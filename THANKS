@@ -9,4 +9,5 @@ Philip Balinov - Slackware package
 Richard Zidlicky <rz@linux-m68k.org> - rpm specfile
 Thomas Klausner <wiz@NetBSD.org> - NetBSD port maintainer
 Vincent Tantardini <vinc@FreeBSD-fr.org> - FreeBSD port maintainer
+Jari Komppa <jari.komppa at gmail> - win32 speed improvements
 

@@ -1216,31 +1216,14 @@ void caca_refresh(void)
     {
         COORD size, pos;
         SMALL_RECT rect;
-        DWORD dummy;
-        unsigned int x, y, len;
+        unsigned int i;
 
         /* Render everything to our back buffer */
-        for(y = 0; y < _caca_height; y++)
+        for(i = 0; i < _caca_width * _caca_height; i++)
         {
-            pos.X = 0;
-            pos.Y = y;
-            SetConsoleCursorPosition(win32_back, pos);
-
-            for(x = 0; x < _caca_width; x += len)
-            {
-                unsigned char *attr = win32_attr + x + y * _caca_width;
-
-                len = 1;
-                while(x + len < _caca_width && attr[len] == attr[0])
-                    len++;
-
-                SetConsoleTextAttribute(win32_back,
-                                        win32_fg_palette[attr[0] & 0xf]
-                                         | win32_bg_palette[attr[0] >> 4]);
-
-                WriteConsole(win32_back, win32_char + x + y * _caca_width,
-                             len, &dummy, NULL);
-            }
+            win32_buffer[i].Char.AsciiChar = win32_char[i];
+            win32_buffer[i].Attributes = win32_fg_palette[win32_attr[i] & 0xf]
+                                       | win32_bg_palette[win32_attr[i] >> 4];
         }
 
         /* Blit the back buffer to the front buffer */
@@ -1250,7 +1233,6 @@ void caca_refresh(void)
         rect.Left = rect.Top = 0;
         rect.Right = _caca_width - 1;
         rect.Bottom = _caca_height - 1;
-        ReadConsoleOutput(win32_back, win32_buffer, size, pos, &rect);
         WriteConsoleOutput(win32_front, win32_buffer, size, pos, &rect);
     }
     else
