@@ -92,8 +92,8 @@ static int rgb_palette[] =
     0x7ff, 0x0,   0x0,
     0x7ff, 0x0,   0x7ff,
     0x7ff, 0x7ff, 0x0,
-    0x7ff, 0x7ff, 0x7ff,
-    0x3ff, 0x3ff, 0x3ff,
+    0xaaa, 0xaaa, 0xaaa,
+    0x555, 0x555, 0x555,
     0x000, 0x000, 0xfff,
     0x000, 0xfff, 0x000,
     0x000, 0xfff, 0xfff,
@@ -576,7 +576,7 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
     {
         unsigned int i;
         int ch = 0, distmin;
-        int r, g, b, a, fg_r, fg_g, fg_b, bg_r, bg_g, bg_b;
+        int r, g, b, a, fg_r = 0, fg_g = 0, fg_b = 0, bg_r, bg_g, bg_b;
         int fromx, fromy, tox, toy, myx, myy, dots, dist;
 
         enum caca_color outfg = 0, outbg = 0;
@@ -672,42 +672,62 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
         bg_g = rgb_palette[outbg * 3 + 1];
         bg_b = rgb_palette[outbg * 3 + 2];
 
-        distmin = INT_MAX;
-        for(i = 0; i < 16; i++)
+        if(_caca_background == CACA_BACKGROUND_SOLID)
         {
-            if(i == outbg)
-                continue;
-            dist = sq(r - rgb_palette[i * 3])
-                 + sq(g - rgb_palette[i * 3 + 1])
-                 + sq(b - rgb_palette[i * 3 + 2]);
-            dist *= rgb_weight[i];
-            if(dist < distmin)
+            distmin = INT_MAX;
+            for(i = 0; i < 16; i++)
             {
-                outfg = i;
-                distmin = dist;
+                if(i == outbg)
+                    continue;
+                dist = sq(r - rgb_palette[i * 3])
+                     + sq(g - rgb_palette[i * 3 + 1])
+                     + sq(b - rgb_palette[i * 3 + 2]);
+                dist *= rgb_weight[i];
+                if(dist < distmin)
+                {
+                    outfg = i;
+                    distmin = dist;
+                }
             }
-        }
-        fg_r = rgb_palette[outfg * 3];
-        fg_g = rgb_palette[outfg * 3 + 1];
-        fg_b = rgb_palette[outfg * 3 + 2];
+            fg_r = rgb_palette[outfg * 3];
+            fg_g = rgb_palette[outfg * 3 + 1];
+            fg_b = rgb_palette[outfg * 3 + 2];
 
-        distmin = INT_MAX;
-        for(i = 0; i < DCHMAX - 1; i++)
-	{
-            int newr = i * fg_r + ((2*DCHMAX-1) - i) * bg_r;
-            int newg = i * fg_g + ((2*DCHMAX-1) - i) * bg_g;
-            int newb = i * fg_b + ((2*DCHMAX-1) - i) * bg_b;
-            dist = abs(r * (2*DCHMAX-1) - newr)
-                 + abs(g * (2*DCHMAX-1) - newg)
-                 + abs(b * (2*DCHMAX-1) - newb);
-
-            if(dist < distmin)
+            distmin = INT_MAX;
+            for(i = 0; i < DCHMAX - 1; i++)
             {
-                ch = i;
-                distmin = dist;
+                int newr = i * fg_r + ((2*DCHMAX-1) - i) * bg_r;
+                int newg = i * fg_g + ((2*DCHMAX-1) - i) * bg_g;
+                int newb = i * fg_b + ((2*DCHMAX-1) - i) * bg_b;
+                dist = abs(r * (2*DCHMAX-1) - newr)
+                     + abs(g * (2*DCHMAX-1) - newg)
+                     + abs(b * (2*DCHMAX-1) - newb);
+
+                if(dist < distmin)
+                {
+                    ch = i;
+                    distmin = dist;
+                }
             }
+            outch = density_chars[4 * ch];
         }
-        outch = density_chars[4 * ch];
+        else
+        {
+            int lum = r;
+            if(g > lum)
+                lum = g;
+            if(b > lum)
+                lum = b;
+            outfg = outbg;
+            outbg = CACA_COLOR_BLACK;
+
+            ch = lum * DCHMAX / 0x1000;
+            if(ch < 0)
+                ch = 0;
+            else if(ch > (int)(DCHMAX - 1))
+                ch = DCHMAX - 1;
+            outch = density_chars[4 * ch];
+        }
 
         if(_caca_dithering == CACA_DITHERING_FSTEIN)
         {
