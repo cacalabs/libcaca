@@ -26,8 +26,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <malloc.h>
+#include <unistd.h>
 
-#define X_DISPLAY_MISSING 1
 #include <Imlib2.h>
 
 #include "caca.h"
@@ -101,8 +101,11 @@ int main(int argc, char **argv)
                 reload = 1;
                 break;
             case CACA_EVENT_KEY_PRESS | 'd':
-            case CACA_EVENT_KEY_PRESS | 'D':
                 dithering = (dithering + 1) % 4;
+                update = 1;
+                break;
+            case CACA_EVENT_KEY_PRESS | 'D':
+                dithering = (dithering - 1) % 4;
                 update = 1;
                 break;
             case CACA_EVENT_KEY_PRESS | '+':
@@ -143,7 +146,7 @@ int main(int argc, char **argv)
                 update = 1;
                 break;
             case CACA_EVENT_KEY_PRESS | '?':
-                help = !help;
+                help = 1;
                 update = 1;
                 break;
             case CACA_EVENT_KEY_PRESS | 'q':
@@ -173,82 +176,86 @@ int main(int argc, char **argv)
             free(buffer);
         }
 
-        if(update)
+        if(!update)
         {
-            caca_clear();
-            caca_set_dithering(dithering);
-            caca_set_color(CACA_COLOR_WHITE, CACA_COLOR_BLUE);
-
-            if(!items)
-                caca_printf(ww / 2 - 5, wh / 2, " No image. ");
-            else if(!image)
-            {
-                char *buffer = malloc(ww + 1);
-                snprintf(buffer, ww, " Error loading `%s'. ", list[current]);
-                buffer[ww] = '\0';
-                caca_putstr((ww - strlen(buffer)) / 2, wh / 2, buffer);
-                free(buffer);
-            }
-            else if(zoom < 0)
-            {
-                int xo = (ww - 1) / 2;
-                int yo = (wh - 1) / 2;
-                int xn = (ww - 1) / (2 - zoom);
-                int yn = (wh - 1) / (2 - zoom);
-                caca_draw_bitmap(xo - xn, yo - yn, xo + xn, yo + yn,
-                                 bitmap, pixels);
-            }
-            else if(zoom > 0)
-            {
-                struct caca_bitmap *newbitmap;
-                int xn = w / (2 + zoom);
-                int yn = h / (2 + zoom);
-                if(x < xn) x = xn;
-                if(y < yn) y = yn;
-                if(xn + x > w) x = w - xn;
-                if(yn + y > h) y = h - yn;
-                newbitmap = caca_create_bitmap(32, 2 * xn, 2 * yn, 4 * w,
-                                           0x00ff0000, 0x0000ff00, 0x000000ff);
-                caca_draw_bitmap(0, 0, ww - 1, wh - 1, newbitmap,
-                                 pixels + 4 * (x - xn) + 4 * w * (y - yn));
-                caca_free_bitmap(newbitmap);
-            }
-            else
-            {
-                caca_draw_bitmap(0, 0, ww - 1, wh - 1, bitmap, pixels);
-            }
-
-            caca_set_color(CACA_COLOR_WHITE, CACA_COLOR_BLUE);
-            caca_draw_line(0, 0, ww - 1, 0, ' ');
-            caca_draw_line(0, wh - 1, ww - 1, wh - 1, '-');
-            caca_putstr(0, 0, "q:Quit  +/-/x:Zoom  h/j/k/l: Move  "
-                              "d:Dithering  ?:Help");
-            caca_printf(3, wh - 1, "cacaview %s", VERSION);
-            caca_printf(ww / 2 - 5, wh - 1, "(dithering: %s)",
-                        caca_get_dithering_name(dithering));
-            caca_printf(ww - 14, wh - 1,
-                        "(zoom: %s%i)", zoom > 0 ? "+" : "", zoom);
-
-            if(help)
-            {
-                caca_putstr(2, 2,  " +: zoom in          ");
-                caca_putstr(2, 3,  " -: zoom out         ");
-                caca_putstr(2, 4,  " x: reset zoom       ");
-                caca_putstr(2, 5,  " ------------------- ");
-                caca_putstr(2, 6,  " hjkl: move view     ");
-                caca_putstr(2, 7,  " arrows: move view   ");
-                caca_putstr(2, 8,  " ------------------- ");
-                caca_putstr(2, 9,  " d: dithering method ");
-                caca_putstr(2, 10, " ------------------- ");
-                caca_putstr(2, 11, " ?: help             ");
-                caca_putstr(2, 12, " q: quit             ");
-
-                help = 0;
-            }
-
-            caca_refresh();
-            update = 0;
+            usleep(10000);
+            continue;
         }
+
+        caca_clear();
+        caca_set_dithering(dithering);
+        caca_set_color(CACA_COLOR_WHITE, CACA_COLOR_BLUE);
+
+        if(!items)
+            caca_printf(ww / 2 - 5, wh / 2, " No image. ");
+        else if(!image)
+        {
+            char *buffer = malloc(ww + 1);
+            snprintf(buffer, ww, " Error loading `%s'. ", list[current]);
+            buffer[ww] = '\0';
+            caca_putstr((ww - strlen(buffer)) / 2, wh / 2, buffer);
+            free(buffer);
+        }
+        else if(zoom < 0)
+        {
+            int xo = (ww - 1) / 2;
+            int yo = (wh - 1) / 2;
+            int xn = (ww - 1) / (2 - zoom);
+            int yn = (wh - 1) / (2 - zoom);
+            caca_draw_bitmap(xo - xn, yo - yn, xo + xn, yo + yn,
+                             bitmap, pixels);
+        }
+        else if(zoom > 0)
+        {
+            struct caca_bitmap *newbitmap;
+            int xn = w / (2 + zoom);
+            int yn = h / (2 + zoom);
+            if(x < xn) x = xn;
+            if(y < yn) y = yn;
+            if(xn + x > w) x = w - xn;
+            if(yn + y > h) y = h - yn;
+            newbitmap = caca_create_bitmap(32, 2 * xn, 2 * yn, 4 * w,
+                                       0x00ff0000, 0x0000ff00, 0x000000ff);
+            caca_draw_bitmap(0, 0, ww - 1, wh - 1, newbitmap,
+                             pixels + 4 * (x - xn) + 4 * w * (y - yn));
+            caca_free_bitmap(newbitmap);
+        }
+        else
+        {
+            caca_draw_bitmap(0, 0, ww - 1, wh - 1, bitmap, pixels);
+        }
+
+        caca_set_color(CACA_COLOR_WHITE, CACA_COLOR_BLUE);
+        caca_draw_line(0, 0, ww - 1, 0, ' ');
+        caca_draw_line(0, wh - 1, ww - 1, wh - 1, '-');
+        caca_putstr(0, 0, "q:Quit  n/p:Next/Prev  +/-/x:Zoom  "
+                          "h/j/k/l: Move  d:Dithering");
+        caca_putstr(ww - strlen("?:Help"), 0, "?:Help");
+        caca_printf(3, wh - 1, "cacaview %s", VERSION);
+        caca_printf(ww / 2 - 5, wh - 1, "(%s dithering)",
+                    caca_get_dithering_name(dithering));
+        caca_printf(ww - 14, wh - 1,
+                    "(zoom: %s%i)", zoom > 0 ? "+" : "", zoom);
+
+        if(help)
+        {
+            caca_putstr(ww - 22, 2,  " +: zoom in          ");
+            caca_putstr(ww - 22, 3,  " -: zoom out         ");
+            caca_putstr(ww - 22, 4,  " x: reset zoom       ");
+            caca_putstr(ww - 22, 5,  " ------------------- ");
+            caca_putstr(ww - 22, 6,  " hjkl: move view     ");
+            caca_putstr(ww - 22, 7,  " arrows: move view   ");
+            caca_putstr(ww - 22, 8,  " ------------------- ");
+            caca_putstr(ww - 22, 9,  " d: dithering method ");
+            caca_putstr(ww - 22, 10, " ------------------- ");
+            caca_putstr(ww - 22, 11, " ?: help             ");
+            caca_putstr(ww - 22, 12, " q: quit             ");
+
+            help = 0;
+        }
+
+        caca_refresh();
+        update = 0;
     }
 
     if(bitmap)

@@ -27,7 +27,7 @@ if USE_IMLIB2
 cacaview = cacaview
 cacaview_SOURCES = view.c
 cacaview_LDADD = ../src/libcaca.a $(LDFLAGS_slang) $(LDFLAGS_ncurses)
-cacaview_CPPFLAGS = -I$(top_srcdir)/src
+cacaview_CPPFLAGS = -I$(top_srcdir)/src -DX_DISPLAY_MISSING=1
 cacaview_CFLAGS = `imlib2-config --cflags`
 cacaview_LDFLAGS = `imlib2-config --libs`
 endif

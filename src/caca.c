@@ -184,9 +184,9 @@ const char *caca_get_dithering_name(enum caca_dithering dithering)
 {
     static const char *dithering_names[] =
     {
-        "none",
-        "ordered 4x4",
-        "ordered 8x8",
+        "no",
+        "4x4 ordered",
+        "8x8 ordered",
         "random"
     };
 
