@@ -21,7 +21,7 @@ High level stuff
 
    o  Fix the thin ellipse rendering
 
-   o  Support more colour depths, more bitmask orderings
+   o  DONE 26 Nov 2003: Support more colour depths, more bitmask orderings
 
 
 Misc

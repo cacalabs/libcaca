@@ -1,7 +1,17 @@
 $Id$
 
-New in v0.1
------------
+Changes between 0.1 and 0.2:
+----------------------------
+
+  * rendering now uses 256 colour pairs instead of 16
+  * mouse support for ncurses
+  * ncurses is now the preferred backend
+  * arbitrary color depth and bitmasks in the bitmap renderer
+  * cacaview, an image viewer based on libcaca
+
+
+New in 0.1
+----------
 
   * initial release
   * slang, ncurses and conio drivers

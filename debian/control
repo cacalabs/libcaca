@@ -2,13 +2,13 @@ Source: libcaca
 Section: libs
 Priority: optional
 Maintainer: Sam Hocevar (Debian packages) <sam+deb@zoy.org>
-Build-Depends: debhelper (>= 4.0), slang1-dev, libimlib2-dev
+Build-Depends: debhelper (>= 4.0), libncurses5-dev, libimlib2-dev
 Standards-Version: 3.6.1.0
 
 Package: libcaca-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, slang1-dev
+Depends: ${shlibs:Depends}, libncurses5-dev
 Description: text mode graphics library
  libcaca is the Colour AsCii Art library.
  .

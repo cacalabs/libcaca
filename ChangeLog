@@ -1,7 +1,360 @@
 ------------------------------------------------------------------------
+r138 | sam | 2003-11-30 18:14:19 +0100 (Sun, 30 Nov 2003) | 3 lines
+Changed paths:
+   M /trunk/examples/view.c
+
+  * examples/view.c:
+    + Removed last endianness issue.
+
+------------------------------------------------------------------------
+r137 | sam | 2003-11-30 17:34:04 +0100 (Sun, 30 Nov 2003) | 5 lines
+Changed paths:
+   M /trunk/examples/view.c
+   M /trunk/src/bitmap.c
+   M /trunk/src/io.c
+
+  * src/io.c:
+    + Removed a useless message.
+  * src/bitmap.c examples/view.c:
+    + Really fixed the endianness issue.
+
+------------------------------------------------------------------------
+r136 | sam | 2003-11-30 16:56:02 +0100 (Sun, 30 Nov 2003) | 5 lines
+Changed paths:
+   M /trunk/src/bitmap.c
+
+  * src/bitmap.c:
+    + Fine-tuned the new renderer.
+    + Fixed warnings.
+    + Changed hardcoded values to macros.
+
+------------------------------------------------------------------------
+r135 | sam | 2003-11-30 16:01:55 +0100 (Sun, 30 Nov 2003) | 11 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/examples/demo.c
+   M /trunk/examples/view.c
+   M /trunk/src/bitmap.c
+   M /trunk/src/caca.c
+   M /trunk/src/caca.h
+
+  * src/bitmap.c:
+    + Fixed an endianness issue in the byte reader.
+    + Decreased precision in RGB and HSV values to avoid overflows.
+    + New dithering method: 2x2 ordered.
+    + New renderer, with background colour awareness.
+  * configure.ac:
+    + Check for <endian.h>.
+  * examples/demo.c examples/view.c:
+    + Fixed an endianness issue in cacaview.
+    + Adapted code to the additional dithering method.
+
+------------------------------------------------------------------------
+r134 | sam | 2003-11-30 03:11:37 +0100 (Sun, 30 Nov 2003) | 4 lines
+Changed paths:
+   M /trunk/examples/view.c
+   M /trunk/src/bitmap.c
+
+  * src/bitmap.c examples/view.c:
+    + Fixed an endianness issue in caca_draw_bitmap().
+    + Code cleanup.
+
+------------------------------------------------------------------------
+r133 | sam | 2003-11-30 02:18:10 +0100 (Sun, 30 Nov 2003) | 13 lines
+Changed paths:
+   M /trunk/TODO
+   M /trunk/doc/cacaview.1
+   M /trunk/examples/Makefile.am
+   M /trunk/examples/view.c
+   M /trunk/src/caca.c
+
+  * src/caca.c:
+    + Minor change to the dithering names.
+  * TODO:
+    + Added cacaview TODO.
+  * doc/cacaview.1:
+    + Wrote a manpage for cacaview.
+  * examples/Makefile.am:
+    + Moved the -DX_DISPLAY_MISSING=1 here.
+  * examples/view.c:
+    + Capital 'D' cycles through dithering modes in reverse order.
+    + Sleep when there is nothing to do.
+    + Cosmetic code reorganisation.
+
+------------------------------------------------------------------------
+r132 | sam | 2003-11-29 20:35:07 +0100 (Sat, 29 Nov 2003) | 9 lines
+Changed paths:
+   M /trunk/examples/demo.c
+   M /trunk/examples/view.c
+   M /trunk/src/bitmap.c
+   M /trunk/src/caca.c
+   M /trunk/src/caca.h
+
+  * src/caca.c src/caca.h:
+    + Added caca_get_dithering_name().
+  * src/bitmap.c:
+    + Created a new dithering method with an 8x8 ordered matrix.
+    + Replaced the char list with a string for better readability.
+    + Dithering functions now return a value between 0 and 255.
+  * examples/demo.c examples/view.c:
+    + Adapted to use caca_get_dithering_name().
+
+------------------------------------------------------------------------
+r131 | sam | 2003-11-29 19:04:42 +0100 (Sat, 29 Nov 2003) | 3 lines
+Changed paths:
+   M /trunk/src/caca.c
+
+  * src/caca.c:
+    + Test whether ncurses knows xterm-16color before setting $TERM.
+
+------------------------------------------------------------------------
+r130 | sam | 2003-11-29 18:36:00 +0100 (Sat, 29 Nov 2003) | 6 lines
+Changed paths:
+   M /trunk/examples/view.c
+
+  * examples/view.c:
+    + Added top and bottom status lines, like in mutt and slrn.
+    + Added a status string when loading an image or upon error.
+    + Can load multiple files; use 'n' and 'p' for next and previous.
+    + Clip zoom between -48 and +48.
+
+------------------------------------------------------------------------
+r129 | sam | 2003-11-29 17:42:35 +0100 (Sat, 29 Nov 2003) | 2 lines
+Changed paths:
+   M /trunk/src/caca.c
+
+  * Fixed a C99ism.
+
+------------------------------------------------------------------------
+r128 | sam | 2003-11-29 15:41:37 +0100 (Sat, 29 Nov 2003) | 9 lines
+Changed paths:
+   M /trunk/NOTES
+   M /trunk/configure.ac
+   M /trunk/src/caca.c
+   M /trunk/src/graphics.c
+
+  * configure.ac:
+    + Default to ncurses, not slang, because slang only has 128 colour pairs.
+  * src/caca.c:
+    + Disable scrolling to avoid hashmap scrolling optimization code.
+  * src/graphics.c:
+    + Swap fg and bg in the colour pair indexing, so that bg is always
+      right.
+    + Disable alt charset support to exploit my patched slang.
+
+------------------------------------------------------------------------
+r127 | sam | 2003-11-28 21:39:54 +0100 (Fri, 28 Nov 2003) | 10 lines
+Changed paths:
+   M /trunk/NOTES
+   M /trunk/examples/view.c
+   M /trunk/src/bitmap.c
+
+  * src/bitmap.c:
+    + Dither chroma outside of rgb2hsv_default().
+    + Clip fromx and fromy values.
+  * NOTES:
+    + Link to the XTerm control sequences.
+  * examples/view.c:
+    + Draw status bar.
+    + Move with 'h' 'j' 'k' 'l', à la vi.
+    + '?' toggles a help menu.
+
+------------------------------------------------------------------------
+r126 | sam | 2003-11-28 00:18:12 +0100 (Fri, 28 Nov 2003) | 3 lines
+Changed paths:
+   M /trunk/src/bitmap.c
+
+  * src/bitmap.c:
+    + Removed § from the list of default characters due to collisions.
+
+------------------------------------------------------------------------
+r125 | sam | 2003-11-27 23:54:48 +0100 (Thu, 27 Nov 2003) | 6 lines
+Changed paths:
+   A /trunk/debian/caca-utils.mime
+   M /trunk/debian/control
+   M /trunk/debian/rules
+
+  * debian/control:
+    + Removed slang1-dev dependency in caca-utils.
+  * debian/caca-utils.mime debian/rules:
+    + Added a MIME file with low priority.
+    + Added call to dh_installmime.
+
+------------------------------------------------------------------------
+r124 | sam | 2003-11-27 23:29:13 +0100 (Thu, 27 Nov 2003) | 5 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/src/caca.c
+   M /trunk/src/caca_internals.h
+   M /trunk/src/graphics.c
+
+  * src/caca.c src/graphics.c:
+    + Moved graphics stuff from caca.c to graphics.c.
+    + Added a few kludges: if gnome-terminal or konsole are detected, switch
+      to TERM=xterm-16color to benefit from extended colour palette.
+
+------------------------------------------------------------------------
+r123 | sam | 2003-11-27 22:56:30 +0100 (Thu, 27 Nov 2003) | 13 lines
+Changed paths:
+   M /trunk/NOTES
+   M /trunk/examples/demo.c
+   M /trunk/examples/spritedit.c
+   M /trunk/src/bitmap.c
+   M /trunk/src/caca.c
+   M /trunk/src/caca.h
+   M /trunk/src/graphics.c
+   M /trunk/src/sprite.c
+
+  * NOTES:
+    + Added setab/setaf quotes from the XTerm terminfo.
+    + Proposed a workaround for bright colours on any terminal.
+  * src/caca.c:
+    + 16 colour support for ncurses and conio.
+  * src/graphics.c:
+    + Ported to 16 colour support.
+    + Added a missing <stdio.h> for BUFSIZ.
+    + Disabled vsnprintf under DOS (only vsprintf exists).
+  * examples/:
+    + Don't abort if the caca.txt sprite was not found.
+    + Ported to 16 colour support.
+
+------------------------------------------------------------------------
+r122 | sam | 2003-11-27 14:27:32 +0100 (Thu, 27 Nov 2003) | 2 lines
+Changed paths:
+   M /trunk/NOTES
+
+  * NOTES: more notes about colours.
+
+------------------------------------------------------------------------
+r121 | sam | 2003-11-27 10:43:56 +0100 (Thu, 27 Nov 2003) | 5 lines
+Changed paths:
+   M /trunk/Makefile.am
+   M /trunk/configure.ac
+   M /trunk/examples/Makefile.am
+
+  * configure.ac:
+    + More sensible imlib2 detection, works with cross-compilation.
+  * Makefile.am:
+    + Don't forget to include NOTES to the dist tarball.
+
+------------------------------------------------------------------------
+r120 | sam | 2003-11-27 10:38:16 +0100 (Thu, 27 Nov 2003) | 2 lines
+Changed paths:
+   A /trunk/NOTES
+   M /trunk/README
+   M /trunk/debian/rules
+
+  * NOTES: added information about colour support.
+
+------------------------------------------------------------------------
+r119 | sam | 2003-11-26 22:02:31 +0100 (Wed, 26 Nov 2003) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+
+  * configure.ac: Added a missing check for <inttypes.h>.
+
+------------------------------------------------------------------------
+r118 | sam | 2003-11-26 21:58:30 +0100 (Wed, 26 Nov 2003) | 2 lines
+Changed paths:
+   M /trunk/src/bitmap.c
+
+  * src/bitmap.c: Support for more colour depths.
+
+------------------------------------------------------------------------
+r115 | sam | 2003-11-24 20:56:04 +0100 (Mon, 24 Nov 2003) | 9 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/examples/Makefile.am
+   M /trunk/examples/demo.c
+   M /trunk/examples/view.c
+
+  * configure.ac examples/Makefile.am:
+    + Added a check for imlib2-config.
+    + Build cacaview conditionally.
+  * examples/demo.c:
+    + Removed all gdkpixbuf code.
+  * examples/view.c:
+    + Default to ordered dithering.
+    + Make sure the arrows always work even if delta is too small.
+
+------------------------------------------------------------------------
+r114 | sam | 2003-11-24 18:51:40 +0100 (Mon, 24 Nov 2003) | 4 lines
+Changed paths:
+   M /trunk/debian
+   M /trunk/debian/control
+   M /trunk/debian/rules
+
+  * debian/:
+    + New caca-utils package.
+    + Move cacademo, cacaview and caca-spritedit to caca-utils.
+
+------------------------------------------------------------------------
+r113 | sam | 2003-11-24 18:50:14 +0100 (Mon, 24 Nov 2003) | 6 lines
+Changed paths:
+   M /trunk/doc/Makefile.am
+   D /trunk/doc/caca-demo.1
+   A /trunk/doc/cacademo.1 (from /trunk/doc/caca-demo.1:112)
+   A /trunk/doc/cacaview.1
+   M /trunk/examples
+   M /trunk/examples/Makefile.am
+   A /trunk/examples/view.c
+
+  * examples/:
+    + Simple image viewer, cacaview, based on libcaca and imlib2.
+    + Renamed caca-demo into cacademo.
+  * doc/:
+    + Renamed doc/caca-demo.1 into doc/cacademo.1.
+
+------------------------------------------------------------------------
+r112 | sam | 2003-11-23 16:34:35 +0100 (Sun, 23 Nov 2003) | 2 lines
+Changed paths:
+   M /trunk/src/Makefile.am
+   A /trunk/src/bitmap.c (from /trunk/src/blit.c:111)
+   D /trunk/src/blit.c
+
+  * Renamed src/blit.c into src/bitmap.c.
+
+------------------------------------------------------------------------
+r111 | sam | 2003-11-23 04:44:59 +0100 (Sun, 23 Nov 2003) | 5 lines
+Changed paths:
+   M /trunk/examples/demo.c
+   M /trunk/src/caca.c
+   M /trunk/src/caca.h
+   M /trunk/src/io.c
+
+  * src/caca.c:
+    + Mouse initialisation in ncurses.
+  * src/io.c:
+    + Mouse support in ncurses.
+
+------------------------------------------------------------------------
+r110 | sam | 2003-11-22 15:28:36 +0100 (Sat, 22 Nov 2003) | 3 lines
+Changed paths:
+   M /trunk/debian/control
+
+  * debian/control:
+    + libcaca-dev should depend on slang1-dev.
+
+------------------------------------------------------------------------
+r109 | sam | 2003-11-22 15:23:18 +0100 (Sat, 22 Nov 2003) | 3 lines
+Changed paths:
+   M /trunk/debian/Makefile.am
+
+  * debian/Makefile.am:
+    + Added compat and copyright to the distributed files.
+
+------------------------------------------------------------------------
+r108 | sam | 2003-11-22 15:19:36 +0100 (Sat, 22 Nov 2003) | 2 lines
+Changed paths:
+   A /trunk/ChangeLog
+   M /trunk/debian/rules
+
+  * Added a ChangeLog file.
+
+------------------------------------------------------------------------
 r107 | sam | 2003-11-22 15:13:53 +0100 (Sat, 22 Nov 2003) | 3 lines
 Changed paths:
-   M /examples/Makefile.am
+   M /trunk/examples/Makefile.am
 
   * examples/Makefile.am:
     + Compilation fix when libcaca is not available.
@@ -9,14 +362,14 @@ Changed paths:
 ------------------------------------------------------------------------
 r106 | sam | 2003-11-22 14:44:02 +0100 (Sat, 22 Nov 2003) | 9 lines
 Changed paths:
-   M /debian/changelog
-   A /debian/copyright
-   M /debian/rules
-   M /doc/Makefile.am
-   M /doc/caca-config.1
-   A /doc/caca-demo.1
-   A /doc/caca-spritedit.1
-   M /examples/caca.txt
+   M /trunk/debian/changelog
+   A /trunk/debian/copyright
+   M /trunk/debian/rules
+   M /trunk/doc/Makefile.am
+   M /trunk/doc/caca-config.1
+   A /trunk/doc/caca-demo.1
+   A /trunk/doc/caca-spritedit.1
+   M /trunk/examples/caca.txt
 
   * debian/:
     + Wrote the changelog for the Debian release.
@@ -30,16 +383,16 @@ Changed paths:
 ------------------------------------------------------------------------
 r105 | sam | 2003-11-22 13:53:55 +0100 (Sat, 22 Nov 2003) | 11 lines
 Changed paths:
-   A /AUTHORS
-   M /Makefile.am
-   A /NEWS
-   M /configure.ac
-   A /doc
-   A /doc/Makefile.am
-   A /doc/caca-config.1
-   A /doc/doxygen.cfg
-   A /doc/footer.html
-   A /doc/header.html
+   A /trunk/AUTHORS
+   M /trunk/Makefile.am
+   A /trunk/NEWS
+   M /trunk/configure.ac
+   A /trunk/doc
+   A /trunk/doc/Makefile.am
+   A /trunk/doc/caca-config.1
+   A /trunk/doc/doxygen.cfg
+   A /trunk/doc/footer.html
+   A /trunk/doc/header.html
 
   * AUTHORS NEWS:
     + Added these mandatory files.
@@ -55,26 +408,26 @@ Changed paths:
 ------------------------------------------------------------------------
 r104 | sam | 2003-11-22 13:51:27 +0100 (Sat, 22 Nov 2003) | 2 lines
 Changed paths:
-   M /examples/Makefile.am
-   M /examples/demo.c
+   M /trunk/examples/Makefile.am
+   M /trunk/examples/demo.c
 
   * Disabled gdkpixbuf code.
 
 ------------------------------------------------------------------------
 r103 | sam | 2003-11-22 13:45:25 +0100 (Sat, 22 Nov 2003) | 3 lines
 Changed paths:
-   M /src/blit.c
-   M /src/box.c
-   M /src/caca.c
-   M /src/caca.h
-   M /src/caca_internals.h
-   M /src/conic.c
-   M /src/graphics.c
-   M /src/io.c
-   M /src/line.c
-   M /src/math.c
-   M /src/sprite.c
-   M /src/triangle.c
+   M /trunk/src/blit.c
+   M /trunk/src/box.c
+   M /trunk/src/caca.c
+   M /trunk/src/caca.h
+   M /trunk/src/caca_internals.h
+   M /trunk/src/conic.c
+   M /trunk/src/graphics.c
+   M /trunk/src/io.c
+   M /trunk/src/line.c
+   M /trunk/src/math.c
+   M /trunk/src/sprite.c
+   M /trunk/src/triangle.c
 
   * src/:
     + Doxygenated a few things.
@@ -82,10 +435,10 @@ Changed paths:
 ------------------------------------------------------------------------
 r102 | sam | 2003-11-21 15:34:07 +0100 (Fri, 21 Nov 2003) | 8 lines
 Changed paths:
-   M /TODO
-   M /examples/demo.c
-   M /src/blit.c
-   M /src/caca.h
+   M /trunk/TODO
+   M /trunk/examples/demo.c
+   M /trunk/src/blit.c
+   M /trunk/src/caca.h
 
   * TODO:
     + A few updates.
@@ -98,7 +451,7 @@ Changed paths:
 ------------------------------------------------------------------------
 r101 | sam | 2003-11-21 15:14:26 +0100 (Fri, 21 Nov 2003) | 3 lines
 Changed paths:
-   M /src/io.c
+   M /trunk/src/io.c
 
   * src/io.c:
     + Fixed an off-by-one error in the mouse driver.
@@ -106,20 +459,20 @@ Changed paths:
 ------------------------------------------------------------------------
 r100 | sam | 2003-11-20 17:54:04 +0100 (Thu, 20 Nov 2003) | 13 lines
 Changed paths:
-   M /
-   M /Makefile.am
-   M /README
-   M /TODO
-   A /caca-config.in
-   M /configure.ac
-   M /debian
-   A /debian/compat
-   M /debian/control
-   M /debian/rules
-   M /examples
-   M /examples/Makefile.am
-   M /examples/demo.c
-   M /src/Makefile.am
+   M /trunk
+   M /trunk/Makefile.am
+   M /trunk/README
+   M /trunk/TODO
+   A /trunk/caca-config.in
+   M /trunk/configure.ac
+   M /trunk/debian
+   A /trunk/debian/compat
+   M /trunk/debian/control
+   M /trunk/debian/rules
+   M /trunk/examples
+   M /trunk/examples/Makefile.am
+   M /trunk/examples/demo.c
+   M /trunk/src/Makefile.am
 
   * debian/control:
     + Changed section to libs/libdevel instead of games/games.
@@ -137,8 +490,8 @@ Changed paths:
 ------------------------------------------------------------------------
 r99 | sam | 2003-11-19 19:38:49 +0100 (Wed, 19 Nov 2003) | 3 lines
 Changed paths:
-   M /TODO
-   M /src/io.c
+   M /trunk/TODO
+   M /trunk/src/io.c
 
   * TODO: New stuff to do.
   * src/io.c: left and right arrow keys were swapped.
@@ -146,9 +499,9 @@ Changed paths:
 ------------------------------------------------------------------------
 r98 | sam | 2003-11-19 18:49:43 +0100 (Wed, 19 Nov 2003) | 3 lines
 Changed paths:
-   M /src/blit.c
-   M /src/caca.c
-   M /src/io.c
+   M /trunk/src/blit.c
+   M /trunk/src/caca.c
+   M /trunk/src/io.c
 
   * src/io.c:
     + Fixed a bug in the mouse coordinates reporting.
@@ -156,12 +509,12 @@ Changed paths:
 ------------------------------------------------------------------------
 r97 | sam | 2003-11-19 18:32:10 +0100 (Wed, 19 Nov 2003) | 6 lines
 Changed paths:
-   M /examples/demo.c
-   M /examples/spritedit.c
-   M /src/blit.c
-   M /src/caca.c
-   M /src/caca.h
-   M /src/io.c
+   M /trunk/examples/demo.c
+   M /trunk/examples/spritedit.c
+   M /trunk/src/blit.c
+   M /trunk/src/caca.c
+   M /trunk/src/caca.h
+   M /trunk/src/io.c
 
   * src/io.c:
     + Renamed sdl_get_key() into sdl_get_event().
@@ -172,11 +525,11 @@ Changed paths:
 ------------------------------------------------------------------------
 r96 | sam | 2003-11-17 17:11:34 +0100 (Mon, 17 Nov 2003) | 8 lines
 Changed paths:
-   M /examples/Makefile.am
-   M /src/Makefile.am
-   M /src/blit.c
-   M /src/caca.h
-   M /src/io.c
+   M /trunk/examples/Makefile.am
+   M /trunk/src/Makefile.am
+   M /trunk/src/blit.c
+   M /trunk/src/caca.h
+   M /trunk/src/io.c
 
   * src/io.c src/caca.h:
     + Interpret escape sequences for F1, F2, left, right, etc.
@@ -189,17 +542,17 @@ Changed paths:
 ------------------------------------------------------------------------
 r95 | sam | 2003-11-17 11:15:40 +0100 (Mon, 17 Nov 2003) | 2 lines
 Changed paths:
-   D /.cvsignore
-   D /autotools/.cvsignore
+   D /trunk/.cvsignore
+   D /trunk/autotools/.cvsignore
 
   * Removed legacy .cvsignore files.
 
 ------------------------------------------------------------------------
 r94 | sam | 2003-11-16 18:41:43 +0100 (Sun, 16 Nov 2003) | 6 lines
 Changed paths:
-   M /examples/demo.c
-   M /src/blit.c
-   M /src/caca.h
+   M /trunk/examples/demo.c
+   M /trunk/src/blit.c
+   M /trunk/src/caca.h
 
   * src/blit.c:
     + Hue calculation now uses integers only.
@@ -210,15 +563,15 @@ Changed paths:
 ------------------------------------------------------------------------
 r93 | sam | 2003-11-16 16:20:17 +0100 (Sun, 16 Nov 2003) | 8 lines
 Changed paths:
-   M /examples/Makefile.am
-   A /examples/caca.txt
-   M /examples/demo.c
-   M /examples/spritedit.c
-   M /src/blit.c
-   M /src/caca.c
-   M /src/caca.h
-   M /src/caca_internals.h
-   M /src/graphics.c
+   M /trunk/examples/Makefile.am
+   A /trunk/examples/caca.txt
+   M /trunk/examples/demo.c
+   M /trunk/examples/spritedit.c
+   M /trunk/src/blit.c
+   M /trunk/src/caca.c
+   M /trunk/src/caca.h
+   M /trunk/src/caca_internals.h
+   M /trunk/src/graphics.c
 
   * src/blit.c:
     + Added caca_set_dithering() (unused yet).
@@ -231,34 +584,34 @@ Changed paths:
 ------------------------------------------------------------------------
 r92 | sam | 2003-11-16 13:28:29 +0100 (Sun, 16 Nov 2003) | 2 lines
 Changed paths:
-   M /examples/demo.c
-   M /examples/spritedit.c
-   M /src/blit.c
-   M /src/box.c
-   M /src/caca.c
-   M /src/caca.h
-   M /src/caca_internals.h
-   M /src/conic.c
-   M /src/graphics.c
-   M /src/io.c
-   M /src/line.c
-   M /src/math.c
-   M /src/sprite.c
-   M /src/triangle.c
+   M /trunk/examples/demo.c
+   M /trunk/examples/spritedit.c
+   M /trunk/src/blit.c
+   M /trunk/src/box.c
+   M /trunk/src/caca.c
+   M /trunk/src/caca.h
+   M /trunk/src/caca_internals.h
+   M /trunk/src/conic.c
+   M /trunk/src/graphics.c
+   M /trunk/src/io.c
+   M /trunk/src/line.c
+   M /trunk/src/math.c
+   M /trunk/src/sprite.c
+   M /trunk/src/triangle.c
 
   * Changed copyleft to LGPL.
 
 ------------------------------------------------------------------------
 r91 | sam | 2003-11-16 13:13:46 +0100 (Sun, 16 Nov 2003) | 3 lines
 Changed paths:
-   M /Makefile.am
-   M /configure.ac
-   A /examples (from /test:90)
-   M /examples/Makefile.am
-   D /libcaca
-   A /src (from /libcaca:90)
-   M /src/line.c
-   D /test
+   M /trunk/Makefile.am
+   M /trunk/configure.ac
+   A /trunk/examples (from /trunk/test:90)
+   M /trunk/examples/Makefile.am
+   D /trunk/libcaca
+   A /trunk/src (from /trunk/libcaca:90)
+   M /trunk/src/line.c
+   D /trunk/test
 
   * 2nd pass in the libcaca rehandling; moved sources to src/ and examples
     to examples/.
@@ -266,31 +619,31 @@ Changed paths:
 ------------------------------------------------------------------------
 r90 | sam | 2003-11-16 13:07:52 +0100 (Sun, 16 Nov 2003) | 2 lines
 Changed paths:
-   M /COPYING
-   M /Makefile.am
-   M /README
-   M /TODO
-   M /bootstrap
-   M /configure.ac
-   D /data
-   D /debian/.cvsignore
-   M /debian/changelog
-   M /debian/control
-   M /debian/rules
-   D /doc
-   D /src
+   M /trunk/COPYING
+   M /trunk/Makefile.am
+   M /trunk/README
+   M /trunk/TODO
+   M /trunk/bootstrap
+   M /trunk/configure.ac
+   D /trunk/data
+   D /trunk/debian/.cvsignore
+   M /trunk/debian/changelog
+   M /trunk/debian/control
+   M /trunk/debian/rules
+   D /trunk/doc
+   D /trunk/src
 
   * The big TTYvaders/libcaca split. This is libcaca.
 
 ------------------------------------------------------------------------
 r89 | sam | 2003-11-16 12:26:54 +0100 (Sun, 16 Nov 2003) | 8 lines
 Changed paths:
-   M /configure.ac
-   M /libcaca/blit.c
-   M /libcaca/caca.c
-   M /libcaca/conic.c
-   M /libcaca/graphics.c
-   M /src/weapons.c
+   M /trunk/configure.ac
+   M /trunk/libcaca/blit.c
+   M /trunk/libcaca/caca.c
+   M /trunk/libcaca/conic.c
+   M /trunk/libcaca/graphics.c
+   M /trunk/src/weapons.c
 
   * configure.ac:
     + Added -Wsign-compare to the warning flags.
@@ -303,66 +656,66 @@ Changed paths:
 ------------------------------------------------------------------------
 r88 | sam | 2003-11-16 01:33:35 +0100 (Sun, 16 Nov 2003) | 2 lines
 Changed paths:
-   M /Makefile.am
-   M /TODO
-   M /configure.ac
-   A /libcaca (from /libee:87)
-   M /libcaca/Makefile.am
-   M /libcaca/blit.c
-   M /libcaca/box.c
-   A /libcaca/caca.c (from /libee/ee.c:87)
-   A /libcaca/caca.h (from /libee/ee.h:87)
-   A /libcaca/caca_internals.h (from /libee/ee_internals.h:87)
-   M /libcaca/conic.c
-   D /libcaca/ee.c
-   D /libcaca/ee.h
-   D /libcaca/ee_internals.h
-   M /libcaca/graphics.c
-   M /libcaca/io.c
-   M /libcaca/line.c
-   M /libcaca/math.c
-   M /libcaca/sprite.c
-   M /libcaca/triangle.c
-   D /libee
-   M /src/Makefile.am
-   M /src/aliens.c
-   M /src/bonus.c
-   M /src/box.c
-   M /src/ceo.c
-   M /src/collide.c
-   M /src/common.h
-   M /src/explosions.c
-   M /src/intro.c
-   M /src/main.c
-   M /src/overlay.c
-   M /src/player.c
-   M /src/starfield.c
-   M /src/tunnel.c
-   M /src/weapons.c
-   M /test/Makefile.am
-   M /test/demo.c
-   M /test/spritedit.c
+   M /trunk/Makefile.am
+   M /trunk/TODO
+   M /trunk/configure.ac
+   A /trunk/libcaca (from /trunk/libee:87)
+   M /trunk/libcaca/Makefile.am
+   M /trunk/libcaca/blit.c
+   M /trunk/libcaca/box.c
+   A /trunk/libcaca/caca.c (from /trunk/libee/ee.c:87)
+   A /trunk/libcaca/caca.h (from /trunk/libee/ee.h:87)
+   A /trunk/libcaca/caca_internals.h (from /trunk/libee/ee_internals.h:87)
+   M /trunk/libcaca/conic.c
+   D /trunk/libcaca/ee.c
+   D /trunk/libcaca/ee.h
+   D /trunk/libcaca/ee_internals.h
+   M /trunk/libcaca/graphics.c
+   M /trunk/libcaca/io.c
+   M /trunk/libcaca/line.c
+   M /trunk/libcaca/math.c
+   M /trunk/libcaca/sprite.c
+   M /trunk/libcaca/triangle.c
+   D /trunk/libee
+   M /trunk/src/Makefile.am
+   M /trunk/src/aliens.c
+   M /trunk/src/bonus.c
+   M /trunk/src/box.c
+   M /trunk/src/ceo.c
+   M /trunk/src/collide.c
+   M /trunk/src/common.h
+   M /trunk/src/explosions.c
+   M /trunk/src/intro.c
+   M /trunk/src/main.c
+   M /trunk/src/overlay.c
+   M /trunk/src/player.c
+   M /trunk/src/starfield.c
+   M /trunk/src/tunnel.c
+   M /trunk/src/weapons.c
+   M /trunk/test/Makefile.am
+   M /trunk/test/demo.c
+   M /trunk/test/spritedit.c
 
   * Renamed libee to libcaca. Far less collisions.
 
 ------------------------------------------------------------------------
 r87 | sam | 2003-11-16 01:09:09 +0100 (Sun, 16 Nov 2003) | 2 lines
 Changed paths:
-   M /libee/Makefile.am
-   A /libee/blit.c
-   M /libee/ee.h
-   M /test/Makefile.am
-   M /test/demo.c
+   M /trunk/libee/Makefile.am
+   A /trunk/libee/blit.c
+   M /trunk/libee/ee.h
+   M /trunk/test/Makefile.am
+   M /trunk/test/demo.c
 
   * Very ugly ee_blit function. Will be polished in a while.
 
 ------------------------------------------------------------------------
 r86 | sam | 2003-11-15 13:42:38 +0100 (Sat, 15 Nov 2003) | 10 lines
 Changed paths:
-   M /libee/ee.c
-   M /libee/ee.h
-   M /libee/graphics.c
-   M /test/demo.c
+   M /trunk/libee/ee.c
+   M /trunk/libee/ee.h
+   M /trunk/libee/graphics.c
+   M /trunk/test/demo.c
 
   * libee/ee.c:
     + Replaced ee_color_names[] with ee_get_color_name().
@@ -377,11 +730,11 @@ Changed paths:
 ------------------------------------------------------------------------
 r85 | sam | 2003-11-15 10:58:20 +0100 (Sat, 15 Nov 2003) | 8 lines
 Changed paths:
-   M /libee/ee.c
-   M /libee/ee.h
-   M /libee/ee_internals.h
-   M /libee/graphics.c
-   M /libee/line.c
+   M /trunk/libee/ee.c
+   M /trunk/libee/ee.h
+   M /trunk/libee/ee_internals.h
+   M /trunk/libee/graphics.c
+   M /trunk/libee/line.c
 
   * libee/graphics.c:
     + Correct clipping in ee_putstr() for long strings.
@@ -394,9 +747,9 @@ Changed paths:
 ------------------------------------------------------------------------
 r84 | sam | 2003-11-14 20:00:07 +0100 (Fri, 14 Nov 2003) | 6 lines
 Changed paths:
-   M /libee/ee.c
-   M /src/main.c
-   M /test/demo.c
+   M /trunk/libee/ee.c
+   M /trunk/src/main.c
+   M /trunk/test/demo.c
 
   * libee/ee.c:
     + Implemented correct framerate wait loop.
@@ -407,28 +760,28 @@ Changed paths:
 ------------------------------------------------------------------------
 r83 | sam | 2003-11-14 19:49:53 +0100 (Fri, 14 Nov 2003) | 2 lines
 Changed paths:
-   M /src/Makefile.am
-   M /test/Makefile.am
+   M /trunk/src/Makefile.am
+   M /trunk/test/Makefile.am
 
   * Fixed compilation in an alternate directory.
 
 ------------------------------------------------------------------------
 r82 | sam | 2003-11-14 18:02:36 +0100 (Fri, 14 Nov 2003) | 2 lines
 Changed paths:
-   M /src/box.c
-   M /src/main.c
-   M /src/player.c
-   M /src/starfield.c
-   M /src/tunnel.c
-   M /src/weapons.c
+   M /trunk/src/box.c
+   M /trunk/src/main.c
+   M /trunk/src/player.c
+   M /trunk/src/starfield.c
+   M /trunk/src/tunnel.c
+   M /trunk/src/weapons.c
 
   * Sanity checks after each malloc() call.
 
 ------------------------------------------------------------------------
 r81 | sam | 2003-11-14 17:55:58 +0100 (Fri, 14 Nov 2003) | 4 lines
 Changed paths:
-   M /libee/ee.h
-   M /libee/math.c
+   M /trunk/libee/ee.h
+   M /trunk/libee/math.c
 
   * libee/math.c:
     + ee_sqrt() now uses unsigned ints.
@@ -437,17 +790,17 @@ Changed paths:
 ------------------------------------------------------------------------
 r80 | sam | 2003-11-13 18:12:40 +0100 (Thu, 13 Nov 2003) | 2 lines
 Changed paths:
-   M /src/intro.c
+   M /trunk/src/intro.c
 
   * src/intro.c: Minor graphical issue on dosemu with ncurses backend.
 
 ------------------------------------------------------------------------
 r79 | sam | 2003-11-13 17:45:25 +0100 (Thu, 13 Nov 2003) | 6 lines
 Changed paths:
-   M /libee/ee.c
-   M /libee/ee_internals.h
-   M /libee/graphics.c
-   M /libee/sprite.c
+   M /trunk/libee/ee.c
+   M /trunk/libee/ee_internals.h
+   M /trunk/libee/graphics.c
+   M /trunk/libee/sprite.c
 
   * libee/ee.c:
     + Error checking in ee_init().
@@ -458,64 +811,64 @@ Changed paths:
 ------------------------------------------------------------------------
 r78 | sam | 2003-11-13 16:41:12 +0100 (Thu, 13 Nov 2003) | 2 lines
 Changed paths:
-   M /libee/conic.c
-   M /libee/line.c
-   M /src/box.c
+   M /trunk/libee/conic.c
+   M /trunk/libee/line.c
+   M /trunk/src/box.c
 
   * Minor coding style changes.
 
 ------------------------------------------------------------------------
 r77 | sam | 2003-11-13 16:37:49 +0100 (Thu, 13 Nov 2003) | 2 lines
 Changed paths:
-   M /data/Makefile.am
-   D /data/bar_boss
-   D /data/bar_fighter
-   A /data/barboss.txt (from /data/bar_boss:76)
-   A /data/barfight.txt (from /data/bar_fighter:76)
-   D /data/baz_fighter
-   A /data/bazfight.txt (from /data/baz_fighter:76)
-   A /data/bongem.txt (from /data/item_gem:76)
-   A /data/bonheart.txt (from /data/item_heart:76)
-   D /data/explosion_medium
-   D /data/explosion_small
-   D /data/foo_fighter
-   A /data/foofight.txt (from /data/foo_fighter:76)
-   D /data/item_gem
-   D /data/item_heart
-   A /data/ship.txt (from /data/ship_green:76)
-   D /data/ship_green
-   D /data/weapon_bomb
-   D /data/weapon_fragbomb
-   A /data/wpnbomb.txt (from /data/weapon_bomb:76)
-   A /data/wpnfrag.txt (from /data/weapon_fragbomb:76)
-   A /data/xplmed.txt (from /data/explosion_medium:76)
-   A /data/xplsmall.txt (from /data/explosion_small:76)
-   M /src/aliens.c
-   M /src/bonus.c
-   M /src/explosions.c
-   M /src/intro.c
-   M /src/player.c
-   M /src/weapons.c
-   M /test/demo.c
+   M /trunk/data/Makefile.am
+   D /trunk/data/bar_boss
+   D /trunk/data/bar_fighter
+   A /trunk/data/barboss.txt (from /trunk/data/bar_boss:76)
+   A /trunk/data/barfight.txt (from /trunk/data/bar_fighter:76)
+   D /trunk/data/baz_fighter
+   A /trunk/data/bazfight.txt (from /trunk/data/baz_fighter:76)
+   A /trunk/data/bongem.txt (from /trunk/data/item_gem:76)
+   A /trunk/data/bonheart.txt (from /trunk/data/item_heart:76)
+   D /trunk/data/explosion_medium
+   D /trunk/data/explosion_small
+   D /trunk/data/foo_fighter
+   A /trunk/data/foofight.txt (from /trunk/data/foo_fighter:76)
+   D /trunk/data/item_gem
+   D /trunk/data/item_heart
+   A /trunk/data/ship.txt (from /trunk/data/ship_green:76)
+   D /trunk/data/ship_green
+   D /trunk/data/weapon_bomb
+   D /trunk/data/weapon_fragbomb
+   A /trunk/data/wpnbomb.txt (from /trunk/data/weapon_bomb:76)
+   A /trunk/data/wpnfrag.txt (from /trunk/data/weapon_fragbomb:76)
+   A /trunk/data/xplmed.txt (from /trunk/data/explosion_medium:76)
+   A /trunk/data/xplsmall.txt (from /trunk/data/explosion_small:76)
+   M /trunk/src/aliens.c
+   M /trunk/src/bonus.c
+   M /trunk/src/explosions.c
+   M /trunk/src/intro.c
+   M /trunk/src/player.c
+   M /trunk/src/weapons.c
+   M /trunk/test/demo.c
 
   * Renamed sprites to < 8+3 names for the DOS port.
 
 ------------------------------------------------------------------------
 r76 | sam | 2003-11-13 00:46:58 +0100 (Thu, 13 Nov 2003) | 7 lines
 Changed paths:
-   M /data/bar_boss
-   M /data/bar_fighter
-   M /data/baz_fighter
-   M /data/explosion_medium
-   M /data/explosion_small
-   M /data/foo_fighter
-   M /data/item_gem
-   M /data/item_heart
-   M /data/ship_green
-   M /data/weapon_bomb
-   M /data/weapon_fragbomb
-   M /src/starfield.c
-   M /test/demo.c
+   M /trunk/data/bar_boss
+   M /trunk/data/bar_fighter
+   M /trunk/data/baz_fighter
+   M /trunk/data/explosion_medium
+   M /trunk/data/explosion_small
+   M /trunk/data/foo_fighter
+   M /trunk/data/item_gem
+   M /trunk/data/item_heart
+   M /trunk/data/ship_green
+   M /trunk/data/weapon_bomb
+   M /trunk/data/weapon_fragbomb
+   M /trunk/src/starfield.c
+   M /trunk/test/demo.c
 
   * test/demo.c:
     + Removed a spurious '\n' from an ee_putstr().
@@ -527,26 +880,26 @@ Changed paths:
 ------------------------------------------------------------------------
 r75 | sam | 2003-11-12 22:18:50 +0100 (Wed, 12 Nov 2003) | 25 lines
 Changed paths:
-   A /BUGS
-   M /Makefile.am
-   M /README
-   M /TODO
-   M /libee/Makefile.am
-   M /libee/box.c
-   M /libee/conic.c
-   M /libee/ee.c
-   M /libee/ee.h
-   A /libee/ee_internals.h
-   M /libee/graphics.c
-   M /libee/io.c
-   M /libee/line.c
-   M /libee/math.c
-   M /libee/sprite.c
-   M /libee/triangle.c
-   M /src/Makefile.am
-   M /src/overlay.c
-   M /src/weapons.c
-   M /test/demo.c
+   A /trunk/BUGS
+   M /trunk/Makefile.am
+   M /trunk/README
+   M /trunk/TODO
+   M /trunk/libee/Makefile.am
+   M /trunk/libee/box.c
+   M /trunk/libee/conic.c
+   M /trunk/libee/ee.c
+   M /trunk/libee/ee.h
+   A /trunk/libee/ee_internals.h
+   M /trunk/libee/graphics.c
+   M /trunk/libee/io.c
+   M /trunk/libee/line.c
+   M /trunk/libee/math.c
+   M /trunk/libee/sprite.c
+   M /trunk/libee/triangle.c
+   M /trunk/src/Makefile.am
+   M /trunk/src/overlay.c
+   M /trunk/src/weapons.c
+   M /trunk/test/demo.c
 
   * libee/ee.h:
     + Added ee_color_names[] containing our 16 color names.
@@ -576,10 +929,10 @@ Changed paths:
 ------------------------------------------------------------------------
 r74 | sam | 2003-11-12 19:41:02 +0100 (Wed, 12 Nov 2003) | 7 lines
 Changed paths:
-   M /README
-   M /configure.ac
-   M /libee/ee.c
-   M /libee/graphics.c
+   M /trunk/README
+   M /trunk/configure.ac
+   M /trunk/libee/ee.c
+   M /trunk/libee/graphics.c
 
   * README:
     + Added a note about dos cross-compilation.
@@ -591,39 +944,39 @@ Changed paths:
 ------------------------------------------------------------------------
 r73 | sam | 2003-11-12 17:23:18 +0100 (Wed, 12 Nov 2003) | 2 lines
 Changed paths:
-   M /configure.ac
-   M /libee/conic.c
-   M /libee/ee.c
-   M /libee/graphics.c
-   M /libee/io.c
-   M /libee/line.c
+   M /trunk/configure.ac
+   M /trunk/libee/conic.c
+   M /trunk/libee/ee.c
+   M /trunk/libee/graphics.c
+   M /trunk/libee/io.c
+   M /trunk/libee/line.c
 
   * MS-DOS port of libee, using <conio.h>.
 
 ------------------------------------------------------------------------
 r72 | sam | 2003-11-12 02:48:58 +0100 (Wed, 12 Nov 2003) | 17 lines
 Changed paths:
-   M /data/foo_fighter
-   M /libee/box.c
-   M /libee/ee.h
-   M /libee/graphics.c
-   M /libee/line.c
-   M /libee/sprite.c
-   M /src/Makefile.am
-   M /src/aliens.c
-   M /src/bonus.c
-   M /src/box.c
-   M /src/common.h
-   M /src/explosions.c
-   A /src/intro.c
-   M /src/main.c
-   M /src/overlay.c
-   M /src/player.c
-   M /src/starfield.c
-   M /src/tunnel.c
-   M /src/weapons.c
-   M /test/demo.c
-   M /test/spritedit.c
+   M /trunk/data/foo_fighter
+   M /trunk/libee/box.c
+   M /trunk/libee/ee.h
+   M /trunk/libee/graphics.c
+   M /trunk/libee/line.c
+   M /trunk/libee/sprite.c
+   M /trunk/src/Makefile.am
+   M /trunk/src/aliens.c
+   M /trunk/src/bonus.c
+   M /trunk/src/box.c
+   M /trunk/src/common.h
+   M /trunk/src/explosions.c
+   A /trunk/src/intro.c
+   M /trunk/src/main.c
+   M /trunk/src/overlay.c
+   M /trunk/src/player.c
+   M /trunk/src/starfield.c
+   M /trunk/src/tunnel.c
+   M /trunk/src/weapons.c
+   M /trunk/test/demo.c
+   M /trunk/test/spritedit.c
 
   * libee/graphics.c:
     + Renamed ee_color() to ee_set_color(), wrote ee_get_color().
@@ -645,12 +998,12 @@ Changed paths:
 ------------------------------------------------------------------------
 r71 | sam | 2003-11-11 11:22:19 +0100 (Tue, 11 Nov 2003) | 13 lines
 Changed paths:
-   M /libee/Makefile.am
-   A /libee/box.c
-   M /libee/conic.c
-   M /libee/ee.h
-   M /libee/triangle.c
-   M /test/demo.c
+   M /trunk/libee/Makefile.am
+   A /trunk/libee/box.c
+   M /trunk/libee/conic.c
+   M /trunk/libee/ee.h
+   M /trunk/libee/triangle.c
+   M /trunk/test/demo.c
 
   * libee/triangle.c:
     + Wrote ee_draw_triangle() and ee_draw_thin_triangle().
@@ -668,12 +1021,12 @@ Changed paths:
 ------------------------------------------------------------------------
 r70 | sam | 2003-11-11 09:00:36 +0100 (Tue, 11 Nov 2003) | 5 lines
 Changed paths:
-   M /data/Makefile.am
-   A /data/ship_green
-   M /src/collide.c
-   M /src/main.c
-   M /src/player.c
-   M /src/weapons.c
+   M /trunk/data/Makefile.am
+   A /trunk/data/ship_green
+   M /trunk/src/collide.c
+   M /trunk/src/main.c
+   M /trunk/src/player.c
+   M /trunk/src/weapons.c
 
   * src/weapons.c:
     + Use ee_draw_ellipse() instead of ee_draw_circle() to draw the nuke.
@@ -683,23 +1036,23 @@ Changed paths:
 ------------------------------------------------------------------------
 r69 | sam | 2003-11-11 00:38:50 +0100 (Tue, 11 Nov 2003) | 8 lines
 Changed paths:
-   M /libee/Makefile.am
-   M /libee/conic.c
-   M /libee/ee.c
-   M /libee/ee.h
-   A /libee/graphics.c (from /libee/ee.c:68)
-   M /libee/io.c
-   M /libee/line.c
-   M /libee/math.c
-   M /libee/sprite.c
-   M /libee/triangle.c
-   M /src/box.c
-   M /src/overlay.c
-   M /src/player.c
-   M /src/starfield.c
-   M /src/tunnel.c
-   M /src/weapons.c
-   M /test/demo.c
+   M /trunk/libee/Makefile.am
+   M /trunk/libee/conic.c
+   M /trunk/libee/ee.c
+   M /trunk/libee/ee.h
+   A /trunk/libee/graphics.c (from /trunk/libee/ee.c:68)
+   M /trunk/libee/io.c
+   M /trunk/libee/line.c
+   M /trunk/libee/math.c
+   M /trunk/libee/sprite.c
+   M /trunk/libee/triangle.c
+   M /trunk/src/box.c
+   M /trunk/src/overlay.c
+   M /trunk/src/player.c
+   M /trunk/src/starfield.c
+   M /trunk/src/tunnel.c
+   M /trunk/src/weapons.c
+   M /trunk/test/demo.c
 
   * libee/graphics.c:
     + Moved ee_putstr() and ee_putchar() in here.
@@ -712,11 +1065,11 @@ Changed paths:
 ------------------------------------------------------------------------
 r68 | sam | 2003-11-11 00:04:13 +0100 (Tue, 11 Nov 2003) | 5 lines
 Changed paths:
-   M /data/Makefile.am
-   M /src/Makefile.am
-   M /test
-   M /test/Makefile.am
-   A /test/spritedit.c
+   M /trunk/data/Makefile.am
+   M /trunk/src/Makefile.am
+   M /trunk/test
+   M /trunk/test/Makefile.am
+   A /trunk/test/spritedit.c
 
   * test/spritedit.c:
     + Placeholder for our upcoming sprite editor.
@@ -726,9 +1079,9 @@ Changed paths:
 ------------------------------------------------------------------------
 r67 | sam | 2003-11-10 23:43:30 +0100 (Mon, 10 Nov 2003) | 4 lines
 Changed paths:
-   M /data/Makefile.am
-   A /data/weapon_fragbomb
-   M /src/weapons.c
+   M /trunk/data/Makefile.am
+   A /trunk/data/weapon_fragbomb
+   M /trunk/src/weapons.c
 
   * src/weapons.c data/weapon_fragbomb:
     + Drew the fragbomb sprite.
@@ -737,9 +1090,9 @@ Changed paths:
 ------------------------------------------------------------------------
 r66 | sam | 2003-11-10 22:54:11 +0100 (Mon, 10 Nov 2003) | 5 lines
 Changed paths:
-   M /data/Makefile.am
-   A /data/weapon_bomb
-   M /src/weapons.c
+   M /trunk/data/Makefile.am
+   A /trunk/data/weapon_bomb
+   M /trunk/src/weapons.c
 
   * data/weapon_bomb:
     + New bomb sprite.
@@ -749,11 +1102,11 @@ Changed paths:
 ------------------------------------------------------------------------
 r65 | sam | 2003-11-10 22:17:47 +0100 (Mon, 10 Nov 2003) | 8 lines
 Changed paths:
-   M /data/Makefile.am
-   A /data/explosion_medium
-   A /data/explosion_small
-   M /libee/sprite.c
-   M /src/explosions.c
+   M /trunk/data/Makefile.am
+   A /trunk/data/explosion_medium
+   A /trunk/data/explosion_small
+   M /trunk/libee/sprite.c
+   M /trunk/src/explosions.c
 
   * libee/sprite.c:
     + Made sprite loading more robust.
@@ -766,15 +1119,15 @@ Changed paths:
 ------------------------------------------------------------------------
 r64 | sam | 2003-11-10 21:43:02 +0100 (Mon, 10 Nov 2003) | 2 lines
 Changed paths:
-   M /libee/conic.c
+   M /trunk/libee/conic.c
 
   * libee/conic.c: Clip circles and ellipses.
 
 ------------------------------------------------------------------------
 r63 | sam | 2003-11-10 19:29:04 +0100 (Mon, 10 Nov 2003) | 5 lines
 Changed paths:
-   M /libee/conic.c
-   M /libee/sprite.c
+   M /trunk/libee/conic.c
+   M /trunk/libee/sprite.c
 
   * libee/sprite.c:
     + Added sanity checks in ee_sprite_* functions.
@@ -784,7 +1137,7 @@ Changed paths:
 ------------------------------------------------------------------------
 r62 | sam | 2003-11-10 19:23:23 +0100 (Mon, 10 Nov 2003) | 3 lines
 Changed paths:
-   M /test/demo.c
+   M /trunk/test/demo.c
 
   * test/demo.c:
     + Ellipses demo.
@@ -792,8 +1145,8 @@ Changed paths:
 ------------------------------------------------------------------------
 r61 | sam | 2003-11-10 19:21:36 +0100 (Mon, 10 Nov 2003) | 3 lines
 Changed paths:
-   M /libee/conic.c
-   M /libee/ee.h
+   M /trunk/libee/conic.c
+   M /trunk/libee/ee.h
 
   * libee/conic.c:
     + ee_draw_ellipse().
@@ -801,17 +1154,17 @@ Changed paths:
 ------------------------------------------------------------------------
 r60 | sam | 2003-11-10 16:31:12 +0100 (Mon, 10 Nov 2003) | 2 lines
 Changed paths:
-   M /libee/Makefile.am
-   D /libee/circle.c
-   A /libee/conic.c (from /libee/circle.c:58)
-   M /libee/line.c
+   M /trunk/libee/Makefile.am
+   D /trunk/libee/circle.c
+   A /trunk/libee/conic.c (from /trunk/libee/circle.c:58)
+   M /trunk/libee/line.c
 
   * Renamed libee/circle.c to libee/conic.c because we'll do ellipsis.
 
 ------------------------------------------------------------------------
 r59 | sam | 2003-11-10 16:16:38 +0100 (Mon, 10 Nov 2003) | 3 lines
 Changed paths:
-   M /libee/line.c
+   M /trunk/libee/line.c
 
   * libee/line.c:
     + Added code comments.
@@ -819,10 +1172,10 @@ Changed paths:
 ------------------------------------------------------------------------
 r58 | sam | 2003-11-10 15:19:21 +0100 (Mon, 10 Nov 2003) | 4 lines
 Changed paths:
-   M /configure.ac
-   M /libee/Makefile.am
-   M /src/Makefile.am
-   M /test/Makefile.am
+   M /trunk/configure.ac
+   M /trunk/libee/Makefile.am
+   M /trunk/src/Makefile.am
+   M /trunk/test/Makefile.am
 
   * configure.ac:
     + Moved optimization flags and warning triggers here.
@@ -831,23 +1184,23 @@ Changed paths:
 ------------------------------------------------------------------------
 r57 | sam | 2003-11-10 15:13:56 +0100 (Mon, 10 Nov 2003) | 2 lines
 Changed paths:
-   M /test/demo.c
+   M /trunk/test/demo.c
 
   * test/demo.c: Nicer complete demo.
 
 ------------------------------------------------------------------------
 r56 | sam | 2003-11-10 10:26:40 +0100 (Mon, 10 Nov 2003) | 11 lines
 Changed paths:
-   M /data/Makefile.am
-   A /data/baz_fighter
-   A /data/foo_fighter
-   A /data/item_gem
-   A /data/item_heart
-   M /libee/ee.h
-   M /libee/sprite.c
-   M /src/aliens.c
-   M /src/bonus.c
-   M /src/box.c
+   M /trunk/data/Makefile.am
+   A /trunk/data/baz_fighter
+   A /trunk/data/foo_fighter
+   A /trunk/data/item_gem
+   A /trunk/data/item_heart
+   M /trunk/libee/ee.h
+   M /trunk/libee/sprite.c
+   M /trunk/src/aliens.c
+   M /trunk/src/bonus.c
+   M /trunk/src/box.c
 
   * libee/sprite.c:
     + More robust sprite loader.
@@ -863,19 +1216,19 @@ Changed paths:
 ------------------------------------------------------------------------
 r55 | sam | 2003-11-10 03:00:52 +0100 (Mon, 10 Nov 2003) | 2 lines
 Changed paths:
-   A /data/Makefile.am
+   A /trunk/data/Makefile.am
 
   * Oops, forgot data/Makefile.am.
 
 ------------------------------------------------------------------------
 r54 | sam | 2003-11-10 03:00:19 +0100 (Mon, 10 Nov 2003) | 5 lines
 Changed paths:
-   M /Makefile.am
-   M /configure.ac
-   A /data
-   A /data/bar_boss
-   A /data/bar_fighter
-   M /test/demo.c
+   M /trunk/Makefile.am
+   M /trunk/configure.ac
+   A /trunk/data
+   A /trunk/data/bar_boss
+   A /trunk/data/bar_fighter
+   M /trunk/test/demo.c
 
   * test/demo.c:
     + Wrote a little sprite demo.
@@ -885,9 +1238,9 @@ Changed paths:
 ------------------------------------------------------------------------
 r53 | sam | 2003-11-10 02:56:24 +0100 (Mon, 10 Nov 2003) | 4 lines
 Changed paths:
-   M /libee/Makefile.am
-   M /libee/ee.h
-   A /libee/sprite.c
+   M /trunk/libee/Makefile.am
+   M /trunk/libee/ee.h
+   A /trunk/libee/sprite.c
 
   * libee/sprite.c:
     + Beginning of sprite handling within the library.
@@ -896,7 +1249,7 @@ Changed paths:
 ------------------------------------------------------------------------
 r52 | sam | 2003-11-10 01:27:33 +0100 (Mon, 10 Nov 2003) | 3 lines
 Changed paths:
-   M /test/demo.c
+   M /trunk/test/demo.c
 
   * test/demo.c:
     + outlined triangles demo.
@@ -904,27 +1257,27 @@ Changed paths:
 ------------------------------------------------------------------------
 r51 | sam | 2003-11-10 01:15:02 +0100 (Mon, 10 Nov 2003) | 2 lines
 Changed paths:
-   M /configure.ac
-   M /libee/Makefile.am
-   M /src/Makefile.am
-   M /test/Makefile.am
+   M /trunk/configure.ac
+   M /trunk/libee/Makefile.am
+   M /trunk/src/Makefile.am
+   M /trunk/test/Makefile.am
 
   * Removed CPPFLAGS_slang and CPPFLAGS_ncurses, we now have config.h.
 
 ------------------------------------------------------------------------
 r50 | sam | 2003-11-10 00:34:24 +0100 (Mon, 10 Nov 2003) | 4 lines
 Changed paths:
-   M /src/aliens.c
-   M /src/bonus.c
-   M /src/box.c
-   M /src/collide.c
-   M /src/explosions.c
-   M /src/main.c
-   M /src/overlay.c
-   M /src/player.c
-   M /src/starfield.c
-   M /src/tunnel.c
-   M /src/weapons.c
+   M /trunk/src/aliens.c
+   M /trunk/src/bonus.c
+   M /trunk/src/box.c
+   M /trunk/src/collide.c
+   M /trunk/src/explosions.c
+   M /trunk/src/main.c
+   M /trunk/src/overlay.c
+   M /trunk/src/player.c
+   M /trunk/src/starfield.c
+   M /trunk/src/tunnel.c
+   M /trunk/src/weapons.c
 
   * src/*.c:
     + Added missing #include "config.h".
@@ -933,7 +1286,7 @@ Changed paths:
 ------------------------------------------------------------------------
 r49 | sam | 2003-11-10 00:01:29 +0100 (Mon, 10 Nov 2003) | 3 lines
 Changed paths:
-   M /test/demo.c
+   M /trunk/test/demo.c
 
   * test/demo.c:
     + Disabled the pyramid demo and wrote a simple triangles demo.
@@ -941,11 +1294,11 @@ Changed paths:
 ------------------------------------------------------------------------
 r48 | sam | 2003-11-09 22:36:24 +0100 (Sun, 09 Nov 2003) | 5 lines
 Changed paths:
-   M /libee/Makefile.am
-   M /libee/ee.h
-   A /libee/triangle.c
-   M /test/Makefile.am
-   M /test/demo.c
+   M /trunk/libee/Makefile.am
+   M /trunk/libee/ee.h
+   A /trunk/libee/triangle.c
+   M /trunk/test/Makefile.am
+   M /trunk/test/demo.c
 
   * libee/triangle.c:
     + Implemented ee_fill_triangle().
@@ -955,9 +1308,9 @@ Changed paths:
 ------------------------------------------------------------------------
 r47 | sam | 2003-11-09 20:46:14 +0100 (Sun, 09 Nov 2003) | 5 lines
 Changed paths:
-   M /libee/ee.h
-   M /libee/line.c
-   M /test/demo.c
+   M /trunk/libee/ee.h
+   M /trunk/libee/line.c
+   M /trunk/test/demo.c
 
   * libee/line.c:
     + ee_draw_thin_line().
@@ -967,15 +1320,15 @@ Changed paths:
 ------------------------------------------------------------------------
 r46 | sam | 2003-11-09 19:10:44 +0100 (Sun, 09 Nov 2003) | 2 lines
 Changed paths:
-   M /libee/line.c
+   M /trunk/libee/line.c
 
   * libee/line.c: genericized line drawing for future use.
 
 ------------------------------------------------------------------------
 r45 | sam | 2003-11-09 18:45:12 +0100 (Sun, 09 Nov 2003) | 6 lines
 Changed paths:
-   M /test
-   M /test/demo.c
+   M /trunk/test
+   M /trunk/test/demo.c
 
   * test/demo.c:
     + Putpixel demo.
@@ -986,11 +1339,11 @@ Changed paths:
 ------------------------------------------------------------------------
 r44 | sam | 2003-11-09 18:21:43 +0100 (Sun, 09 Nov 2003) | 7 lines
 Changed paths:
-   M /libee/Makefile.am
-   A /libee/circle.c (from /src/weapons.c:42)
-   M /libee/ee.h
-   M /libee/line.c
-   M /src/weapons.c
+   M /trunk/libee/Makefile.am
+   A /trunk/libee/circle.c (from /trunk/src/weapons.c:42)
+   M /trunk/libee/ee.h
+   M /trunk/libee/line.c
+   M /trunk/src/weapons.c
 
   * src/weapons.c:
     + Removed draw_circle, use ee_draw_circle instead.
@@ -1002,19 +1355,19 @@ Changed paths:
 ------------------------------------------------------------------------
 r43 | sam | 2003-11-09 17:34:23 +0100 (Sun, 09 Nov 2003) | 2 lines
 Changed paths:
-   M /libee
-   M /libee/Makefile.am
-   M /libee/ee.h
-   A /libee/line.c
+   M /trunk/libee
+   M /trunk/libee/Makefile.am
+   M /trunk/libee/ee.h
+   A /trunk/libee/line.c
 
   * libee/line.c: Implemented ee_draw_line.
 
 ------------------------------------------------------------------------
 r42 | sam | 2003-11-09 14:52:40 +0100 (Sun, 09 Nov 2003) | 5 lines
 Changed paths:
-   M /libee/ee.c
-   M /libee/ee.h
-   M /test/demo.c
+   M /trunk/libee/ee.c
+   M /trunk/libee/ee.h
+   M /trunk/test/demo.c
 
   * libee/ee.c:
     + got rid of DELAY.
@@ -1024,28 +1377,28 @@ Changed paths:
 ------------------------------------------------------------------------
 r41 | sam | 2003-11-09 14:51:37 +0100 (Sun, 09 Nov 2003) | 2 lines
 Changed paths:
-   M /libee/math.c
+   M /trunk/libee/math.c
 
   * libee/math.c: fixed a thinko in ee_rand().
 
 ------------------------------------------------------------------------
 r40 | sam | 2003-11-09 14:32:04 +0100 (Sun, 09 Nov 2003) | 8 lines
 Changed paths:
-   M /libee/Makefile.am
-   M /libee/ee.c
-   M /libee/ee.h
-   A /libee/io.c (from /libee/ee.c:37)
-   A /libee/math.c
-   M /src/Makefile.am
-   M /src/aliens.c
-   M /src/collide.c
-   M /src/common.h
-   M /src/explosions.c
-   M /src/main.c
-   D /src/math.c
-   M /src/starfield.c
-   M /src/tunnel.c
-   M /src/weapons.c
+   M /trunk/libee/Makefile.am
+   M /trunk/libee/ee.c
+   M /trunk/libee/ee.h
+   A /trunk/libee/io.c (from /trunk/libee/ee.c:37)
+   A /trunk/libee/math.c
+   M /trunk/src/Makefile.am
+   M /trunk/src/aliens.c
+   M /trunk/src/collide.c
+   M /trunk/src/common.h
+   M /trunk/src/explosions.c
+   M /trunk/src/main.c
+   D /trunk/src/math.c
+   M /trunk/src/starfield.c
+   M /trunk/src/tunnel.c
+   M /trunk/src/weapons.c
 
   * libee/io.c:
     + Moved ee_get_key() here.
@@ -1058,29 +1411,29 @@ Changed paths:
 ------------------------------------------------------------------------
 r39 | sam | 2003-11-09 14:16:19 +0100 (Sun, 09 Nov 2003) | 2 lines
 Changed paths:
-   M /src/aliens.c
-   M /src/bonus.c
-   M /src/box.c
-   M /src/ceo.c
-   M /src/collide.c
-   M /src/common.h
-   M /src/explosions.c
-   M /src/main.c
-   M /src/math.c
-   M /src/overlay.c
-   M /src/player.c
-   M /src/starfield.c
-   M /src/tunnel.c
-   M /src/weapons.c
+   M /trunk/src/aliens.c
+   M /trunk/src/bonus.c
+   M /trunk/src/box.c
+   M /trunk/src/ceo.c
+   M /trunk/src/collide.c
+   M /trunk/src/common.h
+   M /trunk/src/explosions.c
+   M /trunk/src/main.c
+   M /trunk/src/math.c
+   M /trunk/src/overlay.c
+   M /trunk/src/player.c
+   M /trunk/src/starfield.c
+   M /trunk/src/tunnel.c
+   M /trunk/src/weapons.c
 
   * Coding style everywhere.
 
 ------------------------------------------------------------------------
 r38 | sam | 2003-11-09 14:02:34 +0100 (Sun, 09 Nov 2003) | 5 lines
 Changed paths:
-   M /libee/Makefile.am
-   M /test/Makefile.am
-   A /test/demo.c
+   M /trunk/libee/Makefile.am
+   M /trunk/test/Makefile.am
+   A /trunk/test/demo.c
 
   * libee/Makefile.am, test/Makefile.am:
     + Added more compiler warning flags.
@@ -1090,63 +1443,63 @@ Changed paths:
 ------------------------------------------------------------------------
 r37 | sam | 2003-11-09 14:01:44 +0100 (Sun, 09 Nov 2003) | 2 lines
 Changed paths:
-   M /libee/ee.c
+   M /trunk/libee/ee.c
 
   * libee/ee.c: Fixed a compilation warning.
 
 ------------------------------------------------------------------------
 r36 | sam | 2003-11-09 13:48:09 +0100 (Sun, 09 Nov 2003) | 2 lines
 Changed paths:
-   M /libee/ee.c
+   M /trunk/libee/ee.c
 
   * libee/ee.c: Exact line fill in ee_clear().
 
 ------------------------------------------------------------------------
 r35 | sam | 2003-11-09 13:40:53 +0100 (Sun, 09 Nov 2003) | 2 lines
 Changed paths:
-   M /libee/Makefile.am
-   M /libee/ee.c
-   A /libee/ee.h
-   M /src/Makefile.am
-   M /src/aliens.c
-   M /src/bonus.c
-   M /src/box.c
-   M /src/ceo.c
-   M /src/common.h
-   M /src/explosions.c
-   M /src/main.c
-   M /src/overlay.c
-   M /src/player.c
-   M /src/starfield.c
-   M /src/tunnel.c
-   M /src/weapons.c
+   M /trunk/libee/Makefile.am
+   M /trunk/libee/ee.c
+   A /trunk/libee/ee.h
+   M /trunk/src/Makefile.am
+   M /trunk/src/aliens.c
+   M /trunk/src/bonus.c
+   M /trunk/src/box.c
+   M /trunk/src/ceo.c
+   M /trunk/src/common.h
+   M /trunk/src/explosions.c
+   M /trunk/src/main.c
+   M /trunk/src/overlay.c
+   M /trunk/src/player.c
+   M /trunk/src/starfield.c
+   M /trunk/src/tunnel.c
+   M /trunk/src/weapons.c
 
   * libee is now standalone.
 
 ------------------------------------------------------------------------
 r34 | sam | 2003-11-09 13:02:42 +0100 (Sun, 09 Nov 2003) | 2 lines
 Changed paths:
-   M /Makefile.am
-   M /configure.ac
-   M /libee
-   A /libee/Makefile.am
-   M /src/Makefile.am
-   A /test
-   A /test/Makefile.am
+   M /trunk/Makefile.am
+   M /trunk/configure.ac
+   M /trunk/libee
+   A /trunk/libee/Makefile.am
+   M /trunk/src/Makefile.am
+   A /trunk/test
+   A /trunk/test/Makefile.am
 
   * libee is now (almost) standalone.
 
 ------------------------------------------------------------------------
 r33 | sam | 2003-11-09 12:26:08 +0100 (Sun, 09 Nov 2003) | 7 lines
 Changed paths:
-   M /doc/shapes.txt
-   A /libee
-   A /libee/ee.c (from /src/graphics.c:31)
-   M /src/Makefile.am
-   M /src/ceo.c
-   M /src/common.h
-   D /src/graphics.c
-   M /src/main.c
+   M /trunk/doc/shapes.txt
+   A /trunk/libee
+   A /trunk/libee/ee.c (from /trunk/src/graphics.c:31)
+   M /trunk/src/Makefile.am
+   M /trunk/src/ceo.c
+   M /trunk/src/common.h
+   D /trunk/src/graphics.c
+   M /trunk/src/main.c
 
   * libee/ee.c:
     + First file in libee, from src/graphics.c.
@@ -1158,46 +1511,46 @@ Changed paths:
 ------------------------------------------------------------------------
 r32 | sam | 2003-11-06 22:40:53 +0100 (Thu, 06 Nov 2003) | 2 lines
 Changed paths:
-   M /bootstrap
+   M /trunk/bootstrap
 
   * bootstrap: always remove autom4te.cache.
 
 ------------------------------------------------------------------------
 r31 | sam | 2003-10-02 03:08:13 +0200 (Thu, 02 Oct 2003) | 2 lines
 Changed paths:
-   M /
-   M /autotools
-   M /bootstrap
-   M /configure.ac
-   M /debian
-   M /src
-   M /src/aliens.c
-   M /src/bonus.c
-   M /src/box.c
-   M /src/ceo.c
-   M /src/collide.c
-   M /src/common.h
-   M /src/explosions.c
-   M /src/graphics.c
-   M /src/main.c
-   M /src/math.c
-   M /src/overlay.c
-   M /src/player.c
-   M /src/starfield.c
-   M /src/tunnel.c
-   M /src/weapons.c
+   M /trunk
+   M /trunk/autotools
+   M /trunk/bootstrap
+   M /trunk/configure.ac
+   M /trunk/debian
+   M /trunk/src
+   M /trunk/src/aliens.c
+   M /trunk/src/bonus.c
+   M /trunk/src/box.c
+   M /trunk/src/ceo.c
+   M /trunk/src/collide.c
+   M /trunk/src/common.h
+   M /trunk/src/explosions.c
+   M /trunk/src/graphics.c
+   M /trunk/src/main.c
+   M /trunk/src/math.c
+   M /trunk/src/overlay.c
+   M /trunk/src/player.c
+   M /trunk/src/starfield.c
+   M /trunk/src/tunnel.c
+   M /trunk/src/weapons.c
 
   * Fixed keywords, ignore, and lots of tiny SVN things.
 
 ------------------------------------------------------------------------
 r30 | sam | 2003-02-09 12:17:40 +0100 (Sun, 09 Feb 2003) | 3 lines
 Changed paths:
-   M /TODO
-   M /src/Makefile.am
-   A /src/box.c
-   M /src/common.h
-   M /src/main.c
-   M /src/overlay.c
+   M /trunk/TODO
+   M /trunk/src/Makefile.am
+   A /trunk/src/box.c
+   M /trunk/src/common.h
+   M /trunk/src/main.c
+   M /trunk/src/overlay.c
 
   * support for boxes
   * application: pause box
@@ -1205,8 +1558,8 @@ Changed paths:
 ------------------------------------------------------------------------
 r29 | sam | 2003-01-06 13:22:58 +0100 (Mon, 06 Jan 2003) | 3 lines
 Changed paths:
-   M /TODO
-   M /src/collide.c
+   M /trunk/TODO
+   M /trunk/src/collide.c
 
   * cosmetic code changes.
   * fixed a bug in the tunnel munching.
@@ -1214,10 +1567,10 @@ Changed paths:
 ------------------------------------------------------------------------
 r28 | sam | 2002-12-23 17:44:28 +0100 (Mon, 23 Dec 2002) | 3 lines
 Changed paths:
-   M /README
-   M /TODO
-   M /configure.ac
-   M /src/weapons.c
+   M /trunk/README
+   M /trunk/TODO
+   M /trunk/configure.ac
+   M /trunk/src/weapons.c
 
   * fixed the ncurses build.
   * replaced '?\239?\191?\189' with ':' in the fragbomb tail because it's not ASCII.
@@ -1225,13 +1578,13 @@ Changed paths:
 ------------------------------------------------------------------------
 r27 | sam | 2002-12-23 17:21:38 +0100 (Mon, 23 Dec 2002) | 6 lines
 Changed paths:
-   M /configure.ac
-   M /src/collide.c
-   M /src/common.h
-   M /src/graphics.c
-   M /src/main.c
-   M /src/overlay.c
-   M /src/player.c
+   M /trunk/configure.ac
+   M /trunk/src/collide.c
+   M /trunk/src/common.h
+   M /trunk/src/graphics.c
+   M /trunk/src/main.c
+   M /trunk/src/overlay.c
+   M /trunk/src/player.c
 
   * new timestamp for a new snapshot.
   * lots of sanity checks in collide.c.
@@ -1242,11 +1595,11 @@ Changed paths:
 ------------------------------------------------------------------------
 r26 | sam | 2002-12-23 16:06:13 +0100 (Mon, 23 Dec 2002) | 4 lines
 Changed paths:
-   M /src/Makefile.am
-   M /src/common.h
-   M /src/main.c
-   A /src/overlay.c
-   M /src/player.c
+   M /trunk/src/Makefile.am
+   M /trunk/src/common.h
+   M /trunk/src/main.c
+   A /trunk/src/overlay.c
+   M /trunk/src/player.c
 
   * better handling of special weapon timeout.
   * the bomb is now part of the standard fire button effect.
@@ -1255,11 +1608,11 @@ Changed paths:
 ------------------------------------------------------------------------
 r25 | sam | 2002-12-23 14:46:27 +0100 (Mon, 23 Dec 2002) | 3 lines
 Changed paths:
-   M /src/aliens.c
-   M /src/collide.c
-   M /src/common.h
-   M /src/main.c
-   M /src/player.c
+   M /trunk/src/aliens.c
+   M /trunk/src/collide.c
+   M /trunk/src/common.h
+   M /trunk/src/main.c
+   M /trunk/src/player.c
 
   * aliens are now named foo, bar and baz.
   * beginning of life jauges.
@@ -1267,26 +1620,26 @@ Changed paths:
 ------------------------------------------------------------------------
 r24 | sam | 2002-12-23 14:13:04 +0100 (Mon, 23 Dec 2002) | 2 lines
 Changed paths:
-   M /src/common.h
-   M /src/main.c
-   M /src/player.c
+   M /trunk/src/common.h
+   M /trunk/src/main.c
+   M /trunk/src/player.c
 
   * ship has vx and vy.
 
 ------------------------------------------------------------------------
 r23 | sam | 2002-12-23 13:47:36 +0100 (Mon, 23 Dec 2002) | 2 lines
 Changed paths:
-   M /TODO
-   M /src/main.c
-   M /src/tunnel.c
+   M /trunk/TODO
+   M /trunk/src/main.c
+   M /trunk/src/tunnel.c
 
   * cosmetic change: reworked draw_tunnel.
 
 ------------------------------------------------------------------------
 r22 | sam | 2002-12-23 13:03:31 +0100 (Mon, 23 Dec 2002) | 3 lines
 Changed paths:
-   M /src/main.c
-   M /src/tunnel.c
+   M /trunk/src/main.c
+   M /trunk/src/tunnel.c
 
   * lasers are now twice as fast.
   * walls are now filled, and displayed on top of aliens.
@@ -1294,13 +1647,13 @@ Changed paths:
 ------------------------------------------------------------------------
 r21 | sam | 2002-12-23 11:06:27 +0100 (Mon, 23 Dec 2002) | 5 lines
 Changed paths:
-   M /configure.ac
-   M /src/Makefile.am
-   M /src/ceo.c
-   M /src/common.h
-   M /src/graphics.c
-   M /src/main.c
-   M /src/tunnel.c
+   M /trunk/configure.ac
+   M /trunk/src/Makefile.am
+   M /trunk/src/ceo.c
+   M /trunk/src/common.h
+   M /trunk/src/graphics.c
+   M /trunk/src/main.c
+   M /trunk/src/tunnel.c
 
   * added support for --disable-slang.
   * fixed an overflow in the tunnel update code.
@@ -1310,13 +1663,13 @@ Changed paths:
 ------------------------------------------------------------------------
 r20 | sam | 2002-12-23 10:28:37 +0100 (Mon, 23 Dec 2002) | 5 lines
 Changed paths:
-   M /TODO
-   M /src/collide.c
-   M /src/common.h
-   M /src/main.c
-   M /src/starfield.c
-   M /src/tunnel.c
-   M /src/weapons.c
+   M /trunk/TODO
+   M /trunk/src/collide.c
+   M /trunk/src/common.h
+   M /trunk/src/main.c
+   M /trunk/src/starfield.c
+   M /trunk/src/tunnel.c
+   M /trunk/src/weapons.c
 
   * the beam now digs the tunnel.
   * the starfield is now an array of stars.
@@ -1326,7 +1679,7 @@ Changed paths:
 ------------------------------------------------------------------------
 r19 | sam | 2002-12-23 00:39:15 +0100 (Mon, 23 Dec 2002) | 3 lines
 Changed paths:
-   M /src/weapons.c
+   M /trunk/src/weapons.c
 
   * seekers and homing bombs react more quickly.
   * 16 seekers on fragbomb explosion instead of 12.
@@ -1334,8 +1687,8 @@ Changed paths:
 ------------------------------------------------------------------------
 r18 | sam | 2002-12-23 00:01:35 +0100 (Mon, 23 Dec 2002) | 3 lines
 Changed paths:
-   M /src/math.c
-   M /src/weapons.c
+   M /trunk/src/math.c
+   M /trunk/src/weapons.c
 
   * fixed a segfault when the target seeker speed was zero.
   * factorized the seeker generation on fragbomb explosion.
@@ -1343,23 +1696,23 @@ Changed paths:
 ------------------------------------------------------------------------
 r17 | sam | 2002-12-22 23:36:42 +0100 (Sun, 22 Dec 2002) | 2 lines
 Changed paths:
-   M /src/Makefile.am
-   M /src/common.h
-   A /src/math.c
-   M /src/weapons.c
+   M /trunk/src/Makefile.am
+   M /trunk/src/common.h
+   A /trunk/src/math.c
+   M /trunk/src/weapons.c
 
   * Removed the dependency on <math.h>. We don't need no stinking sqrt!
 
 ------------------------------------------------------------------------
 r16 | sam | 2002-12-22 23:17:41 +0100 (Sun, 22 Dec 2002) | 3 lines
 Changed paths:
-   M /doc/shapes.txt
-   M /src/aliens.c
-   M /src/ceo.c
-   M /src/collide.c
-   M /src/common.h
-   M /src/main.c
-   M /src/weapons.c
+   M /trunk/doc/shapes.txt
+   M /trunk/src/aliens.c
+   M /trunk/src/ceo.c
+   M /trunk/src/collide.c
+   M /trunk/src/common.h
+   M /trunk/src/main.c
+   M /trunk/src/weapons.c
 
   * dead aliens don't explode in the collision loop but in their update loop.
   * new super weapon, the fragmentation bomb.
@@ -1367,52 +1720,52 @@ Changed paths:
 ------------------------------------------------------------------------
 r15 | sam | 2002-12-22 20:08:35 +0100 (Sun, 22 Dec 2002) | 2 lines
 Changed paths:
-   M /.cvsignore
-   M /Makefile.am
-   A /autotools
-   A /autotools/.cvsignore
-   A /autotools/Makefile.am
-   M /bootstrap
-   M /configure.ac
-   M /debian/.cvsignore
-   M /src/Makefile.am
+   M /trunk/.cvsignore
+   M /trunk/Makefile.am
+   A /trunk/autotools
+   A /trunk/autotools/.cvsignore
+   A /trunk/autotools/Makefile.am
+   M /trunk/bootstrap
+   M /trunk/configure.ac
+   M /trunk/debian/.cvsignore
+   M /trunk/src/Makefile.am
 
   * Moved generated autotools files to the autotools/ directory.
 
 ------------------------------------------------------------------------
 r14 | sam | 2002-12-22 19:44:12 +0100 (Sun, 22 Dec 2002) | 2 lines
 Changed paths:
-   M /src/aliens.c
-   M /src/bonus.c
-   M /src/ceo.c
-   M /src/collide.c
-   M /src/common.h
-   M /src/explosions.c
-   M /src/graphics.c
-   M /src/main.c
-   M /src/player.c
-   M /src/starfield.c
-   M /src/tunnel.c
-   M /src/weapons.c
+   M /trunk/src/aliens.c
+   M /trunk/src/bonus.c
+   M /trunk/src/ceo.c
+   M /trunk/src/collide.c
+   M /trunk/src/common.h
+   M /trunk/src/explosions.c
+   M /trunk/src/graphics.c
+   M /trunk/src/main.c
+   M /trunk/src/player.c
+   M /trunk/src/starfield.c
+   M /trunk/src/tunnel.c
+   M /trunk/src/weapons.c
 
   * I think I fucked up the $Id tags on my previous commit.
 
 ------------------------------------------------------------------------
 r13 | sam | 2002-12-22 19:42:32 +0100 (Sun, 22 Dec 2002) | 3 lines
 Changed paths:
-   A /COPYING
-   M /src/aliens.c
-   M /src/bonus.c
-   M /src/ceo.c
-   M /src/collide.c
-   M /src/common.h
-   M /src/explosions.c
-   M /src/graphics.c
-   M /src/main.c
-   M /src/player.c
-   M /src/starfield.c
-   M /src/tunnel.c
-   M /src/weapons.c
+   A /trunk/COPYING
+   M /trunk/src/aliens.c
+   M /trunk/src/bonus.c
+   M /trunk/src/ceo.c
+   M /trunk/src/collide.c
+   M /trunk/src/common.h
+   M /trunk/src/explosions.c
+   M /trunk/src/graphics.c
+   M /trunk/src/main.c
+   M /trunk/src/player.c
+   M /trunk/src/starfield.c
+   M /trunk/src/tunnel.c
+   M /trunk/src/weapons.c
 
   * added the COPYING file (GPLv2).
   * added GPL headers to source files.
@@ -1420,58 +1773,58 @@ Changed paths:
 ------------------------------------------------------------------------
 r12 | sam | 2002-12-22 19:40:36 +0100 (Sun, 22 Dec 2002) | 2 lines
 Changed paths:
-   M /src/Makefile.am
-   A /src/ceo.c
-   M /src/common.h
-   M /src/main.c
+   M /trunk/src/Makefile.am
+   A /trunk/src/ceo.c
+   M /trunk/src/common.h
+   M /trunk/src/main.c
 
   * tab == hotkey for CEO alert.
 
 ------------------------------------------------------------------------
 r11 | sam | 2002-12-18 19:44:47 +0100 (Wed, 18 Dec 2002) | 2 lines
 Changed paths:
-   M /TODO
-   M /doc/shapes.txt
-   M /src/aliens.c
+   M /trunk/TODO
+   M /trunk/doc/shapes.txt
+   M /trunk/src/aliens.c
 
   * 3rd alien type.
 
 ------------------------------------------------------------------------
 r10 | sam | 2002-12-18 19:12:28 +0100 (Wed, 18 Dec 2002) | 2 lines
 Changed paths:
-   D /Makefile
+   D /trunk/Makefile
 
   * Scrapped Makefile.
 
 ------------------------------------------------------------------------
 r9 | sam | 2002-12-18 19:11:54 +0100 (Wed, 18 Dec 2002) | 2 lines
 Changed paths:
-   M /Makefile
-   A /README
-   A /TODO
+   M /trunk/Makefile
+   A /trunk/README
+   A /trunk/TODO
 
   * README and TODO files.
 
 ------------------------------------------------------------------------
 r8 | sam | 2002-12-18 14:29:31 +0100 (Wed, 18 Dec 2002) | 2 lines
 Changed paths:
-   M /Makefile
-   M /configure.ac
-   M /doc/shapes.txt
-   M /src/collide.c
-   M /src/weapons.c
+   M /trunk/Makefile
+   M /trunk/configure.ac
+   M /trunk/doc/shapes.txt
+   M /trunk/src/collide.c
+   M /trunk/src/weapons.c
 
   * the bomb's head is now white
 
 ------------------------------------------------------------------------
 r7 | sam | 2002-12-15 18:16:45 +0100 (Sun, 15 Dec 2002) | 3 lines
 Changed paths:
-   M /doc/shapes.txt
-   M /src/aliens.c
-   M /src/collide.c
-   M /src/common.h
-   M /src/main.c
-   M /src/weapons.c
+   M /trunk/doc/shapes.txt
+   M /trunk/src/aliens.c
+   M /trunk/src/collide.c
+   M /trunk/src/common.h
+   M /trunk/src/main.c
+   M /trunk/src/weapons.c
 
   * new weapon: bomb.
   * beam now collides with aliens.
@@ -1479,34 +1832,34 @@ Changed paths:
 ------------------------------------------------------------------------
 r6 | sam | 2002-12-15 06:03:55 +0100 (Sun, 15 Dec 2002) | 2 lines
 Changed paths:
-   M /doc/shapes.txt
-   M /src/common.h
-   M /src/main.c
-   M /src/weapons.c
+   M /trunk/doc/shapes.txt
+   M /trunk/src/common.h
+   M /trunk/src/main.c
+   M /trunk/src/weapons.c
 
   * 'beam' weapon.
 
 ------------------------------------------------------------------------
 r5 | sam | 2002-12-15 04:41:32 +0100 (Sun, 15 Dec 2002) | 10 lines
 Changed paths:
-   M /Makefile
-   M /configure.ac
-   M /debian/changelog
-   M /debian/control
-   M /debian/rules
-   M /doc/shapes.txt
-   M /src/Makefile.am
-   M /src/aliens.c
-   A /src/bonus.c
-   M /src/collide.c
-   M /src/common.h
-   M /src/explosions.c
-   M /src/graphics.c
-   M /src/main.c
-   M /src/player.c
-   M /src/starfield.c
-   M /src/tunnel.c
-   M /src/weapons.c
+   M /trunk/Makefile
+   M /trunk/configure.ac
+   M /trunk/debian/changelog
+   M /trunk/debian/control
+   M /trunk/debian/rules
+   M /trunk/doc/shapes.txt
+   M /trunk/src/Makefile.am
+   M /trunk/src/aliens.c
+   A /trunk/src/bonus.c
+   M /trunk/src/collide.c
+   M /trunk/src/common.h
+   M /trunk/src/explosions.c
+   M /trunk/src/graphics.c
+   M /trunk/src/main.c
+   M /trunk/src/player.c
+   M /trunk/src/starfield.c
+   M /trunk/src/tunnel.c
+   M /trunk/src/weapons.c
 
   * real Debian package files.
   * two new types of aliens. only one rules.
@@ -1521,55 +1874,55 @@ Changed paths:
 ------------------------------------------------------------------------
 r4 | sam | 2002-12-13 21:50:00 +0100 (Fri, 13 Dec 2002) | 2 lines
 Changed paths:
-   M /.cvsignore
-   M /Makefile
-   A /Makefile.am
-   D /aliens.c
-   A /bootstrap
-   D /collide.c
-   D /common.h
-   A /configure.ac
-   A /debian
-   A /debian/.cvsignore
-   A /debian/Makefile.am
-   A /debian/changelog
-   A /debian/control
-   A /debian/rules
-   A /doc
-   A /doc/shapes.txt
-   D /explosions.c
-   D /graphics.c
-   D /main.c
-   D /player.c
-   D /shapes.txt
-   A /src
-   A /src/.cvsignore
-   A /src/Makefile.am
-   A /src/aliens.c
-   A /src/collide.c
-   A /src/common.h
-   A /src/explosions.c
-   A /src/graphics.c
-   A /src/main.c
-   A /src/player.c
-   A /src/starfield.c
-   A /src/tunnel.c
-   A /src/weapons.c
-   D /starfield.c
-   D /tunnel.c
-   D /weapons.c
+   M /trunk/.cvsignore
+   M /trunk/Makefile
+   A /trunk/Makefile.am
+   D /trunk/aliens.c
+   A /trunk/bootstrap
+   D /trunk/collide.c
+   D /trunk/common.h
+   A /trunk/configure.ac
+   A /trunk/debian
+   A /trunk/debian/.cvsignore
+   A /trunk/debian/Makefile.am
+   A /trunk/debian/changelog
+   A /trunk/debian/control
+   A /trunk/debian/rules
+   A /trunk/doc
+   A /trunk/doc/shapes.txt
+   D /trunk/explosions.c
+   D /trunk/graphics.c
+   D /trunk/main.c
+   D /trunk/player.c
+   D /trunk/shapes.txt
+   A /trunk/src
+   A /trunk/src/.cvsignore
+   A /trunk/src/Makefile.am
+   A /trunk/src/aliens.c
+   A /trunk/src/collide.c
+   A /trunk/src/common.h
+   A /trunk/src/explosions.c
+   A /trunk/src/graphics.c
+   A /trunk/src/main.c
+   A /trunk/src/player.c
+   A /trunk/src/starfield.c
+   A /trunk/src/tunnel.c
+   A /trunk/src/weapons.c
+   D /trunk/starfield.c
+   D /trunk/tunnel.c
+   D /trunk/weapons.c
 
   * autotoolificationized the whole thing.
 
 ------------------------------------------------------------------------
 r3 | sam | 2002-12-13 20:27:16 +0100 (Fri, 13 Dec 2002) | 4 lines
 Changed paths:
-   M /collide.c
-   M /common.h
-   M /explosions.c
-   M /main.c
-   M /player.c
-   M /weapons.c
+   M /trunk/collide.c
+   M /trunk/common.h
+   M /trunk/explosions.c
+   M /trunk/main.c
+   M /trunk/player.c
+   M /trunk/weapons.c
 
   * moved nuke from explosions to weapons.
   * used a cool Bresenham algorithm to draw the nuke circles.
@@ -1578,25 +1931,27 @@ Changed paths:
 ------------------------------------------------------------------------
 r2 | sam | 2002-12-13 20:24:53 +0100 (Fri, 13 Dec 2002) | 2 lines
 Changed paths:
-   A /.cvsignore
+   A /trunk/.cvsignore
 
   * .cvsignore file.
 
 ------------------------------------------------------------------------
 r1 | sam | 2002-12-13 20:23:07 +0100 (Fri, 13 Dec 2002) | 3 lines
 Changed paths:
-   A /Makefile
-   A /aliens.c
-   A /collide.c
-   A /common.h
-   A /explosions.c
-   A /graphics.c
-   A /main.c
-   A /player.c
-   A /shapes.txt
-   A /starfield.c
-   A /tunnel.c
-   A /weapons.c
+   A /branches
+   A /trunk
+   A /trunk/Makefile
+   A /trunk/aliens.c
+   A /trunk/collide.c
+   A /trunk/common.h
+   A /trunk/explosions.c
+   A /trunk/graphics.c
+   A /trunk/main.c
+   A /trunk/player.c
+   A /trunk/shapes.txt
+   A /trunk/starfield.c
+   A /trunk/tunnel.c
+   A /trunk/weapons.c
 
   * First commit. Scrolling works, some weaponry, controls, tunnel blowing,
     the nuke is still ugly, almost no collision detection. Nice demo :)
