@@ -6,7 +6,7 @@ pkgdata_DATA = caca.txt
 
 EXTRA_DIST = caca.txt
 
-bin_PROGRAMS = cacademo cacafire cacaball caca-spritedit cacaview
+bin_PROGRAMS = cacademo cacafire cacaball cacaview
 
 cacademo_SOURCES = demo.c
 cacademo_LDADD = ../src/libcaca.a @CACA_LIBS@ -lm
@@ -19,10 +19,6 @@ cacafire_CPPFLAGS = -I$(top_srcdir)/src -DLIBCACA=1
 cacaball_SOURCES = cacaball.c
 cacaball_LDADD = ../src/libcaca.a @CACA_LIBS@
 cacaball_CPPFLAGS = -I$(top_srcdir)/src
-
-caca_spritedit_SOURCES = spritedit.c
-caca_spritedit_LDADD = ../src/libcaca.a @CACA_LIBS@
-caca_spritedit_CPPFLAGS = -I$(top_srcdir)/src
 
 cacaview_SOURCES = cacaview.c
 cacaview_LDADD = ../src/libcaca.a @CACA_LIBS@

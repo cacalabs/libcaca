@@ -49,9 +49,9 @@ or enable anti-aliasing.
 
 cacaball is a tiny graphic program that renders animated ASCII metaballs on
 the screen, cacafire is a port of AALib's aafire and displays burning ASCII
-art flames, cacademo is a simple application that shows the libcaca rendering
-features such as line and ellipses drawing, triangle filling and sprite
-blitting, and caca-spritedit is a simple sprite viewer for libcaca.
+art flames, and cacademo is a simple application that shows the libcaca
+rendering features such as line and ellipses drawing, triangle filling and
+sprite blitting.
 
 %prep
 case "${RPM_COMMAND:-all}" in
@@ -96,14 +96,12 @@ rm -rf %{buildroot}
 %{_prefix}/bin/cacademo
 %{_prefix}/bin/cacafire
 %{_prefix}/bin/cacaview
-%{_prefix}/bin/caca-spritedit
 %{_prefix}/share/doc/caca-utils-%{version}/*
 %{_prefix}/share/libcaca/*
 %{_prefix}/share/man/man1/cacaball.1*
 %{_prefix}/share/man/man1/cacademo.1*
 %{_prefix}/share/man/man1/cacafire.1*
 %{_prefix}/share/man/man1/cacaview.1*
-%{_prefix}/share/man/man1/caca-spritedit.1*
 
 %changelog
 * Sat Jan 4 2004 Sam Hocevar (RPM packages) <sam+rpm@zoy.org> 0.6-2

@@ -1,6 +1,6 @@
 EXTRA_DIST = doxygen.cfg.in footer.html header.html $(man_MANS)
 
-man_MANS = caca-config.1 cacademo.1 caca-spritedit.1 cacaview.1
+man_MANS = caca-config.1 cacademo.1 cacaview.1
 
 if DOXYGEN
 htmldoc_DATA = html/doxygen.css
