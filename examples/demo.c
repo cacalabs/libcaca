@@ -47,6 +47,7 @@ static void demo_blit(void);
 
 int bounds = 0;
 int outline = 0;
+int dithering = 0;
 struct caca_sprite *sprite = NULL;
 
 GdkPixbuf *pixbuf;
@@ -76,10 +77,13 @@ gdk_init (&argc, &argv);
     //pixbuf = gdk_pixbuf_new_from_file("/home/sam/pix/union.png", NULL);
     //pixbuf = gdk_pixbuf_new_from_file("/home/sam/pix/pikachu.jpeg", NULL);
     //pixbuf = gdk_pixbuf_new_from_file("/home/sam/pix/gradient.png", NULL);
+    //pixbuf = gdk_pixbuf_new_from_file("/home/sam/pix/beastie.png", NULL);
+    pixbuf = gdk_pixbuf_new_from_file("/home/sam/pix/stitch.jpg", NULL);
+    //pixbuf = gdk_pixbuf_new_from_file("/home/sam/pix/dranac.jpeg", NULL);
     //pixbuf = gdk_pixbuf_new_from_file("/home/sam/artwork/aboire.png", NULL);
     //pixbuf = gdk_pixbuf_new_from_file("/home/sam/web/sam.zoy.org/artwork/goret.png", NULL);
     //pixbuf = gdk_pixbuf_new_from_file("/home/sam/lilkim02.jpg", NULL);
-    pixbuf = gdk_pixbuf_new_from_file("/home/sam/etw.bmp", NULL);
+    //pixbuf = gdk_pixbuf_new_from_file("/home/sam/etw.bmp", NULL);
 if(!pixbuf) return -2;
     pixels = gdk_pixbuf_get_pixels(pixbuf);
     bufx = gdk_pixbuf_get_width(pixbuf);
@@ -121,6 +125,14 @@ fprintf(stderr, "w %i, h %i, stride %i\n", bufx, bufy, bufpitch);
             case 'b':
             case 'B':
                 bounds = (bounds + 1) % 2;
+                display_menu();
+                break;
+            case 'd':
+            case 'D':
+                dithering = (dithering + 1) % 3;
+                caca_set_dithering(dithering == 0 ? CACA_DITHER_NONE :
+                                   dithering == 1 ? CACA_DITHER_ORDERED :
+                                                    CACA_DITHER_RANDOM);
                 display_menu();
                 break;
             case 'c':
@@ -213,6 +225,8 @@ static void display_menu(void)
               outline == 0 ? "none" : outline == 1 ? "solid" : "thin");
     caca_printf(4, 19, "'b': drawing boundaries: %s",
               bounds == 0 ? "screen" : "infinite");
+    caca_printf(4, 20, "'d': %s dithering",
+              dithering == 0 ? "no" : dithering == 1 ? "ordered" : "random");
 
     caca_putstr(4, yo - 2, "'q': quit");
 }
@@ -464,6 +478,7 @@ static void demo_sprites(void)
 
 static void demo_blit(void)
 {
-    caca_blit(6, 4, caca_get_width() - 6, caca_get_height() - 4, pixels, bufx, bufy);
+    caca_blit(6, 4, caca_get_width() - 6, caca_get_height() - 4,
+              pixels, bufx, bufy);
 }
 

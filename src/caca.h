@@ -57,8 +57,9 @@ enum caca_color
  */
 enum caca_dithering
 {
-    CACA_DITHER_NONE = 0,
-    CACA_DITHER_RANDOM = 1
+    CACA_DITHER_NONE,
+    CACA_DITHER_ORDERED,
+    CACA_DITHER_RANDOM
 };
 
 /*
