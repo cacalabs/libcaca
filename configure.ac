@@ -30,6 +30,7 @@ AC_ARG_ENABLE(x11,
 
 AC_CHECK_HEADERS(inttypes.h endian.h)
 AC_CHECK_FUNCS(vsnprintf getenv putenv strcasecmp usleep Sleep)
+AC_CHECK_LIB(m, sin, MATH_LIBS="${MATH_LIBS} -lm")
 
 CACA_DRIVERS="" 
 
@@ -120,6 +121,7 @@ else
   AC_MSG_RESULT([${CACA_DRIVERS}])
 fi
 
+AC_SUBST(MATH_LIBS)
 AC_SUBST(CACA_LIBS)
 
 # Optimizations
