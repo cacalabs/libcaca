@@ -25,6 +25,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <malloc.h>
 
 #define X_DISPLAY_MISSING 1
 #include <Imlib2.h>
@@ -34,63 +35,73 @@
 Imlib_Image image = NULL;
 char *pixels = NULL;
 struct caca_bitmap *bitmap = NULL;
+int x, y, w, h;
 
 int dithering = 1;
 const enum caca_dithering dithering_list[] =
     { CACA_DITHER_NONE, CACA_DITHER_ORDERED, CACA_DITHER_RANDOM };
 
+static void load_image(const char *);
+
 int main(int argc, char **argv)
 {
-    int quit = 0, update = 1, help = 0;
-    int x, y, w, h, zoom = 0;
+    int quit = 0, update = 1, help = 0, reload = 0;
+    int i, zoom = 0;
 
-    if(argc != 2)
-    {
-        fprintf(stderr, "usage: %s <filename>\n", argv[0]);
-        return 1;
-    }
+    char **list = NULL;
+    int current = 0, items = 0, opts = 1;
 
-    image = imlib_load_image(argv[1]);
-
-    if(!image)
-    {
-        fprintf(stderr, "%s: unable to open `%s'\n", argv[0], argv[1]);
-        return 1;
-    }
-
-    imlib_context_set_image(image);
-    pixels = (char *)imlib_image_get_data_for_reading_only();
-    w = imlib_image_get_width();
-    h = imlib_image_get_height();
-    x = w / 2;
-    y = h / 2;
-
+    /* Initialise libcaca */
     if(caca_init())
     {
         fprintf(stderr, "%s: unable to initialise libcaca\n", argv[0]);
         return 1;
     }
 
-    /* Create the libcaca bitmap */
-    bitmap = caca_create_bitmap(32, w, h, 4 * w,
-                                0x00ff0000, 0x0000ff00, 0x000000ff);
-
-    if(!image)
+    /* Load items into playlist */
+    for(i = 1; i < argc; i++)
     {
-        fprintf(stderr, "%s: unable to create libcaca bitmap\n", argv[0]);
-        caca_end();
-        return 1;
+        /* Skip options except after `--' */
+        if(opts && argv[i][0] == '-')
+        {
+            if(argv[i][1] == '-' && argv[i][2] == '\0')
+                opts = 0;
+            continue;
+        }
+
+        /* Add argv[i] to the list */
+        if(items)
+            list = realloc(list, (items + 1) * sizeof(char *));
+        else
+            list = malloc(sizeof(char *));
+        list[items] = argv[i];
+        items++;
+
+        reload = 1;
     }
 
     /* Go ! */
     while(!quit)
     {
+        int ww = caca_get_width();
+        int wh = caca_get_height();
+
         int event;
 
         while((event = caca_get_event()))
         {
             switch(event)
             {
+            case CACA_EVENT_KEY_PRESS | 'n':
+            case CACA_EVENT_KEY_PRESS | 'N':
+                if(items) current = (current + 1) % items;
+                reload = 1;
+                break;
+            case CACA_EVENT_KEY_PRESS | 'p':
+            case CACA_EVENT_KEY_PRESS | 'P':
+                if(items) current = (items + current - 1) % items;
+                reload = 1;
+                break;
             case CACA_EVENT_KEY_PRESS | 'd':
             case CACA_EVENT_KEY_PRESS | 'D':
                 dithering = (dithering + 1) % 3;
@@ -98,11 +109,11 @@ int main(int argc, char **argv)
                 break;
             case CACA_EVENT_KEY_PRESS | '+':
                 zoom++;
-                update = 1;
+                if(zoom > 48) zoom = 48; else update = 1;
                 break;
             case CACA_EVENT_KEY_PRESS | '-':
                 zoom--;
-                update = 1;
+                if(zoom < -48) zoom = -48; else update = 1;
                 break;
             case CACA_EVENT_KEY_PRESS | 'x':
             case CACA_EVENT_KEY_PRESS | 'X':
@@ -144,14 +155,43 @@ int main(int argc, char **argv)
             }
         }
 
+        if(items && reload)
+        {
+            char *buffer = malloc(ww + 1);
+
+            /* Reset image-specific runtime variables */
+            zoom = 0;
+
+            snprintf(buffer, ww, " Loading `%s'... ", list[current]);
+            buffer[ww] = '\0';
+            caca_set_color(CACA_COLOR_WHITE, CACA_COLOR_BLUE);
+            caca_putstr((ww - strlen(buffer)) / 2, wh / 2, buffer);
+            caca_refresh();
+
+            load_image(list[current]);
+            reload = 0;
+            update = 1;
+
+            free(buffer);
+        }
+
         if(update)
         {
-            int ww = caca_get_width();
-            int wh = caca_get_height();
-
             caca_clear();
             caca_set_dithering(dithering_list[dithering]);
-            if(zoom < 0)
+            caca_set_color(CACA_COLOR_WHITE, CACA_COLOR_BLUE);
+
+            if(!items)
+                caca_printf(ww / 2 - 5, wh / 2, " No image. ");
+            else if(!image)
+            {
+                char *buffer = malloc(ww + 1);
+                snprintf(buffer, ww, " Error loading `%s'. ", list[current]);
+                buffer[ww] = '\0';
+                caca_putstr((ww - strlen(buffer)) / 2, wh / 2, buffer);
+                free(buffer);
+            }
+            else if(zoom < 0)
             {
                 int xo = (ww - 1) / 2;
                 int yo = (wh - 1) / 2;
@@ -182,9 +222,12 @@ int main(int argc, char **argv)
 
             caca_set_color(CACA_COLOR_WHITE, CACA_COLOR_BLUE);
             caca_draw_line(0, 0, ww - 1, 0, ' ');
-            caca_printf(1, 0, "cacaview %s", VERSION);
-            caca_putstr(ww - strlen("'?' for help") - 1, 0,
-                        "'?' for help");
+            caca_draw_line(0, wh - 1, ww - 1, wh - 1, '-');
+            caca_putstr(0, 0, "q:Quit  +/-/x:Zoom  h/j/k/l: Move  "
+                              "d:Dithering  ?:Help");
+            caca_printf(3, wh - 1, "cacaview %s", VERSION);
+            caca_printf(ww - 14, wh - 1,
+                        "(zoom: %s%i)", zoom > 0 ? "+" : "", zoom);
 
             if(help)
             {
@@ -208,12 +251,51 @@ int main(int argc, char **argv)
         }
     }
 
-    caca_free_bitmap(bitmap);
-    imlib_free_image();
+    if(bitmap)
+        caca_free_bitmap(bitmap);
+    if(image)
+        imlib_free_image();
 
     /* Clean up */
     caca_end();
 
     return 0;
+}
+
+static void load_image(const char *name)
+{
+    /* Empty previous data */
+    if(image)
+        imlib_free_image();
+
+    if(bitmap)
+        caca_free_bitmap(bitmap);
+
+    image = NULL;
+    bitmap = NULL;
+
+    /* Load the new image */
+    image = imlib_load_image(name);
+
+    if(!image)
+    {
+        return;
+    }
+
+    imlib_context_set_image(image);
+    pixels = (char *)imlib_image_get_data_for_reading_only();
+    w = imlib_image_get_width();
+    h = imlib_image_get_height();
+    x = w / 2;
+    y = h / 2;
+
+    /* Create the libcaca bitmap */
+    bitmap = caca_create_bitmap(32, w, h, 4 * w,
+                                0x00ff0000, 0x0000ff00, 0x000000ff);
+    if(!bitmap)
+    {
+        imlib_free_image();
+        image = NULL;
+    }
 }
 
