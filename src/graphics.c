@@ -446,7 +446,7 @@ int _caca_init_graphics(void)
     if(getenv("CACA_HEIGHT"))
         _caca_height = atoi(getenv("CACA_HEIGHT"));
     if(!_caca_height)
-        _caca_height = 25;
+        _caca_height = 32;
 
     x11_screen = malloc(_caca_width * _caca_height * sizeof(int));
     if(x11_screen == NULL)
