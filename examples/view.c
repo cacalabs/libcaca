@@ -215,7 +215,7 @@ int main(int argc, char **argv)
             if(xn + x > w) x = w - xn;
             if(yn + y > h) y = h - yn;
             newbitmap = caca_create_bitmap(32, 2 * xn, 2 * yn, 4 * w,
-                                       0x00ff0000, 0x0000ff00, 0x000000ff);
+                                       0x0000ff00, 0x00ff0000, 0xff000000);
             caca_draw_bitmap(0, 0, ww - 1, wh - 1, newbitmap,
                              pixels + 4 * (x - xn) + 4 * w * (y - yn));
             caca_free_bitmap(newbitmap);
@@ -298,7 +298,7 @@ static void load_image(const char *name)
 
     /* Create the libcaca bitmap */
     bitmap = caca_create_bitmap(32, w, h, 4 * w,
-                                0x00ff0000, 0x0000ff00, 0x000000ff);
+                                0x0000ff00, 0x00ff0000, 0xff000000);
     if(!bitmap)
     {
         imlib_free_image();

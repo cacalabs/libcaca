@@ -42,34 +42,34 @@ typedef unsigned int uint32_t;
 #include "caca.h"
 #include "caca_internals.h"
 
-static void mask2shift(int, int *, int *);
+static void mask2shift(unsigned int, int *, int *);
 
-static void get_rgb_default(struct caca_bitmap *, unsigned char *,
-                            int, int, int *, int *, int *);
+static void get_rgb_default(struct caca_bitmap *, uint8_t *, int, int,
+                            unsigned int *, unsigned int *, unsigned int *);
 static void rgb2hsv_default(int, int, int, int *, int *, int *);
 
 /* Dithering methods */
 static void init_no_dither(int);
-static int get_no_dither(void);
+static unsigned int get_no_dither(void);
 static void increment_no_dither(void);
 
 static void init_ordered4_dither(int);
-static int get_ordered4_dither(void);
+static unsigned int get_ordered4_dither(void);
 static void increment_ordered4_dither(void);
 
 static void init_ordered8_dither(int);
-static int get_ordered8_dither(void);
+static unsigned int get_ordered8_dither(void);
 static void increment_ordered8_dither(void);
 
 static void init_random_dither(int);
-static int get_random_dither(void);
+static unsigned int get_random_dither(void);
 static void increment_random_dither(void);
 
 /* Current dithering method */
 static enum caca_dithering _caca_dithering = CACA_DITHERING_NONE;
 
 static void (*_init_dither) (int) = init_no_dither;
-static int (*_get_dither) (void) = get_no_dither;
+static unsigned int (*_get_dither) (void) = get_no_dither;
 static void (*_increment_dither) (void) = increment_no_dither;
 
 void caca_set_dithering(enum caca_dithering dither)
@@ -118,13 +118,15 @@ struct caca_bitmap
     int red[256], green[256], blue[256];
 };
 
-static void mask2shift(int mask, int *right, int *left)
+static void mask2shift(unsigned int mask, int *right, int *left)
 {
     int rshift = 0, lshift = 0;
-    *right = *left = 0;
 
     if(!mask)
+    {
+        *right = *left = 0;
         return;
+    }
 
     while(!(mask & 1))
     {
@@ -141,6 +143,7 @@ static void mask2shift(int mask, int *right, int *left)
     *left = 16 - lshift;
 }
 
+#include <stdio.h>
 struct caca_bitmap *caca_create_bitmap(int bpp, int w, int h, int pitch,
                                        int rmask, int gmask, int bmask)
 {
@@ -172,6 +175,7 @@ struct caca_bitmap *caca_create_bitmap(int bpp, int w, int h, int pitch,
         mask2shift(gmask, &bitmap->gright, &bitmap->gleft);
         mask2shift(bmask, &bitmap->bright, &bitmap->bleft);
     }
+fprintf(stderr, "shifts: %i %i %i %i %i %i\n", bitmap->rright, bitmap->rleft, bitmap->gright, bitmap->gleft, bitmap->bright, bitmap->bleft);
 
     /* In 8 bpp mode, default to a grayscale palette */
     if(bpp == 8)
@@ -218,23 +222,30 @@ void caca_free_bitmap(struct caca_bitmap *bitmap)
     free(bitmap);
 }
 
-static void get_rgb_default(struct caca_bitmap *bitmap, unsigned char *pixels,
-                            int x, int y, int *r, int *g, int *b)
+static void get_rgb_default(struct caca_bitmap *bitmap, uint8_t *pixels,
+                            int x, int y, unsigned int *r,
+                            unsigned int *g, unsigned int *b)
 {
-    int bits;
+    unsigned int bits;
 
     pixels += (bitmap->bpp / 8) * x + bitmap->pitch * y;
 
     switch(bitmap->bpp / 8)
     {
         case 4:
-            bits = *(uint32_t *)(pixels + 0);
+            bits = ((uint32_t)pixels[0] << 24) |
+                   ((uint32_t)pixels[1] << 16) |
+                   ((uint32_t)pixels[2] << 8) |
+                   ((uint32_t)pixels[3]);
             break;
         case 3:
-            bits = (pixels[0] << 16) | (pixels[1] << 8) | (pixels[2]);
+            bits = ((uint32_t)pixels[0] << 16) |
+                   ((uint32_t)pixels[1] << 8) |
+                   ((uint32_t)pixels[2]);
             break;
         case 2:
-            bits = *(uint16_t *)(pixels + 0);
+            bits = ((uint16_t)pixels[0] << 8) |
+                   ((uint16_t)pixels[1]);
             break;
         case 1:
         default:
@@ -361,7 +372,7 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
         for(x = x1 > 0 ? x1 : 0; x <= x2 && x <= (int)caca_get_width(); x++)
         {
             int ch;
-            int hue, sat, val, r, g, b, R, G, B;
+            unsigned int hue, sat, val, r, g, b, R, G, B;
             int fromx = w * (x - x1) / (x2 - x1 + 1);
             int fromy = h * (y - y1) / (y2 - y1 + 1);
 
@@ -415,7 +426,7 @@ static void init_no_dither(int line)
     ;
 }
 
-static int get_no_dither(void)
+static unsigned int get_no_dither(void)
 {
     return 0x80;
 }
@@ -432,12 +443,12 @@ static void increment_no_dither(void)
                           -1, -6, -5,  2,
                           -2, -7, -8,  3,
                            4, -3, -4, -7};*/
-static int *ordered4_table;
-static int ordered4_index;
+static unsigned int *ordered4_table;
+static unsigned int ordered4_index;
 
 static void init_ordered4_dither(int line)
 {
-    static int dither4x4[] =
+    static unsigned int dither4x4[] =
     {
         0x00, 0x80, 0x20, 0xa0,
         0xc0, 0x40, 0xe0, 0x60,
@@ -449,7 +460,7 @@ static void init_ordered4_dither(int line)
     ordered4_index = 0;
 }
 
-static int get_ordered4_dither(void)
+static unsigned int get_ordered4_dither(void)
 {
     return ordered4_table[ordered4_index];
 }
@@ -462,12 +473,12 @@ static void increment_ordered4_dither(void)
 /*
  * Ordered 8 dithering
  */
-static int *ordered8_table;
-static int ordered8_index;
+static unsigned int *ordered8_table;
+static unsigned int ordered8_index;
 
 static void init_ordered8_dither(int line)
 {
-    static int dither8x8[] =
+    static unsigned int dither8x8[] =
     {
         0x00, 0x80, 0x20, 0xa0, 0x08, 0x88, 0x28, 0xa8,
         0xc0, 0x40, 0xe0, 0x60, 0xc8, 0x48, 0xe8, 0x68,
@@ -483,7 +494,7 @@ static void init_ordered8_dither(int line)
     ordered8_index = 0;
 }
 
-static int get_ordered8_dither(void)
+static unsigned int get_ordered8_dither(void)
 {
     return ordered8_table[ordered8_index];
 }
@@ -501,7 +512,7 @@ static void init_random_dither(int line)
     ;
 }
 
-static int get_random_dither(void)
+static unsigned int get_random_dither(void)
 {
     return caca_rand(0x00, 0xff);
 }
