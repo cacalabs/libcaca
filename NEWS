@@ -1,5 +1,12 @@
 $Id$
 
+Changes between 0.4 and 0.5:
+----------------------------
+
+  * palette optimisation for the S-Lang driver to work around the colour pair
+    shortage bug
+  * minor compilation fix
+
 Changes between 0.3 and 0.4:
 ----------------------------
 
