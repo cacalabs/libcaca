@@ -24,6 +24,7 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <string.h>
 
 #define X_DISPLAY_MISSING 1
 #include <Imlib2.h>
@@ -40,7 +41,7 @@ const enum caca_dithering dithering_list[] =
 
 int main(int argc, char **argv)
 {
-    int quit = 0, update = 1;
+    int quit = 0, update = 1, help = 0;
     int x, y, w, h, zoom = 0;
 
     if(argc != 2)
@@ -108,20 +109,32 @@ int main(int argc, char **argv)
                 zoom = 0;
                 update = 1;
                 break;
+            case CACA_EVENT_KEY_PRESS | 'k':
+            case CACA_EVENT_KEY_PRESS | 'K':
             case CACA_EVENT_KEY_PRESS | CACA_KEY_UP:
                 if(zoom > 0) y -= 1 + h / (2 + zoom) / 8;
                 update = 1;
                 break;
+            case CACA_EVENT_KEY_PRESS | 'j':
+            case CACA_EVENT_KEY_PRESS | 'J':
             case CACA_EVENT_KEY_PRESS | CACA_KEY_DOWN:
                 if(zoom > 0) y += 1 + h / (2 + zoom) / 8;
                 update = 1;
                 break;
+            case CACA_EVENT_KEY_PRESS | 'h':
+            case CACA_EVENT_KEY_PRESS | 'H':
             case CACA_EVENT_KEY_PRESS | CACA_KEY_LEFT:
                 if(zoom > 0) x -= 1 + w / (2 + zoom) / 8;
                 update = 1;
                 break;
+            case CACA_EVENT_KEY_PRESS | 'l':
+            case CACA_EVENT_KEY_PRESS | 'L':
             case CACA_EVENT_KEY_PRESS | CACA_KEY_RIGHT:
                 if(zoom > 0) x += 1 + w / (2 + zoom) / 8;
+                update = 1;
+                break;
+            case CACA_EVENT_KEY_PRESS | '?':
+                help = !help;
                 update = 1;
                 break;
             case CACA_EVENT_KEY_PRESS | 'q':
@@ -133,14 +146,17 @@ int main(int argc, char **argv)
 
         if(update)
         {
+            int ww = caca_get_width();
+            int wh = caca_get_height();
+
             caca_clear();
             caca_set_dithering(dithering_list[dithering]);
             if(zoom < 0)
             {
-                int xo = (caca_get_width() - 1) / 2;
-                int yo = (caca_get_height() - 1) / 2;
-                int xn = (caca_get_width() - 1) / (2 - zoom);
-                int yn = (caca_get_height() - 1) / (2 - zoom);
+                int xo = (ww - 1) / 2;
+                int yo = (wh - 1) / 2;
+                int xn = (ww - 1) / (2 - zoom);
+                int yn = (wh - 1) / (2 - zoom);
                 caca_draw_bitmap(xo - xn, yo - yn, xo + xn, yo + yn,
                                  bitmap, pixels);
             }
@@ -154,17 +170,39 @@ int main(int argc, char **argv)
                 if(xn + x > w) x = w - xn;
                 if(yn + y > h) y = h - yn;
                 newbitmap = caca_create_bitmap(32, 2 * xn, 2 * yn, 4 * w,
-                                            0x00ff0000, 0x0000ff00, 0x000000ff);
-                caca_draw_bitmap(0, 0, caca_get_width() - 1,
-                                 caca_get_height() - 1, newbitmap,
+                                           0x00ff0000, 0x0000ff00, 0x000000ff);
+                caca_draw_bitmap(0, 0, ww - 1, wh - 1, newbitmap,
                                  pixels + 4 * (x - xn) + 4 * w * (y - yn));
                 caca_free_bitmap(newbitmap);
             }
             else
             {
-                caca_draw_bitmap(0, 0, caca_get_width() - 1,
-                                 caca_get_height() - 1, bitmap, pixels);
+                caca_draw_bitmap(0, 0, ww - 1, wh - 1, bitmap, pixels);
             }
+
+            caca_set_color(CACA_COLOR_WHITE, CACA_COLOR_BLUE);
+            caca_draw_line(0, 0, ww - 1, 0, ' ');
+            caca_printf(1, 0, "cacaview %s", VERSION);
+            caca_putstr(ww - strlen("'?' for help") - 1, 0,
+                        "'?' for help");
+
+            if(help)
+            {
+                caca_putstr(2, 2,  " +: zoom in          ");
+                caca_putstr(2, 3,  " -: zoom out         ");
+                caca_putstr(2, 4,  " x: reset zoom       ");
+                caca_putstr(2, 5,  " ------------------- ");
+                caca_putstr(2, 6,  " hjkl: move view     ");
+                caca_putstr(2, 7,  " arrows: move view   ");
+                caca_putstr(2, 8,  " ------------------- ");
+                caca_putstr(2, 9,  " d: dithering method ");
+                caca_putstr(2, 10, " ------------------- ");
+                caca_putstr(2, 11, " ?: help             ");
+                caca_putstr(2, 12, " q: quit             ");
+
+                help = 0;
+            }
+
             caca_refresh();
             update = 0;
         }

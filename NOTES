@@ -17,11 +17,12 @@ $Id$
         setab=\E[4%p1%dm, setaf=\E[3%p1%dm
 
       From the xterm-16color terminfo:
+      (http://www.sct.gu.edu.au/~anthony/info/X/Xterm_xf86.terminfo)
 
         setab=\E[%?%p1%{8}%<%t%p1%{40}%+%e%p1%{92}%+%;%dm,
         setaf=\E[%?%p1%{8}%<%t%p1%{30}%+%e%p1%{82}%+%;%dm,
 
-      (http://www.sct.gu.edu.au/~anthony/info/X/Xterm_xf86.terminfo)
+      These values can be simply retrieved with a tigetstr() call.
 
    o  I tested the following terminals:
 
@@ -75,9 +76,11 @@ $Id$
        + gnome-terminal (no bright bg)
        + konsole (no bright bg, $blink really blinks)
 
-   o  In an XTerm-compatible terminal, \e[9xm sets bright foreground and
-      \e[10xm bright background colours. Unfortunately all terminals don't
-      support these escape sequences. Here is a testcase:
+   o In an XTerm-compatible terminal, \e[9xm sets bright foreground
+     and \e[10xm bright background colours. Documentation on this can be
+     found at http://ftp.xfree86.org/pub/XFree86/4.2.1/doc/ctlseqs.TXT .
+     Unfortunately all terminals don't support these escape sequences. Here
+     is a testcase:
 
       for fgpre in 3 9; do for fg in 0 4 2 6 1 5 3 7; do
         for bgpre in 4 10; do

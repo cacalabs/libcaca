@@ -221,9 +221,7 @@ static void get_rgb_default(struct caca_bitmap *bitmap, unsigned char *pixels,
             bits = *(uint32_t *)(pixels + 0);
             break;
         case 3:
-            bits = (pixels[0] << 16)
-                    | (pixels[1] << 8)
-                    | (pixels[2]);
+            bits = (pixels[0] << 16) | (pixels[1] << 8) | (pixels[2]);
             break;
         case 2:
             bits = *(uint16_t *)(pixels + 0);
@@ -256,27 +254,25 @@ static void rgb2hsv_default(int r, int g, int b, int *hue, int *sat, int *val)
     if(min > g) min = g; if(max < g) max = g;
     if(min > b) min = b; if(max < b) max = b;
 
-    delta = max - min; /* 0 - 65535 */
-    *val = max; /* 0 - 65535 */
-    *sat = max ? 0x100 * delta / max * 0x100: 0; /* 0 - 65536 */
+    delta = max - min; /* 0 - 0xffff */
+    *val = max; /* 0 - 0xffff */
 
-    if(*sat > (_get_dither() + 24) * 0x400)
+    if(delta)
     {
-        /* XXX: Values should be between 1 and 6, but since we
-         * are dithering, there may be overflows, hence our bigger
-         * *_colors[] tables. */
+        *sat = 0x1000 * delta / max * 0x10; /* 0 - 0xffff */
+
+        /* Generate *hue between 0 and 0x5ffff */
         if( r == max )
             *hue = 0x10000 + 0x100 * (g - b) / delta * 0x100;
         else if( g == max )
             *hue = 0x30000 + 0x100 * (b - r) / delta * 0x100;
         else
             *hue = 0x50000 + 0x100 * (r - g) / delta * 0x100;
-
-        *hue = (*hue + 0x8000 + 0x1000 * _get_dither()) / 0x10000;
     }
     else
     {
         *sat = 0;
+        *hue = 0;
     }
 }
 
@@ -360,6 +356,10 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
             int fromx = w * (x - x1) / (x2 - x1 + 1);
             int fromy = h * (y - y1) / (y2 - y1 + 1);
 
+            /* Clip values (yuck) */
+            if(fromx == 0) fromx = 1;
+            if(fromy == 0) fromy = 1;
+
             /* First get RGB */
             R = 0, G = 0, B = 0;
             get_rgb_default(bitmap, pixels, fromx, fromy, &r, &g, &b);
@@ -377,12 +377,12 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
             /* Now get HSV from RGB */
             rgb2hsv_default(R, G, B, &hue, &sat, &val);
 
-            if(!sat)
+            if(sat < 0x6000 + _get_dither() * 0x800)
                 caca_set_color(white_colors[val * 3 / 0x10000], CACA_COLOR_BLACK);
             else if(val > (_get_dither() + 40) * 0x400)
-                caca_set_color(light_colors[hue], CACA_COLOR_BLACK);
+                caca_set_color(light_colors[(hue + 0x8000 + _get_dither() * 0x1000) / 0x10000], CACA_COLOR_BLACK);
             else
-                caca_set_color(dark_colors[hue], CACA_COLOR_BLACK);
+                caca_set_color(dark_colors[(hue + 0x8000 + _get_dither() * 0x1000) / 0x10000], CACA_COLOR_BLACK);
 
             /* FIXME: choose better characters! */
             ch = (val + 0x200 * _get_dither()) * 10 / 0x10000;
