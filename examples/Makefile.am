@@ -13,15 +13,18 @@ if USE_NCURSES
 LDFLAGS_ncurses = -lncurses
 endif
 
-bin_PROGRAMS = caca-demo caca-spritedit
+bin_PROGRAMS = cacademo caca-spritedit cacaview
 
-caca_demo_SOURCES = demo.c
-caca_demo_LDADD = ../src/libcaca.a $(LDFLAGS_slang) $(LDFLAGS_ncurses) -lm
-caca_demo_CPPFLAGS = -I$(top_srcdir)/src -DDATADIR=\"$(pkgdatadir)\"
-#caca_demo_CFLAGS = `pkg-config --cflags gtk+-2.0`
-#caca_demo_LDFLAGS = `pkg-config --libs gtk+-2.0`
+cacademo_SOURCES = demo.c
+cacademo_LDADD = ../src/libcaca.a $(LDFLAGS_slang) $(LDFLAGS_ncurses) -lm
+cacademo_CPPFLAGS = -I$(top_srcdir)/src -DDATADIR=\"$(pkgdatadir)\"
 
 caca_spritedit_SOURCES = spritedit.c
 caca_spritedit_LDADD = ../src/libcaca.a $(LDFLAGS_slang) $(LDFLAGS_ncurses) -lm
 caca_spritedit_CPPFLAGS = -I$(top_srcdir)/src
 
+cacaview_SOURCES = view.c
+cacaview_LDADD = ../src/libcaca.a $(LDFLAGS_slang) $(LDFLAGS_ncurses) -lm
+cacaview_CPPFLAGS = -I$(top_srcdir)/src
+cacaview_CFLAGS = `imlib2-config --cflags`
+cacaview_LDFLAGS = `imlib2-config --libs`
