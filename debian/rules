@@ -41,7 +41,7 @@ install: build
 	dh_installdirs -plibcaca-dev
 	dh_installdirs usr/bin usr/share/doc/caca-utils usr/share/man/man1 -pcaca-utils
 
-	DESTDIR=`pwd`/debian/libcaca-dev/ $(MAKE) install prefix=/usr
+	$(MAKE) install DESTDIR=`pwd`/debian/libcaca-dev/
 
 	mv debian/libcaca-dev/usr/bin/cacaball debian/caca-utils/usr/bin
 	mv debian/libcaca-dev/usr/bin/cacademo debian/caca-utils/usr/bin
@@ -65,7 +65,6 @@ install: build
 	   debian/caca-utils/usr/share/man/man1/
 
 	cp debian/libcaca-dev/usr/share/doc/libcaca-dev/README \
-	   debian/libcaca-dev/usr/share/doc/libcaca-dev/BUGS \
 	   debian/libcaca-dev/usr/share/doc/libcaca-dev/TODO \
 	   debian/libcaca-dev/usr/share/doc/libcaca-dev/AUTHORS \
 	   debian/libcaca-dev/usr/share/doc/libcaca-dev/NEWS \

@@ -3,7 +3,6 @@ $Id$
 Low level stuff
 
    o  Write a Linux console output for the drawing library
-      See also BUGS as to why it's very slow in console mode
 
    o  Better keyboard driver in an X terminal, see
       http://groups.yahoo.com/group/zepp/message/381

@@ -1,3 +1,10 @@
+libcaca (0.9-2) unstable; urgency=low
+
+  * debian/control:
+    + Depend on libx11-dev instead of xlibs-dev.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Mon, 15 Mar 2004 16:48:19 +0100
+
 libcaca (0.9-1) unstable; urgency=low
 
   * New upstream release.
