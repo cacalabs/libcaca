@@ -1,0 +1,17 @@
+.cvsignore
+Build.PL
+lib/Term/Caca.pm
+lib/Term/Caca.xs
+lib/Term/Caca/Bitmap.pm
+lib/Term/Caca/Constants.pm
+lib/Term/Caca/Sprite.pm
+lib/Term/Kaka.pm
+lib/Term/Kaka/Bitmap.pm
+lib/Term/Kaka/Constants.pm
+lib/Term/Kaka/Sprite.pm
+Makefile.PL
+MANIFEST			This list of files
+MANIFEST.SKIP
+META.yml
+README
+t/data/caca.txt

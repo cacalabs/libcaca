@@ -1,0 +1,21 @@
+___________                           _________
+\__    ___/__________  _____   /\  /\ \_   ___ \_____    ____ _____
+  |    |_/ __ \_  __ \/     \  \/  \/ /    \  \/\__  \ _/ ___\\__  \
+  |    |\  ___/|  | \/  Y Y  \ /\  /\ \     \____/ __ \\  \___ / __ \_
+  |____| \___  >__|  |__|_|  / \/  \/  \______  (____  /\___  >____  /
+             \/            \/                 \/     \/     \/     \/
+
+--]- a perl wrapper around libcaca (Colour AsCii Art library)
+                                    ^      ^ ^   ^
+        http://sam.zoy.org/projects/libcaca/
+
+
+--]- a note about versioning,
+
+        Term-Caca-x.y_z.tar.gz
+                  | | ^--------- sub-version of this perl wrapper
+                  | |
+                  `-`----------- version of libcaca c library
+                                 this wrapper is based on.
+
+

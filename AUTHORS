@@ -2,4 +2,5 @@ $Id$
 
 Sam Hocevar <sam@zoy.org> - main programmer
 Jean-Yves Lamoureux <jylam@lnxscene.org> - cacaball
+John Beppu <beppu@lbox.org> - Term::Caca Perl wrapper
 

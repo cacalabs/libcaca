@@ -1,0 +1,29 @@
+--- #YAML:1.0
+name: Term-Caca
+version: 0.9_1
+author: ~
+abstract: |-
+  perl interface for libcaca (Colour AsCii Art library)
+license: lgpl
+build_requires:
+  Test::More: 0
+provides:
+  Term::Caca:
+    file: lib/Term/Caca.pm
+    version: 0.9_1
+  Term::Caca::Bitmap:
+    file: lib/Term/Caca/Bitmap.pm
+  Term::Caca::Constants:
+    file: lib/Term/Caca/Constants.pm
+    version: 0.9
+  Term::Caca::Sprite:
+    file: lib/Term/Caca/Sprite.pm
+  Term::Kaka:
+    file: lib/Term/Kaka.pm
+  Term::Kaka::Bitmap:
+    file: lib/Term/Kaka/Bitmap.pm
+  Term::Kaka::Constants:
+    file: lib/Term/Kaka/Constants.pm
+  Term::Kaka::Sprite:
+    file: lib/Term/Kaka/Sprite.pm
+generated_by: Module::Build version 0.26

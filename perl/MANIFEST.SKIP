@@ -1,0 +1,11 @@
+\bCVS\b
+^MANIFEST\.bak$
+^Makefile$
+\..*\.swp$
+~$
+\bblib\b
+\b\.xvpics\b
+\b_build\b
+^Build$
+^Linux-Input.*gz$
+^x.pl$
