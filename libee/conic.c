@@ -22,6 +22,12 @@
 
 #include "config.h"
 
+#ifdef USE_SLANG
+#   include <slang.h>
+#elif USE_NCURSES
+#   include <curses.h>
+#endif
+
 #include <stdlib.h>
 #include <inttypes.h>
 
@@ -99,27 +105,15 @@ static void ellipsepoints(int xo, int yo, int x, int y, char c)
         b |= 0x8;
 
     if((b & (0x1|0x4)) == (0x1|0x4))
-    {
-        ee_goto(xo + x, yo + y);
-        ee_putchar(c);
-    }
+        ee_putchar(xo + x, yo + y, c);
 
     if((b & (0x2|0x4)) == (0x2|0x4))
-    {
-        ee_goto(xo - x, yo + y);
-        ee_putchar(c);
-    }
+        ee_putchar(xo - x, yo + y, c);
 
     if((b & (0x1|0x8)) == (0x1|0x8))
-    {
-        ee_goto(xo + x, yo - y);
-        ee_putchar(c);
-    }
+        ee_putchar(xo + x, yo - y, c);
 
     if((b & (0x2|0x8)) == (0x2|0x8))
-    {
-        ee_goto(xo - x, yo - y);
-        ee_putchar(c);
-    }
+        ee_putchar(xo - x, yo - y, c);
 }
 

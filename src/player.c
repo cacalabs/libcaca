@@ -55,18 +55,13 @@ void draw_player(game *g, player *p)
         return;
     }
 
-    ee_goto(p->x + 2, p->y - 2);
     ee_color(EE_GREEN);
-    ee_putstr("/\\");
-    ee_goto(p->x + 1, p->y - 1);
-    ee_putchar('(');
+    ee_putstr(p->x + 2, p->y - 2, "/\\");
+    ee_putchar(p->x + 1, p->y - 1, '(');
+    ee_putchar(p->x + 4, p->y - 1, ')');
+    ee_putstr(p->x, p->y, "I<__>I");
     ee_color(EE_YELLOW);
-    ee_putstr("()");
-    ee_color(EE_GREEN);
-    ee_putchar(')');
-    ee_goto(p->x, p->y);
-    ee_color(EE_GREEN);
-    ee_putstr("I<__>I");
+    ee_putstr(p->x + 2, p->y - 1, "()");
 }
 
 void update_player(game *g, player *p)

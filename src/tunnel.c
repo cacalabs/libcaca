@@ -77,83 +77,49 @@ void draw_tunnel(game *g, tunnel *t)
     for(i = 0; i < g->h ; i++)
     {
         if(t->left[i] <= -10)
-        {
             continue;
-        }
 
         if(i + 1 == g->h || t->left[i] > t->left[i+1])
-        {
             c = (i == 0 || t->left[i] > t->left[i-1]) ? '>' : '/';
-        }
         else
-        {
             c = (i == 0 || t->left[i] > t->left[i-1]) ? '\\' : '<';
-        }
 
-        ee_goto(t->left[i] + 1, i);
-        ee_putchar(c);
+        ee_putchar(t->left[i] + 1, i, c);
 
         if(i + 1 < g->h)
-        {
             for(j = 1; j < t->left[i+1] - t->left[i]; j++)
-            {
-                ee_goto(t->left[i] + j + 1, i);
-                ee_putchar('_');
-            }
-        }
+                ee_putchar(t->left[i] + j + 1, i, '_');
     }
 
     /* Right border */
     for(i = 0; i < g->h ; i++)
     {
         if(t->right[i] >= g->w + 10)
-        {
             continue;
-        }
 
         if(i + 1 == g->h || t->right[i] > t->right[i+1])
-        {
             c = (i == 0 || t->right[i] > t->right[i-1]) ? '>' : '/';
-        }
         else
-        {
             c = (i == 0 || t->right[i] > t->right[i-1]) ? '\\' : '<';
-        }
 
         if(i + 1 < g->h)
-        {
             for(j = 1; j < t->right[i] - t->right[i+1]; j++)
-            {
-                ee_goto(t->right[i+1] + j - 1, i);
-                ee_putchar('_');
-            }
-        }
+                ee_putchar(t->right[i+1] + j - 1, i, '_');
 
-        ee_goto(t->right[i] - 1, i);
-        ee_putchar(c);
+        ee_putchar(t->right[i] - 1, i, c);
     }
 
     ee_color(EE_RED);
 
     /* Left concrete */
     for(i = 0; i < g->h ; i++)
-    {
         for(j = 0 ; j <= t->left[i]; j++)
-        {
-            ee_goto(j, i);
-            ee_putchar('#');
-        }
-    }
+            ee_putchar(j, i, '#');
 
     /* Right concrete */
     for(i = 0; i < g->h ; i++)
-    {
         for(j = t->right[i] ; j < g->w ; j++)
-        {
-            ee_goto(j, i);
-            ee_putchar('#');
-        }
-    }
+            ee_putchar(j, i, '#');
 }
 
 void update_tunnel(game *g, tunnel *t)

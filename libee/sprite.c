@@ -22,6 +22,12 @@
 
 #include "config.h"
 
+#ifdef USE_SLANG
+#   include <slang.h>
+#elif USE_NCURSES
+#   include <curses.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -166,9 +172,9 @@ void ee_draw_sprite(int x, int y, struct ee_sprite *sprite)
             int col = frame->color[frame->w * j + i];
             if(col >= 0)
             {
-                ee_goto(x + i - frame->dx, y + j - frame->dy);
                 ee_color(col);
-                ee_putchar(frame->chars[frame->w * j + i]);
+                ee_putchar(x + i - frame->dx, y + j - frame->dy,
+                           frame->chars[frame->w * j + i]);
             }
         }
     }

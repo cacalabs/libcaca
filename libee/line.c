@@ -22,6 +22,12 @@
 
 #include "config.h"
 
+#ifdef USE_SLANG
+#   include <slang.h>
+#elif USE_NCURSES
+#   include <curses.h>
+#endif
+
 #include <inttypes.h>
 #include <stdlib.h>
 
@@ -196,8 +202,7 @@ static void draw_solid_line(struct line* s)
 
         for(; dx>=0; dx--)
         {
-            ee_goto(x1, y1);
-            ee_putchar(s->c);
+            ee_putchar(x1, y1, s->c);
             if(delta > 0)
             {
                 x1 += xinc;
@@ -219,8 +224,7 @@ static void draw_solid_line(struct line* s)
 
         for(; dy >= 0; dy--)
         {
-            ee_goto(x1, y1);
-            ee_putchar(s->c);
+            ee_putchar(x1, y1, s->c);
             if(delta > 0)
             {
                 x1 += xinc;
@@ -290,10 +294,9 @@ static void draw_thin_line(struct line* s)
 
         for(; dx>=0; dx--)
         {
-            ee_goto(x1, y1);
             if(delta > 0)
             {
-                ee_putchar(charmapy[1]);
+                ee_putchar(x1, y1, charmapy[1]);
                 x1++;
                 y1 += yinc;
                 delta += dpru;
@@ -302,9 +305,9 @@ static void draw_thin_line(struct line* s)
             else
             {
                 if(prev)
-                    ee_putchar(charmapy[0]);
+                    ee_putchar(x1, y1, charmapy[0]);
                 else
-                    ee_putchar('-');
+                    ee_putchar(x1, y1, '-');
                 x1++;
                 delta += dpr;
                 prev = 0;
@@ -319,18 +322,17 @@ static void draw_thin_line(struct line* s)
 
         for(; dy >= 0; dy--)
         {
-            ee_goto(x1, y1);
             if(delta > 0)
             {
-                ee_putchar(charmapx[0]);
-                ee_putchar(charmapx[1]);
+                ee_putchar(x1, y1, charmapx[0]);
+                ee_putchar(x1 + 1, y1, charmapx[1]);
                 x1++;
                 y1 += yinc;
                 delta += dpru;
             }
             else
             {
-                ee_putchar('|');
+                ee_putchar(x1, y1, '|');
                 y1 += yinc;
                 delta += dpr;
             }

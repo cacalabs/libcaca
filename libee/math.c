@@ -22,6 +22,12 @@
 
 #include "config.h"
 
+#ifdef USE_SLANG
+#   include <slang.h>
+#elif USE_NCURSES
+#   include <curses.h>
+#endif
+
 #include <stdlib.h>
 
 #include "ee.h"

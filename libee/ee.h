@@ -21,33 +21,7 @@
  */
 
 /*
- * Graphics primitives
- */
-#ifdef USE_SLANG
-#   include <slang.h>
-#   define ee_color(x) SLsmg_set_color(x)
-#   define ee_goto(x,y) SLsmg_gotorc(y,x)
-#   define ee_putchar(x) SLsmg_write_char(x)
-#   define ee_putstr(x) SLsmg_write_string(x)
-#elif USE_NCURSES
-#   define box box_divert
-#   include <curses.h>
-#   undef box
-#   define ee_color(x) attrset(COLOR_PAIR(x))
-#   define ee_goto(x,y) move(y,x)
-#   define ee_putchar(x) addch(x)
-#   define ee_putstr(x) addstr(x)
-#else
-#   define ee_color(x) (void)(x)
-#   define ee_goto(x,y) do{ (void)(x); (void)(y); } while(0)
-#   define ee_putchar(x) (void)(x)
-#   define ee_putstr(x) (void)(x)
-#endif
-
-#define ee_putcharTO(x,y,c) do{ ee_goto(x,y); ee_putchar(c); }while(0)
-
-/*
- * Colours
+ * Colors
  */
 #define EE_BLACK 1
 #define EE_GREEN 2
@@ -72,11 +46,15 @@ int ee_init(void);
 void ee_set_delay(int);
 int ee_get_width(void);
 int ee_get_height(void);
-void ee_clear(void);
 void ee_refresh(void);
 void ee_end(void);
 
 char ee_get_key(void);
+
+void ee_color(int);
+void ee_putchar(int, int, char);
+void ee_putstr(int, int, char *);
+void ee_clear(void);
 
 void ee_draw_line(int, int, int, int, char);
 void ee_draw_thin_line(int, int, int, int);

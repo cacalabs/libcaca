@@ -54,8 +54,7 @@ void draw_starfield(game *g, starfield *s)
         if(s[i].x >= 0)
         {
             ee_color(s[i].c);
-            ee_goto(s[i].x, s[i].y);
-            ee_putchar(s[i].ch);
+            ee_putchar(s[i].x, s[i].y, s[i].ch);
         }
     }
 }

@@ -22,6 +22,12 @@
 
 #include "config.h"
 
+#ifdef USE_SLANG
+#   include <slang.h>
+#elif USE_NCURSES
+#   include <curses.h>
+#endif
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
@@ -127,28 +133,6 @@ int ee_get_height(void)
 #endif
 }
 
-void ee_clear(void)
-{
-#if defined(USE_SLANG) || defined(USE_NCURSES)
-    /* We could use SLsmg_cls(), but drawing empty lines is much faster */
-    int x = ee_get_width(), y = ee_get_height();
-    char *empty_line = malloc((x + 1) * sizeof(char));
-
-    memset(empty_line, ' ', x);
-    empty_line[x] = '\0';
-
-    while(y--)
-    {
-        ee_goto(0, y);
-        ee_putstr(empty_line);
-    }
-
-    free(empty_line);
-#else
-    /* Use dummy driver */
-#endif
-}
-
 static int64_t local_time(void)
 {
     struct timeval tv;
@@ -165,8 +149,6 @@ void ee_refresh(void)
 {
     static int64_t local_clock = 0;
     int64_t now;
-
-    ee_goto(0, 0);
 
     if(!local_clock)
     {

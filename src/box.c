@@ -85,16 +85,16 @@ void draw_box(game *g, box *b)
     ee_color(EE_YELLOW);
 
     /* FIXME: use a font */
-    ee_goto(b->x - b->w / 2 + 12, b->y - b->h / 2 + 2);
-    ee_putstr("XXXX.  .XXXX  X   X  .XXXX  .XXXX  XXXX.");
-    ee_goto(b->x - b->w / 2 + 12, b->y - b->h / 2 + 3);
-    ee_putstr("X  `X  X'  X  X   X  X'     X'     X  `X");
-    ee_goto(b->x - b->w / 2 + 12, b->y - b->h / 2 + 4);
-    ee_putstr("XXXX'  XXXXX  X   X  `XXX   XXXX   X   X");
-    ee_goto(b->x - b->w / 2 + 12, b->y - b->h / 2 + 5);
-    ee_putstr("X'     X' `X  X. ,X     `X  X'     X  ,X");
-    ee_goto(b->x - b->w / 2 + 12, b->y - b->h / 2 + 6);
-    ee_putstr("X      X   X  `XXXX  XXXX'  `XXXX  XXXX'");
+    ee_putstr(b->x - b->w / 2 + 12, b->y - b->h / 2 + 2,
+              "XXXX.  .XXXX  X   X  .XXXX  .XXXX  XXXX.");
+    ee_putstr(b->x - b->w / 2 + 12, b->y - b->h / 2 + 3,
+              "X  `X  X'  X  X   X  X'     X'     X  `X");
+    ee_putstr(b->x - b->w / 2 + 12, b->y - b->h / 2 + 4,
+              "XXXX'  XXXXX  X   X  `XXX   XXXX   X   X");
+    ee_putstr(b->x - b->w / 2 + 12, b->y - b->h / 2 + 5,
+              "X'     X' `X  X. ,X     `X  X'     X  ,X");
+    ee_putstr(b->x - b->w / 2 + 12, b->y - b->h / 2 + 6,
+              "X      X   X  `XXXX  XXXX'  `XXXX  XXXX'");
 }
 
 void free_box(box *b)

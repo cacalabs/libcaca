@@ -33,8 +33,7 @@ void draw_status(game *g)
 
     /* Draw life jauge */
     ee_color(EE_GRAY);
-    ee_goto(4, 1);
-    ee_putstr(dots30);
+    ee_putstr(4, 1, dots30);
 
     if(g->p->life > MAX_LIFE * 7 / 10)
     {
@@ -49,19 +48,15 @@ void draw_status(game *g)
         ee_color(EE_RED);
     }
 
-    ee_goto(4, 1);
-    ee_putstr(dashes30 + (MAX_LIFE - g->p->life) * 30 / MAX_LIFE);
+    ee_putstr(4, 1, dashes30 + (MAX_LIFE - g->p->life) * 30 / MAX_LIFE);
 
     ee_color(EE_WHITE);
-    ee_goto(1, 1);
-    ee_putstr("L |");
-    ee_goto(34, 1);
-    ee_putstr("|");
+    ee_putstr(1, 1, "L |");
+    ee_putstr(34, 1, "|");
 
     /* Draw weapon jauge */
     ee_color(EE_GRAY);
-    ee_goto(42, 1);
-    ee_putstr(dots30 + 10);
+    ee_putstr(42, 1, dots30 + 10);
 
     if(g->p->special > MAX_SPECIAL * 9 / 10)
     {
@@ -76,13 +71,11 @@ void draw_status(game *g)
         ee_color(EE_BLUE);
     }
 
-    ee_goto(42, 1);
-    ee_putstr(dashes30 + 10 + (MAX_SPECIAL - g->p->special) * 20 / MAX_SPECIAL);
+    ee_putstr(42, 1, dashes30 + 10
+                       + (MAX_SPECIAL - g->p->special) * 20 / MAX_SPECIAL);
 
     ee_color(EE_WHITE);
-    ee_goto(39, 1);
-    ee_putstr("S |");
-    ee_goto(62, 1);
-    ee_putstr("|");
+    ee_putstr(39, 1, "S |");
+    ee_putstr(62, 1, "|");
 }
 

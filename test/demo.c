@@ -138,32 +138,20 @@ static void display_menu(void)
     ee_draw_line(xo, 1, xo, yo, ':');
     ee_draw_line(1, 1, xo, 1, '.');
 
-    ee_goto((xo - strlen("libee demo")) / 2, 3);
-    ee_putstr("libee demo");
-    ee_goto((xo - strlen("============")) / 2, 4);
-    ee_putstr("============");
+    ee_putstr((xo - strlen("libee demo")) / 2, 3, "libee demo");
+    ee_putstr((xo - strlen("============")) / 2, 4, "============");
 
-    ee_goto(4, 6);
-    ee_putstr("0: complete demo");
-    ee_goto(4, 7);
-    ee_putstr("1: dots demo");
-    ee_goto(4, 8);
-    ee_putstr("2: lines demo");
-    ee_goto(4, 9);
-    ee_putstr("3: thin lines demo");
-    ee_goto(4, 10);
-    ee_putstr("4: circles demo");
-    ee_goto(4, 11);
-    ee_putstr("5: ellipses demo");
-    ee_goto(4, 12);
-    ee_putstr("6: triangles demo");
-    ee_goto(4, 13);
-    ee_putstr("7: outlined triangles demo");
-    ee_goto(4, 14);
-    ee_putstr("8: sprites demo");
+    ee_putstr(4, 6, "0: complete demo");
+    ee_putstr(4, 7, "1: dots demo");
+    ee_putstr(4, 8, "2: lines demo");
+    ee_putstr(4, 9, "3: thin lines demo");
+    ee_putstr(4, 10, "4: circles demo");
+    ee_putstr(4, 11, "5: ellipses demo");
+    ee_putstr(4, 12, "6: triangles demo");
+    ee_putstr(4, 13, "7: outlined triangles demo");
+    ee_putstr(4, 14, "8: sprites demo");
 
-    ee_goto(4, yo - 2);
-    ee_putstr("q: quit");
+    ee_putstr(4, yo - 2, "q: quit");
 
     ee_refresh();
 }
@@ -265,11 +253,11 @@ static void demo_all(void)
     {
         int delta = ee_rand(-5, 5);
         ee_color(ee_rand(1, 10));
-        ee_goto(ee_get_width() / 2
-                 + cos(0.02*j) * (delta + ee_get_width() / 4),
-                ee_get_height() / 2
-                 + sin(0.02*j) * (delta + ee_get_height() / 3));
-        ee_putchar('#');
+        ee_putchar(ee_get_width() / 2
+                    + cos(0.02*j) * (delta + ee_get_width() / 4),
+                   ee_get_height() / 2
+                    + sin(0.02*j) * (delta + ee_get_height() / 3),
+                   '#');
     }
 
     /* Draw foreground sprite */
@@ -290,8 +278,7 @@ static void demo_dots(void)
     {
         /* Putpixel */
         ee_color(ee_rand(1, 10));
-        ee_goto(ee_rand(0, xmax), ee_rand(0, ymax));
-        ee_putchar('#');
+        ee_putchar(ee_rand(0, xmax), ee_rand(0, ymax), '#');
     }
     ee_refresh();
 }

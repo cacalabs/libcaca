@@ -28,27 +28,66 @@
 #   include <curses.h>
 #endif
 
+#include <string.h>
+#include <stdlib.h>
+
 #include "ee.h"
 
-char ee_get_key(void)
+void ee_color(int color)
 {
 #ifdef USE_SLANG
-    if(SLang_input_pending(0))
-    {
-        return SLang_getkey();
-    }
+    SLsmg_set_color(color);
 #elif USE_NCURSES
-    char key = getch();
-
-    if(key != ERR)
-    {
-        return key;
-    }
+    attrset(COLOR_PAIR(color));
 #else
-    return 0;
-
+    /* Use dummy driver */
 #endif
+}
 
-    return 0;
+void ee_putchar(int x, int y, char c)
+{
+#ifdef USE_SLANG
+    SLsmg_gotorc(y,x);
+    SLsmg_write_char(c);
+#elif USE_NCURSES
+    move(y,x);
+    addch(c);
+#else
+    /* Use dummy driver */
+#endif
+}
+
+void ee_putstr(int x, int y, char *s)
+{
+#ifdef USE_SLANG
+    SLsmg_gotorc(y,x);
+    SLsmg_write_string(s);
+#elif USE_NCURSES
+    move(y,x);
+    addstr(s);
+#else
+    /* Use dummy driver */
+#endif
+}
+
+void ee_clear(void)
+{
+#if defined(USE_SLANG) || defined(USE_NCURSES)
+    /* We could use SLsmg_cls(), but drawing empty lines is much faster */
+    int x = ee_get_width(), y = ee_get_height();
+    char *empty_line = malloc((x + 1) * sizeof(char));
+
+    memset(empty_line, ' ', x);
+    empty_line[x] = '\0';
+
+    while(y--)
+    {
+        ee_putstr(0, y, empty_line);
+    }
+
+    free(empty_line);
+#else
+    /* Use dummy driver */
+#endif
 }
 

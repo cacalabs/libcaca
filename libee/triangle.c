@@ -22,6 +22,12 @@
 
 #include "config.h"
 
+#ifdef USE_SLANG
+#   include <slang.h>
+#elif USE_NCURSES
+#   include <curses.h>
+#endif
+
 #include <stdlib.h>
 
 #include "ee.h"
@@ -81,10 +87,7 @@ void ee_fill_triangle(int x1, int y1, int x2, int y2, int x3, int y3, char c)
         if(xb > xmax) xb = xmax;
 
         for(x = xa; x <= xb; x++)
-        {
-            ee_goto(x, y);
-            ee_putchar(c);
-        }
+            ee_putchar(x, y, c);
     }
 }
 
