@@ -1,3 +1,4 @@
+NULL = 
 EXTRA_DIST = \
 	foo_fighter \
 	bar_fighter \

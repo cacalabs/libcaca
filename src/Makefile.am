@@ -2,6 +2,8 @@
 # Automake targets and declarations for ttyvaders
 ###############################################################################
 
+AM_CPPFLAGS = -I../libee
+
 if USE_SLANG
 LDFLAGS_slang = -lslang
 endif
@@ -26,7 +28,5 @@ ttyvaders_SOURCES = \
 	tunnel.c \
 	weapons.c \
 	$(NULL)
-
-ttyvaders_CPPFLAGS = -I../libee
 ttyvaders_LDADD = ../libee/libee.a $(LDFLAGS_slang) $(LDFLAGS_ncurses)
 
