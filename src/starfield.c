@@ -32,6 +32,8 @@ starfield * create_starfield(game *g)
     starfield *s;
 
     s = malloc(STARS * sizeof(starfield));
+    if(s == NULL)
+        exit(1);
 
     for(i = 0; i < STARS; i++)
     {

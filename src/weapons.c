@@ -169,7 +169,7 @@ void update_weapons(game *g, weapons *wp)
                 /* Normalize direction */
                 if(dx | dy)
                 {
-                    int norm = ee_sqrt(dx * dx + 4 * dy * dy);
+                    unsigned int norm = ee_sqrt(dx * dx + 4 * dy * dy);
                     dx = dx * 32 / norm;
                     dy = dy * 32 / norm;
                 }
@@ -181,7 +181,7 @@ void update_weapons(game *g, weapons *wp)
                 /* Normalize speed */
                 if(dx | dy)
                 {
-                    int norm = ee_sqrt(dx * dx + 4 * dy * dy);
+                    unsigned int norm = ee_sqrt(dx * dx + 4 * dy * dy);
                     wp->vx[i] = dx * 32 / norm;
                     wp->vy[i] = dy * 32 / norm;
                 }

@@ -32,6 +32,8 @@ struct ee_sprite *ship_sprite;
 player * create_player(game *g)
 {
     player *p = malloc(sizeof(player));
+    if(p == NULL)
+        exit(1);
 
     p->x = g->w / 2;
     p->y = g->h - 3;

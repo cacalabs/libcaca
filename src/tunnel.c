@@ -31,9 +31,15 @@ tunnel * create_tunnel(game *g, int w, int h)
 {
     int i;
     tunnel *t = malloc(sizeof(tunnel));
+    if(t == NULL)
+        exit(1);
 
     t->left = malloc(h*sizeof(int));
+    if(t->left == NULL)
+        exit(1);
     t->right = malloc(h*sizeof(int));
+    if(t->right == NULL)
+        exit(1);
     t->w = w;
     t->h = h;
 

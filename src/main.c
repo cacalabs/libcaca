@@ -36,6 +36,8 @@ static void start_game (game *);
 int main (int argc, char **argv)
 {
     game *g = malloc(sizeof(game));
+    if(g == NULL)
+        exit(1);
 
     srand(time(NULL));
 
@@ -70,11 +72,19 @@ static void start_game (game *g)
 
     g->sf = create_starfield(g);
     g->wp = malloc(sizeof(weapons));
+    if(g->wp == NULL)
+        exit(1);
     g->ex = malloc(sizeof(explosions));
+    if(g->ex == NULL)
+        exit(1);
     g->bo = malloc(sizeof(bonus));
+    if(g->bo == NULL)
+        exit(1);
     g->t = create_tunnel(g, g->w, g->h);
     g->p = create_player(g);
     g->al = malloc(sizeof(aliens));
+    if(g->al == NULL)
+        exit(1);
 
     init_bonus(g, g->bo);
     init_weapons(g, g->wp);
