@@ -1,4 +1,70 @@
 ------------------------------------------------------------------------
+r258 | sam | 2004-01-26 11:52:30 +0100 (Mon, 26 Jan 2004) | 5 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/debian/changelog
+   M /trunk/src/caca.c
+   M /trunk/src/event.c
+   M /trunk/src/graphics.c
+
+  * configure.ac:
+    + Check for curses.h as well as ncurses.h.
+  * src/caca.c src/event.c src/graphics.c:
+    + Include curses.h if ncurses.h was not found.
+
+------------------------------------------------------------------------
+r257 | sam | 2004-01-23 10:20:39 +0100 (Fri, 23 Jan 2004) | 3 lines
+Changed paths:
+   M /trunk/examples/cacaview.c
+
+  * examples/cacaview.c:
+    + Moved statusbar and help menu handling in separate functions.
+
+------------------------------------------------------------------------
+r256 | sam | 2004-01-23 10:15:42 +0100 (Fri, 23 Jan 2004) | 4 lines
+Changed paths:
+   M /trunk/src/caca.c
+
+  * src/caca.c:
+    + Alloc the AllocConsole() call to fail in case the process already has
+      a console.
+
+------------------------------------------------------------------------
+r255 | sam | 2004-01-21 18:25:18 +0100 (Wed, 21 Jan 2004) | 6 lines
+Changed paths:
+   M /trunk/examples/cacaview.c
+
+  * examples/cacaview.c:
+    + Proper aspect ratio support.
+    + Finer zoom support.
+    + Handle mouse clicks as next/prev picture command.
+    + Removed useless iterations in draw_checkers().
+
+------------------------------------------------------------------------
+r254 | sam | 2004-01-21 14:49:26 +0100 (Wed, 21 Jan 2004) | 8 lines
+Changed paths:
+   M /trunk/THANKS
+   M /trunk/src/event.c
+   M /trunk/src/graphics.c
+
+  * src/graphics.c:
+    + Fixed a buffer overflow due to bad signed/unsigned handling.
+  * src/event.c:
+    + Disallow zero width or height in the X11 driver.
+    + Fixed resizing in ncurses and slang.
+  * THANKS:
+    + Added the Source Mage maintainer.
+
+------------------------------------------------------------------------
+r253 | sam | 2004-01-18 05:48:09 +0100 (Sun, 18 Jan 2004) | 2 lines
+Changed paths:
+   A /branches/0.8 (from /trunk:252)
+   M /branches/0.8/ChangeLog
+   M /trunk/ChangeLog
+
+  * 0.8 branch.
+
+------------------------------------------------------------------------
 r252 | sam | 2004-01-18 05:45:28 +0100 (Sun, 18 Jan 2004) | 2 lines
 Changed paths:
    M /trunk/ChangeLog

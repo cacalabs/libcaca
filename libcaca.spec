@@ -1,5 +1,5 @@
 %define name libcaca
-%define version 0.8
+%define version 0.9
 %define release 1
 
 Name: %{name}
@@ -110,6 +110,9 @@ rm -rf %{buildroot}
 %{_prefix}/share/man/man1/cacaview.1*
 
 %changelog
+* Sun Feb 2 2004 Sam Hocevar (RPM packages) <sam+rpm@zoy.org> 0.9-1
+- new release
+
 * Sun Jan 18 2004 Sam Hocevar (RPM packages) <sam+rpm@zoy.org> 0.8-1
 - new release
 

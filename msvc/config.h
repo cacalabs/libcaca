@@ -2,11 +2,13 @@
 
 #define ALLOCCONSOLE_IN_WINDOWS_H 1
 /* #undef HAVE_CONIO_H */
+/* #undef HAVE_CURSES_H */
 /* #undef HAVE_ENDIAN_H */
 #define HAVE_GETENV 1
 /* #undef HAVE_GETTIMEOFDAY */
 /* #undef HAVE_IMLIB2_H */
 /* #undef HAVE_INTTYPES_H */
+/* #undef HAVE_IOCTL */
 #define HAVE_MEMORY_H 1
 /* #undef HAVE_NCURSES_H */
 #define HAVE_PUTENV 1
@@ -44,7 +46,7 @@
 /* #undef USE_SLANG */
 #define USE_WIN32 1
 /* #undef USE_X11 */
-#define VERSION "0.8"
+#define VERSION "0.9"
 /* #undef const */
 #ifndef __cplusplus
 #define inline __inline

@@ -1,3 +1,9 @@
+libcaca (0.9-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Mon,  2 Feb 2004 03:50:43 +0100
+
 libcaca (0.8-2) unstable; urgency=low
 
   * src/caca.c src/event.c src/graphics.c:
