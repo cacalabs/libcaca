@@ -819,7 +819,16 @@ static unsigned int _caca_getticks(void)
 
     if(last_sec != 0)
     {
-        ticks = (tv.tv_sec - last_sec) * 1000000 + (tv.tv_usec - last_usec);
+        /* If the delay was greater than 60 seconds, return 10 seconds
+         * otherwise we may overflow our ticks counter. */
+        if(tv.tv_sec >= last_sec + 60)
+            ticks = 60 * 1000000;
+        else
+        {
+            ticks = (tv.tv_sec - last_sec) * 1000000;
+            ticks += tv.tv_usec;
+            ticks -= last_usec;
+        }
     }
 
     last_sec = tv.tv_sec;
