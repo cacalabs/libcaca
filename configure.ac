@@ -18,22 +18,26 @@ AC_ARG_ENABLE(slang,
 AC_ARG_ENABLE(ncurses,
   [  --enable-ncurses        ncurses graphics support (default disabled)])
 
+USE_SLANG=false
+USE_NCURSES=false
 if test "${enable_ncurses}" = "yes"
 then
   AC_CHECK_HEADER(ncurses.h,:,AC_MSG_ERROR([cannot find ncurses headers]))
   AC_CHECK_LIB(ncurses,initscr,:,AC_MSG_ERROR([cannot find ncurses library]))
+  USE_NCURSES=:
 else
   if test "${enable_slang}" != "no"
   then
     AC_CHECK_HEADER(slang.h,:,AC_MSG_ERROR([cannot find slang headers]))
     AC_CHECK_LIB(slang,SLkp_init,:,AC_MSG_ERROR([cannot find slang library]))
+    USE_SLANG=:
   else
     :
   fi
 fi
 
-AM_CONDITIONAL(USE_SLANG, test "${enable_slang}" != "no")
-AM_CONDITIONAL(USE_NCURSES, test "${enable_ncurses}" = "yes")
+AM_CONDITIONAL(USE_SLANG, ${USE_SLANG})
+AM_CONDITIONAL(USE_NCURSES, ${USE_NCURSES})
 
 AC_OUTPUT([
   Makefile

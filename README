@@ -1,4 +1,12 @@
 
+Building ttyvaders
+==================
+
+   Run configure then make. Configure flags are:
+
+    --enable-slang: use the SLang library (default)
+    --enable-ncurses: use the ncurses library
+
 
 History of textmode games
 =========================

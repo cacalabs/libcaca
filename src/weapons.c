@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: weapons.c,v 1.12 2002/12/23 09:28:37 sam Exp $
+ *   $Id: weapons.c,v 1.13 2002/12/23 16:44:28 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -493,9 +493,9 @@ static void draw_fragbomb( int x, int y, int frame )
         gfx_putchar( 'o' );
         gfx_color( GRAY );
         gfx_goto( x - 1, y + 3 );
-        gfx_putchar( '°' );
+        gfx_putchar( ':' );
         gfx_goto( x + 2, y + 4 );
-        gfx_putchar( '°' );
+        gfx_putchar( ':' );
         gfx_goto( x, y + 4 );
         gfx_putchar( '.' );
         gfx_goto( x + 1, y + 5 );
@@ -511,9 +511,9 @@ static void draw_fragbomb( int x, int y, int frame )
         gfx_putchar( 'o' );
         gfx_color( GRAY );
         gfx_goto( x + 2, y + 3 );
-        gfx_putchar( '°' );
+        gfx_putchar( ':' );
         gfx_goto( x + 1, y + 4 );
-        gfx_putchar( '°' );
+        gfx_putchar( ':' );
         gfx_goto( x - 1, y + 4 );
         gfx_putchar( '.' );
         gfx_goto( x + 2, y + 5 );
@@ -531,7 +531,7 @@ static void draw_fragbomb( int x, int y, int frame )
         gfx_putchar( 'o' );
         gfx_color( GRAY );
         gfx_goto( x, y + 4 );
-        gfx_putchar( '°' );
+        gfx_putchar( ':' );
         gfx_goto( x + 2, y + 4 );
         gfx_putchar( '.' );
         gfx_goto( x + 1, y + 5 );
@@ -549,9 +549,9 @@ static void draw_fragbomb( int x, int y, int frame )
         gfx_putchar( 'o' );
         gfx_color( GRAY );
         gfx_goto( x, y + 3 );
-        gfx_putchar( '°' );
+        gfx_putchar( ':' );
         gfx_goto( x + 1, y + 4 );
-        gfx_putchar( '°' );
+        gfx_putchar( ':' );
         gfx_goto( x, y + 5 );
         gfx_putchar( '.' );
         break;
