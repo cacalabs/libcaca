@@ -36,34 +36,22 @@
 #include <stdlib.h>
 
 #include "ee.h"
+#include "ee_internals.h"
 
 static int ee_color = 0;
-#if defined(USE_CONIO)
-static enum COLORS dos_colors[] = {
-    0,
-    BLACK,
-    GREEN,
-    YELLOW,
-    WHITE,
-    RED,
-    DARKGRAY,
-    LIGHTGRAY,
-    BLUE,
-    CYAN,
-    MAGENTA
-};
-#endif
 
 void ee_set_color(int color)
 {
+    if(color < 0 || color > 15)
+        return;
+
     ee_color = color;
 #if defined(USE_SLANG)
-    SLsmg_set_color(color);
+    SLsmg_set_color(color + 1);
 #elif defined(USE_NCURSES)
-    attrset(COLOR_PAIR(color));
+    attrset(_ee_attr[color]);
 #elif defined(USE_CONIO)
-    if(color >= 1 && color <= 10)
-        textcolor(dos_colors[color]);
+    textcolor(color);
 #endif
 }
 
@@ -72,44 +60,57 @@ int ee_get_color(void)
     return ee_color;
 }
 
-extern char *_screen_buffer;
-
 void ee_putchar(int x, int y, char c)
 {
+    if(x < 0 || x >= ee_get_width() || y < 0 || y >= ee_get_height())
+        return;
+
 #if defined(USE_SLANG)
-    SLsmg_gotorc(y,x);
+    SLsmg_gotorc(y, x);
     SLsmg_write_char(c);
 #elif defined(USE_NCURSES)
-    move(y,x);
+    move(y, x);
     addch(c);
 #elif defined(USE_CONIO)
-    if(x<0 || x>=ee_get_width() || y<0 || y>=ee_get_height())
-        return;
-    _screen_buffer[2 * (x + y * ee_get_width())] = c;
-    _screen_buffer[2 * (x + y * ee_get_width()) + 1] = dos_colors[ee_color];
-//    gotoxy(x+1,y+1);
+    _ee_screen[2 * (x + y * ee_get_width())] = c;
+    _ee_screen[2 * (x + y * ee_get_width()) + 1] = ee_color;
+//    gotoxy(x + 1, y + 1);
 //    putch(c);
 #endif
 }
 
 void ee_putstr(int x, int y, char *s)
 {
-    if(y<0 || y>=ee_get_height())
+    int len;
+
+    if(y < 0 || y >= ee_get_height())
         return;
+
+    len = strlen(s);
+
+    if(x < 0)
+    {
+        len -= -x;
+        if(len < 0)
+            return;
+        s += -x;
+        x = 0;
+    }
+
 #if defined(USE_SLANG)
-    SLsmg_gotorc(y,x);
+    SLsmg_gotorc(y, x);
     SLsmg_write_string(s);
 #elif defined(USE_NCURSES)
-    move(y,x);
+    move(y, x);
     addstr(s);
 #elif defined(USE_CONIO)
-    char *buf = _screen_buffer + 2 * (x + y * ee_get_width());
+    char *buf = _ee_screen + 2 * (x + y * ee_get_width());
     while(*s)
     {
         *buf++ = *s++;
-        *buf++ = dos_colors[ee_color];
+        *buf++ = ee_color;
     }
-//    gotoxy(x+1,y+1);
+//    gotoxy(x + 1, y + 1);
 //    cputs(s);
 #endif
 }
@@ -117,7 +118,8 @@ void ee_putstr(int x, int y, char *s)
 void ee_clear(void)
 {
     /* We could use SLsmg_cls() etc., but drawing empty lines is much faster */
-    int x = ee_get_width(), y = ee_get_height();
+    int x = ee_get_width();
+    int y = ee_get_height();
     char *empty_line = malloc((x + 1) * sizeof(char));
 
     memset(empty_line, ' ', x);

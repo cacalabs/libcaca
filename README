@@ -1,47 +1,46 @@
+$Id$
 
 Building ttyvaders
-==================
 
-   Run configure then make. Configure flags are:
+   o  Run configure then make. Useful configure flags are:
 
-    --enable-slang: use the SLang library (default)
-    --enable-ncurses: use the ncurses library
-    --enable-conio: use MS-DOS conio.h
+     --enable-slang: use the SLang library (default)
+     --enable-ncurses: use the ncurses library
+     --enable-conio: use MS-DOS conio.h
 
-   Cross-compilation example:
-    ./configure --enable-conio --host=i386-pc-msdosdjgpp
+   o  Cross-compilation example:
+ 
+     ./configure --enable-conio --host=i386-pc-msdosdjgpp
 
 
 History of textmode games
-=========================
 
-http://www.textmodegames.com/
+   o  http://www.textmodegames.com/
 
 
 Other terminal-based games
-==========================
 
- * moon-buggy: http://www.mathematik.uni-kl.de/~wwwstoch/voss/comp/moon-buggy.html
-    extremely simple, extremely addictive
+   o  moon-buggy: extremely simple, extremely addictive
+      http://www.mathematik.uni-kl.de/~wwwstoch/voss/comp/moon-buggy.html
 
- * 0verkill: http://artax.karlin.mff.cuni.cz/~brain/0verkill/
+   o  0verkill: http://artax.karlin.mff.cuni.cz/~brain/0verkill/
 
- * nInvaders: http://dettus.dyndns.org/ninvaders/
-    real space invaders clone
+   o  nInvaders: http://dettus.dyndns.org/ninvaders/
+      real space invaders clone
 
- * Stardork: http://www.seekrut.com/rk/stardork.html
-    more strategy than arcade
+   o  Stardork: http://www.seekrut.com/rk/stardork.html
+      more strategy than arcade
 
- * Nethack: http://www.nethack.org/
+   o  Nethack: http://www.nethack.org/
 
- * Tetrinet: http://www.secret.com.au/games/tetrinet/
+   o  Tetrinet: http://www.secret.com.au/games/tetrinet/
 
- * MyMan: http://geocities.com/bsittler/
-    pacman clone
+   o  MyMan: http://geocities.com/bsittler/
+      pacman clone
 
- * Tornado: http://home.kcore.de/~kiza/linux/tornado/
+   o  Tornado: http://home.kcore.de/~kiza/linux/tornado/
 
- * David's Perl games: http://davidsperlgames.sourceforge.net/
+   o  David's Perl games: http://davidsperlgames.sourceforge.net/
 
- * ascii-invaders: http://www.ip9.org/munro/invaders/index.html
+   o  ascii-invaders: http://www.ip9.org/munro/invaders/index.html
 

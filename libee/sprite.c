@@ -22,17 +22,12 @@
 
 #include "config.h"
 
-#ifdef USE_SLANG
-#   include <slang.h>
-#elif USE_NCURSES
-#   include <curses.h>
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "ee.h"
+#include "ee_internals.h"
 
 struct ee_frame
 {

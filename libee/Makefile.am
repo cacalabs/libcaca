@@ -6,6 +6,7 @@ lib_LIBRARIES = libee.a
 libee_a_SOURCES = \
 	ee.c \
 	ee.h \
+	ee_internals.h \
 	graphics.c \
 	io.c \
 	math.c \

@@ -20,33 +20,15 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include "config.h"
+#ifndef __EE_INTERNALS_H__
+#define __EE_INTERNALS_H__
 
-#if defined(USE_SLANG)
-#   include <slang.h>
-#elif defined(USE_NCURSES)
-#   include <curses.h>
-#elif defined(USE_CONIO)
-#   include <conio.h>
-#else
-#   error "no graphics library detected"
+#if defined(USE_NCURSES)
+extern int _ee_attr[];
 #endif
 
-#include "ee.h"
-#include "ee_internals.h"
-
-char ee_get_key(void)
-{
-#if defined(USE_SLANG)
-    return SLang_input_pending(0) ? SLang_getkey() : 0;
-
-#elif defined(USE_NCURSES)
-    char key = getch();
-    return key != ERR ? key : 0;
-
-#elif defined(USE_CONIO)
-    return _conio_kbhit() ? getch() : 0;
-
+#if defined(USE_CONIO)
+extern char *_ee_screen;
 #endif
-}
 
+#endif /* __EE_INTERNALS_H__ */

@@ -22,12 +22,6 @@
 
 #include "config.h"
 
-#ifdef USE_SLANG
-#   include <slang.h>
-#elif USE_NCURSES
-#   include <curses.h>
-#endif
-
 #ifdef HAVE_INTTYPES_H
 #   include <inttypes.h>
 #else
@@ -37,6 +31,7 @@ typedef unsigned char uint8_t;
 #include <stdlib.h>
 
 #include "ee.h"
+#include "ee_internals.h"
 
 struct line
 {

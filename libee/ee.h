@@ -31,16 +31,27 @@ extern "C"
 /*
  * Colors
  */
-#define EE_BLACK 1
-#define EE_GREEN 2
-#define EE_YELLOW 3
-#define EE_WHITE 4
-#define EE_RED 5
-#define EE_GRAY 6
-#define EE_LIGHTGRAY 7
-#define EE_BLUE 8
-#define EE_CYAN 9
-#define EE_MAGENTA 10
+enum ee_colors
+{
+    EE_BLACK = 0,
+    EE_BLUE = 1,
+    EE_GREEN = 2,
+    EE_CYAN = 3,
+    EE_RED = 4,
+    EE_MAGENTA = 5,
+    EE_BROWN = 6,
+    EE_LIGHTGRAY = 7,
+    EE_DARKGRAY = 8,
+    EE_LIGHTBLUE = 9,
+    EE_LIGHTGREEN = 10,
+    EE_LIGHTCYAN = 11,
+    EE_LIGHTRED = 12,
+    EE_LIGHTMAGENTA = 13,
+    EE_YELLOW = 14,
+    EE_WHITE = 15
+};
+
+extern char *ee_color_names[16];
 
 /*
  * Types

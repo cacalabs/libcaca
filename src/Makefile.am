@@ -29,5 +29,5 @@ ttyvaders_SOURCES = \
 	tunnel.c \
 	weapons.c \
 	$(NULL)
-ttyvaders_LDADD = ../libee/libee.a $(LDFLAGS_slang) $(LDFLAGS_ncurses)
+ttyvaders_LDADD = ../libee/libee.a $(LDFLAGS_slang) $(LDFLAGS_ncurses) -lm
 

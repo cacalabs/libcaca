@@ -69,7 +69,7 @@ void draw_weapons(game *g, weapons *wp)
                 ee_putchar(wp->x[i] >> 4, wp->y[i] >> 4, '@');
                 break;
             case WEAPON_BOMB:
-                ee_set_color(EE_GRAY);
+                ee_set_color(EE_DARKGRAY);
                 ee_putchar((wp->x[i] - wp->vx[i]) >> 4, (wp->y[i] - wp->vy[i]) >> 4, '.');
                 ee_putchar((wp->x3[i] - wp->vx[i]) >> 4, (wp->y3[i] - wp->vy[i]) >> 4, '.');
                 ee_putchar((wp->x2[i] - wp->vx[i]) >> 4, (wp->y2[i] - wp->vy[i]) >> 4, '.');

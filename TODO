@@ -1,44 +1,47 @@
-Things to do
+$Id$
 
- * let the ship pick up bonuses
+TODO for libee
 
- DONE 23 Dec 2002: handle life
+   o  Sprite library
 
- * alien swarms, programmed behaviour
+   o  Clip graphics 
 
- * sprite library
+   o  Fix the thin ellipse rendering
 
- DONE 23 Dec 2002: mega ball
+   o  Write a Linux console output for the drawing library
+      See also BUGS as to why it's very slow in console mode
 
- * spiral weapon (vertical sine)
+   o  DONE 12 Nov 2003: Port to conio.h
 
- DONE 23 Dec 2002: fragmentation bomb (merge with mega-ball?)
 
- * stick aliens to tunnel
+TODO for ttyvaders
 
- * change tunnel colour
+   o  Let the ship pick up bonuses
 
- DONE Dec 23 2002: fill holes in the tunnel when |step| > 2
+   o  Alien swarms, programmed behaviour
 
- DONE Dec 18 2002: draw a 3rd alien type
+   o  Spiral weapon (vertical sine)
 
- * draw bosses
+   o  Stick aliens to tunnel
 
- * port to conio.h
+   o  Change tunnel colour
 
- * clip graphics 
+   o  Draw bosses
 
- * promote precision for all coordinates except screen
+   o  Promote precision for all coordinates except screen
 
- DONE Dec 19 2002: tunnel sometimes doesn't get drawn on the left
+   o  Animate the ship
 
- * write a generic drawing library with automatic clipping
+   o  The nuke should break the tunnel
+      Or at least a bit
 
- * write a linux console output for the drawing library
+   o  The laser stays alive when the ship explodes
 
- * animate the ship
-
- * the nuke should break the tunnel
-
- * the laser stays alive when the ship explodes
+   o  DONE 12 Nov 2003: Write a generic drawing library with automatic clipping
+   o  DONE 23 Dec 2002: Handle life
+   o  DONE 23 Dec 2002: Mega ball
+   o  DONE 23 Dec 2002: Fragmentation bomb (merge with mega-ball?)
+   o  DONE 23 Dec 2002: Fill holes in the tunnel when |step| > 2
+   o  DONE 19 Dec 2002: Tunnel sometimes doesn't get drawn on the left
+   o  DONE 18 Dec 2002: Draw a 3rd alien type
 

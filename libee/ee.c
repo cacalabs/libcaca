@@ -43,18 +43,63 @@
 #include <time.h>
 
 #include "ee.h"
+#include "ee_internals.h"
+
+/* Global array with color names */
+char *ee_color_names[16] =
+{
+    "black",
+    "blue",
+    "green",
+    "cyan",
+    "red",
+    "magenta",
+    "brown",
+    "lightgray",
+    "darkgray",
+    "lightblue",
+    "lightgreen",
+    "lightcyan",
+    "lightred",
+    "lightmagenta",
+    "yellow",
+    "white",
+};
 
 static int _ee_delay;
+
+#if defined(USE_NCURSES)
+int _ee_attr[16];
+#endif
+
 #if defined(USE_CONIO)
 static struct text_info ti;
-char *_screen_buffer;
+char *_ee_screen;
 #endif
 
 int ee_init(void)
 {
 #if defined(USE_SLANG)
-    static char * colors[] = { "black", "green", "yellow", "white",
-        "red", "gray", "lightgray", "blue", "cyan", "magenta", NULL };
+    static char *slang_colors[16] =
+    {
+        "black",
+        "blue",
+        "green",
+        "cyan",
+        "red",
+        "magenta",
+        "brown",
+        "lightgray",
+        "gray",
+        "brightblue",
+        "brightgreen",
+        "brightcyan",
+        "brightred",
+        "brightmagenta",
+        "yellow",
+        "white",
+    };
+
     int i;
 
     /* Initialize slang library */
@@ -81,13 +126,12 @@ int ee_init(void)
     SLtt_set_cursor_visibility(0);
     SLsmg_refresh();
 
-    for(i = 0; colors[i]; i++)
-    {
-        SLtt_set_color(i + 1, NULL, colors[i], "black");
-    }
+    for(i = 0; i < 16; i++)
+        SLtt_set_color(i + 1, NULL, slang_colors[i], "black");
 
 #elif defined(USE_NCURSES)
-    /* Initialize ncurses library */
+    int i;
+
     initscr();
     keypad(stdscr, TRUE);
     nonl();
@@ -98,24 +142,40 @@ int ee_init(void)
 
     start_color();
 
-    init_pair(EE_BLACK, COLOR_BLACK, COLOR_BLACK);
-    init_pair(EE_GREEN, COLOR_GREEN, COLOR_BLACK);
-    init_pair(EE_YELLOW, COLOR_YELLOW, COLOR_BLACK);
-    init_pair(EE_WHITE, COLOR_WHITE, COLOR_BLACK);
-    init_pair(EE_RED, COLOR_RED, COLOR_BLACK);
-    init_pair(EE_GRAY, COLOR_WHITE, COLOR_BLACK); // XXX
-    init_pair(EE_LIGHTGRAY, COLOR_WHITE, COLOR_BLACK); // XXX
-    init_pair(EE_BLUE, COLOR_BLUE, COLOR_BLACK);
-    init_pair(EE_CYAN, COLOR_CYAN, COLOR_BLACK);
-    init_pair(EE_MAGENTA, COLOR_MAGENTA, COLOR_BLACK);
+    init_pair(1 + EE_BLACK,        COLOR_BLACK,   COLOR_BLACK);
+    init_pair(1 + EE_BLUE,         COLOR_BLUE,    COLOR_BLACK);
+    init_pair(1 + EE_GREEN,        COLOR_GREEN,   COLOR_BLACK);
+    init_pair(1 + EE_CYAN,         COLOR_CYAN,    COLOR_BLACK);
+    init_pair(1 + EE_RED,          COLOR_RED,     COLOR_BLACK);
+    init_pair(1 + EE_MAGENTA,      COLOR_MAGENTA, COLOR_BLACK);
+    init_pair(1 + EE_BROWN,        COLOR_YELLOW,  COLOR_BLACK);
+    init_pair(1 + EE_LIGHTGRAY,    COLOR_WHITE,   COLOR_BLACK);
+    init_pair(1 + EE_DARKGRAY,     COLOR_BLACK,   COLOR_BLACK);
+    init_pair(1 + EE_LIGHTBLUE,    COLOR_BLUE,    COLOR_BLACK);
+    init_pair(1 + EE_LIGHTGREEN,   COLOR_GREEN,   COLOR_BLACK);
+    init_pair(1 + EE_LIGHTCYAN,    COLOR_CYAN,    COLOR_BLACK);
+    init_pair(1 + EE_LIGHTRED,     COLOR_RED,     COLOR_BLACK);
+    init_pair(1 + EE_LIGHTMAGENTA, COLOR_MAGENTA, COLOR_BLACK);
+    init_pair(1 + EE_YELLOW,       COLOR_YELLOW,  COLOR_BLACK);
+    init_pair(1 + EE_WHITE,        COLOR_WHITE,   COLOR_BLACK);
+
+    for(i = 0; i < 8; i++)
+    {
+        _ee_attr[i] = COLOR_PAIR(1 + i);
+        _ee_attr[i + 8] = A_BOLD | COLOR_PAIR(1 + i);
+    }
 
 #elif defined(USE_CONIO)
     _wscroll = 0;
     _setcursortype(_NOCURSOR);
     clrscr();
     gettextinfo(&ti);
-    _screen_buffer = malloc(ee_get_width() * ee_get_height() * 2);
-    ScreenRetrieve(_screen_buffer);
+    _ee_screen = malloc(2 * ti.screenwidth * ti.screenheight);
+#   if defined(SCREENUPDATE_IN_PC_H)
+    ScreenRetrieve(_ee_screen);
+#   else
+    /* FIXME */
+#   endif
 
 #endif
     _ee_delay = 0;
@@ -187,7 +247,11 @@ void ee_refresh(void)
 #elif defined(USE_NCURSES)
     refresh();
 #elif defined(USE_CONIO)
-    ScreenUpdate(_screen_buffer);
+#   if defined(SCREENUPDATE_IN_PC_H)
+    ScreenUpdate(_ee_screen);
+#   else
+    /* FIXME */
+#   endif
 #endif
 
 #if !defined(USE_CONIO)
@@ -214,7 +278,6 @@ void ee_end(void)
     curs_set(1);
     endwin();
 #elif defined(USE_CONIO)
-    ScreenUpdate(_screen_buffer);
     _wscroll = 1;
     textcolor((enum COLORS)WHITE);
     textbackground((enum COLORS)BLACK);

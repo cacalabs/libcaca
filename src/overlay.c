@@ -32,7 +32,7 @@ void draw_status(game *g)
     static char dashes30[] = "==============================";
 
     /* Draw life jauge */
-    ee_set_color(EE_GRAY);
+    ee_set_color(EE_DARKGRAY);
     ee_putstr(4, 1, dots30);
 
     if(g->p->life > MAX_LIFE * 7 / 10)
@@ -55,7 +55,7 @@ void draw_status(game *g)
     ee_putstr(34, 1, "|");
 
     /* Draw weapon jauge */
-    ee_set_color(EE_GRAY);
+    ee_set_color(EE_DARKGRAY);
     ee_putstr(42, 1, dots30 + 10);
 
     if(g->p->special > MAX_SPECIAL * 9 / 10)

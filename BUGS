@@ -1,0 +1,8 @@
+$Id$
+
+Video rendering
+
+   o  Slang's and ncurses' hashmap scrolling optimization code cause the
+      screen to occasionally flicker because it tries to optimize the
+      vertical scrolling.
+
