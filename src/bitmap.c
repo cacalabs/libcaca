@@ -46,8 +46,16 @@ typedef unsigned int uint32_t;
 #include "caca.h"
 #include "caca_internals.h"
 
-#define NEW_RENDERER 1
+/*
+ * Global variables
+ */
+enum caca_feature _caca_background;
+enum caca_feature _caca_dithering;
+enum caca_feature _caca_antialiasing;
 
+/*
+ * Local prototypes
+ */
 static void mask2shift(unsigned int, int *, int *);
 
 static void get_rgba_default(const struct caca_bitmap *, uint8_t *, int, int,
@@ -75,54 +83,6 @@ static void increment_ordered8_dither(void);
 static void init_random_dither(int);
 static unsigned int get_random_dither(void);
 static void increment_random_dither(void);
-
-/* Current dithering method */
-static enum caca_dithering _caca_dithering = CACA_DITHERING_NONE;
-
-static void (*_init_dither) (int) = init_no_dither;
-static unsigned int (*_get_dither) (void) = get_no_dither;
-static void (*_increment_dither) (void) = increment_no_dither;
-
-void caca_set_dithering(enum caca_dithering dither)
-{
-    switch(dither)
-    {
-    case CACA_DITHERING_NONE:
-        _init_dither = init_no_dither;
-        _get_dither = get_no_dither;
-        _increment_dither = increment_no_dither;
-        break;
-
-    case CACA_DITHERING_ORDERED2:
-        _init_dither = init_ordered2_dither;
-        _get_dither = get_ordered2_dither;
-        _increment_dither = increment_ordered2_dither;
-        break;
-
-    case CACA_DITHERING_ORDERED4:
-        _init_dither = init_ordered4_dither;
-        _get_dither = get_ordered4_dither;
-        _increment_dither = increment_ordered4_dither;
-        break;
-
-    case CACA_DITHERING_ORDERED8:
-        _init_dither = init_ordered8_dither;
-        _get_dither = get_ordered8_dither;
-        _increment_dither = increment_ordered8_dither;
-        break;
-
-    case CACA_DITHERING_RANDOM:
-        _init_dither = init_random_dither;
-        _get_dither = get_random_dither;
-        _increment_dither = increment_random_dither;
-        break;
-
-    default:
-        return;
-    }
-
-    _caca_dithering = dither;
-}
 
 struct caca_bitmap
 {
@@ -287,17 +247,17 @@ static void get_rgba_default(const struct caca_bitmap *bitmap, uint8_t *pixels,
 
     if(bitmap->palette)
     {
-        *r = bitmap->red[bits];
-        *g = bitmap->green[bits];
-        *b = bitmap->blue[bits];
-        *a = bitmap->alpha[bits];
+        *r += bitmap->red[bits];
+        *g += bitmap->green[bits];
+        *b += bitmap->blue[bits];
+        *a += bitmap->alpha[bits];
     }
     else
     {
-        *r = ((bits & bitmap->rmask) >> bitmap->rright) << bitmap->rleft;
-        *g = ((bits & bitmap->gmask) >> bitmap->gright) << bitmap->gleft;
-        *b = ((bits & bitmap->bmask) >> bitmap->bright) << bitmap->bleft;
-        *a = ((bits & bitmap->amask) >> bitmap->aright) << bitmap->aleft;
+        *r += ((bits & bitmap->rmask) >> bitmap->rright) << bitmap->rleft;
+        *g += ((bits & bitmap->gmask) >> bitmap->gright) << bitmap->gleft;
+        *b += ((bits & bitmap->bmask) >> bitmap->bright) << bitmap->bleft;
+        *a += ((bits & bitmap->amask) >> bitmap->aright) << bitmap->aleft;
     }
 }
 
@@ -334,7 +294,12 @@ static void rgb2hsv_default(int r, int g, int b, int *hue, int *sat, int *val)
 void caca_draw_bitmap(int x1, int y1, int x2, int y2,
                       const struct caca_bitmap *bitmap, void *pixels)
 {
-#if !NEW_RENDERER
+    /* Current dithering method */
+    void (*_init_dither) (int);
+    unsigned int (*_get_dither) (void);
+    void (*_increment_dither) (void);
+
+    /* Only used when background is black */
     static const int white_colors[] =
     {
         CACA_COLOR_BLACK,
@@ -342,7 +307,6 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
         CACA_COLOR_LIGHTGRAY,
         CACA_COLOR_WHITE
     };
-#endif
 
     static const int light_colors[] =
     {
@@ -403,221 +367,275 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
         int tmp = y2; y2 = y1; y1 = tmp;
     }
 
+    switch(_caca_dithering)
+    {
+    case CACA_DITHERING_NONE:
+        _init_dither = init_no_dither;
+        _get_dither = get_no_dither;
+        _increment_dither = increment_no_dither;
+        break;
+
+    case CACA_DITHERING_ORDERED2:
+        _init_dither = init_ordered2_dither;
+        _get_dither = get_ordered2_dither;
+        _increment_dither = increment_ordered2_dither;
+        break;
+
+    case CACA_DITHERING_ORDERED4:
+        _init_dither = init_ordered4_dither;
+        _get_dither = get_ordered4_dither;
+        _increment_dither = increment_ordered4_dither;
+        break;
+
+    case CACA_DITHERING_ORDERED8:
+        _init_dither = init_ordered8_dither;
+        _get_dither = get_ordered8_dither;
+        _increment_dither = increment_ordered8_dither;
+        break;
+
+    case CACA_DITHERING_RANDOM:
+        _init_dither = init_random_dither;
+        _get_dither = get_random_dither;
+        _increment_dither = increment_random_dither;
+        break;
+
+    default:
+        /* Something wicked happened! */
+        return;
+    }
+
     for(y = y1 > 0 ? y1 : 0; y <= y2 && y <= (int)_caca_height; y++)
         for(x = x1 > 0 ? x1 : 0, _init_dither(y);
             x <= x2 && x <= (int)_caca_width;
             x++)
     {
         int ch;
-        unsigned int r, g, b, a, R, G, B;
+        unsigned int r, g, b, a;
         int hue, sat, val;
-        int fromx = w * (x - x1) / (x2 - x1 + 1);
-        int fromy = h * (y - y1) / (y2 - y1 + 1);
+        int fromx, fromy, tox, toy, myx, myy, dots;
         enum caca_color outfg, outbg;
         char outch;
-#if NEW_RENDERER
-        int distbg, distfg, dist, hue1, hue2;
-#endif
 
-        /* Clip values (yuck) */
-        if(fromx == 0) fromx = 1;
-        if(fromy == 0) fromy = 1;
+        /* Only used by coloured background */
+        int distbg, distfg, dist, hue1, hue2;
+
+        r = g = b = a = 0;
 
         /* First get RGB */
-        R = 0, G = 0, B = 0;
-        get_rgba_default(bitmap, pixels, fromx, fromy, &r, &g, &b, &a);
-        if(a == 0)
+        if(_caca_antialiasing == CACA_ANTIALIASING_PREFILTER)
+        {
+            fromx = ((x - x1) * (w - 1)) / (x2 - x1 + 1);
+            fromy = ((y - y1) * (h - 1)) / (y2 - y1 + 1);
+            tox = ((x - x1 + 1) * (w - 1)) / (x2 - x1 + 1);
+            toy = ((y - y1 + 1) * (h - 1)) / (y2 - y1 + 1);
+            dots = 0;
+
+            for(myx = fromx; myx <= tox; myx++)
+                for(myy = fromy; myy <= toy; myy++)
+                {
+                    dots++;
+                    get_rgba_default(bitmap, pixels, myx, myy, &r, &g, &b, &a);
+                }
+
+            /* Normalize */
+            r /= dots;
+            g /= dots;
+            b /= dots;
+            a /= dots;
+        }
+        else
+        {
+            fromx = ((x - x1) * (w - 1)) / (x2 - x1 + 1);
+            fromy = ((y - y1) * (h - 1)) / (y2 - y1 + 1);
+            tox = ((x - x1 + 1) * (w - 1)) / (x2 - x1 + 1);
+            toy = ((y - y1 + 1) * (h - 1)) / (y2 - y1 + 1);
+
+            myx = (fromx + tox) / 2;
+            myy = (fromy + toy) / 2;
+
+            get_rgba_default(bitmap, pixels, myx, myy, &r, &g, &b, &a);
+        }
+
+        if(a < 0x100)
             continue;
-#if 1
-        R += r; G += g; B += b;
-#else
-        R += r; G += g; B += b;
-        get_rgba_default(bitmap, pixels, fromx - 1, fromy, &r, &g, &b, &a);
-        R += r; G += g; B += b;
-        get_rgba_default(bitmap, pixels, fromx, fromy - 1, &r, &g, &b, &a);
-        R += r; G += g; B += b;
-        get_rgba_default(bitmap, pixels, fromx + 1, fromy, &r, &g, &b, &a);
-        R += r; G += g; B += b;
-        get_rgba_default(bitmap, pixels, fromx, fromy + 1, &r, &g, &b, &a);
-        R += r; G += g; B += b;
-        R /= 5; G /= 5; B /= 5;
-#endif
 
         /* Now get HSV from RGB */
-        rgb2hsv_default(R, G, B, &hue, &sat, &val);
+        rgb2hsv_default(r, g, b, &hue, &sat, &val);
 
         /* The hard work: calculate foreground and background colours,
          * as well as the most appropriate character to output. */
-#if NEW_RENDERER
-#       define XRATIO 5*5
-#       define YRATIO 3*3
-#       define HRATIO 2*2
-#       define FUZZINESS XRATIO * 0x800
-
-        /* distance to black */
-        distbg = XRATIO * val * val;
-        distbg += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
-        distbg = distbg * 2 / 4;
-        outbg = CACA_COLOR_BLACK;
-
-        /* distance to 30% */
-        dist = XRATIO * (val - 0x600) * (val - 0x600)
-             + YRATIO * sat * sat;
-        dist += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
-        dist = dist * 3 / 2;
-        if(dist <= distbg)
+        if(_caca_background == CACA_BACKGROUND_SOLID)
         {
-            outfg = outbg;
-            distfg = distbg;
-            outbg = CACA_COLOR_DARKGRAY;
-            distbg = dist;
+#           define XRATIO 5*5
+#           define YRATIO 3*3
+#           define HRATIO 2*2
+#           define FUZZINESS XRATIO * 0x800
+
+            /* distance to black */
+            distbg = XRATIO * val * val;
+            distbg += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
+            distbg = distbg * 2 / 4;
+            outbg = CACA_COLOR_BLACK;
+
+            /* distance to 30% */
+            dist = XRATIO * (val - 0x600) * (val - 0x600)
+                 + YRATIO * sat * sat;
+            dist += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
+            dist = dist * 3 / 2;
+            if(dist <= distbg)
+            {
+                outfg = outbg;
+                distfg = distbg;
+                outbg = CACA_COLOR_DARKGRAY;
+                distbg = dist;
+            }
+            else
+            {
+                outfg = CACA_COLOR_DARKGRAY;
+                distfg = dist;
+            }
+
+            /* check dist to 70% */
+            dist = XRATIO * (val - 0xa00) * (val - 0xa00)
+                 + YRATIO * sat * sat;
+            dist += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
+            dist = dist * 3 / 2;
+            if(dist <= distbg)
+            {
+                outfg = outbg;
+                distfg = distbg;
+                outbg = CACA_COLOR_LIGHTGRAY;
+                distbg = dist;
+            }
+            else if(dist <= distfg)
+            {
+                outfg = CACA_COLOR_LIGHTGRAY;
+                distfg = dist;
+            }
+
+            /* check dist to white */
+            dist = XRATIO * (val - 0x1000) * (val - 0x1000)
+                 + YRATIO * sat * sat;
+            dist += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
+            if(dist <= distbg)
+            {
+                outfg = outbg;
+                distfg = distbg;
+                outbg = CACA_COLOR_WHITE;
+                distbg = dist;
+            }
+            else if(dist <= distfg)
+            {
+                outfg = CACA_COLOR_WHITE;
+                distfg = dist;
+            }
+
+            hue1 = (hue + 0x800) & ~0xfff;
+            if(hue > hue1)
+                hue2 = (hue + 0x1800) & ~0xfff;
+            else
+                hue2 = (hue - 0x800) & ~0xfff;
+
+            /* check dist to 2nd closest dark color */
+            dist = XRATIO * (val - 0x600) * (val - 0x600)
+                 + YRATIO * (sat - 0x1000) * (sat - 0x1000)
+                 + HRATIO * (hue - hue2) * (hue - hue2);
+            dist += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
+            //dist = dist * 3 / 4;
+            if(dist <= distbg)
+            {
+                outfg = outbg;
+                distfg = distbg;
+                outbg = dark_colors[hue2 / 0x1000];
+                distbg = dist;
+            }
+            else if(dist <= distfg)
+            {
+                outfg = dark_colors[hue2 / 0x1000];
+                distfg = dist;
+            }
+
+            /* check dist to 2nd closest light color */
+            dist = XRATIO * (val - 0x1000) * (val - 0x1000)
+                 + YRATIO * (sat - 0x1000) * (sat - 0x1000)
+                 + HRATIO * (hue - hue2) * (hue - hue2);
+            dist += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
+            //dist = dist * 3 / 4;
+            //dist = dist / 2;
+            if(dist <= distbg)
+            {
+                outfg = outbg;
+                distfg = distbg;
+                outbg = light_colors[hue2 / 0x1000];
+                distbg = dist;
+            }
+            else if(dist <= distfg)
+            {
+                outfg = light_colors[hue2 / 0x1000];
+                distfg = dist;
+            }
+
+            /* check dist to closest dark color */
+            dist = XRATIO * (val - 0x600) * (val - 0x600)
+                 + YRATIO * (sat - 0x1000) * (sat - 0x1000)
+                 + HRATIO * (hue - hue1) * (hue - hue1);
+            dist += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
+            dist = dist * 3 / 4;
+            if(dist <= distbg)
+            {
+                outfg = outbg;
+                distfg = distbg;
+                outbg = dark_colors[hue1 / 0x1000];
+                distbg = dist;
+            }
+            else if(dist <= distfg)
+            {
+                outfg = dark_colors[hue1 / 0x1000];
+                distfg = dist;
+            }
+
+            /* check dist to closest light color */
+            dist = XRATIO * (val - 0x1000) * (val - 0x1000)
+                 + YRATIO * (sat - 0x1000) * (sat - 0x1000)
+                 + HRATIO * (hue - hue1) * (hue - hue1);
+            dist += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
+            dist = dist / 2;
+            if(dist <= distbg)
+            {
+                outfg = outbg;
+                distfg = distbg;
+                outbg = light_colors[hue1 / 0x1000];
+                distbg = dist;
+            }
+            else if(dist <= distfg)
+            {
+                outfg = light_colors[hue1 / 0x1000];
+                distfg = dist;
+            }
+
+            if(distbg <= 0) distbg = 1;
+            if(distfg <= 0) distfg = 1;
+
+            /* distbg can be > distfg because of dithering fuzziness */
+            ch = distbg * 2 * (DENSITY_CHARS - 1) / (distbg + distfg);
+            ch = 4 * ch + _get_dither() / 0x40;
+            outch = density_chars[ch];
         }
         else
         {
-            outfg = CACA_COLOR_DARKGRAY;
-            distfg = dist;
-        }
+            outbg = CACA_COLOR_BLACK;
+            if((unsigned int)sat < 0x200 + _get_dither() * 0x8)
+                outfg = white_colors[1 + (val * 2 + _get_dither() * 0x10)
+                                       / 0x1000];
+            else if((unsigned int)val > 0x800 + _get_dither() * 0x4)
+                outfg = light_colors[(hue + _get_dither() * 0x10) / 0x1000];
+            else
+                outfg = dark_colors[(hue + _get_dither() * 0x10) / 0x1000];
 
-        /* check dist to 70% */
-        dist = XRATIO * (val - 0xa00) * (val - 0xa00)
-             + YRATIO * sat * sat;
-        dist += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
-        dist = dist * 3 / 2;
-        if(dist <= distbg)
-        {
-            outfg = outbg;
-            distfg = distbg;
-            outbg = CACA_COLOR_LIGHTGRAY;
-            distbg = dist;
+            ch = (val + 0x2 * _get_dither()) * 10 / 0x1000;
+            ch = 4 * ch + _get_dither() / 0x40;
+            outch = density_chars[ch];
         }
-        else if(dist <= distfg)
-        {
-            outfg = CACA_COLOR_LIGHTGRAY;
-            distfg = dist;
-        }
-
-        /* check dist to white */
-        dist = XRATIO * (val - 0x1000) * (val - 0x1000)
-             + YRATIO * sat * sat;
-        dist += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
-        if(dist <= distbg)
-        {
-            outfg = outbg;
-            distfg = distbg;
-            outbg = CACA_COLOR_WHITE;
-            distbg = dist;
-        }
-        else if(dist <= distfg)
-        {
-            outfg = CACA_COLOR_WHITE;
-            distfg = dist;
-        }
-
-        hue1 = (hue + 0x800) & ~0xfff;
-        if(hue > hue1)
-            hue2 = (hue + 0x1800) & ~0xfff;
-        else
-            hue2 = (hue - 0x800) & ~0xfff;
-
-        /* check dist to 2nd closest dark color */
-        dist = XRATIO * (val - 0x600) * (val - 0x600)
-             + YRATIO * (sat - 0x1000) * (sat - 0x1000)
-             + HRATIO * (hue - hue2) * (hue - hue2);
-        dist += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
-//        dist = dist * 3 / 4;
-        if(dist <= distbg)
-        {
-            outfg = outbg;
-            distfg = distbg;
-            outbg = dark_colors[hue2 / 0x1000];
-            distbg = dist;
-        }
-        else if(dist <= distfg)
-        {
-            outfg = dark_colors[hue2 / 0x1000];
-            distfg = dist;
-        }
-
-        /* check dist to 2nd closest light color */
-        dist = XRATIO * (val - 0x1000) * (val - 0x1000)
-             + YRATIO * (sat - 0x1000) * (sat - 0x1000)
-             + HRATIO * (hue - hue2) * (hue - hue2);
-        dist += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
-        //dist = dist * 3 / 4;
-        //dist = dist / 2;
-        if(dist <= distbg)
-        {
-            outfg = outbg;
-            distfg = distbg;
-            outbg = light_colors[hue2 / 0x1000];
-            distbg = dist;
-        }
-        else if(dist <= distfg)
-        {
-            outfg = light_colors[hue2 / 0x1000];
-            distfg = dist;
-        }
-
-        /* check dist to closest dark color */
-        dist = XRATIO * (val - 0x600) * (val - 0x600)
-             + YRATIO * (sat - 0x1000) * (sat - 0x1000)
-             + HRATIO * (hue - hue1) * (hue - hue1);
-        dist += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
-        dist = dist * 3 / 4;
-        if(dist <= distbg)
-        {
-            outfg = outbg;
-            distfg = distbg;
-            outbg = dark_colors[hue1 / 0x1000];
-            distbg = dist;
-        }
-        else if(dist <= distfg)
-        {
-            outfg = dark_colors[hue1 / 0x1000];
-            distfg = dist;
-        }
-
-        /* check dist to closest light color */
-        dist = XRATIO * (val - 0x1000) * (val - 0x1000)
-             + YRATIO * (sat - 0x1000) * (sat - 0x1000)
-             + HRATIO * (hue - hue1) * (hue - hue1);
-        dist += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
-        dist = dist / 2;
-        if(dist <= distbg)
-        {
-            outfg = outbg;
-            distfg = distbg;
-            outbg = light_colors[hue1 / 0x1000];
-            distbg = dist;
-        }
-        else if(dist <= distfg)
-        {
-            outfg = light_colors[hue1 / 0x1000];
-            distfg = dist;
-        }
-
-        if(distbg <= 0) distbg = 1;
-        if(distfg <= 0) distfg = 1;
-
-        /* distbg can be > distfg because of dithering fuzziness */
-        ch = distbg * 2 * (DENSITY_CHARS - 1) / (distbg + distfg);
-        ch = 4 * ch + _get_dither() / 0x40;
-        outch = density_chars[ch];
-
-#else
-        outbg = CACA_COLOR_BLACK;
-        if((unsigned int)sat < 0x200 + _get_dither() * 0x8)
-            outfg = white_colors[1 + (val * 2 + _get_dither() * 0x10) / 0x1000];
-        else if((unsigned int)val > 0x800 + _get_dither() * 0x4)
-            outfg = light_colors[(hue + _get_dither() * 0x10) / 0x1000];
-        else
-            outfg = dark_colors[(hue + _get_dither() * 0x10) / 0x1000];
-
-        ch = (val + 0x2 * _get_dither()) * 10 / 0x1000;
-        ch = 4 * ch + _get_dither() / 0x40;
-        outch = density_chars[ch];
-
-#endif
 
         /* Now output the character */
         caca_set_color(outfg, outbg);

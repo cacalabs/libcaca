@@ -133,7 +133,6 @@ initialize (void)
   caca_bitmap = caca_create_bitmap(8, XSIZ, YSIZ - 2, XSIZ, 0, 0, 0, 0);
   caca_set_bitmap_palette(caca_bitmap, r, g, b, a);
   bitmap = malloc(XSIZ * YSIZ * sizeof(char));
-  caca_set_dithering(CACA_DITHERING_ORDERED8);
 #else
   aa_hidecursor (context);
 #endif

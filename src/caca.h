@@ -84,20 +84,44 @@ enum caca_color
 const char *caca_get_color_name(enum caca_color);
 
 /**
- * The dithering modes to be used with caca_set_dithering().
+ * The internal libcaca features.
  */
-enum caca_dithering
+enum caca_feature
 {
-    CACA_DITHERING_NONE = 0,
-    CACA_DITHERING_ORDERED2 = 1,
-    CACA_DITHERING_ORDERED4 = 2,
-    CACA_DITHERING_ORDERED8 = 3,
-    CACA_DITHERING_RANDOM = 4
+    /* Properties of background characters */
+    CACA_BACKGROUND       = 0x10,
+    CACA_BACKGROUND_BLACK = 0x11,
+    CACA_BACKGROUND_SOLID = 0x12,
+#define CACA_BACKGROUND_MIN 0x11
+#define CACA_BACKGROUND_MAX 0x12
+
+    /* Antialiasing features */
+    CACA_ANTIALIASING           = 0x20,
+    CACA_ANTIALIASING_NONE      = 0x21,
+    CACA_ANTIALIASING_PREFILTER = 0x22,
+#define CACA_ANTIALIASING_MIN     0x21
+#define CACA_ANTIALIASING_MAX     0x22
+
+    /* Dithering methods */
+    CACA_DITHERING          = 0x30,
+    CACA_DITHERING_NONE     = 0x31,
+    CACA_DITHERING_ORDERED2 = 0x32,
+    CACA_DITHERING_ORDERED4 = 0x33,
+    CACA_DITHERING_ORDERED8 = 0x34,
+    CACA_DITHERING_RANDOM   = 0x35,
+#define CACA_DITHERING_MIN    0x31
+#define CACA_DITHERING_MAX    0x35
+
+    /* Unknown feature */
+    CACA_UNKNOWN_FEATURE = 0xffff
 };
 
-const char *caca_get_dithering_name(enum caca_dithering);
+const char *caca_get_feature_name(enum caca_feature);
 
 /* Backwards compatibility */
+#define caca_dithering caca_feature
+#define caca_set_dithering caca_set_feature
+#define caca_get_dithering_name caca_get_feature_name
 #define CACA_DITHER_NONE    CACA_DITHERING_NONE
 #define CACA_DITHER_ORDERED CACA_DITHERING_ORDERED8
 #define CACA_DITHER_RANDOM  CACA_DITHERING_RANDOM
@@ -145,7 +169,8 @@ enum caca_key
  */
 int caca_init(void);
 void caca_set_delay(unsigned int);
-void caca_set_dithering(enum caca_dithering);
+enum caca_feature caca_get_feature(enum caca_feature);
+void caca_set_feature(enum caca_feature);
 unsigned int caca_get_rendertime(void);
 unsigned int caca_get_width(void);
 unsigned int caca_get_height(void);

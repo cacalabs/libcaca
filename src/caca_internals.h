@@ -32,7 +32,13 @@
 
 extern int _caca_init_graphics(void);
 
+/* Cached screen size */
 extern unsigned int _caca_width;
 extern unsigned int _caca_height;
+
+/* Internal libcaca features */
+extern enum caca_feature _caca_background;
+extern enum caca_feature _caca_dithering;
+extern enum caca_feature _caca_antialiasing;
 
 #endif /* __CACA_INTERNALS_H__ */

@@ -46,7 +46,6 @@ int x, y, w, h;
 int main(int argc, char **argv)
 {
     int quit = 0, update = 1, help = 0, reload = 0, fullscreen = 0, zoom = 0;
-    int dithering = CACA_DITHERING_ORDERED4;
 
     char **list = NULL;
     int current = 0, items = 0, opts = 1;
@@ -108,12 +107,40 @@ int main(int argc, char **argv)
                 fullscreen = ~fullscreen;
                 update = 1;
                 break;
+            case CACA_EVENT_KEY_PRESS | 'b':
+                i = 1 + caca_get_feature(CACA_BACKGROUND);
+                if(i > CACA_BACKGROUND_MAX) i = CACA_BACKGROUND_MIN;
+                caca_set_feature(i);
+                update = 1;
+                break;
+            case CACA_EVENT_KEY_PRESS | 'B':
+                i = -1 + caca_get_feature(CACA_BACKGROUND);
+                if(i < CACA_BACKGROUND_MIN) i = CACA_BACKGROUND_MAX;
+                caca_set_feature(i);
+                update = 1;
+                break;
+            case CACA_EVENT_KEY_PRESS | 'a':
+                i = 1 + caca_get_feature(CACA_ANTIALIASING);
+                if(i > CACA_ANTIALIASING_MAX) i = CACA_ANTIALIASING_MIN;
+                caca_set_feature(i);
+                update = 1;
+                break;
+            case CACA_EVENT_KEY_PRESS | 'A':
+                i = -1 + caca_get_feature(CACA_ANTIALIASING);
+                if(i < CACA_ANTIALIASING_MIN) i = CACA_ANTIALIASING_MAX;
+                caca_set_feature(i);
+                update = 1;
+                break;
             case CACA_EVENT_KEY_PRESS | 'd':
-                dithering = (dithering + 1) % 5;
+                i = 1 + caca_get_feature(CACA_DITHERING);
+                if(i > CACA_DITHERING_MAX) i = CACA_DITHERING_MIN;
+                caca_set_feature(i);
                 update = 1;
                 break;
             case CACA_EVENT_KEY_PRESS | 'D':
-                dithering = (dithering + 4) % 5;
+                i = -1 + caca_get_feature(CACA_DITHERING);
+                if(i < CACA_DITHERING_MIN) i = CACA_DITHERING_MAX;
+                caca_set_feature(i);
                 update = 1;
                 break;
             case CACA_EVENT_KEY_PRESS | '+':
@@ -191,7 +218,6 @@ int main(int argc, char **argv)
         }
 
         caca_clear();
-        caca_set_dithering(dithering);
         caca_set_color(CACA_COLOR_WHITE, CACA_COLOR_BLUE);
 
         if(!items)
@@ -249,29 +275,30 @@ int main(int argc, char **argv)
         {
             caca_draw_line(0, 0, ww - 1, 0, ' ');
             caca_draw_line(0, wh - 1, ww - 1, wh - 1, '-');
-            caca_putstr(0, 0, "q:Quit  n/p:Next/Prev  +/-/x:Zoom  "
-                              "h/j/k/l: Move  d:Dithering");
+            caca_putstr(0, 0, "q:Quit  np:Next/Prev  +-x:Zoom  "
+                              "hjkl:Move  d:Dithering  a:Antialias");
             caca_putstr(ww - strlen("?:Help"), 0, "?:Help");
-            caca_printf(3, wh - 1, "cacaview %s", VERSION);
-            caca_printf(ww / 2 - 5, wh - 1, "(%s dithering)",
-                        caca_get_dithering_name(dithering));
+            caca_printf(3, wh - 1, "cacaview %s (%s, %s)", VERSION,
+                caca_get_feature_name(caca_get_feature(CACA_DITHERING)),
+                caca_get_feature_name(caca_get_feature(CACA_ANTIALIASING)));
             caca_printf(ww - 14, wh - 1,
                         "(zoom: %s%i)", zoom > 0 ? "+" : "", zoom);
         }
 
         if(help)
         {
-            caca_putstr(ww - 22, 2,  " +: zoom in          ");
-            caca_putstr(ww - 22, 3,  " -: zoom out         ");
-            caca_putstr(ww - 22, 4,  " x: reset zoom       ");
-            caca_putstr(ww - 22, 5,  " ------------------- ");
-            caca_putstr(ww - 22, 6,  " hjkl: move view     ");
-            caca_putstr(ww - 22, 7,  " arrows: move view   ");
-            caca_putstr(ww - 22, 8,  " ------------------- ");
-            caca_putstr(ww - 22, 9,  " d: dithering method ");
-            caca_putstr(ww - 22, 10, " ------------------- ");
-            caca_putstr(ww - 22, 11, " ?: help             ");
-            caca_putstr(ww - 22, 12, " q: quit             ");
+            caca_putstr(ww - 22, 2,  " +: zoom in             ");
+            caca_putstr(ww - 22, 3,  " -: zoom out            ");
+            caca_putstr(ww - 22, 4,  " x: reset zoom          ");
+            caca_putstr(ww - 22, 5,  " ---------------------- ");
+            caca_putstr(ww - 22, 6,  " hjkl: move view        ");
+            caca_putstr(ww - 22, 7,  " arrows: move view      ");
+            caca_putstr(ww - 22, 8,  " ---------------------- ");
+            caca_putstr(ww - 22, 9,  " a: antialiasing method ");
+            caca_putstr(ww - 22, 9,  " d: dithering method    ");
+            caca_putstr(ww - 22, 10, " ---------------------- ");
+            caca_putstr(ww - 22, 11, " ?: help                ");
+            caca_putstr(ww - 22, 12, " q: quit                ");
 
             help = 0;
         }

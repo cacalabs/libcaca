@@ -131,6 +131,7 @@ int main(int argc, char **argv)
             case 'S':
                 if(sprite)
                     demo = demo_sprites;
+                break;
             case 'r':
             case 'R':
                 demo = demo_render;
@@ -501,7 +502,7 @@ static void demo_render(void)
     struct caca_bitmap *bitmap;
     int buffer[256*256];
     int *dest;
-    int x, y, z, t, xo, yo;
+    int x, y, z, xo, yo;
     static int i = 0;
 
     i++;
@@ -510,31 +511,26 @@ static void demo_render(void)
     for(x = 0; x < 256; x++)
         for(y = 0; y < 256; y++)
     {
-        *dest++ = 0;
+        *dest++ = 0xff000000;
     }
 
     /* red */
     xo = 128 + 48 * sin(0.02 * i);
     yo = 128 + 48 * cos(0.03 * i);
-    t = 256 * (2.0 + sin(4 + 0.017 * i)) / 3;
     for(z = 0; z < 240; z++)
-        draw_circle(buffer, xo, yo, z, 0x00ff0000,
-                    ((255 - z) * t / 256) << 16);
+        draw_circle(buffer, xo, yo, z, 0x00ff0000, 200 << 16);
 
     /* green */
     xo = 128 + 48 * sin(2 + 0.06 * i);
     yo = 128 + 48 * cos(2 + 0.05 * i);
-    t = 256 * (2.0 + sin(8 + 0.021 * i)) / 3;
     for(z = 0; z < 240; z++)
-        draw_circle(buffer, xo, yo, z, 0x0000ff00,
-                    ((255 - z) * t / 256) << 8);
+        draw_circle(buffer, xo, yo, z, 0x0000ff00, 200 << 8);
 
     /* blue */
     xo = 128 + 48 * sin(1 + 0.04 * i);
     yo = 128 + 48 * cos(1 + 0.03 * i);
-    t = 256 * (2.0 + sin(3 + 0.033 * i)) / 3;
     for(z = 0; z < 240; z++)
-        draw_circle(buffer, xo, yo, z, 0x000000ff, (255 - z) * t / 256);
+        draw_circle(buffer, xo, yo, z, 0x000000ff, 200);
 
     bitmap = caca_create_bitmap(32, 256, 256, 4 * 256, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
     caca_draw_bitmap(0, 0, caca_get_width() - 1, caca_get_height() - 1,
@@ -547,7 +543,7 @@ static void draw_circle(int *buffer, int x, int y, int r, int mask, int val)
     int t, dx, dy;
 
 #define POINT(X,Y) \
-    buffer[(X) + 256 * (Y)] = (buffer[(X) + 256 * (Y)] & ~mask) | val;
+    buffer[(X) + 256 * (Y)] = 0xff000000 | (buffer[(X) + 256 * (Y)] & ~mask) | val;
 
     for(t = 0, dx = 0, dy = r; dx <= dy; dx++)
     {

@@ -48,6 +48,7 @@
 #include "caca.h"
 #include "caca_internals.h"
 
+static void caca_init_features(void);
 static void caca_init_terminal(void);
 
 #if defined(USE_NCURSES)
@@ -60,6 +61,7 @@ int caca_init(void)
     mmask_t newmask;
 #endif
 
+    caca_init_features();
     caca_init_terminal();
 
 #if defined(USE_SLANG)
@@ -156,21 +158,73 @@ const char *caca_get_color_name(enum caca_color color)
     return color_names[color];
 }
 
-const char *caca_get_dithering_name(enum caca_dithering dithering)
+enum caca_feature caca_get_feature(enum caca_feature feature)
 {
-    static const char *dithering_names[] =
+    switch(feature)
     {
-        "no",
-        "2x2 ordered",
-        "4x4 ordered",
-        "8x8 ordered",
-        "random"
-    };
+        case CACA_BACKGROUND:
+            return _caca_background;
+        case CACA_ANTIALIASING:
+            return _caca_antialiasing;
+        case CACA_DITHERING:
+            return _caca_dithering;
 
-    if(dithering < 0 || dithering > 4)
-        return "unknown";
+        default:
+            return CACA_UNKNOWN_FEATURE;
+    }
+}
 
-    return dithering_names[dithering];
+void caca_set_feature(enum caca_feature feature)
+{
+    switch(feature)
+    {
+        case CACA_BACKGROUND:
+            feature = CACA_BACKGROUND_SOLID;
+        case CACA_BACKGROUND_BLACK:
+        case CACA_BACKGROUND_SOLID:
+            _caca_background = feature;
+            break;
+
+        case CACA_ANTIALIASING:
+            feature = CACA_ANTIALIASING_PREFILTER;
+        case CACA_ANTIALIASING_NONE:
+        case CACA_ANTIALIASING_PREFILTER:
+            _caca_antialiasing = feature;
+            break;
+
+        case CACA_DITHERING:
+            feature = CACA_DITHERING_ORDERED4;
+        case CACA_DITHERING_NONE:
+        case CACA_DITHERING_ORDERED2:
+        case CACA_DITHERING_ORDERED4:
+        case CACA_DITHERING_ORDERED8:
+        case CACA_DITHERING_RANDOM:
+            _caca_dithering = feature;
+            break;
+
+        case CACA_UNKNOWN_FEATURE:
+            break;
+    }
+}
+
+const char *caca_get_feature_name(enum caca_feature feature)
+{
+    switch(feature)
+    {
+        case CACA_BACKGROUND_BLACK: return "black background";
+        case CACA_BACKGROUND_SOLID: return "solid background";
+
+        case CACA_ANTIALIASING_NONE:      return "no antialiasing";
+        case CACA_ANTIALIASING_PREFILTER: return "prefilter antialiasing";
+
+        case CACA_DITHERING_NONE:     return "no dithering";
+        case CACA_DITHERING_ORDERED2: return "2x2 ordered dithering";
+        case CACA_DITHERING_ORDERED4: return "4x4 ordered dithering";
+        case CACA_DITHERING_ORDERED8: return "8x8 ordered dithering";
+        case CACA_DITHERING_RANDOM:   return "random dithering";
+
+        default: return "unknown";
+    }
 }
 
 void caca_end(void)
@@ -192,6 +246,13 @@ void caca_end(void)
     cputs("\r\n");
     _setcursortype(_NORMALCURSOR);
 #endif
+}
+
+static void caca_init_features(void)
+{
+    caca_set_feature(CACA_BACKGROUND);
+    caca_set_feature(CACA_ANTIALIASING);
+    caca_set_feature(CACA_DITHERING);
 }
 
 static void caca_init_terminal(void)
