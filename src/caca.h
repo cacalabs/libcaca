@@ -245,6 +245,7 @@ char const *caca_get_feature_name(enum caca_feature);
 unsigned int caca_get_rendertime(void);
 unsigned int caca_get_width(void);
 unsigned int caca_get_height(void);
+int caca_set_title(char const *);
 void caca_refresh(void);
 void caca_end(void);
 /*  @} */

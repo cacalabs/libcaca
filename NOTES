@@ -196,3 +196,6 @@ $Id$
    o  Win32: we use GetConsoleScreenBufferInfo etc. There is an interesting
       tutorial here: http://www.adrianxw.dk/SoftwareSite/index.html
 
+   o  Set terminal window title:
+      http://mail.gnome.org/archives/mc-devel/2003-January/msg00101.html
+

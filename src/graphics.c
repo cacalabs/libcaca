@@ -937,6 +937,38 @@ int _caca_end_graphics(void)
 }
 #endif /* _DOXYGEN_SKIP_ME */
 
+/** \brief Set the window title.
+ *
+ *  If libcaca runs in a window, try to change its title. This works with
+ *  the X11 and Win32 drivers.
+ *
+ *  \param title The desired window title.
+ *  \return 0 upon success, a non-zero value if an error occurs.
+ */
+int caca_set_title(char const *title)
+{
+#if defined(USE_X11)
+    if(_caca_driver == CACA_DRIVER_X11)
+    {
+        XStoreName(x11_dpy, x11_window, title);
+    }
+    else
+#endif
+#if defined(USE_WIN32)
+    if(_caca_driver == CACA_DRIVER_WIN32)
+    {
+        SetConsoleTitle(title);
+    }
+    else
+#endif
+    {
+        /* Not supported */
+        return -1;
+    }
+
+    return 0;
+}
+
 /** \brief Set the refresh delay.
  *
  *  This function sets the refresh delay in microseconds. The refresh delay
