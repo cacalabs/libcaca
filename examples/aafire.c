@@ -104,7 +104,7 @@ initialize (void)
       printf ("Failed to initialize libcaca\n");
       exit (1);
     }
-  caca_set_delay(20000);
+  caca_set_delay(0);
 #else
   context = aa_autoinit (&aa_defparams);
   if (context == NULL)
