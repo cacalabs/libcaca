@@ -1,13 +1,13 @@
 # $Id$
 
-AC_INIT(ttyvaders,0.0cvs-20021223)
+AC_INIT(ttyvaders,0.0cvs-20031110)
 
 AC_PREREQ(2.50)
 AC_CONFIG_SRCDIR(src/main.c)
 AC_CONFIG_AUX_DIR(autotools)
 AC_CANONICAL_SYSTEM
 
-AM_INIT_AUTOMAKE(ttyvaders,0.0cvs-20021223)
+AM_INIT_AUTOMAKE(ttyvaders,0.0cvs-20031110)
 AM_CONFIG_HEADER(config.h)
 
 AM_PROG_CC_C_O
@@ -35,6 +35,11 @@ fi
 
 AM_CONDITIONAL(USE_SLANG, ${USE_SLANG})
 AM_CONDITIONAL(USE_NCURSES, ${USE_NCURSES})
+
+# Optimizations
+CFLAGS="${CFLAGS} -g -O2 -fno-strength-reduce -fomit-frame-pointer"
+# Code qui fait des warnings == code de porc == deux baffes dans ta gueule
+CFLAGS="${CFLAGS} -Wall -Wpointer-arith -Wcast-align -Wcast-qual -Wstrict-prototypes -Wshadow -Waggregate-return -Wmissing-prototypes -Wnested-externs"
 
 AC_OUTPUT([
   Makefile
