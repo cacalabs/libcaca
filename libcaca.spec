@@ -104,6 +104,9 @@ rm -rf %{buildroot}
 %{_prefix}/share/man/man1/cacaview.1*
 
 %changelog
+* Sat Jan 7 2004 Sam Hocevar (RPM packages) <sam+rpm@zoy.org> 0.7-1
+- new release
+
 * Sat Jan 4 2004 Sam Hocevar (RPM packages) <sam+rpm@zoy.org> 0.6-2
 - install documentation into {doc}/package-version instead of {doc}/package
 - added tetex-dvips to the build dependencies
