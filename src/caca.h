@@ -48,6 +48,35 @@
  *
  *   The complete \e libcaca programming interface is available from the
  *   caca.h file.
+ *
+ *   \section env Environment variables
+ *
+ *   Some environment variables can be used to change the behaviour of
+ *   \e libcaca without having to modify the program which uses it. These
+ *   variables are:
+ *
+ *   \li \b CACA_BACKGROUND: set the background type.
+ *       - \c solid uses solid coloured backgrounds for all characters. This
+ *         feature does not work with all terminal emulators. This is the
+ *         default choice.
+ *       - \c black uses only black backgrounds to render characters.
+ *
+ *   \li \b CACA_ANTIALIASING: set the antialiasing mode. Antialiasing
+ *       smoothens the rendered image and avoids the commonly seen staircase
+ *       effect.
+ *       - \c none disables antialiasing.
+ *       - \c prefilter uses a simple prefilter antialiasing method. This is
+ *         the default choice.
+ *
+ *   \li \b CACA_DITHERING: set the dithering mode. Dithering is necessary
+ *       when rendering a picture that has more colours than the usually
+ *       available palette.
+ *       - \c none disables dithering.
+ *       - \c ordered2 uses a 2x2 bayer matrix for dithering.
+ *       - \c ordered4 uses a 4x4 bayer matrix for dithering. This is the
+ *         default choice.
+ *       - \c ordered8 uses a 8x8 bayer matrix for dithering.
+ *       - \c random uses random dithering.
  */
 
 #ifndef __CACA_H__
