@@ -22,7 +22,7 @@
 /** \file conic.c
  *  \version \$Id$
  *  \author Sam Hocevar <sam@zoy.org>
- *  \brief Ellipse and circle drawing functions
+ *  \brief Ellipse and circle drawing
  *
  *  This file contains ellipse and circle drawing functions, both filled
  *  and outline.

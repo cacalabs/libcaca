@@ -104,7 +104,7 @@ extern "C"
 
 /** \brief Colour definitions.
  *
- *  This enum lists all colours that can be used with caca_set_color().
+ *  Colours that can be used with caca_set_color().
  */
 enum caca_color
 {
@@ -128,8 +128,8 @@ enum caca_color
 
 /** \brief Internal features.
  *
- *  This enum lists all possible internal libcaca features such as the
- *  rendering method or the dithering mode.
+ *  Internal libcaca features such as the rendering method or the dithering
+ *  mode.
  */
 enum caca_feature
 {
@@ -171,7 +171,7 @@ enum caca_feature
 
 /** \brief User events.
  *
- *  This enum lists all possible event types returned by caca_get_event().
+ *  Event types returned by caca_get_event().
  */
 enum caca_event
 {
@@ -185,8 +185,8 @@ enum caca_event
 
 /** \brief Special key values.
  *
- *  This enum lists special key values returned by caca_get_event() for
- *  which there is no ASCII equivalent.
+ *  Special key values returned by caca_get_event() for which there is no
+ *  ASCII equivalent.
  */
 enum caca_key
 {
@@ -230,7 +230,7 @@ void caca_refresh(void);
 void caca_end(void);
 /*  @} */
 
-/** \defgroup event Event handling functions
+/** \defgroup event Event handling
  *
  *  These functions handle user events such as keyboard input and mouse
  *  clicks.
@@ -240,7 +240,7 @@ unsigned int caca_get_event(void);
 unsigned int caca_wait_event(void);
 /*  @} */
 
-/** \defgroup char Character printing functions
+/** \defgroup char Character printing
  *
  *  These functions provide low-level character printing routines.
  *
@@ -255,7 +255,7 @@ void caca_printf(int, int, const char *, ...);
 void caca_clear(void);
 /*  @} */
 
-/** \defgroup prim Primitives drawing functions
+/** \defgroup prim Primitives drawing
  *
  *  These functions provide routines for primitive drawing, such as lines,
  *  boxes, triangles and ellipses.
@@ -289,7 +289,7 @@ int caca_rand(int, int);
 unsigned int caca_sqrt(unsigned int);
 /*  @} */
 
-/** \defgroup sprite Sprite handling functions
+/** \defgroup sprite Sprite handling
  *
  *  These functions provide high level routines for sprite loading, animation
  *  and rendering.
@@ -306,7 +306,7 @@ void caca_draw_sprite(int, int, const struct caca_sprite *, int);
 void caca_free_sprite(struct caca_sprite *);
 /*  @} */
 
-/** \defgroup bitmap Bitmap handling functions
+/** \defgroup bitmap Bitmap handling
  *
  *  These functions provide high level routines for bitmap allocation and
  *  rendering.

@@ -22,7 +22,7 @@
 /** \file box.c
  *  \version \$Id$
  *  \author Sam Hocevar <sam@zoy.org>
- *  \brief Simple box drawing functions
+ *  \brief Simple box drawing
  *
  *  This file contains box drawing functions, both filled and outline.
  */

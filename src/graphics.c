@@ -22,7 +22,7 @@
 /** \file graphics.c
  *  \version \$Id$
  *  \author Sam Hocevar <sam@zoy.org>
- *  \brief Character drawing functions
+ *  \brief Character drawing
  *
  *  This file contains character and string drawing functions.
  */

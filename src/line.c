@@ -22,7 +22,7 @@
 /** \file line.c
  *  \version \$Id$
  *  \author Sam Hocevar <sam@zoy.org>
- *  \brief Line drawing functions
+ *  \brief Line drawing
  *
  *  This file contains line and polyline drawing functions, with both thin
  *  and thick styles.

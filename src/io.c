@@ -22,7 +22,7 @@
 /** \file io.c
  *  \version \$Id$
  *  \author Sam Hocevar <sam@zoy.org>
- *  \brief Event handling functions
+ *  \brief Event handling
  *
  *  This file contains event handling functions for keyboard and mouse input.
  */

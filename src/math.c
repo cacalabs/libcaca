@@ -22,7 +22,7 @@
 /** \file math.c
  *  \version \$Id$
  *  \author Sam Hocevar <sam@zoy.org>
- *  \brief Math functions
+ *  \brief Math
  *
  *  This file contains simple mathematical routines.
  */

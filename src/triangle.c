@@ -22,7 +22,7 @@
 /** \file triangle.c
  *  \version \$Id$
  *  \author Sam Hocevar <sam@zoy.org>
- *  \brief Triangle drawing functions
+ *  \brief Triangle drawing
  *
  *  This file contains triangle drawing functions, both filled and outline.
  */

@@ -22,7 +22,7 @@
 /** \file bitmap.c
  *  \version \$Id$
  *  \author Sam Hocevar <sam@zoy.org>
- *  \brief Bitmap functions
+ *  \brief Bitmap blitting
  *
  *  This file contains bitmap blitting functions.
  */
