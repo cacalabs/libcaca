@@ -38,6 +38,7 @@ struct line
 static void clip_line(struct line*);
 static uint8_t clip_bits(int, int);
 static void draw_solid_line(struct line*);
+static void draw_thin_line(struct line*);
 
 void ee_draw_line(int x1, int y1, int x2, int y2, char c)
 {
@@ -48,6 +49,17 @@ void ee_draw_line(int x1, int y1, int x2, int y2, char c)
     s.y2 = y2;
     s.c = c;
     s.draw = draw_solid_line;
+    clip_line(&s);
+}
+
+void ee_draw_thin_line(int x1, int y1, int x2, int y2)
+{
+    struct line s;
+    s.x1 = x1;
+    s.y1 = y1;
+    s.x2 = x2;
+    s.y2 = y2;
+    s.draw = draw_thin_line;
     clip_line(&s);
 }
 
@@ -121,15 +133,14 @@ static uint8_t clip_bits(int x, int y)
 
 static void draw_solid_line(struct line* s)
 {
-    int x1 = s->x1;
-    int y1 = s->y1;
-    int x2 = s->x2;
-    int y2 = s->y2;
-
-    int dx = abs(x2-x1);
-    int dy = abs(y2-y1);
-
+    int x1, y1, x2, y2;
+    int dx, dy;
     int xinc, yinc;
+
+    x1 = s->x1; y1 = s->y1; x2 = s->x2; y2 = s->y2;
+
+    dx = abs(x2 - x1);
+    dy = abs(y2 - y1);
 
     xinc = (x1 > x2) ? -1 : 1;
     yinc = (y1 > y2) ? -1 : 1;
@@ -175,6 +186,101 @@ static void draw_solid_line(struct line* s)
             }
             else
             {
+                y1 += yinc;
+                delta += dpr;
+            }
+        }
+    }
+}
+
+static void draw_thin_line(struct line* s)
+{
+    char *charmapx, *charmapy;
+    int x1, y1, x2, y2;
+    int dx, dy;
+    int yinc;
+
+    if(s->x2 >= s->x1)
+    {
+        if(s->y1 > s->y2)
+            charmapx = ",'";
+        else
+            charmapx = "`.";
+        x1 = s->x1; y1 = s->y1; x2 = s->x2; y2 = s->y2;
+    }
+    else
+    {
+        if(s->y1 > s->y2)
+            charmapx = "`.";
+        else
+            charmapx = ",'";
+        x2 = s->x1; y2 = s->y1; x1 = s->x2; y1 = s->y2;
+    }
+
+    dx = abs(x2 - x1);
+    dy = abs(y2 - y1);
+
+    if(y1 > y2)
+    {
+        charmapy = ",'";
+        yinc = -1;
+    }
+    else
+    {
+        yinc = 1;
+        charmapy = "`.";
+    }
+
+    if(dx >= dy)
+    {
+        int dpr = dy << 1;
+        int dpru = dpr - (dx << 1);
+        int delta = dpr - dx;
+        int prev = 0;
+
+        for(; dx>=0; dx--)
+        {
+            ee_goto(x1, y1);
+            if(delta > 0)
+            {
+                ee_putchar(charmapy[1]);
+                x1++;
+                y1 += yinc;
+                delta += dpru;
+                prev = 1;
+            }
+            else
+            {
+                if(prev)
+                    ee_putchar(charmapy[0]);
+                else
+                    ee_putchar('-');
+                x1++;
+                delta += dpr;
+                prev = 0;
+            }
+        }
+    }
+    else
+    {
+        int dpr = dx << 1;
+        int dpru = dpr - (dy << 1);
+        int delta = dpr - dy;
+
+        for(; dy >= 0; dy--)
+        {
+            ee_goto(x1, y1);
+            if(delta > 0)
+            {
+                ee_putchar(charmapx[0]);
+                ee_putchar(charmapx[1]);
+                x1++;
+                y1 += yinc;
+                delta += dpru;
+            }
+            else
+            {
+                ee_putchar('|');
                 y1 += yinc;
                 delta += dpr;
             }

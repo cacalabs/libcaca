@@ -29,6 +29,7 @@ static void display_menu(void);
 
 static void demo_dots(void);
 static void demo_lines(void);
+static void demo_thin_lines(void);
 static void demo_circles(void);
 static void demo_radar(void);
 
@@ -73,9 +74,13 @@ int main(int argc, char **argv)
                 break;
             case '3':
                 ee_clear();
-                demo = demo_circles;
+                demo = demo_thin_lines;
                 break;
             case '4':
+                ee_clear();
+                demo = demo_circles;
+                break;
+            case '5':
                 ee_clear();
                 demo = demo_radar;
                 break;
@@ -114,9 +119,11 @@ static void display_menu(void)
     ee_goto(4, 7);
     ee_putstr("2: lines demo");
     ee_goto(4, 8);
-    ee_putstr("3: circles demo");
+    ee_putstr("3: thin lines demo");
     ee_goto(4, 9);
-    ee_putstr("4: radar demo");
+    ee_putstr("4: circles demo");
+    ee_goto(4, 10);
+    ee_putstr("5: radar demo");
 
     ee_goto(4, yo - 2);
     ee_putstr("q: quit");
@@ -126,14 +133,15 @@ static void display_menu(void)
 
 static void demo_dots(void)
 {
+    int xmax = ee_get_width() - 1;
+    int ymax = ee_get_height() - 1;
     int i;
 
-    for(i=1000; i--;)
+    for(i = 1000; i--;)
     {
         /* Putpixel */
         ee_color(ee_rand(1, 10));
-        ee_goto(ee_rand(0, ee_get_width() - 1),
-                ee_rand(0, ee_get_height() - 1));
+        ee_goto(ee_rand(0, xmax), ee_rand(0, ymax));
         ee_putchar('#');
     }
     ee_refresh();
@@ -141,46 +149,65 @@ static void demo_dots(void)
 
 static void demo_lines(void)
 {
+    int w = ee_get_width();
+    int h = ee_get_height();
+
     /* Draw lines */
     ee_color(ee_rand(1, 10));
     if(clipping)
     {
-        ee_draw_line(ee_rand(- ee_get_width(), 2 * ee_get_width()),
-                     ee_rand(- ee_get_height(), 2 * ee_get_height()),
-                     ee_rand(- ee_get_width(), 2 * ee_get_width()),
-                     ee_rand(- ee_get_height(), 2 * ee_get_height()),
-                     '#');
+        ee_draw_line(ee_rand(- w, 2 * w), ee_rand(- h, 2 * h),
+                     ee_rand(- w, 2 * w), ee_rand(- h, 2 * h), '#');
     }
     else
     {
-        ee_draw_line(ee_rand(0, ee_get_width()),
-                     ee_rand(0, ee_get_height()),
-                     ee_rand(0, ee_get_width()),
-                     ee_rand(0, ee_get_height()),
-                     '*');
+        ee_draw_line(ee_rand(0, w - 1), ee_rand(0, h - 1),
+                     ee_rand(0, w - 1), ee_rand(0, h - 1), '*');
+    }
+    ee_refresh();
+}
+
+static void demo_thin_lines(void)
+{
+    int w = ee_get_width();
+    int h = ee_get_height();
+
+    /* Draw lines */
+    ee_color(ee_rand(1, 10));
+    if(clipping)
+    {
+        ee_draw_thin_line(ee_rand(- w, 2 * w), ee_rand(- h, 2 * h),
+                          ee_rand(- w, 2 * w), ee_rand(- h, 2 * h));
+    }
+    else
+    {
+        ee_draw_thin_line(ee_rand(0, w), ee_rand(0, h),
+                          ee_rand(0, w), ee_rand(0, h));
     }
     ee_refresh();
 }
 
 static void demo_circles(void)
 {
+    int w = ee_get_width();
+    int h = ee_get_height();
+
     /* Draw circles */
     if(clipping)
     {
         ee_color(ee_rand(1, 10));
-        ee_draw_circle(ee_rand(- ee_get_width(), 2 * ee_get_width()),
-                       ee_rand(- ee_get_height(), 2 * ee_get_height()),
-                       ee_rand(0, ee_get_width() + ee_get_height()) / 2,
+        ee_draw_circle(ee_rand(- w, 2 * w),
+                       ee_rand(- h, 2 * h),
+                       ee_rand(0, (w + h) / 2),
                        '#');
     }
     else
     {
-        int x = ee_rand(0, ee_get_width());
-        int y = ee_rand(0, ee_get_height());
-        int r = ee_rand(0, (ee_get_width() + ee_get_height()) / 2);
+        int x = ee_rand(0, w);
+        int y = ee_rand(0, h);
+        int r = ee_rand(0, (w + h) / 2);
 
-        if(x - r < 0 || x + r >= ee_get_width() ||
-           y - r < 0 || y + r >= ee_get_height())
+        if(x - r < 0 || x + r >= w || y - r < 0 || y + r >= h)
         {
             demo_circles();
             return;

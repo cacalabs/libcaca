@@ -75,6 +75,7 @@ char ee_get_key(void);
 
 void ee_draw_circle(int, int, int, char);
 void ee_draw_line(int, int, int, int, char);
+void ee_draw_thin_line(int, int, int, int);
 
 int ee_rand(int, int);
 int ee_sqrt(int);
