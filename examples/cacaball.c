@@ -28,6 +28,10 @@
 #include <string.h>
 #include <math.h>
 
+#ifndef M_PI
+#   define M_PI 3.14159265358979323846
+#endif
+
 #include "caca.h"
 
 /* Virtual buffer size */
@@ -35,10 +39,10 @@
 #define YSIZ 256
 
 #define METASIZE 100
-#define METABALLS 24
+#define METABALLS 16
 
 /* Colour index where to crop balls */
-#define CROPBALL 180
+#define CROPBALL 160
 
 static void create_ball(void);
 static void draw_ball(unsigned int, unsigned int);
@@ -53,33 +57,22 @@ int main(int argc, char **argv)
     unsigned int x[METABALLS], y[METABALLS];
     struct caca_bitmap *caca_bitmap;
     float i = 10.0, j = 17.0, k = 11.0;
-    int p;
+    int p, frame = 0;
 
     if(caca_init())
         return 1;
 
-    caca_set_delay(10000);
+    caca_set_delay(20000);
 
     /* Make the palette eatable by libcaca */
     for(p = 0; p < 256; p++)
-    {
-        r[p] = p < 0x40 ? 0 : p < 0xc0 ? (p - 0x40) * 0x20 : 0xfff;
-        g[p] = p < 0xc0 ? 0 : (p - 0xc0) * 0x40;
-        b[p] = p < 0x40 ? p * 0x40 : 0xfff;
-        a[p] = 0x0;
-    }
-
-    /* Crop the palette */
-    for(p = 0; p < CROPBALL; p++)
         r[p] = g[p] = b[p] = a[p] = 0x0;
+    r[255] = g[255] = b[255] = 0xfff;
 
     /* Create a libcaca bitmap smaller than our pixel buffer, so that we
      * display only the interesting part of it */
     caca_bitmap = caca_create_bitmap(8, XSIZ - METASIZE, YSIZ - METASIZE,
                                      XSIZ, 0, 0, 0, 0);
-
-    /* Set the palette */
-    caca_set_bitmap_palette(caca_bitmap, r, g, b, a);
 
     /* Generate ball sprite */
     create_ball();
@@ -95,6 +88,30 @@ int main(int argc, char **argv)
     /* Go ! */
     while(!caca_get_event(CACA_EVENT_KEY_PRESS))
     {
+        frame++;
+
+        /* Crop the palette */
+        for(p = CROPBALL; p < 255; p++)
+        {
+            int t1, t2, t3;
+            t1 = p < 0x40 ? 0 : p < 0xc0 ? (p - 0x40) * 0x20 : 0xfff;
+            t2 = p < 0xe0 ? 0 : (p - 0xe0) * 0x80;
+            t3 = p < 0x40 ? p * 0x40 : 0xfff;
+
+            r[p] = (1.0 + sin((double)frame * M_PI / 60)) * t1 / 4
+                 + (1.0 + sin((double)(frame + 40) * M_PI / 60)) * t2 / 4
+                 + (1.0 + sin((double)(frame + 80) * M_PI / 60)) * t3 / 4;
+            g[p] = (1.0 + sin((double)frame * M_PI / 60)) * t2 / 4
+                 + (1.0 + sin((double)(frame + 40) * M_PI / 60)) * t3 / 4
+                 + (1.0 + sin((double)(frame + 80) * M_PI / 60)) * t1 / 4;
+            b[p] = (1.0 + sin((double)frame * M_PI / 60)) * t3 / 4
+                 + (1.0 + sin((double)(frame + 40) * M_PI / 60)) * t1 / 4
+                 + (1.0 + sin((double)(frame + 80) * M_PI / 60)) * t2 / 4;
+        }
+
+        /* Set the palette */
+        caca_set_bitmap_palette(caca_bitmap, r, g, b, a);
+
         /* Silly paths for our balls */
         for(p = 0; p < METABALLS; p++)
         {

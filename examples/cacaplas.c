@@ -55,7 +55,7 @@ int main (int argc, char **argv)
     if(caca_init() < 0)
         return 1;
 
-    caca_set_delay(10000);
+    caca_set_delay(20000);
 
     /* Fill various tables */
     for(i = 0 ; i < 256; i++)
