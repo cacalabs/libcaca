@@ -23,6 +23,7 @@
 #include "config.h"
 
 #include <stdlib.h>
+#include <inttypes.h>
 
 #include "ee.h"
 
@@ -86,9 +87,39 @@ void ee_draw_ellipse(int xo, int yo, int a, int b, char c)
 
 static void ellipsepoints(int xo, int yo, int x, int y, char c)
 {
-    ee_putcharTO(xo + x, yo + y, c);
-    ee_putcharTO(xo - x, yo + y, c);
-    ee_putcharTO(xo + x, yo - y, c);
-    ee_putcharTO(xo - x, yo - y, c);
+    uint8_t b = 0;
+
+    if(xo + x >= 0 && xo + x < ee_get_width())
+        b |= 0x1;
+    if(xo - x >= 0 && xo - x < ee_get_width())
+        b |= 0x2;
+    if(yo + y >= 0 && yo + y < ee_get_height())
+        b |= 0x4;
+    if(yo - y >= 0 && yo - y < ee_get_height())
+        b |= 0x8;
+
+    if((b & (0x1|0x4)) == (0x1|0x4))
+    {
+        ee_goto(xo + x, yo + y);
+        ee_putchar(c);
+    }
+
+    if((b & (0x2|0x4)) == (0x2|0x4))
+    {
+        ee_goto(xo - x, yo + y);
+        ee_putchar(c);
+    }
+
+    if((b & (0x1|0x8)) == (0x1|0x8))
+    {
+        ee_goto(xo + x, yo - y);
+        ee_putchar(c);
+    }
+
+    if((b & (0x2|0x8)) == (0x2|0x8))
+    {
+        ee_goto(xo - x, yo - y);
+        ee_putchar(c);
+    }
 }
 
