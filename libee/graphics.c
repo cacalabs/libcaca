@@ -118,18 +118,9 @@ void ee_putstr(int x, int y, char *s)
 void ee_clear(void)
 {
     /* We could use SLsmg_cls() etc., but drawing empty lines is much faster */
-    int x = ee_get_width();
     int y = ee_get_height();
-    char *empty_line = malloc((x + 1) * sizeof(char));
-
-    memset(empty_line, ' ', x);
-    empty_line[x] = '\0';
 
     while(y--)
-    {
-        ee_putstr(0, y, empty_line);
-    }
-
-    free(empty_line);
+        ee_putstr(0, y, _ee_empty_line);
 }
 

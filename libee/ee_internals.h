@@ -31,4 +31,6 @@ extern int _ee_attr[];
 extern char *_ee_screen;
 #endif
 
+extern char *_ee_empty_line;
+
 #endif /* __EE_INTERNALS_H__ */

@@ -54,6 +54,9 @@ struct ee_sprite *ee_load_sprite(const char *file)
         return NULL;
 
     sprite = malloc(sizeof(struct ee_sprite));
+    if(sprite == NULL)
+        goto sprite_alloc_failed;
+
     sprite->nf = 0;
     sprite->frames = NULL;
 
@@ -71,11 +74,23 @@ struct ee_sprite *ee_load_sprite(const char *file)
         if(w <= 0 || h <= 0 || w > BUFSIZ / 2)
             break;
 
-        if(sprite->nf++)
-            sprite->frames = realloc(sprite->frames,
-                                     sprite->nf * sizeof(struct ee_frame));
+        if(sprite->nf)
+        {
+            void *tmp = realloc(sprite->frames,
+                                (sprite->nf + 1) * sizeof(struct ee_frame));
+            if(tmp == NULL)
+                goto frame_failed;
+            sprite->frames = tmp;
+            sprite->nf++;
+        }
         else
-            sprite->frames = malloc(sprite->nf * sizeof(struct ee_frame));
+        {
+            sprite->frames = malloc((sprite->nf + 1) * sizeof(struct ee_frame));
+            if(sprite->frames == NULL)
+                goto sprite_failed;
+            sprite->nf++;
+        }
+
         frame = &sprite->frames[sprite->nf - 1];
 
         frame->w = w;
@@ -83,12 +98,23 @@ struct ee_sprite *ee_load_sprite(const char *file)
         frame->dx = dx;
         frame->dy = dy;
         frame->chars = malloc(w * h * sizeof(char));
+        if(frame->chars == NULL)
+        {
+            sprite->nf--;
+            goto frame_failed;
+        }
         frame->color = malloc(w * h * sizeof(int));
+        if(frame->color == NULL)
+        {
+            free(frame->chars);
+            sprite->nf--;
+            goto frame_failed;
+        }
 
         for(y = 0; y < h; y++)
         {
             if(!fgets(buf, BUFSIZ, fd))
-                goto failed;
+                goto frame_failed;
 
             for(x = 0; x < w && buf[x] && buf[x] != '\r' && buf[x] != '\n'; x++)
                 frame->chars[w * y + x] = buf[x];
@@ -100,7 +126,7 @@ struct ee_sprite *ee_load_sprite(const char *file)
         for(y = 0; y < h; y++)
         {
             if(!fgets(buf, BUFSIZ, fd))
-                goto failed;
+                goto frame_failed;
 
             for(x = 0; x < w && buf[x] && buf[x] != '\r' && buf[x] != '\n'; x++)
                 frame->color[w * y + x] = buf[x] - 'a';
@@ -110,23 +136,26 @@ struct ee_sprite *ee_load_sprite(const char *file)
         }
 
         continue;
-
-    failed:
-        free(sprite->frames[sprite->nf - 1].chars);
-        free(sprite->frames[sprite->nf - 1].color);
-        sprite->nf--;
-        break;
     }
-
-    fclose(fd);
 
     if(sprite->nf == 0)
-    {
-        free(sprite);
-        return NULL;
-    }
+        goto sprite_failed;
 
+    fclose(fd);
     return sprite;
+
+frame_failed:
+    while(sprite->nf)
+    {
+        free(sprite->frames[sprite->nf - 1].color);
+        free(sprite->frames[sprite->nf - 1].chars);
+        sprite->nf--;
+    }
+sprite_failed:
+    free(sprite);
+sprite_alloc_failed:
+    fclose(fd);
+    return NULL;
 }
 
 int ee_get_sprite_frames(struct ee_sprite *sprite)

@@ -67,6 +67,7 @@ char *ee_color_names[16] =
 };
 
 static int _ee_delay;
+char *_ee_empty_line;
 
 #if defined(USE_NCURSES)
 int _ee_attr[16];
@@ -166,11 +167,13 @@ int ee_init(void)
     }
 
 #elif defined(USE_CONIO)
+    gettextinfo(&ti);
+    _ee_screen = malloc(2 * ti.screenwidth * ti.screenheight);
+    if(_ee_screen == NULL)
+        return -1;
     _wscroll = 0;
     _setcursortype(_NOCURSOR);
     clrscr();
-    gettextinfo(&ti);
-    _ee_screen = malloc(2 * ti.screenwidth * ti.screenheight);
 #   if defined(SCREENUPDATE_IN_PC_H)
     ScreenRetrieve(_ee_screen);
 #   else
@@ -178,6 +181,10 @@ int ee_init(void)
 #   endif
 
 #endif
+    _ee_empty_line = malloc(ee_get_width() + 1);
+    memset(_ee_empty_line, ' ', ee_get_width());
+    _ee_empty_line[ee_get_width()] = '\0';
+
     _ee_delay = 0;
 
     return 0;
