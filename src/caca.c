@@ -97,6 +97,8 @@ int caca_init(void)
 
     SLang_init_tty(-1, 0, 1);
 
+    SLkp_define_keysym("\e[M", 1001);
+
     if(SLsmg_init_smg() == -1)
     {
         SLsig_unblock_signals();
@@ -107,6 +109,7 @@ int caca_init(void)
 
     SLsmg_cls();
     SLtt_set_cursor_visibility(0);
+    SLtt_set_mouse_mode (1, 0);
     SLsmg_refresh();
 
     for(i = 0; i < 16; i++)
@@ -291,6 +294,7 @@ void caca_refresh(void)
 void caca_end(void)
 {
 #if defined(USE_SLANG)
+    SLtt_set_mouse_mode(0, 0);
     SLtt_set_cursor_visibility(1);
     SLang_reset_tty();
     SLsmg_reset_smg();

@@ -56,22 +56,27 @@ int main(int argc, char **argv)
     {
         int xa, ya, xb, yb;
         char buf[BUFSIZ];
+        int event;
 
-        switch(caca_get_key())
+        while((event = caca_get_event()))
         {
-        case 0:
-            break;
-        case 'q':
-            quit = 1;
-            break;
-        case '-':
-            if(frame > 0)
-                frame--;
-            break;
-        case '+':
-            if(frame < caca_get_sprite_frames(sprite) - 1)
-                frame++;
-            break;
+            if(event & CACA_EVENT_KEY_PRESS)
+                switch(event & 0xff)
+                {
+                case 0:
+                    break;
+                case 'q':
+                    quit = 1;
+                    break;
+                case '-':
+                    if(frame > 0)
+                        frame--;
+                    break;
+                case '+':
+                    if(frame < caca_get_sprite_frames(sprite) - 1)
+                        frame++;
+                    break;
+                }
         }
 
         caca_clear();

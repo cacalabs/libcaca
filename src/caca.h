@@ -63,6 +63,17 @@ enum caca_dithering
 };
 
 /*
+ * Events
+ */
+enum caca_event
+{
+    CACA_EVENT_NONE =        0x00000000,
+    CACA_EVENT_KEY_PRESS =   0x01000000,
+    CACA_EVENT_KEY_RELEASE = 0x02000000,
+    CACA_EVENT_MOUSE_CLICK = 0x04000000
+};
+
+/*
  * Keys
  */
 enum caca_key
@@ -107,7 +118,7 @@ const char *caca_get_color_name(unsigned int);
 void caca_refresh(void);
 void caca_end(void);
 
-int caca_get_key(void);
+int caca_get_event(void);
 
 void caca_set_color(enum caca_color);
 enum caca_color caca_get_color(void);

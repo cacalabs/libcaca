@@ -78,12 +78,14 @@ gdk_init (&argc, &argv);
     //pixbuf = gdk_pixbuf_new_from_file("/home/sam/pix/pikachu.jpeg", NULL);
     //pixbuf = gdk_pixbuf_new_from_file("/home/sam/pix/gradient.png", NULL);
     //pixbuf = gdk_pixbuf_new_from_file("/home/sam/pix/beastie.png", NULL);
-    pixbuf = gdk_pixbuf_new_from_file("/home/sam/pix/stitch.jpg", NULL);
+    //pixbuf = gdk_pixbuf_new_from_file("/home/sam/pix/stitch.jpg", NULL);
+    //pixbuf = gdk_pixbuf_new_from_file("/home/sam/pix/caca.jpg", NULL);
     //pixbuf = gdk_pixbuf_new_from_file("/home/sam/pix/dranac.jpeg", NULL);
     //pixbuf = gdk_pixbuf_new_from_file("/home/sam/artwork/aboire.png", NULL);
     //pixbuf = gdk_pixbuf_new_from_file("/home/sam/web/sam.zoy.org/artwork/goret.png", NULL);
     //pixbuf = gdk_pixbuf_new_from_file("/home/sam/lilkim02.jpg", NULL);
     //pixbuf = gdk_pixbuf_new_from_file("/home/sam/etw.bmp", NULL);
+    pixbuf = gdk_pixbuf_new_from_file("/home/sam/pix/lena_std.png", NULL);
 if(!pixbuf) return -2;
     pixels = gdk_pixbuf_get_pixels(pixbuf);
     bufx = gdk_pixbuf_get_width(pixbuf);
@@ -99,18 +101,18 @@ fprintf(stderr, "w %i, h %i, stride %i\n", bufx, bufy, bufpitch);
     /* Go ! */
     while(!quit)
     {
-        char key = caca_get_key();
+        int event = caca_get_event();
 
-        if(key && demo)
+        if(event && demo)
         {
             display_menu();
             caca_refresh();
             demo = NULL;
         }
-        else if(key)
+        else if(event & CACA_EVENT_KEY_PRESS)
         {
         handle_key:
-            switch(key)
+            switch(event & 0xff)
             {
             case 'q':
             case 'Q':
@@ -170,9 +172,12 @@ fprintf(stderr, "w %i, h %i, stride %i\n", bufx, bufy, bufpitch);
             if(demo)
                 caca_clear();
 
-            key = caca_get_key();
-            if(key)
+        handle_event:
+            event = caca_get_event();
+            if(event & CACA_EVENT_KEY_PRESS)
                 goto handle_key;
+            else if(event)
+                goto handle_event;
 
             caca_refresh();
         }
