@@ -29,6 +29,9 @@
 static void draw_small_explosion(int x, int y, int frame);
 static void draw_medium_explosion(int x, int y, int frame);
 
+struct ee_sprite *medium_sprite;
+struct ee_sprite *small_sprite;
+
 void init_explosions(game *g, explosions *ex)
 {
     int i;
@@ -37,6 +40,9 @@ void init_explosions(game *g, explosions *ex)
     {
         ex->type[i] = EXPLOSION_NONE;
     }
+
+    medium_sprite = ee_load_sprite("data/explosion_medium");
+    small_sprite = ee_load_sprite("data/explosion_small");
 }
 
 void add_explosion(game *g, explosions *ex, int x, int y, int vx, int vy, int type)
@@ -137,120 +143,13 @@ void update_explosions(game *g, explosions *ex)
 
 static void draw_small_explosion(int x, int y, int frame)
 {
-    switch(frame)
-    {
-    case 6:
-        ee_color(EE_YELLOW);
-        ee_goto(x, y);
-        ee_putchar('+');
-        break;
-    case 5:
-        ee_color(EE_YELLOW);
-        ee_goto(x, y);
-        ee_putchar('o');
-        break;
-    case 4:
-        ee_color(EE_YELLOW);
-        ee_goto(x, y-1);
-        ee_putchar('_');
-        ee_goto(x-1, y);
-        ee_putstr(")_(");
-        break;
-    case 3:
-        ee_color(EE_YELLOW);
-        ee_goto(x-1, y-1);
-        ee_putstr("._,");
-        ee_goto(x-1, y);
-        ee_putstr(")_(");
-        ee_goto(x-1, y+1);
-        ee_putstr("\' `");
-        break;
-    case 2:
-        ee_color(EE_YELLOW);
-        ee_goto(x-1, y-1);
-        ee_putstr(".v,");
-        ee_goto(x-1, y);
-        ee_putstr("> <");
-        ee_goto(x-1, y+1);
-        ee_putstr("\'^`");
-        break;
-    case 1:
-        ee_color(EE_WHITE);
-        ee_goto(x-1, y-1);
-        ee_putstr(". ,");
-        ee_goto(x-1, y);
-        ee_putstr("   ");
-        ee_goto(x-1, y+1);
-        ee_putstr("\' `");
-        break;
-    }
+    ee_set_sprite_frame(small_sprite, 6 - frame);
+    ee_draw_sprite(x, y, small_sprite);
 }
 
 static void draw_medium_explosion(int x, int y, int frame)
 {
-    ee_color(EE_YELLOW);
-
-    switch(frame)
-    {
-    case 10:
-        ee_goto(x, y);
-        ee_putchar('+');
-        break;
-    case 9:
-        ee_goto(x, y);
-        ee_putchar('o');
-        break;
-    case 8:
-        ee_goto(x, y-1);
-        ee_putchar('_');
-        ee_goto(x-1, y);
-        ee_putstr(")_(");
-        break;
-    case 7:
-        ee_goto(x-1, y-1);
-        ee_putstr("._,");
-        ee_goto(x-1, y);
-        ee_putstr(")_(");
-        ee_goto(x-1, y+1);
-        ee_putstr("\' `");
-        break;
-    case 6:
-        ee_goto(x-1, y-1);
-        ee_putstr(".v,");
-        ee_goto(x-1, y);
-        ee_putstr("> <");
-        ee_goto(x-1, y+1);
-        ee_putstr("\'^`");
-        break;
-    case 5:
-        ee_color(EE_RED);
-    case 4:
-        ee_goto(x-2, y-1);
-        ee_putstr("_\\~/_");
-        ee_goto(x-2, y);
-        ee_putstr(">   <");
-        ee_goto(x-2, y+1);
-        ee_putstr("~/_\\~");
-        break;
-    case 3:
-        ee_color(EE_RED);
-    case 2:
-        ee_goto(x-2, y-1);
-        ee_putstr("_\\ /_");
-        ee_goto(x-2, y);
-        ee_putstr("_   _");
-        ee_goto(x-2, y+1);
-        ee_putstr(" / \\ ");
-        break;
-    case 1:
-        ee_color(EE_WHITE);
-        ee_goto(x-2, y-1);
-        ee_putstr(". \' ,");
-        ee_goto(x-2, y);
-        ee_putstr("     ");
-        ee_goto(x-2, y+1);
-        ee_putstr("\' . `");
-        break;
-    }
+    ee_set_sprite_frame(medium_sprite, 10 - frame);
+    ee_draw_sprite(x, y, medium_sprite);
 }
 

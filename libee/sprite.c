@@ -88,24 +88,26 @@ struct ee_sprite *ee_load_sprite(const char *file)
 
         for(y = 0; y < h; y++)
         {
-            memset(buf, ' ', w);
-            buf[w] = '\0';
             if(!fgets(buf, BUFSIZ, fd))
                 goto failed;
 
-            for(x = 0; x < w; x++)
+            for(x = 0; x < w && buf[x] && buf[x] != '\r' && buf[x] != '\n'; x++)
                 frame->chars[w * y + x] = buf[x];
+
+            for(; x < w; x++)
+                frame->chars[w * y + x] = ' ';
         }
 
         for(y = 0; y < h; y++)
         {
-            memset(buf, ' ', w);
-            buf[w] = '\0';
             if(!fgets(buf, BUFSIZ, fd))
                 goto failed;
 
-            for(x = 0; x < w; x++)
+            for(x = 0; x < w && buf[x] && buf[x] != '\r' && buf[x] != '\n'; x++)
                 frame->color[w * y + x] = buf[x] - 'a';
+
+            for(; x < w; x++)
+                frame->color[w * y + x] = ' ' - 'a';
         }
 
         continue;
