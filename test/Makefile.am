@@ -2,7 +2,7 @@
 # Automake targets and declarations for libee tests
 ###############################################################################
 
-AM_CPPFLAGS = -I../libee
+AM_CPPFLAGS = -I$(top_srcdir)/libee
 
 if USE_SLANG
 LDFLAGS_slang = -lslang
