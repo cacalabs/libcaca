@@ -54,6 +54,44 @@ enum caca_feature _caca_dithering;
 enum caca_feature _caca_antialiasing;
 
 /*
+ * Local variables
+ */
+#define LOOKUP_VAL 32
+#define LOOKUP_SAT 32
+#define LOOKUP_HUE 16
+static unsigned char lookup_table[LOOKUP_VAL][LOOKUP_SAT][LOOKUP_HUE];
+static enum caca_color lookup_colors[8];
+
+static int const hsv_palette[] =
+{
+    /* hue, saturation, value */
+    0x0,    0x0,    0x0,   /* black */
+    0x0,    0x0,    0x5ff, /* 30% */
+    0x0,    0x0,    0x9ff, /* 70% */
+    0x0,    0x0,    0xfff, /* white */
+    0x1000, 0xfff,  0x5ff, /* dark yellow */
+    0x1000, 0xfff,  0xfff, /* light yellow */
+    0x0,    0xfff,  0x5ff, /* dark red */
+    0x0,    0xfff,  0xfff  /* light red */
+};
+
+#define HSV_XRATIO (5*5)
+#define HSV_YRATIO (3*3)
+#define HSV_HRATIO (2*2)
+
+#define HSV_DISTANCE(h, s, v, index) \
+    ((HSV_XRATIO * ((v) - hsv_palette[index * 3 + 2]) \
+                 * ((v) - hsv_palette[index * 3 + 2])) \
+    + (hsv_palette[index * 3 + 2] \
+        ? (HSV_YRATIO * ((s) - hsv_palette[index * 3 + 1]) \
+                      * ((s) - hsv_palette[index * 3 + 1])) \
+        : 0) \
+    + (hsv_palette[index * 3 + 1] \
+        ? (HSV_HRATIO * ((h) - hsv_palette[index * 3 + 0]) \
+                      * ((h) - hsv_palette[index * 3 + 0])) \
+        : 0))
+
+/*
  * Local prototypes
  */
 static void mask2shift(unsigned int, int *, int *);
@@ -61,7 +99,7 @@ static void mask2shift(unsigned int, int *, int *);
 static void get_rgba_default(struct caca_bitmap const *, uint8_t *, int, int,
                              unsigned int *, unsigned int *, unsigned int *,
                              unsigned int *);
-static void rgb2hsv_default(int, int, int, int *, int *, int *);
+static inline void rgb2hsv_default(int, int, int, int *, int *, int *);
 
 /* Dithering methods */
 static void init_no_dither(int);
@@ -297,7 +335,8 @@ static void get_rgba_default(struct caca_bitmap const *bitmap, uint8_t *pixels,
     }
 }
 
-static void rgb2hsv_default(int r, int g, int b, int *hue, int *sat, int *val)
+static inline void rgb2hsv_default(int r, int g, int b,
+                                   int *hue, int *sat, int *val)
 {
     int min, max, delta;
 
@@ -305,12 +344,12 @@ static void rgb2hsv_default(int r, int g, int b, int *hue, int *sat, int *val)
     if(min > g) min = g; if(max < g) max = g;
     if(min > b) min = b; if(max < b) max = b;
 
-    delta = max - min; /* 0 - 0xffff */
-    *val = max; /* 0 - 0xffff */
+    delta = max - min; /* 0 - 0xfff */
+    *val = max; /* 0 - 0xfff */
 
     if(delta)
     {
-        *sat = 0x1000 * delta / max; /* 0 - 0xfff */
+        *sat = 0xfff * delta / max; /* 0 - 0xfff */
 
         /* Generate *hue between 0 and 0x5fff */
         if( r == max )
@@ -463,9 +502,6 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
         enum caca_color outfg, outbg;
         char outch;
 
-        /* Only used by coloured background */
-        int distbg, distfg, dist, hue1, hue2;
-
         r = g = b = a = 0;
 
         /* First get RGB */
@@ -479,10 +515,10 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
 
             for(myx = fromx; myx <= tox; myx++)
                 for(myy = fromy; myy <= toy; myy++)
-                {
-                    dots++;
-                    get_rgba_default(bitmap, pixels, myx, myy, &r, &g, &b, &a);
-                }
+            {
+                dots++;
+                get_rgba_default(bitmap, pixels, myx, myy, &r, &g, &b, &a);
+            }
 
             /* Normalize */
             r /= dots;
@@ -513,160 +549,37 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
          * as well as the most appropriate character to output. */
         if(_caca_background == CACA_BACKGROUND_SOLID)
         {
-#           define XRATIO 5*5
-#           define YRATIO 3*3
-#           define HRATIO 2*2
-#           define FUZZINESS XRATIO * 0x800
+            unsigned char point;
+            int distfg, distbg;
 
-            /* distance to black */
-            distbg = XRATIO * val * val;
-            distbg += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
-            distbg = distbg * 2 / 4;
-            outbg = CACA_COLOR_BLACK;
+            lookup_colors[4] = dark_colors[1 + hue / 0x1000];
+            lookup_colors[5] = light_colors[1 + hue / 0x1000];
+            lookup_colors[6] = dark_colors[hue / 0x1000];
+            lookup_colors[7] = light_colors[hue / 0x1000];
 
-            /* distance to 30% */
-            dist = XRATIO * (val - 0x600) * (val - 0x600)
-                 + YRATIO * sat * sat;
-            dist += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
-            dist = dist * 3 / 2;
-            if(dist <= distbg)
-            {
-                outfg = outbg;
-                distfg = distbg;
-                outbg = CACA_COLOR_DARKGRAY;
-                distbg = dist;
-            }
-            else
-            {
-                outfg = CACA_COLOR_DARKGRAY;
-                distfg = dist;
-            }
+            point = lookup_table[val * LOOKUP_VAL / 0x1000]
+                                [sat * LOOKUP_SAT / 0x1000]
+                                [(hue & 0xfff) * LOOKUP_HUE / 0x1000];
 
-            /* check dist to 70% */
-            dist = XRATIO * (val - 0xa00) * (val - 0xa00)
-                 + YRATIO * sat * sat;
-            dist += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
-            dist = dist * 3 / 2;
-            if(dist <= distbg)
-            {
-                outfg = outbg;
-                distfg = distbg;
-                outbg = CACA_COLOR_LIGHTGRAY;
-                distbg = dist;
-            }
-            else if(dist <= distfg)
-            {
-                outfg = CACA_COLOR_LIGHTGRAY;
-                distfg = dist;
-            }
+try_again:
+            distfg = HSV_DISTANCE(hue % 0xfff, sat, val, (point >> 4));
+            distbg = HSV_DISTANCE(hue % 0xfff, sat, val, (point & 0xf));
 
-            /* check dist to white */
-            dist = XRATIO * (val - 0x1000) * (val - 0x1000)
-                 + YRATIO * sat * sat;
-            dist += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
-            if(dist <= distbg)
+            /* Sanity check due to the lack of precision in lookup_table */
+#if 0
+            if(distbg > distfg)
             {
-                outfg = outbg;
-                distfg = distbg;
-                outbg = CACA_COLOR_WHITE;
-                distbg = dist;
+                point = ((point & 0xf) << 4) | (point >> 4);
+                goto try_again;
             }
-            else if(dist <= distfg)
-            {
-                outfg = CACA_COLOR_WHITE;
-                distfg = dist;
-            }
+#endif
+            if(distbg > distfg)
+                distbg = distfg;
 
-            hue1 = (hue + 0x800) & ~0xfff;
-            if(hue > hue1)
-                hue2 = (hue + 0x1800) & ~0xfff;
-            else
-                hue2 = (hue - 0x800) & ~0xfff;
+            outfg = lookup_colors[(point >> 4)];
+            outbg = lookup_colors[(point & 0xf)];
 
-            /* check dist to 2nd closest dark color */
-            dist = XRATIO * (val - 0x600) * (val - 0x600)
-                 + YRATIO * (sat - 0x1000) * (sat - 0x1000)
-                 + HRATIO * (hue - hue2) * (hue - hue2);
-            dist += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
-            //dist = dist * 3 / 4;
-            if(dist <= distbg)
-            {
-                outfg = outbg;
-                distfg = distbg;
-                outbg = dark_colors[hue2 / 0x1000];
-                distbg = dist;
-            }
-            else if(dist <= distfg)
-            {
-                outfg = dark_colors[hue2 / 0x1000];
-                distfg = dist;
-            }
-
-            /* check dist to 2nd closest light color */
-            dist = XRATIO * (val - 0x1000) * (val - 0x1000)
-                 + YRATIO * (sat - 0x1000) * (sat - 0x1000)
-                 + HRATIO * (hue - hue2) * (hue - hue2);
-            dist += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
-            //dist = dist * 3 / 4;
-            //dist = dist / 2;
-            if(dist <= distbg)
-            {
-                outfg = outbg;
-                distfg = distbg;
-                outbg = light_colors[hue2 / 0x1000];
-                distbg = dist;
-            }
-            else if(dist <= distfg)
-            {
-                outfg = light_colors[hue2 / 0x1000];
-                distfg = dist;
-            }
-
-            /* check dist to closest dark color */
-            dist = XRATIO * (val - 0x600) * (val - 0x600)
-                 + YRATIO * (sat - 0x1000) * (sat - 0x1000)
-                 + HRATIO * (hue - hue1) * (hue - hue1);
-            dist += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
-            dist = dist * 3 / 4;
-            if(dist <= distbg)
-            {
-                outfg = outbg;
-                distfg = distbg;
-                outbg = dark_colors[hue1 / 0x1000];
-                distbg = dist;
-            }
-            else if(dist <= distfg)
-            {
-                outfg = dark_colors[hue1 / 0x1000];
-                distfg = dist;
-            }
-
-            /* check dist to closest light color */
-            dist = XRATIO * (val - 0x1000) * (val - 0x1000)
-                 + YRATIO * (sat - 0x1000) * (sat - 0x1000)
-                 + HRATIO * (hue - hue1) * (hue - hue1);
-            dist += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
-            dist = dist / 2;
-            if(dist <= distbg)
-            {
-                outfg = outbg;
-                distfg = distbg;
-                outbg = light_colors[hue1 / 0x1000];
-                distbg = dist;
-            }
-            else if(dist <= distfg)
-            {
-                outfg = light_colors[hue1 / 0x1000];
-                distfg = dist;
-            }
-
-            if(distbg <= 0) distbg = 1;
-            if(distfg <= 0) distfg = 1;
-
-            /* distbg can be > distfg because of dithering fuzziness */
-            ch = distbg * 2 * (DENSITY_CHARS - 1) / (distbg + distfg);
-            ch = 4 * ch + _get_dither() / 0x40;
-            outch = density_chars[ch];
+            outch = density_chars[4 * (distbg * (DENSITY_CHARS - 1) / distfg)];
         }
         else
         {
@@ -690,6 +603,164 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
 
         _increment_dither();
     }
+}
+
+int _caca_init_bitmap(void)
+{
+    unsigned int v, s, h;
+
+    /* These ones are constant */
+    lookup_colors[0] = CACA_COLOR_BLACK;
+    lookup_colors[1] = CACA_COLOR_DARKGRAY;
+    lookup_colors[2] = CACA_COLOR_LIGHTGRAY;
+    lookup_colors[3] = CACA_COLOR_WHITE;
+
+    /* These ones will be overwritten */
+    lookup_colors[4] = CACA_COLOR_MAGENTA;
+    lookup_colors[5] = CACA_COLOR_LIGHTMAGENTA;
+    lookup_colors[6] = CACA_COLOR_RED;
+    lookup_colors[7] = CACA_COLOR_LIGHTRED;
+
+    for(v = 0; v < LOOKUP_VAL; v++)
+        for(s = 0; s < LOOKUP_SAT; s++)
+            for(h = 0; h < LOOKUP_HUE; h++)
+    {
+        int distbg, distfg, dist;
+        int val, sat, hue;
+        unsigned char outbg, outfg;
+
+        val = 0x1000 * v / LOOKUP_VAL;
+        sat = 0x1000 * s / LOOKUP_SAT;
+        hue = 0x1000 * h / LOOKUP_HUE;
+
+        /* distance to black */
+        distbg = HSV_DISTANCE(hue, sat, val, 0);
+        distbg = distbg * 2 / 4;
+        outbg = 0;
+
+        /* distance to 30% */
+        dist = HSV_DISTANCE(hue, sat, val, 1);
+        dist = dist * 3 / 2;
+        if(dist <= distbg)
+        {
+            outfg = outbg;
+            distfg = distbg;
+            outbg = 1;
+            distbg = dist;
+        }
+        else
+        {
+            outfg = 1;
+            distfg = dist;
+        }
+
+        /* check dist to 70% */
+        dist = HSV_DISTANCE(hue, sat, val, 2);
+        dist = dist * 3 / 2;
+        if(dist <= distbg)
+        {
+            outfg = outbg;
+            distfg = distbg;
+            outbg = 2;
+            distbg = dist;
+        }
+        else if(dist <= distfg)
+        {
+            outfg = 2;
+            distfg = dist;
+        }
+
+        /* check dist to white */
+        dist = HSV_DISTANCE(hue, sat, val, 3);
+        if(dist <= distbg)
+        {
+            outfg = outbg;
+            distfg = distbg;
+            outbg = 3;
+            distbg = dist;
+        }
+        else if(dist <= distfg)
+        {
+            outfg = 3;
+            distfg = dist;
+        }
+
+        /* check dist to 2nd closest dark color */
+        dist = HSV_DISTANCE(hue, sat, val, 4);
+        //dist = dist * 3 / 4;
+        dist = dist * 3 / 4;
+        if(dist <= distbg)
+        {
+            outfg = outbg;
+            distfg = distbg;
+            outbg = 4;
+            distbg = dist;
+        }
+        else if(dist <= distfg)
+        {
+            outfg = 4;
+            distfg = dist;
+        }
+
+        /* check dist to 2nd closest light color */
+        dist = HSV_DISTANCE(hue, sat, val, 5);
+        dist = dist / 2;
+        //dist = dist * 3 / 4;
+        //dist = dist / 2;
+        if(dist <= distbg)
+        {
+            outfg = outbg;
+            distfg = distbg;
+            outbg = 5;
+            distbg = dist;
+        }
+        else if(dist <= distfg)
+        {
+            outfg = 5;
+            distfg = dist;
+        }
+
+        /* check dist to closest dark color */
+        dist = HSV_DISTANCE(hue, sat, val, 6);
+        dist = dist * 3 / 4;
+        if(dist <= distbg)
+        {
+            outfg = outbg;
+            distfg = distbg;
+            outbg = 6;
+            distbg = dist;
+        }
+        else if(dist <= distfg)
+        {
+            outfg = 6;
+            distfg = dist;
+        }
+
+        /* check dist to closest light color */
+        dist = HSV_DISTANCE(hue, sat, val, 7);
+        dist = dist / 2;
+        if(dist <= distbg)
+        {
+            outfg = outbg;
+            distfg = distbg;
+            outbg = 7;
+            distbg = dist;
+        }
+        else if(dist <= distfg)
+        {
+            outfg = 7;
+            distfg = dist;
+        }
+
+        lookup_table[v][s][h] = (outfg << 4) | outbg;
+    }
+
+    return 0;
+}
+
+int _caca_end_bitmap(void)
+{
+    return 0;
 }
 
 /*

@@ -53,6 +53,8 @@ extern enum caca_driver _caca_driver;
 /* Initialisation functions */
 extern int _caca_init_graphics(void);
 extern int _caca_end_graphics(void);
+extern int _caca_init_bitmap(void);
+extern int _caca_end_bitmap(void);
 
 /* Cached screen size */
 extern unsigned int _caca_width;

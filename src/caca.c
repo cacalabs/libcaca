@@ -155,6 +155,9 @@ int caca_init(void)
     if(_caca_init_graphics())
         return -1;
 
+    if(_caca_init_bitmap())
+        return -1;
+
     return 0;
 }
 
@@ -319,6 +322,7 @@ char const *caca_get_feature_name(enum caca_feature feature)
  */
 void caca_end(void)
 {
+    _caca_end_bitmap();
     _caca_end_graphics();
 
 #if defined(USE_SLANG)
