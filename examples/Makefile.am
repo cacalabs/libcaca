@@ -23,7 +23,7 @@ caca_spritedit_SOURCES = spritedit.c
 caca_spritedit_LDADD = ../src/libcaca.a $(LDFLAGS_slang) $(LDFLAGS_ncurses) -lm
 caca_spritedit_CPPFLAGS = -I$(top_srcdir)/src
 
-if IMLIB2_CONFIG
+if USE_IMLIB2
 cacaview = cacaview
 cacaview_SOURCES = view.c
 cacaview_LDADD = ../src/libcaca.a $(LDFLAGS_slang) $(LDFLAGS_ncurses)

@@ -25,6 +25,7 @@ AC_ARG_ENABLE(conio,
   [  --enable-conio          DOS conio.h graphics support (default disabled)])
 
 AC_CHECK_HEADERS(inttypes.h)
+AC_CHECK_FUNCS(vsnprintf)
 
 USE_SLANG=false
 USE_NCURSES=false
@@ -73,8 +74,14 @@ esac
 AM_CONDITIONAL(NEED_PIC, ${NEED_PIC})
 
 # Build cacaview?
+save_CPPFLAGS="${CPPFLAGS}"
 AC_PATH_PROG(IMLIB2_CONFIG, imlib2-config, no)
-AM_CONDITIONAL(IMLIB2_CONFIG, test "${IMLIB2_CONFIG}" != "no")
+if test "${IMLIB2_CONFIG}" != "no"; then
+  CPPFLAGS="${CPPFLAGS} `imlib2-config --cflags` -DX_DISPLAY_MISSING=1"
+fi
+AC_CHECK_HEADER(Imlib2.h, USE_IMLIB2=:, USE_IMLIB2=false)
+CPPFLAGS="${save_CPPFLAGS}"
+AM_CONDITIONAL(USE_IMLIB2, ${USE_IMLIB2})
 
 # Build documentation?
 AC_PATH_PROG(DOXYGEN, doxygen, no)

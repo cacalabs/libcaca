@@ -5,7 +5,7 @@
 SUBDIRS = src examples doc
 DIST_SUBDIRS = $(SUBDIRS) autotools debian
 
-EXTRA_DIST = BUGS bootstrap caca-config.in
+EXTRA_DIST = BUGS NOTES bootstrap caca-config.in
 AUTOMAKE_OPTIONS = dist-bzip2
 
 bin_SCRIPTS = caca-config
