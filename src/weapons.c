@@ -31,6 +31,8 @@ static void draw_nuke(int x, int y, int frame);
 static void draw_beam(int x, int y, int frame);
 static void draw_fragbomb(int x, int y, int frame);
 
+struct ee_sprite *bomb_sprite;
+
 void init_weapons(game *g, weapons *wp)
 {
     int i;
@@ -39,6 +41,8 @@ void init_weapons(game *g, weapons *wp)
     {
         wp->type[i] = WEAPON_NONE;
     }
+
+    bomb_sprite = ee_load_sprite("data/weapon_bomb");
 }
 
 void draw_weapons(game *g, weapons *wp)
@@ -289,94 +293,30 @@ void add_weapon(game *g, weapons *wp, int x, int y, int vx, int vy, int type)
 
 static void draw_bomb(int x, int y, int vx, int vy)
 {
+    int frame;
+
+    /* We have 1x2 pixels */
     vy *= 2;
-    ee_color(EE_CYAN);
 
     if(vx > vy)
     {
         if(vx > -vy) /* right quarter */
         {
             if(vy > vx/4)
-            {
-                /* -1pi/6 */
-                ee_goto(x-4, y-1);
-                ee_putstr("/`-.");
-                ee_goto(x-4, y);
-                ee_putstr("`-._\\");
-                ee_color(EE_WHITE);
-                ee_goto(x-1, y);
-                ee_putstr("_\\");
-                ee_goto(x, y+1);
-                ee_putchar('`');
-            }
+                frame = 0; /* -pi/6 */
             else if(vy < -vx/4)
-            {
-                /* 1pi/6 */
-                ee_goto(x-4, y);
-                ee_putstr(",-' ");
-                ee_goto(x-4, y+1);
-                ee_putstr("\\,-'");
-                ee_color(EE_WHITE);
-                ee_goto(x-1, y-1);
-                ee_putstr("_,");
-                ee_goto(x, y);
-                ee_putchar('/');
-            }
+                frame = 1; /* pi/6 */
             else
-            {
-                /* 0pi/6 */
-                ee_goto(x-4, y-1);
-                ee_putstr("____");
-                ee_goto(x-5, y);
-                ee_putstr("|____");
-                ee_color(EE_WHITE);
-                ee_goto(x, y);
-                ee_putchar('>');
-            }
+                frame = 2; /* 0pi/6 */
         }
         else /* top quarter */
         {
             if(vx > -vy/4)
-            {
-                /* 2pi/6 */
-                ee_goto(x-2, y);
-                ee_putstr("/ ");
-                ee_goto(x-3, y+1);
-                ee_putstr("/ /");
-                ee_goto(x-3, y+2);
-                ee_putstr("`'");
-                ee_color(EE_WHITE);
-                ee_goto(x-1, y-1);
-                ee_putstr("_,");
-                ee_goto(x, y);
-                ee_putchar('|');
-            }
+                frame = 3; /* 2pi/6 */
             else if(vx < vy/4)
-            {
-                /* 4pi/6 */
-                ee_goto(x+1, y);
-                ee_putstr(" \\");
-                ee_goto(x+1, y+1);
-                ee_putstr("\\ \\");
-                ee_goto(x+2, y+2);
-                ee_putstr("`'");
-                ee_color(EE_WHITE);
-                ee_goto(x, y-1);
-                ee_putstr("._");
-                ee_goto(x, y);
-                ee_putchar('|');
-            }
+                frame = 4; /* 4pi/6 */
             else
-            {
-                /* 3pi/6 */
-                ee_goto(x-1, y+1);
-                ee_putstr("| |");
-                ee_goto(x-1, y+2);
-                ee_putstr("|_|");
-                ee_color(EE_WHITE);
-                ee_goto(x-1, y);
-                ee_putstr(",^.");
-            }
+                frame = 5; /* 3pi/6 */
         }
     }
     else
@@ -384,86 +324,25 @@ static void draw_bomb(int x, int y, int vx, int vy)
         if(vx > -vy) /* bottom quarter */
         {
             if(vx > vy/4)
-            {
-                /* -2pi/6 */
-                ee_goto(x-2, y-2);
-                ee_putstr(",.");
-                ee_goto(x-2, y-1);
-                ee_putstr("\\ \\");
-                ee_goto(x-1, y);
-                ee_putchar('\\');
-                ee_color(EE_WHITE);
-                ee_goto(x, y);
-                ee_putstr("_|");
-            }
+                frame = 6; /* -2pi/6 */
             else if(vx < -vy/4)
-            {
-                /* -4pi/6 */
-                ee_goto(x+1, y-2);
-                ee_putstr(",.");
-                ee_goto(x, y-1);
-                ee_putstr("/ /");
-                ee_goto(x+1, y);
-                ee_putchar('/');
-                ee_color(EE_WHITE);
-                ee_goto(x-1, y);
-                ee_putstr("|_/");
-            }
+                frame = 7; /* -4pi/6 */
             else
-            {
-                /* -3pi/6 */
-                ee_goto(x, y-3);
-                ee_putchar('_');
-                ee_goto(x-1, y-2);
-                ee_putstr("| |");
-                ee_goto(x-1, y-1);
-                ee_putstr("| |");
-                ee_color(EE_WHITE);
-                ee_goto(x-1, y);
-                ee_putstr("`v'");
-            }
+                frame = 8; /* -3pi/6 */
         }
         else /* left quarter */
         {
             if(vy > -vx/4)
-            {
-                /* -5pi/6 */
-                ee_goto(x+1, y-1);
-                ee_putstr(",-'\\");
-                ee_goto(x+2, y);
-                ee_putstr(",-'");
-                ee_goto(x, y+1);
-                ee_putchar('\'');
-                ee_color(EE_WHITE);
-                ee_goto(x, y);
-                ee_putstr("/_");
-            }
+                frame = 9; /* -5pi/6 */
             else if(vy < vx/4)
-            {
-                /* 5pi/6 */
-                ee_goto(x+1, y);
-                ee_putstr(" `-.");
-                ee_goto(x+1, y+1);
-                ee_putstr("`-./");
-                ee_color(EE_WHITE);
-                ee_goto(x, y-1);
-                ee_putstr("._");
-                ee_goto(x, y);
-                ee_putchar('\\');
-            }
+                frame = 10; /* 5pi/6 */
             else
-            {
-                /* 6pi/6 */
-                ee_goto(x+1, y-1);
-                ee_putstr("____");
-                ee_goto(x+1, y);
-                ee_putstr("____|");
-                ee_color(EE_WHITE);
-                ee_goto(x, y);
-                ee_putchar('<');
-            }
+                frame = 11; /* 6pi/6 */
         }
     }
+
+    ee_set_sprite_frame(bomb_sprite, frame);
+    ee_draw_sprite(x, y, bomb_sprite);
 }
 
 static void draw_fragbomb(int x, int y, int frame)

@@ -7,4 +7,5 @@ EXTRA_DIST = \
 	explosion_small \
 	item_gem \
 	item_heart \
+	weapon_bomb \
 	$(NULL)
