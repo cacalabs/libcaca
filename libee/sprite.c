@@ -130,6 +130,9 @@ struct ee_sprite *ee_load_sprite(const char *file)
 
 void ee_set_sprite_frame(struct ee_sprite *sprite, int f)
 {
+    if(sprite == NULL)
+        return;
+
     if(f < 0 || f >= sprite->nf)
         return;
 
@@ -138,13 +141,21 @@ void ee_set_sprite_frame(struct ee_sprite *sprite, int f)
 
 int ee_get_sprite_frame(struct ee_sprite *sprite)
 {
+    if(sprite == NULL)
+        return -1;
+
     return sprite->f;
 }
 
 void ee_draw_sprite(int x, int y, struct ee_sprite *sprite)
 {
     int i, j;
-    struct ee_frame *frame = &sprite->frames[sprite->f];
+    struct ee_frame *frame;
+
+    if(sprite == NULL)
+        return;
+
+    frame = &sprite->frames[sprite->f];
 
     for(j = 0; j < frame->h; j++)
     {
@@ -164,6 +175,9 @@ void ee_draw_sprite(int x, int y, struct ee_sprite *sprite)
 void ee_free_sprite(struct ee_sprite *sprite)
 {
     int i;
+
+    if(sprite == NULL)
+        return;
 
     for(i = sprite->nf; i--;)
     {

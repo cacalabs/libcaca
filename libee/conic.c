@@ -26,6 +26,8 @@
 
 #include "ee.h"
 
+static void ellipsepoints(int, int, int, int, char);
+
 void ee_draw_circle(int x, int y, int r, char c)
 {
     int test, dx, dy;
@@ -33,26 +35,11 @@ void ee_draw_circle(int x, int y, int r, char c)
     /* Optimized Bresenham. Kick ass. */
     for(test = 0, dx = 0, dy = r ; dx <= dy ; dx++)
     {
-        ee_putcharTO(x + dx, y + dy / 2, c);
-        ee_putcharTO(x - dx, y + dy / 2, c);
-        ee_putcharTO(x + dx, y - dy / 2, c);
-        ee_putcharTO(x - dx, y - dy / 2, c);
-
-        ee_putcharTO(x + dy, y + dx / 2, c);
-        ee_putcharTO(x - dy, y + dx / 2, c);
-        ee_putcharTO(x + dy, y - dx / 2, c);
-        ee_putcharTO(x - dy, y - dx / 2, c);
+        ellipsepoints(x, y, dx, dy, c);
+        ellipsepoints(x, y, dy, dx, c);
 
         test += test > 0 ? dx - dy-- : dx;
     }
-}
-
-static void ellipsepoints(int xo, int yo, int x, int y, char c)
-{
-    ee_putcharTO(xo + x, yo + y, c);
-    ee_putcharTO(xo - x, yo + y, c);
-    ee_putcharTO(xo + x, yo - y, c);
-    ee_putcharTO(xo - x, yo - y, c);
 }
 
 void ee_draw_ellipse(int xo, int yo, int a, int b, char c)
@@ -95,5 +82,13 @@ void ee_draw_ellipse(int xo, int yo, int a, int b, char c)
         y--;
         ellipsepoints(xo, yo, x, y, c);
     }
+}
+
+static void ellipsepoints(int xo, int yo, int x, int y, char c)
+{
+    ee_putcharTO(xo + x, yo + y, c);
+    ee_putcharTO(xo - x, yo + y, c);
+    ee_putcharTO(xo + x, yo - y, c);
+    ee_putcharTO(xo - x, yo - y, c);
 }
 
