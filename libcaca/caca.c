@@ -257,8 +257,8 @@ static unsigned int _caca_getticks(void)
 void caca_refresh(void)
 {
 #define IDLE_USEC 10000
-    static unsigned int lastticks = 0;
-    unsigned int ticks = lastticks + _caca_getticks();
+    static int lastticks = 0;
+    int ticks = lastticks + _caca_getticks();
 
 #if defined(USE_SLANG)
     SLsmg_refresh();
@@ -274,7 +274,7 @@ void caca_refresh(void)
 
     /* Wait until _caca_delay + time of last call */
     ticks += _caca_getticks();
-    for(; ticks < _caca_delay - IDLE_USEC; ticks += _caca_getticks())
+    for(; ticks + IDLE_USEC < (int)_caca_delay; ticks += _caca_getticks())
         usleep(IDLE_USEC);
 
     /* Update the sliding mean of the render time */
@@ -283,7 +283,7 @@ void caca_refresh(void)
     lastticks = ticks - _caca_delay;
 
     /* If we drifted too much, it's bad, bad, bad. */
-    if(lastticks > _caca_delay)
+    if(lastticks > (int)_caca_delay)
         lastticks = 0;
 }
 

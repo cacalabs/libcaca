@@ -183,13 +183,13 @@ static void ellipsepoints(int xo, int yo, int x, int y, char c)
 {
     uint8_t b = 0;
 
-    if(xo + x >= 0 && xo + x < caca_get_width())
+    if(xo + x >= 0 && xo + x < (int)caca_get_width())
         b |= 0x1;
-    if(xo - x >= 0 && xo - x < caca_get_width())
+    if(xo - x >= 0 && xo - x < (int)caca_get_width())
         b |= 0x2;
-    if(yo + y >= 0 && yo + y < caca_get_height())
+    if(yo + y >= 0 && yo + y < (int)caca_get_height())
         b |= 0x4;
-    if(yo - y >= 0 && yo - y < caca_get_height())
+    if(yo - y >= 0 && yo - y < (int)caca_get_height())
         b |= 0x8;
 
     if((b & (0x1|0x4)) == (0x1|0x4))

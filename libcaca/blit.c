@@ -51,8 +51,8 @@ void caca_blit(int x1, int y1, int x2, int y2, void *pixels, int w, int h)
 
     pitch = (3 * w + 3) / 4 * 4;
 
-    for(y = y1 > 0 ? y1 : 0; y <= y2 && y <= caca_get_height(); y++)
-        for(x = x1 > 0 ? x1 : 0; x <= x2 && x <= caca_get_width(); x++)
+    for(y = y1 > 0 ? y1 : 0; y <= y2 && y <= (int)caca_get_height(); y++)
+        for(x = x1 > 0 ? x1 : 0; x <= x2 && x <= (int)caca_get_width(); x++)
         {
             int fromx = w * (x - x1) / (x2 - x1 + 1);
             int fromy = h * (y - y1) / (y2 - y1 + 1);

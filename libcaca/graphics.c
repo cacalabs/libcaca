@@ -63,7 +63,8 @@ int caca_get_color(void)
 
 void caca_putchar(int x, int y, char c)
 {
-    if(x < 0 || x >= caca_get_width() || y < 0 || y >= caca_get_height())
+    if(x < 0 || x >= (int)caca_get_width() ||
+       y < 0 || y >= (int)caca_get_height())
         return;
 
 #if defined(USE_SLANG)
@@ -82,9 +83,9 @@ void caca_putchar(int x, int y, char c)
 
 void caca_putstr(int x, int y, const char *s)
 {
-    int len;
+    unsigned int len;
 
-    if(y < 0 || y >= caca_get_height() || x >= caca_get_width())
+    if(y < 0 || y >= (int)caca_get_height() || x >= (int)caca_get_width())
         return;
 
     len = strlen(s);
@@ -129,7 +130,7 @@ void caca_printf(int x, int y, const char *format, ...)
     char *buf = tmp;
     va_list args;
 
-    if(y < 0 || y >= caca_get_height() || x >= caca_get_width())
+    if(y < 0 || y >= (int)caca_get_height() || x >= (int)caca_get_width())
         return;
 
     if(caca_get_width() - x + 1 > BUFSIZ)

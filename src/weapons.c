@@ -49,7 +49,7 @@ void init_weapons(game *g, weapons *wp)
 
 void draw_weapons(game *g, weapons *wp)
 {
-    int i;
+    unsigned int i;
 
     for(i = 0; i < WEAPONS; i++)
     {
@@ -95,7 +95,8 @@ void draw_weapons(game *g, weapons *wp)
 
 void update_weapons(game *g, weapons *wp)
 {
-    int i, j, dist, xmin, ymin, dx, dy, xnew, ynew;
+    unsigned int i, j;
+    int dist, xmin, ymin, dx, dy, xnew, ynew;
 
     for(i = 0; i < WEAPONS; i++)
     {
