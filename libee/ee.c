@@ -24,6 +24,7 @@
 
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 #include <sys/time.h>
 #include <time.h>
 
@@ -128,7 +129,7 @@ void ee_clear(void)
     memset(empty_line, ' ', x);
     empty_line[x] = '\0';
 
-    for(y; y--;)
+    while(y--)
     {
         ee_goto(0, y);
         ee_putstr(empty_line);
