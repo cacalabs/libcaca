@@ -1,0 +1,37 @@
+#! /bin/sh
+
+##  Win32 cross-compilation for libcaca -- Sam Hocevar <sam@zoy.org>
+##  $Id$
+
+set -x
+set -e
+
+# Clean up our working directory
+DIRNAME="libcaca-win32-`sed -ne '/^VERSION/s/[^0-9]*//p' Makefile`"
+DESTDIR="`pwd`/${DIRNAME}"
+rm -Rf "${DIRNAME}"
+rm -f "${DIRNAME}.zip"
+mkdir "${DIRNAME}"
+
+# Build for win32
+./configure --host=i586-mingw32msvc --prefix=/ --bindir=/ --libdir=/ --disable-imlib2
+make pkglibdir=/lib pkgdatadir=/data
+
+# Install into our private directory
+make install DESTDIR="${DESTDIR}" pkglibdir=/lib pkgdatadir=/
+i586-mingw32msvc-strip "${DESTDIR}/"*.exe
+rm -Rf "${DESTDIR}/man"
+rm -Rf "${DESTDIR}/include"
+rm -f "${DESTDIR}/caca-config"
+rm -f "${DESTDIR}/"*.a
+mv "${DESTDIR}/share/doc/libcaca-dev/html" "${DESTDIR}/html"
+mv "${DESTDIR}/share/doc/libcaca-dev/ps" "${DESTDIR}/doc"
+mv "${DESTDIR}/share/doc/libcaca-dev/"* "${DESTDIR}/doc"
+rmdir "${DESTDIR}/share/doc/libcaca-dev"
+rmdir "${DESTDIR}/share/doc"
+rmdir "${DESTDIR}/share"
+
+# Pack the directory
+zip "${DIRNAME}.zip" `find "${DIRNAME}"`
+rm -Rf "${DIRNAME}"
+

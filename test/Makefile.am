@@ -1,6 +1,4 @@
-###############################################################################
-# Automake targets and declarations for libcaca test programs
-###############################################################################
+# $Id: foo$
 
 noinst_PROGRAMS = dithering event hsv optipal spritedit
 

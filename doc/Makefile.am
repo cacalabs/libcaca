@@ -1,3 +1,5 @@
+# $Id: foo$
+
 EXTRA_DIST = doxygen.cfg.in footer.html header.html $(man_MANS)
 
 man_MANS = caca-config.1 cacademo.1 cacaview.1
