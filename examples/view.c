@@ -523,7 +523,7 @@ static void load_image(const char *name)
                     if(k == 0)
                         bits = freadint(fp);
                     pixels[w * i * depth + j] =
-                        (bits >> ((k & ~0xf) + 0xf - (k & 0xf))) & 0xf;
+                        (bits >> ((k & ~0xf) + 0xf - (k & 0xf))) & 0x1;
                 }
                 break;
             case 4:
@@ -537,9 +537,11 @@ static void load_image(const char *name)
                 }
                 break;
             default:
+                /* Works for 8bpp, but also for 16, 24 etc. */
                 fread(pixels + w * i * depth, w * depth, 1, fp);
                 /* Pad reads to 4 bytes */
-                tmp = (4 - (w * depth) % 4) % 4;
+                tmp = (w * depth) % 4;
+                tmp = (4 - tmp) % 4;
                 while(tmp--)
                     freadchar(fp);
                 break;
