@@ -95,7 +95,7 @@ void ee_draw_thin_triangle(int, int, int, int, int, int);
 void ee_fill_triangle(int, int, int, int, int, int, char);
 
 int ee_rand(int, int);
-int ee_sqrt(int);
+unsigned int ee_sqrt(unsigned int);
 
 struct ee_sprite * ee_load_sprite(const char *);
 int ee_get_sprite_frames(struct ee_sprite *);

@@ -32,23 +32,28 @@ int ee_rand(int min, int max)
     return min + (int)((1.0*(max-min+1)) * rand() / (RAND_MAX+1.0));
 }
 
-int ee_sqrt(int a)
+unsigned int ee_sqrt(unsigned int a)
 {
-    int x;
-
-    if(a <= 0)
-    {
+    if(a == 0)
         return 0;
+
+    if(a < 1000000000)
+    {
+        unsigned int x = a < 10 ? 1
+                       : a < 1000 ? 10
+                       : a < 100000 ? 100
+                       : a < 10000000 ? 1000
+                       : 10000;
+
+        /* Newton's method. Three iterations would be more than enough. */
+        x = (x * x + a) / x / 2;
+        x = (x * x + a) / x / 2;
+        x = (x * x + a) / x / 2;
+        x = (x * x + a) / x / 2;
+
+        return x;
     }
 
-    x = a > 100000 ? 1000 : a > 1000 ? 100 : a > 10 ? 10 : 1;
-
-    /* Newton's method. Three iterations would be more than enough. */
-    x = (x * x + a) / x / 2;
-    x = (x * x + a) / x / 2;
-    x = (x * x + a) / x / 2;
-    x = (x * x + a) / x / 2;
-
-    return x;
+    return 2 * ee_sqrt(a / 4);
 }
 
