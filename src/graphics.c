@@ -143,7 +143,7 @@ Window x11_window;
 int x11_font_width, x11_font_height;
 static GC x11_gc;
 static Pixmap x11_pixmap;
-static int *x11_screen;
+static uint8_t *x11_char, *x11_attr;
 static int x11_colors[16];
 static Font x11_font;
 static XFontStruct *x11_font_struct;
@@ -167,6 +167,10 @@ static enum caca_color _caca_bgcolor = CACA_COLOR_BLACK;
  */
 #if defined(USE_SLANG)
 static void slang_init_palette(void);
+#endif
+
+#if defined(USE_X11)
+static int x11_error_handler(Display *, XErrorEvent *);
 #endif
 
 static unsigned int _caca_getticks(void);
@@ -201,20 +205,13 @@ void caca_set_color(enum caca_color fgcolor, enum caca_color bgcolor)
         else
         {
             _caca_fgisbg = 1;
-            switch(fgcolor)
-            {
-            case CACA_COLOR_BLACK:
+            if(fgcolor == CACA_COLOR_BLACK)
                 fgcolor = CACA_COLOR_WHITE;
-                break;
-            case CACA_COLOR_WHITE:
+            else if(fgcolor == CACA_COLOR_WHITE
+                     || fgcolor <= CACA_COLOR_LIGHTGRAY)
                 fgcolor = CACA_COLOR_BLACK;
-                break;
-            default:
-                if(fgcolor <= CACA_COLOR_LIGHTGRAY)
-                    fgcolor = CACA_COLOR_BLACK;
-                else
-                    fgcolor = CACA_COLOR_WHITE;
-            }
+            else
+                fgcolor = CACA_COLOR_WHITE;
         }
 #endif
 
@@ -319,8 +316,8 @@ void caca_putchar(int x, int y, char c)
 #endif
 #if defined(USE_X11)
     case CACA_DRIVER_X11:
-        x11_screen[x + y * _caca_width] =
-            ((int)c << 8) | ((int)_caca_bgcolor << 4) | (int)_caca_fgcolor;
+        x11_char[x + y * _caca_width] = c;
+        x11_attr[x + y * _caca_width] = (_caca_bgcolor << 4) | _caca_fgcolor;
         break;
 #endif
     default:
@@ -341,11 +338,11 @@ void caca_putchar(int x, int y, char c)
  */
 void caca_putstr(int x, int y, const char *s)
 {
-#if defined(USE_CONIO)
+#if defined(USE_CONIO) | defined(USE_X11)
     char *charbuf;
 #endif
 #if defined(USE_X11)
-    int *intbuf;
+    char *attrbuf;
 #endif
     unsigned int len;
 
@@ -404,10 +401,13 @@ void caca_putstr(int x, int y, const char *s)
 #endif
 #if defined(USE_X11)
     case CACA_DRIVER_X11:
-        intbuf = x11_screen + x + y * _caca_width;
+        charbuf = x11_char + x + y * _caca_width;
+        attrbuf = x11_attr + x + y * _caca_width;
         while(*s)
-            *intbuf++ = ((int)*s++ << 8)
-                         | ((int)_caca_bgcolor << 4) | (int)_caca_fgcolor;
+        {
+            *charbuf++ = *s++;
+            *attrbuf++ = (_caca_bgcolor << 4) | _caca_fgcolor;
+        }
         break;
 #endif
     default:
@@ -481,7 +481,8 @@ int _caca_init_graphics(void)
     {
         slang_init_palette();
 
-        /* Disable alt charset support so that we get all 256 colour pairs */
+        /* Disable alt charset support so that we get a chance to have all
+         * 256 colour pairs */
         SLtt_Has_Alt_Charset = 0;
 
         _caca_width = SLtt_Screen_Cols;
@@ -579,31 +580,32 @@ int _caca_init_graphics(void)
         static int x11_palette[] =
         {
             /* Standard curses colours */
-            0, 0, 0,
-            0, 0, 32768,
-            0, 32768, 0,
-            0, 32768, 32768,
-            32768, 0, 0,
-            32768, 0, 32768,
-            32768, 32768, 0,
-            32768, 32768, 32768,
+            0x0,    0x0,    0x0,
+            0x0,    0x0,    0x8000,
+            0x0,    0x8000, 0x0,
+            0x0,    0x8000, 0x8000,
+            0x8000, 0x0,    0x0,
+            0x8000, 0x0,    0x8000,
+            0x8000, 0x8000, 0x0,
+            0x8000, 0x8000, 0x8000,
             /* Extra values for xterm-16color */
-            16384, 16384, 16384,
-            16384, 16384, 65535,
-            16384, 65535, 16384,
-            16384, 65535, 65535,
-            65535, 16384, 16384,
-            65535, 16384, 65535,
-            65535, 65535, 16384,
-            65535, 65535, 65535,
+            0x4000, 0x4000, 0x4000,
+            0x4000, 0x4000, 0xffff,
+            0x4000, 0xffff, 0x4000,
+            0x4000, 0xffff, 0xffff,
+            0xffff, 0x4000, 0x4000,
+            0xffff, 0x4000, 0xffff,
+            0xffff, 0xffff, 0x4000,
+            0xffff, 0xffff, 0xffff,
         };
 
         Colormap colormap;
-        XSetWindowAttributes x11_attr;
+        XSetWindowAttributes x11_winattr;
+        int (*old_error_handler)(Display *, XErrorEvent *);
         const char *font_name = "8x13bold";
         int i;
 
-        if(getenv("CACA_GEOMETRY"))
+        if(getenv("CACA_GEOMETRY") && *(getenv("CACA_GEOMETRY")))
             sscanf(getenv("CACA_GEOMETRY"),
                    "%ux%u", &_caca_width, &_caca_height);
 
@@ -612,25 +614,37 @@ int _caca_init_graphics(void)
         if(!_caca_height)
             _caca_height = 32;
 
-        x11_screen = malloc(_caca_width * _caca_height * sizeof(int));
-        if(x11_screen == NULL)
+        x11_char = malloc(_caca_width * _caca_height * sizeof(int));
+        if(x11_char == NULL)
             return -1;
+
+        x11_attr = malloc(_caca_width * _caca_height * sizeof(int));
+        if(x11_attr == NULL)
+        {
+            free(x11_char);
+            return -1;
+        }
 
         x11_dpy = XOpenDisplay(NULL);
         if(x11_dpy == NULL)
         {
-            free(x11_screen);
+            free(x11_char);
+            free(x11_attr);
             return -1;
         }
 
-        if(getenv("CACA_FONT"))
+        if(getenv("CACA_FONT") && *(getenv("CACA_FONT")))
             font_name = getenv("CACA_FONT");
+
+        /* Ignore font errors */
+        old_error_handler = XSetErrorHandler(x11_error_handler);
 
         x11_font = XLoadFont(x11_dpy, font_name);
         if(!x11_font)
         {
             XCloseDisplay(x11_dpy);
-            free(x11_screen);
+            free(x11_char);
+            free(x11_attr);
             return -1;
         }
 
@@ -639,9 +653,13 @@ int _caca_init_graphics(void)
         {
             XUnloadFont(x11_dpy, x11_font);
             XCloseDisplay(x11_dpy);
-            free(x11_screen);
+            free(x11_char);
+            free(x11_attr);
             return -1;
         }
+
+        /* Reset the default X11 error handler */
+        XSetErrorHandler(old_error_handler);
 
         x11_font_width = x11_font_struct->max_bounds.width;
         x11_font_height = x11_font_struct->max_bounds.ascent
@@ -659,16 +677,16 @@ int _caca_init_graphics(void)
             x11_colors[i] = color.pixel;
         }
 
-        x11_attr.backing_store = Always;
-        x11_attr.background_pixel = x11_colors[0];
-        x11_attr.event_mask = ExposureMask | StructureNotifyMask;
+        x11_winattr.backing_store = Always;
+        x11_winattr.background_pixel = x11_colors[0];
+        x11_winattr.event_mask = ExposureMask | StructureNotifyMask;
 
         x11_window = XCreateWindow(x11_dpy, DefaultRootWindow(x11_dpy), 0, 0,
                                    _caca_width * x11_font_width,
                                    _caca_height * x11_font_height,
                                    0, 0, InputOutput, 0,
                                    CWBackingStore | CWBackPixel | CWEventMask,
-                                   &x11_attr);
+                                   &x11_winattr);
 
         XStoreName(x11_dpy, x11_window, "caca for X");
 
@@ -741,9 +759,15 @@ int _caca_end_graphics(void)
         XUnmapWindow(x11_dpy, x11_window);
         XDestroyWindow(x11_dpy, x11_window);
         XCloseDisplay(x11_dpy);
-        free(x11_screen);
+        free(x11_char);
+        free(x11_attr);
     }
+    else
 #endif
+    {
+        /* Dummy */
+    }
+
     free(_caca_empty_line);
 
     return 0;
@@ -845,7 +869,7 @@ void caca_refresh(void)
 #if defined(USE_X11)
     if(_caca_driver == CACA_DRIVER_X11)
     {
-        unsigned int x, y;
+        unsigned int x, y, len;
 
         /* FIXME: This is very, very slow. There are several things that can
          * be done in order to speed up things:
@@ -853,19 +877,27 @@ void caca_refresh(void)
          *  - pre-render all characters
          *  - use our own rendering routine (screen depth dependent) */
         for(y = 0; y < _caca_height; y++)
-            for(x = 0; x < _caca_width; x++)
+        {
+            for(x = 0; x < _caca_width; x += len)
             {
-                int item = x11_screen[x + y * _caca_width];
-                char data = item >> 8;
-                XSetForeground(x11_dpy, x11_gc, x11_colors[(item >> 4) & 0xf]);
+                unsigned char *attr = x11_attr + x + y * _caca_width;
+
+                len = 1;
+                while(x + len < _caca_width && attr[len] == attr[0])
+                    len++;
+
+                XSetForeground(x11_dpy, x11_gc, x11_colors[attr[0] >> 4]);
                 XFillRectangle(x11_dpy, x11_pixmap, x11_gc,
                                x * x11_font_width, y * x11_font_height,
-                               x11_font_width, x11_font_height);
-                XSetForeground(x11_dpy, x11_gc, x11_colors[item & 0xf]);
+                               len * x11_font_width, x11_font_height);
+
+                XSetForeground(x11_dpy, x11_gc, x11_colors[attr[0] & 0xf]);
                 XDrawString(x11_dpy, x11_pixmap, x11_gc, x * x11_font_width,
                             (y + 1) * x11_font_height - x11_font_offset,
-                            &data, 1);
+                            x11_char + x + y * _caca_width, len);
             }
+        }
+
         XCopyArea(x11_dpy, x11_pixmap, x11_window, x11_gc, 0, 0,
                   _caca_width * x11_font_width, _caca_height * x11_font_height,
                   0, 0);
@@ -889,10 +921,6 @@ void caca_refresh(void)
 }
 
 #if defined(USE_SLANG)
-
-#if defined(OPTIMISE_SLANG_PALETTE)
-#endif
-
 static void slang_init_palette(void)
 {
     /* See SLang ref., 5.4.4. */
@@ -918,7 +946,13 @@ static void slang_init_palette(void)
         "white",
     };
 
-#if !defined(OPTIMISE_SLANG_PALETTE)
+#if defined(OPTIMISE_SLANG_PALETTE)
+    int i;
+
+    for(i = 0; i < 16 * 16; i++)
+        SLtt_set_color(i, NULL, slang_colors[slang_palette[i * 2]],
+                                slang_colors[slang_palette[i * 2 + 1]]);
+#else
     int fg, bg;
 
     for(bg = 0; bg < 16; bg++)
@@ -927,13 +961,14 @@ static void slang_init_palette(void)
             int i = fg + 16 * bg;
             SLtt_set_color(i, NULL, slang_colors[fg], slang_colors[bg]);
         }
-#else
-    int i;
-
-    for(i = 0; i < 16 * 16; i++)
-        SLtt_set_color(i, NULL, slang_colors[slang_palette[i * 2]],
-                                slang_colors[slang_palette[i * 2 + 1]]);
 #endif
 }
 #endif /* USE_SLANG */
+
+#if defined(USE_X11)
+static int x11_error_handler(Display *dpy, XErrorEvent *event)
+{
+    return 0;
+}
+#endif
 

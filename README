@@ -4,14 +4,16 @@ Building libcaca
 
    o  Run configure then make. Useful configure flags are:
 
-     --enable-ncurses: support for the ncurses library (default enabled)
-     --enable-slang: add support for the SLang library
-     --enable-conio: add support for MS-DOS conio.h
-     --enable-x11: add support for native X11 rendering
+     --enable-ncurses: support for the ncurses library
+     --enable-slang: support for the SLang library
+     --enable-conio: support for MS-DOS conio.h
+     --enable-x11: support for native X11 rendering
+
+     --disable-imlib2: remove Imlib2 support in cacaview
 
    o  Cross-compilation example:
  
-     ./configure --disable-ncurses --enable-conio --host=i386-pc-msdosdjgpp
+     ./configure --disable-imlib2 --host=i386-pc-msdosdjgpp
 
 
 Using libcaca

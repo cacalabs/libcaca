@@ -146,10 +146,11 @@ int caca_init(void)
     else
 #endif
 #if defined(USE_X11)
-    {
-        /* Nothing to do */
-    }
+    /* Nothing to do */
 #endif
+    {
+        /* Dummy */
+    }
 
     if(_caca_init_graphics())
         return -1;
@@ -438,7 +439,7 @@ static void caca_init_features(void)
     caca_set_feature(CACA_DITHERING);
 
 #if defined(HAVE_GETENV) && defined(HAVE_STRCASECMP)
-    if((var = getenv("CACA_BACKGROUND")))
+    if((var = getenv("CACA_BACKGROUND")) && *var)
     {
         if(!strcasecmp("black", var))
             caca_set_feature(CACA_BACKGROUND_BLACK);
@@ -446,7 +447,7 @@ static void caca_init_features(void)
             caca_set_feature(CACA_BACKGROUND_SOLID);
     }
 
-    if((var = getenv("CACA_ANTIALIASING")))
+    if((var = getenv("CACA_ANTIALIASING")) && *var)
     {
         if(!strcasecmp("none", var))
             caca_set_feature(CACA_ANTIALIASING_NONE);
@@ -454,7 +455,7 @@ static void caca_init_features(void)
             caca_set_feature(CACA_ANTIALIASING_PREFILTER);
     }
 
-    if((var = getenv("CACA_DITHERING")))
+    if((var = getenv("CACA_DITHERING")) && *var)
     {
         if(!strcasecmp("none", var))
             caca_set_feature(CACA_DITHERING_NONE);
