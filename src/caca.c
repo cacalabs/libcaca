@@ -356,7 +356,11 @@ void caca_end(void)
     {
         /* Nothing to do */
     }
+    else
 #endif
+    {
+        /* Dummy */
+    }
 }
 
 /*
@@ -463,13 +467,16 @@ static void caca_init_features(void)
 
 static void caca_init_terminal(void)
 {
-#if defined(HAVE_GETENV) && defined(HAVE_PUTENV) \
-     && (defined(USE_SLANG) || defined(USE_NCURSES))
+#if defined(HAVE_GETENV) && defined(HAVE_PUTENV)
     char *term, *colorterm, *other;
 
-    if(_caca_driver != CACA_DRIVER_NCURSES &&
-       _caca_driver != CACA_DRIVER_SLANG)
-        return;
+#if defined(USE_SLANG)
+    if(_caca_driver != CACA_DRIVER_SLANG)
+#endif
+#if defined(USE_NCURSES)
+    if(_caca_driver != CACA_DRIVER_NCURSES)
+#endif
+    return;
 
     term = getenv("TERM");
     colorterm = getenv("COLORTERM");
