@@ -433,12 +433,8 @@ void caca_putchar(int x, int y, char c)
  */
 void caca_putstr(int x, int y, char const *s)
 {
-#if defined(USE_CONIO) | defined(USE_X11) | defined(USE_WIN32)
     char *charbuf;
-#endif
-#if defined(USE_X11) | defined(USE_WIN32)
     char *attrbuf;
-#endif
     char const *t;
     unsigned int len;
 
