@@ -14,11 +14,13 @@ Things to do
 
  * fragmentation bomb (merge with mega-ball?)
 
+ * stick aliens to tunnel
+
  * change tunnel colour
 
  * fill holes in the tunnel when |step| > 2
 
- * draw a 3rd alien type
+ DONE Dec 18 2002: draw a 3rd alien type
 
  * draw bosses
 

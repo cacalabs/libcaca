@@ -32,7 +32,7 @@ void draw_aliens( game *g, aliens *al )
                 draw_alien_poolp( g, al->x[i], al->y[i], al->img[i] % 2 );
                 break;
             case ALIEN_BOOL:
-                draw_alien_bool( g, al->x[i], al->y[i], al->img[i] % 5 );
+                draw_alien_bool( g, al->x[i], al->y[i], al->img[i] % 6 );
                 break;
             case ALIEN_NONE:
                 break;
@@ -134,38 +134,39 @@ static void draw_alien_poolp( game *g, int x, int y, int frame )
 static void draw_alien_bool( game *g, int x, int y, int frame )
 {
     gfx_color( GREEN );
-    gfx_goto( x+1, y );
-    gfx_putstr( ",---." );
+    gfx_goto( x, y-1 );
+    gfx_putstr( "__" );
 
-    gfx_goto( x, y+1 );
-    gfx_putchar( '(' );
+    gfx_goto( x-1, y );
+    gfx_putchar( '/' );
+    gfx_goto( x+2, y );
+    gfx_putchar( '\\' );
 
-    gfx_color( WHITE );
     switch( frame )
     {
-    case 4:
-        gfx_putstr( "##( )" );
-        break;
     case 3:
-        gfx_putstr( ")##( " );
+        gfx_goto( x-2, y+1 );
+        gfx_putstr( "//'`\\\\" );
         break;
+    case 4:
     case 2:
-        gfx_putstr( " )##(" );
+        gfx_goto( x-2, y+1 );
+        gfx_putstr( "/(~~)\\" );
         break;
+    case 5:
     case 1:
-        gfx_putstr( "( )##" );
+        gfx_goto( x-2, y+1 );
+        gfx_putstr( "((^^))" );
         break;
     case 0:
-        gfx_putstr( "#( )#" );
+        gfx_goto( x-1, y+1 );
+        gfx_putstr( "\\\\//" );
         break;
     }
 
-    gfx_color( GREEN );
-    gfx_goto( x+6, y+1 );
-    gfx_putchar( ')' );
-
-    gfx_goto( x+1, y+2 );
-    gfx_putstr( "`---'" );
+    gfx_color( WHITE );
+    gfx_goto( x, y );
+    gfx_putstr( "oo" );
 }
 
 static void draw_alien_brah( game *g, int x, int y, int frame )
