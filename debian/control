@@ -1,15 +1,16 @@
 Source: libcaca
-Section: games
+Section: libs
 Priority: optional
 Maintainer: Sam Hocevar (Debian packages) <sam+deb@zoy.org>
-Build-Depends: debhelper (>= 2.2.0), slang1-dev
+Build-Depends: debhelper (>= 4.0), slang1-dev
 Standards-Version: 3.6.1.0
 
-Package: libcaca
-Section: games
+Package: libcaca-dev
+Section: libdevel
 Architecture: any
 Depends: ${shlibs:Depends}
 Description: text mode graphics library
- libcaca is the Color ANSI Console Art library.
+ libcaca is the Colour AsCii Art library.
  .
- It rules.
+ This package contains the header files and static libraries needed to
+ compile applications or shared objects that use libcaca.

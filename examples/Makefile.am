@@ -4,6 +4,8 @@
 
 AM_CPPFLAGS = -I$(top_srcdir)/src
 
+pkgdata_DATA = caca.txt
+
 EXTRA_DIST = caca.txt
 
 if USE_SLANG
@@ -13,13 +15,14 @@ if USE_NCURSES
 LDFLAGS_ncurses = -lncurses
 endif
 
-noinst_PROGRAMS = demo spritedit
+bin_PROGRAMS = caca-demo caca-spritedit
 
-demo_SOURCES = demo.c
-demo_LDADD = ../src/libcaca.a $(LDFLAGS_slang) $(LDFLAGS_ncurses) -lm
-demo_CFLAGS = `pkg-config --cflags gtk+-2.0`
-demo_LDFLAGS = `pkg-config --libs gtk+-2.0`
+caca_demo_SOURCES = demo.c
+caca_demo_LDADD = ../src/libcaca.a $(LDFLAGS_slang) $(LDFLAGS_ncurses) -lm
+caca_demo_CPPFLAGS = -DDATADIR=\"$(pkgdatadir)\"
+caca_demo_CFLAGS = `pkg-config --cflags gtk+-2.0`
+caca_demo_LDFLAGS = `pkg-config --libs gtk+-2.0`
 
-spritedit_SOURCES = spritedit.c
-spritedit_LDADD = ../src/libcaca.a $(LDFLAGS_slang) $(LDFLAGS_ncurses) -lm
+caca_spritedit_SOURCES = spritedit.c
+caca_spritedit_LDADD = ../src/libcaca.a $(LDFLAGS_slang) $(LDFLAGS_ncurses) -lm
 

@@ -2,7 +2,9 @@
 # Automake targets and declarations for libcaca
 ###############################################################################
 
-lib_LIBRARIES = libcaca.a
+include_HEADERS = caca.h
+
+lib_LIBRARIES = libcaca.a $(libcaca_pic_a)
 libcaca_a_SOURCES = \
 	caca.c \
 	caca.h \
@@ -18,5 +20,9 @@ libcaca_a_SOURCES = \
 	blit.c \
 	$(NULL)
 
-include_HEADERS = caca.h
+if NEED_PIC
+libcaca_pic_a = libcaca_pic.a
+endif
+libcaca_pic_a_SOURCES = $(libcaca_a_SOURCES)
+libcaca_pic_a_CPPFLAGS = -fPIC
 

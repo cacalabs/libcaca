@@ -58,11 +58,26 @@ CFLAGS="${CFLAGS} -g -O2 -fno-strength-reduce -fomit-frame-pointer"
 # Code qui fait des warnings == code de porc == deux baffes dans ta gueule
 CFLAGS="${CFLAGS} -Wall -Wpointer-arith -Wcast-align -Wcast-qual -Wstrict-prototypes -Wshadow -Waggregate-return -Wmissing-prototypes -Wnested-externs -Wsign-compare"
 
+# Build the PIC library?
+case "${target_os}" in
+  *mingw32* | *cygwin*)
+    NEED_PIC=false
+    ;;
+  *)
+    NEED_PIC=:
+    ;;
+esac
+
+AM_CONDITIONAL(NEED_PIC, ${NEED_PIC})
+
 AC_OUTPUT([
   Makefile
   src/Makefile
   examples/Makefile
   autotools/Makefile
   debian/Makefile
+  caca-config
+],[
+  chmod 0755 caca-config
 ])
 

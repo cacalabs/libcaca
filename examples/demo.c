@@ -67,7 +67,9 @@ int main(int argc, char **argv)
     caca_set_delay(40000);
 
     /* Initialize data */
-    sprite = caca_load_sprite("caca.txt");
+    sprite = caca_load_sprite(DATADIR "/caca.txt");
+    if(!sprite)
+        sprite = caca_load_sprite("caca.txt");
     if(!sprite)
         sprite = caca_load_sprite("examples/caca.txt");
 

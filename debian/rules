@@ -1,7 +1,6 @@
 #!/usr/bin/make -f
 
 #export DH_VERBOSE=1
-export DH_COMPAT=3
 export DEB_HOST_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 export DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
@@ -38,7 +37,7 @@ install: build
 	dh_testroot
 	dh_clean -k
 	dh_installdirs
-	DESTDIR=`pwd`/debian/libcaca/ $(MAKE) install prefix=/usr
+	DESTDIR=`pwd`/debian/libcaca-dev/ $(MAKE) install prefix=/usr
 
 # Build architecture-independent files here.
 binary-indep: build install
@@ -50,7 +49,7 @@ binary-arch: build install
 	dh_testdir
 	dh_testroot
 #	dh_installdebconf	
-	dh_installdocs
+	dh_installdocs README BUGS TODO
 #	dh_installexamples
 	dh_installmenu
 #	dh_installemacsen

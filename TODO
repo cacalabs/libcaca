@@ -8,6 +8,8 @@ Low level stuff
    o  Better keyboard driver in an X terminal, see
       http://groups.yahoo.com/group/zepp/message/381
 
+   o  Write a window resize handler.
+
    o  DONE 12 Nov 2003: Port to conio.h
 
 
@@ -18,4 +20,14 @@ High level stuff
    o  Clip all graphics primitives
 
    o  Fix the thin ellipse rendering
+
+
+Misc
+
+   o  Draw a nicer logo sprite
+
+
+Documentation
+
+   o  Everything is still to do.
 
