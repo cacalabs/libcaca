@@ -2,11 +2,11 @@
 # Automake targets and declarations for libcaca
 ###############################################################################
 
-SUBDIRS = src examples
+SUBDIRS = src examples doc
 DIST_SUBDIRS = $(SUBDIRS) autotools debian
 
 EXTRA_DIST = BUGS bootstrap caca-config.in
-AUTOMAKE_OPTIONS = foreign dist-bzip2
+AUTOMAKE_OPTIONS = dist-bzip2
 
 bin_SCRIPTS = caca-config
 

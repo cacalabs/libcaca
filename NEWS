@@ -1,0 +1,10 @@
+$Id$
+
+New in v0.1
+-----------
+
+  * initial release
+  * slang, ncurses and conio drivers
+  * basic line, box, ellipse and triangle primitives
+  * colour bitmap blitting
+

@@ -1,13 +1,12 @@
 # $Id$
 
-AC_INIT(libcaca,0.0cvs-20031110)
+AC_INIT(src/caca.c)
 
 AC_PREREQ(2.50)
-AC_CONFIG_SRCDIR(src/caca.c)
 AC_CONFIG_AUX_DIR(autotools)
 AC_CANONICAL_SYSTEM
 
-AM_INIT_AUTOMAKE(libcaca,0.0cvs-20031110)
+AM_INIT_AUTOMAKE(libcaca, 0.1)
 AM_CONFIG_HEADER(config.h)
 
 AM_PROG_CC_C_O
@@ -48,6 +47,8 @@ elif test "${enable_slang}" != "no"; then
   AC_CHECK_LIB(slang,SLkp_init,:,AC_MSG_ERROR([cannot find slang library]))
   AC_DEFINE(USE_SLANG, 1, Define if the backend driver is slang)
   USE_SLANG=:
+else
+  AC_MSG_ERROR([could not find any terminal graphics interface])
 fi
 
 AM_CONDITIONAL(USE_SLANG, ${USE_SLANG})
@@ -60,20 +61,33 @@ CFLAGS="${CFLAGS} -Wall -Wpointer-arith -Wcast-align -Wcast-qual -Wstrict-protot
 
 # Build the PIC library?
 case "${target_os}" in
-  *mingw32* | *cygwin*)
+  *mingw32* | *cygwin* | *djgpp*)
     NEED_PIC=false
     ;;
   *)
     NEED_PIC=:
     ;;
 esac
-
 AM_CONDITIONAL(NEED_PIC, ${NEED_PIC})
+
+# Build documentation?
+AC_PATH_PROG(DOXYGEN, doxygen, no)
+AM_CONDITIONAL(DOXYGEN, test "${DOXYGEN}" != "no")
+AC_PATH_PROG(LATEX, latex, no)
+AC_MSG_CHECKING(for a4wide.sty)
+if test -f /usr/share/texmf/tex/latex/misc/a4wide.sty; then
+  AC_MSG_RESULT(yes)
+else
+  LATEX=no
+  AC_MSG_RESULT(no)
+fi
+AM_CONDITIONAL(LATEX, test "${LATEX}" != "no")
 
 AC_OUTPUT([
   Makefile
   src/Makefile
   examples/Makefile
+  doc/Makefile
   autotools/Makefile
   debian/Makefile
   caca-config
