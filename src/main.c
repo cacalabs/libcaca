@@ -37,7 +37,7 @@ int main (int argc, char **argv)
 
     srand(time(NULL));
 
-    if( ee_init() )
+    if(ee_init())
     {
         return 1;
     }
@@ -64,174 +64,174 @@ static void start_game (game *g)
 
     box *pausebox = NULL;
 
-    g->sf = create_starfield( g );
+    g->sf = create_starfield(g);
     g->wp = malloc(sizeof(weapons));
     g->ex = malloc(sizeof(explosions));
     g->bo = malloc(sizeof(bonus));
-    g->t = create_tunnel( g, g->w, g->h );
-    g->p = create_player( g );
+    g->t = create_tunnel(g, g->w, g->h);
+    g->p = create_player(g);
     g->al = malloc(sizeof(aliens));
 
-    init_bonus( g, g->bo );
-    init_weapons( g, g->wp );
-    init_explosions( g, g->ex );
-    init_aliens( g, g->al );
+    init_bonus(g, g->bo);
+    init_weapons(g, g->wp);
+    init_explosions(g, g->ex);
+    init_aliens(g, g->al);
 
     /* Temporary stuff */
     g->t->w = 25;
 
-    while( !quit )
+    while(!quit)
     {
         char key;
 
-        while( ( key = ee_get_key() ) )
+        while((key = ee_get_key()))
         {
-            switch( key )
+            switch(key)
             {
             case 'q':
                 quit = 1;
                 break;
             case 'p':
                 poz = !poz;
-                if( poz )
+                if(poz)
                 {
-                    pausebox = create_box( g, g->w / 2, g->h / 2,
-                                              g->w - 16, 8 );
+                    pausebox = create_box(g, g->w / 2, g->h / 2,
+                                              g->w - 16, 8);
                 }
                 else
                 {
-                    free_box( pausebox );
+                    free_box(pausebox);
                 }
                 break;
             case '\t':
-                ceo_alert( g );
+                ceo_alert(g);
                 poz = 1;
                 break;
             case 's':
                 skip = 1;
                 break;
             default:
-                if( g->p->dead )
+                if(g->p->dead)
                 {
                     break;
                 }
 
-                switch( key )
+                switch(key)
                 {
                 case 'h':
                     g->p->vx = -2;
                     break;
                 case 'j':
-                    if( g->p->y < g->h - 2 ) g->p->y += 1;
+                    if(g->p->y < g->h - 2) g->p->y += 1;
                     break;
                 case 'k':
-                    if( g->p->y > 1 ) g->p->y -= 1;
+                    if(g->p->y > 1) g->p->y -= 1;
                     break;
                 case 'l':
                     g->p->vx = 2;
                     break;
                 case 'n':
-                    if( g->p->special >= COST_NUKE )
+                    if(g->p->special >= COST_NUKE)
                     {
                         g->p->special -= COST_NUKE;
-                        add_weapon( g, g->wp, (g->p->x + 2) << 4, g->p->y << 4, 0, 0, WEAPON_NUKE );
+                        add_weapon(g, g->wp, (g->p->x + 2) << 4, g->p->y << 4, 0, 0, WEAPON_NUKE);
                     }
                     break;
                 case 'f':
-                    if( g->p->special >= COST_FRAGBOMB )
+                    if(g->p->special >= COST_FRAGBOMB)
                     {
                         g->p->special -= COST_FRAGBOMB;
-                        add_weapon( g, g->wp, (g->p->x + 2) << 4, g->p->y << 4, 0, -16, WEAPON_FRAGBOMB );
+                        add_weapon(g, g->wp, (g->p->x + 2) << 4, g->p->y << 4, 0, -16, WEAPON_FRAGBOMB);
                     }
                     break;
                 case 'b':
-                    if( g->p->special >= COST_BEAM )
+                    if(g->p->special >= COST_BEAM)
                     {
                         g->p->special -= COST_BEAM;
-                        add_weapon( g, g->wp, (g->p->x + 2) << 4, g->p->y << 4, 0, 0, WEAPON_BEAM );
+                        add_weapon(g, g->wp, (g->p->x + 2) << 4, g->p->y << 4, 0, 0, WEAPON_BEAM);
                     }
                     break;
                 case ' ':
-                    if( g->p->weapon == 0 )
+                    if(g->p->weapon == 0)
                     {
                         g->p->weapon = 4;
-                        add_weapon( g, g->wp, g->p->x << 4, g->p->y << 4, 0, -32, WEAPON_LASER );
-                        add_weapon( g, g->wp, (g->p->x + 5) << 4, g->p->y << 4, 0, -32, WEAPON_LASER );
+                        add_weapon(g, g->wp, g->p->x << 4, g->p->y << 4, 0, -32, WEAPON_LASER);
+                        add_weapon(g, g->wp, (g->p->x + 5) << 4, g->p->y << 4, 0, -32, WEAPON_LASER);
                         /* Extra schtuph */
-                        add_weapon( g, g->wp, g->p->x << 4, g->p->y << 4, -24, -16, WEAPON_SEEKER );
-                        add_weapon( g, g->wp, (g->p->x + 5) << 4, g->p->y << 4, 24, -16, WEAPON_SEEKER );
+                        add_weapon(g, g->wp, g->p->x << 4, g->p->y << 4, -24, -16, WEAPON_SEEKER);
+                        add_weapon(g, g->wp, (g->p->x + 5) << 4, g->p->y << 4, 24, -16, WEAPON_SEEKER);
                         /* More schtuph */
-                        add_weapon( g, g->wp, (g->p->x + 1) << 4, (g->p->y - 1) << 4, 0, -32, WEAPON_LASER );
-                        add_weapon( g, g->wp, (g->p->x + 4) << 4, (g->p->y - 1) << 4, 0, -32, WEAPON_LASER );
+                        add_weapon(g, g->wp, (g->p->x + 1) << 4, (g->p->y - 1) << 4, 0, -32, WEAPON_LASER);
+                        add_weapon(g, g->wp, (g->p->x + 4) << 4, (g->p->y - 1) << 4, 0, -32, WEAPON_LASER);
                         /* Even more schtuph */
-                        add_weapon( g, g->wp, (g->p->x + 2) << 4, (g->p->y - 1) << 4, 0, -32, WEAPON_LASER );
-                        add_weapon( g, g->wp, (g->p->x + 3) << 4, (g->p->y - 1) << 4, 0, -32, WEAPON_LASER );
+                        add_weapon(g, g->wp, (g->p->x + 2) << 4, (g->p->y - 1) << 4, 0, -32, WEAPON_LASER);
+                        add_weapon(g, g->wp, (g->p->x + 3) << 4, (g->p->y - 1) << 4, 0, -32, WEAPON_LASER);
                         /* Extra schtuph */
-                        add_weapon( g, g->wp, g->p->x << 4, g->p->y << 4, -32, 0, WEAPON_SEEKER );
-                        add_weapon( g, g->wp, (g->p->x + 5) << 4, g->p->y << 4, 32, 0, WEAPON_SEEKER );
+                        add_weapon(g, g->wp, g->p->x << 4, g->p->y << 4, -32, 0, WEAPON_SEEKER);
+                        add_weapon(g, g->wp, (g->p->x + 5) << 4, g->p->y << 4, 32, 0, WEAPON_SEEKER);
                         /* MORE SCHTUPH! */
-                        add_weapon( g, g->wp, (g->p->x + 2) << 4, g->p->y << 4, 0, -16, WEAPON_BOMB );
+                        add_weapon(g, g->wp, (g->p->x + 2) << 4, g->p->y << 4, 0, -16, WEAPON_BOMB);
                     }
                     break;
                 }
             }
         }
 
-        if( !poz || skip )
+        if(!poz || skip)
         {
             skip = 0;
 
             /* XXX: to be removed */
-            if( GET_RAND(0,10) == 0 )
+            if(GET_RAND(0,10) == 0)
             {
                 int list[3] = { ALIEN_FOO, ALIEN_BAR, ALIEN_BAZ };
 
-                add_alien( g, g->al, 0, rand() % g->h / 2, list[GET_RAND(0,3)] );
+                add_alien(g, g->al, 0, rand() % g->h / 2, list[GET_RAND(0,3)]);
             }
 
             /* Update game rules */
-            if( g->t->right[1] - g->t->left[1] == g->t->w )
+            if(g->t->right[1] - g->t->left[1] == g->t->w)
             {
                 g->t->w = 85 - g->t->w;
             }
 
             /* Scroll and update positions */
-            collide_player_tunnel( g, g->p, g->t, g->ex );
-            update_player( g, g->p );
-            collide_player_tunnel( g, g->p, g->t, g->ex );
+            collide_player_tunnel(g, g->p, g->t, g->ex);
+            update_player(g, g->p);
+            collide_player_tunnel(g, g->p, g->t, g->ex);
 
-            update_starfield( g, g->sf );
-            update_bonus( g, g->bo );
-            update_aliens( g, g->al );
+            update_starfield(g, g->sf);
+            update_bonus(g, g->bo);
+            update_aliens(g, g->al);
 
-            collide_weapons_tunnel( g, g->wp, g->t, g->ex );
-            collide_weapons_aliens( g, g->wp, g->al, g->ex );
-            update_weapons( g, g->wp );
-            collide_weapons_tunnel( g, g->wp, g->t, g->ex );
-            collide_weapons_aliens( g, g->wp, g->al, g->ex );
+            collide_weapons_tunnel(g, g->wp, g->t, g->ex);
+            collide_weapons_aliens(g, g->wp, g->al, g->ex);
+            update_weapons(g, g->wp);
+            collide_weapons_tunnel(g, g->wp, g->t, g->ex);
+            collide_weapons_aliens(g, g->wp, g->al, g->ex);
 
-            update_explosions( g, g->ex );
-            update_tunnel( g, g->t );
+            update_explosions(g, g->ex);
+            update_tunnel(g, g->t);
         }
 
         /* Clear screen */
         ee_clear();
 
         /* Print starfield, tunnel, aliens, player and explosions */
-        draw_starfield( g, g->sf );
-        draw_aliens( g, g->al );
-        draw_tunnel( g, g->t );
-        draw_bonus( g, g->bo );
-        draw_explosions( g, g->ex );
-        draw_weapons( g, g->wp );
-        draw_player( g, g->p );
-        draw_status( g );
+        draw_starfield(g, g->sf);
+        draw_aliens(g, g->al);
+        draw_tunnel(g, g->t);
+        draw_bonus(g, g->bo);
+        draw_explosions(g, g->ex);
+        draw_weapons(g, g->wp);
+        draw_player(g, g->p);
+        draw_status(g);
 
         /* Print pause box if needed */
-        if( poz )
+        if(poz)
         {
             pausebox->frame++;
-            draw_box( g, pausebox );
+            draw_box(g, pausebox);
         }
 
         /* Refresh */
@@ -240,13 +240,13 @@ static void start_game (game *g)
         purcompteur++;
     }
 
-    if( pausebox )
+    if(pausebox)
     {
-        free_box( pausebox );
+        free_box(pausebox);
     }
 
-    free_starfield( g, g->sf );
-    free_tunnel( g->t );
-    free_player( g->p );
+    free_starfield(g, g->sf);
+    free_tunnel(g->t);
+    free_player(g->p);
 }
 

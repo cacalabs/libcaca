@@ -27,23 +27,23 @@
 
 #include "common.h"
 
-void ceo_alert( game *g )
+void ceo_alert(game *g)
 {
     int end = 0;
 
-    while( !end )
+    while(!end)
     {
         ee_clear();
 
-        if( ee_get_key() == '\t' )
+        if(ee_get_key() == '\t')
         {
             end = 1;
         }
 
-        fprintf( stderr, "foo\n" );
+        fprintf(stderr, "foo\n");
 
         ee_refresh();
 
-        usleep( 40000 );
+        usleep(40000);
     }
 }

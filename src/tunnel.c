@@ -27,7 +27,7 @@
 #include "common.h"
 
 /* Init tunnel */
-tunnel * create_tunnel( game *g, int w, int h )
+tunnel * create_tunnel(game *g, int w, int h)
 {
     int i;
     tunnel *t = malloc(sizeof(tunnel));
@@ -37,9 +37,9 @@ tunnel * create_tunnel( game *g, int w, int h )
     t->w = w;
     t->h = h;
 
-    if( t->w >= g->w )
+    if(t->w >= g->w)
     {
-        for( i = 0; i < g->h; i++ )
+        for(i = 0; i < g->h; i++)
         {
             t->left[i] = -10;
             t->right[i] = g->w + 10;
@@ -50,119 +50,119 @@ tunnel * create_tunnel( game *g, int w, int h )
         t->left[0] = (g->w - w) / 2;
         t->right[0] = (g->w + w) / 2;
         /* Yeah, sub-efficient, but less code to do :-) */
-        for( i = 0; i < g->h; i++ )
+        for(i = 0; i < g->h; i++)
         {
-            update_tunnel( g, t );
+            update_tunnel(g, t);
         }
     }
 
     return t;
 }
 
-void free_tunnel( tunnel *t )
+void free_tunnel(tunnel *t)
 {
-    free( t->left );
-    free( t->right );
-    free( t );
+    free(t->left);
+    free(t->right);
+    free(t);
 }
 
-void draw_tunnel( game *g, tunnel *t )
+void draw_tunnel(game *g, tunnel *t)
 {
     int i, j;
     char c;
 
-    ee_color( EE_GREEN );
+    ee_color(EE_GREEN);
 
     /* Left border */
-    for( i = 0; i < g->h ; i++ )
+    for(i = 0; i < g->h ; i++)
     {
-        if( t->left[i] <= -10 )
+        if(t->left[i] <= -10)
         {
             continue;
         }
 
-        if( i + 1 == g->h || t->left[i] > t->left[i+1] )
+        if(i + 1 == g->h || t->left[i] > t->left[i+1])
         {
-            c = ( i == 0 || t->left[i] > t->left[i-1] ) ? '>' : '/';
+            c = (i == 0 || t->left[i] > t->left[i-1]) ? '>' : '/';
         }
         else
         {
-            c = ( i == 0 || t->left[i] > t->left[i-1] ) ? '\\' : '<';
+            c = (i == 0 || t->left[i] > t->left[i-1]) ? '\\' : '<';
         }
 
-        ee_goto( t->left[i] + 1, i );
-        ee_putchar( c );
+        ee_goto(t->left[i] + 1, i);
+        ee_putchar(c);
 
-        if( i + 1 < g->h )
+        if(i + 1 < g->h)
         {
-            for( j = 1; j < t->left[i+1] - t->left[i]; j++ )
+            for(j = 1; j < t->left[i+1] - t->left[i]; j++)
             {
-                ee_goto( t->left[i] + j + 1, i );
-                ee_putchar( '_' );
+                ee_goto(t->left[i] + j + 1, i);
+                ee_putchar('_');
             }
         }
     }
 
     /* Right border */
-    for( i = 0; i < g->h ; i++ )
+    for(i = 0; i < g->h ; i++)
     {
-        if( t->right[i] >= g->w + 10 )
+        if(t->right[i] >= g->w + 10)
         {
             continue;
         }
 
-        if( i + 1 == g->h || t->right[i] > t->right[i+1] )
+        if(i + 1 == g->h || t->right[i] > t->right[i+1])
         {
-            c = ( i == 0 || t->right[i] > t->right[i-1] ) ? '>' : '/';
+            c = (i == 0 || t->right[i] > t->right[i-1]) ? '>' : '/';
         }
         else
         {
-            c = ( i == 0 || t->right[i] > t->right[i-1] ) ? '\\' : '<';
+            c = (i == 0 || t->right[i] > t->right[i-1]) ? '\\' : '<';
         }
 
-        if( i + 1 < g->h )
+        if(i + 1 < g->h)
         {
-            for( j = 1; j < t->right[i] - t->right[i+1]; j++ )
+            for(j = 1; j < t->right[i] - t->right[i+1]; j++)
             {
-                ee_goto( t->right[i+1] + j - 1, i );
-                ee_putchar( '_' );
+                ee_goto(t->right[i+1] + j - 1, i);
+                ee_putchar('_');
             }
         }
 
-        ee_goto( t->right[i] - 1, i );
-        ee_putchar( c );
+        ee_goto(t->right[i] - 1, i);
+        ee_putchar(c);
     }
 
-    ee_color( EE_RED );
+    ee_color(EE_RED);
 
     /* Left concrete */
-    for( i = 0; i < g->h ; i++ )
+    for(i = 0; i < g->h ; i++)
     {
-        for( j = 0 ; j <= t->left[i]; j++ )
+        for(j = 0 ; j <= t->left[i]; j++)
         {
-            ee_goto( j, i );
-            ee_putchar( '#' );
+            ee_goto(j, i);
+            ee_putchar('#');
         }
     }
 
     /* Right concrete */
-    for( i = 0; i < g->h ; i++ )
+    for(i = 0; i < g->h ; i++)
     {
-        for( j = t->right[i] ; j < g->w ; j++ )
+        for(j = t->right[i] ; j < g->w ; j++)
         {
-            ee_goto( j, i );
-            ee_putchar( '#' );
+            ee_goto(j, i);
+            ee_putchar('#');
         }
     }
 }
 
-void update_tunnel( game *g, tunnel *t )
+void update_tunnel(game *g, tunnel *t)
 {
     static int const delta[] = { -3, -2, -1, 1, 2, 3 };
     int i,j,k;
 
     /* Slide tunnel one block vertically */
-    for( i = t->h - 1; i--; )
+    for(i = t->h - 1; i--;)
     {
         t->left[i+1] = t->left[i];
         t->right[i+1] = t->right[i];
@@ -173,18 +173,18 @@ void update_tunnel( game *g, tunnel *t )
     j = delta[GET_RAND(0,6)];
 
     /* Check in which direction we need to alter tunnel */
-    if( t->right[1] - t->left[1] < t->w )
+    if(t->right[1] - t->left[1] < t->w)
     {
         /* Not wide enough, make sure i <= j */
-        if( i > j )
+        if(i > j)
         {
             k = j; j = i; i = k;
         }
     }
-    else if( t->right[1] - t->left[1] - 2 > t->w )
+    else if(t->right[1] - t->left[1] - 2 > t->w)
     {
         /* Too wide, make sure i >= j */
-        if( i < j )
+        if(i < j)
         {
             k = j; j = i; i = k;
         }
@@ -195,7 +195,7 @@ void update_tunnel( game *g, tunnel *t )
     }
 
     /* If width doesn't exceed game size, update coords */
-    if( t->w <= g->w || t->right[1] - t->left[1] < t->w )
+    if(t->w <= g->w || t->right[1] - t->left[1] < t->w)
     {
         t->left[0] = t->left[1] + i;
         t->right[0] = t->right[1] + j;
@@ -206,26 +206,26 @@ void update_tunnel( game *g, tunnel *t )
         t->right[0] = g->w + 10;
     }
 
-    if( t->w > g->w )
+    if(t->w > g->w)
     {
-        if( t->left[0] < 0 && t->right[0] < g->w - 2 )
+        if(t->left[0] < 0 && t->right[0] < g->w - 2)
         {
              t->left[0] = t->left[1] + 1;
         }
 
-        if( t->left[0] > 1 && t->right[0] > g->w - 1 )
+        if(t->left[0] > 1 && t->right[0] > g->w - 1)
         {
              t->right[0] = t->right[1] - 1;
         }
     }
     else
     {
-        if( t->left[0] < 0 )
+        if(t->left[0] < 0)
         {
             t->left[0] = t->left[1] + 1;
         }
 
-        if( t->right[0] > g->w - 1 )
+        if(t->right[0] > g->w - 1)
         {
             t->right[0] = t->right[1] - 1;
         }

@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: math.c,v 1.2 2002/12/22 23:01:35 sam Exp $
+ *   $Id$
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -22,11 +22,11 @@
 
 #include "common.h"
 
-int r00t( int a )
+int r00t(int a)
 {
     int x = a > 100000 ? 1000 : a > 1000 ? 100 : a > 10 ? 10 : 1;
 
-    if( a <= 0 )
+    if(a <= 0)
     {
         return 0;
     }

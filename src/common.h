@@ -146,85 +146,85 @@ typedef struct
 /*
  * From aliens.c
  */
-void init_aliens( game *g, aliens *al );
-void draw_aliens( game *g, aliens *al );
-void update_aliens( game *g, aliens *al );
-void add_alien( game *g, aliens *al, int x, int y, int type );
+void init_aliens(game *, aliens *);
+void draw_aliens(game *, aliens *);
+void update_aliens(game *, aliens *);
+void add_alien(game *, aliens *, int, int, int);
 
 /*
  * From bonus.c
  */
-void init_bonus( game *g, bonus *bo );
-void draw_bonus( game *g, bonus *bo );
-void update_bonus( game *g, bonus *bo );
-void add_bonus( game *g, bonus *bo, int x, int y, int type );
+void init_bonus(game *, bonus *);
+void draw_bonus(game *, bonus *);
+void update_bonus(game *, bonus *);
+void add_bonus(game *, bonus *, int, int, int);
 
 /*
  * From box.c
  */
-box * create_box( game *g, int x, int y, int w, int h );
-void draw_box( game *g, box *b );
-void free_box( box *b );
+box * create_box(game *, int, int, int, int);
+void draw_box(game *, box *);
+void free_box(box *);
 
 /*
  * From ceo.c
  */
-void ceo_alert( game *g );
+void ceo_alert(game *);
 
 /*
  * From collide.c
  */
-void collide_weapons_tunnel( game *g, weapons *wp, tunnel *t, explosions *ex );
-void collide_weapons_aliens( game *g, weapons *wp, aliens *al, explosions *ex );
-void collide_player_tunnel( game *g, player *p, tunnel *t, explosions *ex );
+void collide_weapons_tunnel(game *, weapons *, tunnel *, explosions *);
+void collide_weapons_aliens(game *, weapons *, aliens *, explosions *);
+void collide_player_tunnel(game *, player *, tunnel *, explosions *);
 
 /*
  * From explosions.c
  */
-void init_explosions( game *g, explosions *ex );
-void add_explosion( game *g, explosions *ex, int x, int y, int vx, int vy, int type );
-void draw_explosions( game *g, explosions *ex );
-void update_explosions( game *g, explosions *ex );
+void init_explosions(game *, explosions *);
+void add_explosion(game *, explosions *, int, int, int, int, int);
+void draw_explosions(game *, explosions *);
+void update_explosions(game *, explosions *);
 
 /*
  * From math.c
  */
-int r00t( int a );
+int r00t(int);
 
 /*
  * From overlay.c
  */
-void draw_status( game *g );
+void draw_status(game *);
 
 /*
  * From player.c
  */
-player * create_player( game *g );
-void free_player( player *p );
-void draw_player( game *g, player *p );
-void update_player( game *g, player *p );
+player * create_player(game *);
+void free_player(player *);
+void draw_player(game *, player *);
+void update_player(game *, player *);
 
 /*
  * From starfield.c
  */
-starfield * create_starfield( game *g );
-void draw_starfield( game *g, starfield *s );
-void update_starfield( game *g, starfield *s );
-void free_starfield( game *g, starfield *s );
+starfield * create_starfield(game *);
+void draw_starfield(game *, starfield *);
+void update_starfield(game *, starfield *);
+void free_starfield(game *, starfield *);
 
 /*
  * From tunnel.c
  */
-tunnel * create_tunnel( game *g, int w, int h );
-void free_tunnel( tunnel *t );
-void draw_tunnel( game *g, tunnel *t );
-void update_tunnel( game *g, tunnel *t );
+tunnel * create_tunnel(game *, int, int);
+void free_tunnel(tunnel *);
+void draw_tunnel(game *, tunnel *);
+void update_tunnel(game *, tunnel *);
 
 /*
  * From weapons.c
  */
-void init_weapons( game *g, weapons *wp );
-void draw_weapons( game *g, weapons *wp );
-void update_weapons( game *g, weapons *wp );
-void add_weapon( game *g, weapons *wp, int x, int y, int vx, int vy, int type );
+void init_weapons(game *, weapons *);
+void draw_weapons(game *, weapons *);
+void update_weapons(game *, weapons *);
+void add_weapon(game *, weapons *, int, int, int, int, int);
 

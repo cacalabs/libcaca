@@ -24,70 +24,70 @@
 
 #include "common.h"
 
-static void draw_bomb( int x, int y, int vx, int vy );
-static void draw_nuke( int x, int y, int frame );
-static void draw_beam( int x, int y, int frame );
-static void draw_circle( int x, int y, int r, char c );
-static void draw_fragbomb( int x, int y, int frame );
+static void draw_bomb(int x, int y, int vx, int vy);
+static void draw_nuke(int x, int y, int frame);
+static void draw_beam(int x, int y, int frame);
+static void draw_circle(int x, int y, int r, char c);
+static void draw_fragbomb(int x, int y, int frame);
 
-void init_weapons( game *g, weapons *wp )
+void init_weapons(game *g, weapons *wp)
 {
     int i;
 
-    for( i = 0; i < WEAPONS; i++ )
+    for(i = 0; i < WEAPONS; i++)
     {
         wp->type[i] = WEAPON_NONE;
     }
 }
 
-void draw_weapons( game *g, weapons *wp )
+void draw_weapons(game *g, weapons *wp)
 {
     int i;
 
-    for( i = 0; i < WEAPONS; i++ )
+    for(i = 0; i < WEAPONS; i++)
     {
-        switch( wp->type[i] )
+        switch(wp->type[i])
         {
             case WEAPON_LASER:
-                ee_color( EE_WHITE );
-                ee_goto( wp->x[i] >> 4, wp->y[i] >> 4 );
-                ee_putchar( '|' );
-                ee_color( EE_CYAN );
-                ee_goto( wp->x[i] >> 4, (wp->y[i] >> 4) + 1 );
-                ee_putchar( '|' );
+                ee_color(EE_WHITE);
+                ee_goto(wp->x[i] >> 4, wp->y[i] >> 4);
+                ee_putchar('|');
+                ee_color(EE_CYAN);
+                ee_goto(wp->x[i] >> 4, (wp->y[i] >> 4) + 1);
+                ee_putchar('|');
                 break;
             case WEAPON_SEEKER:
-                ee_color( EE_CYAN );
-                ee_goto( wp->x3[i] >> 4, wp->y3[i] >> 4 );
-                ee_putchar( '.' );
-                ee_goto( wp->x2[i] >> 4, wp->y2[i] >> 4 );
-                ee_putchar( 'o' );
-                ee_color( EE_WHITE );
-                ee_goto( wp->x[i] >> 4, wp->y[i] >> 4 );
-                ee_putchar( '@' );
+                ee_color(EE_CYAN);
+                ee_goto(wp->x3[i] >> 4, wp->y3[i] >> 4);
+                ee_putchar('.');
+                ee_goto(wp->x2[i] >> 4, wp->y2[i] >> 4);
+                ee_putchar('o');
+                ee_color(EE_WHITE);
+                ee_goto(wp->x[i] >> 4, wp->y[i] >> 4);
+                ee_putchar('@');
                 break;
             case WEAPON_BOMB:
-                ee_color( EE_GRAY );
-                ee_goto( (wp->x[i] - wp->vx[i]) >> 4, (wp->y[i] - wp->vy[i]) >> 4 );
-                ee_putchar( '.' );
-                ee_goto( (wp->x3[i] - wp->vx[i]) >> 4, (wp->y3[i] - wp->vy[i]) >> 4 );
-                ee_putchar( '.' );
-                ee_goto( (wp->x2[i] - wp->vx[i]) >> 4, (wp->y2[i] - wp->vy[i]) >> 4 );
-                ee_putchar( '.' );
-                ee_goto( wp->x3[i] >> 4, wp->y3[i] >> 4 );
-                ee_putchar( '.' );
-                ee_goto( wp->x2[i] >> 4, wp->y2[i] >> 4 );
-                ee_putchar( '.' );
-                draw_bomb( wp->x[i] >> 4, wp->y[i] >> 4, wp->vx[i], wp->vy[i] );
+                ee_color(EE_GRAY);
+                ee_goto((wp->x[i] - wp->vx[i]) >> 4, (wp->y[i] - wp->vy[i]) >> 4);
+                ee_putchar('.');
+                ee_goto((wp->x3[i] - wp->vx[i]) >> 4, (wp->y3[i] - wp->vy[i]) >> 4);
+                ee_putchar('.');
+                ee_goto((wp->x2[i] - wp->vx[i]) >> 4, (wp->y2[i] - wp->vy[i]) >> 4);
+                ee_putchar('.');
+                ee_goto(wp->x3[i] >> 4, wp->y3[i] >> 4);
+                ee_putchar('.');
+                ee_goto(wp->x2[i] >> 4, wp->y2[i] >> 4);
+                ee_putchar('.');
+                draw_bomb(wp->x[i] >> 4, wp->y[i] >> 4, wp->vx[i], wp->vy[i]);
                 break;
             case WEAPON_FRAGBOMB:
-                draw_fragbomb( wp->x[i] >> 4, wp->y[i] >> 4, wp->n[i] );
+                draw_fragbomb(wp->x[i] >> 4, wp->y[i] >> 4, wp->n[i]);
                 break;
             case WEAPON_BEAM:
-                draw_beam( wp->x[i] >> 4, wp->y[i] >> 4, wp->n[i] );
+                draw_beam(wp->x[i] >> 4, wp->y[i] >> 4, wp->n[i]);
                 break;
             case WEAPON_NUKE:
-                draw_nuke( wp->x[i] >> 4, wp->y[i] >> 4, wp->n[i] );
+                draw_nuke(wp->x[i] >> 4, wp->y[i] >> 4, wp->n[i]);
                 break;
             case WEAPON_LIGHTNING:
             case WEAPON_NONE:
@@ -96,18 +96,18 @@ void draw_weapons( game *g, weapons *wp )
     }
 }
 
-void update_weapons( game *g, weapons *wp )
+void update_weapons(game *g, weapons *wp)
 {
     int i, j, dist, xmin, ymin, dx, dy, xnew, ynew;
 
-    for( i = 0; i < WEAPONS; i++ )
+    for(i = 0; i < WEAPONS; i++)
     {
-        switch( wp->type[i] )
+        switch(wp->type[i])
         {
             case WEAPON_LASER:
                 wp->x[i] += wp->vx[i];
                 wp->y[i] += wp->vy[i];
-                if( wp->y[i] < 0 )
+                if(wp->y[i] < 0)
                 {
                     wp->type[i] = WEAPON_NONE;
                 }
@@ -124,13 +124,13 @@ void update_weapons( game *g, weapons *wp )
                 wp->x[i] += wp->vx[i];
                 wp->y[i] += wp->vy[i];
 
-                if( wp->y[i] < 0 )
+                if(wp->y[i] < 0)
                 {
                     wp->type[i] = WEAPON_NONE;
                     break;
                 }
 
-                if( wp->n[i] < 0 )
+                if(wp->n[i] < 0)
                 {
                     /* Stop updating direction */
                     break;
@@ -148,15 +148,15 @@ void update_weapons( game *g, weapons *wp )
                         + 4 * (ynew - ymin) * (ynew - ymin);
 
                 /* Find the nearest alien */
-                for( j = 0; j < ALIENS; j++ )
+                for(j = 0; j < ALIENS; j++)
                 {
-                    if( g->al->type[j] != ALIEN_NONE )
+                    if(g->al->type[j] != ALIEN_NONE)
                     {
                         int alx = g->al->x[j] << 4;
                         int aly = g->al->y[j] << 4;
                         int new = (xnew - alx) * (xnew - alx)
                                    + 4 * (ynew - aly) * (ynew - aly);
-                        if( new <= dist )
+                        if(new <= dist)
                         {
                             dist = new;
                             xmin = alx;
@@ -170,9 +170,9 @@ void update_weapons( game *g, weapons *wp )
                 dy = ymin - wp->y[i];
 
                 /* Normalize direction */
-                if( dx | dy )
+                if(dx | dy)
                 {
-                    int norm = r00t( dx * dx + 4 * dy * dy );
+                    int norm = r00t(dx * dx + 4 * dy * dy);
                     dx = dx * 32 / norm;
                     dy = dy * 32 / norm;
                 }
@@ -182,9 +182,9 @@ void update_weapons( game *g, weapons *wp )
                 dy = (dy + 3 * wp->vy[i]) / 4;
 
                 /* Normalize speed */
-                if( dx | dy )
+                if(dx | dy)
                 {
-                    int norm = r00t( dx * dx + 4 * dy * dy );
+                    int norm = r00t(dx * dx + 4 * dy * dy);
                     wp->vx[i] = dx * 32 / norm;
                     wp->vy[i] = dy * 32 / norm;
                 }
@@ -193,7 +193,7 @@ void update_weapons( game *g, weapons *wp )
 
             case WEAPON_FRAGBOMB:
                 /* If n was set to -1, the fragbomb just exploded */
-                if( wp->n[i] == -1 )
+                if(wp->n[i] == -1)
                 {
                     int coords[] =
                     {
@@ -203,10 +203,10 @@ void update_weapons( game *g, weapons *wp )
                         16, 14,   -16, 14,   16, -14,   -16, -14
                     };
 
-                    for( j = 0 ; j < sizeof(coords) / sizeof(int) ; j += 2 )
+                    for(j = 0 ; j < sizeof(coords) / sizeof(int) ; j += 2)
                     {
-                        add_weapon( g, g->wp, wp->x[i] + coords[j], wp->y[i] + coords[j+1] / 2, coords[j], coords[j+1], WEAPON_SEEKER );
-                        add_weapon( g, g->wp, wp->x[i] + coords[j] / 2, wp->y[i] + coords[j+1], coords[j], coords[j+1], WEAPON_SEEKER );
+                        add_weapon(g, g->wp, wp->x[i] + coords[j], wp->y[i] + coords[j+1] / 2, coords[j], coords[j+1], WEAPON_SEEKER);
+                        add_weapon(g, g->wp, wp->x[i] + coords[j] / 2, wp->y[i] + coords[j+1], coords[j], coords[j+1], WEAPON_SEEKER);
                     }
 
                     wp->type[i] = WEAPON_NONE;
@@ -215,7 +215,7 @@ void update_weapons( game *g, weapons *wp )
                 wp->x[i] += wp->vx[i];
                 wp->y[i] += wp->vy[i];
                 wp->n[i]++;
-                if( wp->y[i] < 0 )
+                if(wp->y[i] < 0)
                 {
                     wp->type[i] = WEAPON_NONE;
                 }
@@ -225,14 +225,14 @@ void update_weapons( game *g, weapons *wp )
                 wp->x[i] = (g->p->x + 2) << 4;
                 wp->y[i] = g->p->y << 4;
                 wp->n[i]--;
-                if( wp->n[i] < 0 )
+                if(wp->n[i] < 0)
                 {
                     wp->type[i] = WEAPON_NONE;
                 }
                 break;
             case WEAPON_NUKE:
                 wp->n[i]--;
-                if( wp->n[i] < 0 )
+                if(wp->n[i] < 0)
                 {
                     wp->type[i] = WEAPON_NONE;
                 }
@@ -244,13 +244,13 @@ void update_weapons( game *g, weapons *wp )
     }
 }
 
-void add_weapon( game *g, weapons *wp, int x, int y, int vx, int vy, int type )
+void add_weapon(game *g, weapons *wp, int x, int y, int vx, int vy, int type)
 {
     int i;
 
-    for( i = 0; i < WEAPONS; i++ )
+    for(i = 0; i < WEAPONS; i++)
     {
-        if( wp->type[i] == WEAPON_NONE )
+        if(wp->type[i] == WEAPON_NONE)
         {
             wp->x[i] = x;
             wp->y[i] = y;
@@ -258,7 +258,7 @@ void add_weapon( game *g, weapons *wp, int x, int y, int vx, int vy, int type )
             wp->vy[i] = vy;
             wp->type[i] = type;
             wp->n[i] = 0;
-            switch( type )
+            switch(type)
             {
                 case WEAPON_LASER:
                     break;
@@ -286,447 +286,447 @@ void add_weapon( game *g, weapons *wp, int x, int y, int vx, int vy, int type )
     }
 }
 
-static void draw_bomb( int x, int y, int vx, int vy )
+static void draw_bomb(int x, int y, int vx, int vy)
 {
     vy *= 2;
-    ee_color( EE_CYAN );
+    ee_color(EE_CYAN);
 
-    if( vx > vy )
+    if(vx > vy)
     {
-        if( vx > -vy ) /* right quarter */
+        if(vx > -vy) /* right quarter */
         {
-            if( vy > vx/4 )
+            if(vy > vx/4)
             {
                 /* -1pi/6 */
-                ee_goto( x-4, y-1 );
-                ee_putstr( "/`-." );
-                ee_goto( x-4, y );
-                ee_putstr( "`-._\\" );
-                ee_color( EE_WHITE );
-                ee_goto( x-1, y );
-                ee_putstr( "_\\" );
-                ee_goto( x, y+1 );
-                ee_putchar( '`' );
+                ee_goto(x-4, y-1);
+                ee_putstr("/`-.");
+                ee_goto(x-4, y);
+                ee_putstr("`-._\\");
+                ee_color(EE_WHITE);
+                ee_goto(x-1, y);
+                ee_putstr("_\\");
+                ee_goto(x, y+1);
+                ee_putchar('`');
             }
-            else if( vy < -vx/4 )
+            else if(vy < -vx/4)
             {
                 /* 1pi/6 */
-                ee_goto( x-4, y );
-                ee_putstr( ",-' " );
-                ee_goto( x-4, y+1 );
-                ee_putstr( "\\,-'" );
-                ee_color( EE_WHITE );
-                ee_goto( x-1, y-1 );
-                ee_putstr( "_," );
-                ee_goto( x, y );
-                ee_putchar( '/' );
+                ee_goto(x-4, y);
+                ee_putstr(",-' ");
+                ee_goto(x-4, y+1);
+                ee_putstr("\\,-'");
+                ee_color(EE_WHITE);
+                ee_goto(x-1, y-1);
+                ee_putstr("_,");
+                ee_goto(x, y);
+                ee_putchar('/');
             }
             else
             {
                 /* 0pi/6 */
-                ee_goto( x-4, y-1 );
-                ee_putstr( "____" );
-                ee_goto( x-5, y );
-                ee_putstr( "|____" );
-                ee_color( EE_WHITE );
-                ee_goto( x, y );
-                ee_putchar( '>' );
+                ee_goto(x-4, y-1);
+                ee_putstr("____");
+                ee_goto(x-5, y);
+                ee_putstr("|____");
+                ee_color(EE_WHITE);
+                ee_goto(x, y);
+                ee_putchar('>');
             }
         }
         else /* top quarter */
         {
-            if( vx > -vy/4 )
+            if(vx > -vy/4)
             {
                 /* 2pi/6 */
-                ee_goto( x-2, y );
-                ee_putstr( "/ " );
-                ee_goto( x-3, y+1 );
-                ee_putstr( "/ /" );
-                ee_goto( x-3, y+2 );
-                ee_putstr( "`'" );
-                ee_color( EE_WHITE );
-                ee_goto( x-1, y-1 );
-                ee_putstr( "_," );
-                ee_goto( x, y );
-                ee_putchar( '|' );
+                ee_goto(x-2, y);
+                ee_putstr("/ ");
+                ee_goto(x-3, y+1);
+                ee_putstr("/ /");
+                ee_goto(x-3, y+2);
+                ee_putstr("`'");
+                ee_color(EE_WHITE);
+                ee_goto(x-1, y-1);
+                ee_putstr("_,");
+                ee_goto(x, y);
+                ee_putchar('|');
             }
-            else if( vx < vy/4 )
+            else if(vx < vy/4)
             {
                 /* 4pi/6 */
-                ee_goto( x+1, y );
-                ee_putstr( " \\" );
-                ee_goto( x+1, y+1 );
-                ee_putstr( "\\ \\" );
-                ee_goto( x+2, y+2 );
-                ee_putstr( "`'" );
-                ee_color( EE_WHITE );
-                ee_goto( x, y-1 );
-                ee_putstr( "._" );
-                ee_goto( x, y );
-                ee_putchar( '|' );
+                ee_goto(x+1, y);
+                ee_putstr(" \\");
+                ee_goto(x+1, y+1);
+                ee_putstr("\\ \\");
+                ee_goto(x+2, y+2);
+                ee_putstr("`'");
+                ee_color(EE_WHITE);
+                ee_goto(x, y-1);
+                ee_putstr("._");
+                ee_goto(x, y);
+                ee_putchar('|');
             }
             else
             {
                 /* 3pi/6 */
-                ee_goto( x-1, y+1 );
-                ee_putstr( "| |" );
-                ee_goto( x-1, y+2 );
-                ee_putstr( "|_|" );
-                ee_color( EE_WHITE );
-                ee_goto( x-1, y );
-                ee_putstr( ",^." );
+                ee_goto(x-1, y+1);
+                ee_putstr("| |");
+                ee_goto(x-1, y+2);
+                ee_putstr("|_|");
+                ee_color(EE_WHITE);
+                ee_goto(x-1, y);
+                ee_putstr(",^.");
             }
         }
     }
     else
     {
-        if( vx > -vy ) /* bottom quarter */
+        if(vx > -vy) /* bottom quarter */
         {
-            if( vx > vy/4 )
+            if(vx > vy/4)
             {
                 /* -2pi/6 */
-                ee_goto( x-2, y-2 );
-                ee_putstr( ",." );
-                ee_goto( x-2, y-1 );
-                ee_putstr( "\\ \\" );
-                ee_goto( x-1, y );
-                ee_putchar( '\\' );
-                ee_color( EE_WHITE );
-                ee_goto( x, y );
-                ee_putstr( "_|" );
+                ee_goto(x-2, y-2);
+                ee_putstr(",.");
+                ee_goto(x-2, y-1);
+                ee_putstr("\\ \\");
+                ee_goto(x-1, y);
+                ee_putchar('\\');
+                ee_color(EE_WHITE);
+                ee_goto(x, y);
+                ee_putstr("_|");
             }
-            else if( vx < -vy/4 )
+            else if(vx < -vy/4)
             {
                 /* -4pi/6 */
-                ee_goto( x+1, y-2 );
-                ee_putstr( ",." );
-                ee_goto( x, y-1 );
-                ee_putstr( "/ /" );
-                ee_goto( x+1, y );
-                ee_putchar( '/' );
-                ee_color( EE_WHITE );
-                ee_goto( x-1, y );
-                ee_putstr( "|_/" );
+                ee_goto(x+1, y-2);
+                ee_putstr(",.");
+                ee_goto(x, y-1);
+                ee_putstr("/ /");
+                ee_goto(x+1, y);
+                ee_putchar('/');
+                ee_color(EE_WHITE);
+                ee_goto(x-1, y);
+                ee_putstr("|_/");
             }
             else
             {
                 /* -3pi/6 */
-                ee_goto( x, y-3 );
-                ee_putchar( '_' );
-                ee_goto( x-1, y-2 );
-                ee_putstr( "| |" );
-                ee_goto( x-1, y-1 );
-                ee_putstr( "| |" );
-                ee_color( EE_WHITE );
-                ee_goto( x-1, y );
-                ee_putstr( "`v'" );
+                ee_goto(x, y-3);
+                ee_putchar('_');
+                ee_goto(x-1, y-2);
+                ee_putstr("| |");
+                ee_goto(x-1, y-1);
+                ee_putstr("| |");
+                ee_color(EE_WHITE);
+                ee_goto(x-1, y);
+                ee_putstr("`v'");
             }
         }
         else /* left quarter */
         {
-            if( vy > -vx/4 )
+            if(vy > -vx/4)
             {
                 /* -5pi/6 */
-                ee_goto( x+1, y-1 );
-                ee_putstr( ",-'\\" );
-                ee_goto( x+2, y );
-                ee_putstr( ",-'" );
-                ee_goto( x, y+1 );
-                ee_putchar( '\'' );
-                ee_color( EE_WHITE );
-                ee_goto( x, y );
-                ee_putstr( "/_" );
+                ee_goto(x+1, y-1);
+                ee_putstr(",-'\\");
+                ee_goto(x+2, y);
+                ee_putstr(",-'");
+                ee_goto(x, y+1);
+                ee_putchar('\'');
+                ee_color(EE_WHITE);
+                ee_goto(x, y);
+                ee_putstr("/_");
             }
-            else if( vy < vx/4 )
+            else if(vy < vx/4)
             {
                 /* 5pi/6 */
-                ee_goto( x+1, y );
-                ee_putstr( " `-." );
-                ee_goto( x+1, y+1 );
-                ee_putstr( "`-./" );
-                ee_color( EE_WHITE );
-                ee_goto( x, y-1 );
-                ee_putstr( "._" );
-                ee_goto( x, y );
-                ee_putchar( '\\' );
+                ee_goto(x+1, y);
+                ee_putstr(" `-.");
+                ee_goto(x+1, y+1);
+                ee_putstr("`-./");
+                ee_color(EE_WHITE);
+                ee_goto(x, y-1);
+                ee_putstr("._");
+                ee_goto(x, y);
+                ee_putchar('\\');
             }
             else
             {
                 /* 6pi/6 */
-                ee_goto( x+1, y-1 );
-                ee_putstr( "____" );
-                ee_goto( x+1, y );
-                ee_putstr( "____|" );
-                ee_color( EE_WHITE );
-                ee_goto( x, y );
-                ee_putchar( '<' );
+                ee_goto(x+1, y-1);
+                ee_putstr("____");
+                ee_goto(x+1, y);
+                ee_putstr("____|");
+                ee_color(EE_WHITE);
+                ee_goto(x, y);
+                ee_putchar('<');
             }
         }
     }
 }
 
-static void draw_fragbomb( int x, int y, int frame )
+static void draw_fragbomb(int x, int y, int frame)
 {
-    ee_color( EE_WHITE );
+    ee_color(EE_WHITE);
 
-    ee_color( frame & 1 ? EE_CYAN : EE_WHITE );
-    ee_goto( x-2, y );
-    ee_putstr( "(    )" );
-    ee_goto( x-1, y+1 );
-    ee_putstr( "`--'" );
+    ee_color(frame & 1 ? EE_CYAN : EE_WHITE);
+    ee_goto(x-2, y);
+    ee_putstr("(    )");
+    ee_goto(x-1, y+1);
+    ee_putstr("`--'");
 
-    ee_color( frame & 1 ? EE_WHITE : EE_CYAN );
-    ee_goto( x-1, y-1 );
-    ee_putstr( ",--." );
-    ee_goto( x, y );
-    ee_putstr( "'," );
+    ee_color(frame & 1 ? EE_WHITE : EE_CYAN);
+    ee_goto(x-1, y-1);
+    ee_putstr(",--.");
+    ee_goto(x, y);
+    ee_putstr("',");
 
-    switch( frame % 4 )
+    switch(frame % 4)
     {
     case 0:
-        ee_color( EE_CYAN );
-        ee_goto( x, y + 2 );
-        ee_putchar( 'O' );
-        ee_goto( x + 2, y + 2 );
-        ee_putchar( 'o' );
-        ee_goto( x + 1, y + 3 );
-        ee_putchar( 'o' );
-        ee_color( EE_GRAY );
-        ee_goto( x - 1, y + 3 );
-        ee_putchar( ':' );
-        ee_goto( x + 2, y + 4 );
-        ee_putchar( ':' );
-        ee_goto( x, y + 4 );
-        ee_putchar( '.' );
-        ee_goto( x + 1, y + 5 );
-        ee_putchar( '.' );
+        ee_color(EE_CYAN);
+        ee_goto(x, y + 2);
+        ee_putchar('O');
+        ee_goto(x + 2, y + 2);
+        ee_putchar('o');
+        ee_goto(x + 1, y + 3);
+        ee_putchar('o');
+        ee_color(EE_GRAY);
+        ee_goto(x - 1, y + 3);
+        ee_putchar(':');
+        ee_goto(x + 2, y + 4);
+        ee_putchar(':');
+        ee_goto(x, y + 4);
+        ee_putchar('.');
+        ee_goto(x + 1, y + 5);
+        ee_putchar('.');
         break;
     case 1:
-        ee_color( EE_CYAN );
-        //ee_goto( x, y + 1 );
-        //ee_putchar( 'O' );
-        ee_goto( x + 1, y + 2 );
-        ee_putchar( 'O' );
-        ee_goto( x, y + 3 );
-        ee_putchar( 'o' );
-        ee_color( EE_GRAY );
-        ee_goto( x + 2, y + 3 );
-        ee_putchar( ':' );
-        ee_goto( x + 1, y + 4 );
-        ee_putchar( ':' );
-        ee_goto( x - 1, y + 4 );
-        ee_putchar( '.' );
-        ee_goto( x + 2, y + 5 );
-        ee_putchar( '.' );
+        ee_color(EE_CYAN);
+        //ee_goto(x, y + 1);
+        //ee_putchar('O');
+        ee_goto(x + 1, y + 2);
+        ee_putchar('O');
+        ee_goto(x, y + 3);
+        ee_putchar('o');
+        ee_color(EE_GRAY);
+        ee_goto(x + 2, y + 3);
+        ee_putchar(':');
+        ee_goto(x + 1, y + 4);
+        ee_putchar(':');
+        ee_goto(x - 1, y + 4);
+        ee_putchar('.');
+        ee_goto(x + 2, y + 5);
+        ee_putchar('.');
         break;
     case 2:
-        ee_color( EE_CYAN );
-        //ee_goto( x - 1, y + 1 );
-        //ee_putchar( 'O' );
-        ee_goto( x + 2, y + 2 );
-        ee_putchar( 'O' );
-        ee_goto( x, y + 2 );
-        ee_putchar( 'o' );
-        ee_goto( x + 1, y + 3 );
-        ee_putchar( 'o' );
-        ee_color( EE_GRAY );
-        ee_goto( x, y + 4 );
-        ee_putchar( ':' );
-        ee_goto( x + 2, y + 4 );
-        ee_putchar( '.' );
-        ee_goto( x + 1, y + 5 );
-        ee_putchar( '.' );
+        ee_color(EE_CYAN);
+        //ee_goto(x - 1, y + 1);
+        //ee_putchar('O');
+        ee_goto(x + 2, y + 2);
+        ee_putchar('O');
+        ee_goto(x, y + 2);
+        ee_putchar('o');
+        ee_goto(x + 1, y + 3);
+        ee_putchar('o');
+        ee_color(EE_GRAY);
+        ee_goto(x, y + 4);
+        ee_putchar(':');
+        ee_goto(x + 2, y + 4);
+        ee_putchar('.');
+        ee_goto(x + 1, y + 5);
+        ee_putchar('.');
         break;
     case 3:
-        ee_color( EE_CYAN );
-        //ee_goto( x + 2, y + 1 );
-        //ee_putchar( 'O' );
-        ee_goto( x + 1, y + 2 );
-        ee_putchar( 'O' );
-        ee_goto( x - 1, y + 2 );
-        ee_putchar( 'o' );
-        ee_goto( x + 2, y + 3 );
-        ee_putchar( 'o' );
-        ee_color( EE_GRAY );
-        ee_goto( x, y + 3 );
-        ee_putchar( ':' );
-        ee_goto( x + 1, y + 4 );
-        ee_putchar( ':' );
-        ee_goto( x, y + 5 );
-        ee_putchar( '.' );
+        ee_color(EE_CYAN);
+        //ee_goto(x + 2, y + 1);
+        //ee_putchar('O');
+        ee_goto(x + 1, y + 2);
+        ee_putchar('O');
+        ee_goto(x - 1, y + 2);
+        ee_putchar('o');
+        ee_goto(x + 2, y + 3);
+        ee_putchar('o');
+        ee_color(EE_GRAY);
+        ee_goto(x, y + 3);
+        ee_putchar(':');
+        ee_goto(x + 1, y + 4);
+        ee_putchar(':');
+        ee_goto(x, y + 5);
+        ee_putchar('.');
         break;
     }
 }
 
-static void draw_beam( int x, int y, int frame )
+static void draw_beam(int x, int y, int frame)
 {
     int r = (29 - frame) * (29 - frame) / 8;
     int i;
 
-    switch( frame )
+    switch(frame)
     {
         case 24:
-            ee_color( EE_WHITE );
-            ee_goto( x, y-3 );
-            ee_putstr( "__" );
-            ee_goto( x-1, y-2 );
-            ee_putchar( '\'' );
-            ee_goto( x+2, y-2 );
-            ee_putchar( '`' );
+            ee_color(EE_WHITE);
+            ee_goto(x, y-3);
+            ee_putstr("__");
+            ee_goto(x-1, y-2);
+            ee_putchar('\'');
+            ee_goto(x+2, y-2);
+            ee_putchar('`');
             break;
         case 23:
-            ee_color( EE_CYAN );
-            ee_goto( x, y-3 );
-            ee_putstr( "__" );
-            ee_color( EE_WHITE );
-            ee_goto( x-2, y-2 );
-            ee_putstr( "-'" );
-            ee_goto( x+2, y-2 );
-            ee_putstr( "`-" );
+            ee_color(EE_CYAN);
+            ee_goto(x, y-3);
+            ee_putstr("__");
+            ee_color(EE_WHITE);
+            ee_goto(x-2, y-2);
+            ee_putstr("-'");
+            ee_goto(x+2, y-2);
+            ee_putstr("`-");
             break;
         case 22:
-            ee_color( EE_CYAN );
-            ee_goto( x, y-3 );
-            ee_putstr( "__" );
-            ee_goto( x-1, y-2 );
-            ee_putchar( '\'' );
-            ee_goto( x+2, y-2 );
-            ee_putchar( '`' );
-            ee_color( EE_WHITE );
-            ee_goto( x-3, y-2 );
-            ee_putstr( ",-" );
-            ee_goto( x+3, y-2 );
-            ee_putstr( "-." );
+            ee_color(EE_CYAN);
+            ee_goto(x, y-3);
+            ee_putstr("__");
+            ee_goto(x-1, y-2);
+            ee_putchar('\'');
+            ee_goto(x+2, y-2);
+            ee_putchar('`');
+            ee_color(EE_WHITE);
+            ee_goto(x-3, y-2);
+            ee_putstr(",-");
+            ee_goto(x+3, y-2);
+            ee_putstr("-.");
             break;
         case 21:
-            ee_color( EE_CYAN );
-            ee_goto( x-1, y-3 );
-            ee_putstr( "____" );
-            ee_goto( x-2, y-2 );
-            ee_putchar( '\'' );
-            ee_goto( x+3, y-2 );
-            ee_putchar( '`' );
-            ee_color( EE_WHITE );
-            ee_goto( x-4, y-2 );
-            ee_putstr( ",-" );
-            ee_goto( x+4, y-2 );
-            ee_putstr( "-." );
+            ee_color(EE_CYAN);
+            ee_goto(x-1, y-3);
+            ee_putstr("____");
+            ee_goto(x-2, y-2);
+            ee_putchar('\'');
+            ee_goto(x+3, y-2);
+            ee_putchar('`');
+            ee_color(EE_WHITE);
+            ee_goto(x-4, y-2);
+            ee_putstr(",-");
+            ee_goto(x+4, y-2);
+            ee_putstr("-.");
             break;
         case 20:
-            ee_color( EE_WHITE );
-            ee_goto( x, y-3 );
-            ee_putstr( "%%" );
-            ee_goto( x-4, y-2 );
-            ee_putchar( ',' );
-            ee_goto( x+5, y-2 );
-            ee_putchar( '.' );
-            ee_color( EE_CYAN );
-            ee_goto( x-1, y-3 );
-            ee_putchar( ':' );
-            ee_goto( x+2, y-3 );
-            ee_putchar( ':' );
-            ee_goto( x-3, y-2 );
-            ee_putstr( "-'" );
-            ee_goto( x+3, y-2 );
-            ee_putstr( "`-" );
+            ee_color(EE_WHITE);
+            ee_goto(x, y-3);
+            ee_putstr("%%");
+            ee_goto(x-4, y-2);
+            ee_putchar(',');
+            ee_goto(x+5, y-2);
+            ee_putchar('.');
+            ee_color(EE_CYAN);
+            ee_goto(x-1, y-3);
+            ee_putchar(':');
+            ee_goto(x+2, y-3);
+            ee_putchar(':');
+            ee_goto(x-3, y-2);
+            ee_putstr("-'");
+            ee_goto(x+3, y-2);
+            ee_putstr("`-");
             break;
         case 19:
-            ee_color( EE_WHITE );
-            ee_goto( x, y-4 );
-            ee_putstr( "%%" );
-            ee_goto( x, y-3 );
-            ee_putstr( "##" );
-            ee_color( EE_CYAN );
-            ee_goto( x-1, y-4 );
-            ee_putchar( ':' );
-            ee_goto( x+2, y-4 );
-            ee_putchar( ':' );
-            ee_goto( x-1, y-3 );
-            ee_putchar( '%' );
-            ee_goto( x+2, y-3 );
-            ee_putchar( '%' );
-            ee_goto( x-4, y-2 );
-            ee_putstr( ",-'" );
-            ee_goto( x+3, y-2 );
-            ee_putstr( "`-." );
-            ee_color( EE_BLUE );
-            ee_goto( x-2, y-3 );
-            ee_putchar( ':' );
-            ee_goto( x+3, y-3 );
-            ee_putchar( ':' );
+            ee_color(EE_WHITE);
+            ee_goto(x, y-4);
+            ee_putstr("%%");
+            ee_goto(x, y-3);
+            ee_putstr("##");
+            ee_color(EE_CYAN);
+            ee_goto(x-1, y-4);
+            ee_putchar(':');
+            ee_goto(x+2, y-4);
+            ee_putchar(':');
+            ee_goto(x-1, y-3);
+            ee_putchar('%');
+            ee_goto(x+2, y-3);
+            ee_putchar('%');
+            ee_goto(x-4, y-2);
+            ee_putstr(",-'");
+            ee_goto(x+3, y-2);
+            ee_putstr("`-.");
+            ee_color(EE_BLUE);
+            ee_goto(x-2, y-3);
+            ee_putchar(':');
+            ee_goto(x+3, y-3);
+            ee_putchar(':');
             break;
         case 18:
         default:
             r = (18 - frame) * (18 - frame);
-            ee_color( EE_WHITE );
-            ee_goto( x-1, y-5-r );
-            ee_putstr( ":%%:" );
-            ee_goto( x-1, y-4-r );
-            ee_putstr( "%##%" );
-            ee_color( EE_CYAN );
-            ee_goto( x-2, y-4-r );
-            ee_putchar( ':' );
-            ee_goto( x+3, y-4-r );
-            ee_putchar( ':' );
-            ee_goto( x-2, y-2 );
-            ee_putchar( '\'' );
-            ee_goto( x+3, y-2 );
-            ee_putchar( '`' );
-            ee_color( EE_BLUE );
-            ee_goto( x-3, y-2 );
-            ee_putchar( ':' );
-            ee_goto( x+4, y-2 );
-            ee_putchar( ':' );
-            for( i = 0; i <= r; i++ )
+            ee_color(EE_WHITE);
+            ee_goto(x-1, y-5-r);
+            ee_putstr(":%%:");
+            ee_goto(x-1, y-4-r);
+            ee_putstr("%##%");
+            ee_color(EE_CYAN);
+            ee_goto(x-2, y-4-r);
+            ee_putchar(':');
+            ee_goto(x+3, y-4-r);
+            ee_putchar(':');
+            ee_goto(x-2, y-2);
+            ee_putchar('\'');
+            ee_goto(x+3, y-2);
+            ee_putchar('`');
+            ee_color(EE_BLUE);
+            ee_goto(x-3, y-2);
+            ee_putchar(':');
+            ee_goto(x+4, y-2);
+            ee_putchar(':');
+            for(i = 0; i <= r; i++)
             {
-                ee_color( EE_WHITE );
-                ee_goto( x-1, y-3-i );
-                ee_putstr( (i+frame) % 5 ? "####" : "%%%%" );
-                ee_color( EE_CYAN );
-                ee_goto( x-2, y-3-i );
-                ee_putchar( '%' );
-                ee_goto( x+3, y-3-i );
-                ee_putchar( '%' );
-                ee_color( EE_BLUE );
-                ee_goto( x-3, y-3-i );
-                ee_putchar( ':' );
-                ee_goto( x+4, y-3-i );
-                ee_putchar( ':' );
+                ee_color(EE_WHITE);
+                ee_goto(x-1, y-3-i);
+                ee_putstr((i+frame) % 5 ? "####" : "%%%%");
+                ee_color(EE_CYAN);
+                ee_goto(x-2, y-3-i);
+                ee_putchar('%');
+                ee_goto(x+3, y-3-i);
+                ee_putchar('%');
+                ee_color(EE_BLUE);
+                ee_goto(x-3, y-3-i);
+                ee_putchar(':');
+                ee_goto(x+4, y-3-i);
+                ee_putchar(':');
             }
             break;
     }
 }
 
-static void draw_nuke( int x, int y, int frame )
+static void draw_nuke(int x, int y, int frame)
 {
     int r = (29 - frame) * (29 - frame) / 8;
 
     /* Lots of duplicate pixels, but we don't care */
-    ee_color( EE_BLUE );
-    draw_circle( x, y, r++, ':' );
-    ee_color( EE_CYAN );
-    draw_circle( x, y, r++, '%' );
-    ee_color( EE_WHITE );
-    draw_circle( x, y, r++, '#' );
-    draw_circle( x, y, r++, '#' );
+    ee_color(EE_BLUE);
+    draw_circle(x, y, r++, ':');
+    ee_color(EE_CYAN);
+    draw_circle(x, y, r++, '%');
+    ee_color(EE_WHITE);
+    draw_circle(x, y, r++, '#');
+    draw_circle(x, y, r++, '#');
 }
 
-static void draw_circle( int x, int y, int r, char c )
+static void draw_circle(int x, int y, int r, char c)
 {
     int test, dx, dy;
 
     /* Optimized Bresenham. Kick ass. */
-    for( test = 0, dx = 0, dy = r ; dx <= dy ; dx++ )
+    for(test = 0, dx = 0, dy = r ; dx <= dy ; dx++)
     {
-        ee_putcharTO( x + dx, y + dy / 2, c );
-        ee_putcharTO( x - dx, y + dy / 2, c );
-        ee_putcharTO( x + dx, y - dy / 2, c );
-        ee_putcharTO( x - dx, y - dy / 2, c );
+        ee_putcharTO(x + dx, y + dy / 2, c);
+        ee_putcharTO(x - dx, y + dy / 2, c);
+        ee_putcharTO(x + dx, y - dy / 2, c);
+        ee_putcharTO(x - dx, y - dy / 2, c);
 
-        ee_putcharTO( x + dy, y + dx / 2, c );
-        ee_putcharTO( x - dy, y + dx / 2, c );
-        ee_putcharTO( x + dy, y - dx / 2, c );
-        ee_putcharTO( x - dy, y - dx / 2, c );
+        ee_putcharTO(x + dy, y + dx / 2, c);
+        ee_putcharTO(x - dy, y + dx / 2, c);
+        ee_putcharTO(x + dy, y - dx / 2, c);
+        ee_putcharTO(x - dy, y - dx / 2, c);
 
         test += test > 0 ? dx - dy-- : dx;
     }

@@ -24,49 +24,49 @@
 
 #include "common.h"
 
-void init_bonus( game *g, bonus *bo )
+void init_bonus(game *g, bonus *bo)
 {
     int i;
 
-    for( i = 0; i < BONUS; i++ )
+    for(i = 0; i < BONUS; i++)
     {
         bo->type[i] = BONUS_NONE;
     }
 }
 
-void draw_bonus( game *g, bonus *bo )
+void draw_bonus(game *g, bonus *bo)
 {
     int i;
 
-    for( i = 0; i < BONUS; i++ )
+    for(i = 0; i < BONUS; i++)
     {
-        switch( bo->type[i] )
+        switch(bo->type[i])
         {
             case BONUS_GREEN:
-                ee_color( (bo->n[i]/2 % 3) ? EE_GREEN : EE_WHITE );
-                ee_goto( bo->x[i]+1, bo->y[i]-1 );
-                ee_putchar( '_' );
-                ee_goto( bo->x[i], bo->y[i] );
-                ee_putstr( "/ \\" );
-                ee_goto( bo->x[i], bo->y[i]+1 );
-                ee_putstr( "\\_/" );
-                ee_color( EE_WHITE );
-                ee_goto( bo->x[i]+1, bo->y[i] );
-                ee_putchar( 'g' );
+                ee_color((bo->n[i]/2 % 3) ? EE_GREEN : EE_WHITE);
+                ee_goto(bo->x[i]+1, bo->y[i]-1);
+                ee_putchar('_');
+                ee_goto(bo->x[i], bo->y[i]);
+                ee_putstr("/ \\");
+                ee_goto(bo->x[i], bo->y[i]+1);
+                ee_putstr("\\_/");
+                ee_color(EE_WHITE);
+                ee_goto(bo->x[i]+1, bo->y[i]);
+                ee_putchar('g');
                 break;
             case BONUS_LIFE:
-                ee_color( (bo->n[i] % 3) ? EE_RED : EE_WHITE );
-                ee_goto( bo->x[i]+1, bo->y[i]-1 );
-                ee_putchar( '_' );
-                ee_goto( bo->x[i]+3, bo->y[i]-1 );
-                ee_putchar( '_' );
-                ee_goto( bo->x[i], bo->y[i] );
-                ee_putstr( "( ' )" );
-                ee_goto( bo->x[i]+1, bo->y[i]+1 );
-                ee_putstr( "`v'" );
-                ee_color( EE_WHITE );
-                ee_goto( bo->x[i]+3, bo->y[i] );
-                ee_putchar( '^' );
+                ee_color((bo->n[i] % 3) ? EE_RED : EE_WHITE);
+                ee_goto(bo->x[i]+1, bo->y[i]-1);
+                ee_putchar('_');
+                ee_goto(bo->x[i]+3, bo->y[i]-1);
+                ee_putchar('_');
+                ee_goto(bo->x[i], bo->y[i]);
+                ee_putstr("( ' )");
+                ee_goto(bo->x[i]+1, bo->y[i]+1);
+                ee_putstr("`v'");
+                ee_color(EE_WHITE);
+                ee_goto(bo->x[i]+3, bo->y[i]);
+                ee_putchar('^');
                 break;
             case BONUS_NONE:
                 break;
@@ -74,18 +74,18 @@ void draw_bonus( game *g, bonus *bo )
     }
 }
 
-void update_bonus( game *g, bonus *bo )
+void update_bonus(game *g, bonus *bo)
 {
     int i;
 
-    for( i = 0; i < BONUS; i++ )
+    for(i = 0; i < BONUS; i++)
     {
-        switch( bo->type[i] )
+        switch(bo->type[i])
         {
             case BONUS_GREEN:
                 bo->n[i]++;
                 bo->y[i]++;
-                if( bo->y[i] > g->h )
+                if(bo->y[i] > g->h)
                 {
                     bo->type[i] = BONUS_NONE;
                 }
@@ -93,7 +93,7 @@ void update_bonus( game *g, bonus *bo )
             case BONUS_LIFE:
                 bo->n[i]++;
                 bo->y[i]++;
-                if( bo->y[i] > g->h )
+                if(bo->y[i] > g->h)
                 {
                     bo->type[i] = BONUS_NONE;
                 }
@@ -104,13 +104,13 @@ void update_bonus( game *g, bonus *bo )
     }
 }
 
-void add_bonus( game *g, bonus *bo, int x, int y, int type )
+void add_bonus(game *g, bonus *bo, int x, int y, int type)
 {
     int i;
 
-    for( i = 0; i < BONUS; i++ )
+    for(i = 0; i < BONUS; i++)
     {
-        if( bo->type[i] == BONUS_NONE )
+        if(bo->type[i] == BONUS_NONE)
         {
             bo->type[i] = type;
             bo->x[i] = x;

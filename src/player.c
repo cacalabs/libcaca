@@ -25,7 +25,7 @@
 #include "common.h"
 
 /* Init tunnel */
-player * create_player( game *g )
+player * create_player(game *g)
 {
     player *p = malloc(sizeof(player));
 
@@ -41,59 +41,59 @@ player * create_player( game *g )
     return p;
 }
 
-void free_player( player *p )
+void free_player(player *p)
 {
-    free( p );
+    free(p);
 }
 
-void draw_player( game *g, player *p )
+void draw_player(game *g, player *p)
 {
-    if( p->dead )
+    if(p->dead)
     {
         return;
     }
 
-    ee_goto( p->x + 2, p->y - 2 );
-    ee_color( EE_GREEN );
-    ee_putstr( "/\\" );
-    ee_goto( p->x + 1, p->y - 1 );
-    ee_putchar( '(' );
-    ee_color( EE_YELLOW );
-    ee_putstr( "()" );
-    ee_color( EE_GREEN );
-    ee_putchar( ')' );
-    ee_goto( p->x, p->y );
-    ee_color( EE_GREEN );
-    ee_putstr( "I<__>I" );
+    ee_goto(p->x + 2, p->y - 2);
+    ee_color(EE_GREEN);
+    ee_putstr("/\\");
+    ee_goto(p->x + 1, p->y - 1);
+    ee_putchar('(');
+    ee_color(EE_YELLOW);
+    ee_putstr("()");
+    ee_color(EE_GREEN);
+    ee_putchar(')');
+    ee_goto(p->x, p->y);
+    ee_color(EE_GREEN);
+    ee_putstr("I<__>I");
 }
 
-void update_player( game *g, player *p )
+void update_player(game *g, player *p)
 {
-    if( p->dead )
+    if(p->dead)
     {
         return;
     }
 
-    if( p->life <= 0 )
+    if(p->life <= 0)
     {
-        add_explosion( g, g->ex, p->x, p->y, 0, 0, EXPLOSION_SMALL );
+        add_explosion(g, g->ex, p->x, p->y, 0, 0, EXPLOSION_SMALL);
         p->dead = 1;
         return;
     }
 
     /* Update weapon stats */
-    if( p->weapon )
+    if(p->weapon)
     {
         p->weapon--;
     }
 
-    if( p->special < MAX_SPECIAL )
+    if(p->special < MAX_SPECIAL)
     {
         p->special++;
     }
 
     /* Update life */
-    if( p->life < MAX_LIFE )
+    if(p->life < MAX_LIFE)
     {
         p->life++;
     }
@@ -101,20 +101,20 @@ void update_player( game *g, player *p )
     /* Update coords */
     p->x += p->vx;
 
-    if( p->vx < 0 )
+    if(p->vx < 0)
     {
         p->vx++;
     }
-    else if( p->vx > 0 )
+    else if(p->vx > 0)
     {
         p->vx--;
     }
 
-    if( p->x < 1 )
+    if(p->x < 1)
     {
         p->x = 1;
     }
-    else if( p->x > g->w - 7 )
+    else if(p->x > g->w - 7)
     {
         p->x = g->w - 7;
     }

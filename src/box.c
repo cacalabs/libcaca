@@ -24,9 +24,9 @@
 
 #include "common.h"
 
-box * create_box( game *g, int x, int y, int w, int h )
+box * create_box(game *g, int x, int y, int w, int h)
 {
-    box *b = malloc( sizeof( box ) );
+    box *b = malloc(sizeof( box ));
 
     b->x = x;
     b->y = y;
@@ -37,21 +37,21 @@ box * create_box( game *g, int x, int y, int w, int h )
     return b;
 }
 
-void draw_box( game *g, box *b )
+void draw_box(game *g, box *b)
 {
     int i, j, frame;
 
-    ee_color( EE_YELLOW );
+    ee_color(EE_YELLOW);
 
     /* Draw the thin horizontal line */
-    if( b->frame < 8 )
+    if(b->frame < 8)
     {
-        for( i = b->x - b->w * b->frame / 16 ;
+        for(i = b->x - b->w * b->frame / 16 ;
              i < b->x + b->w * b->frame / 16 ;
-             i++ )
+             i++)
         {
-            ee_goto( i, b->y );
-            ee_putchar( 'X' );
+            ee_goto(i, b->y);
+            ee_putchar('X');
         }
 
         return;
@@ -60,64 +60,64 @@ void draw_box( game *g, box *b )
     /* Draw the frame */
     frame = b->frame < 12 ? b->frame : 12;
 
-    for( i = b->x - b->w / 2 ;
+    for(i = b->x - b->w / 2 ;
          i < b->x + b->w / 2 ;
-         i++ )
+         i++)
     {
-        ee_goto( i, b->y - b->h * (frame - 8) / 8 );
-        ee_putchar( 'X' );
-        ee_goto( i, b->y + b->h * (frame - 8) / 8 );
-        ee_putchar( 'X' );
+        ee_goto(i, b->y - b->h * (frame - 8) / 8);
+        ee_putchar('X');
+        ee_goto(i, b->y + b->h * (frame - 8) / 8);
+        ee_putchar('X');
     }
 
-    for( j = b->y - b->h * (frame - 8) / 8 ;
+    for(j = b->y - b->h * (frame - 8) / 8 ;
          j < b->y + b->h * (frame - 8) / 8 ;
-         j++ )
+         j++)
     {
-        ee_goto( b->x - b->w / 2, j );
-        ee_putchar( 'X' );
-        ee_goto( b->x + b->w / 2 - 1, j );
-        ee_putchar( 'X' );
+        ee_goto(b->x - b->w / 2, j);
+        ee_putchar('X');
+        ee_goto(b->x + b->w / 2 - 1, j);
+        ee_putchar('X');
     }
 
-    ee_color( EE_BLACK );
+    ee_color(EE_BLACK);
 
-    for( j = b->y - b->h * (frame - 8) / 8 + 1 ;
+    for(j = b->y - b->h * (frame - 8) / 8 + 1 ;
          j < b->y + b->h * (frame - 8) / 8 ;
-         j++ )
+         j++)
     {
-        for( i = b->x - b->w / 2 + 1 ;
+        for(i = b->x - b->w / 2 + 1 ;
              i < b->x + b->w / 2 - 1 ;
-             i++ )
+             i++)
         {
-            ee_goto( i, j );
-            ee_putchar( 'X' );
+            ee_goto(i, j);
+            ee_putchar('X');
         }
     }
 
-    if( b->frame < 12 )
+    if(b->frame < 12)
     {
         return;
     }
 
     /* Draw the text inside the frame */
-    ee_color( EE_YELLOW );
+    ee_color(EE_YELLOW);
 
     /* FIXME: use a font */
-    ee_goto( b->x - b->w / 2 + 12, b->y - b->h / 2 + 2 );
-    ee_putstr( "XXXX.  .XXXX  X   X  .XXXX  .XXXX  XXXX." );
-    ee_goto( b->x - b->w / 2 + 12, b->y - b->h / 2 + 3 );
-    ee_putstr( "X  `X  X'  X  X   X  X'     X'     X  `X" );
-    ee_goto( b->x - b->w / 2 + 12, b->y - b->h / 2 + 4 );
-    ee_putstr( "XXXX'  XXXXX  X   X  `XXX   XXXX   X   X" );
-    ee_goto( b->x - b->w / 2 + 12, b->y - b->h / 2 + 5 );
-    ee_putstr( "X'     X' `X  X. ,X     `X  X'     X  ,X" );
-    ee_goto( b->x - b->w / 2 + 12, b->y - b->h / 2 + 6 );
-    ee_putstr( "X      X   X  `XXXX  XXXX'  `XXXX  XXXX'" );
+    ee_goto(b->x - b->w / 2 + 12, b->y - b->h / 2 + 2);
+    ee_putstr("XXXX.  .XXXX  X   X  .XXXX  .XXXX  XXXX.");
+    ee_goto(b->x - b->w / 2 + 12, b->y - b->h / 2 + 3);
+    ee_putstr("X  `X  X'  X  X   X  X'     X'     X  `X");
+    ee_goto(b->x - b->w / 2 + 12, b->y - b->h / 2 + 4);
+    ee_putstr("XXXX'  XXXXX  X   X  `XXX   XXXX   X   X");
+    ee_goto(b->x - b->w / 2 + 12, b->y - b->h / 2 + 5);
+    ee_putstr("X'     X' `X  X. ,X     `X  X'     X  ,X");
+    ee_goto(b->x - b->w / 2 + 12, b->y - b->h / 2 + 6);
+    ee_putstr("X      X   X  `XXXX  XXXX'  `XXXX  XXXX'");
 }
 
-void free_box( box *b )
+void free_box(box *b)
 {
-    free( b );
+    free(b);
 }
 

@@ -24,55 +24,55 @@
 
 #include "common.h"
 
-starfield * create_starfield( game *g )
+starfield * create_starfield(game *g)
 {
     int i;
     starfield *s;
 
-    s = malloc( STARS * sizeof(starfield) );
+    s = malloc(STARS * sizeof(starfield));
 
-    for( i = 0; i < STARS; i++ )
+    for(i = 0; i < STARS; i++)
     {
-        s[i].x = GET_RAND( 0, g->w );
-        s[i].y = GET_RAND( 0, g->h );
-        s[i].z = GET_RAND( 1, 4 );
-        s[i].c = GET_RAND( 6, 8 );
-        s[i].ch = GET_RAND( 0, 2 ) ? '.' : '\'';
+        s[i].x = GET_RAND(0, g->w);
+        s[i].y = GET_RAND(0, g->h);
+        s[i].z = GET_RAND(1, 4);
+        s[i].c = GET_RAND(6, 8);
+        s[i].ch = GET_RAND(0, 2) ? '.' : '\'';
     }
 
     return s;
 }
 
-void draw_starfield( game *g, starfield *s )
+void draw_starfield(game *g, starfield *s)
 {
     int i;
 
-    for( i = 0; i < STARS; i++ )
+    for(i = 0; i < STARS; i++)
     {
-        if( s[i].x >= 0 )
+        if(s[i].x >= 0)
         {
-            ee_color( s[i].c );
-            ee_goto( s[i].x, s[i].y );
-            ee_putchar( s[i].ch );
+            ee_color(s[i].c);
+            ee_goto(s[i].x, s[i].y);
+            ee_putchar(s[i].ch);
         }
     }
 }
 
-void update_starfield( game *g, starfield *s )
+void update_starfield(game *g, starfield *s)
 {
     int i;
 
-    for( i = 0; i < STARS; i++ )
+    for(i = 0; i < STARS; i++)
     {
-        if( s[i].x < 0 )
+        if(s[i].x < 0)
         {
-            s[i].x = GET_RAND( 0, g->w );
+            s[i].x = GET_RAND(0, g->w);
             s[i].y = 0;
-            s[i].z = GET_RAND( 1, 3 );
-            s[i].c = GET_RAND( 6, 8 );
-            s[i].ch = GET_RAND( 0, 2 ) ? '.' : '\'';
+            s[i].z = GET_RAND(1, 3);
+            s[i].c = GET_RAND(6, 8);
+            s[i].ch = GET_RAND(0, 2) ? '.' : '\'';
         }
-        else if( s[i].y < g->h-1 )
+        else if(s[i].y < g->h-1)
         {
             s[i].y += s[i].z;
         }
@@ -83,8 +83,8 @@ void update_starfield( game *g, starfield *s )
     }
 }
 
-void free_starfield( game *g, starfield *s )
+void free_starfield(game *g, starfield *s)
 {
-    free( s );
+    free(s);
 }
 
