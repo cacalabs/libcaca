@@ -122,6 +122,74 @@ $Id$
       alternate character set. Replacing a few 0x7F with 0xFF in sldisply.c
       works around the problem but gets rid of the alternate charset.
 
+      We can work around this problem. See this usage grid:
+
+                      bg                         1 1 1 1 1 1
+        fg                  0 1 2 3 4 5 6 7  8 9 0 1 2 3 4 5
+
+        0 (black)             C C C C C C F  B c c c c c c F
+        1 (blue)            A   h D h D * f  C C h E h E F g
+        2 (green)           A h   D h * D f  C h C E h * E g
+        3 (cyan)            A D D   * h h f  C E E C * h h g
+        4 (red)             A h h *   D D f  C h h * C E E g
+        5 (magenta)         A D * h D   h f  C E * h E C h g
+        6 (brown)           A * D h D h   f  C * E h E h C g
+        7 (light gray)      A a a a a a a    B C C C C C C B
+
+        8 (dark gray)       A C C C C C C B    d d d d d d C
+        9 (light blue)      A C h E h E * C  e   h D h D * C
+        10 (light green)    A h C E h * E C  e h   D h * D C
+        11 (light cyan)     A E E C * h h C  e D D   * h h C
+        12 (light red)      A h h * C E E C  e h h *   D D C
+        13 (light magenta)  A E * h E C h C  e D * h D   h C
+        14 (yellow)         A F E h E h C C  e * D h D h   C
+        15 (white)          A b b b b b b B  C C C C C C C  
+
+      ' ': useless colour pairs that can be emulated by printing a space in
+           any other colour pair that has the same background
+      'A': black background colour pairs that are needed for the old renderer
+      'B': gray combinations used for grayscale dithering
+      'C': white/light, light/dark, lightgray/light, darkgray/dark, dark/black
+           combinations often used for saturation/value dithering (the two
+           other possible combinations, lightgray/dark and darkgray/light, are
+           not considered here)
+      'D': next colour combinations for hue dithering (magenta/blue, blue/green
+           and so on)
+      'E': next colour combinations for hue/value dithering (blue/lightgreen,
+           green/lightblue and so on)
+      'F': black on light gray, black on white, and yellow/blue (chosen
+           arbitrarily)
+
+      'A': 15 colour pairs
+      'A'+'B': 20 colour pairs
+      'A'+'B'+'C': 76 colour pairs
+      'A'+'B'+'C'+'D': 100 colour pairs
+      'A'+'B'+'C'+'D'+'E': 124 colour pairs
+      'A'+'B'+'C'+'D'+'E'+'F': 128 colour pairs
+
+      The remaining slightly important colour pairs are:
+
+      'a': light gray on dark colour: emulate with light colour on dark colour
+      'b': white on dark colour: emulate with light gray on light colour
+      'c': black on light colour: emulate with dark gray on dark colour
+      'd': dark gray on light colour: emulate with dark colour on light colour
+      'e': light colour on dark gray: emulate with dark colour on dark gray
+      'f': dark colour on light gray: emulate with light colour on dark gray
+      'g': dark colour on white: emulate with light colour on white
+
+      And now the seldom used pairs:
+
+      'h': 120 degree hue pairs can be emulated as well; for instance blue on
+           red can be emulated using magenta on red, and blue on green using
+           cyan on green
+
+      And the almost never used pairs:
+
+      'i': dark opposite on dark: emulate with dark opposite on black
+      'j': light opposite on dark: emulate with light opposite on black
+      'k': dark opposite on light: emulate with black on dark
+      'l': light opposite on light: emulate with white on light
+
    o  MS-DOS: all bright colours, bright backgrounds, and bright combinations
       work using <conio.h>. No need to kludge anything.
 
