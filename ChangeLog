@@ -1,4 +1,332 @@
 ------------------------------------------------------------------------
+r207 | sam | 2004-01-04 00:15:48 +0100 (Sun, 04 Jan 2004) | 9 lines
+Changed paths:
+   M /trunk/NEWS
+   M /trunk/configure.ac
+   M /trunk/debian/changelog
+   M /trunk/debian/control
+   M /trunk/debian/rules
+   M /trunk/doc/Makefile.am
+   M /trunk/libcaca.spec
+
+  * configure.ac NEWS:
+    + Prepared the 0.6 release.
+  * libcaca.spec:
+    + Split the RPM into libcaca-devel and caca-utils.
+    + More detailed descriptions.
+    + Packages are now rpmlint clean.
+  * doc/Makefile.am:
+    + Symlink cacafire.1 to cacademo.1 upon manpage installation.
+
+------------------------------------------------------------------------
+r206 | sam | 2004-01-03 18:31:44 +0100 (Sat, 03 Jan 2004) | 3 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/src/caca.c
+   M /trunk/src/graphics.c
+   M /trunk/src/io.c
+
+  * configure.ac:
+    + Search for <slang/slang.h> in addition of <slang.h>.
+
+------------------------------------------------------------------------
+r205 | sam | 2004-01-03 15:33:35 +0100 (Sat, 03 Jan 2004) | 5 lines
+Changed paths:
+   M /trunk/src/bitmap.c
+
+  * src/bitmap.c:
+    + Dither H/S/V when looking up the two nearest colours.
+    + Weigh pixels in the distance calculation.
+    + Factorised the lookup table calculation.
+
+------------------------------------------------------------------------
+r204 | sam | 2004-01-03 15:28:39 +0100 (Sat, 03 Jan 2004) | 3 lines
+Changed paths:
+   M /trunk/test
+   M /trunk/test/Makefile.am
+   A /trunk/test/hsv.c
+
+  * test/hsv.c:
+    + Trivial saturation/value rendering test.
+
+------------------------------------------------------------------------
+r203 | sam | 2004-01-02 19:09:29 +0100 (Fri, 02 Jan 2004) | 5 lines
+Changed paths:
+   M /trunk/src/bitmap.c
+   M /trunk/src/caca.c
+   M /trunk/src/caca_internals.h
+
+  * src/bitmap.c:
+    + Fixed a minor overflow in the saturation computation.
+    + Use a global lookup table for foreground/background colour selection
+      in the bitmap rendering routine. This broke dithering, sorry.
+
+------------------------------------------------------------------------
+r202 | sam | 2004-01-02 17:52:10 +0100 (Fri, 02 Jan 2004) | 3 lines
+Changed paths:
+   M /trunk/examples/aafire.c
+   M /trunk/examples/cacaview.c
+   M /trunk/src/bitmap.c
+   M /trunk/src/caca.c
+   M /trunk/src/caca.h
+   M /trunk/src/graphics.c
+   M /trunk/src/line.c
+   M /trunk/src/sprite.c
+   M /trunk/test/optipal.c
+
+  * src/ examples/ test/:
+    + Changed <const type> constructs into <type const>.
+
+------------------------------------------------------------------------
+r201 | sam | 2004-01-02 16:35:53 +0100 (Fri, 02 Jan 2004) | 4 lines
+Changed paths:
+   M /trunk/examples/aafire.c
+
+  * examples/aafire.c:
+    + Do not call caca_get_width() 10000 times per frame. Cache the value
+      instead.
+
+------------------------------------------------------------------------
+r200 | sam | 2004-01-02 16:34:16 +0100 (Fri, 02 Jan 2004) | 4 lines
+Changed paths:
+   M /trunk/src/graphics.c
+
+  * src/graphics.c:
+    + Split the drawing of foreground and background colours in the X11
+      driver. Nice performance improvement.
+
+------------------------------------------------------------------------
+r199 | sam | 2004-01-02 16:23:54 +0100 (Fri, 02 Jan 2004) | 3 lines
+Changed paths:
+   M /trunk/examples/cacaview.c
+
+  * examples/cacaview.c:
+    + If Imlib2 was not activated, warn the user that only BMP is supported.
+
+------------------------------------------------------------------------
+r198 | sam | 2004-01-01 19:21:13 +0100 (Thu, 01 Jan 2004) | 5 lines
+Changed paths:
+   M /trunk/AUTHORS
+   M /trunk/Makefile.am
+   A /trunk/THANKS
+   A /trunk/libcaca.spec
+
+  * libcaca.spec:
+    + RPM specfile, courtesy of Richard Zidlicky.
+  * THANKS:
+    + Added a THANKS file for contributors.
+
+------------------------------------------------------------------------
+r197 | sam | 2004-01-01 18:51:57 +0100 (Thu, 01 Jan 2004) | 10 lines
+Changed paths:
+   M /trunk/README
+   M /trunk/src/caca.c
+   M /trunk/src/graphics.c
+
+  * src/graphics.c:
+    + Minor optimisation in caca_set_color().
+    + Added an X11 error handler to avoid BadFont aborts in the X11 driver.
+    + Optimised the X11 caca_refresh() routine by handling strings of the
+      same colour as one text chunk.
+  * src/caca.c:
+    + Bugfix in caca_init when conio is the only compiled-in driver.
+  * README:
+    + Minor documentation updates.
+
+------------------------------------------------------------------------
+r196 | sam | 2004-01-01 17:29:50 +0100 (Thu, 01 Jan 2004) | 5 lines
+Changed paths:
+   M /trunk/examples/aafire.c
+   M /trunk/examples/cacaview.c
+
+  * examples/cacaview.c:
+    + Use sprintf() instead of snprintf() so that cacaview builds with DJGPP.
+  * examples/aafire.c:
+    + bzero the pixel buffer in the initialisation routine.
+
+------------------------------------------------------------------------
+r195 | sam | 2003-12-31 15:21:08 +0100 (Wed, 31 Dec 2003) | 5 lines
+Changed paths:
+   M /trunk/doc/doxygen.cfg.in
+   M /trunk/src/bitmap.c
+   M /trunk/src/box.c
+   M /trunk/src/caca.h
+   M /trunk/src/conic.c
+   M /trunk/src/graphics.c
+   M /trunk/src/io.c
+   M /trunk/src/line.c
+   M /trunk/src/math.c
+   M /trunk/src/triangle.c
+
+  * doc/doxygen.cfg.in:
+    + Removed caca_internal.h from the list of documented files.
+  * src/:
+    + Minor documentation updates.
+
+------------------------------------------------------------------------
+r194 | sam | 2003-12-31 14:55:34 +0100 (Wed, 31 Dec 2003) | 9 lines
+Changed paths:
+   M /trunk/BUGS
+   M /trunk/debian/rules
+   M /trunk/doc/Makefile.am
+   M /trunk/test/dithering.c
+
+  * test/dithering.c:
+    + Fixed a minor compilation warning.
+  * debian/rules:
+    + Explicitely use --enable-imlib2.
+  * BUGS:
+    + Added a note about blinking consoles.
+  * doc/Makefile.am:
+    + Fixed a bashism in the HTML files installation.
+
+------------------------------------------------------------------------
+r193 | sam | 2003-12-31 14:32:14 +0100 (Wed, 31 Dec 2003) | 4 lines
+Changed paths:
+   M /trunk/doc/Makefile.am
+
+  * doc/Makefile.am:
+    + Do not install doxygen.png directly, because it can be doxygen.gif on
+      old installations.
+
+------------------------------------------------------------------------
+r192 | sam | 2003-12-31 14:26:47 +0100 (Wed, 31 Dec 2003) | 3 lines
+Changed paths:
+   M /trunk/examples/aafire.c
+
+  * examples/aafire.c:
+    + Only quit upon keypress, not mouse motion.
+
+------------------------------------------------------------------------
+r191 | sam | 2003-12-31 14:24:46 +0100 (Wed, 31 Dec 2003) | 3 lines
+Changed paths:
+   M /trunk/examples/aafire.c
+
+  * examples/aafire.c:
+    + Render cacafire at full speed.
+
+------------------------------------------------------------------------
+r190 | sam | 2003-12-31 14:20:18 +0100 (Wed, 31 Dec 2003) | 6 lines
+Changed paths:
+   M /trunk/src/graphics.c
+   M /trunk/test
+   M /trunk/test/Makefile.am
+   A /trunk/test/optipal.c
+
+  * test/optipal.c:
+    + Optimised S-Lang palette generator.
+  * src/graphics:
+    + Removed the S-Lang palette generator and replaced it with the tables
+      generated by optipal.
+
+------------------------------------------------------------------------
+r189 | sam | 2003-12-31 13:26:22 +0100 (Wed, 31 Dec 2003) | 5 lines
+Changed paths:
+   M /trunk/Makefile.am
+   M /trunk/configure.ac
+   M /trunk/examples/Makefile.am
+   A /trunk/test
+   A /trunk/test/Makefile.am
+   A /trunk/test/dithering.c
+
+  * Makefile.am:
+    + Added a test directory for test programs.
+  * test/dithering.c:
+    + The value/saturation dithering example.
+
+------------------------------------------------------------------------
+r188 | sam | 2003-12-31 13:05:44 +0100 (Wed, 31 Dec 2003) | 5 lines
+Changed paths:
+   M /trunk/examples/cacaview.c
+   M /trunk/src/caca.c
+
+  * src/caca.c:
+    + Do not try the X11 driver if DISPLAY is set to the empty string.
+  * examples/cacaview.c:
+    + Cosmetic fixes.
+
+------------------------------------------------------------------------
+r187 | sam | 2003-12-31 13:00:18 +0100 (Wed, 31 Dec 2003) | 3 lines
+Changed paths:
+   M /trunk/examples/Makefile.am
+   A /trunk/examples/cacaview.c (from /trunk/examples/view.c:182)
+   D /trunk/examples/view.c
+
+  * example/:
+    + Renamed view.c into cacaview.c.
+
+------------------------------------------------------------------------
+r186 | sam | 2003-12-31 12:17:47 +0100 (Wed, 31 Dec 2003) | 3 lines
+Changed paths:
+   M /trunk/src/io.c
+
+  * src/io.c:
+    + Fixed mouse support under ncurses and slang.
+
+------------------------------------------------------------------------
+r185 | sam | 2003-12-31 12:17:00 +0100 (Wed, 31 Dec 2003) | 3 lines
+Changed paths:
+   M /trunk/configure.ac
+
+  * configure.ac:
+    + Error out if Imlib2 was not found. Override with --disable-imlib2.
+
+------------------------------------------------------------------------
+r184 | sam | 2003-12-31 02:16:47 +0100 (Wed, 31 Dec 2003) | 6 lines
+Changed paths:
+   M /trunk/doc
+   M /trunk/examples/demo.c
+   M /trunk/src/caca.h
+   M /trunk/src/io.c
+
+  * src/io.c:
+    + Mouse support under X11.
+    + Split the mouse motion and mouse click events.
+  * examples/demo.c:
+    + Mouse motion support.
+
+------------------------------------------------------------------------
+r183 | sam | 2003-12-31 02:02:08 +0100 (Wed, 31 Dec 2003) | 5 lines
+Changed paths:
+   M /trunk/src/caca.c
+   M /trunk/src/graphics.c
+
+  * src/graphics.c:
+    + Compilation fix.
+  * src/caca.c:
+    + Minor indentation fix.
+
+------------------------------------------------------------------------
+r182 | sam | 2003-12-26 00:59:48 +0100 (Fri, 26 Dec 2003) | 6 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/src/caca.c
+
+  * src/caca.c:
+    + Prefer the X11 driver if $DISPLAY is set.
+    + The slang driver is now preferred over the ncurses driver.
+  * configure.ac:
+    + Autodetect conio.h.
+
+------------------------------------------------------------------------
+r181 | sam | 2003-12-26 00:22:13 +0100 (Fri, 26 Dec 2003) | 4 lines
+Changed paths:
+   M /trunk/configure.ac
+
+  * configure.ac:
+    + Autodetect ncurses, slang and X11.
+    + Abort if no output driver was selected or detected.
+
+------------------------------------------------------------------------
+r180 | sam | 2003-12-25 22:38:46 +0100 (Thu, 25 Dec 2003) | 2 lines
+Changed paths:
+   A /branches/0.5 (from /trunk:179)
+   M /branches/0.5/ChangeLog
+   M /trunk/ChangeLog
+
+  * 0.5 branch.
+
+------------------------------------------------------------------------
 r179 | sam | 2003-12-25 22:36:52 +0100 (Thu, 25 Dec 2003) | 3 lines
 Changed paths:
    M /trunk/NEWS
