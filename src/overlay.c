@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: overlay.c,v 1.2 2002/12/23 16:21:38 sam Exp $
+ *   $Id: overlay.c,v 1.3 2003/02/09 11:17:40 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 
 #include "common.h"
 
-void draw_overlay( game *g )
+void draw_status( game *g )
 {
     static char dots30[] = "------------------------------";
     static char dashes30[] = "==============================";

@@ -21,6 +21,7 @@ bin_PROGRAMS = ttyvaders
 ttyvaders_SOURCES = \
 	aliens.c \
 	bonus.c \
+	box.c \
 	ceo.c \
 	collide.c \
 	common.h \

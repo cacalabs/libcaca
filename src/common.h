@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: common.h,v 1.15 2002/12/23 16:21:38 sam Exp $
+ *   $Id: common.h,v 1.16 2003/02/09 11:17:40 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -143,6 +143,14 @@ typedef struct
 typedef struct
 {
     int w, h;
+    int x, y;
+    int frame;
+
+} box;
+
+typedef struct
+{
+    int w, h;
 
     starfield *sf;
     weapons *wp;
@@ -180,6 +188,13 @@ void init_bonus( game *g, bonus *bo );
 void draw_bonus( game *g, bonus *bo );
 void update_bonus( game *g, bonus *bo );
 void add_bonus( game *g, bonus *bo, int x, int y, int type );
+
+/*
+ * From box.c
+ */
+box * create_box( game *g, int x, int y, int w, int h );
+void draw_box( game *g, box *b );
+void free_box( box *b );
 
 /*
  * From ceo.c
@@ -220,7 +235,7 @@ int r00t( int a );
 /*
  * From overlay.c
  */
-void draw_overlay( game *g );
+void draw_status( game *g );
 
 /*
  * From player.c

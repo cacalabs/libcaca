@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: main.c,v 1.16 2002/12/23 16:21:38 sam Exp $
+ *   $Id: main.c,v 1.17 2003/02/09 11:17:40 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -61,6 +61,8 @@ static void start_game (game *g)
     int skip = 0;
     int purcompteur = 0;
 
+    box *pausebox = NULL;
+
     g->sf = create_starfield( g );
     g->wp = malloc(sizeof(weapons));
     g->ex = malloc(sizeof(explosions));
@@ -90,6 +92,15 @@ static void start_game (game *g)
                 break;
             case 'p':
                 poz = !poz;
+                if( poz )
+                {
+                    pausebox = create_box( g, g->w / 2, g->h / 2,
+                                              g->w - 16, 8 );
+                }
+                else
+                {
+                    free_box( pausebox );
+                }
                 break;
             case '\t':
                 ceo_alert();
@@ -215,12 +226,24 @@ static void start_game (game *g)
         draw_explosions( g, g->ex );
         draw_weapons( g, g->wp );
         draw_player( g, g->p );
-        draw_overlay( g );
+        draw_status( g );
+
+        /* Print pause box if needed */
+        if( poz )
+        {
+            pausebox->frame++;
+            draw_box( g, pausebox );
+        }
 
         /* Refresh */
         refresh_graphics();
 
         purcompteur++;
+    }
+
+    if( pausebox )
+    {
+        free_box( pausebox );
     }
 
     free_starfield( g, g->sf );
