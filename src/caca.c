@@ -407,7 +407,7 @@ static void caca_init_driver(void)
 #endif
 #if defined(USE_X11)
 #if defined(HAVE_GETENV)
-    if(getenv("DISPLAY"))
+    if(getenv("DISPLAY") && *(getenv("DISPLAY")))
 #endif
     {
         _caca_driver = CACA_DRIVER_X11;

@@ -1,5 +1,5 @@
 /*
- *  view          image viewer for libcaca
+ *  cacaview      image viewer for libcaca
  *  Copyright (c) 2003 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
@@ -60,7 +60,9 @@ char *pixels = NULL;
 struct caca_bitmap *bitmap = NULL;
 int x, y;
 unsigned int w, h, depth, bpp, rmask, gmask, bmask, amask;
+#if !defined(HAVE_IMLIB2_H)
 unsigned int red[256], green[256], blue[256], alpha[256];
+#endif
 
 int main(int argc, char **argv)
 {
@@ -287,8 +289,10 @@ int main(int argc, char **argv)
             if(yn + y > (int)h) y = h - yn;
             newbitmap = caca_create_bitmap(bpp, 2 * xn, 2 * yn, depth * w,
                                            rmask, gmask, bmask, amask);
+#if !defined(HAVE_IMLIB2_H)
             if(bpp == 8)
                 caca_set_bitmap_palette(newbitmap, red, green, blue, alpha);
+#endif
             draw_checkers(0, fullscreen ? 0 : 1,
                           ww - 1, fullscreen ? wh - 1 : wh - 3);
             caca_draw_bitmap(0, fullscreen ? 0 : 1,
@@ -368,7 +372,7 @@ int main(int argc, char **argv)
 
 static void unload_image(void)
 {
-#ifdef HAVE_IMLIB2_H
+#if defined(HAVE_IMLIB2_H)
     if(image)
         imlib_free_image();
     image = NULL;
@@ -385,7 +389,7 @@ static void unload_image(void)
 
 static void load_image(const char *name)
 {
-#ifdef HAVE_IMLIB2_H
+#if defined(HAVE_IMLIB2_H)
     /* Load the new image */
     image = imlib_load_image(name);
 
