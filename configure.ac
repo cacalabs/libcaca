@@ -30,12 +30,11 @@ AC_ARG_ENABLE(x11,
 
 AC_CHECK_HEADERS(inttypes.h endian.h)
 AC_CHECK_FUNCS(vsnprintf getenv putenv strcasecmp usleep gettimeofday)
-case "${target_os}" in
-  *mingw32*|*cygwin*)
-    AC_CHECK_LIB(kernel32, Sleep,
-                 [AC_DEFINE(HAVE_KERNEL32_SLEEP, 1, [Define if you have Windows' Sleep])])
-    ;;
-esac
+AC_MSG_CHECKING(for Sleep)
+AC_TRY_COMPILE([#include <windows.h>],[Sleep(42);],
+ [AC_MSG_RESULT(yes)
+  AC_DEFINE(HAVE_SLEEP, 1, [Define if you have Windows' Sleep])],
+ [AC_MSG_RESULT(no)])
 AC_CHECK_LIB(m, sin, MATH_LIBS="${MATH_LIBS} -lm")
 
 CACA_DRIVERS="" 

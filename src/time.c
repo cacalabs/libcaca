@@ -46,7 +46,7 @@ void _caca_sleep(unsigned int usec)
 {
 #if defined(HAVE_USLEEP)
         usleep(usec);
-#elif defined(HAVE_KERNEL32_SLEEP)
+#elif defined(HAVE_SLEEP)
         Sleep(usec / 1000);
 #else
         SLEEP
