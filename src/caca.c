@@ -57,6 +57,11 @@ static void caca_init_terminal(void);
 static mmask_t oldmask;
 #endif
 
+/**
+ * \brief Initialise libcaca.
+ *
+ * \return 0 upon success, a non-zero value if an error occurs.
+ */
 int caca_init(void)
 {
 #if defined(USE_NCURSES)
@@ -125,16 +130,32 @@ int caca_init(void)
     return 0;
 }
 
+/**
+ * \brief Get the screen width.
+ *
+ * \return The screen width, in character cells.
+ */
 unsigned int caca_get_width(void)
 {
     return _caca_width;
 }
 
+/**
+ * \brief Get the screen height.
+ *
+ * \return The screen height, in character cells.
+ */
 unsigned int caca_get_height(void)
 {
     return _caca_height;
 }
 
+/**
+ * \brief Translate a colour value into its name.
+ *
+ * \param color The colour value.
+ * \return A static string containing the colour's name.
+ */
 const char *caca_get_color_name(enum caca_color color)
 {
     static const char *color_names[] =
@@ -163,6 +184,12 @@ const char *caca_get_color_name(enum caca_color color)
     return color_names[color];
 }
 
+/**
+ * \brief Get the current value of a feature.
+ *
+ * \param feature The requested feature.
+ * \return The current value of the feature.
+ */
 enum caca_feature caca_get_feature(enum caca_feature feature)
 {
     switch(feature)
@@ -179,6 +206,12 @@ enum caca_feature caca_get_feature(enum caca_feature feature)
     }
 }
 
+/**
+ * \brief Set a feature.
+ *
+ * \param feature The wanted feature.
+ * \return void
+ */
 void caca_set_feature(enum caca_feature feature)
 {
     switch(feature)
@@ -212,6 +245,12 @@ void caca_set_feature(enum caca_feature feature)
     }
 }
 
+/**
+ * \brief Translate a feature value into its name.
+ *
+ * \param feature The feature value.
+ * \return A static string containing the feature's name.
+ */
 const char *caca_get_feature_name(enum caca_feature feature)
 {
     switch(feature)
@@ -232,6 +271,11 @@ const char *caca_get_feature_name(enum caca_feature feature)
     }
 }
 
+/**
+ * \brief Uninitialise libcaca.
+ *
+ * \return void
+ */
 void caca_end(void)
 {
     _caca_end_graphics();

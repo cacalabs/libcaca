@@ -92,6 +92,13 @@ static unsigned int _caca_rendertime;
 static enum caca_color _caca_fgcolor = CACA_COLOR_LIGHTGRAY;
 static enum caca_color _caca_bgcolor = CACA_COLOR_BLACK;
 
+/**
+ * \brief Set the default colour pair.
+ *
+ * \param fgcolor The desired foreground colour.
+ * \param bgcolor The desired background colour.
+ * \return void
+ */
 void caca_set_color(enum caca_color fgcolor, enum caca_color bgcolor)
 {
     if(fgcolor < 0 || fgcolor > 15 || bgcolor < 0 || bgcolor > 15)
@@ -111,16 +118,34 @@ void caca_set_color(enum caca_color fgcolor, enum caca_color bgcolor)
 #endif
 }
 
+/**
+ * \brief Get the current foreground colour.
+ *
+ * \return The current foreground colour.
+ */
 enum caca_color caca_get_fg_color(void)
 {
     return _caca_fgcolor;
 }
 
+/**
+ * \brief Get the current background colour.
+ *
+ * \return The current background colour.
+ */
 enum caca_color caca_get_bg_color(void)
 {
     return _caca_bgcolor;
 }
 
+/**
+ * \brief Print a character at given coordinates.
+ *
+ * \param x The X coordinate of the character.
+ * \param y The Y coordinate of the character.
+ * \param c The character to print.
+ * \return void
+ */
 void caca_putchar(int x, int y, char c)
 {
 #if defined(USE_CONIO)
@@ -147,6 +172,14 @@ void caca_putchar(int x, int y, char c)
 #endif
 }
 
+/**
+ * \brief Print a string at given coordinates.
+ *
+ * \param x The X coordinate of the string.
+ * \param y The Y coordinate of the string.
+ * \param s The string to print.
+ * \return void
+ */
 void caca_putstr(int x, int y, const char *s)
 {
     unsigned int len;
@@ -192,6 +225,15 @@ void caca_putstr(int x, int y, const char *s)
 #endif
 }
 
+/**
+ * \brief Format a string at given coordinates.
+ *
+ * \param x The X coordinate of the string.
+ * \param y The Y coordinate of the string.
+ * \param format The format string to print.
+ * \param ... Arguments to the format string.
+ * \return void
+ */
 void caca_printf(int x, int y, const char *format, ...)
 {
     char tmp[BUFSIZ];
@@ -219,6 +261,11 @@ void caca_printf(int x, int y, const char *format, ...)
         free(buf);
 }
 
+/**
+ * \brief Clear the screen.
+ *
+ * \return void
+ */
 void caca_clear(void)
 {
     enum caca_color oldfg = caca_get_fg_color();
@@ -418,11 +465,22 @@ int _caca_end_graphics(void)
     return 0;
 }
 
+/**
+ * \brief Set the refresh delay.
+ *
+ * \param usec The refresh delay in microseconds.
+ * \return void
+ */
 void caca_set_delay(unsigned int usec)
 {
     _caca_delay = usec;
 }
 
+/**
+ * \brief Get the average rendering time.
+ *
+ * \return The render time in microseconds.
+ */
 unsigned int caca_get_rendertime(void)
 {
     return _caca_rendertime;
@@ -448,6 +506,11 @@ static unsigned int _caca_getticks(void)
     return ticks;
 }
 
+/**
+ * \brief Flush pending changes and redraw the screen.
+ *
+ * \return void
+ */
 void caca_refresh(void)
 {
 #define IDLE_USEC 10000

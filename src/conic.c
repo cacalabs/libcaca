@@ -43,6 +43,15 @@ typedef unsigned char uint8_t;
 
 static void ellipsepoints(int, int, int, int, char);
 
+/**
+ * \brief Draw a circle on the screen using the given character.
+ *
+ * \param x Center X coordinate.
+ * \param y Center Y coordinate.
+ * \param r Circle radius.
+ * \param c Character to draw the circle outline with.
+ * \return void
+ */
 void caca_draw_circle(int x, int y, int r, char c)
 {
     int test, dx, dy;
@@ -57,6 +66,16 @@ void caca_draw_circle(int x, int y, int r, char c)
     }
 }
 
+/**
+ * \brief Fill an ellipse on the screen using the given character.
+ *
+ * \param xo Center X coordinate.
+ * \param yo Center Y coordinate.
+ * \param a Ellipse X radius.
+ * \param b Ellipse Y radius.
+ * \param c Character to fill the ellipse with.
+ * \return void
+ */
 void caca_fill_ellipse(int xo, int yo, int a, int b, char c)
 {
     int d2;
@@ -102,6 +121,16 @@ void caca_fill_ellipse(int xo, int yo, int a, int b, char c)
     }
 }
 
+/**
+ * \brief Draw an ellipse on the screen using the given character.
+ *
+ * \param xo Center X coordinate.
+ * \param yo Center Y coordinate.
+ * \param a Ellipse X radius.
+ * \param b Ellipse Y radius.
+ * \param c Character to draw the ellipse outline with.
+ * \return void
+ */
 void caca_draw_ellipse(int xo, int yo, int a, int b, char c)
 {
     int d2;
@@ -144,6 +173,15 @@ void caca_draw_ellipse(int xo, int yo, int a, int b, char c)
     }
 }
 
+/**
+ * \brief Draw a thin ellipse on the screen.
+ *
+ * \param xo Center X coordinate.
+ * \param yo Center Y coordinate.
+ * \param a Ellipse X radius.
+ * \param b Ellipse Y radius.
+ * \return void
+ */
 void caca_draw_thin_ellipse(int xo, int yo, int a, int b)
 {
     /* FIXME: this is not correct */

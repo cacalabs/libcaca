@@ -34,6 +34,16 @@
 #include "caca.h"
 #include "caca_internals.h"
 
+/**
+ * \brief Draw a box on the screen using the given character.
+ *
+ * \param x1 X coordinate of the upper-left corner of the box.
+ * \param y1 Y coordinate of the upper-left corner of the box.
+ * \param x2 X coordinate of the lower-right corner of the box.
+ * \param y2 Y coordinate of the lower-right corner of the box.
+ * \param c Character to draw the box outline with.
+ * \return void
+ */
 void caca_draw_box(int x1, int y1, int x2, int y2, char c)
 {
     caca_draw_line(x1, y1, x1, y2, c);
@@ -42,6 +52,15 @@ void caca_draw_box(int x1, int y1, int x2, int y2, char c)
     caca_draw_line(x2, y1, x1, y1, c);
 }
 
+/**
+ * \brief Draw a thin box on the screen.
+ *
+ * \param x1 X coordinate of the upper-left corner of the box.
+ * \param y1 Y coordinate of the upper-left corner of the box.
+ * \param x2 X coordinate of the lower-right corner of the box.
+ * \param y2 Y coordinate of the lower-right corner of the box.
+ * \return void
+ */
 void caca_draw_thin_box(int x1, int y1, int x2, int y2)
 {
     int x, y, xmax, ymax;
@@ -95,6 +114,16 @@ void caca_draw_thin_box(int x1, int y1, int x2, int y2)
         caca_putchar(x2, y2, '\'');
 }
 
+/**
+ * \brief Fill a box on the screen using the given character.
+ *
+ * \param x1 X coordinate of the upper-left corner of the box.
+ * \param y1 Y coordinate of the upper-left corner of the box.
+ * \param x2 X coordinate of the lower-right corner of the box.
+ * \param y2 Y coordinate of the lower-right corner of the box.
+ * \param c Character to fill the box with.
+ * \return void
+ */
 void caca_fill_box(int x1, int y1, int x2, int y2, char c)
 {
     int x, y, xmax, ymax;

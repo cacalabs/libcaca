@@ -34,11 +34,25 @@
 #include "caca.h"
 #include "caca_internals.h"
 
+/**
+ * \brief Generate a random integer within a range.
+ *
+ * \param min The lower bound of the integer range.
+ * \param max The upper bound of the integer range.
+ * \return A random integer comprised between \p min and \p max, inclusive.
+ */
 int caca_rand(int min, int max)
 {
     return min + (int)((1.0*(max-min+1)) * rand() / (RAND_MAX+1.0));
 }
 
+/**
+ * \brief Approximate a square root, using Newton's method to avoid
+ *        costly floating point calculations.
+ *
+ * \param a A positive integer.
+ * \return The approximate square root of \p a.
+ */
 unsigned int caca_sqrt(unsigned int a)
 {
     if(a == 0)

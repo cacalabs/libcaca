@@ -76,6 +76,18 @@ void caca_draw_line(int x1, int y1, int x2, int y2, char c)
     clip_line(&s);
 }
 
+/**
+ * \brief Draw a polyline on the screen using the given character and
+ *        coordinate arrays. The first and last points are not connected,
+ *        so in order to draw a polygon you need to specify the starting
+ *        point at the end of the list as well.
+ *
+ * \param x Array of X coordinates. Must have \p n + 1 elements.
+ * \param y Array of Y coordinates. Must have \p n + 1 elements.
+ * \param n Number of lines to draw.
+ * \param c Character to draw the lines with.
+ * \return void
+ */
 void caca_draw_polyline(const int x[], const int y[], int n, char c)
 {
     int i;
@@ -113,6 +125,17 @@ void caca_draw_thin_line(int x1, int y1, int x2, int y2)
     clip_line(&s);
 }
 
+/**
+ * \brief Draw a thin polyline on the screen using the given coordinate
+ *        arrays and with ASCII art. The first and last points are not
+ *        connected, so in order to draw a polygon you need to specify the
+ *        starting point at the end of the list as well.
+ *
+ * \param x Array of X coordinates. Must have \p n + 1 elements.
+ * \param y Array of Y coordinates. Must have \p n + 1 elements.
+ * \param n Number of lines to draw.
+ * \return void
+ */
 void caca_draw_thin_polyline(const int x[], const int y[], int n)
 {
     int i;
@@ -195,7 +218,7 @@ static void clip_line(struct line* s)
  *
  * \param x X coordinate of the point.
  * \param y Y coordinate of the point.
- * \return b The clipping bits for the given point.
+ * \return The clipping bits for the given point.
  */
 static uint8_t clip_bits(int x, int y)
 {

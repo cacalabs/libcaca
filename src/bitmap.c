@@ -120,6 +120,19 @@ static void mask2shift(unsigned int mask, int *right, int *left)
     *left = 12 - lshift;
 }
 
+/**
+ * \brief Create an internal bitmap object.
+ *
+ * \param bitmap The bitmap depth in bits per pixel.
+ * \param w The bitmap width in pixels.
+ * \param h The bitmap height in pixels.
+ * \param pitch The bitmap pitch in bytes.
+ * \param rmask The bitmask for red values.
+ * \param gmask The bitmask for green values.
+ * \param bmask The bitmask for blue values.
+ * \param amask The bitmask for alpha values.
+ * \return A bitmap object or NULL upon error.
+ */
 struct caca_bitmap *caca_create_bitmap(unsigned int bpp, unsigned int w,
                                        unsigned int h, unsigned int pitch,
                                        unsigned int rmask, unsigned int gmask,
@@ -174,6 +187,16 @@ struct caca_bitmap *caca_create_bitmap(unsigned int bpp, unsigned int w,
     return bitmap;
 }
 
+/**
+ * \brief Set the palette of an 8bpp bitmap object.
+ *
+ * \param bpp The bitmap object.
+ * \param red An array of 256 red values.
+ * \param green An array of 256 green values.
+ * \param blue An array of 256 blue values.
+ * \param alpha An array of 256 alpha values.
+ * \return void
+ */
 void caca_set_bitmap_palette(struct caca_bitmap *bitmap,
                              unsigned int red[], unsigned int green[],
                              unsigned int blue[], unsigned int alpha[])
@@ -204,6 +227,12 @@ void caca_set_bitmap_palette(struct caca_bitmap *bitmap,
     bitmap->has_alpha = has_alpha;
 }
 
+/**
+ * \brief Free the memory associated with a bitmap.
+ *
+ * \param bitmap The bitmap object to be freed.
+ * \return void
+ */
 void caca_free_bitmap(struct caca_bitmap *bitmap)
 {
     if(!bitmap)
@@ -298,6 +327,17 @@ static void rgb2hsv_default(int r, int g, int b, int *hue, int *sat, int *val)
     }
 }
 
+/**
+ * \brief Draw a bitmap on the screen.
+ *
+ * \param x1 X coordinate of the upper-left corner of the drawing area.
+ * \param y1 Y coordinate of the upper-left corner of the drawing area.
+ * \param x2 X coordinate of the lower-right corner of the drawing area.
+ * \param y2 Y coordinate of the lower-right corner of the drawing area.
+ * \param bitmap The bitmap object to be drawn.
+ * \param pixels A pointer to the bitmap's pixels.
+ * \return void
+ */
 void caca_draw_bitmap(int x1, int y1, int x2, int y2,
                       const struct caca_bitmap *bitmap, void *pixels)
 {

@@ -53,6 +53,11 @@ static unsigned int _read_key(void);
 static unsigned int keybuf[KEY_BUFLEN + 1]; /* zero-terminated */
 static int keys = 0;
 
+/**
+ * \brief Get the next mouse or keyboard input event.
+ *
+ * \return The next event in the queue, or 0 if no event is pending.
+ */
 unsigned int caca_get_event(void)
 {
     unsigned int event = 0;

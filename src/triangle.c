@@ -34,6 +34,18 @@
 #include "caca.h"
 #include "caca_internals.h"
 
+/**
+ * \brief Draw a triangle on the screen using the given character.
+ *
+ * \param x1 X coordinate of the first point.
+ * \param y1 Y coordinate of the first point.
+ * \param x2 X coordinate of the second point.
+ * \param y2 Y coordinate of the second point.
+ * \param x3 X coordinate of the third point.
+ * \param y3 Y coordinate of the third point.
+ * \param c Character to draw the triangle outline with.
+ * \return void
+ */
 void caca_draw_triangle(int x1, int y1, int x2, int y2, int x3, int y3, char c)
 {
     caca_draw_line(x1, y1, x2, y2, c);
@@ -41,6 +53,17 @@ void caca_draw_triangle(int x1, int y1, int x2, int y2, int x3, int y3, char c)
     caca_draw_line(x3, y3, x1, y1, c);
 }
 
+/**
+ * \brief Draw a thin triangle on the screen.
+ *
+ * \param x1 X coordinate of the first point.
+ * \param y1 Y coordinate of the first point.
+ * \param x2 X coordinate of the second point.
+ * \param y2 Y coordinate of the second point.
+ * \param x3 X coordinate of the third point.
+ * \param y3 Y coordinate of the third point.
+ * \return void
+ */
 void caca_draw_thin_triangle(int x1, int y1, int x2, int y2, int x3, int y3)
 {
     caca_draw_thin_line(x1, y1, x2, y2);
@@ -48,6 +71,18 @@ void caca_draw_thin_triangle(int x1, int y1, int x2, int y2, int x3, int y3)
     caca_draw_thin_line(x3, y3, x1, y1);
 }
 
+/**
+ * \brief Fill a triangle on the screen using the given character.
+ *
+ * \param x1 X coordinate of the first point.
+ * \param y1 Y coordinate of the first point.
+ * \param x2 X coordinate of the second point.
+ * \param y2 Y coordinate of the second point.
+ * \param x3 X coordinate of the third point.
+ * \param y3 Y coordinate of the third point.
+ * \param c Character to fill the triangle with.
+ * \return void
+ */
 void caca_fill_triangle(int x1, int y1, int x2, int y2, int x3, int y3, char c)
 {
     int x, y, xa, xb, xmax, ymax;

@@ -50,6 +50,12 @@ struct caca_sprite
     struct caca_frame *frames;
 };
 
+/**
+ * \brief Allocate a sprite loaded from a file.
+ *
+ * \param file The filename.
+ * \return The sprite, or NULL if an error occured.
+ */
 struct caca_sprite *caca_load_sprite(const char *file)
 {
     char buf[BUFSIZ];
@@ -165,6 +171,12 @@ sprite_alloc_failed:
     return NULL;
 }
 
+/**
+ * \brief Return the number of frames in a sprite.
+ *
+ * \param sprite The sprite.
+ * \return The number of frames.
+ */
 int caca_get_sprite_frames(const struct caca_sprite *sprite)
 {
     if(sprite == NULL)
@@ -173,6 +185,13 @@ int caca_get_sprite_frames(const struct caca_sprite *sprite)
     return sprite->nf;
 }
 
+/**
+ * \brief Return the width of a sprite.
+ *
+ * \param sprite The sprite.
+ * \param f The frame index.
+ * \return The width of the given frame of the sprite.
+ */
 int caca_get_sprite_width(const struct caca_sprite *sprite, int f)
 {
     if(sprite == NULL)
@@ -184,6 +203,13 @@ int caca_get_sprite_width(const struct caca_sprite *sprite, int f)
     return sprite->frames[f].w;
 }
 
+/**
+ * \brief Return the height of a sprite.
+ *
+ * \param sprite The sprite.
+ * \param f The frame index.
+ * \return The height of the given frame of the sprite.
+ */
 int caca_get_sprite_height(const struct caca_sprite *sprite, int f)
 {
     if(sprite == NULL)
@@ -195,6 +221,13 @@ int caca_get_sprite_height(const struct caca_sprite *sprite, int f)
     return sprite->frames[f].h;
 }
 
+/**
+ * \brief Return the X coordinate of a sprite's handle.
+ *
+ * \param sprite The sprite.
+ * \param f The frame index.
+ * \return The X coordinate of the given frame's handle.
+ */
 int caca_get_sprite_dx(const struct caca_sprite *sprite, int f)
 {
     if(sprite == NULL)
@@ -206,6 +239,13 @@ int caca_get_sprite_dx(const struct caca_sprite *sprite, int f)
     return sprite->frames[f].dx;
 }
 
+/**
+ * \brief Return the Y coordinate of a sprite's handle.
+ *
+ * \param sprite The sprite.
+ * \param f The frame index.
+ * \return The Y coordinate of the given frame's handle.
+ */
 int caca_get_sprite_dy(const struct caca_sprite *sprite, int f)
 {
     if(sprite == NULL)
@@ -217,6 +257,16 @@ int caca_get_sprite_dy(const struct caca_sprite *sprite, int f)
     return sprite->frames[f].dy;
 }
 
+/**
+ * \brief Draw a sprite's specific frame at the given coordinates. If the
+ *        frame does not exist, nothing is displayed.
+ *
+ * \param x The X coordinate.
+ * \param y The Y coordinate.
+ * \param sprite The sprite.
+ * \param f The frame index.
+ * \return void
+ */
 void caca_draw_sprite(int x, int y, const struct caca_sprite *sprite, int f)
 {
     int i, j;
@@ -251,6 +301,12 @@ void caca_draw_sprite(int x, int y, const struct caca_sprite *sprite, int f)
     caca_set_color(oldfg, oldbg);
 }
 
+/**
+ * \brief Free the memory associated with a sprite.
+ *
+ * \param sprite The sprite to be freed.
+ * \return void
+ */
 void caca_free_sprite(struct caca_sprite *sprite)
 {
     int i;

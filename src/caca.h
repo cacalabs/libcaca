@@ -226,9 +226,9 @@ void caca_clear(void);
  * Graphics primitives
  */
 void caca_draw_line(int, int, int, int, char);
-void caca_draw_polyline(const int[], const int[], int, char);
+void caca_draw_polyline(const int x[], const int y[], int, char);
 void caca_draw_thin_line(int, int, int, int);
-void caca_draw_thin_polyline(const int[], const int[], int);
+void caca_draw_thin_polyline(const int x[], const int y[], int);
 
 void caca_draw_circle(int, int, int, char);
 void caca_draw_ellipse(int, int, int, int, char);
@@ -270,8 +270,9 @@ struct caca_bitmap *caca_create_bitmap(unsigned int, unsigned int,
                                        unsigned int, unsigned int,
                                        unsigned int, unsigned int,
                                        unsigned int, unsigned int);
-void caca_set_bitmap_palette(struct caca_bitmap *, unsigned int[],
-                             unsigned int[], unsigned int[], unsigned int[]);
+void caca_set_bitmap_palette(struct caca_bitmap *,
+                             unsigned int r[], unsigned int g[],
+                             unsigned int b[], unsigned int a[]);
 void caca_draw_bitmap(int, int, int, int, const struct caca_bitmap *, void *);
 void caca_free_bitmap(struct caca_bitmap *);
 
