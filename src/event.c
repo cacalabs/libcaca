@@ -69,6 +69,8 @@ static unsigned int eventbuf[EVENTBUF_LEN];
 static int events = 0;
 #endif
 
+static unsigned int mouse_x = 0, mouse_y = 0;
+
 #if !defined(_DOXYGEN_SKIP_ME)
 /* If no new key was pressed after AUTOREPEAT_THRESHOLD usec, assume the
  * key was released */
@@ -128,6 +130,34 @@ unsigned int caca_wait_event(unsigned int event_mask)
 
         _caca_sleep(10000);
     }
+}
+
+/** \brief Return the X mouse coordinate.
+ *
+ *  This function returns the X coordinate of the mouse position last time
+ *  it was detected. This function is not reliable if the ncurses or S-Lang
+ *  drivers are being used, because mouse position is only detected when
+ *  the mouse is clicked. Other drivers such as X11 work well.
+ *
+ *  \return The X mouse coordinate.
+ */
+unsigned int caca_get_mouse_x(void)
+{
+    return mouse_x;
+}
+
+/** \brief Return the Y mouse coordinate.
+ *
+ *  This function returns the Y coordinate of the mouse position last time
+ *  it was detected. This function is not reliable if the ncurses or S-Lang
+ *  drivers are being used, because mouse position is only detected when
+ *  the mouse is clicked. Other drivers such as X11 work well.
+ *
+ *  \return The Y mouse coordinate.
+ */
+unsigned int caca_get_mouse_y(void)
+{
+    return mouse_y;
 }
 
 /*
@@ -216,15 +246,27 @@ static unsigned int _lowlevel_event(void)
     if(_caca_driver == CACA_DRIVER_X11)
     {
         XEvent xevent;
-        static unsigned int x11_x = 0, x11_y = 0;
-        long int xevent_mask = KeyPressMask | KeyReleaseMask | ButtonPressMask
-                                | ButtonReleaseMask | PointerMotionMask;
         char key;
 
-        while(XCheckWindowEvent(x11_dpy, x11_window, xevent_mask, &xevent)
+        while(XCheckWindowEvent(x11_dpy, x11_window, x11_event_mask, &xevent)
                == True)
         {
             KeySym keysym;
+
+            /* Resize event */
+            if(xevent.type == ConfigureNotify)
+            {
+                unsigned int w = xevent.xconfigure.width / x11_font_width;
+                unsigned int h = xevent.xconfigure.height / x11_font_height;
+
+                if(w == _caca_width && h == _caca_height)
+                    continue;
+
+                _caca_new_width = w;
+                _caca_new_height = h;
+
+                return CACA_EVENT_RESIZE;
+            }
 
             /* Check for mouse motion events */
             if(xevent.type == MotionNotify)
@@ -237,13 +279,13 @@ static unsigned int _lowlevel_event(void)
                 if(newy >= _caca_height)
                     newy = _caca_height - 1;
 
-                if(x11_x == newx && x11_y == newy)
+                if(mouse_x == newx && mouse_y == newy)
                     continue;
 
-                x11_x = newx & 0xfff;
-                x11_y = newy & 0xfff;
+                mouse_x = newx;
+                mouse_y = newy;
 
-                return CACA_EVENT_MOUSE_MOTION | (newx << 12) | (newy << 0);
+                return CACA_EVENT_MOUSE_MOTION | (mouse_x << 12) | mouse_y;
             }
 
             /* Check for mouse press and release events */
@@ -427,7 +469,14 @@ static unsigned int _lowlevel_event(void)
                     break;
             }
 
-            return CACA_EVENT_MOUSE_MOTION | (mevent.x << 12) | mevent.y;
+            if(mouse_x == (unsigned int)mevent.x &&
+               mouse_y == (unsigned int)mevent.y)
+                return _pop_event();
+
+            mouse_x = mevent.x;
+            mouse_y = mevent.y;
+
+            return CACA_EVENT_MOUSE_MOTION | (mouse_x << 12) | mouse_y;
         }
 
         event = CACA_EVENT_KEY_PRESS;
@@ -492,11 +541,18 @@ static unsigned int _lowlevel_event(void)
         if(intkey == 0x3e9)
         {
             int button = (SLang_getkey() - ' ' + 1) & 0xf;
-            int x = SLang_getkey() - '!';
-            int y = SLang_getkey() - '!';
+            unsigned int x = SLang_getkey() - '!';
+            unsigned int y = SLang_getkey() - '!';
             _push_event(CACA_EVENT_MOUSE_PRESS | button);
             _push_event(CACA_EVENT_MOUSE_RELEASE | button);
-            return CACA_EVENT_MOUSE_MOTION | (x << 12) | (y << 0);
+
+            if(mouse_x == x && mouse_y == y)
+                return _pop_event();
+
+            mouse_x = x;
+            mouse_y = y;
+
+            return CACA_EVENT_MOUSE_MOTION | (mouse_x << 12) | mouse_y;
         }
 
         event = CACA_EVENT_KEY_PRESS;
@@ -551,55 +607,70 @@ static unsigned int _lowlevel_event(void)
         INPUT_RECORD rec;
         DWORD num;
 
-        GetNumberOfConsoleInputEvents(win32_hin, &num);
-        if(num == 0)
-            return CACA_EVENT_NONE;
-
-        ReadConsoleInput(win32_hin, &rec, 1, &num);
-        if(rec.EventType == KEY_EVENT)
+        for( ; ; )
         {
-            if(rec.Event.KeyEvent.bKeyDown)
-                event = CACA_EVENT_KEY_PRESS;
-            else
-                event = CACA_EVENT_KEY_RELEASE;
+            GetNumberOfConsoleInputEvents(win32_hin, &num);
+            if(num == 0)
+                break;
 
-            if(rec.Event.KeyEvent.uChar.AsciiChar)
-                return event | rec.Event.KeyEvent.uChar.AsciiChar;
-        }
-        else if(rec.EventType == MOUSE_EVENT)
-        {
-            if(rec.Event.MouseEvent.dwEventFlags == 0)
+            ReadConsoleInput(win32_hin, &rec, 1, &num);
+            if(rec.EventType == KEY_EVENT)
             {
-                if(rec.Event.MouseEvent.dwButtonState & 0x01)
-                    return CACA_EVENT_MOUSE_PRESS | 0x000001;
-
-                if(rec.Event.MouseEvent.dwButtonState & 0x02)
-                    return CACA_EVENT_MOUSE_PRESS | 0x000002;
-            }
-            else if(rec.Event.MouseEvent.dwEventFlags == MOUSE_MOVED)
-            {
-                return CACA_EVENT_MOUSE_MOTION
-                        | (rec.Event.MouseEvent.dwMousePosition.X << 12)
-                        | (rec.Event.MouseEvent.dwMousePosition.Y);
-            }
-#if 0
-            else if(rec.Event.MouseEvent.dwEventFlags == DOUBLE_CLICK)
-            {
-                cout << rec.Event.MouseEvent.dwMousePosition.X << "," <<
-                        rec.Event.MouseEvent.dwMousePosition.Y << "  " << flush;
-            }
-            else if(rec.Event.MouseEvent.dwEventFlags == MOUSE_WHEELED)
-            {
-                SetConsoleCursorPosition(hOut,
-                                         WheelWhere);
-                if(rec.Event.MouseEvent.dwButtonState & 0xFF000000)
-                    cout << "Down" << flush;
+                if(rec.Event.KeyEvent.bKeyDown)
+                    event = CACA_EVENT_KEY_PRESS;
                 else
-                    cout << "Up  " << flush;
+                    event = CACA_EVENT_KEY_RELEASE;
+
+                if(rec.Event.KeyEvent.uChar.AsciiChar)
+                    return event | rec.Event.KeyEvent.uChar.AsciiChar;
             }
+
+            if(rec.EventType == MOUSE_EVENT)
+            {
+                if(rec.Event.MouseEvent.dwEventFlags == 0)
+                {
+                    if(rec.Event.MouseEvent.dwButtonState & 0x01)
+                        return CACA_EVENT_MOUSE_PRESS | 0x000001;
+
+                    if(rec.Event.MouseEvent.dwButtonState & 0x02)
+                        return CACA_EVENT_MOUSE_PRESS | 0x000002;
+                }
+                else if(rec.Event.MouseEvent.dwEventFlags == MOUSE_MOVED)
+                {
+                    COORD pos = rec.Event.MouseEvent.dwMousePosition;
+
+                    if(mouse_x == (unsigned int)pos.X &&
+                       mouse_y == (unsigned int)pos.Y)
+                        continue;
+
+                    mouse_x = pos.X;
+                    mouse_y = pos.Y;
+
+                    return CACA_EVENT_MOUSE_MOTION | (mouse_x << 12) | mouse_y;
+                }
+#if 0
+                else if(rec.Event.MouseEvent.dwEventFlags == DOUBLE_CLICK)
+                {
+                    cout << rec.Event.MouseEvent.dwMousePosition.X << "," <<
+                            rec.Event.MouseEvent.dwMousePosition.Y << "  " << flush;
+                }
+                else if(rec.Event.MouseEvent.dwEventFlags == MOUSE_WHEELED)
+                {
+                    SetConsoleCursorPosition(hOut,
+                                             WheelWhere);
+                    if(rec.Event.MouseEvent.dwButtonState & 0xFF000000)
+                        cout << "Down" << flush;
+                    else
+                        cout << "Up  " << flush;
+                }
 #endif
+            }
+
+            /* Unknown event */
+            return CACA_EVENT_NONE;
         }
 
+        /* No event */
         return CACA_EVENT_NONE;
     }
     else

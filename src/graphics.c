@@ -78,6 +78,8 @@ typedef unsigned char uint8_t;
 #if !defined(_DOXYGEN_SKIP_ME)
 unsigned int _caca_width = 0;
 unsigned int _caca_height = 0;
+unsigned int _caca_new_width = 0;
+unsigned int _caca_new_height = 0;
 #endif
 
 /*
@@ -154,6 +156,8 @@ static char *conio_screen;
 #if defined(USE_X11) && !defined(_DOXYGEN_SKIP_ME)
 Display *x11_dpy;
 Window x11_window;
+long int x11_event_mask = KeyPressMask | KeyReleaseMask | ButtonPressMask
+            | ButtonReleaseMask | PointerMotionMask | StructureNotifyMask;
 int x11_font_width, x11_font_height;
 static GC x11_gc;
 static Pixmap x11_pixmap;
@@ -229,6 +233,8 @@ static enum caca_color _caca_bgcolor = CACA_COLOR_BLACK;
 /*
  * Local functions
  */
+static void caca_handle_resize(void);
+
 #if defined(USE_SLANG)
 static void slang_init_palette(void);
 #endif
@@ -796,9 +802,7 @@ int _caca_init_graphics(void)
             XAutoRepeatOff(x11_dpy);
 #endif
 
-        XSelectInput(x11_dpy, x11_window,
-                     KeyPressMask | KeyReleaseMask | ButtonPressMask
-                      | ButtonReleaseMask | PointerMotionMask);
+        XSelectInput(x11_dpy, x11_window, x11_event_mask);
 
         XSync(x11_dpy, False);
 
@@ -887,6 +891,9 @@ int _caca_init_graphics(void)
     _caca_empty_line[_caca_width] = '\0';
 
     _caca_scratch_line = malloc(_caca_width + 1);
+
+    _caca_new_width = _caca_width;
+    _caca_new_height = _caca_height;
 
     _caca_delay = 0;
     _caca_rendertime = 0;
@@ -1162,6 +1169,9 @@ void caca_refresh(void)
         /* Dummy */
     }
 
+    if(_caca_width != _caca_new_width || _caca_height != _caca_new_height)
+        caca_handle_resize();
+
     /* Wait until _caca_delay + time of last call */
     ticks += _caca_getticks(&timer);
     for(ticks += _caca_getticks(&timer);
@@ -1179,6 +1189,73 @@ void caca_refresh(void)
     /* If we drifted too much, it's bad, bad, bad. */
     if(lastticks > (int)_caca_delay)
         lastticks = 0;
+}
+
+/*
+ * XXX: following functions are loca
+ */
+static void caca_handle_resize(void)
+{
+    unsigned int old_width = _caca_width;
+    unsigned int old_height = _caca_height;
+
+    _caca_width = _caca_new_width;
+    _caca_height = _caca_new_height;
+
+    free(_caca_empty_line);
+    _caca_empty_line = malloc(_caca_width + 1);
+    memset(_caca_empty_line, ' ', _caca_width);
+    _caca_empty_line[_caca_width] = '\0';
+
+    free(_caca_scratch_line);
+    _caca_scratch_line = malloc(_caca_width + 1);
+
+#if defined(USE_SLANG)
+    if(_caca_driver == CACA_DRIVER_SLANG)
+    {
+    }
+    else
+#endif
+#if defined(USE_NCURSES)
+    if(_caca_driver == CACA_DRIVER_NCURSES)
+    {
+    }
+    else
+#endif
+#if defined(USE_CONIO)
+    if(_caca_driver == CACA_DRIVER_CONIO)
+    {
+    }
+    else
+#endif
+#if defined(USE_X11)
+    if(_caca_driver == CACA_DRIVER_X11)
+    {
+        XFreePixmap(x11_dpy, x11_pixmap);
+        free(x11_char);
+        free(x11_attr);
+
+        x11_pixmap = XCreatePixmap(x11_dpy, x11_window,
+                                   _caca_width * x11_font_width,
+                                   _caca_height * x11_font_height,
+                                   DefaultDepth(x11_dpy,
+                                                DefaultScreen(x11_dpy)));
+        x11_char = malloc(_caca_width * _caca_height * sizeof(int));
+        memset(x11_char, 0, _caca_width * _caca_height * sizeof(int));
+        x11_attr = malloc(_caca_width * _caca_height * sizeof(int));
+        memset(x11_attr, 0, _caca_width * _caca_height * sizeof(int));
+    }
+    else
+#endif
+#if defined(USE_WIN32)
+    if(_caca_driver == CACA_DRIVER_WIN32)
+    {
+    }
+    else
+#endif
+    {
+        /* Dummy */
+    }
 }
 
 #if defined(USE_SLANG)
@@ -1229,6 +1306,7 @@ static void slang_init_palette(void)
 #if defined(USE_X11)
 static int x11_error_handler(Display *dpy, XErrorEvent *event)
 {
+    /* Ignore the error */
     return 0;
 }
 #endif

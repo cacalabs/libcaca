@@ -219,8 +219,8 @@ drawfire (void)
   caca_draw_bitmap(0, 0, caca_get_width() - 1, caca_get_height() - 1,
                    caca_bitmap, bitmap);
   caca_refresh();
-  XSIZ = caca_get_width() * 2;
-  YSIZ = caca_get_height() * 2 - 4;
+  /*XSIZ = caca_get_width() * 2;
+  YSIZ = caca_get_height() * 2 - 4;*/
 #else
   aa_renderpalette (context, palette, params, 0, 0, aa_scrwidth (context),
 		    aa_scrheight (context));
