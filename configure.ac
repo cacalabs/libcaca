@@ -27,9 +27,6 @@ AC_ARG_ENABLE(conio,
 AC_CHECK_HEADERS(inttypes.h endian.h)
 AC_CHECK_FUNCS(vsnprintf getenv putenv)
 
-USE_SLANG=false
-USE_NCURSES=false
-USE_CONIO=false
 if test "${enable_conio}" = "yes"; then
   AC_CHECK_HEADER(conio.h,:,AC_MSG_ERROR([cannot find conio.h header]))
   AC_MSG_CHECKING(for ScreenUpdate in pc.h)
@@ -39,23 +36,21 @@ if test "${enable_conio}" = "yes"; then
               Define if <pc.h> defines ScreenUpdate.)],[
     AC_MSG_RESULT(no)])
   AC_DEFINE(USE_CONIO, 1, Define if the backend driver is conio.h)
-  USE_CONIO=:
 elif test "${enable_slang}" = "yes"; then
   AC_CHECK_HEADER(slang.h,:,AC_MSG_ERROR([cannot find slang headers]))
   AC_CHECK_LIB(slang,SLkp_init,:,AC_MSG_ERROR([cannot find slang library]))
   AC_DEFINE(USE_SLANG, 1, Define if the backend driver is slang)
-  USE_SLANG=:
+  CACA_LIBS="${CACA_LIBS} -lslang"
 elif test "${enable_ncurses}" != "no"; then
   AC_CHECK_HEADER(ncurses.h,:,AC_MSG_ERROR([cannot find ncurses headers]))
   AC_CHECK_LIB(ncurses,initscr,:,AC_MSG_ERROR([cannot find ncurses library]))
   AC_DEFINE(USE_NCURSES, 1, Define if the backend driver is ncurses)
-  USE_NCURSES=:
+  CACA_LIBS="${CACA_LIBS} -lncurses"
 else
   AC_MSG_ERROR([could not find any terminal graphics interface])
 fi
 
-AM_CONDITIONAL(USE_SLANG, ${USE_SLANG})
-AM_CONDITIONAL(USE_NCURSES, ${USE_NCURSES})
+AC_SUBST(CACA_LIBS)
 
 # Optimizations
 CFLAGS="${CFLAGS} -g -O2 -fno-strength-reduce -fomit-frame-pointer"
