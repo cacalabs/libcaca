@@ -20,6 +20,7 @@ dnl AC_PROG_EGREP only exists in autoconf 2.54+, so we use AC_EGREP_CPP right
 dnl now otherwise it might be set in an obscure if statement.
 AC_EGREP_CPP(foo, foo)
 
+dnl output driver features
 AC_ARG_ENABLE(slang,
   [  --enable-slang          slang graphics support (autodetected)])
 AC_ARG_ENABLE(ncurses,
@@ -30,6 +31,14 @@ AC_ARG_ENABLE(conio,
   [  --enable-conio          DOS conio.h graphics support (autodetected)])
 AC_ARG_ENABLE(x11,
   [  --enable-x11            X11 support (autodetected)])
+
+dnl example programs features
+AC_ARG_ENABLE(imlib2,
+  [  --enable-imlib2         Imlib2 graphics support (default enabled)])
+
+dnl conditional builds
+AC_ARG_ENABLE(doc,
+  [  --enable-doc            build documentation (needs doxygen and LaTeX)])
 
 AC_CHECK_HEADERS(sys/time.h inttypes.h endian.h unistd.h)
 AC_CHECK_FUNCS(vsnprintf _vsnprintf getenv putenv strcasecmp usleep gettimeofday)
@@ -150,8 +159,6 @@ AM_CONDITIONAL(NEED_PIC, ${NEED_PIC})
 
 # Use Imlib2?
 ac_cv_my_have_imlib2="no"
-AC_ARG_ENABLE(imlib2,
-  [  --enable-imlib2         Imlib2 graphics support (default enabled)])
 save_CPPFLAGS="${CPPFLAGS}"
 if test "${enable_imlib2}" != "no"; then
   AC_PATH_PROG(IMLIB2_CONFIG, imlib2-config, no)
@@ -167,23 +174,30 @@ fi
 AM_CONDITIONAL(USE_IMLIB2, test "${ac_cv_my_have_imlib2}" = "yes")
 
 # Build documentation?
-AC_PATH_PROG(DOXYGEN, doxygen, no)
-AM_CONDITIONAL(DOXYGEN, test "${DOXYGEN}" != "no")
+DOXYGEN="no"
+LATEX="no"
+if test "${enable_doc}" != "no"; then
+  AC_PATH_PROG(DOXYGEN, doxygen, no)
+  if test "${DOXYGEN}" = "no"; then
+    AC_MSG_ERROR([[cannot find doxygen, which is needed to build the libcaca documentation; if this is really what you want, re-run configure with '--disable-doc'.]])
+  fi
 
-# Build LaTeX documentation?
-AC_PATH_PROG(LATEX, latex, no)
-AC_PATH_PROG(DVIPS, dvips, no)
-if test "${DVIPS}" = "no"; then
-  LATEX="no"
+  # Build LaTeX documentation?
+  AC_PATH_PROG(LATEX, latex, no)
+  AC_PATH_PROG(DVIPS, dvips, no)
+  if test "${DVIPS}" = "no"; then
+    LATEX="no"
+  fi
+  AC_MSG_CHECKING(for a4wide.sty)
+  if test -f /usr/share/texmf/tex/latex/misc/a4wide.sty; then
+    AC_MSG_RESULT(yes)
+  else
+    LATEX="no"
+    AC_MSG_RESULT(no)
+  fi
 fi
-AC_MSG_CHECKING(for a4wide.sty)
-if test -f /usr/share/texmf/tex/latex/misc/a4wide.sty; then
-  AC_MSG_RESULT(yes)
-else
-  LATEX="no"
-  AC_MSG_RESULT(no)
-fi
-AM_CONDITIONAL(LATEX, test "${LATEX}" != "no")
+AM_CONDITIONAL(BUILD_DOCUMENTATION, test "${DOXYGEN}" != "no")
+AM_CONDITIONAL(USE_LATEX, test "${LATEX}" != "no")
 
 AC_CONFIG_FILES([
   Makefile

@@ -4,10 +4,10 @@ EXTRA_DIST = doxygen.cfg.in footer.html header.html $(man_MANS)
 
 man_MANS = caca-config.1 cacademo.1 cacaview.1
 
-if DOXYGEN
+if BUILD_DOCUMENTATION
 htmldoc_DATA = html/doxygen.css
 htmldocdir = $(datadir)/doc/libcaca-dev/html
-if LATEX
+if USE_LATEX
 psdoc_DATA = latex/libcaca.ps
 psdocdir = $(datadir)/doc/libcaca-dev/ps
 endif
@@ -17,14 +17,14 @@ html/doxygen.css html/doxygen.png: stamp-doxygen
 latex/libcaca.ps: stamp-latex
 
 stamp-doxygen:
-if DOXYGEN
+if BUILD_DOCUMENTATION
 	doxygen doxygen.cfg
 	touch stamp-doxygen
 endif
 
 stamp-latex: stamp-doxygen
-if DOXYGEN
-if LATEX
+if BUILD_DOCUMENTATION
+if USE_LATEX
 	rm -f latex/libcaca.tex latex/libcaca.ps
 	mv latex/refman.tex latex/libcaca.tex
 	sed 's/setlength{/renewcommand{/' latex/libcaca.tex > latex/refman.tex
@@ -40,7 +40,7 @@ clean-local:
 	-rm -f stamp-latex stamp-doxygen
 
 install-data-local:
-if DOXYGEN
+if BUILD_DOCUMENTATION
 	$(mkinstalldirs) $(DESTDIR)$(datadir)/doc/libcaca-dev/html
 	cp `find html -name '*.html' -o -name '*.gif' -o -name '*.png'` \
 	  $(DESTDIR)$(datadir)/doc/libcaca-dev/html

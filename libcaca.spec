@@ -1,4 +1,4 @@
-%define name  libcaca
+%define name libcaca
 %define version 0.7
 %define release 1
 
@@ -69,7 +69,7 @@ all)
   --bindir=\${prefix}/bin \
   --mandir=\${prefix}/share/man \
   --infodir=\${prefix}/share/info \
-  --enable-slang --enable-ncurses --enable-x11 --enable-imlib2
+  --enable-slang --enable-ncurses --enable-x11 --enable-imlib2 --enable-doc
 ;;esac
 make 
 

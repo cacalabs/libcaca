@@ -14,7 +14,7 @@ rm -f "${DIRNAME}.zip"
 mkdir "${DIRNAME}"
 
 # Build for win32
-./configure --host=i586-mingw32msvc --prefix=/ --bindir=/ --libdir=/ --disable-imlib2
+./configure --host=i586-mingw32msvc --prefix=/ --bindir=/ --libdir=/ --disable-imlib2 --disable-doc
 make pkglibdir=/lib pkgdatadir=/data
 
 # Install into our private directory
@@ -24,10 +24,7 @@ rm -Rf "${DESTDIR}/man"
 rm -Rf "${DESTDIR}/include"
 rm -f "${DESTDIR}/caca-config"
 rm -f "${DESTDIR}/"*.a
-mv "${DESTDIR}/share/doc/libcaca-dev/html" "${DESTDIR}/html"
-mv "${DESTDIR}/share/doc/libcaca-dev/ps" "${DESTDIR}/doc"
-mv "${DESTDIR}/share/doc/libcaca-dev/"* "${DESTDIR}/doc"
-rmdir "${DESTDIR}/share/doc/libcaca-dev"
+mv "${DESTDIR}/share/doc/libcaca-dev/" "${DESTDIR}/doc"
 rmdir "${DESTDIR}/share/doc"
 rmdir "${DESTDIR}/share"
 

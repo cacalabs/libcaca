@@ -12,7 +12,8 @@ else
 endif
 
 confflags += --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info
-confflags += --enable-ncurses --enable-slang --enable-x11 --enable-imlib2
+confflags += --enable-ncurses --enable-slang --enable-x11 \
+	     --enable-imlib2 --enable-doc
 
 configure: configure-stamp
 configure-stamp:
