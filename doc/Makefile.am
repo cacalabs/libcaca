@@ -3,7 +3,7 @@ EXTRA_DIST = doxygen.cfg.in footer.html header.html $(man_MANS)
 man_MANS = caca-config.1 cacademo.1 caca-spritedit.1 cacaview.1
 
 if DOXYGEN
-htmldoc_DATA = html/doxygen.css html/doxygen.png
+htmldoc_DATA = html/doxygen.css
 htmldocdir = $(datadir)/doc/libcaca-dev/html
 if LATEX
 psdoc_DATA = latex/libcaca.ps
@@ -39,6 +39,7 @@ install-data-local:
 if DOXYGEN
 	$(mkinstalldirs) $(DESTDIR)$(datadir)/doc/libcaca-dev/html
 	cp html/*.html $(DESTDIR)$(datadir)/doc/libcaca-dev/html
+	cp html/*.gif html/*.png $(DESTDIR)$(datadir)/doc/libcaca-dev/html
 	$(mkinstalldirs) $(DESTDIR)$(mandir)/man3
 	cp man/man3/*.3caca $(DESTDIR)$(mandir)/man3
 endif
