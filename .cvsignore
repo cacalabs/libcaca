@@ -1,13 +1,12 @@
 .dirstamp
 configure
+configure-stamp
 config.h
 config.h.*
 config.log
 config.cache
 config.rpath
 config.status
-config.guess
-config.sub
 confdefs.h
 conftest.cc
 autom4te.cache
@@ -16,8 +15,3 @@ Makefile.in
 build-stamp
 stamp-h*
 aclocal.m4
-install-sh
-missing
-mkinstalldirs
-compile
-depcomp

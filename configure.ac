@@ -4,6 +4,7 @@ AC_INIT(ttyvaders,0.0cvs-20021218)
 
 AC_PREREQ(2.50)
 AC_CONFIG_SRCDIR(src/main.c)
+AC_CONFIG_AUX_DIR(autotools)
 AC_CANONICAL_SYSTEM
 
 AM_INIT_AUTOMAKE(ttyvaders,0.0cvs-20021218)
@@ -29,6 +30,7 @@ AM_CONDITIONAL(USE_NCURSES, test "${enable_ncurses}" = "yes")
 AC_OUTPUT([
   Makefile
   src/Makefile
+  autotools/Makefile
   debian/Makefile
 ])
 

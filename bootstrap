@@ -1,7 +1,8 @@
 #! /bin/sh
 set -x
 
-rm -f aclocal.m4 configure config.guess config.log config.sub ltmain.sh libtool ltconfig missing mkinstalldirs depcomp install-sh
+rm -f aclocal.m4 configure libtool ltconfig ltmain.sh config.log
+rm -f autotools/compile autotools/config.guess autotools/config.sub autotools/missing autotools/mkinstalldirs autotools/depcomp autotools/install-sh
 
 # Check for automake
 amvers="none"
@@ -37,7 +38,7 @@ then
   exit 1
 fi
 
-aclocal${amvers} || exit 1
+aclocal${amvers} -I autotools || exit 1
 autoheader || exit 1
 automake${amvers} --add-missing --copy || exit 1
 autoconf || exit 1
