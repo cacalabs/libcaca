@@ -323,7 +323,7 @@ void caca_end(void)
     else
 #endif
 #if defined(USE_CONIO)
-    if(_caca_driver == USE_CONIO)
+    if(_caca_driver == CACA_DRIVER_CONIO)
     {
         _wscroll = 1;
         textcolor((enum COLORS)WHITE);
@@ -335,7 +335,7 @@ void caca_end(void)
     else
 #endif
 #if defined(USE_X11)
-    if(_caca_driver == USE_X11)
+    if(_caca_driver == CACA_DRIVER_X11)
     {
         /* Nothing to do */
     }
@@ -459,7 +459,7 @@ static void caca_init_terminal(void)
         if(colorterm && !strcmp(colorterm, "gnome-terminal"))
         {
 #if defined(USE_NCURSES)
-            if(_caca_driver == USE_NCURSES)
+            if(_caca_driver == CACA_DRIVER_NCURSES)
             {
                 SCREEN *screen;
                 screen = newterm("xterm-16color", stdout, stdin);
@@ -477,7 +477,7 @@ static void caca_init_terminal(void)
         if(other)
         {
 #if defined(USE_NCURSES)
-            if(_caca_driver == USE_NCURSES)
+            if(_caca_driver == CACA_DRIVER_NCURSES)
             {
                 SCREEN *screen;
                 screen = newterm("xterm-16color", stdout, stdin);
