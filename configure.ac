@@ -51,8 +51,8 @@ if test "${enable_x11}" = "yes"; then
   AC_PATH_X
   AC_CHECK_LIB(X11, XOpenDisplay,
    [ac_cv_my_have_x11=yes
-    X_CFLAGS="-I${x_includes}"
-    X_LIBS="-lX11 -L${x_libraries}"],
+    if test -n "${x_includes}"; then X_CFLAGS="-I${x_includes}"; fi
+    if test -n "${x_libraries}"; then X_LIBS="-lX11 -L${x_libraries}"; fi],
    [ac_cv_my_have_x11=no],
    [[-lXt -L${x_libraries}]])
   if test "${ac_cv_my_have_x11}" != "yes"; then
