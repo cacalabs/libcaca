@@ -17,6 +17,10 @@ High level stuff
 
    o  Sprite library
 
+   o  256 colour sprites instead of 16
+
+   o  Alpha layer for sprites
+
    o  Clip all graphics primitives
 
    o  Fix the thin ellipse rendering

@@ -2,7 +2,9 @@ $Id$
 
 Video rendering
 
-   o  Slang's and ncurses' hashmap scrolling optimization code cause the
-      screen to occasionally flicker because it tries to optimize the
-      vertical scrolling.
+   o  ncurses' hashmap scrolling optimization code causes the screen to
+      occasionally flicker because it tries to optimize the vertical
+      scrolling.
+
+   o  Slang cannot display 256 colour pairs under Unix.
 
