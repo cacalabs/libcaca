@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: collide.c,v 1.10 2002/12/23 16:21:38 sam Exp $
+ *   $Id: collide.c,v 1.11 2003/01/06 12:22:58 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -55,11 +55,11 @@ void collide_weapons_tunnel( game *g, weapons *wp, tunnel *t, explosions *ex )
 
                 if( x <= t->left[y] )
                 {
-                    if( y-2 >= 0 ) t->right[y-2] -= damage - 1;
+                    if( y-2 >= 0 ) t->left[y-2] -= damage - 1;
                     if( y-1 >= 0 ) t->left[y-1] -= damage;
                     t->left[y] -= damage + 1;
                     if( y+1 < g->h ) t->left[y+1] -= damage;
-                    if( y+2 < g->h ) t->right[y+2] -= damage - 1;
+                    if( y+2 < g->h ) t->left[y+2] -= damage - 1;
                 }
                 else
                 {
@@ -97,27 +97,15 @@ void collide_weapons_tunnel( game *g, weapons *wp, tunnel *t, explosions *ex )
 
                     if( x <= t->left[y+j] )
                     {
-                        if( y+j-1 >= 0 )
-                        {
-                            t->left[y+j-1]--;
-                        }
+                        if( y+j-1 >= 0 ) t->left[y+j-1]--;
                         t->left[y+j] -= 2;
-                        if( y+j+1 < g->h )
-                        {
-                            t->left[y+j+1]--;
-                        }
+                        if( y+j+1 < g->h ) t->left[y+j+1]--;
                     }
                     else
                     {
-                        if( y+j-1 >= 0 )
-                        {
-                            t->right[y+j-1]++;
-                        }
+                        if( y+j-1 >= 0 ) t->right[y+j-1]++;
                         t->right[y+j] += 2;
-                        if( y+j+1 < g->h )
-                        {
-                            t->right[y+j+1]++;
-                        }
+                        if( y+j+1 < g->h ) t->right[y+j+1]++;
                     }
                     break;
                 }
@@ -293,14 +281,14 @@ void collide_player_tunnel( game *g, player *p, tunnel *t, explosions *ex )
         p->x += 3;
         p->vx = 2;
         add_explosion( g, ex, p->x+1, p->y-1, 0, 0, EXPLOSION_SMALL );
-        p->life -= 80;
+        p->life -= 180;
     }
     else if( p->x + 5 >= t->right[p->y] )
     {
         p->x -= 3;
         p->vx = -2;
         add_explosion( g, ex, p->x+4, p->y-1, 0, 0, EXPLOSION_SMALL );
-        p->life -= 80;
+        p->life -= 180;
     }
 }
 
