@@ -1,4 +1,4 @@
-# $Id: foo$
+# $Id$
 
 noinst_PROGRAMS = dithering event hsv optipal spritedit
 

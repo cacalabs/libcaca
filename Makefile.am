@@ -1,4 +1,4 @@
-# $Id: foo$
+# $Id$
 
 SUBDIRS = src examples test doc
 DIST_SUBDIRS = $(SUBDIRS) autotools debian

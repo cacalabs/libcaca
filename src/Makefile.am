@@ -1,4 +1,4 @@
-# $Id: foo$
+# $Id$
 
 include_HEADERS = caca.h
 

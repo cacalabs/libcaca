@@ -1,4 +1,4 @@
-# $Id: foo$
+# $Id$
 
 pkgdata_DATA = caca.txt
 
