@@ -152,9 +152,9 @@ unsigned int caca_get_height(void)
 #endif
 }
 
-const char *caca_get_color_name(unsigned int color)
+const char *caca_get_color_name(enum caca_color color)
 {
-    static const char *color_names[16] =
+    static const char *color_names[] =
     {
         "black",
         "blue",
@@ -175,9 +175,25 @@ const char *caca_get_color_name(unsigned int color)
     };
 
     if(color < 0 || color > 15)
-        return "unknown color";
+        return "unknown";
 
     return color_names[color];
+}
+
+const char *caca_get_dithering_name(enum caca_dithering dithering)
+{
+    static const char *dithering_names[] =
+    {
+        "none",
+        "ordered 4x4",
+        "ordered 8x8",
+        "random"
+    };
+
+    if(dithering < 0 || dithering > 3)
+        return "unknown";
+
+    return dithering_names[dithering];
 }
 
 void caca_end(void)

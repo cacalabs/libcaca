@@ -37,9 +37,7 @@ char *pixels = NULL;
 struct caca_bitmap *bitmap = NULL;
 int x, y, w, h;
 
-int dithering = 1;
-const enum caca_dithering dithering_list[] =
-    { CACA_DITHER_NONE, CACA_DITHER_ORDERED, CACA_DITHER_RANDOM };
+int dithering = CACA_DITHERING_ORDERED4;
 
 static void load_image(const char *);
 
@@ -104,7 +102,7 @@ int main(int argc, char **argv)
                 break;
             case CACA_EVENT_KEY_PRESS | 'd':
             case CACA_EVENT_KEY_PRESS | 'D':
-                dithering = (dithering + 1) % 3;
+                dithering = (dithering + 1) % 4;
                 update = 1;
                 break;
             case CACA_EVENT_KEY_PRESS | '+':
@@ -178,7 +176,7 @@ int main(int argc, char **argv)
         if(update)
         {
             caca_clear();
-            caca_set_dithering(dithering_list[dithering]);
+            caca_set_dithering(dithering);
             caca_set_color(CACA_COLOR_WHITE, CACA_COLOR_BLUE);
 
             if(!items)
@@ -226,6 +224,8 @@ int main(int argc, char **argv)
             caca_putstr(0, 0, "q:Quit  +/-/x:Zoom  h/j/k/l: Move  "
                               "d:Dithering  ?:Help");
             caca_printf(3, wh - 1, "cacaview %s", VERSION);
+            caca_printf(ww / 2 - 5, wh - 1, "(dithering: %s)",
+                        caca_get_dithering_name(dithering));
             caca_printf(ww - 14, wh - 1,
                         "(zoom: %s%i)", zoom > 0 ? "+" : "", zoom);
 

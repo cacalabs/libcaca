@@ -53,16 +53,20 @@ static void init_no_dither(int);
 static int get_no_dither(void);
 static void increment_no_dither(void);
 
-static void init_ordered_dither(int);
-static int get_ordered_dither(void);
-static void increment_ordered_dither(void);
+static void init_ordered4_dither(int);
+static int get_ordered4_dither(void);
+static void increment_ordered4_dither(void);
+
+static void init_ordered8_dither(int);
+static int get_ordered8_dither(void);
+static void increment_ordered8_dither(void);
 
 static void init_random_dither(int);
 static int get_random_dither(void);
 static void increment_random_dither(void);
 
 /* Current dithering method */
-static enum caca_dithering _caca_dithering = CACA_DITHER_NONE;
+static enum caca_dithering _caca_dithering = CACA_DITHERING_NONE;
 
 static void (*_init_dither) (int) = init_no_dither;
 static int (*_get_dither) (void) = get_no_dither;
@@ -72,19 +76,25 @@ void caca_set_dithering(enum caca_dithering dither)
 {
     switch(dither)
     {
-    case CACA_DITHER_NONE:
+    case CACA_DITHERING_NONE:
         _init_dither = init_no_dither;
         _get_dither = get_no_dither;
         _increment_dither = increment_no_dither;
         break;
 
-    case CACA_DITHER_ORDERED:
-        _init_dither = init_ordered_dither;
-        _get_dither = get_ordered_dither;
-        _increment_dither = increment_ordered_dither;
+    case CACA_DITHERING_ORDERED4:
+        _init_dither = init_ordered4_dither;
+        _get_dither = get_ordered4_dither;
+        _increment_dither = increment_ordered4_dither;
         break;
 
-    case CACA_DITHER_RANDOM:
+    case CACA_DITHERING_ORDERED8:
+        _init_dither = init_ordered8_dither;
+        _get_dither = get_ordered8_dither;
+        _increment_dither = increment_ordered8_dither;
+        break;
+
+    case CACA_DITHERING_RANDOM:
         _init_dither = init_random_dither;
         _get_dither = get_random_dither;
         _increment_dither = increment_random_dither;
@@ -310,19 +320,18 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
     };
 
     static char foo[] =
-    {
-        ' ', ' ', ' ', ' ',
-        ',', '`', '.', '\'',
-        'i', '-', ':', '^',
-        '|', '/', ';', '\\',
-        '=', '+', 'o', 'x',
-        '<', 'x', '%', '>',
-        '&', 'z', '$', 'w',
-        'W', 'X', 'K', 'M',
-        '#', '8', '#', '#',
-        '8', '@', '8', '#',
-        '@', '8', '@', '8',
-    };
+        "    "
+        " ,' "
+        ",`.'"
+        "i-:^"
+        "|/;\\"
+        "=+ox"
+        "<x%>"
+        "&z$w"
+        "WXKM"
+        "#8##"
+        "8@8#"
+        "@8@8";
 
     int x, y, w, h, pitch;
 
@@ -377,16 +386,16 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
             /* Now get HSV from RGB */
             rgb2hsv_default(R, G, B, &hue, &sat, &val);
 
-            if(sat < 0x6000 + _get_dither() * 0x800)
+            if(sat < 0x2000 + _get_dither() * 0x80)
                 caca_set_color(white_colors[val * 3 / 0x10000], CACA_COLOR_BLACK);
-            else if(val > (_get_dither() + 40) * 0x400)
-                caca_set_color(light_colors[(hue + 0x8000 + _get_dither() * 0x1000) / 0x10000], CACA_COLOR_BLACK);
+            else if(val > 0x8000 + _get_dither() * 0x40)
+                caca_set_color(light_colors[(hue + _get_dither() * 0x100) / 0x10000], CACA_COLOR_BLACK);
             else
-                caca_set_color(dark_colors[(hue + 0x8000 + _get_dither() * 0x1000) / 0x10000], CACA_COLOR_BLACK);
+                caca_set_color(dark_colors[(hue + _get_dither() * 0x100) / 0x10000], CACA_COLOR_BLACK);
 
             /* FIXME: choose better characters! */
-            ch = (val + 0x200 * _get_dither()) * 10 / 0x10000;
-            ch = 4 * ch + (_get_dither() + 8) / 4;
+            ch = (val + 0x20 * _get_dither() - 0x1000 /*???*/) * 10 / 0x10000;
+            ch = 4 * ch + (_get_dither() + 8) / 0x40;
             caca_putchar(x, y, foo[ch]);
 
             _increment_dither();
@@ -408,7 +417,7 @@ static void init_no_dither(int line)
 
 static int get_no_dither(void)
 {
-    return 0;
+    return 0x80;
 }
 
 static void increment_no_dither(void)
@@ -417,29 +426,71 @@ static void increment_no_dither(void)
 }
 
 /*
- * Ordered dithering
+ * Ordered 4 dithering
  */
-static int dither4x4[] = {-8,  0, -6,  2,
-                           4, -4,  6, -2,
-                          -5,  3, -7,  1,
-                           7, -1,  5, -3};
-static int *dither_table;
-static int dither_index;
+/*static int dither4x4[] = { 5,  0,  1,  6,
+                          -1, -6, -5,  2,
+                          -2, -7, -8,  3,
+                           4, -3, -4, -7};*/
+static int *ordered4_table;
+static int ordered4_index;
 
-static void init_ordered_dither(int line)
+static void init_ordered4_dither(int line)
 {
-    dither_table = dither4x4 + (line % 4) * 4;
-    dither_index = 0;
+    static int dither4x4[] =
+    {
+        0x00, 0x80, 0x20, 0xa0,
+        0xc0, 0x40, 0xe0, 0x60,
+        0x30, 0xb0, 0x10, 0x90,
+        0xf0, 0x70, 0xd0, 0x50
+    };
+
+    ordered4_table = dither4x4 + (line % 4) * 4;
+    ordered4_index = 0;
 }
 
-static int get_ordered_dither(void)
+static int get_ordered4_dither(void)
 {
-    return dither_table[dither_index];
+    return ordered4_table[ordered4_index];
 }
 
-static void increment_ordered_dither(void)
+static void increment_ordered4_dither(void)
 {
-    dither_index = (dither_index + 1) % 4;
+    ordered4_index = (ordered4_index + 1) % 4;
+}
+
+/*
+ * Ordered 8 dithering
+ */
+static int *ordered8_table;
+static int ordered8_index;
+
+static void init_ordered8_dither(int line)
+{
+    static int dither8x8[] =
+    {
+        0x00, 0x80, 0x20, 0xa0, 0x08, 0x88, 0x28, 0xa8,
+        0xc0, 0x40, 0xe0, 0x60, 0xc8, 0x48, 0xe8, 0x68,
+        0x30, 0xb0, 0x10, 0x90, 0x38, 0xb8, 0x18, 0x98,
+        0xf0, 0x70, 0xd0, 0x50, 0xf8, 0x78, 0xd8, 0x58,
+        0x0c, 0x8c, 0x2c, 0xac, 0x04, 0x84, 0x24, 0xa4,
+        0xcc, 0x4c, 0xec, 0x6c, 0xc4, 0x44, 0xe4, 0x64,
+        0x3c, 0xbc, 0x1c, 0x9c, 0x34, 0xb4, 0x14, 0x94,
+        0xfc, 0x7c, 0xdc, 0x5c, 0xf4, 0x74, 0xd4, 0x54,
+    };
+
+    ordered8_table = dither8x8 + (line % 8) * 8;
+    ordered8_index = 0;
+}
+
+static int get_ordered8_dither(void)
+{
+    return ordered8_table[ordered8_index];
+}
+
+static void increment_ordered8_dither(void)
+{
+    ordered8_index = (ordered8_index + 1) % 8;
 }
 
 /*
@@ -452,7 +503,7 @@ static void init_random_dither(int line)
 
 static int get_random_dither(void)
 {
-    return caca_rand(-8, 7);
+    return caca_rand(0x00, 0xff);
 }
 
 static void increment_random_dither(void)

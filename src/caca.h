@@ -81,15 +81,25 @@ enum caca_color
     CACA_COLOR_WHITE = 15
 };
 
+const char *caca_get_color_name(enum caca_color);
+
 /**
  * The dithering modes to be used with caca_set_dithering().
  */
 enum caca_dithering
 {
-    CACA_DITHER_NONE,
-    CACA_DITHER_ORDERED,
-    CACA_DITHER_RANDOM
+    CACA_DITHERING_NONE = 0,
+    CACA_DITHERING_ORDERED4 = 1,
+    CACA_DITHERING_ORDERED8 = 2,
+    CACA_DITHERING_RANDOM = 3
 };
+
+const char *caca_get_dithering_name(enum caca_dithering);
+
+/* Backwards compatibility */
+#define CACA_DITHER_NONE    CACA_DITHERING_NONE
+#define CACA_DITHER_ORDERED CACA_DITHERING_ORDERED8
+#define CACA_DITHER_RANDOM  CACA_DITHERING_RANDOM
 
 /**
  * The event types returned by caca_get_event().
@@ -138,7 +148,6 @@ void caca_set_dithering(enum caca_dithering);
 unsigned int caca_get_rendertime(void);
 unsigned int caca_get_width(void);
 unsigned int caca_get_height(void);
-const char *caca_get_color_name(unsigned int);
 void caca_refresh(void);
 void caca_end(void);
 
