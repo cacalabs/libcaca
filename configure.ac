@@ -24,6 +24,8 @@ AC_ARG_ENABLE(ncurses,
 AC_ARG_ENABLE(conio,
   [  --enable-conio          DOS conio.h graphics support (default disabled)])
 
+AC_CHECK_HEADERS(inttypes.h)
+
 USE_SLANG=false
 USE_NCURSES=false
 USE_CONIO=false
