@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: main.c,v 1.11 2002/12/23 12:03:31 sam Exp $
+ *   $Id: main.c,v 1.12 2002/12/23 12:47:36 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -55,7 +55,6 @@ int main (int argc, char **argv)
 
 static void start_game (game *g)
 {
-    int i;
     int quit = 0;
     int poz = 0;
     int skip = 0;

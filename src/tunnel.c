@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: tunnel.c,v 1.7 2002/12/23 12:03:31 sam Exp $
+ *   $Id: tunnel.c,v 1.8 2002/12/23 12:47:36 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -20,11 +20,11 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include "config.h"
+
 #include <stdlib.h>
 
 #include "common.h"
-
-static void draw_wall( game *g, int *wall, int delta );
 
 /* Init tunnel */
 tunnel * create_tunnel( game *g, int w, int h )
@@ -68,9 +68,92 @@ void free_tunnel( tunnel *t )
 
 void draw_tunnel( game *g, tunnel *t )
 {
-    /* Print tunnel */
-    draw_wall( g, t->left, 1 );
-    draw_wall( g, t->right, -1 );
+    int i, j;
+    char c;
+
+    gfx_color( GREEN );
+
+    /* Left border */
+    for( i = 0; i < g->h ; i++ )
+    {
+        if( t->left[i] <= -10 )
+        {
+            continue;
+        }
+
+        if( i + 1 == g->h || t->left[i] > t->left[i+1] )
+        {
+            c = ( i == 0 || t->left[i] > t->left[i-1] ) ? '>' : '/';
+        }
+        else
+        {
+            c = ( i == 0 || t->left[i] > t->left[i-1] ) ? '\\' : '<';
+        }
+
+        gfx_goto( t->left[i] + 1, i );
+        gfx_putchar( c );
+
+        if( i + 1 < g->h )
+        {
+            for( j = 1; j < t->left[i+1] - t->left[i]; j++ )
+            {
+                gfx_goto( t->left[i] + j + 1, i );
+                gfx_putchar( '_' );
+            }
+        }
+    }
+
+    /* Right border */
+    for( i = 0; i < g->h ; i++ )
+    {
+        if( t->right[i] >= g->w + 10 )
+        {
+            continue;
+        }
+
+        if( i + 1 == g->h || t->right[i] > t->right[i+1] )
+        {
+            c = ( i == 0 || t->right[i] > t->right[i-1] ) ? '>' : '/';
+        }
+        else
+        {
+            c = ( i == 0 || t->right[i] > t->right[i-1] ) ? '\\' : '<';
+        }
+
+        if( i + 1 < g->h )
+        {
+            for( j = 1; j < t->right[i] - t->right[i+1]; j++ )
+            {
+                gfx_goto( t->right[i+1] + j - 1, i );
+                gfx_putchar( '_' );
+            }
+        }
+
+        gfx_goto( t->right[i] - 1, i );
+        gfx_putchar( c );
+    }
+
+    gfx_color( RED );
+
+    /* Left concrete */
+    for( i = 0; i < g->h ; i++ )
+    {
+        for( j = 0 ; j <= t->left[i]; j++ )
+        {
+            gfx_goto( j, i );
+            gfx_putchar( '#' );
+        }
+    }
+
+    /* Right concrete */
+    for( i = 0; i < g->h ; i++ )
+    {
+        for( j = t->right[i] ; j < g->w ; j++ )
+        {
+            gfx_goto( j, i );
+            gfx_putchar( '#' );
+        }
+    }
 }
 
 void update_tunnel( game *g, tunnel *t )
@@ -92,7 +175,7 @@ void update_tunnel( game *g, tunnel *t )
     /* Check in which direction we need to alter tunnel */
     if( t->right[1] - t->left[1] < t->w )
     {
-        /* Not wide enough */
+        /* Not wide enough, make sure i <= j */
         if( i > j )
         {
             k = j; j = i; i = k;
@@ -100,7 +183,7 @@ void update_tunnel( game *g, tunnel *t )
     }
     else if( t->right[1] - t->left[1] - 2 > t->w )
     {
-        /* Too wide */
+        /* Too wide, make sure i >= j */
         if( i < j )
         {
             k = j; j = i; i = k;
@@ -145,78 +228,6 @@ void update_tunnel( game *g, tunnel *t )
         if( t->right[0] > g->w - 1 )
         {
             t->right[0] = t->right[1] - 1;
-        }
-    }
-}
-
-static void draw_wall( game *g, int *wall, int delta )
-{
-    int i, j;
-
-    gfx_color( RED );
-
-    if( delta == -1 )
-    {
-        for( i = 0; i < g->h ; i++ )
-        {
-            for( j = wall[i] ; j < g->w ; j++ )
-            {
-                gfx_goto( j, i );
-                gfx_putchar( '#' );
-            }
-        }
-    }
-    else
-    {
-        for( i = 0; i < g->h ; i++ )
-        {
-            for( j = 0 ; j <= wall[i]; j++ )
-            {
-                gfx_goto( j, i );
-                gfx_putchar( '#' );
-            }
-        }
-    }
-
-    gfx_color( GREEN );
-
-    for( i = 0; i < g->h ; i++ )
-    {
-        char c;
-
-        if( wall[i] <= -10 || wall[i] >= g->w + 10 )
-        {
-            continue;
-        }
-
-        if( i + 1 == g->h || wall[i] > wall[i+1] )
-        {
-            c = ( i == 0 || wall[i] > wall[i-1] ) ? '>' : '/';
-        }
-        else
-        {
-            c = ( i == 0 || wall[i] > wall[i-1] ) ? '\\' : '<';
-        }
-
-        if( delta == -1 && i + 1 < g->h )
-        {
-            for( j = 1; j < wall[i] - wall[i+1]; j++ )
-            {
-                gfx_goto( wall[i+1] + j - 1, i );
-                gfx_putchar( '_' );
-            }
-        }
-
-        gfx_goto( wall[i] + delta, i );
-        gfx_putchar( c );
-
-        if( delta == +1 && i + 1 < g->h )
-        {
-            for( j = 1; j < wall[i+1] - wall[i]; j++ )
-            {
-                gfx_goto( wall[i] + j + 1, i );
-                gfx_putchar( '_' );
-            }
         }
     }
 }
