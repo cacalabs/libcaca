@@ -1,5 +1,6 @@
-libcaca (0.0cvs-1) unstable; urgency=low
+libcaca (0.1-1) unstable; urgency=low
 
-  * Not yet released.
+  * Initial release.
 
- -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Sat, 14 Dec 2002 15:22:25 +0100
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Sat, 22 Nov 2003 14:00:18 +0100
+

@@ -1,6 +1,6 @@
 EXTRA_DIST = doxygen.cfg footer.html header.html $(man_MANS)
 
-man_MANS = caca-config.1
+man_MANS = caca-config.1 caca-demo.1 caca-spritedit.1
 
 all: stamp-doxygen stamp-latex
 
