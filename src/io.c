@@ -41,7 +41,10 @@
 #if defined(USE_X11)
 #   include <X11/Xlib.h>
 #   include <X11/Xutil.h>
+#   include <X11/keysym.h>
 #endif
+
+#include <unistd.h>
 
 #include "caca.h"
 #include "caca_internals.h"
@@ -67,7 +70,7 @@ unsigned int caca_get_event(void)
 {
     unsigned int event = 0;
 
-    /* Read all available key events */
+    /* Read all available key events and push them into the buffer */
     while(keys < KEY_BUFLEN)
     {
         unsigned int key = _read_key();
@@ -76,6 +79,7 @@ unsigned int caca_get_event(void)
         _push_key(key);
     }
 
+    /* If no keys were read, return */
     if(!keys)
         return 0;
 
@@ -266,12 +270,37 @@ static unsigned int _read_key(void)
         while(XCheckWindowEvent(x11_dpy, x11_window, KeyPressMask, &event)
                == True)
         {
-            if(event.type == KeyPress)
+            KeySym keysym;
+
+            if(event.type != KeyPress)
+                continue;
+
+            if(XLookupString(&event.xkey, &key, 1, NULL, NULL))
+                return key;
+
+            keysym = XKeycodeToKeysym(x11_dpy, event.xkey.keycode, 0);
+            switch(keysym)
             {
-                //KeySym keysym;
-                //keysym = XKeycodeToKeysym(_caca_dpy, event.xkey.keycode, 0);
-                if(XLookupString(&event.xkey, &key, 1, NULL, NULL))
-                    return key;
+            case XK_F1:    return CACA_KEY_F1;
+            case XK_F2:    return CACA_KEY_F2;
+            case XK_F3:    return CACA_KEY_F3;
+            case XK_F4:    return CACA_KEY_F4;
+            case XK_F5:    return CACA_KEY_F5;
+            case XK_F6:    return CACA_KEY_F6;
+            case XK_F7:    return CACA_KEY_F7;
+            case XK_F8:    return CACA_KEY_F8;
+            case XK_F9:    return CACA_KEY_F9;
+            case XK_F10:   return CACA_KEY_F10;
+            case XK_F11:   return CACA_KEY_F11;
+            case XK_F12:   return CACA_KEY_F12;
+            case XK_F13:   return CACA_KEY_F13;
+            case XK_F14:   return CACA_KEY_F14;
+            case XK_F15:   return CACA_KEY_F15;
+            case XK_Left:  return CACA_KEY_LEFT;
+            case XK_Right: return CACA_KEY_RIGHT;
+            case XK_Up:    return CACA_KEY_UP;
+            case XK_Down:  return CACA_KEY_DOWN;
+            default:       return 0;
             }
         }
 
