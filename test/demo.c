@@ -33,8 +33,7 @@ static void demo_dots(void);
 static void demo_lines(void);
 static void demo_thin_lines(void);
 static void demo_circles(void);
-static void demo_triangle(void);
-static void demo_radar(void);
+static void demo_triangles(void);
 
 int clipping = 0;
 
@@ -85,11 +84,7 @@ int main(int argc, char **argv)
                 break;
             case '5':
                 ee_clear();
-                demo = demo_triangle;
-                break;
-            case '6':
-                ee_clear();
-                demo = demo_radar;
+                demo = demo_triangles;
                 break;
             }
         }
@@ -130,9 +125,7 @@ static void display_menu(void)
     ee_goto(4, 9);
     ee_putstr("4: circles demo");
     ee_goto(4, 10);
-    ee_putstr("5: triangle demo");
-    ee_goto(4, 11);
-    ee_putstr("6: radar demo");
+    ee_putstr("5: triangles demo");
 
     ee_goto(4, yo - 2);
     ee_putstr("q: quit");
@@ -171,7 +164,7 @@ static void demo_lines(void)
     else
     {
         ee_draw_line(ee_rand(0, w - 1), ee_rand(0, h - 1),
-                     ee_rand(0, w - 1), ee_rand(0, h - 1), '*');
+                     ee_rand(0, w - 1), ee_rand(0, h - 1), '#');
     }
     ee_refresh();
 }
@@ -223,13 +216,35 @@ static void demo_circles(void)
         }
 
         ee_color(ee_rand(1, 10));
-        ee_draw_circle(x, y, r, '*');
+        ee_draw_circle(x, y, r, '#');
     }
 
     ee_refresh();
 }
 
-static void demo_triangle(void)
+static void demo_triangles(void)
+{
+    int w = ee_get_width();
+    int h = ee_get_height();
+
+    /* Draw lines */
+    ee_color(ee_rand(1, 10));
+    if(clipping)
+    {
+        ee_fill_triangle(ee_rand(- w, 2 * w), ee_rand(- h, 2 * h),
+                         ee_rand(- w, 2 * w), ee_rand(- h, 2 * h),
+                         ee_rand(- w, 2 * w), ee_rand(- h, 2 * h), '#');
+    }
+    else
+    {
+        ee_fill_triangle(ee_rand(0, w - 1), ee_rand(0, h - 1),
+                         ee_rand(0, w - 1), ee_rand(0, h - 1),
+                         ee_rand(0, w - 1), ee_rand(0, h - 1), '#');
+    }
+    ee_refresh();
+}
+
+static void demo_pyramid(void)
 {
     static int i = 0;
 
@@ -271,28 +286,6 @@ static void demo_triangle(void)
     ee_draw_thin_line(xo, yo, x2, y2);
     ee_draw_thin_line(x2, y2, x3, y3);
     ee_draw_thin_line(x3, y3, xo, yo);
-
-    ee_refresh();
-}
-
-static void demo_radar(void)
-{
-    static int i = 0;
-
-    int xo = ee_get_width() / 2;
-    int yo = ee_get_height() / 2;
-    int l = ee_get_height() + ee_get_width();
-
-    i++;
-
-    ee_color(EE_BLUE);
-    ee_draw_line(xo,yo,xo+(sin(0.03*(i-30))*l*2),yo+(cos(0.03*(i-30))*l),'.');
-    ee_color(EE_CYAN);
-    ee_draw_line(xo,yo,xo+(sin(0.03*(i-2))*l*2),yo+(cos(0.03*(i-2))*l),':');
-    ee_color(EE_WHITE);
-    ee_draw_line(xo,yo,xo+(sin(0.03*(i-1))*l*2),yo+(cos(0.03*(i-1))*l),':');
-    ee_color(EE_WHITE);
-    ee_draw_line(xo,yo,xo+(sin(0.03*i)*l*2),yo+(cos(0.03*i)*l),'#');
 
     ee_refresh();
 }
