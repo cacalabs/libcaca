@@ -643,7 +643,11 @@ int _caca_init_graphics(void)
                                    DefaultDepth(x11_dpy,
                                                 DefaultScreen(x11_dpy)));
     }
+    else
 #endif
+    {
+        /* Dummy */
+    }
 
     _caca_empty_line = malloc(_caca_width + 1);
     memset(_caca_empty_line, ' ', _caca_width);

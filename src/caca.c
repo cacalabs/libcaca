@@ -395,7 +395,7 @@ static void caca_init_driver(void)
             _caca_driver = CACA_DRIVER_NCURSES;
         else
 #endif
-        _caca_driver = CACA_DRIVER_NONE;
+            _caca_driver = CACA_DRIVER_NONE;
 
         return;
     }
