@@ -81,13 +81,14 @@ static char *conio_screen;
 #if defined(USE_X11)
 Display *x11_dpy;
 Window x11_window;
+int x11_font_width, x11_font_height;
 static GC x11_gc;
 static Pixmap x11_pixmap;
 static int *x11_screen;
 static int x11_colors[16];
 static Font x11_font;
 static XFontStruct *x11_font_struct;
-static int x11_font_width, x11_font_height, x11_font_offset;
+static int x11_font_offset;
 #endif
 
 static char *_caca_empty_line;
@@ -604,7 +605,8 @@ int _caca_init_graphics(void)
                 break;
         }
 
-        XSelectInput(x11_dpy, x11_window, KeyPressMask);
+        XSelectInput(x11_dpy, x11_window,
+                     KeyPressMask | ButtonPressMask | PointerMotionMask);
 
         XSync(x11_dpy, False);
 

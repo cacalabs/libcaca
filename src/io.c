@@ -128,6 +128,11 @@ unsigned int caca_get_event(void)
     }
 #endif
 
+    /* If it's already a special event, return it */
+    if((keybuf[0] & ~0xff) != 0)
+        return _pop_key();
+
+    /* If it's not an escape sequence, return the key */
     if(keybuf[0] != '\x1b')
         return CACA_EVENT_KEY_PRESS | _pop_key();
 
@@ -247,6 +252,8 @@ static unsigned int _read_key(void)
 #endif
 #if defined(USE_X11)
     XEvent event;
+    static int x11_x = 0, x11_y = 0;
+    long int event_mask = KeyPressMask | ButtonPressMask | PointerMotionMask;
     char key;
 #endif
 
@@ -267,10 +274,31 @@ static unsigned int _read_key(void)
 #endif
 #if defined(USE_X11)
     case CACA_DRIVER_X11:
-        while(XCheckWindowEvent(x11_dpy, x11_window, KeyPressMask, &event)
+        while(XCheckWindowEvent(x11_dpy, x11_window, event_mask, &event)
                == True)
         {
             KeySym keysym;
+
+            if(event.type == MotionNotify)
+            {
+                x11_x = event.xmotion.x;
+                x11_y = event.xmotion.y;
+                continue;
+            }
+
+            if(event.type == ButtonPress)
+            {
+                unsigned int x = x11_x / x11_font_width;
+                unsigned int y = x11_y / x11_font_height;
+
+                if(x >= _caca_width)
+                    x = _caca_width - 1;
+                if(y >= _caca_height)
+                    y = _caca_height - 1;
+
+                return CACA_EVENT_MOUSE_CLICK
+                        | (1 << 16) | (x << 8) | (y << 0);
+            }
 
             if(event.type != KeyPress)
                 continue;
