@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: common.h,v 1.12 2002/12/23 13:13:04 sam Exp $
+ *   $Id: common.h,v 1.13 2002/12/23 13:46:27 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -19,6 +19,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
+
+#define MAX_LIFE 1000
 
 #define STARS 50
 #define WEAPONS 200
@@ -104,12 +106,13 @@ typedef struct
     int x, y;
     int vx, vy;
     int weapon, nuke;
+    int life, dead;
 
 } player;
 
 typedef struct
 {
-    enum { ALIEN_NONE, ALIEN_POOLP, ALIEN_BOOL, ALIEN_BRAH } type[ALIENS];
+    enum { ALIEN_NONE, ALIEN_FOO, ALIEN_BAR, ALIEN_BAZ } type[ALIENS];
     int x[ALIENS];
     int y[ALIENS];
     int life[ALIENS];

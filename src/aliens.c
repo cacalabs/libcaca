@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: aliens.c,v 1.7 2002/12/22 22:17:41 sam Exp $
+ *   $Id: aliens.c,v 1.8 2002/12/23 13:46:27 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -24,9 +24,9 @@
 
 #include "common.h"
 
-static void draw_alien_poolp( game *g, int x, int y, int frame );
-static void draw_alien_bool( game *g, int x, int y, int frame );
-static void draw_alien_brah( game *g, int x, int y, int frame );
+static void draw_alien_foo( game *g, int x, int y, int frame );
+static void draw_alien_bar( game *g, int x, int y, int frame );
+static void draw_alien_baz( game *g, int x, int y, int frame );
 
 void init_aliens( game *g, aliens *al )
 {
@@ -46,14 +46,14 @@ void draw_aliens( game *g, aliens *al )
     {
         switch( al->type[i] )
         {
-            case ALIEN_BRAH:
-                draw_alien_brah( g, al->x[i], al->y[i], al->img[i] % 8 );
+            case ALIEN_FOO:
+                draw_alien_foo( g, al->x[i], al->y[i], al->img[i] % 8 );
                 break;
-            case ALIEN_POOLP:
-                draw_alien_poolp( g, al->x[i], al->y[i], al->img[i] % 2 );
+            case ALIEN_BAR:
+                draw_alien_bar( g, al->x[i], al->y[i], al->img[i] % 2 );
                 break;
-            case ALIEN_BOOL:
-                draw_alien_bool( g, al->x[i], al->y[i], al->img[i] % 6 );
+            case ALIEN_BAZ:
+                draw_alien_baz( g, al->x[i], al->y[i], al->img[i] % 6 );
                 break;
             case ALIEN_NONE:
                 break;
@@ -78,9 +78,9 @@ void update_aliens( game *g, aliens *al )
         /* Update coordinates */
         switch( al->type[i] )
         {
-            case ALIEN_POOLP:
-            case ALIEN_BOOL:
-            case ALIEN_BRAH:
+            case ALIEN_FOO:
+            case ALIEN_BAR:
+            case ALIEN_BAZ:
                 al->x[i] = ((al->x[i] + 5) % (g->w + 3)) - 3;
                 al->y[i] = al->y[i] + (rand() % 8) / 7 - (rand() % 8) / 7;
                 al->img[i] = al->img[i] + 1;
@@ -110,13 +110,13 @@ void add_alien( game *g, aliens *al, int x, int y, int type )
 
             switch( al->type[i] )
             {
-                case ALIEN_POOLP:
+                case ALIEN_FOO:
                     al->life[i] = 3;
                     break;
-                case ALIEN_BOOL:
+                case ALIEN_BAR:
                     al->life[i] = 3;
                     break;
-                case ALIEN_BRAH:
+                case ALIEN_BAZ:
                     al->life[i] = 3;
                     break;
                 case ALIEN_NONE:
@@ -128,7 +128,7 @@ void add_alien( game *g, aliens *al, int x, int y, int type )
     }
 }
 
-static void draw_alien_poolp( game *g, int x, int y, int frame )
+static void draw_alien_bar( game *g, int x, int y, int frame )
 {
     switch( frame )
     {
@@ -161,7 +161,7 @@ static void draw_alien_poolp( game *g, int x, int y, int frame )
     }
 }
 
-static void draw_alien_bool( game *g, int x, int y, int frame )
+static void draw_alien_baz( game *g, int x, int y, int frame )
 {
     gfx_color( GREEN );
     gfx_goto( x, y-1 );
@@ -199,7 +199,7 @@ static void draw_alien_bool( game *g, int x, int y, int frame )
     gfx_putstr( "oo" );
 }
 
-static void draw_alien_brah( game *g, int x, int y, int frame )
+static void draw_alien_foo( game *g, int x, int y, int frame )
 {
     gfx_color( YELLOW );
 

@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: collide.c,v 1.8 2002/12/23 09:28:37 sam Exp $
+ *   $Id: collide.c,v 1.9 2002/12/23 13:46:27 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -261,15 +261,22 @@ void collide_weapons_aliens( game *g, weapons *wp, aliens *al, explosions *ex )
 
 void collide_player_tunnel( game *g, player *p, tunnel *t, explosions *ex )
 {
+    if( p->dead )
+    {
+        return;
+    }
+
     if( p->x <= t->left[p->y] )
     {
         p->x += 2;
         add_explosion( g, ex, p->x+1, p->y-2, 0, 0, EXPLOSION_SMALL );
+        p->life -= 50;
     }
     else if( p->x + 5 >= t->right[p->y] )
     {
         p->x -= 2;
         add_explosion( g, ex, p->x+4, p->y-2, 0, 0, EXPLOSION_SMALL );
+        p->life -= 50;
     }
 }
 

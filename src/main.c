@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: main.c,v 1.13 2002/12/23 13:13:04 sam Exp $
+ *   $Id: main.c,v 1.14 2002/12/23 13:46:27 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -168,7 +168,7 @@ static void start_game (game *g)
             /* XXX: to be removed */
             if( GET_RAND(0,10) == 0 )
             {
-                int list[3] = { ALIEN_POOLP, ALIEN_BOOL, ALIEN_BRAH };
+                int list[3] = { ALIEN_FOO, ALIEN_BAR, ALIEN_BAZ };
 
                 add_alien( g, g->al, 0, rand() % g->h / 2, list[GET_RAND(0,3)] );
             }

@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: player.c,v 1.5 2002/12/23 13:13:04 sam Exp $
+ *   $Id: player.c,v 1.6 2002/12/23 13:46:27 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -35,6 +35,7 @@ player * create_player( game *g )
     p->vy = 0;
     p->weapon = 0;
     p->nuke = 0;
+    p->life = MAX_LIFE;
 
     return p;
 }
@@ -46,6 +47,11 @@ void free_player( player *p )
 
 void draw_player( game *g, player *p )
 {
+    if( p->dead )
+    {
+        return;
+    }
+
     gfx_goto( p->x + 2, p->y - 2 );
     gfx_color( GREEN );
     gfx_putstr( "/\\" );
@@ -62,6 +68,19 @@ void draw_player( game *g, player *p )
 
 void update_player( game *g, player *p )
 {
+    if( p->dead )
+    {
+        return;
+    }
+
+    if( p->life <= 0 )
+    {
+        add_explosion( g, g->ex, p->x, p->y, 0, 0, EXPLOSION_SMALL );
+        p->dead = 1;
+        return;
+    }
+
+    /* Update weapon stats */
     if( p->weapon )
     {
         p->weapon--;
@@ -72,6 +91,13 @@ void update_player( game *g, player *p )
         p->nuke--;
     }
 
+    /* Update life */
+    if( p->life < MAX_LIFE )
+    {
+        p->life++;
+    }
+
+    /* Update coords */
     p->x += p->vx;
 
     if( p->vx < 0 )
