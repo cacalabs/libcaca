@@ -1,0 +1,6 @@
+.dirstamp
+.deps
+Makefile
+Makefile.in
+*.o
+ttyvaders
