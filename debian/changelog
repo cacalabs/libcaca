@@ -1,3 +1,12 @@
+libcaca (0.4-1) unstable; urgency=low
+
+  * New upstream release.
+  * debian/control:
+    + Build-depend on doxygen and tetex to build documentation.
+    + Build-depend on xlibs-dev and slang1-dev to provide alternate drivers.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Tue, 23 Dec 2003 18:01:41 +0100
+
 libcaca (0.3-2) unstable; urgency=low
 
   * debian/rules:

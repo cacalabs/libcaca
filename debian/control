@@ -2,7 +2,7 @@ Source: libcaca
 Section: libs
 Priority: optional
 Maintainer: Sam Hocevar (Debian packages) <sam+deb@zoy.org>
-Build-Depends: debhelper (>= 4.0), libncurses5-dev, libimlib2-dev
+Build-Depends: debhelper (>= 4.0), libncurses5-dev, slang1-dev, xlibs-dev, libimlib2-dev, doxygen, tetex-bin, tetex-extra
 Standards-Version: 3.6.1.0
 
 Package: libcaca-dev

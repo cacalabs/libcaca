@@ -12,6 +12,7 @@ else
 endif
 
 confflags += --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info
+confflags += --enable-ncurses --enable-slang --enable-x11
 
 configure: configure-stamp
 configure-stamp:
@@ -37,7 +38,7 @@ install: build
 	dh_testroot
 	dh_clean -k
 	dh_installdirs -plibcaca-dev
-	dh_installdirs usr/bin usr/share/doc usr/share/man/man1 -pcaca-utils
+	dh_installdirs usr/bin usr/share/doc/caca-utils usr/share/man/man1 -pcaca-utils
 
 	DESTDIR=`pwd`/debian/libcaca-dev/ $(MAKE) install prefix=/usr
 
@@ -47,10 +48,21 @@ install: build
 	mv debian/libcaca-dev/usr/bin/caca-spritedit debian/caca-utils/usr/bin
 
 	mv debian/libcaca-dev/usr/share/libcaca debian/caca-utils/usr/share
-	mv debian/libcaca-dev/usr/share/man/man1/cacademo.1 debian/caca-utils/usr/share/man/man1
+	mv debian/libcaca-dev/usr/share/man/man1/cacademo.1 \
+	   debian/caca-utils/usr/share/man/man1
 	ln -s cacademo.1 debian/caca-utils/usr/share/man/man1/cacafire.1
-	mv debian/libcaca-dev/usr/share/man/man1/cacaview.1 debian/caca-utils/usr/share/man/man1
-	mv debian/libcaca-dev/usr/share/man/man1/caca-spritedit.1 debian/caca-utils/usr/share/man/man1
+	mv debian/libcaca-dev/usr/share/man/man1/cacaview.1 \
+	   debian/caca-utils/usr/share/man/man1
+	mv debian/libcaca-dev/usr/share/man/man1/caca-spritedit.1 \
+	   debian/caca-utils/usr/share/man/man1
+
+	cp debian/libcaca-dev/usr/share/doc/libcaca-dev/README \
+	   debian/libcaca-dev/usr/share/doc/libcaca-dev/BUGS \
+	   debian/libcaca-dev/usr/share/doc/libcaca-dev/TODO \
+	   debian/libcaca-dev/usr/share/doc/libcaca-dev/AUTHORS \
+	   debian/libcaca-dev/usr/share/doc/libcaca-dev/NEWS \
+	   debian/libcaca-dev/usr/share/doc/libcaca-dev/NOTES \
+	   debian/caca-utils/usr/share/doc/caca-utils/
 
 # Build architecture-independent files here.
 binary-indep: build install
@@ -62,8 +74,7 @@ binary-arch: build install
 	dh_testdir
 	dh_testroot
 #	dh_installdebconf	
-	dh_installdocs README BUGS TODO AUTHORS NEWS NOTES -pcaca-utils
-	dh_installdocs README BUGS TODO AUTHORS NEWS NOTES -plibcaca-dev
+	dh_installdocs
 #	dh_installexamples
 	dh_installmenu
 #	dh_installemacsen
