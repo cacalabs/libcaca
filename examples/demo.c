@@ -74,7 +74,7 @@ int main(int argc, char **argv)
         int menu = 0, mouse = 0, xmouse = 0, ymouse = 0;
         int event;
 
-        while((event = caca_get_event()))
+        while((event = caca_get_event(CACA_EVENT_ANY)))
         {
             if(demo && (event & CACA_EVENT_KEY_PRESS))
             {

@@ -58,25 +58,24 @@ int main(int argc, char **argv)
         char buf[BUFSIZ];
         int event;
 
-        while((event = caca_get_event()))
+        while((event = caca_get_event(CACA_EVENT_KEY_PRESS)))
         {
-            if(event & CACA_EVENT_KEY_PRESS)
-                switch(event & 0xff)
-                {
-                case 0:
-                    break;
-                case 'q':
-                    quit = 1;
-                    break;
-                case '-':
-                    if(frame > 0)
-                        frame--;
-                    break;
-                case '+':
-                    if(frame < caca_get_sprite_frames(sprite) - 1)
-                        frame++;
-                    break;
-                }
+            switch(event & 0x00ffffff)
+            {
+            case 0:
+                break;
+            case 'q':
+                quit = 1;
+                break;
+            case '-':
+                if(frame > 0)
+                    frame--;
+                break;
+            case '+':
+                if(frame < caca_get_sprite_frames(sprite) - 1)
+                    frame++;
+                break;
+            }
         }
 
         caca_clear();

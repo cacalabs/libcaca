@@ -108,112 +108,114 @@ int main(int argc, char **argv)
         int ww = caca_get_width();
         int wh = caca_get_height();
 
-        int event, new_status = 0, new_help = 0;
+        unsigned int event, new_status = 0, new_help = 0;
 
-        while((event = caca_get_event()))
+        while((event = caca_get_event(CACA_EVENT_KEY_PRESS)))
         {
-            switch(event)
+            unsigned int key = event & 0x00ffffff;
+
+            switch(key)
             {
-            case CACA_EVENT_KEY_PRESS | 'n':
-            case CACA_EVENT_KEY_PRESS | 'N':
+            case 'n':
+            case 'N':
                 if(items) current = (current + 1) % items;
                 reload = 1;
                 break;
-            case CACA_EVENT_KEY_PRESS | 'p':
-            case CACA_EVENT_KEY_PRESS | 'P':
+            case 'p':
+            case 'P':
                 if(items) current = (items + current - 1) % items;
                 reload = 1;
                 break;
-            case CACA_EVENT_KEY_PRESS | 'f':
-            case CACA_EVENT_KEY_PRESS | 'F':
+            case 'f':
+            case 'F':
                 fullscreen = ~fullscreen;
                 update = 1;
                 break;
-            case CACA_EVENT_KEY_PRESS | 'b':
+            case 'b':
                 i = 1 + caca_get_feature(CACA_BACKGROUND);
                 if(i > CACA_BACKGROUND_MAX) i = CACA_BACKGROUND_MIN;
                 caca_set_feature(i);
                 new_status = STATUS_BACKGROUND;
                 update = 1;
                 break;
-            case CACA_EVENT_KEY_PRESS | 'B':
+            case 'B':
                 i = -1 + caca_get_feature(CACA_BACKGROUND);
                 if(i < CACA_BACKGROUND_MIN) i = CACA_BACKGROUND_MAX;
                 caca_set_feature(i);
                 new_status = STATUS_BACKGROUND;
                 update = 1;
                 break;
-            case CACA_EVENT_KEY_PRESS | 'a':
+            case 'a':
                 i = 1 + caca_get_feature(CACA_ANTIALIASING);
                 if(i > CACA_ANTIALIASING_MAX) i = CACA_ANTIALIASING_MIN;
                 caca_set_feature(i);
                 new_status = STATUS_ANTIALIASING;
                 update = 1;
                 break;
-            case CACA_EVENT_KEY_PRESS | 'A':
+            case 'A':
                 i = -1 + caca_get_feature(CACA_ANTIALIASING);
                 if(i < CACA_ANTIALIASING_MIN) i = CACA_ANTIALIASING_MAX;
                 caca_set_feature(i);
                 new_status = STATUS_ANTIALIASING;
                 update = 1;
                 break;
-            case CACA_EVENT_KEY_PRESS | 'd':
+            case 'd':
                 i = 1 + caca_get_feature(CACA_DITHERING);
                 if(i > CACA_DITHERING_MAX) i = CACA_DITHERING_MIN;
                 caca_set_feature(i);
                 new_status = STATUS_DITHERING;
                 update = 1;
                 break;
-            case CACA_EVENT_KEY_PRESS | 'D':
+            case 'D':
                 i = -1 + caca_get_feature(CACA_DITHERING);
                 if(i < CACA_DITHERING_MIN) i = CACA_DITHERING_MAX;
                 caca_set_feature(i);
                 new_status = STATUS_DITHERING;
                 update = 1;
                 break;
-            case CACA_EVENT_KEY_PRESS | '+':
+            case '+':
                 zoom++;
                 if(zoom > 48) zoom = 48; else update = 1;
                 break;
-            case CACA_EVENT_KEY_PRESS | '-':
+            case '-':
                 zoom--;
                 if(zoom < -48) zoom = -48; else update = 1;
                 break;
-            case CACA_EVENT_KEY_PRESS | 'x':
-            case CACA_EVENT_KEY_PRESS | 'X':
+            case 'x':
+            case 'X':
                 zoom = 0;
                 update = 1;
                 break;
-            case CACA_EVENT_KEY_PRESS | 'k':
-            case CACA_EVENT_KEY_PRESS | 'K':
-            case CACA_EVENT_KEY_PRESS | CACA_KEY_UP:
+            case 'k':
+            case 'K':
+            case CACA_KEY_UP:
                 if(zoom > 0) y -= 1 + h / (2 + zoom) / 8;
                 update = 1;
                 break;
-            case CACA_EVENT_KEY_PRESS | 'j':
-            case CACA_EVENT_KEY_PRESS | 'J':
-            case CACA_EVENT_KEY_PRESS | CACA_KEY_DOWN:
+            case 'j':
+            case 'J':
+            case CACA_KEY_DOWN:
                 if(zoom > 0) y += 1 + h / (2 + zoom) / 8;
                 update = 1;
                 break;
-            case CACA_EVENT_KEY_PRESS | 'h':
-            case CACA_EVENT_KEY_PRESS | 'H':
-            case CACA_EVENT_KEY_PRESS | CACA_KEY_LEFT:
+            case 'h':
+            case 'H':
+            case CACA_KEY_LEFT:
                 if(zoom > 0) x -= 1 + w / (2 + zoom) / 8;
                 update = 1;
                 break;
-            case CACA_EVENT_KEY_PRESS | 'l':
-            case CACA_EVENT_KEY_PRESS | 'L':
-            case CACA_EVENT_KEY_PRESS | CACA_KEY_RIGHT:
+            case 'l':
+            case 'L':
+            case CACA_KEY_RIGHT:
                 if(zoom > 0) x += 1 + w / (2 + zoom) / 8;
                 update = 1;
                 break;
-            case CACA_EVENT_KEY_PRESS | '?':
+            case '?':
                 new_help = !help;
                 update = 1;
                 break;
-            case CACA_EVENT_KEY_PRESS | 'q':
-            case CACA_EVENT_KEY_PRESS | 'Q':
+            case 'q':
+            case 'Q':
                 quit = 1;
                 break;
             }

@@ -56,7 +56,7 @@ int main(void)
 
     caca_refresh();
 
-    while((caca_get_event() & 0xff000000) != CACA_EVENT_KEY_PRESS);
+    while(!caca_get_event(CACA_EVENT_KEY_PRESS));
 
     caca_end();
 

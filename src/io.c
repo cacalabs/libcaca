@@ -53,6 +53,7 @@
 #include "caca.h"
 #include "caca_internals.h"
 
+static unsigned int _get_next_event(void);
 static void _push_key(unsigned int);
 static unsigned int _pop_key(void);
 static unsigned int _read_key(void);
@@ -63,18 +64,59 @@ static int keys = 0;
 
 /** \brief Get the next mouse or keyboard input event.
  *
- *  This function polls the event queue for mouse or keyboard events and
- *  returns the event. It is non-blocking and returns zero if no event is
+ *  This function polls the event queue for mouse or keyboard events matching
+ *  the event mask and returns the first matching event. Non-matching events
+ *  are discarded. It is non-blocking and returns zero if no more events are
  *  pending in the queue. See also caca_wait_event() for a blocking version
  *  of this function.
  *
- * \return The next event in the queue, or 0 if no event is pending.
+ * \param event_mask Bitmask of requested events.
+ * \return The next matching event in the queue, or 0 if no event is pending.
  */
-unsigned int caca_get_event(void)
+unsigned int caca_get_event(unsigned int event_mask)
+{
+    for( ; ; )
+    {
+        unsigned int event = _get_next_event();
+
+        if(!event || event & event_mask)
+            return event;
+    }
+}
+
+/** \brief Wait for the next mouse or keyboard input event.
+ *
+ *  This function returns the first mouse or keyboard event in the queue
+ *  that matches the event mask. If no event is pending, it blocks until a
+ *  matching event is received. See also caca_get_event() for a non-blocking
+ *  version of this function.
+ *
+ *  \param event_mask Bitmask of requested events.
+ *  \return The next event in the queue.
+ */
+unsigned int caca_wait_event(unsigned int event_mask)
+{
+    for( ; ; )
+    {
+        unsigned int event = _get_next_event();
+
+        if(event & event_mask)
+            return event;
+
+        usleep(1000);
+    }
+}
+
+/*
+ * XXX: The following functions are local.
+ */
+
+static unsigned int _get_next_event(void)
 {
     unsigned int event = 0;
 
 #if defined(USE_X11)
+    /* The X11 event check routine */
     if(_caca_driver == CACA_DRIVER_X11)
     {
         XEvent xevent;
@@ -88,6 +130,7 @@ unsigned int caca_get_event(void)
         {
             KeySym keysym;
 
+            /* Check for mouse motion events */
             if(xevent.type == MotionNotify)
             {
                 unsigned int newx = xevent.xmotion.x / x11_font_width;
@@ -107,18 +150,20 @@ unsigned int caca_get_event(void)
                 return CACA_EVENT_MOUSE_MOTION | (newx << 12) | (newy << 0);
             }
 
+            /* Check for mouse press and release events */
             if(xevent.type == ButtonPress)
                 return CACA_EVENT_MOUSE_PRESS | 1;
 
             if(xevent.type == ButtonRelease)
                 return CACA_EVENT_MOUSE_RELEASE | 1;
 
+            /* Check for key press and release events */
             if(xevent.type == KeyPress)
                 event |= CACA_EVENT_KEY_PRESS;
             else if(xevent.type == KeyRelease)
                 event |= CACA_EVENT_KEY_RELEASE;
             else
-                return 0;
+                continue;
 
             if(XLookupString(&xevent.xkey, &key, 1, NULL, NULL))
                 return event | key;
@@ -175,8 +220,7 @@ unsigned int caca_get_event(void)
             _pop_key();
             getmouse(&mevent);
             _push_key(CACA_EVENT_MOUSE_PRESS | 1);
-            return CACA_EVENT_MOUSE_MOTION
-                    | (mevent.x << 12) | (mevent.y << 0);
+            return CACA_EVENT_MOUSE_MOTION | (mevent.x << 12) | mevent.y;
         }
 
         switch(keybuf[0])
@@ -276,31 +320,6 @@ unsigned int caca_get_event(void)
     /* Unknown escape sequence: return the ESC key */
     return CACA_EVENT_KEY_PRESS | '\x1b';
 }
-
-/** \brief Wait for the next mouse or keyboard input event.
- *
- *  This function returns the first mouse or keyboard event in the queue. If
- *  no event is pending, it blocks until an event is received. See also
- *  caca_get_event() for a non-blocking version of this function.
- *
- *  \return The next event in the queue.
- */
-unsigned int caca_wait_event(void)
-{
-    for( ; ; )
-    {
-        unsigned int event = caca_get_event();
-
-        if(event)
-            return event;
-
-        usleep(1000);
-    }
-}
-
-/*
- * XXX: The following functions are local.
- */
 
 static void _push_key(unsigned int key)
 {

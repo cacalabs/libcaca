@@ -180,7 +180,8 @@ enum caca_event
     CACA_EVENT_KEY_RELEASE =   0x02000000, /**< A key was released. */
     CACA_EVENT_MOUSE_PRESS =   0x04000000, /**< A mouse button was pressed. */
     CACA_EVENT_MOUSE_RELEASE = 0x08000000, /**< A mouse button was released. */
-    CACA_EVENT_MOUSE_MOTION =  0x10000000  /**< The mouse was moved. */
+    CACA_EVENT_MOUSE_MOTION =  0x10000000, /**< The mouse was moved. */
+    CACA_EVENT_ANY =           0xff000000  /**< Bitmask for any event. */
 };
 
 /** \brief Special key values.
@@ -236,8 +237,8 @@ void caca_end(void);
  *  clicks.
  *
  *  @{ */
-unsigned int caca_get_event(void);
-unsigned int caca_wait_event(void);
+unsigned int caca_get_event(unsigned int);
+unsigned int caca_wait_event(unsigned int);
 /*  @} */
 
 /** \defgroup char Character printing
