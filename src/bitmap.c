@@ -19,7 +19,7 @@
  *   02111-1307  USA
  */
 
-/**  \file blit.c
+/**  \file bitmap.c
  *   \version \$Id$
  *   \author Sam Hocevar <sam@zoy.org>
  *   \brief Bitmap functions
