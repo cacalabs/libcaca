@@ -59,37 +59,38 @@ enum caca_feature _caca_antialiasing;
 #define LOOKUP_VAL 32
 #define LOOKUP_SAT 32
 #define LOOKUP_HUE 16
-static unsigned char lookup_table[LOOKUP_VAL][LOOKUP_SAT][LOOKUP_HUE];
+static unsigned char hsv_distances[LOOKUP_VAL][LOOKUP_SAT][LOOKUP_HUE];
 static enum caca_color lookup_colors[8];
 
 static int const hsv_palette[] =
 {
-    /* hue, saturation, value */
-    0x0,    0x0,    0x0,   /* black */
-    0x0,    0x0,    0x5ff, /* 30% */
-    0x0,    0x0,    0x9ff, /* 70% */
-    0x0,    0x0,    0xfff, /* white */
-    0x1000, 0xfff,  0x5ff, /* dark yellow */
-    0x1000, 0xfff,  0xfff, /* light yellow */
-    0x0,    0xfff,  0x5ff, /* dark red */
-    0x0,    0xfff,  0xfff  /* light red */
+    /* weight, hue, saturation, value */
+    4,    0x0,    0x0,    0x0,   /* black */
+    5,    0x0,    0x0,    0x5ff, /* 30% */
+    5,    0x0,    0x0,    0x9ff, /* 70% */
+    4,    0x0,    0x0,    0xfff, /* white */
+    3,    0x1000, 0xfff,  0x5ff, /* dark yellow */
+    2,    0x1000, 0xfff,  0xfff, /* light yellow */
+    3,    0x0,    0xfff,  0x5ff, /* dark red */
+    2,    0x0,    0xfff,  0xfff  /* light red */
 };
 
-#define HSV_XRATIO (5*5)
-#define HSV_YRATIO (3*3)
-#define HSV_HRATIO (2*2)
+#define HSV_XRATIO 6
+#define HSV_YRATIO 3
+#define HSV_HRATIO 3
 
 #define HSV_DISTANCE(h, s, v, index) \
-    ((HSV_XRATIO * ((v) - hsv_palette[index * 3 + 2]) \
-                 * ((v) - hsv_palette[index * 3 + 2])) \
-    + (hsv_palette[index * 3 + 2] \
-        ? (HSV_YRATIO * ((s) - hsv_palette[index * 3 + 1]) \
-                      * ((s) - hsv_palette[index * 3 + 1])) \
-        : 0) \
-    + (hsv_palette[index * 3 + 1] \
-        ? (HSV_HRATIO * ((h) - hsv_palette[index * 3 + 0]) \
-                      * ((h) - hsv_palette[index * 3 + 0])) \
-        : 0))
+    (hsv_palette[index * 4] \
+     * ((HSV_XRATIO * ((v) - hsv_palette[index * 4 + 3]) \
+                    * ((v) - hsv_palette[index * 4 + 3])) \
+       + (hsv_palette[index * 4 + 3] \
+           ? (HSV_YRATIO * ((s) - hsv_palette[index * 4 + 2]) \
+                         * ((s) - hsv_palette[index * 4 + 2])) \
+           : 0) \
+       + (hsv_palette[index * 4 + 2] \
+           ? (HSV_HRATIO * ((h) - hsv_palette[index * 4 + 1]) \
+                         * ((h) - hsv_palette[index * 4 + 1])) \
+           : 0)))
 
 /*
  * Local prototypes
@@ -557,29 +558,28 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
             lookup_colors[6] = dark_colors[hue / 0x1000];
             lookup_colors[7] = light_colors[hue / 0x1000];
 
-            point = lookup_table[val * LOOKUP_VAL / 0x1000]
-                                [sat * LOOKUP_SAT / 0x1000]
-                                [(hue & 0xfff) * LOOKUP_HUE / 0x1000];
+            point = hsv_distances[(val + _get_dither() * (0x1000 / LOOKUP_VAL)
+                                    / 0x100) * (LOOKUP_VAL - 1) / 0x1000]
+                                 [(sat + _get_dither() * (0x1000 / LOOKUP_SAT)
+                                    / 0x100) * (LOOKUP_SAT - 1) / 0x1000]
+                                 [((hue & 0xfff) + _get_dither()
+                                            * (0x1000 / LOOKUP_HUE) / 0x100)
+                                            * (LOOKUP_HUE - 1) / 0x1000];
 
-try_again:
             distfg = HSV_DISTANCE(hue % 0xfff, sat, val, (point >> 4));
             distbg = HSV_DISTANCE(hue % 0xfff, sat, val, (point & 0xf));
 
-            /* Sanity check due to the lack of precision in lookup_table */
-#if 0
-            if(distbg > distfg)
-            {
-                point = ((point & 0xf) << 4) | (point >> 4);
-                goto try_again;
-            }
-#endif
+            /* Sanity check due to the lack of precision in hsv_distances,
+             * and distbg can be > distfg because of dithering fuzziness. */
             if(distbg > distfg)
                 distbg = distfg;
 
             outfg = lookup_colors[(point >> 4)];
             outbg = lookup_colors[(point & 0xf)];
 
-            outch = density_chars[4 * (distbg * (DENSITY_CHARS - 1) / distfg)];
+            ch = distbg * 2 * (DENSITY_CHARS - 1) / (distbg + distfg);
+            ch = 4 * ch + _get_dither() / 0x40;
+            outch = density_chars[ch];
         }
         else
         {
@@ -625,134 +625,39 @@ int _caca_init_bitmap(void)
         for(s = 0; s < LOOKUP_SAT; s++)
             for(h = 0; h < LOOKUP_HUE; h++)
     {
-        int distbg, distfg, dist;
+        int i, distbg, distfg, dist;
         int val, sat, hue;
         unsigned char outbg, outfg;
 
-        val = 0x1000 * v / LOOKUP_VAL;
-        sat = 0x1000 * s / LOOKUP_SAT;
-        hue = 0x1000 * h / LOOKUP_HUE;
+        val = 0xfff * v / (LOOKUP_VAL - 1);
+        sat = 0xfff * s / (LOOKUP_SAT - 1);
+        hue = 0xfff * h / (LOOKUP_HUE - 1);
 
-        /* distance to black */
-        distbg = HSV_DISTANCE(hue, sat, val, 0);
-        distbg = distbg * 2 / 4;
-        outbg = 0;
+        /* Initialise distances to the distance between pure black HSV
+         * coordinates and our white colour (3) */
+        outbg = outfg = 3;
+        distbg = distfg = HSV_DISTANCE(0, 0, 0, 3);
 
-        /* distance to 30% */
-        dist = HSV_DISTANCE(hue, sat, val, 1);
-        dist = dist * 3 / 2;
-        if(dist <= distbg)
+        /* Calculate distances to eight major colour values and store the
+         * two nearest points in our lookup table. */
+        for(i = 0; i < 8; i++)
         {
-            outfg = outbg;
-            distfg = distbg;
-            outbg = 1;
-            distbg = dist;
-        }
-        else
-        {
-            outfg = 1;
-            distfg = dist;
-        }
-
-        /* check dist to 70% */
-        dist = HSV_DISTANCE(hue, sat, val, 2);
-        dist = dist * 3 / 2;
-        if(dist <= distbg)
-        {
-            outfg = outbg;
-            distfg = distbg;
-            outbg = 2;
-            distbg = dist;
-        }
-        else if(dist <= distfg)
-        {
-            outfg = 2;
-            distfg = dist;
+            dist = HSV_DISTANCE(hue, sat, val, i);
+            if(dist <= distbg)
+            {
+                outfg = outbg;
+                distfg = distbg;
+                outbg = i;
+                distbg = dist;
+            }
+            else if(dist <= distfg)
+            {
+                outfg = i;
+                distfg = dist;
+            }
         }
 
-        /* check dist to white */
-        dist = HSV_DISTANCE(hue, sat, val, 3);
-        if(dist <= distbg)
-        {
-            outfg = outbg;
-            distfg = distbg;
-            outbg = 3;
-            distbg = dist;
-        }
-        else if(dist <= distfg)
-        {
-            outfg = 3;
-            distfg = dist;
-        }
-
-        /* check dist to 2nd closest dark color */
-        dist = HSV_DISTANCE(hue, sat, val, 4);
-        //dist = dist * 3 / 4;
-        dist = dist * 3 / 4;
-        if(dist <= distbg)
-        {
-            outfg = outbg;
-            distfg = distbg;
-            outbg = 4;
-            distbg = dist;
-        }
-        else if(dist <= distfg)
-        {
-            outfg = 4;
-            distfg = dist;
-        }
-
-        /* check dist to 2nd closest light color */
-        dist = HSV_DISTANCE(hue, sat, val, 5);
-        dist = dist / 2;
-        //dist = dist * 3 / 4;
-        //dist = dist / 2;
-        if(dist <= distbg)
-        {
-            outfg = outbg;
-            distfg = distbg;
-            outbg = 5;
-            distbg = dist;
-        }
-        else if(dist <= distfg)
-        {
-            outfg = 5;
-            distfg = dist;
-        }
-
-        /* check dist to closest dark color */
-        dist = HSV_DISTANCE(hue, sat, val, 6);
-        dist = dist * 3 / 4;
-        if(dist <= distbg)
-        {
-            outfg = outbg;
-            distfg = distbg;
-            outbg = 6;
-            distbg = dist;
-        }
-        else if(dist <= distfg)
-        {
-            outfg = 6;
-            distfg = dist;
-        }
-
-        /* check dist to closest light color */
-        dist = HSV_DISTANCE(hue, sat, val, 7);
-        dist = dist / 2;
-        if(dist <= distbg)
-        {
-            outfg = outbg;
-            distfg = distbg;
-            outbg = 7;
-            distbg = dist;
-        }
-        else if(dist <= distfg)
-        {
-            outfg = 7;
-            distfg = dist;
-        }
-
-        lookup_table[v][s][h] = (outfg << 4) | outbg;
+        hsv_distances[v][s][h] = (outfg << 4) | outbg;
     }
 
     return 0;
