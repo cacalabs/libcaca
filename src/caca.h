@@ -62,6 +62,10 @@
  *      - \c slang uses the S-Lang library.
  *      - \c x11 uses the native X11 driver.
  *
+ *  \li \b CACA_GEOMETRY: set the video display size. The format of this
+ *      variable must be XxY, with X and Y being integer values. This option
+ *      currently only works with the X11 driver.
+ *
  *  \li \b CACA_BACKGROUND: set the background type.
  *      - \c solid uses solid coloured backgrounds for all characters. This
  *        feature does not work with all terminal emulators. This is the

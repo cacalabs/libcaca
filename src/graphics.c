@@ -520,13 +520,12 @@ int _caca_init_graphics(void)
         const char *font_name = "8x13bold";
         int i;
 
-        if(getenv("CACA_WIDTH"))
-            _caca_width = atoi(getenv("CACA_WIDTH"));
+        if(getenv("CACA_GEOMETRY"))
+            sscanf(getenv("CACA_GEOMETRY"),
+                   "%ux%u", &_caca_width, &_caca_height);
+
         if(!_caca_width)
             _caca_width = 80;
-
-        if(getenv("CACA_HEIGHT"))
-            _caca_height = atoi(getenv("CACA_HEIGHT"));
         if(!_caca_height)
             _caca_height = 32;
 
