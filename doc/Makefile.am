@@ -45,7 +45,7 @@ if BUILD_DOCUMENTATION
 	cp `find html -name '*.html' -o -name '*.gif' -o -name '*.png'` \
 	  $(DESTDIR)$(datadir)/doc/libcaca-dev/html
 	$(mkinstalldirs) $(DESTDIR)$(mandir)/man3
-	cp `find man/man3 -name '*.3caca'` $(DESTDIR)$(mandir)/man3
+	cp `find man -name '*.3caca'` $(DESTDIR)$(mandir)/man3
 	$(mkinstalldirs) $(DESTDIR)$(mandir)/man1
 	rm -f $(DESTDIR)$(mandir)/man1/cacaball.1
 	ln -s cacademo.1 $(DESTDIR)$(mandir)/man1/cacaball.1
