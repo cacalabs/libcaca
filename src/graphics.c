@@ -979,7 +979,7 @@ int _caca_end_graphics(void)
  *  \param title The desired window title.
  *  \return 0 upon success, a non-zero value if an error occurs.
  */
-int caca_set_title(char const *title)
+int caca_set_window_title(char const *title)
 {
 #if defined(USE_X11)
     if(_caca_driver == CACA_DRIVER_X11)
@@ -1001,6 +1001,72 @@ int caca_set_title(char const *title)
     }
 
     return 0;
+}
+
+/** \brief Get the window width.
+ *
+ *  If libcaca runs in a window, get the usable window width. This value can
+ *  be used for aspect ratio calculation. If libcaca does not run in a window
+ *  or if there is no way to know the font size, assume a 6x10 font is being
+ *  used. Note that the units are not necessarily pixels.
+ *
+ *  \return The window width.
+ */
+unsigned int caca_get_window_width(void)
+{
+#if defined(USE_X11)
+    if(_caca_driver == CACA_DRIVER_X11)
+    {
+        return _caca_width * x11_font_width;
+    }
+    else
+#endif
+#if defined(USE_WIN32)
+    if(_caca_driver == CACA_DRIVER_WIN32)
+    {
+        /* FIXME */
+    }
+    else
+#endif
+    {
+        /* Dummy */
+    }
+
+    /* Fallback to a 6x10 font */
+    return _caca_width * 6;
+}
+
+/** \brief Get the window height.
+ *
+ *  If libcaca runs in a window, get the usable window height. This value can
+ *  be used for aspect ratio calculation. If libcaca does not run in a window
+ *  or if there is no way to know the font size, assume a 6x10 font is being
+ *  used. Note that the units are not necessarily pixels.
+ *
+ *  \return The window height.
+ */
+unsigned int caca_get_window_height(void)
+{
+#if defined(USE_X11)
+    if(_caca_driver == CACA_DRIVER_X11)
+    {
+        return _caca_height * x11_font_height;
+    }
+    else
+#endif
+#if defined(USE_WIN32)
+    if(_caca_driver == CACA_DRIVER_WIN32)
+    {
+        /* FIXME */
+    }
+    else
+#endif
+    {
+        /* Dummy */
+    }
+
+    /* Fallback to a 6x10 font */
+    return _caca_height * 10;
 }
 
 /** \brief Set the refresh delay.

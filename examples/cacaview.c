@@ -84,7 +84,7 @@ int main(int argc, char **argv)
     }
 
     /* Set the window title */
-    caca_set_title("cacaview");
+    caca_set_window_title("cacaview");
 
     /* Load items into playlist */
     for(i = 1; i < argc; i++)

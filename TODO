@@ -8,8 +8,7 @@ Low level stuff
    o  Better keyboard driver in an X terminal, see
       http://groups.yahoo.com/group/zepp/message/381
 
-   o  Write a window resize handler.
-
+   o  DONE 13 Jan 2004: Write a window resize handler.
    o  DONE 12 Nov 2003: Port to conio.h
 
 
@@ -21,11 +20,10 @@ High level stuff
 
    o  Alpha layer for sprites
 
-   o  Clip all graphics primitives
-
    o  Fix the thin ellipse rendering
 
    o  DONE 26 Nov 2003: Support more colour depths, more bitmask orderings
+   o  DONE 15 Nov 2003: Clip all graphics primitives
 
 
 Misc
