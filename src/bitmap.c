@@ -50,8 +50,9 @@ typedef unsigned int uint32_t;
 
 static void mask2shift(unsigned int, int *, int *);
 
-static void get_rgb_default(struct caca_bitmap *, uint8_t *, int, int,
-                            unsigned int *, unsigned int *, unsigned int *);
+static void get_rgba_default(const struct caca_bitmap *, uint8_t *, int, int,
+                             unsigned int *, unsigned int *, unsigned int *,
+                             unsigned int *);
 static void rgb2hsv_default(int, int, int, int *, int *, int *);
 
 /* Dithering methods */
@@ -127,11 +128,11 @@ struct caca_bitmap
 {
     int bpp, palette;
     int w, h, pitch;
-    int rmask, gmask, bmask;
-    int rright, gright, bright;
-    int rleft, gleft, bleft;
+    int rmask, gmask, bmask, amask;
+    int rright, gright, bright, aright;
+    int rleft, gleft, bleft, aleft;
     void (*get_hsv)(struct caca_bitmap *, char *, int, int);
-    int red[256], green[256], blue[256];
+    int red[256], green[256], blue[256], alpha[256];
 };
 
 static void mask2shift(unsigned int mask, int *right, int *left)
@@ -160,7 +161,8 @@ static void mask2shift(unsigned int mask, int *right, int *left)
 }
 
 struct caca_bitmap *caca_create_bitmap(int bpp, int w, int h, int pitch,
-                                       int rmask, int gmask, int bmask)
+                                       int rmask, int gmask, int bmask,
+                                       int amask)
 {
     struct caca_bitmap *bitmap;
 
@@ -182,13 +184,15 @@ struct caca_bitmap *caca_create_bitmap(int bpp, int w, int h, int pitch,
     bitmap->rmask = rmask;
     bitmap->gmask = gmask;
     bitmap->bmask = bmask;
+    bitmap->amask = amask;
 
     /* Load bitmasks */
-    if(rmask || gmask || bmask)
+    if(rmask || gmask || bmask || amask)
     {
         mask2shift(rmask, &bitmap->rright, &bitmap->rleft);
         mask2shift(gmask, &bitmap->gright, &bitmap->gleft);
         mask2shift(bmask, &bitmap->bright, &bitmap->bleft);
+        mask2shift(amask, &bitmap->aright, &bitmap->aleft);
     }
 
     /* In 8 bpp mode, default to a grayscale palette */
@@ -198,9 +202,10 @@ struct caca_bitmap *caca_create_bitmap(int bpp, int w, int h, int pitch,
         bitmap->palette = 1;
         for(i = 0; i < 256; i++)
         {
-            bitmap->red[i] = i * 0x10;
-            bitmap->green[i] = i * 0x10;
-            bitmap->blue[i] = i * 0x10;
+            bitmap->red[i] = i * 0xfff / 256;
+            bitmap->green[i] = i * 0xfff / 256;
+            bitmap->blue[i] = i * 0xfff / 256;
+            bitmap->alpha[i] = 0xfff;
         }
     }
 
@@ -208,7 +213,8 @@ struct caca_bitmap *caca_create_bitmap(int bpp, int w, int h, int pitch,
 }
 
 void caca_set_bitmap_palette(struct caca_bitmap *bitmap,
-                             int red[], int green[], int blue[])
+                             unsigned int red[], unsigned int green[],
+                             unsigned int blue[], unsigned int alpha[])
 {
     int i;
 
@@ -219,11 +225,13 @@ void caca_set_bitmap_palette(struct caca_bitmap *bitmap,
     {
         if(red[i] >= 0 && red[i] < 0x1000 &&
            green[i] >= 0 && green[i] < 0x1000 &&
-           blue[i] >= 0 && blue[i] < 0x1000)
+           blue[i] >= 0 && blue[i] < 0x1000 &&
+           alpha[i] >= 0 && alpha[i] < 0x1000)
         {
             bitmap->red[i] = red[i];
             bitmap->green[i] = green[i];
             bitmap->blue[i] = blue[i];
+            bitmap->alpha[i] = alpha[i];
         }
     }
 }
@@ -236,9 +244,9 @@ void caca_free_bitmap(struct caca_bitmap *bitmap)
     free(bitmap);
 }
 
-static void get_rgb_default(struct caca_bitmap *bitmap, uint8_t *pixels,
-                            int x, int y, unsigned int *r,
-                            unsigned int *g, unsigned int *b)
+static void get_rgba_default(const struct caca_bitmap *bitmap, uint8_t *pixels,
+                             int x, int y, unsigned int *r, unsigned int *g,
+                             unsigned int *b, unsigned int *a)
 {
     uint32_t bits;
 
@@ -254,8 +262,9 @@ static void get_rgb_default(struct caca_bitmap *bitmap, uint8_t *pixels,
 #ifdef HAVE_ENDIAN_H
             if(__BYTE_ORDER == __BIG_ENDIAN)
 #else
-            static const uint32_t rmask = 0x12345678;
-            if(*(uint8_t *)&rmask == 0x12)
+            /* This is compile-time optimised with at least -O1 or -Os */
+            const uint32_t rmask = 0x12345678;
+            if(*(const uint8_t *)&rmask == 0x12)
 #endif
                 bits = ((uint32_t)pixels[0] << 16) |
                        ((uint32_t)pixels[1] << 8) |
@@ -280,12 +289,14 @@ static void get_rgb_default(struct caca_bitmap *bitmap, uint8_t *pixels,
         *r = bitmap->red[bits];
         *g = bitmap->green[bits];
         *b = bitmap->blue[bits];
+        *a = bitmap->alpha[bits];
     }
     else
     {
         *r = ((bits & bitmap->rmask) >> bitmap->rright) << bitmap->rleft;
         *g = ((bits & bitmap->gmask) >> bitmap->gright) << bitmap->gleft;
         *b = ((bits & bitmap->bmask) >> bitmap->bright) << bitmap->bleft;
+        *a = ((bits & bitmap->amask) >> bitmap->aright) << bitmap->aleft;
     }
 }
 
@@ -320,7 +331,7 @@ static void rgb2hsv_default(int r, int g, int b, int *hue, int *sat, int *val)
 }
 
 void caca_draw_bitmap(int x1, int y1, int x2, int y2,
-                      struct caca_bitmap *bitmap, char *pixels)
+                      const struct caca_bitmap *bitmap, char *pixels)
 {
 #if !NEW_RENDERER
     static const int white_colors[] =
@@ -358,18 +369,18 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
 #   define DENSITY_CHARS 13
     static const char density_chars[] =
         "    "
-        "    "
-        ".`  "
-        ",`.'"
-        "i:-^"
-        "|=+;"
-        "ox/\\"
-        "<>x%"
-        "&$zw"
-        "WXKM"
-        "#8##"
-        "8@8#"
-        "@8@8"
+        ".   "
+        "..  "
+        "...."
+        "::::"
+        ";=;="
+        "tftf"
+        "%$%$"
+        "&KSZ"
+        "WXGM"
+        "@@@@"
+        "8888"
+        "####"
         "????";
 
     int x, y, w, h, pitch;
@@ -391,13 +402,13 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
         int tmp = y2; y2 = y1; y1 = tmp;
     }
 
-    for(y = y1 > 0 ? y1 : 0; y <= y2 && y <= (int)caca_get_height(); y++)
+    for(y = y1 > 0 ? y1 : 0; y <= y2 && y <= (int)_caca_height; y++)
         for(x = x1 > 0 ? x1 : 0, _init_dither(y);
-            x <= x2 && x <= (int)caca_get_width();
+            x <= x2 && x <= (int)_caca_width;
             x++)
     {
         int ch;
-        unsigned int r, g, b, R, G, B;
+        unsigned int r, g, b, a, R, G, B;
         int hue, sat, val;
         int fromx = w * (x - x1) / (x2 - x1 + 1);
         int fromy = h * (y - y1) / (y2 - y1 + 1);
@@ -413,18 +424,20 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
 
         /* First get RGB */
         R = 0, G = 0, B = 0;
-        get_rgb_default(bitmap, pixels, fromx, fromy, &r, &g, &b);
+        get_rgba_default(bitmap, pixels, fromx, fromy, &r, &g, &b, &a);
+        if(a == 0)
+            continue;
 #if 1
         R += r; G += g; B += b;
 #else
         R += r; G += g; B += b;
-        get_rgb_default(bitmap, pixels, fromx - 1, fromy, &r, &g, &b);
+        get_rgba_default(bitmap, pixels, fromx - 1, fromy, &r, &g, &b, &a);
         R += r; G += g; B += b;
-        get_rgb_default(bitmap, pixels, fromx, fromy - 1, &r, &g, &b);
+        get_rgba_default(bitmap, pixels, fromx, fromy - 1, &r, &g, &b, &a);
         R += r; G += g; B += b;
-        get_rgb_default(bitmap, pixels, fromx + 1, fromy, &r, &g, &b);
+        get_rgba_default(bitmap, pixels, fromx + 1, fromy, &r, &g, &b, &a);
         R += r; G += g; B += b;
-        get_rgb_default(bitmap, pixels, fromx, fromy + 1, &r, &g, &b);
+        get_rgba_default(bitmap, pixels, fromx, fromy + 1, &r, &g, &b, &a);
         R += r; G += g; B += b;
         R /= 5; G /= 5; B /= 5;
 #endif
@@ -443,6 +456,7 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
         /* distance to black */
         distbg = XRATIO * val * val;
         distbg += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
+        distbg = distbg * 2 / 4;
         outbg = CACA_COLOR_BLACK;
 
         /* distance to 30% */
@@ -509,7 +523,7 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
              + YRATIO * (sat - 0x1000) * (sat - 0x1000)
              + HRATIO * (hue - hue2) * (hue - hue2);
         dist += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
-        dist = dist * 3 / 4;
+//        dist = dist * 3 / 4;
         if(dist <= distbg)
         {
             outfg = outbg;
@@ -528,7 +542,8 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
              + YRATIO * (sat - 0x1000) * (sat - 0x1000)
              + HRATIO * (hue - hue2) * (hue - hue2);
         dist += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
-        dist = dist / 2;
+        //dist = dist * 3 / 4;
+        //dist = dist / 2;
         if(dist <= distbg)
         {
             outfg = outbg;

@@ -171,7 +171,7 @@ static void clip_line(struct line* s)
     }
     else if(bits1 & (1<<1))
     {
-        int xmax = caca_get_width() - 1;
+        int xmax = _caca_width - 1;
         s->y1 = s->y2 - (s->x2 - xmax) * (s->y2 - s->y1) / (s->x2 - s->x1);
         s->x1 = xmax;
     }
@@ -182,7 +182,7 @@ static void clip_line(struct line* s)
     }
     else if(bits1 & (1<<3))
     {
-        int ymax = caca_get_height() - 1;
+        int ymax = _caca_height - 1;
         s->x1 = s->x2 - (s->y2 - ymax) * (s->x2 - s->x1) / (s->y2 - s->y1);
         s->y1 = ymax;
     }
@@ -203,12 +203,12 @@ static uint8_t clip_bits(int x, int y)
 
     if(x < 0)
         b |= (1<<0);
-    else if(x >= (int)caca_get_width())
+    else if(x >= (int)_caca_width)
         b |= (1<<1);
 
     if(y < 0)
         b |= (1<<2);
-    else if(y >= (int)caca_get_height())
+    else if(y >= (int)_caca_height)
         b |= (1<<3);
 
     return b;

@@ -40,6 +40,7 @@ static void demo_boxes(void);
 static void demo_ellipses(void);
 static void demo_triangles(void);
 static void demo_sprites(void);
+static void demo_render(void);
 
 int bounds = 0;
 int outline = 0;
@@ -130,6 +131,9 @@ int main(int argc, char **argv)
             case 'S':
                 if(sprite)
                     demo = demo_sprites;
+            case 'r':
+            case 'R':
+                demo = demo_render;
                 break;
             }
 
@@ -193,8 +197,9 @@ static void display_menu(void)
     caca_putstr(4, 11, "'4': triangles");
     caca_putstr(4, 12, "'5': ellipses");
     caca_putstr(4, 13, "'c': colour");
+    caca_putstr(4, 14, "'r': render");
     if(sprite)
-        caca_putstr(4, 14, "'s': sprites");
+        caca_putstr(4, 15, "'s': sprites");
 
     caca_putstr(4, 16, "settings:");
     caca_printf(4, 17, "'o': outline: %s",
@@ -458,5 +463,105 @@ static void demo_sprites(void)
 {
     caca_draw_sprite(caca_rand(0, caca_get_width() - 1),
                    caca_rand(0, caca_get_height() - 1), sprite, 0);
+}
+
+#if 0
+static void demo_render(void)
+{
+    struct caca_bitmap *bitmap;
+    //short buffer[256*256];
+    //short *dest = buffer;
+    int buffer[256*256];
+    int *dest = buffer;
+    int x, y, z;
+    static int i = 0;
+
+    i = (i + 1) % 512;
+    z = i < 256 ? i : 511 - i;
+
+    for(x = 0; x < 256; x++)
+        for(y = 0; y < 256; y++)
+    {
+        //*dest++ = ((x >> 3) << 11) | ((y >> 2) << 5) | ((z >> 3));
+        *dest++ = (x << 16) | (y << 8) | (z);
+    }
+
+    //bitmap = caca_create_bitmap(16, 256, 256, 2 * 256, 0xf800, 0x07e0, 0x001f, 0x0000);
+    bitmap = caca_create_bitmap(32, 256, 256, 4 * 256, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+    caca_draw_bitmap(0, 0, caca_get_width() - 1, caca_get_height() - 1,
+                     bitmap, buffer);
+    caca_free_bitmap(bitmap);
+}
+#endif
+
+static void draw_circle(int *buffer, int xo, int yo, int r, int mask, int val);
+
+static void demo_render(void)
+{
+    struct caca_bitmap *bitmap;
+    int buffer[256*256];
+    int *dest;
+    int x, y, z, t, xo, yo;
+    static int i = 0;
+
+    i++;
+
+    dest = buffer;
+    for(x = 0; x < 256; x++)
+        for(y = 0; y < 256; y++)
+    {
+        *dest++ = 0;
+    }
+
+    /* red */
+    xo = 128 + 48 * sin(0.02 * i);
+    yo = 128 + 48 * cos(0.03 * i);
+    t = 256 * (2.0 + sin(4 + 0.017 * i)) / 3;
+    for(z = 0; z < 240; z++)
+        draw_circle(buffer, xo, yo, z, 0x00ff0000,
+                    ((255 - z) * t / 256) << 16);
+
+    /* green */
+    xo = 128 + 48 * sin(2 + 0.06 * i);
+    yo = 128 + 48 * cos(2 + 0.05 * i);
+    t = 256 * (2.0 + sin(8 + 0.021 * i)) / 3;
+    for(z = 0; z < 240; z++)
+        draw_circle(buffer, xo, yo, z, 0x0000ff00,
+                    ((255 - z) * t / 256) << 8);
+
+    /* blue */
+    xo = 128 + 48 * sin(1 + 0.04 * i);
+    yo = 128 + 48 * cos(1 + 0.03 * i);
+    t = 256 * (2.0 + sin(3 + 0.033 * i)) / 3;
+    for(z = 0; z < 240; z++)
+        draw_circle(buffer, xo, yo, z, 0x000000ff, (255 - z) * t / 256);
+
+    bitmap = caca_create_bitmap(32, 256, 256, 4 * 256, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+    caca_draw_bitmap(0, 0, caca_get_width() - 1, caca_get_height() - 1,
+                     bitmap, (char *)buffer);
+    caca_free_bitmap(bitmap);
+}
+
+static void draw_circle(int *buffer, int x, int y, int r, int mask, int val)
+{
+    int t, dx, dy;
+
+#define POINT(X,Y) \
+    buffer[(X) + 256 * (Y)] = (buffer[(X) + 256 * (Y)] & ~mask) | val;
+
+    for(t = 0, dx = 0, dy = r; dx <= dy; dx++)
+    {
+        POINT(x - dx / 3, y - dy / 3);
+        POINT(x + dx / 3, y - dy / 3);
+        POINT(x - dx / 3, y + dy / 3);
+        POINT(x + dx / 3, y + dy / 3);
+
+        POINT(x - dy / 3, y - dx / 3);
+        POINT(x + dy / 3, y - dx / 3);
+        POINT(x - dy / 3, y + dx / 3);
+        POINT(x + dy / 3, y + dx / 3);
+
+        t += t > 0 ? dx - dy-- : dx;
+    }
 }
 

@@ -70,8 +70,8 @@ void caca_fill_triangle(int x1, int y1, int x2, int y2, int x3, int y3, char c)
     x2 *= 4;
     x3 *= 4;
 
-    xmax = caca_get_width() - 1;
-    ymax = caca_get_height() - 1;
+    xmax = _caca_width - 1;
+    ymax = _caca_height - 1;
 
     /* Rasterize our triangle */
     for(y = y1 < 0 ? 0 : y1; y <= y3 && y <= ymax; y++)

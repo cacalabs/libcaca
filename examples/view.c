@@ -32,23 +32,25 @@
 
 #include "caca.h"
 
+/* Local functions */
+static void load_image(const char *);
+static void draw_checkers(unsigned int, unsigned int,
+                          unsigned int, unsigned int);
+
+/* Local variables */
 Imlib_Image image = NULL;
 char *pixels = NULL;
 struct caca_bitmap *bitmap = NULL;
 int x, y, w, h;
-const unsigned int rmask = 0x00ff0000, gmask = 0x0000ff00, bmask = 0x000000ff;
-
-int dithering = CACA_DITHERING_ORDERED4;
-
-static void load_image(const char *);
 
 int main(int argc, char **argv)
 {
-    int quit = 0, update = 1, help = 0, reload = 0;
-    int i, zoom = 0;
+    int quit = 0, update = 1, help = 0, reload = 0, fullscreen = 0, zoom = 0;
+    int dithering = CACA_DITHERING_ORDERED4;
 
     char **list = NULL;
     int current = 0, items = 0, opts = 1;
+    int i;
 
     /* Initialise libcaca */
     if(caca_init())
@@ -100,6 +102,11 @@ int main(int argc, char **argv)
             case CACA_EVENT_KEY_PRESS | 'P':
                 if(items) current = (items + current - 1) % items;
                 reload = 1;
+                break;
+            case CACA_EVENT_KEY_PRESS | 'f':
+            case CACA_EVENT_KEY_PRESS | 'F':
+                fullscreen = ~fullscreen;
+                update = 1;
                 break;
             case CACA_EVENT_KEY_PRESS | 'd':
                 dithering = (dithering + 1) % 5;
@@ -203,6 +210,7 @@ int main(int argc, char **argv)
             int yo = (wh - 1) / 2;
             int xn = (ww - 1) / (2 - zoom);
             int yn = (wh - 1) / (2 - zoom);
+            draw_checkers(xo - xn, yo - yn, xo + xn, yo + yn);
             caca_draw_bitmap(xo - xn, yo - yn, xo + xn, yo + yn,
                              bitmap, pixels);
         }
@@ -216,27 +224,40 @@ int main(int argc, char **argv)
             if(xn + x > w) x = w - xn;
             if(yn + y > h) y = h - yn;
             newbitmap = caca_create_bitmap(32, 2 * xn, 2 * yn, 4 * w,
-                                           rmask, gmask, bmask);
-            caca_draw_bitmap(0, 0, ww - 1, wh - 1, newbitmap,
+                                           0x00ff0000, 0x0000ff00, 0x000000ff,
+                                           0xff000000);
+            draw_checkers(0, fullscreen ? 0 : 1,
+                          ww - 1, fullscreen ? wh - 1 : wh - 2);
+            caca_draw_bitmap(0, fullscreen ? 0 : 1,
+                             ww - 1, fullscreen ? wh - 1 : wh - 2,
+                             newbitmap,
                              pixels + 4 * (x - xn) + 4 * w * (y - yn));
             caca_free_bitmap(newbitmap);
         }
         else
         {
-            caca_draw_bitmap(0, 0, ww - 1, wh - 1, bitmap, pixels);
+            draw_checkers(0, fullscreen ? 0 : 1,
+                          ww - 1, fullscreen ? wh - 1 : wh - 2);
+            caca_draw_bitmap(0, fullscreen ? 0 : 1,
+                             ww - 1, fullscreen ? wh - 1 : wh - 2,
+                             bitmap, pixels);
         }
 
         caca_set_color(CACA_COLOR_WHITE, CACA_COLOR_BLUE);
-        caca_draw_line(0, 0, ww - 1, 0, ' ');
-        caca_draw_line(0, wh - 1, ww - 1, wh - 1, '-');
-        caca_putstr(0, 0, "q:Quit  n/p:Next/Prev  +/-/x:Zoom  "
-                          "h/j/k/l: Move  d:Dithering");
-        caca_putstr(ww - strlen("?:Help"), 0, "?:Help");
-        caca_printf(3, wh - 1, "cacaview %s", VERSION);
-        caca_printf(ww / 2 - 5, wh - 1, "(%s dithering)",
-                    caca_get_dithering_name(dithering));
-        caca_printf(ww - 14, wh - 1,
-                    "(zoom: %s%i)", zoom > 0 ? "+" : "", zoom);
+
+        if(!fullscreen)
+        {
+            caca_draw_line(0, 0, ww - 1, 0, ' ');
+            caca_draw_line(0, wh - 1, ww - 1, wh - 1, '-');
+            caca_putstr(0, 0, "q:Quit  n/p:Next/Prev  +/-/x:Zoom  "
+                              "h/j/k/l: Move  d:Dithering");
+            caca_putstr(ww - strlen("?:Help"), 0, "?:Help");
+            caca_printf(3, wh - 1, "cacaview %s", VERSION);
+            caca_printf(ww / 2 - 5, wh - 1, "(%s dithering)",
+                        caca_get_dithering_name(dithering));
+            caca_printf(ww - 14, wh - 1,
+                        "(zoom: %s%i)", zoom > 0 ? "+" : "", zoom);
+        }
 
         if(help)
         {
@@ -298,11 +319,28 @@ static void load_image(const char *name)
     y = h / 2;
 
     /* Create the libcaca bitmap */
-    bitmap = caca_create_bitmap(32, w, h, 4 * w, rmask, gmask, bmask);
+    bitmap = caca_create_bitmap(32, w, h, 4 * w, 0x00ff0000, 0x0000ff00,
+                                0x000000ff, 0xff000000);
     if(!bitmap)
     {
         imlib_free_image();
         image = NULL;
+    }
+}
+
+static void draw_checkers(unsigned int x1, unsigned int y1,
+                          unsigned int x2, unsigned int y2)
+{
+    unsigned int xn, yn;
+
+    for(yn = y1; yn <= y2; yn++)
+        for(xn = x1; xn <= x2; xn++)
+    {
+        if(((xn / 4) ^ (yn / 2)) & 1)
+            caca_set_color(CACA_COLOR_LIGHTGRAY, CACA_COLOR_DARKGRAY);
+        else
+            caca_set_color(CACA_COLOR_DARKGRAY, CACA_COLOR_LIGHTGRAY);
+        caca_putchar(xn, yn, ' ');
     }
 }
 

@@ -35,6 +35,9 @@
 #   include <curses.h>
 #elif defined(USE_CONIO)
 #   include <conio.h>
+#   if defined(SCREENUPDATE_IN_PC_H)
+#       include <pc.h>
+#   endif
 #else
 #   error "no graphics library detected"
 #endif
@@ -53,6 +56,13 @@
 
 #include "caca.h"
 #include "caca_internals.h"
+
+#ifdef USE_CONIO
+static struct text_info ti;
+#endif
+
+unsigned int _caca_width;
+unsigned int _caca_height;
 
 static unsigned int _caca_delay;
 static unsigned int _caca_rendertime;
@@ -92,8 +102,8 @@ void caca_putchar(int x, int y, char c)
 #if defined(USE_CONIO)
     char *data;
 #endif
-    if(x < 0 || x >= (int)caca_get_width() ||
-       y < 0 || y >= (int)caca_get_height())
+    if(x < 0 || x >= (int)_caca_width ||
+       y < 0 || y >= (int)_caca_height)
         return;
 
 #if defined(USE_SLANG)
@@ -103,7 +113,7 @@ void caca_putchar(int x, int y, char c)
     move(y, x);
     addch(c);
 #elif defined(USE_CONIO)
-    data = _caca_screen + 2 * (x + y * caca_get_width());
+    data = _caca_screen + 2 * (x + y * _caca_width);
     data[0] = c;
     data[1] = (_caca_bgcolor << 4) | _caca_fgcolor;
 //    gotoxy(x + 1, y + 1);
@@ -115,7 +125,7 @@ void caca_putstr(int x, int y, const char *s)
 {
     unsigned int len;
 
-    if(y < 0 || y >= (int)caca_get_height() || x >= (int)caca_get_width())
+    if(y < 0 || y >= (int)_caca_height || x >= (int)_caca_width)
         return;
 
     len = strlen(s);
@@ -129,10 +139,10 @@ void caca_putstr(int x, int y, const char *s)
         x = 0;
     }
 
-    if(x + len >= caca_get_width())
+    if(x + len >= _caca_width)
     {
-        memcpy(_caca_scratch_line, s, caca_get_width() - x);
-        _caca_scratch_line[caca_get_width() - x] = '\0';
+        memcpy(_caca_scratch_line, s, _caca_width - x);
+        _caca_scratch_line[_caca_width - x] = '\0';
         s = _caca_scratch_line;
     }
 
@@ -143,7 +153,7 @@ void caca_putstr(int x, int y, const char *s)
     move(y, x);
     addstr(s);
 #elif defined(USE_CONIO)
-    char *buf = _caca_screen + 2 * (x + y * caca_get_width());
+    char *buf = _caca_screen + 2 * (x + y * _caca_width);
     while(*s)
     {
         *buf++ = *s++;
@@ -160,19 +170,19 @@ void caca_printf(int x, int y, const char *format, ...)
     char *buf = tmp;
     va_list args;
 
-    if(y < 0 || y >= (int)caca_get_height() || x >= (int)caca_get_width())
+    if(y < 0 || y >= (int)_caca_height || x >= (int)_caca_width)
         return;
 
-    if(caca_get_width() - x + 1 > BUFSIZ)
-        buf = malloc(caca_get_width() - x + 1);
+    if(_caca_width - x + 1 > BUFSIZ)
+        buf = malloc(_caca_width - x + 1);
 
     va_start(args, format);
 #if defined(HAVE_VSNPRINTF)
-    vsnprintf(buf, caca_get_width() - x + 1, format, args);
+    vsnprintf(buf, _caca_width - x + 1, format, args);
 #else
     vsprintf(buf, format, args);
 #endif
-    buf[caca_get_width() - x] = '\0';
+    buf[_caca_width - x] = '\0';
     va_end(args);
 
     caca_putstr(x, y, buf);
@@ -185,7 +195,7 @@ void caca_clear(void)
 {
     enum caca_color oldfg = caca_get_fg_color();
     enum caca_color oldbg = caca_get_bg_color();
-    int y = caca_get_height();
+    int y = _caca_height;
 
     caca_set_color(CACA_COLOR_LIGHTGRAY, CACA_COLOR_BLACK);
 
@@ -233,6 +243,9 @@ int _caca_init_graphics(void)
 
     /* Disable alt charset support so that we get all 256 colour pairs */
     SLtt_Has_Alt_Charset = 0;
+
+    _caca_width = SLtt_Screen_Cols;
+    _caca_height = SLtt_Screen_Rows;
 
 #elif defined(USE_NCURSES)
     static int curses_colors[] =
@@ -292,6 +305,9 @@ int _caca_init_graphics(void)
             }
         }
 
+    _caca_width = COLS;
+    _caca_height = LINES;
+
 #elif defined(USE_CONIO)
     gettextinfo(&ti);
     _caca_screen = malloc(2 * ti.screenwidth * ti.screenheight);
@@ -302,13 +318,15 @@ int _caca_init_graphics(void)
 #   else
     /* FIXME */
 #   endif
+    _caca_width = ti.screenwidth;
+    _caca_height = ti.screenheight;
 
 #endif
-    _caca_empty_line = malloc(caca_get_width() + 1);
-    memset(_caca_empty_line, ' ', caca_get_width());
-    _caca_empty_line[caca_get_width()] = '\0';
+    _caca_empty_line = malloc(_caca_width + 1);
+    memset(_caca_empty_line, ' ', _caca_width);
+    _caca_empty_line[_caca_width] = '\0';
 
-    _caca_scratch_line = malloc(caca_get_width() + 1);
+    _caca_scratch_line = malloc(_caca_width + 1);
 
     _caca_delay = 0;
     _caca_rendertime = 0;

@@ -165,7 +165,7 @@ sprite_alloc_failed:
     return NULL;
 }
 
-int caca_get_sprite_frames(struct caca_sprite *sprite)
+int caca_get_sprite_frames(const struct caca_sprite *sprite)
 {
     if(sprite == NULL)
         return 0;
@@ -173,7 +173,7 @@ int caca_get_sprite_frames(struct caca_sprite *sprite)
     return sprite->nf;
 }
 
-int caca_get_sprite_width(struct caca_sprite *sprite, int f)
+int caca_get_sprite_width(const struct caca_sprite *sprite, int f)
 {
     if(sprite == NULL)
         return 0;
@@ -184,7 +184,7 @@ int caca_get_sprite_width(struct caca_sprite *sprite, int f)
     return sprite->frames[f].w;
 }
 
-int caca_get_sprite_height(struct caca_sprite *sprite, int f)
+int caca_get_sprite_height(const struct caca_sprite *sprite, int f)
 {
     if(sprite == NULL)
         return 0;
@@ -195,7 +195,7 @@ int caca_get_sprite_height(struct caca_sprite *sprite, int f)
     return sprite->frames[f].h;
 }
 
-int caca_get_sprite_dx(struct caca_sprite *sprite, int f)
+int caca_get_sprite_dx(const struct caca_sprite *sprite, int f)
 {
     if(sprite == NULL)
         return 0;
@@ -206,7 +206,7 @@ int caca_get_sprite_dx(struct caca_sprite *sprite, int f)
     return sprite->frames[f].dx;
 }
 
-int caca_get_sprite_dy(struct caca_sprite *sprite, int f)
+int caca_get_sprite_dy(const struct caca_sprite *sprite, int f)
 {
     if(sprite == NULL)
         return 0;
@@ -217,7 +217,7 @@ int caca_get_sprite_dy(struct caca_sprite *sprite, int f)
     return sprite->frames[f].dy;
 }
 
-void caca_draw_sprite(int x, int y, struct caca_sprite *sprite, int f)
+void caca_draw_sprite(int x, int y, const struct caca_sprite *sprite, int f)
 {
     int i, j;
     enum caca_color oldfg, oldbg;

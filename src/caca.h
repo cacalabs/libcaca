@@ -200,21 +200,22 @@ unsigned int caca_sqrt(unsigned int);
  */
 struct caca_sprite;
 struct caca_sprite * caca_load_sprite(const char *);
-int caca_get_sprite_frames(struct caca_sprite *);
-int caca_get_sprite_width(struct caca_sprite *, int);
-int caca_get_sprite_height(struct caca_sprite *, int);
-int caca_get_sprite_dx(struct caca_sprite *, int);
-int caca_get_sprite_dy(struct caca_sprite *, int);
-void caca_draw_sprite(int, int, struct caca_sprite *, int);
+int caca_get_sprite_frames(const struct caca_sprite *);
+int caca_get_sprite_width(const struct caca_sprite *, int);
+int caca_get_sprite_height(const struct caca_sprite *, int);
+int caca_get_sprite_dx(const struct caca_sprite *, int);
+int caca_get_sprite_dy(const struct caca_sprite *, int);
+void caca_draw_sprite(int, int, const struct caca_sprite *, int);
 void caca_free_sprite(struct caca_sprite *);
 
 /*
  * Bitmap handling
  */
 struct caca_bitmap;
-struct caca_bitmap *caca_create_bitmap(int, int, int, int, int, int, int);
-void caca_set_bitmap_palette(struct caca_bitmap *, int[], int[], int[]);
-void caca_draw_bitmap(int, int, int, int, struct caca_bitmap *, char *);
+struct caca_bitmap *caca_create_bitmap(int, int, int, int, int, int, int, int);
+void caca_set_bitmap_palette(struct caca_bitmap *, unsigned int[],
+                             unsigned int[], unsigned int[], unsigned int[]);
+void caca_draw_bitmap(int, int, int, int, const struct caca_bitmap *, char *);
 void caca_free_bitmap(struct caca_bitmap *);
 
 #ifdef __cplusplus

@@ -38,9 +38,6 @@
 #elif defined(USE_CONIO)
 #   include <dos.h>
 #   include <conio.h>
-#   if defined(SCREENUPDATE_IN_PC_H)
-#       include <pc.h>
-#   endif
 #else
 #   error "no graphics library detected"
 #endif
@@ -62,7 +59,6 @@ int _caca_attr[16*16];
 #endif
 
 #if defined(USE_CONIO)
-static struct text_info ti;
 char *_caca_screen;
 #endif
 
@@ -132,24 +128,12 @@ int caca_init(void)
 
 unsigned int caca_get_width(void)
 {
-#if defined(USE_SLANG)
-    return SLtt_Screen_Cols;
-#elif defined(USE_NCURSES)
-    return COLS;
-#elif defined(USE_CONIO)
-    return ti.screenwidth;
-#endif
+    return _caca_width;
 }
 
 unsigned int caca_get_height(void)
 {
-#if defined(USE_SLANG)
-    return SLtt_Screen_Rows;
-#elif defined(USE_NCURSES)
-    return LINES;
-#else
-    return ti.screenheight;
-#endif
+    return _caca_height;
 }
 
 const char *caca_get_color_name(enum caca_color color)
@@ -212,7 +196,7 @@ void caca_end(void)
     _wscroll = 1;
     textcolor((enum COLORS)WHITE);
     textbackground((enum COLORS)BLACK);
-    gotoxy(caca_get_width(), caca_get_height());
+    gotoxy(_caca_width, _caca_height);
     cputs("\r\n");
     _setcursortype(_NORMALCURSOR);
 #endif

@@ -58,8 +58,8 @@ void caca_draw_thin_box(int x1, int y1, int x2, int y2)
         y1 = y2; y2 = tmp;
     }
 
-    xmax = caca_get_width() - 1;
-    ymax = caca_get_height() - 1;
+    xmax = _caca_width - 1;
+    ymax = _caca_height - 1;
 
     if(x2 < 0 || y2 < 0 || x1 > xmax || y1 > ymax)
         return;
@@ -111,8 +111,8 @@ void caca_fill_box(int x1, int y1, int x2, int y2, char c)
         y1 = y2; y2 = tmp;
     }
 
-    xmax = caca_get_width() - 1;
-    ymax = caca_get_height() - 1;
+    xmax = _caca_width - 1;
+    ymax = _caca_height - 1;
 
     if(x2 < 0 || y2 < 0 || x1 > xmax || y1 > ymax)
         return;

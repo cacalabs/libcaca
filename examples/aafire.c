@@ -95,7 +95,7 @@ initialize (void)
 {
   int i;
 #ifdef LIBCACA
-  int r[256], g[256], b[256];
+  int r[256], g[256], b[256], a[256];
 #endif
 
 #ifdef LIBCACA
@@ -104,6 +104,7 @@ initialize (void)
       printf ("Failed to initialize libcaca\n");
       exit (1);
     }
+  caca_set_delay(20000);
 #else
   context = aa_autoinit (&aa_defparams);
   if (context == NULL)
@@ -121,6 +122,7 @@ initialize (void)
     r[i] = pal[i * 3] * 64;
     g[i] = pal[i * 3 + 1] * 64;
     b[i] = pal[i * 3 + 2] * 64;
+    a[i] = 0xfff;
   }
 #else
     aa_setpalette (palette, i, pal[i * 3] * 4,
@@ -128,14 +130,13 @@ initialize (void)
 #endif
 
 #ifdef LIBCACA
-  caca_bitmap = caca_create_bitmap(8, XSIZ, YSIZ - 4, XSIZ, 0, 0, 0);
-  caca_set_bitmap_palette(caca_bitmap, r, g, b);
+  caca_bitmap = caca_create_bitmap(8, XSIZ, YSIZ - 2, XSIZ, 0, 0, 0, 0);
+  caca_set_bitmap_palette(caca_bitmap, r, g, b, a);
   bitmap = malloc(XSIZ * YSIZ * sizeof(char));
   caca_set_dithering(CACA_DITHERING_ORDERED8);
 #else
   aa_hidecursor (context);
 #endif
-fprintf(stderr, "%i %i\n", XSIZ, YSIZ);
 }
 static void
 uninitialize (void)
