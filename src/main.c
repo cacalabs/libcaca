@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: main.c,v 1.14 2002/12/23 13:46:27 sam Exp $
+ *   $Id: main.c,v 1.15 2002/12/23 15:06:13 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -84,19 +84,27 @@ static void start_game (game *g)
         {
             switch( key )
             {
-                case 'q':
-                    quit = 1;
+            case 'q':
+                quit = 1;
+                break;
+            case 'p':
+                poz = !poz;
+                break;
+            case '\t':
+                ceo_alert();
+                poz = 1;
+                break;
+            case 's':
+                skip = 1;
+                break;
+            default:
+                if( g->p->dead )
+                {
                     break;
-                case 'p':
-                    poz = !poz;
-                    break;
-                case '\t':
-                    ceo_alert();
-                    poz = 1;
-                    break;
-                case 's':
-                    skip = 1;
-                    break;
+                }
+
+                switch( key )
+                {
                 case 'h':
                     g->p->vx = -2;
                     break;
@@ -110,52 +118,49 @@ static void start_game (game *g)
                     g->p->vx = 2;
                     break;
                 case 'n':
-                    if( g->p->nuke == 0 )
+                    if( g->p->special >= COST_NUKE )
                     {
-                        g->p->nuke = 40;
+                        g->p->special -= COST_NUKE;
                         add_weapon( g, g->wp, (g->p->x + 2) << 4, g->p->y << 4, 0, 0, WEAPON_NUKE );
                     }
                     break;
-                case '\r':
-                    if( g->p->nuke == 0 )
-                    {
-                        g->p->nuke = 40;
-                        add_weapon( g, g->wp, (g->p->x + 2) << 4, g->p->y << 4, 0, 0, WEAPON_BEAM );
-                    }
-                    break;
                 case 'f':
-                    if( g->p->nuke == 0 )
+                    if( g->p->special >= COST_FRAGBOMB )
                     {
-                        g->p->nuke = 40;
+                        g->p->special -= COST_FRAGBOMB;
                         add_weapon( g, g->wp, (g->p->x + 2) << 4, g->p->y << 4, 0, -16, WEAPON_FRAGBOMB );
                     }
                     break;
                 case 'b':
-                    if( g->p->weapon == 0 )
+                    if( g->p->special >= COST_BEAM )
                     {
-                        g->p->weapon = 4;
-                        add_weapon( g, g->wp, (g->p->x + 2) << 4, g->p->y << 4, 0, -16, WEAPON_BOMB );
+                        g->p->special -= COST_BEAM;
+                        add_weapon( g, g->wp, (g->p->x + 2) << 4, g->p->y << 4, 0, 0, WEAPON_BEAM );
                     }
+                    break;
                 case ' ':
                     if( g->p->weapon == 0 )
                     {
                         g->p->weapon = 4;
                         add_weapon( g, g->wp, g->p->x << 4, g->p->y << 4, 0, -32, WEAPON_LASER );
                         add_weapon( g, g->wp, (g->p->x + 5) << 4, g->p->y << 4, 0, -32, WEAPON_LASER );
-                        /* Extra shtuph */
+                        /* Extra schtuph */
                         add_weapon( g, g->wp, g->p->x << 4, g->p->y << 4, -24, -16, WEAPON_SEEKER );
                         add_weapon( g, g->wp, (g->p->x + 5) << 4, g->p->y << 4, 24, -16, WEAPON_SEEKER );
-                        /* More shtuph */
+                        /* More schtuph */
                         add_weapon( g, g->wp, (g->p->x + 1) << 4, (g->p->y - 1) << 4, 0, -32, WEAPON_LASER );
                         add_weapon( g, g->wp, (g->p->x + 4) << 4, (g->p->y - 1) << 4, 0, -32, WEAPON_LASER );
-                        /* Even more shtuph */
+                        /* Even more schtuph */
                         add_weapon( g, g->wp, (g->p->x + 2) << 4, (g->p->y - 1) << 4, 0, -32, WEAPON_LASER );
                         add_weapon( g, g->wp, (g->p->x + 3) << 4, (g->p->y - 1) << 4, 0, -32, WEAPON_LASER );
-                        /* Extra shtuph */
+                        /* Extra schtuph */
                         add_weapon( g, g->wp, g->p->x << 4, g->p->y << 4, -32, 0, WEAPON_SEEKER );
                         add_weapon( g, g->wp, (g->p->x + 5) << 4, g->p->y << 4, 32, 0, WEAPON_SEEKER );
+                        /* MORE SCHTUPH! */
+                        add_weapon( g, g->wp, (g->p->x + 2) << 4, g->p->y << 4, 0, -16, WEAPON_BOMB );
                     }
                     break;
+                }
             }
         }
 
@@ -209,6 +214,7 @@ static void start_game (game *g)
         draw_explosions( g, g->ex );
         draw_weapons( g, g->wp );
         draw_player( g, g->p );
+        draw_overlay( g );
 
         /* Refresh */
         refresh_graphics();

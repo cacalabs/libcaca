@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: player.c,v 1.6 2002/12/23 13:46:27 sam Exp $
+ *   $Id: player.c,v 1.7 2002/12/23 15:06:13 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ player * create_player( game *g )
     p->vx = 0;
     p->vy = 0;
     p->weapon = 0;
-    p->nuke = 0;
+    p->special = MAX_SPECIAL;
     p->life = MAX_LIFE;
 
     return p;
@@ -86,9 +86,9 @@ void update_player( game *g, player *p )
         p->weapon--;
     }
 
-    if( p->nuke )
+    if( p->special < MAX_SPECIAL )
     {
-        p->nuke--;
+        p->special++;
     }
 
     /* Update life */

@@ -22,16 +22,17 @@ ttyvaders_SOURCES = \
 	aliens.c \
 	bonus.c \
 	ceo.c \
+	collide.c \
 	common.h \
 	explosions.c \
+	graphics.c \
 	main.c \
 	math.c \
-	starfield.c \
-	weapons.c \
-	collide.c \
-	graphics.c \
+	overlay.c \
 	player.c \
+	starfield.c \
 	tunnel.c \
+	weapons.c \
 	$(NULL)
 
 ttyvaders_CPPFLAGS = $(CPPFLAGS_slang) $(CPPFLAGS_ncurses)
