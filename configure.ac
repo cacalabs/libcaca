@@ -17,10 +17,10 @@ dnl AC_PROG_EGREP only exists in autoconf 2.54+, so we use AC_EGREP_CPP right
 dnl now otherwise it might be set in an obscure if statement.
 AC_EGREP_CPP(foo,foo)
 
-AC_ARG_ENABLE(slang,
-  [  --enable-slang          slang graphics support (default enabled)])
 AC_ARG_ENABLE(ncurses,
-  [  --enable-ncurses        ncurses graphics support (default disabled)])
+  [  --enable-ncurses        ncurses graphics support (default enabled)])
+AC_ARG_ENABLE(slang,
+  [  --enable-slang          slang graphics support (default disabled)])
 AC_ARG_ENABLE(conio,
   [  --enable-conio          DOS conio.h graphics support (default disabled)])
 
@@ -40,16 +40,16 @@ if test "${enable_conio}" = "yes"; then
     AC_MSG_RESULT(no)])
   AC_DEFINE(USE_CONIO, 1, Define if the backend driver is conio.h)
   USE_CONIO=:
-elif test "${enable_ncurses}" = "yes"; then
-  AC_CHECK_HEADER(ncurses.h,:,AC_MSG_ERROR([cannot find ncurses headers]))
-  AC_CHECK_LIB(ncurses,initscr,:,AC_MSG_ERROR([cannot find ncurses library]))
-  AC_DEFINE(USE_NCURSES, 1, Define if the backend driver is ncurses)
-  USE_NCURSES=:
-elif test "${enable_slang}" != "no"; then
+elif test "${enable_slang}" = "yes"; then
   AC_CHECK_HEADER(slang.h,:,AC_MSG_ERROR([cannot find slang headers]))
   AC_CHECK_LIB(slang,SLkp_init,:,AC_MSG_ERROR([cannot find slang library]))
   AC_DEFINE(USE_SLANG, 1, Define if the backend driver is slang)
   USE_SLANG=:
+elif test "${enable_ncurses}" != "no"; then
+  AC_CHECK_HEADER(ncurses.h,:,AC_MSG_ERROR([cannot find ncurses headers]))
+  AC_CHECK_LIB(ncurses,initscr,:,AC_MSG_ERROR([cannot find ncurses library]))
+  AC_DEFINE(USE_NCURSES, 1, Define if the backend driver is ncurses)
+  USE_NCURSES=:
 else
   AC_MSG_ERROR([could not find any terminal graphics interface])
 fi

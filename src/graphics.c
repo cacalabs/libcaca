@@ -39,6 +39,10 @@
 #   error "no graphics library detected"
 #endif
 
+#ifdef HAVE_INTTYPES_H
+#   include <inttypes.h>
+#endif
+
 #include <stdio.h> /* BUFSIZ */
 #include <string.h>
 #include <stdlib.h>
@@ -64,7 +68,7 @@ void caca_set_color(enum caca_color fgcolor, enum caca_color bgcolor)
     _caca_fgcolor = fgcolor;
     _caca_bgcolor = bgcolor;
 #if defined(USE_SLANG)
-    SLsmg_set_color(fgcolor + 16 * bgcolor);
+    SLsmg_set_color((bgcolor + 16 * fgcolor) /*% 128*/);
 #elif defined(USE_NCURSES)
     attrset(_caca_attr[fgcolor + 16 * bgcolor]);
 #elif defined(USE_CONIO)
@@ -134,7 +138,7 @@ void caca_putstr(int x, int y, const char *s)
 
 #if defined(USE_SLANG)
     SLsmg_gotorc(y, x);
-    SLsmg_write_string(s);
+    SLsmg_write_string((char *)(intptr_t)s);
 #elif defined(USE_NCURSES)
     move(y, x);
     addstr(s);
@@ -198,6 +202,7 @@ int _caca_init_graphics(void)
     /* See SLang ref., 5.4.4. */
     static char *slang_colors[16] =
     {
+        /* Standard colours */
         "black",
         "blue",
         "green",
@@ -206,6 +211,7 @@ int _caca_init_graphics(void)
         "magenta",
         "brown",
         "lightgray",
+        /* Bright colours */
         "gray",
         "brightblue",
         "brightgreen",
@@ -218,16 +224,20 @@ int _caca_init_graphics(void)
 
     int fg, bg;
 
-    for(bg = 0; bg < 16; bg++)
-        for(fg = 0; fg < 16; fg++)
+    for(fg = 0; fg < 16; fg++)
+        for(bg = 0; bg < 16; bg++)
         {
-            int i = fg + 16 * bg;
+            int i = bg + 16 * fg;
             SLtt_set_color(i, NULL, slang_colors[fg], slang_colors[bg]);
         }
+
+    /* Disable alt charset support so that we get all 256 colour pairs */
+    SLtt_Has_Alt_Charset = 0;
 
 #elif defined(USE_NCURSES)
     static int curses_colors[] =
     {
+        /* Standard curses colours */
         COLOR_BLACK,
         COLOR_BLUE,
         COLOR_GREEN,
@@ -252,6 +262,12 @@ int _caca_init_graphics(void)
     /* Activate colour */
     start_color();
 
+    /* If COLORS == 16, it means the terminal supports full bright colours
+     * using setab and setaf (will use \e[90m \e[91m etc. for colours >= 8),
+     * we can build 16*16 colour pairs.
+     * If COLORS == 8, it means the terminal does not know about bright
+     * colours and we need to get them through A_BOLD and A_BLINK (\e[1m
+     * and \e[5m). We can only build 8*8 colour pairs. */
     max = COLORS >= 16 ? 16 : 8;
 
     for(bg = 0; bg < max; bg++)
@@ -271,7 +287,8 @@ int _caca_init_graphics(void)
                 /* Simple fg on bright bg */
                 _caca_attr[fg + 16 * (bg + 8)] = A_BLINK | COLOR_PAIR(col);
                 /* Bright fg on bright bg */
-                _caca_attr[fg + 8 + 16 * (bg + 8)] = A_BLINK | A_BOLD | COLOR_PAIR(col);
+                _caca_attr[fg + 8 + 16 * (bg + 8)] = A_BLINK | A_BOLD
+                                                             | COLOR_PAIR(col);
             }
         }
 

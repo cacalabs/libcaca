@@ -97,6 +97,10 @@ int caca_init(void)
     SLtt_set_mouse_mode(1, 0);
     SLsmg_refresh();
 
+    /* Disable scrolling so that hashmap scrolling optimization code
+     * does not cause ugly refreshes due to slow terminals */
+    SLtt_Term_Cannot_Scroll = 1;
+
 #elif defined(USE_NCURSES)
     mmask_t newmask;
 

@@ -117,6 +117,11 @@ $Id$
 
    o  S-Lang:
 
+      256 character pairs are definable, but only 128 can be used. This is
+      because slsmg.c's This_Color variable uses its 8th bit to indicate an
+      alternate character set. Replacing a few 0x7F with 0xFF in sldisply.c
+      works around the problem but gets rid of the alternate charset.
+
    o  MS-DOS: all bright colours, bright backgrounds, and bright combinations
       work using <conio.h>. No need to kludge anything.
 
