@@ -54,6 +54,7 @@
 #include "caca_internals.h"
 
 static unsigned int _get_next_event(void);
+static unsigned int _lowlevel_event(void);
 static void _push_event(unsigned int);
 static unsigned int _pop_event(void);
 
@@ -62,6 +63,16 @@ static unsigned int _pop_event(void);
 #endif
 static unsigned int eventbuf[EVENTBUF_LEN];
 static int events = 0;
+
+#if !defined(_DOXYGEN_SKIP_ME)
+/* If no new key was pressed after AUTOREPEAT_THRESHOLD usec, assume the
+ * key was released */
+#define AUTOREPEAT_THRESHOLD 200000
+/* Start repeating key after AUTOREPEAT_TRIGGER usec and send keypress
+ * events every AUTOREPEAT_RATE usec. */
+#define AUTOREPEAT_TRIGGER 300000
+#define AUTOREPEAT_RATE 100000
+#endif
 
 /** \brief Get the next mouse or keyboard input event.
  *
@@ -104,7 +115,13 @@ unsigned int caca_wait_event(unsigned int event_mask)
         if(event & event_mask)
             return event;
 
-        usleep(1000);
+#if defined(HAVE_USLEEP)
+        usleep(10000);
+#elif defined(HAVE_SLEEP)
+        Sleep(10);
+#else
+        SLEEP
+#endif
     }
 }
 
@@ -113,6 +130,72 @@ unsigned int caca_wait_event(unsigned int event_mask)
  */
 
 static unsigned int _get_next_event(void)
+{
+#if defined(USE_SLANG) || defined(USE_NCURSES)
+    static struct caca_timer key_timer = CACA_TIMER_INITIALIZER;
+    static unsigned int last_key_ticks = 0;
+    static unsigned int autorepeat_ticks = 0;
+    static unsigned int last_key = 0;
+    unsigned int ticks;
+#endif
+    unsigned int event = _lowlevel_event();
+
+#if defined(USE_SLANG)
+    if(_caca_driver != CACA_DRIVER_SLANG)
+#endif
+#if defined(USE_NCURSES)
+    if(_caca_driver != CACA_DRIVER_NCURSES)
+#endif
+    return event;
+
+#if defined(USE_SLANG) || defined(USE_NCURSES)
+    /* Simulate long keypresses using autorepeat features */
+    ticks = _caca_getticks(&key_timer);
+    last_key_ticks += ticks;
+    autorepeat_ticks += ticks;
+
+    /* Handle autorepeat */
+    if(last_key && autorepeat_ticks > AUTOREPEAT_TRIGGER
+                && autorepeat_ticks > AUTOREPEAT_THRESHOLD
+                && autorepeat_ticks > AUTOREPEAT_RATE)
+    {
+        _push_event(event);
+        autorepeat_ticks -= AUTOREPEAT_RATE;
+        return CACA_EVENT_KEY_PRESS | last_key;
+    }
+
+    /* We are in autorepeat mode and the same key was just pressed, ignore
+     * this event and return the next one by calling ourselves. */
+    if(event == (CACA_EVENT_KEY_PRESS | last_key))
+    {
+        last_key_ticks = 0;
+        return _get_next_event();
+    }
+
+    /* We are in autorepeat mode, but key has expired or a new key was
+     * pressed - store our event and return a key release event first */
+    if(last_key && (last_key_ticks > AUTOREPEAT_THRESHOLD
+                     || (event & CACA_EVENT_KEY_PRESS)))
+    {
+        _push_event(event);
+        event = CACA_EVENT_KEY_RELEASE | last_key;
+        last_key = 0;
+        return event;
+    }
+
+    /* A new key was pressed, enter autorepeat mode */
+    if(event & CACA_EVENT_KEY_PRESS)
+    {
+        last_key_ticks = 0;
+        autorepeat_ticks = 0;
+        last_key = event & 0x00ffffff;
+    }
+
+    return event;
+#endif
+}
+
+static unsigned int _lowlevel_event(void)
 {
     unsigned int event = _pop_event();
 
@@ -213,7 +296,6 @@ static unsigned int _get_next_event(void)
 
         if(intkey < 0x100)
         {
-            _push_event(CACA_EVENT_KEY_RELEASE | intkey);
             return CACA_EVENT_KEY_PRESS | intkey;
         }
 
@@ -360,7 +442,6 @@ static unsigned int _get_next_event(void)
             case KEY_F(12): event = CACA_KEY_F12; break;
         }
 
-        _push_event(CACA_EVENT_KEY_RELEASE | event);
         return CACA_EVENT_KEY_PRESS | event;
     }
     else
@@ -377,7 +458,6 @@ static unsigned int _get_next_event(void)
 
         if(intkey < 0x100)
         {
-            _push_event(CACA_EVENT_KEY_RELEASE | intkey);
             return CACA_EVENT_KEY_PRESS | intkey;
         }
 
@@ -412,7 +492,6 @@ static unsigned int _get_next_event(void)
             case SL_KEY_F(12): event = CACA_KEY_F12; break;
         }
 
-        _push_event(CACA_EVENT_KEY_RELEASE | event);
         return CACA_EVENT_KEY_PRESS | event;
     }
     else

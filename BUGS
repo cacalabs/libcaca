@@ -4,9 +4,8 @@ Video rendering
 
    o  ncurses' hashmap scrolling optimisation code causes the screen to
       occasionally flicker because it tries to optimise the vertical
-      scrolling.
-
-   o  the X11 driver is very slow.
+      scrolling. With S-Lang, SLtt_Term_Cannot_Scroll prevents this
+      unwanted behaviour.
 
    o  some terminal emulators (Konsole, or the Linux VGA console) honour
       the blink attribute instead of using it for bold or bright like any

@@ -63,8 +63,6 @@ typedef unsigned char uint8_t;
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdarg.h>
-#include <sys/time.h>
-#include <time.h>
 
 #include "caca.h"
 #include "caca_internals.h"
@@ -186,8 +184,6 @@ static void slang_init_palette(void);
 #if defined(USE_X11)
 static int x11_error_handler(Display *, XErrorEvent *);
 #endif
-
-static unsigned int _caca_getticks(void);
 
 /** \brief Set the default colour pair.
  *
@@ -828,39 +824,11 @@ unsigned int caca_get_rendertime(void)
     return _caca_rendertime;
 }
 
-static unsigned int _caca_getticks(void)
-{
-    static int last_sec = 0, last_usec = 0;
-
-    struct timeval tv;
-    unsigned int ticks = 0;
-
-    gettimeofday(&tv, NULL);
-
-    if(last_sec != 0)
-    {
-        /* If the delay was greater than 60 seconds, return 10 seconds
-         * otherwise we may overflow our ticks counter. */
-        if(tv.tv_sec >= last_sec + 60)
-            ticks = 60 * 1000000;
-        else
-        {
-            ticks = (tv.tv_sec - last_sec) * 1000000;
-            ticks += tv.tv_usec;
-            ticks -= last_usec;
-        }
-    }
-
-    last_sec = tv.tv_sec;
-    last_usec = tv.tv_usec;
-
-    return ticks;
-}
-
 /** \brief Flush pending changes and redraw the screen.
  *
  *  This function flushes all graphical operations and prints them to the
- *  screen. Nothing will show on the screen caca_refresh() is not called.
+ *  screen. Nothing will show on the screen until caca_refresh() is
+ *  called.
  *
  *  If caca_set_delay() was called with a non-zero value, caca_refresh()
  *  will use that value to achieve constant framerate: if two consecutive
@@ -873,8 +841,9 @@ void caca_refresh(void)
 #if !defined(_DOXYGEN_SKIP_ME)
 #define IDLE_USEC 10000
 #endif
+    static struct caca_timer timer = CACA_TIMER_INITIALIZER;
     static int lastticks = 0;
-    int ticks = lastticks + _caca_getticks();
+    int ticks = lastticks + _caca_getticks(&timer);
 
 #if defined(USE_SLANG)
     if(_caca_driver == CACA_DRIVER_SLANG)
@@ -958,9 +927,19 @@ void caca_refresh(void)
 #endif
 
     /* Wait until _caca_delay + time of last call */
-    ticks += _caca_getticks();
-    for(; ticks + IDLE_USEC < (int)_caca_delay; ticks += _caca_getticks())
+    ticks += _caca_getticks(&timer);
+    for(ticks += _caca_getticks(&timer);
+        ticks + IDLE_USEC < (int)_caca_delay;
+        ticks += _caca_getticks(&timer))
+    {
+#if defined(HAVE_USLEEP)
         usleep(IDLE_USEC);
+#elif defined(HAVE_SLEEP)
+        Sleep(IDLE_USEC / 1000);
+#else
+        SLEEP
+#endif
+    }
 
     /* Update the sliding mean of the render time */
     _caca_rendertime = (7 * _caca_rendertime + ticks) / 8;

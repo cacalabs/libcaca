@@ -18,6 +18,7 @@ libcaca_a_SOURCES = \
 	triangle.c \
 	sprite.c \
 	bitmap.c \
+	time.c \
 	$(NULL)
 
 if NEED_PIC

@@ -15,19 +15,21 @@ AC_PROG_RANLIB
 
 dnl AC_PROG_EGREP only exists in autoconf 2.54+, so we use AC_EGREP_CPP right
 dnl now otherwise it might be set in an obscure if statement.
-AC_EGREP_CPP(foo,foo)
+AC_EGREP_CPP(foo, foo)
 
 AC_ARG_ENABLE(slang,
   [  --enable-slang          slang graphics support (autodetected)])
 AC_ARG_ENABLE(ncurses,
   [  --enable-ncurses        ncurses graphics support (autodetected)])
+AC_ARG_ENABLE(win32,
+  [  --enable-win32          Windows console support (autodetected)])
 AC_ARG_ENABLE(conio,
-  [  --enable-conio          DOS conio.h graphics support (default disabled)])
+  [  --enable-conio          DOS conio.h graphics support (autodetected)])
 AC_ARG_ENABLE(x11,
   [  --enable-x11            X11 support (autodetected)])
 
 AC_CHECK_HEADERS(inttypes.h endian.h)
-AC_CHECK_FUNCS(vsnprintf getenv putenv strcasecmp)
+AC_CHECK_FUNCS(vsnprintf getenv putenv strcasecmp usleep Sleep)
 
 CACA_DRIVERS="" 
 
@@ -35,7 +37,7 @@ if test "${enable_conio}" != "no"; then
   ac_cv_my_have_conio="no"
   AC_CHECK_HEADERS(conio.h,
    [AC_MSG_CHECKING(for ScreenUpdate in pc.h)
-    AC_EGREP_HEADER(ScreenUpdate,pc.h,
+    AC_EGREP_HEADER(ScreenUpdate, pc.h,
      [ac_cv_my_have_conio="yes"
       AC_MSG_RESULT(yes)
       AC_DEFINE(SCREENUPDATE_IN_PC_H, 1,
@@ -45,6 +47,23 @@ if test "${enable_conio}" != "no"; then
      [AC_MSG_RESULT(no)])])
   if test "${ac_cv_my_have_conio}" = "no" -a "${enable_conio}" = "yes"; then
     AC_MSG_ERROR([cannot find conio.h])
+  fi
+fi
+
+if test "${enable_win32}" != "no"; then
+  ac_cv_my_have_win32="no"
+  AC_CHECK_HEADERS(windows.h,
+   [AC_MSG_CHECKING(for AllocConsole in windows.h)
+    AC_EGREP_HEADER(AllocConsole, windows.h,
+     [ac_cv_my_have_win32="yes"
+      AC_MSG_RESULT(yes)
+      AC_DEFINE(ALLOCCONSOLE_IN_WINDOWS_H, 1,
+                Define if <windows.h> defines AllocConsole.)
+      AC_DEFINE(USE_WIN32, 1, Define to activate the win32 backend driver)
+      CACA_DRIVERS="${CACA_DRIVERS} win32"],
+     [AC_MSG_RESULT(no)])])
+  if test "${ac_cv_my_have_win32}" = "no" -a "${enable_win32}" = "yes"; then
+    AC_MSG_ERROR([cannot find win32 console development files])
   fi
 fi
 

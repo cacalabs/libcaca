@@ -140,6 +140,9 @@ int caca_init(void)
         newmask = REPORT_MOUSE_POSITION | ALL_MOUSE_EVENTS;
         mousemask(newmask, &oldmask);
         mouseinterval(-1); /* No click emulation */
+
+        /* Set the escape delay to a ridiculously low value */
+        ESCDELAY = 10;
     }
     else
 #endif

@@ -193,3 +193,5 @@ $Id$
    o  MS-DOS: all bright colours, bright backgrounds, and bright combinations
       work using <conio.h>. No need to kludge anything.
 
+   o  Win32: we use GetConsoleScreenBufferInfo etc.
+

@@ -11,9 +11,11 @@ Building libcaca
 
      --disable-imlib2: remove Imlib2 support in cacaview
 
-   o  Cross-compilation example:
+   o  Cross-compilation examples:
  
      ./configure --disable-imlib2 --host=i386-pc-msdosdjgpp
+
+     ./configure --disable-imlib2 --host=i586-mingw32msvc
 
 
 Using libcaca

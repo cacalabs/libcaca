@@ -48,6 +48,13 @@ enum caca_driver
     CACA_DRIVER_NONE = 0
 };
 
+/* Timer structure */
+#define CACA_TIMER_INITIALIZER { 0, 0 }
+struct caca_timer
+{
+    int last_sec, last_usec;
+};
+
 extern enum caca_driver _caca_driver;
 
 /* Initialisation functions */
@@ -55,6 +62,9 @@ extern int _caca_init_graphics(void);
 extern int _caca_end_graphics(void);
 extern int _caca_init_bitmap(void);
 extern int _caca_end_bitmap(void);
+
+/* Timer functions */
+extern unsigned int _caca_getticks(struct caca_timer *);
 
 /* Cached screen size */
 extern unsigned int _caca_width;
