@@ -20,5 +20,5 @@ bin_PROGRAMS = demo
 demo_SOURCES = demo.c
 
 demo_CPPFLAGS = -I../libee $(CPPFLAGS_slang) $(CPPFLAGS_ncurses)
-demo_LDADD = ../libee/libee.a $(LDFLAGS_slang) $(LDFLAGS_ncurses)
+demo_LDADD = ../libee/libee.a $(LDFLAGS_slang) $(LDFLAGS_ncurses) -lm
 

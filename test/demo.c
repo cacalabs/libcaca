@@ -20,6 +20,8 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include "config.h"
+
 #include <math.h>
 #include <string.h>
 
@@ -31,6 +33,7 @@ static void demo_dots(void);
 static void demo_lines(void);
 static void demo_thin_lines(void);
 static void demo_circles(void);
+static void demo_triangle(void);
 static void demo_radar(void);
 
 int clipping = 0;
@@ -82,6 +85,10 @@ int main(int argc, char **argv)
                 break;
             case '5':
                 ee_clear();
+                demo = demo_triangle;
+                break;
+            case '6':
+                ee_clear();
                 demo = demo_radar;
                 break;
             }
@@ -123,7 +130,9 @@ static void display_menu(void)
     ee_goto(4, 9);
     ee_putstr("4: circles demo");
     ee_goto(4, 10);
-    ee_putstr("5: radar demo");
+    ee_putstr("5: triangle demo");
+    ee_goto(4, 11);
+    ee_putstr("6: radar demo");
 
     ee_goto(4, yo - 2);
     ee_putstr("q: quit");
@@ -216,6 +225,52 @@ static void demo_circles(void)
         ee_color(ee_rand(1, 10));
         ee_draw_circle(x, y, r, '*');
     }
+
+    ee_refresh();
+}
+
+static void demo_triangle(void)
+{
+    static int i = 0;
+
+    int xo, yo, x1, y1, x2, y2, x3, y3;
+
+    i++;
+
+    xo = ee_get_width() * 5 / 8;
+    yo = 2;
+
+    x1 = ee_get_width() / 8 + sin(0.03*i) * 5;
+    y1 = ee_get_height() / 2 + cos(0.03*i) * 5;
+
+    x2 = ee_get_width() - 10 - cos(0.02*i) * 10;
+    y2 = ee_get_height() - 5 + sin(0.02*i) * 5;
+
+    x3 = ee_get_width() / 4 - sin(0.02*i) * 5;
+    y3 = ee_get_height() + cos(0.02*i) * 5;
+
+    ee_clear();
+
+    ee_color(EE_GREEN);
+    ee_fill_triangle(xo, yo, x2, y2, x1, y1, '%');
+    ee_color(EE_YELLOW);
+    ee_draw_thin_line(xo, yo, x2, y2);
+    ee_draw_thin_line(x2, y2, x1, y1);
+    ee_draw_thin_line(x1, y1, xo, yo);
+
+    ee_color(EE_RED);
+    ee_fill_triangle(x1, y1, x2, y2, x3, y3, '#');
+    ee_color(EE_YELLOW);
+    ee_draw_thin_line(x1, y1, x2, y2);
+    ee_draw_thin_line(x2, y2, x3, y3);
+    ee_draw_thin_line(x3, y3, x1, y1);
+
+    ee_color(EE_BLUE);
+    ee_fill_triangle(xo, yo, x2, y2, x3, y3, '%');
+    ee_color(EE_YELLOW);
+    ee_draw_thin_line(xo, yo, x2, y2);
+    ee_draw_thin_line(x2, y2, x3, y3);
+    ee_draw_thin_line(x3, y3, xo, yo);
 
     ee_refresh();
 }

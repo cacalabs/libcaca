@@ -19,9 +19,10 @@ libee_a_SOURCES = \
 	ee.c \
 	ee.h \
 	io.c \
-	circle.c \
-	line.c \
 	math.c \
+	line.c \
+	circle.c \
+	triangle.c \
 	$(NULL)
 libee_a_CPPFLAGS = $(CPPFLAGS_slang) $(CPPFLAGS_ncurses)
 
