@@ -1,4 +1,4 @@
-dnl Autoconf settings for ttyvaders
+# $Id$
 
 AC_INIT(ttyvaders,0.0cvs-20021223)
 
