@@ -49,8 +49,10 @@
 #   include <X11/Xlib.h>
 #endif
 
-#if defined(HAVE_INTTYPES_H)
+#if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
 #   include <inttypes.h>
+#else
+typedef unsigned char uint8_t;
 #endif
 
 #include <stdio.h> /* BUFSIZ */
@@ -67,8 +69,10 @@
 /*
  * Global variables
  */
+#if !defined(_DOXYGEN_SKIP_ME)
 unsigned int _caca_width = 0;
 unsigned int _caca_height = 0;
+#endif
 
 /*
  * Local variables
@@ -141,7 +145,7 @@ static struct text_info conio_ti;
 static char *conio_screen;
 #endif
 
-#if defined(USE_X11)
+#if defined(USE_X11) && !defined(_DOXYGEN_SKIP_ME)
 Display *x11_dpy;
 Window x11_window;
 int x11_font_width, x11_font_height;
@@ -478,6 +482,7 @@ void caca_clear(void)
     caca_set_color(oldfg, oldbg);
 }
 
+#if !defined(_DOXYGEN_SKIP_ME)
 int _caca_init_graphics(void)
 {
 #if defined(USE_SLANG)
@@ -776,6 +781,7 @@ int _caca_end_graphics(void)
 
     return 0;
 }
+#endif /* _DOXYGEN_SKIP_ME */
 
 /** \brief Set the refresh delay.
  *
@@ -850,7 +856,9 @@ static unsigned int _caca_getticks(void)
  */
 void caca_refresh(void)
 {
+#if !defined(_DOXYGEN_SKIP_ME)
 #define IDLE_USEC 10000
+#endif
     static int lastticks = 0;
     int ticks = lastticks + _caca_getticks();
 

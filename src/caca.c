@@ -59,7 +59,9 @@ static void caca_init_driver(void);
 static void caca_init_features(void);
 static void caca_init_terminal(void);
 
+#if !defined(_DOXYGEN_SKIP_ME)
 enum caca_driver _caca_driver;
+#endif
 
 #if defined(USE_NCURSES)
 static mmask_t oldmask;
@@ -229,7 +231,7 @@ char const *caca_get_color_name(enum caca_color color)
  *  generic feature value is expected, such as CACA_ANTIALIASING.
  *
  *  \param feature The requested feature.
- *  \return The current value of the feature or CACA_UNKNOWN_FEATURE if an
+ *  \return The current value of the feature or CACA_FEATURE_UNKNOWN if an
  *          error occurred..
  */
 enum caca_feature caca_get_feature(enum caca_feature feature)
@@ -244,7 +246,7 @@ enum caca_feature caca_get_feature(enum caca_feature feature)
             return _caca_dithering;
 
         default:
-            return CACA_UNKNOWN_FEATURE;
+            return CACA_FEATURE_UNKNOWN;
     }
 }
 
@@ -285,7 +287,7 @@ void caca_set_feature(enum caca_feature feature)
             _caca_dithering = feature;
             break;
 
-        case CACA_UNKNOWN_FEATURE:
+        case CACA_FEATURE_UNKNOWN:
             break;
     }
 }

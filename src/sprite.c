@@ -36,6 +36,7 @@
 #include "caca.h"
 #include "caca_internals.h"
 
+#if !defined(_DOXYGEN_SKIP_ME)
 struct caca_frame
 {
     int w, h;
@@ -49,6 +50,7 @@ struct caca_sprite
     int nf;
     struct caca_frame *frames;
 };
+#endif
 
 /**
  * \brief Allocate a sprite loaded from a file.

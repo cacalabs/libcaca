@@ -32,9 +32,8 @@ Description: text mode graphics utilities
  ASCII art. The user can zoom and scroll the image, set the dithering method
  or enable anti-aliasing.
  .
- cacafire is a port of AALib's aafire and displays burning ASCII art flames.
- .
- cacademo is a simple application that shows the libcaca rendering features
- such as line and ellipses drawing, triangle filling, and sprite blitting.
- .
- caca-spritedit is a simple sprite viewer for libcaca.
+ cacaball is a tiny graphic program that renders animated ASCII metaballs on
+ the screen, cacafire is a port of AALib's aafire and displays burning ASCII
+ art flames, cacademo is a simple application that shows the libcaca rendering
+ features such as line and ellipses drawing, triangle filling and sprite
+ blitting, and caca-spritedit is a simple sprite viewer for libcaca.

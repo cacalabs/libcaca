@@ -47,12 +47,11 @@ formats such as JPEG, PNG, GIF etc. and renders them on the terminal using
 ASCII art. The user can zoom and scroll the image, set the dithering method
 or enable anti-aliasing.
 
-cacafire is a port of AALib's aafire and displays burning ASCII art flames.
-
-cacademo is a simple application that shows the libcaca rendering features
-such as line and ellipses drawing, triangle filling, and sprite blitting.
-
-caca-spritedit is a simple sprite viewer for libcaca.
+cacaball is a tiny graphic program that renders animated ASCII metaballs on
+the screen, cacafire is a port of AALib's aafire and displays burning ASCII
+art flames, cacademo is a simple application that shows the libcaca rendering
+features such as line and ellipses drawing, triangle filling and sprite
+blitting, and caca-spritedit is a simple sprite viewer for libcaca.
 
 %prep
 case "${RPM_COMMAND:-all}" in
@@ -93,12 +92,14 @@ rm -rf %{buildroot}
 
 %files -n caca-utils
 %defattr(-,root,root)
+%{_prefix}/bin/cacaball
 %{_prefix}/bin/cacademo
 %{_prefix}/bin/cacafire
 %{_prefix}/bin/cacaview
 %{_prefix}/bin/caca-spritedit
 %{_prefix}/share/doc/caca-utils-%{version}/*
 %{_prefix}/share/libcaca/*
+%{_prefix}/share/man/man1/cacaball.1*
 %{_prefix}/share/man/man1/cacademo.1*
 %{_prefix}/share/man/man1/cacafire.1*
 %{_prefix}/share/man/man1/cacaview.1*

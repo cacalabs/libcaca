@@ -30,7 +30,7 @@
 
 #include "config.h"
 
-#if defined(HAVE_INTTYPES_H)
+#if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
 #   include <inttypes.h>
 #else
 typedef unsigned char uint8_t;
@@ -41,6 +41,7 @@ typedef unsigned char uint8_t;
 #include "caca.h"
 #include "caca_internals.h"
 
+#if !defined(_DOXYGEN_SKIP_ME)
 struct line
 {
     int x1, y1;
@@ -48,6 +49,7 @@ struct line
     char c;
     void (*draw) (struct line*);
 };
+#endif
 
 static void clip_line(struct line*);
 static uint8_t clip_bits(int, int);

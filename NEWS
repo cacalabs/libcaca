@@ -1,5 +1,10 @@
 $Id$
 
+Changes between 0.6 and 0.7:
+----------------------------
+
+  * cacaball, a metaball animation example
+
 Changes between 0.5 and 0.6:
 ----------------------------
 
@@ -43,7 +48,6 @@ Changes between 0.1 and 0.2:
   * ncurses is now the preferred backend
   * arbitrary color depth and bitmasks in the bitmap renderer
   * cacaview, an image viewer based on libcaca
-
 
 New in 0.1
 ----------

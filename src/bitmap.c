@@ -29,7 +29,7 @@
 
 #include "config.h"
 
-#if defined(HAVE_INTTYPES_H)
+#if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
 #   include <inttypes.h>
 #else
 typedef unsigned char uint8_t;
@@ -49,16 +49,20 @@ typedef unsigned int uint32_t;
 /*
  * Global variables
  */
+#if !defined(_DOXYGEN_SKIP_ME)
 enum caca_feature _caca_background;
 enum caca_feature _caca_dithering;
 enum caca_feature _caca_antialiasing;
+#endif
 
 /*
  * Local variables
  */
-#define LOOKUP_VAL 32
-#define LOOKUP_SAT 32
-#define LOOKUP_HUE 16
+#if !defined(_DOXYGEN_SKIP_ME)
+#   define LOOKUP_VAL 32
+#   define LOOKUP_SAT 32
+#   define LOOKUP_HUE 16
+#endif
 static unsigned char hsv_distances[LOOKUP_VAL][LOOKUP_SAT][LOOKUP_HUE];
 static enum caca_color lookup_colors[8];
 
@@ -75,6 +79,7 @@ static int const hsv_palette[] =
     2,    0x0,    0xfff,  0xfff  /* light red */
 };
 
+#if !defined(_DOXYGEN_SKIP_ME)
 #define HSV_XRATIO 6
 #define HSV_YRATIO 3
 #define HSV_HRATIO 3
@@ -91,6 +96,7 @@ static int const hsv_palette[] =
            ? (HSV_HRATIO * ((h) - hsv_palette[index * 4 + 1]) \
                          * ((h) - hsv_palette[index * 4 + 1])) \
            : 0)))
+#endif
 
 /*
  * Local prototypes
@@ -123,6 +129,7 @@ static void init_random_dither(int);
 static unsigned int get_random_dither(void);
 static void increment_random_dither(void);
 
+#if !defined(_DOXYGEN_SKIP_ME)
 struct caca_bitmap
 {
     int bpp, has_palette, has_alpha;
@@ -133,6 +140,7 @@ struct caca_bitmap
     void (*get_hsv)(struct caca_bitmap *, char *, int, int);
     int red[256], green[256], blue[256], alpha[256];
 };
+#endif
 
 static void mask2shift(unsigned int mask, int *right, int *left)
 {
@@ -229,12 +237,11 @@ struct caca_bitmap *caca_create_bitmap(unsigned int bpp, unsigned int w,
 /**
  * \brief Set the palette of an 8bpp bitmap object.
  *
- * \param bpp The bitmap object.
+ * \param bitmap The bitmap object.
  * \param red An array of 256 red values.
  * \param green An array of 256 green values.
  * \param blue An array of 256 blue values.
  * \param alpha An array of 256 alpha values.
- * \return void
  */
 void caca_set_bitmap_palette(struct caca_bitmap *bitmap,
                              unsigned int red[], unsigned int green[],
@@ -418,7 +425,9 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
     };
 
     /* FIXME: choose better characters! */
-#   define DENSITY_CHARS 13
+#if !defined(_DOXYGEN_SKIP_ME)
+#   define DENSITY_CHARS ((sizeof(density_chars)/sizeof(char const))-1)
+#endif
     static char const density_chars[] =
         "    "
         ".   "
@@ -605,6 +614,7 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
     }
 }
 
+#if !defined(_DOXYGEN_SKIP_ME)
 int _caca_init_bitmap(void)
 {
     unsigned int v, s, h;
@@ -667,6 +677,7 @@ int _caca_end_bitmap(void)
 {
     return 0;
 }
+#endif /* _DOXYGEN_SKIP_ME */
 
 /*
  * XXX: The following functions are local.

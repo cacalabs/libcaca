@@ -42,12 +42,15 @@ install: build
 
 	DESTDIR=`pwd`/debian/libcaca-dev/ $(MAKE) install prefix=/usr
 
+	mv debian/libcaca-dev/usr/bin/cacaball debian/caca-utils/usr/bin
 	mv debian/libcaca-dev/usr/bin/cacademo debian/caca-utils/usr/bin
 	mv debian/libcaca-dev/usr/bin/cacaview debian/caca-utils/usr/bin
 	mv debian/libcaca-dev/usr/bin/cacafire debian/caca-utils/usr/bin
 	mv debian/libcaca-dev/usr/bin/caca-spritedit debian/caca-utils/usr/bin
 
 	mv debian/libcaca-dev/usr/share/libcaca debian/caca-utils/usr/share
+	mv debian/libcaca-dev/usr/share/man/man1/cacaball.1 \
+	   debian/caca-utils/usr/share/man/man1/
 	mv debian/libcaca-dev/usr/share/man/man1/cacademo.1 \
 	   debian/caca-utils/usr/share/man/man1/
 	mv debian/libcaca-dev/usr/share/man/man1/cacafire.1 \

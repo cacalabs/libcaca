@@ -47,5 +47,7 @@ if DOXYGEN
 	$(mkinstalldirs) $(DESTDIR)$(mandir)/man1
 	rm -f $(DESTDIR)$(mandir)/man1/cacafire.1
 	ln -s cacademo.1 $(DESTDIR)$(mandir)/man1/cacafire.1
+	rm -f $(DESTDIR)$(mandir)/man1/cacaball.1
+	ln -s cacademo.1 $(DESTDIR)$(mandir)/man1/cacaball.1
 endif
 

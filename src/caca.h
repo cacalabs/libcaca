@@ -154,13 +154,13 @@ enum caca_feature
 #define CACA_DITHERING_MIN    0x31 /**< First dithering feature. */
 #define CACA_DITHERING_MAX    0x35 /**< Last dithering feature. */
 
-    CACA_UNKNOWN_FEATURE = 0xffff /**< Unknown feature. */
+    CACA_FEATURE_UNKNOWN = 0xffff /**< Unknown feature. */
 };
 
 /*
  * Backwards compatibility macros
  */
-#ifndef _DOXYGEN_SKIP_ME
+#if !defined(_DOXYGEN_SKIP_ME)
 #define caca_dithering caca_feature
 #define caca_set_dithering caca_set_feature
 #define caca_get_dithering_name caca_get_feature_name

@@ -58,7 +58,9 @@ static void _push_key(unsigned int);
 static unsigned int _pop_key(void);
 static unsigned int _read_key(void);
 
+#if !defined(_DOXYGEN_SKIP_ME)
 #define KEY_BUFLEN 10
+#endif
 static unsigned int keybuf[KEY_BUFLEN + 1]; /* zero-terminated */
 static int keys = 0;
 
