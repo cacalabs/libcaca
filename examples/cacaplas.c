@@ -50,7 +50,7 @@ int main (int argc, char **argv)
     int red[256], green[256], blue[256], alpha[256];
     double r[3], R[6];
     struct caca_bitmap *bitmap;
-    int i, x, y, frame;
+    int i, x, y, frame = 0, pause = 0;
 
     if(caca_init() < 0)
         return 1;
@@ -81,8 +81,14 @@ int main (int argc, char **argv)
     bitmap = caca_create_bitmap(8, XSIZ, YSIZ, XSIZ, 0, 0, 0, 0);
 
     /* Main loop */
-    for(frame = 0; !caca_get_event(CACA_EVENT_KEY_PRESS); frame++)
+    for(;;) 
     {
+        switch(caca_get_event(CACA_EVENT_KEY_PRESS))
+        {
+            case CACA_EVENT_KEY_PRESS | CACA_KEY_ESCAPE: goto end;
+            case CACA_EVENT_KEY_PRESS | ' ': pause = !pause;
+        }
+
         for(i = 0 ; i < 256; i++)
         {
             double z = ((double)i) / 256 * 6 * M_PI;
@@ -95,19 +101,24 @@ int main (int argc, char **argv)
         /* Set the palette */
         caca_set_bitmap_palette(bitmap, red, green, blue, alpha);
 
-        do_plasma(screen,
-                  (1.0 + sin(((double)frame) * R[0])) / 2,
-                  (1.0 + sin(((double)frame) * R[1])) / 2,
-                  (1.0 + sin(((double)frame) * R[2])) / 2,
-                  (1.0 + sin(((double)frame) * R[3])) / 2,
-                  (1.0 + sin(((double)frame) * R[4])) / 2,
-                  (1.0 + sin(((double)frame) * R[5])) / 2);
+        if(!pause)
+        {
+            do_plasma(screen,
+                      (1.0 + sin(((double)frame) * R[0])) / 2,
+                      (1.0 + sin(((double)frame) * R[1])) / 2,
+                      (1.0 + sin(((double)frame) * R[2])) / 2,
+                      (1.0 + sin(((double)frame) * R[3])) / 2,
+                      (1.0 + sin(((double)frame) * R[4])) / 2,
+                      (1.0 + sin(((double)frame) * R[5])) / 2);
+            frame++;
+        }
 
         caca_draw_bitmap(0, 0, caca_get_width() - 1, caca_get_height() - 1,
                          bitmap, screen);
         caca_refresh();
     }
 
+end:
     caca_free_bitmap(bitmap);
     caca_end();
 
