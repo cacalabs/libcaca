@@ -232,7 +232,7 @@ game (void)
   int event;
   gentable ();
 #ifdef LIBCACA
-  while (!(event = caca_get_event()))
+  while (!(event = caca_get_event() & CACA_EVENT_KEY_PRESS))
 #else
   while (!(event = aa_getevent (context, 0)) || event == AA_RESIZE)
 #endif
