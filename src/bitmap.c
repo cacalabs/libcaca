@@ -456,7 +456,7 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
         "####"
         "????";
 
-    int x, y, w, h, pitch;
+    int x, y, w, h, pitch, deltax, deltay;
 
     if(!bitmap || !pixels)
         return;
@@ -474,6 +474,9 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
     {
         int tmp = y2; y2 = y1; y1 = tmp;
     }
+
+    deltax = x2 - x1 + 1;
+    deltay = y2 - y1 + 1;
 
     switch(_caca_dithering)
     {
@@ -529,14 +532,19 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
         /* First get RGB */
         if(_caca_antialiasing == CACA_ANTIALIASING_PREFILTER)
         {
-            fromx = ((x - x1) * (w - 1)) / (x2 - x1 + 1);
-            fromy = ((y - y1) * (h - 1)) / (y2 - y1 + 1);
-            tox = ((x - x1 + 1) * (w - 1)) / (x2 - x1 + 1);
-            toy = ((y - y1 + 1) * (h - 1)) / (y2 - y1 + 1);
+            fromx = (x - x1) * w / deltax;
+            fromy = (y - y1) * h / deltay;
+            tox = (x - x1 + 1) * w / deltax;
+            toy = (y - y1 + 1) * h / deltay;
+
+            /* We want at least one pixel */
+            if(tox == fromx) tox++;
+            if(toy == fromy) toy++;
+
             dots = 0;
 
-            for(myx = fromx; myx <= tox; myx++)
-                for(myy = fromy; myy <= toy; myy++)
+            for(myx = fromx; myx < tox; myx++)
+                for(myy = fromy; myy < toy; myy++)
             {
                 dots++;
                 get_rgba_default(bitmap, pixels, myx, myy, &r, &g, &b, &a);
@@ -550,11 +558,14 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
         }
         else
         {
-            fromx = ((x - x1) * (w - 1)) / (x2 - x1 + 1);
-            fromy = ((y - y1) * (h - 1)) / (y2 - y1 + 1);
-            tox = ((x - x1 + 1) * (w - 1)) / (x2 - x1 + 1);
-            toy = ((y - y1 + 1) * (h - 1)) / (y2 - y1 + 1);
+            fromx = (x - x1) * w / deltax;
+            fromy = (y - y1) * h / deltay;
+            tox = (x - x1 + 1) * w / deltax;
+            toy = (y - y1 + 1) * h / deltay;
 
+            /* tox and toy can overflow the screen, but they cannot overflow
+             * when averaged with fromx and fromy because these are guaranteed
+             * to be within the pixel boundaries. */
             myx = (fromx + tox) / 2;
             myy = (fromy + toy) / 2;
 

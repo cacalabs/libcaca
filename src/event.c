@@ -143,6 +143,9 @@ unsigned int caca_wait_event(unsigned int event_mask)
  */
 unsigned int caca_get_mouse_x(void)
 {
+    if(mouse_x >= _caca_width)
+        mouse_x = _caca_width - 1;
+
     return mouse_x;
 }
 
@@ -157,6 +160,9 @@ unsigned int caca_get_mouse_x(void)
  */
 unsigned int caca_get_mouse_y(void)
 {
+    if(mouse_y >= _caca_height)
+        mouse_y = _caca_height - 1;
+
     return mouse_y;
 }
 
