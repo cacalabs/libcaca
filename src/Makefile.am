@@ -8,11 +8,9 @@ AM_CFLAGS = -g -O2 -fno-strength-reduce -fomit-frame-pointer
 AM_CFLAGS += -Wall -Wpointer-arith -Wcast-align -Wcast-qual -Wstrict-prototypes -Wshadow -Waggregate-return -Wmissing-prototypes -Wnested-externs
 
 if USE_SLANG
-CPPFLAGS_slang = -DUSE_SLANG
 LDFLAGS_slang = -lslang
 endif
 if USE_NCURSES
-CPPFLAGS_ncurses = -DUSE_NCURSES
 LDFLAGS_ncurses = -lncurses
 endif
 
@@ -34,6 +32,6 @@ ttyvaders_SOURCES = \
 	weapons.c \
 	$(NULL)
 
-ttyvaders_CPPFLAGS = -I../libee $(CPPFLAGS_slang) $(CPPFLAGS_ncurses)
+ttyvaders_CPPFLAGS = -I../libee
 ttyvaders_LDADD = ../libee/libee.a $(LDFLAGS_slang) $(LDFLAGS_ncurses)
 

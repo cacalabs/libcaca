@@ -21,20 +21,16 @@ AC_ARG_ENABLE(ncurses,
 
 USE_SLANG=false
 USE_NCURSES=false
-if test "${enable_ncurses}" = "yes"
-then
+if test "${enable_ncurses}" = "yes"; then
   AC_CHECK_HEADER(ncurses.h,:,AC_MSG_ERROR([cannot find ncurses headers]))
   AC_CHECK_LIB(ncurses,initscr,:,AC_MSG_ERROR([cannot find ncurses library]))
+  AC_DEFINE(USE_NCURSES, 1, Define if the backend driver is ncurses)
   USE_NCURSES=:
-else
-  if test "${enable_slang}" != "no"
-  then
-    AC_CHECK_HEADER(slang.h,:,AC_MSG_ERROR([cannot find slang headers]))
-    AC_CHECK_LIB(slang,SLkp_init,:,AC_MSG_ERROR([cannot find slang library]))
-    USE_SLANG=:
-  else
-    :
-  fi
+elif test "${enable_slang}" != "no"; then
+  AC_CHECK_HEADER(slang.h,:,AC_MSG_ERROR([cannot find slang headers]))
+  AC_CHECK_LIB(slang,SLkp_init,:,AC_MSG_ERROR([cannot find slang library]))
+  AC_DEFINE(USE_SLANG, 1, Define if the backend driver is slang)
+  USE_SLANG=:
 fi
 
 AM_CONDITIONAL(USE_SLANG, ${USE_SLANG})
