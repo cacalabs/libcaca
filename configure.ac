@@ -3,7 +3,7 @@
 AC_INIT(libcaca,0.0cvs-20031110)
 
 AC_PREREQ(2.50)
-AC_CONFIG_SRCDIR(src/main.c)
+AC_CONFIG_SRCDIR(src/caca.c)
 AC_CONFIG_AUX_DIR(autotools)
 AC_CANONICAL_SYSTEM
 
@@ -60,8 +60,8 @@ CFLAGS="${CFLAGS} -Wall -Wpointer-arith -Wcast-align -Wcast-qual -Wstrict-protot
 
 AC_OUTPUT([
   Makefile
-  libcaca/Makefile
-  test/Makefile
+  src/Makefile
+  examples/Makefile
   autotools/Makefile
   debian/Makefile
 ])

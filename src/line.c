@@ -195,12 +195,12 @@ static uint8_t clip_bits(int x, int y)
 
     if(x < 0)
         b |= (1<<0);
-    else if(x >= caca_get_width())
+    else if(x >= (int)caca_get_width())
         b |= (1<<1);
 
     if(y < 0)
         b |= (1<<2);
-    else if(y >= caca_get_height())
+    else if(y >= (int)caca_get_height())
         b |= (1<<3);
 
     return b;

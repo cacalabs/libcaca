@@ -2,7 +2,7 @@
 # Automake targets and declarations for libcaca
 ###############################################################################
 
-SUBDIRS = libcaca test
+SUBDIRS = src examples
 DIST_SUBDIRS = $(SUBDIRS) autotools debian
 
 EXTRA_DIST = BUGS bootstrap
