@@ -44,11 +44,15 @@
 #define STATUS_ANTIALIASING 2
 #define STATUS_BACKGROUND 3
 
+#define ZOOM_FACTOR 1.08f
+#define ZOOM_MAX 50
+#define PAD_STEP 0.15
+
 /* Local functions */
+static void set_zoom(int);
 static void load_image(char const *);
 static void unload_image(void);
-static void draw_checkers(unsigned int, unsigned int,
-                          unsigned int, unsigned int);
+static void draw_checkers(int, int, int, int);
 #if !defined(HAVE_IMLIB2_H)
 static int freadint(FILE *);
 static int freadshort(FILE *);
@@ -61,16 +65,19 @@ Imlib_Image image = NULL;
 #endif
 char *pixels = NULL;
 struct caca_bitmap *bitmap = NULL;
-int x, y;
 unsigned int w, h, depth, bpp, rmask, gmask, bmask, amask;
 #if !defined(HAVE_IMLIB2_H)
 unsigned int red[256], green[256], blue[256], alpha[256];
 #endif
 
+float zoomtab[ZOOM_MAX + 1];
+float xfactor = 1.0, yfactor = 1.0, dx = 0.5, dy = 0.5;
+int zoom = 0, fullscreen = 0, ww, wh;
+
 int main(int argc, char **argv)
 {
-    int quit = 0, update = 1, help = 0, fullscreen = 0, status = 0;
-    int reload = 0, zoom = 0;
+    int quit = 0, update = 1, help = 0, status = 0;
+    int reload = 0;
 
     char **list = NULL;
     int current = 0, items = 0, opts = 1;
@@ -85,6 +92,14 @@ int main(int argc, char **argv)
 
     /* Set the window title */
     caca_set_window_title("cacaview");
+
+    ww = caca_get_width();
+    wh = caca_get_height();
+
+    /* Fill the zoom table */
+    zoomtab[0] = 1.0;
+    for(i = 0; i < ZOOM_MAX; i++)
+        zoomtab[i + 1] = zoomtab[i] * 1.08;
 
     /* Load items into playlist */
     for(i = 1; i < argc; i++)
@@ -111,22 +126,32 @@ int main(int argc, char **argv)
     /* Go ! */
     while(!quit)
     {
-        int ww, wh;
+        unsigned int const event_mask = CACA_EVENT_KEY_PRESS
+                                      | CACA_EVENT_RESIZE
+                                      | CACA_EVENT_MOUSE_PRESS;
         unsigned int event, new_status = 0, new_help = 0;
 
-        ww = caca_get_width();
-        wh = caca_get_height();
-
         if(update)
-            event = caca_get_event(CACA_EVENT_KEY_PRESS | CACA_EVENT_RESIZE);
+            event = caca_get_event(event_mask);
         else
-            event = caca_wait_event(CACA_EVENT_KEY_PRESS | CACA_EVENT_RESIZE);
+            event = caca_wait_event(event_mask);
 
         while(event)
         {
-            unsigned int key = event & 0x00ffffff;
-
-            if(key) switch(key)
+            if(event & CACA_EVENT_MOUSE_PRESS)
+            {
+                if((event & 0x00ffffff) == 1)
+                {
+                    if(items) current = (current + 1) % items;
+                    reload = 1;
+                }
+                else if((event & 0x00ffffff) == 2)
+                {
+                    if(items) current = (items + current - 1) % items;
+                    reload = 1;
+                }
+            }
+            else if(event & CACA_EVENT_KEY_PRESS) switch(event & 0x00ffffff)
             {
             case 'n':
             case 'N':
@@ -142,6 +167,7 @@ int main(int argc, char **argv)
             case 'F':
                 fullscreen = ~fullscreen;
                 update = 1;
+                set_zoom(zoom);
                 break;
             case 'b':
                 i = 1 + caca_get_feature(CACA_BACKGROUND);
@@ -186,40 +212,44 @@ int main(int argc, char **argv)
                 update = 1;
                 break;
             case '+':
-                zoom++;
-                if(zoom > 48) zoom = 48; else update = 1;
+                update = 1;
+                set_zoom(zoom + 1);
                 break;
             case '-':
-                zoom--;
-                if(zoom < -48) zoom = -48; else update = 1;
+                update = 1;
+                set_zoom(zoom - 1);
                 break;
             case 'x':
             case 'X':
-                zoom = 0;
                 update = 1;
+                set_zoom(0);
                 break;
             case 'k':
             case 'K':
             case CACA_KEY_UP:
-                if(zoom > 0) y -= 1 + h / (2 + zoom) / 8;
+                if(yfactor > 1.0) dy -= PAD_STEP / yfactor;
+                if(dy < 0.0) dy = 0.0;
                 update = 1;
                 break;
             case 'j':
             case 'J':
             case CACA_KEY_DOWN:
-                if(zoom > 0) y += 1 + h / (2 + zoom) / 8;
+                if(yfactor > 1.0) dy += PAD_STEP / yfactor;
+                if(dy > 1.0) dy = 1.0;
                 update = 1;
                 break;
             case 'h':
             case 'H':
             case CACA_KEY_LEFT:
-                if(zoom > 0) x -= 1 + w / (2 + zoom) / 8;
+                if(xfactor > 1.0) dx -= PAD_STEP / xfactor;
+                if(dx < 0.0) dx = 0.0;
                 update = 1;
                 break;
             case 'l':
             case 'L':
             case CACA_KEY_RIGHT:
-                if(zoom > 0) x += 1 + w / (2 + zoom) / 8;
+                if(xfactor > 1.0) dx += PAD_STEP / xfactor;
+                if(dx > 1.0) dx = 1.0;
                 update = 1;
                 break;
             case '?':
@@ -231,13 +261,13 @@ int main(int argc, char **argv)
                 quit = 1;
                 break;
             }
-
-            if(event == CACA_EVENT_RESIZE)
+            else if(event == CACA_EVENT_RESIZE)
             {
                 caca_refresh();
                 ww = caca_get_width();
                 wh = caca_get_height();
                 update = 1;
+                set_zoom(zoom);
             }
 
             if(status || new_status)
@@ -259,9 +289,6 @@ int main(int argc, char **argv)
 
             buffer = malloc(len);
 
-            /* Reset image-specific runtime variables */
-            zoom = 0;
-
             sprintf(buffer, " Loading `%s'... ", list[current]);
             buffer[ww] = '\0';
             caca_set_color(CACA_COLOR_WHITE, CACA_COLOR_BLUE);
@@ -273,7 +300,11 @@ int main(int argc, char **argv)
             unload_image();
             load_image(list[current]);
             reload = 0;
+
+            /* Reset image-specific runtime variables */
+            dx = dy = 0.5;
             update = 1;
+            set_zoom(0);
 
             free(buffer);
         }
@@ -306,45 +337,26 @@ int main(int argc, char **argv)
             caca_putstr((ww - strlen(buffer)) / 2, wh / 2, buffer);
             free(buffer);
         }
-        else if(zoom < 0)
-        {
-            int xo = (ww - 1) / 2;
-            int yo = (wh - 1) / 2;
-            int xn = (ww - 1) / (2 - zoom);
-            int yn = (wh - 1) / (2 - zoom);
-            draw_checkers(xo - xn, yo - yn, xo + xn, yo + yn);
-            caca_draw_bitmap(xo - xn, yo - yn, xo + xn, yo + yn,
-                             bitmap, pixels);
-        }
-        else if(zoom > 0)
-        {
-            struct caca_bitmap *newbitmap;
-            int xn = w / (2 + zoom);
-            int yn = h / (2 + zoom);
-            if(x < xn) x = xn;
-            if(y < yn) y = yn;
-            if(xn + x > (int)w) x = w - xn;
-            if(yn + y > (int)h) y = h - yn;
-            newbitmap = caca_create_bitmap(bpp, 2 * xn, 2 * yn, depth * w,
-                                           rmask, gmask, bmask, amask);
-#if !defined(HAVE_IMLIB2_H)
-            if(bpp == 8)
-                caca_set_bitmap_palette(newbitmap, red, green, blue, alpha);
-#endif
-            draw_checkers(0, fullscreen ? 0 : 1,
-                          ww - 1, fullscreen ? wh - 1 : wh - 3);
-            caca_draw_bitmap(0, fullscreen ? 0 : 1,
-                             ww - 1, fullscreen ? wh - 1 : wh - 3,
-                             newbitmap,
-                             pixels + depth * (x - xn) + depth * w * (y - yn));
-            caca_free_bitmap(newbitmap);
-        }
         else
         {
-            draw_checkers(0, fullscreen ? 0 : 1,
-                          ww - 1, fullscreen ? wh - 1 : wh - 3);
-            caca_draw_bitmap(0, fullscreen ? 0 : 1,
-                             ww - 1, fullscreen ? wh - 1 : wh - 3,
+            float xdelta, ydelta;
+            int y, height;
+
+            y = fullscreen ? 0 : 1;
+            height = fullscreen ? wh : wh - 3;
+
+            xdelta = (xfactor > 1.0) ? dx : 0.5;
+            ydelta = (yfactor > 1.0) ? dy : 0.5;
+
+            draw_checkers(ww * (1.0 - xfactor) / 2,
+                          y + height * (1.0 - yfactor) / 2,
+                          ww * (1.0 + xfactor) / 2,
+                          y + height * (1.0 + yfactor) / 2);
+
+            caca_draw_bitmap(ww * (1.0 - xfactor) * xdelta,
+                             y + height * (1.0 - yfactor) * ydelta,
+                             ww * (xdelta + (1.0 - xdelta) * xfactor),
+                             y + height * (ydelta + (1.0 - ydelta) * yfactor),
                              bitmap, pixels);
         }
 
@@ -406,6 +418,31 @@ int main(int argc, char **argv)
     caca_end();
 
     return 0;
+}
+
+static void set_zoom(int new_zoom)
+{
+    int height;
+
+    zoom = new_zoom;
+
+    if(zoom > ZOOM_MAX) zoom = ZOOM_MAX;
+    if(zoom < -ZOOM_MAX) zoom = -ZOOM_MAX;
+
+    ww = caca_get_width();
+    height = fullscreen ? wh : wh - 3;
+
+    xfactor = (zoom < 0) ? 1.0 / zoomtab[-zoom] : zoomtab[zoom];
+    yfactor = xfactor * ww / height * h / w
+               * caca_get_height() / caca_get_width()
+               * caca_get_window_width() / caca_get_window_height();
+
+    if(yfactor > xfactor)
+    {
+        float tmp = xfactor;
+        xfactor = tmp * tmp / yfactor;
+        yfactor = tmp;
+    }
 }
 
 static void unload_image(void)
@@ -626,18 +663,17 @@ static void load_image(char const *name)
     if(bpp == 8)
         caca_set_bitmap_palette(bitmap, red, green, blue, alpha);
 #endif
-
-    x = w / 2;
-    y = h / 2;
 }
 
-static void draw_checkers(unsigned int x1, unsigned int y1,
-                          unsigned int x2, unsigned int y2)
+static void draw_checkers(int x1, int y1, int x2, int y2)
 {
-    unsigned int xn, yn;
+    int xn, yn;
 
-    for(yn = y1; yn <= y2; yn++)
-        for(xn = x1; xn <= x2; xn++)
+    if(x2 + 1 > (int)caca_get_width()) x2 = caca_get_width() - 1;
+    if(y2 + 1 > (int)caca_get_height()) y2 = caca_get_height() - 1;
+
+    for(yn = y1 > 0 ? y1 : 0; yn <= y2; yn++)
+        for(xn = x1 > 0 ? x1 : 0; xn <= x2; xn++)
     {
         if((((xn - x1) / 5) ^ ((yn - y1) / 3)) & 1)
             caca_set_color(CACA_COLOR_LIGHTGRAY, CACA_COLOR_DARKGRAY);
