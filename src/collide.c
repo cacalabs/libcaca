@@ -211,7 +211,7 @@ void collide_weapons_aliens( game *g, weapons *wp, aliens *al, explosions *ex )
                     if( x >= al->x[j] && x <= al->x[j] + 4
                          && y >= al->y[j] && y <= al->y[j] + 2 )
                     {
-                        al->life[j]--;
+                        al->life[j] -= wp->type[i] == WEAPON_BOMB ? 5 : 1;
                         if( al->life[j] <= 0 )
                         {
                             al->type[j] = ALIEN_NONE;

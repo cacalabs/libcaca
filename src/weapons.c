@@ -196,7 +196,7 @@ void add_weapon( game *g, weapons *wp, int x, int y, int vx, int vy, int type )
                     wp->y2[i] = y;
                     wp->x3[i] = x;
                     wp->y3[i] = y;
-                    wp->n[i] = 10;
+                    wp->n[i] = 20;
                     break;
                 case WEAPON_BEAM:
                     wp->n[i] = 25;
@@ -228,18 +228,24 @@ static void draw_bomb( int x, int y, int vx, int vy )
                 gfx_putstr( "/`-." );
                 gfx_goto( x-4, y );
                 gfx_putstr( "`-._\\" );
+                gfx_color( WHITE );
+                gfx_goto( x-1, y );
+                gfx_putstr( "_\\" );
                 gfx_goto( x, y+1 );
                 gfx_putchar( '`' );
             }
             else if( vy < -vx/4 )
             {
                 /* 1pi/6 */
-                gfx_goto( x-1, y-1 );
-                gfx_putstr( "_," );
                 gfx_goto( x-4, y );
-                gfx_putstr( ",-' /" );
+                gfx_putstr( ",-' " );
                 gfx_goto( x-4, y+1 );
                 gfx_putstr( "\\,-'" );
+                gfx_color( WHITE );
+                gfx_goto( x-1, y-1 );
+                gfx_putstr( "_," );
+                gfx_goto( x, y );
+                gfx_putchar( '/' );
             }
             else
             {
@@ -247,7 +253,10 @@ static void draw_bomb( int x, int y, int vx, int vy )
                 gfx_goto( x-4, y-1 );
                 gfx_putstr( "____" );
                 gfx_goto( x-5, y );
-                gfx_putstr( "|____>" );
+                gfx_putstr( "|____" );
+                gfx_color( WHITE );
+                gfx_goto( x, y );
+                gfx_putchar( '>' );
             }
         }
         else /* top quarter */
@@ -255,36 +264,43 @@ static void draw_bomb( int x, int y, int vx, int vy )
             if( vx > -vy/4 )
             {
                 /* 2pi/6 */
-                gfx_goto( x-1, y-1 );
-                gfx_putstr( "_," );
                 gfx_goto( x-2, y );
-                gfx_putstr( "/ |" );
+                gfx_putstr( "/ " );
                 gfx_goto( x-3, y+1 );
                 gfx_putstr( "/ /" );
                 gfx_goto( x-3, y+2 );
                 gfx_putstr( "`'" );
+                gfx_color( WHITE );
+                gfx_goto( x-1, y-1 );
+                gfx_putstr( "_," );
+                gfx_goto( x, y );
+                gfx_putchar( '|' );
             }
             else if( vx < vy/4 )
             {
                 /* 4pi/6 */
-                gfx_goto( x, y-1 );
-                gfx_putstr( "._" );
-                gfx_goto( x, y );
-                gfx_putstr( "| \\" );
+                gfx_goto( x+1, y );
+                gfx_putstr( " \\" );
                 gfx_goto( x+1, y+1 );
                 gfx_putstr( "\\ \\" );
                 gfx_goto( x+2, y+2 );
                 gfx_putstr( "`'" );
+                gfx_color( WHITE );
+                gfx_goto( x, y-1 );
+                gfx_putstr( "._" );
+                gfx_goto( x, y );
+                gfx_putchar( '|' );
             }
             else
             {
                 /* 3pi/6 */
-                gfx_goto( x-1, y );
-                gfx_putstr( ",^." );
                 gfx_goto( x-1, y+1 );
                 gfx_putstr( "| |" );
                 gfx_goto( x-1, y+2 );
                 gfx_putstr( "|_|" );
+                gfx_color( WHITE );
+                gfx_goto( x-1, y );
+                gfx_putstr( ",^." );
             }
         }
     }
@@ -300,7 +316,10 @@ static void draw_bomb( int x, int y, int vx, int vy )
                 gfx_goto( x-2, y-1 );
                 gfx_putstr( "\\ \\" );
                 gfx_goto( x-1, y );
-                gfx_putstr( "\\_|" );
+                gfx_putchar( '\\' );
+                gfx_color( WHITE );
+                gfx_goto( x, y );
+                gfx_putstr( "_|" );
             }
             else if( vx < -vy/4 )
             {
@@ -309,6 +328,9 @@ static void draw_bomb( int x, int y, int vx, int vy )
                 gfx_putstr( ",." );
                 gfx_goto( x, y-1 );
                 gfx_putstr( "/ /" );
+                gfx_goto( x+1, y );
+                gfx_putchar( '/' );
+                gfx_color( WHITE );
                 gfx_goto( x-1, y );
                 gfx_putstr( "|_/" );
             }
@@ -321,6 +343,7 @@ static void draw_bomb( int x, int y, int vx, int vy )
                 gfx_putstr( "| |" );
                 gfx_goto( x-1, y-1 );
                 gfx_putstr( "| |" );
+                gfx_color( WHITE );
                 gfx_goto( x-1, y );
                 gfx_putstr( "`v'" );
             }
@@ -332,28 +355,37 @@ static void draw_bomb( int x, int y, int vx, int vy )
                 /* -5pi/6 */
                 gfx_goto( x+1, y-1 );
                 gfx_putstr( ",-'\\" );
-                gfx_goto( x, y );
-                gfx_putstr( "/_,-'" );
+                gfx_goto( x+2, y );
+                gfx_putstr( ",-'" );
                 gfx_goto( x, y+1 );
                 gfx_putchar( '\'' );
+                gfx_color( WHITE );
+                gfx_goto( x, y );
+                gfx_putstr( "/_" );
             }
             else if( vy < vx/4 )
             {
                 /* 5pi/6 */
+                gfx_goto( x+1, y );
+                gfx_putstr( " `-." );
+                gfx_goto( x+1, y+1 );
+                gfx_putstr( "`-./" );
+                gfx_color( WHITE );
                 gfx_goto( x, y-1 );
                 gfx_putstr( "._" );
                 gfx_goto( x, y );
-                gfx_putstr( "\\ `-." );
-                gfx_goto( x+1, y+1 );
-                gfx_putstr( "`-./" );
+                gfx_putchar( '\\' );
             }
             else
             {
                 /* 6pi/6 */
                 gfx_goto( x+1, y-1 );
                 gfx_putstr( "____" );
+                gfx_goto( x+1, y );
+                gfx_putstr( "____|" );
+                gfx_color( WHITE );
                 gfx_goto( x, y );
-                gfx_putstr( "<____|" );
+                gfx_putchar( '<' );
             }
         }
     }
@@ -482,7 +514,7 @@ static void draw_beam( int x, int y, int frame )
             {
                 gfx_color( WHITE );
                 gfx_goto( x-1, y-3-i );
-                gfx_putstr( "####" );
+                gfx_putstr( (i+frame) % 5 ? "####" : "%%%%" );
                 gfx_color( CYAN );
                 gfx_goto( x-2, y-3-i );
                 gfx_putchar( '%' );
