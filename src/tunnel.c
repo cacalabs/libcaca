@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: tunnel.c,v 1.4 2002/12/22 18:44:12 sam Exp $
+ *   $Id: tunnel.c,v 1.5 2002/12/23 09:28:37 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 
 #include "common.h"
 
-static void draw_wall( game *g, int *wall );
+static void draw_wall( game *g, int *wall, int delta );
 
 /* Init tunnel */
 tunnel * create_tunnel( game *g, int w, int h )
@@ -39,12 +39,12 @@ tunnel * create_tunnel( game *g, int w, int h )
 
     if( t->w >= g->w )
     {
-        t->left[0] = -1;
-        t->right[0] = g->w;
+        t->left[0] = -10;
+        t->right[0] = g->w + 10;
         for( i = 0; i < g->h; i++ )
         {
-            t->left[i] = -1;
-            t->right[i] = g->w;
+            t->left[i] = -10;
+            t->right[i] = g->w + 10;
         }
     }
     else
@@ -71,13 +71,13 @@ void free_tunnel( tunnel *t )
 void draw_tunnel( game *g, tunnel *t )
 {
     /* Print tunnel */
-    draw_wall( g, t->left );
-    draw_wall( g, t->right );
+    draw_wall( g, t->left, -2 );
+    draw_wall( g, t->right, -1 );
 }
 
 void update_tunnel( game *g, tunnel *t )
 {
-    static int const delta[] = { -2, -1, 1, 2 };
+    static int const delta[] = { -3, -2, -1, 1, 2, 3 };
     int i,j,k;
 
     /* Slide tunnel one block vertically */
@@ -88,8 +88,8 @@ void update_tunnel( game *g, tunnel *t )
     }
 
     /* Generate new values */
-    i = delta[GET_RAND(0,4)];
-    j = delta[GET_RAND(0,4)];
+    i = delta[GET_RAND(0,6)];
+    j = delta[GET_RAND(0,6)];
 
     /* Check in which direction we need to alter tunnel */
     if( t->right[1] - t->left[1] < t->w )
@@ -121,8 +121,8 @@ void update_tunnel( game *g, tunnel *t )
     }
     else
     {
-        t->left[0] = -1;
-        t->right[0] = g->w;
+        t->left[0] = -10;
+        t->right[0] = g->w + 10;
     }
 
     if( t->w > g->w )
@@ -151,7 +151,7 @@ void update_tunnel( game *g, tunnel *t )
     }
 }
 
-static void draw_wall( game *g, int *wall )
+static void draw_wall( game *g, int *wall, int delta )
 {
     int i;
 
@@ -161,7 +161,7 @@ static void draw_wall( game *g, int *wall )
     {
         char *str;
 
-        if( wall[i] < 0 || wall[i] >= g->w )
+        if( wall[i] < -10 || wall[i] >= g->w + 10 )
         {
             continue;
         }
@@ -177,11 +177,11 @@ static void draw_wall( game *g, int *wall )
 
         if( wall[i] == wall[i+1] + 2 )
         {
-            gfx_goto( wall[i] - 1, i );
+            gfx_goto( wall[i] - 1 + delta, i );
             gfx_putchar( '_' );
         }
 
-        gfx_goto( wall[i], i );
+        gfx_goto( wall[i] + delta, i );
         gfx_putstr( str );
         if( wall[i] == wall[i+1] - 2 ) gfx_putchar( '_' );
     }

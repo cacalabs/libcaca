@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: weapons.c,v 1.11 2002/12/22 23:39:15 sam Exp $
+ *   $Id: weapons.c,v 1.12 2002/12/23 09:28:37 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -198,14 +198,15 @@ void update_weapons( game *g, weapons *wp )
                     int coords[] =
                     {
                         32,  0,   -32,  0,    0,  16,     0, -16,
-                        24, 12,   -24, 12,   24, -12,   -24, -12,
                         28,  8,   -28,  8,   28,  -8,   -28,  -8,
+                        24, 12,   -24, 12,   24, -12,   -24, -12,
                         16, 14,   -16, 14,   16, -14,   -16, -14
                     };
 
                     for( j = 0 ; j < sizeof(coords) / sizeof(int) ; j += 2 )
                     {
-                        add_weapon( g, g->wp, wp->x[i] + coords[j], wp->y[i] + coords[j+1], coords[j], coords[j+1], WEAPON_SEEKER );
+                        add_weapon( g, g->wp, wp->x[i] + coords[j], wp->y[i] + coords[j+1] / 2, coords[j], coords[j+1], WEAPON_SEEKER );
+                        add_weapon( g, g->wp, wp->x[i] + coords[j] / 2, wp->y[i] + coords[j+1], coords[j], coords[j+1], WEAPON_SEEKER );
                     }
 
                     wp->type[i] = WEAPON_NONE;

@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: common.h,v 1.9 2002/12/22 22:36:42 sam Exp $
+ *   $Id: common.h,v 1.10 2002/12/23 09:28:37 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -21,10 +21,10 @@
  */
 
 #define STARS 50
-#define WEAPONS 100
+#define WEAPONS 200
 #define BONUS 30
 #define ALIENS 30
-#define EXPLOSIONS 100
+#define EXPLOSIONS 200
 
 #ifdef USE_SLANG
 #   include <slang.h>
@@ -43,6 +43,8 @@
 #define gfx_putcharTO(x,y,c) do{ gfx_goto(x,y); gfx_putchar(c); }while(0)
 
 #define GET_RAND(p,q) ((p)+(int)((1.0*((q)-(p)))*rand()/(RAND_MAX+1.0)))
+#define GET_MAX(a,b) ((a)>(b)?(a):(b))
+#define GET_MIN(a,b) ((a)<(b)?(a):(b))
 
 typedef struct
 {
@@ -52,11 +54,8 @@ typedef struct
 
 typedef struct
 {
-    int x[STARS];
-    int y[STARS];
-    int z[STARS];
-    char ch[STARS];
-    int c[STARS];
+    int x, y, z, c;
+    char ch;
 
 } starfield;
 
@@ -169,9 +168,10 @@ void draw_bonus( game *g, bonus *bo );
 void update_bonus( game *g, bonus *bo );
 void add_bonus( game *g, bonus *bo, int x, int y, int type );
 
-void init_starfield( game *g, starfield *s );
+starfield * create_starfield( game *g );
 void draw_starfield( game *g, starfield *s );
 void update_starfield( game *g, starfield *s );
+void free_starfield( game *g, starfield *s );
 
 tunnel * create_tunnel( game *g, int w, int h );
 void free_tunnel( tunnel *t );

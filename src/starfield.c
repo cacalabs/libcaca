@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: starfield.c,v 1.4 2002/12/22 18:44:12 sam Exp $
+ *   $Id: starfield.c,v 1.5 2002/12/23 09:28:37 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -24,18 +24,23 @@
 
 #include "common.h"
 
-void init_starfield( game *g, starfield *s )
+starfield * create_starfield( game *g )
 {
     int i;
+    starfield *s;
+
+    s = malloc( STARS * sizeof(starfield) );
 
     for( i = 0; i < STARS; i++ )
     {
-        s->x[i] = rand() % g->w;
-        s->y[i] = rand() % g->h;
-        s->z[i] = 1 + rand() % 3;
-        s->ch[i] = (rand() % 2) ? '.' : '\'';
-        s->c[i] = 6 + rand() % 2;
+        s[i].x = GET_RAND( 0, g->w );
+        s[i].y = GET_RAND( 0, g->h );
+        s[i].z = GET_RAND( 1, 4 );
+        s[i].c = GET_RAND( 6, 8 );
+        s[i].ch = GET_RAND( 0, 2 ) ? '.' : '\'';
     }
+
+    return s;
 }
 
 void draw_starfield( game *g, starfield *s )
@@ -44,11 +49,11 @@ void draw_starfield( game *g, starfield *s )
 
     for( i = 0; i < STARS; i++ )
     {
-        if( s->x[i] >= 0 )
+        if( s[i].x >= 0 )
         {
-            gfx_color( s->c[i] );
-            gfx_goto( s->x[i], s->y[i] );
-            gfx_putchar( s->ch[i] );
+            gfx_color( s[i].c );
+            gfx_goto( s[i].x, s[i].y );
+            gfx_putchar( s[i].ch );
         }
     }
 }
@@ -59,22 +64,27 @@ void update_starfield( game *g, starfield *s )
 
     for( i = 0; i < STARS; i++ )
     {
-        if( s->x[i] < 0 )
+        if( s[i].x < 0 )
         {
-            s->x[i] = rand() % g->w;
-            s->y[i] = 0;
-            s->z[i] = 1 + rand() % 2;
-            s->ch[i] = (rand() % 2) ? '.' : '\'';
-            s->c[i] = 6 + rand() % 2;
+            s[i].x = GET_RAND( 0, g->w );
+            s[i].y = 0;
+            s[i].z = GET_RAND( 1, 3 );
+            s[i].c = GET_RAND( 6, 8 );
+            s[i].ch = GET_RAND( 0, 2 ) ? '.' : '\'';
         }
-        else if( s->y[i] < g->h-1 )
+        else if( s[i].y < g->h-1 )
         {
-            s->y[i] += s->z[i];
+            s[i].y += s[i].z;
         }
         else
         {
-            s->x[i] = -1;
+            s[i].x = -1;
         }
     }
+}
+
+void free_starfield( game *g, starfield *s )
+{
+    free( s );
 }
 

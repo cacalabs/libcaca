@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: collide.c,v 1.7 2002/12/22 22:17:41 sam Exp $
+ *   $Id: collide.c,v 1.8 2002/12/23 09:28:37 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
 
 void collide_weapons_tunnel( game *g, weapons *wp, tunnel *t, explosions *ex )
 {
-    int i, x, y;
+    int i, j, x, y;
 
     for( i = 0; i < WEAPONS; i++ )
     {
@@ -76,50 +76,57 @@ void collide_weapons_tunnel( game *g, weapons *wp, tunnel *t, explosions *ex )
             }
             break;
         case WEAPON_LASER:
-            if( x <= t->left[y+1]
-                 || x >= t->right[y+1] )
+            for( j = GET_MIN( 0, wp->vy[i] >> 4 ) ;
+                 j < GET_MAX( 0, wp->vy[i] >> 4 ) ;
+                 j++ )
             {
-                add_explosion( g, ex, x, y+1, 0, 1, EXPLOSION_SMALL );
-
-                if( x <= t->left[y+1] )
+                if( x <= t->left[y+j] || x >= t->right[y+j] )
                 {
-                    t->left[y]--;
-                    t->left[y+1]-=2;
-                    t->left[y+2]--;
-                }
-                else
-                {
-                    t->right[y]++;
-                    t->right[y+1]+=2;
-                    t->right[y+2]++;
-                }
+                    add_explosion( g, ex, x, y+j, 0, 1, EXPLOSION_SMALL );
+                    wp->type[i] = WEAPON_NONE;
 
-                wp->type[i] = WEAPON_NONE;
-            }
-            else if( x <= t->left[y]
-                      || x >= t->right[y] )
-            {
-                add_explosion( g, ex, x, y, 0, 1, EXPLOSION_SMALL );
-
-                if( x <= t->left[y] )
-                {
-                    t->left[y-1]--;
-                    t->left[y]-=2;
-                    t->left[y+1]--;
+                    if( x <= t->left[y+j] )
+                    {
+                        t->left[y+j-1]--;
+                        t->left[y+j] -= 2;
+                        t->left[y+j+1]--;
+                    }
+                    else
+                    {
+                        t->right[y+j-1]++;
+                        t->right[y+j] += 2;
+                        t->right[y+j+1]++;
+                    }
+                    break;
                 }
-                else
-                {
-                    t->right[y-1]++;
-                    t->right[y]+=2;
-                    t->right[y+1]++;
-                }
-
-                wp->type[i] = WEAPON_NONE;
             }
             break;
-        case WEAPON_NUKE:
         case WEAPON_BEAM:
-            /* The nuke and the laser do not break the tunnel */
+            if( wp->n[i] > 19 )
+            {
+                break;
+            }
+
+            j = (29 - wp->n[i]) * (29 - wp->n[i]) / 8;
+            j = GET_MIN( y, j );
+
+            for( ; j > 0 ; j-- )
+            {
+                if( x - 2 <= t->left[y-j] )
+                {
+                    add_explosion( g, ex, GET_MIN(t->left[y-j], x+3), y-j, 0, 1, EXPLOSION_SMALL );
+                    t->left[y-j] -= GET_RAND(0,3);
+                }
+                else if( x + 3 >= t->right[y-j] )
+                {
+                    add_explosion( g, ex, GET_MAX(t->right[y-j], x-2), y-j, 0, 1, EXPLOSION_SMALL );
+                    t->right[y-j] += GET_RAND(0,3);
+                }
+            }
+            break;
+
+        case WEAPON_NUKE:
+            /* The nuke does not break the tunnel */
             break;
         }
     }
@@ -127,7 +134,7 @@ void collide_weapons_tunnel( game *g, weapons *wp, tunnel *t, explosions *ex )
 
 void collide_weapons_aliens( game *g, weapons *wp, aliens *al, explosions *ex )
 {
-    int i, j, x, y;
+    int i, j, k, x, y;
 
     for( i = 0; i < WEAPONS; i++ )
     {
@@ -165,6 +172,11 @@ void collide_weapons_aliens( game *g, weapons *wp, aliens *al, explosions *ex )
             break;
 
         case WEAPON_BEAM:
+            if( wp->n[i] > 19 )
+            {
+                break;
+            }
+
             r = (29 - wp->n[i]) * (29 - wp->n[i]) / 8;
 
             for( j = 0; j < ALIENS; j++ )
@@ -190,17 +202,17 @@ void collide_weapons_aliens( game *g, weapons *wp, aliens *al, explosions *ex )
                     continue;
                 }
 
-                if( x >= al->x[j] && x <= al->x[j] + 4
-                     && y >= al->y[j] && y <= al->y[j] + 2 )
+                for( k = GET_MIN( 0, wp->vy[i] >> 4 ) ;
+                     k < GET_MAX( 0, wp->vy[i] >> 4 ) ;
+                     k++ )
                 {
-                    al->life[j]--;
-                    ok = 1;
-                }
-                else if( x >= al->x[j] && x <= al->x[j] + 4
-                          && y+1 >= al->y[j] && y+1 <= al->y[j] + 2 )
-                {
-                    al->life[j]--;
-                    ok = 1;
+                    if( x >= al->x[j] && x <= al->x[j] + 4
+                         && y+k >= al->y[j] && y+k <= al->y[j] + 2 )
+                    {
+                        al->life[j]--;
+                        ok = 1;
+                        break;
+                    }
                 }
             }
 

@@ -8,11 +8,11 @@ Things to do
 
  * sprite library
 
- * mega ball
+ DONE 23 Dec 2002: mega ball
 
  * spiral weapon (vertical sine)
 
- * fragmentation bomb (merge with mega-ball?)
+ DONE 23 Dec 2002: fragmentation bomb (merge with mega-ball?)
 
  * stick aliens to tunnel
 
@@ -30,11 +30,13 @@ Things to do
 
  * promote precision for all coordinates except screen
 
- * tunnel sometimes doesn't get drawn on the left
+ DONE Dec 19 2002: tunnel sometimes doesn't get drawn on the left
 
  * write a generic drawing library with automatic clipping
 
  * write a linux console output for the drawing library
 
  * animate the ship
+
+ * the nuke should break the tunnel
 

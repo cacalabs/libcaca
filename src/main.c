@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: main.c,v 1.8 2002/12/22 22:17:41 sam Exp $
+ *   $Id: main.c,v 1.9 2002/12/23 09:28:37 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -61,7 +61,7 @@ static void start_game (game *g)
     int skip = 0;
     int purcompteur = 0;
 
-    g->sf = malloc(sizeof(starfield));
+    g->sf = create_starfield( g );
     g->wp = malloc(sizeof(weapons));
     g->ex = malloc(sizeof(explosions));
     g->bo = malloc(sizeof(bonus));
@@ -69,7 +69,6 @@ static void start_game (game *g)
     g->p = create_player( g );
     g->al = malloc(sizeof(aliens));
 
-    init_starfield( g, g->sf );
     init_weapons( g, g->wp );
     init_explosions( g, g->ex );
     init_aliens( g, g->al );
@@ -221,6 +220,8 @@ static void start_game (game *g)
 
         purcompteur++;
     }
+
+    free_starfield( g, g->sf );
 
 #if 0
     free_player( p );
