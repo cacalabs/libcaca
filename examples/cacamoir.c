@@ -46,7 +46,7 @@ int main (int argc, char **argv)
 {
     int red[256], green[256], blue[256], alpha[256];
     struct caca_bitmap *bitmap;
-    int i, x, y, frame;
+    int i, x, y, frame = 0, pause = 0;
 
     if(caca_init() < 0)
         return 1;
@@ -68,8 +68,17 @@ int main (int argc, char **argv)
     bitmap = caca_create_bitmap(8, XSIZ, YSIZ, XSIZ, 0, 0, 0, 0);
 
     /* Main loop */
-    for(frame = 0; !caca_get_event(CACA_EVENT_KEY_PRESS); frame++)
+    for(;;)
     {
+        switch(caca_get_event(CACA_EVENT_KEY_PRESS))
+        {
+            case CACA_EVENT_KEY_PRESS | CACA_KEY_ESCAPE: goto end;
+            case CACA_EVENT_KEY_PRESS | ' ': pause = !pause;
+        }
+
+        if(pause)
+            goto paused;
+
         memset(screen, 0, XSIZ * YSIZ);
 
         /* Set the palette */
@@ -92,11 +101,15 @@ int main (int argc, char **argv)
         y = sin(0.09 * frame + 1.0) * 64.0 + (YSIZ / 2);
         put_disc(x, y);
 
+        frame++;
+
+paused:
         caca_draw_bitmap(0, 0, caca_get_width() - 1, caca_get_height() - 1,
                          bitmap, screen);
         caca_refresh();
     }
 
+end:
     caca_free_bitmap(bitmap);
     caca_end();
 

@@ -57,7 +57,7 @@ int main(int argc, char **argv)
     unsigned int x[METABALLS], y[METABALLS];
     struct caca_bitmap *caca_bitmap;
     float i = 10.0, j = 17.0, k = 11.0;
-    int p, frame = 0;
+    int p, frame = 0, pause = 0;
 
     if(caca_init())
         return 1;
@@ -86,8 +86,17 @@ int main(int argc, char **argv)
     }
 
     /* Go ! */
-    while(!caca_get_event(CACA_EVENT_KEY_PRESS))
+    for(;;)
     {
+        switch(caca_get_event(CACA_EVENT_KEY_PRESS))
+        {
+            case CACA_EVENT_KEY_PRESS | CACA_KEY_ESCAPE: goto end;
+            case CACA_EVENT_KEY_PRESS | ' ': pause = !pause;
+        }
+
+        if(pause)
+            goto paused;
+
         frame++;
 
         /* Crop the palette */
@@ -134,6 +143,7 @@ int main(int argc, char **argv)
         for(p = 0; p < METABALLS; p++)
             draw_ball(x[p], y[p]);
 
+paused:
         /* Draw our virtual buffer to screen, letting libcaca resize it */
         caca_draw_bitmap(0, 0, caca_get_width() - 1, caca_get_height() - 1,
                          caca_bitmap, pixels + (METASIZE / 2) * (1 + XSIZ));
@@ -141,6 +151,8 @@ int main(int argc, char **argv)
     }
 
     /* End, bye folks */
+end:
+    caca_free_bitmap(caca_bitmap);
     caca_end();
 
     return 0;

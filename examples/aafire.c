@@ -40,6 +40,7 @@
 static int XSIZ, YSIZ;
 static struct caca_bitmap *caca_bitmap;
 static char *bitmap;
+static int pause = 0;
 #else
 static aa_context *context;
 static aa_renderparams *params;
@@ -193,6 +194,9 @@ drawfire (void)
   register unsigned char *p;
 #ifndef LIBCACA
   char *bitmap = aa_image (context);
+#else
+  if(pause)
+    goto paused;
 #endif
 
   height++;
@@ -216,6 +220,7 @@ drawfire (void)
   i = 0;
   firemain ();
 #ifdef LIBCACA
+paused:
   caca_draw_bitmap(0, 0, caca_get_width() - 1, caca_get_height() - 1,
                    caca_bitmap, bitmap);
   caca_refresh();
@@ -230,14 +235,24 @@ drawfire (void)
 static void
 game (void)
 {
+#ifndef LIBCACA
   int event;
+#endif
   gentable ();
 #ifdef LIBCACA
-  while (!(event = caca_get_event(CACA_EVENT_KEY_PRESS)))
+  for(;;)
 #else
   while (!(event = aa_getevent (context, 0)) || event == AA_RESIZE)
 #endif
     {
+#ifdef LIBCACA
+      switch (caca_get_event(CACA_EVENT_KEY_PRESS))
+        {
+          case CACA_EVENT_KEY_PRESS | CACA_KEY_ESCAPE: return;
+          case CACA_EVENT_KEY_PRESS | ' ': pause = !pause;
+        }
+
+#endif
       drawfire ();
     }
 }

@@ -89,6 +89,9 @@ int main (int argc, char **argv)
             case CACA_EVENT_KEY_PRESS | ' ': pause = !pause;
         }
 
+        if(pause)
+            goto paused;
+
         for(i = 0 ; i < 256; i++)
         {
             double z = ((double)i) / 256 * 6 * M_PI;
@@ -101,18 +104,16 @@ int main (int argc, char **argv)
         /* Set the palette */
         caca_set_bitmap_palette(bitmap, red, green, blue, alpha);
 
-        if(!pause)
-        {
-            do_plasma(screen,
-                      (1.0 + sin(((double)frame) * R[0])) / 2,
-                      (1.0 + sin(((double)frame) * R[1])) / 2,
-                      (1.0 + sin(((double)frame) * R[2])) / 2,
-                      (1.0 + sin(((double)frame) * R[3])) / 2,
-                      (1.0 + sin(((double)frame) * R[4])) / 2,
-                      (1.0 + sin(((double)frame) * R[5])) / 2);
-            frame++;
-        }
+        do_plasma(screen,
+                  (1.0 + sin(((double)frame) * R[0])) / 2,
+                  (1.0 + sin(((double)frame) * R[1])) / 2,
+                  (1.0 + sin(((double)frame) * R[2])) / 2,
+                  (1.0 + sin(((double)frame) * R[3])) / 2,
+                  (1.0 + sin(((double)frame) * R[4])) / 2,
+                  (1.0 + sin(((double)frame) * R[5])) / 2);
+        frame++;
 
+paused:
         caca_draw_bitmap(0, 0, caca_get_width() - 1, caca_get_height() - 1,
                          bitmap, screen);
         caca_refresh();
