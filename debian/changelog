@@ -1,8 +1,8 @@
 libcaca (0.3-1) unstable; urgency=low
 
-  * XXX
+  * New upstream release.
 
- -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Thu, 11 Dec 2003 22:10:45 +0100
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Thu, 18 Dec 2003 01:38:17 +0100
 
 libcaca (0.2-2) unstable; urgency=low
 

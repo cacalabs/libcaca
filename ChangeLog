@@ -1,4 +1,220 @@
 ------------------------------------------------------------------------
+r154 | sam | 2003-12-18 01:11:52 +0100 (Thu, 18 Dec 2003) | 3 lines
+Changed paths:
+   M /trunk/src/bitmap.c
+   M /trunk/src/box.c
+   M /trunk/src/caca.c
+   M /trunk/src/caca.h
+   M /trunk/src/conic.c
+   M /trunk/src/graphics.c
+   M /trunk/src/io.c
+   M /trunk/src/line.c
+   M /trunk/src/math.c
+   M /trunk/src/sprite.c
+   M /trunk/src/triangle.c
+
+  * src/:
+    + Doxygenated public functions.
+
+------------------------------------------------------------------------
+r153 | sam | 2003-12-17 16:03:05 +0100 (Wed, 17 Dec 2003) | 3 lines
+Changed paths:
+   M /trunk/src/caca.h
+
+  * src/caca.h:
+    + Documented environment variables.
+
+------------------------------------------------------------------------
+r152 | sam | 2003-12-17 00:25:54 +0100 (Wed, 17 Dec 2003) | 4 lines
+Changed paths:
+   M /trunk/examples/view.c
+
+  * examples/view.c:
+    + Fixed a bug in the loading of 1bpp BMPs.
+    + Commented stuff.
+
+------------------------------------------------------------------------
+r151 | sam | 2003-12-17 00:06:54 +0100 (Wed, 17 Dec 2003) | 7 lines
+Changed paths:
+   M /trunk/examples/Makefile.am
+   M /trunk/examples/view.c
+
+  * examples/view.c:
+    + If Imlib2 is not available, use a custom simple BMP loader.
+    + Draw the bottom bar one line higher to leave room for a status line.
+    + '?' now properly toggles help.
+  * examples/Makefile.am:
+    + Always build cacaview.
+
+------------------------------------------------------------------------
+r150 | sam | 2003-12-16 10:06:46 +0100 (Tue, 16 Dec 2003) | 5 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/src/bitmap.c
+
+  * src/bitmap.c:
+    + If the alpha palette is all-zero, forget the alpha channel.
+  * configure.ac:
+    + Export HAVE_IMLIB2_H and the like.
+
+------------------------------------------------------------------------
+r149 | sam | 2003-12-15 16:02:50 +0100 (Mon, 15 Dec 2003) | 4 lines
+Changed paths:
+   M /trunk/src/bitmap.c
+
+  * src/bitmap.c:
+    + If the alpha mask is 0, ignore alpha information.
+    + Ditto if no alpha information is given with the palette.
+
+------------------------------------------------------------------------
+r148 | sam | 2003-12-15 11:38:03 +0100 (Mon, 15 Dec 2003) | 4 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/src/caca.c
+   M /trunk/src/caca_internals.h
+   M /trunk/src/graphics.c
+   M /trunk/src/io.c
+
+  * src/graphics.c src/io.c:
+    + Beginning of an X11 driver. Currently we merely open the window and
+      check keyboard events.
+
+------------------------------------------------------------------------
+r147 | sam | 2003-12-12 17:19:44 +0100 (Fri, 12 Dec 2003) | 7 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/debian/changelog
+   M /trunk/src/caca.c
+
+  * configure.ac debian/changelog:
+    + Prepare for 0.3 release.
+    + Check for strcasecmp().
+  * src/caca.c:
+    + Honor CACA_BACKGROUND, CACA_DITHERING and CACA_ANTIALIASING environment
+      variables.
+
+------------------------------------------------------------------------
+r146 | sam | 2003-12-12 15:49:41 +0100 (Fri, 12 Dec 2003) | 13 lines
+Changed paths:
+   M /trunk/examples/aafire.c
+   M /trunk/examples/demo.c
+   M /trunk/examples/view.c
+   M /trunk/src/bitmap.c
+   M /trunk/src/caca.c
+   M /trunk/src/caca.h
+   M /trunk/src/caca_internals.h
+
+  * src/bitmap.c:
+    + Added antialiasing support.
+    + Dithering, antialiasing and background mode can now be selected at
+      runtime.
+  * src/caca.c src/caca.h:
+    + Renamed caca_dithering into caca_feature and extended the type to
+      express background colour and antialiasing mode.
+  * examples/demo.c:
+    + Fixed a bug that disabled the sprite demo.
+    + Draw solid flares.
+  * examples/view.c:
+    + Select antialiasing and background mode at runtime.
+
+------------------------------------------------------------------------
+r145 | sam | 2003-12-11 18:01:09 +0100 (Thu, 11 Dec 2003) | 2 lines
+Changed paths:
+   M /trunk/BUGS
+   M /trunk/TODO
+   M /trunk/debian/control
+   M /trunk/doc/cacademo.1
+   M /trunk/doc/cacaview.1
+
+  * Minor updates to manpages, BUGS, TODO and the Debian control file.
+
+------------------------------------------------------------------------
+r144 | sam | 2003-12-11 17:56:35 +0100 (Thu, 11 Dec 2003) | 5 lines
+Changed paths:
+   M /trunk/src/Makefile.am
+   M /trunk/src/bitmap.c
+   M /trunk/src/caca.c
+   M /trunk/src/caca.h
+   M /trunk/src/caca_internals.h
+   M /trunk/src/graphics.c
+
+  * src/caca.c:
+    + Moved global variables to src/graphics.c.
+  * src/bitmap.c:
+    + Sanitised prototypes.
+
+------------------------------------------------------------------------
+r143 | sam | 2003-12-11 17:31:49 +0100 (Thu, 11 Dec 2003) | 17 lines
+Changed paths:
+   M /trunk/examples
+   M /trunk/examples/aafire.c
+   M /trunk/examples/demo.c
+   M /trunk/examples/view.c
+   M /trunk/src/bitmap.c
+   M /trunk/src/box.c
+   M /trunk/src/caca.c
+   M /trunk/src/caca.h
+   M /trunk/src/caca_internals.h
+   M /trunk/src/conic.c
+   M /trunk/src/graphics.c
+   M /trunk/src/line.c
+   M /trunk/src/sprite.c
+   M /trunk/src/triangle.c
+
+  * src/graphics.c:
+    + Internally cache screen width and height.
+  * src/bitmap.c:
+    + Added alpha support to caca_draw_bitmap(). For now, we only treat 0%
+      alpha as fully transparent, and any other value as fully opaque.
+    + Slightly tuned colour weights in the renderer.
+    + caca_set_bitmap_palette() takes unsigned ints.
+  * examples/demo.c:
+    + Added a crap render demo.
+  * examples/aafire.c:
+    + Set a 20ms delay.
+    + Added alpha values to the palette.
+  * examples/view.c:
+    + Draw a gray checkered grid below the image so that transparent images
+      look a lot nicer.
+    + 'f' toggles "fullscreen" mode.
+
+------------------------------------------------------------------------
+r142 | sam | 2003-12-11 16:54:53 +0100 (Thu, 11 Dec 2003) | 6 lines
+Changed paths:
+   M /trunk/caca-config.in
+   M /trunk/configure.ac
+
+  * configure.ac:
+    + Set the executable bit of caca-config when regenerating that file.
+  * caca-config.in:
+    + No longer use USE_SLANG_TRUE and USE_NCURSES_TRUE since we now
+      have @CACA_LIBS@.
+
+------------------------------------------------------------------------
+r141 | sam | 2003-12-02 23:27:27 +0100 (Tue, 02 Dec 2003) | 6 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/examples/Makefile.am
+   A /trunk/examples/aafire.c
+
+  * configure.ac:
+    + Removed unused USE_* variables.
+    + Export -lslang and -lncurses as @CACA_LIBS@.
+  * examples/aafire.c:
+    + Imported aafire.c from the AAlib tree and ported it to libcaca.
+
+------------------------------------------------------------------------
+r139 | sam | 2003-11-30 18:15:31 +0100 (Sun, 30 Nov 2003) | 2 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/NEWS
+   M /trunk/TODO
+   M /trunk/debian/changelog
+   M /trunk/debian/control
+
+  * 0.2 release.
+
+------------------------------------------------------------------------
 r138 | sam | 2003-11-30 18:14:19 +0100 (Sun, 30 Nov 2003) | 3 lines
 Changed paths:
    M /trunk/examples/view.c

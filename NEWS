@@ -1,5 +1,16 @@
 $Id$
 
+Changes between 0.2 and 0.3:
+----------------------------
+
+  * antialiasing support
+  * dithering, antialiasing and background mode can now be selected at
+    runtime or in the environment using the CACA_BACKGROUND, CACA_DITHERING
+    and CACA_ANTIALIASING variables
+  * alpha channel support in cacaview
+  * BMP loading support in cacaview even if Imlib2 is not present
+  * cacafire, a libcaca port of aafire
+
 Changes between 0.1 and 0.2:
 ----------------------------
 

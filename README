@@ -4,8 +4,8 @@ Building libcaca
 
    o  Run configure then make. Useful configure flags are:
 
-     --enable-slang: use the SLang library (default)
-     --enable-ncurses: use the ncurses library
+     --enable-ncurses: use the ncurses library (default)
+     --enable-slang: use the SLang library
      --enable-conio: use MS-DOS conio.h
 
    o  Cross-compilation example:

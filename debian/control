@@ -27,8 +27,10 @@ Description: text mode graphics utilities
  .
  cacaview is a simple image viewer for the terminal. It opens most image
  formats such as JPEG, PNG, GIF etc. and renders them on the terminal using
- ASCII art. The user can zoom and scroll the image and set the dithering
- method.
+ ASCII art. The user can zoom and scroll the image, set the dithering method
+ or enable anti-aliasing.
+ .
+ cacafire is a port of AALib's aafire and displays burning ASCII art flames.
  .
  cacademo is a simple application that shows the libcaca rendering features
  such as line and ellipses drawing, triangle filling, and sprite blitting.
