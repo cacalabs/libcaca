@@ -182,11 +182,11 @@ static void start_game (game *g)
             skip = 0;
 
             /* XXX: to be removed */
-            if(GET_RAND(0,10) == 0)
+            if(ee_rand(0,10) == 0)
             {
                 int list[3] = { ALIEN_FOO, ALIEN_BAR, ALIEN_BAZ };
 
-                add_alien(g, g->al, 0, rand() % g->h / 2, list[GET_RAND(0,3)]);
+                add_alien(g, g->al, 0, rand() % g->h / 2, list[ee_rand(0,3)]);
             }
 
             /* Update game rules */

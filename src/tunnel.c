@@ -169,8 +169,8 @@ void update_tunnel(game *g, tunnel *t)
     }
 
     /* Generate new values */
-    i = delta[GET_RAND(0,6)];
-    j = delta[GET_RAND(0,6)];
+    i = delta[ee_rand(0,6)];
+    j = delta[ee_rand(0,6)];
 
     /* Check in which direction we need to alter tunnel */
     if(t->right[1] - t->left[1] < t->w)

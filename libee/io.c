@@ -1,6 +1,6 @@
 /*
- *   ttyvaders     Textmode shoot'em up
- *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
+ *   libee         ASCII-Art library
+ *   Copyright (c) 2002, 2003 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
  *   $Id$
@@ -20,23 +20,29 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include "common.h"
+#include "config.h"
 
-int r00t(int a)
+#include "ee.h"
+
+char ee_get_key(void)
 {
-    int x = a > 100000 ? 1000 : a > 1000 ? 100 : a > 10 ? 10 : 1;
-
-    if(a <= 0)
+#ifdef USE_SLANG
+    if(SLang_input_pending(0))
     {
-        return 0;
+        return SLang_getkey();
     }
+#elif USE_NCURSES
+    char key = getch();
 
-    /* Newton's method. Three iterations would be more than enough. */
-    x = (x * x + a) / x / 2;
-    x = (x * x + a) / x / 2;
-    x = (x * x + a) / x / 2;
-    x = (x * x + a) / x / 2;
+    if(key != ERR)
+    {
+        return key;
+    }
+#else
+    return 0;
 
-    return x;
+#endif
+
+    return 0;
 }
 

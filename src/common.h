@@ -47,7 +47,6 @@
 /*
  * Useful macros
  */
-#define GET_RAND(p,q) ((p)+(int)((1.0*((q)-(p)))*rand()/(RAND_MAX+1.0)))
 #define GET_MAX(a,b) ((a)>(b)?(a):(b))
 #define GET_MIN(a,b) ((a)<(b)?(a):(b))
 
@@ -185,11 +184,6 @@ void init_explosions(game *, explosions *);
 void add_explosion(game *, explosions *, int, int, int, int, int);
 void draw_explosions(game *, explosions *);
 void update_explosions(game *, explosions *);
-
-/*
- * From math.c
- */
-int r00t(int);
 
 /*
  * From overlay.c

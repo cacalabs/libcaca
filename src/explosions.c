@@ -73,7 +73,7 @@ void draw_explosions(game *g, explosions *ex)
 #if 0
         ee_color(GREEN);
         ee_goto(ex->x[i] + 3, ex->y[i]);
-        switch(GET_RAND(0,3))
+        switch(ee_rand(0,3))
         {
         case 0:
             ee_putchar('p');

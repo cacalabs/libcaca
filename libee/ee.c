@@ -204,25 +204,3 @@ void ee_end(void)
 #endif
 }
 
-char ee_get_key(void)
-{
-#ifdef USE_SLANG
-    if(SLang_input_pending(0))
-    {
-        return SLang_getkey();
-    }
-#elif USE_NCURSES
-    char key = getch();
-
-    if(key != ERR)
-    {
-        return key;
-    }
-#else
-    return 0;
-
-#endif
-
-    return 0;
-}
-

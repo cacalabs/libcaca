@@ -33,11 +33,11 @@ starfield * create_starfield(game *g)
 
     for(i = 0; i < STARS; i++)
     {
-        s[i].x = GET_RAND(0, g->w);
-        s[i].y = GET_RAND(0, g->h);
-        s[i].z = GET_RAND(1, 4);
-        s[i].c = GET_RAND(6, 8);
-        s[i].ch = GET_RAND(0, 2) ? '.' : '\'';
+        s[i].x = ee_rand(0, g->w);
+        s[i].y = ee_rand(0, g->h);
+        s[i].z = ee_rand(1, 4);
+        s[i].c = ee_rand(6, 8);
+        s[i].ch = ee_rand(0, 2) ? '.' : '\'';
     }
 
     return s;
@@ -66,11 +66,11 @@ void update_starfield(game *g, starfield *s)
     {
         if(s[i].x < 0)
         {
-            s[i].x = GET_RAND(0, g->w);
+            s[i].x = ee_rand(0, g->w);
             s[i].y = 0;
-            s[i].z = GET_RAND(1, 3);
-            s[i].c = GET_RAND(6, 8);
-            s[i].ch = GET_RAND(0, 2) ? '.' : '\'';
+            s[i].z = ee_rand(1, 3);
+            s[i].c = ee_rand(6, 8);
+            s[i].ch = ee_rand(0, 2) ? '.' : '\'';
         }
         else if(s[i].y < g->h-1)
         {

@@ -72,3 +72,6 @@ void ee_end(void);
 
 char ee_get_key(void);
 
+int ee_rand(int, int);
+int ee_sqrt(int);
+
