@@ -19,6 +19,7 @@ libee_a_SOURCES = \
 	ee.c \
 	ee.h \
 	io.c \
+	circle.c \
 	line.c \
 	math.c \
 	$(NULL)

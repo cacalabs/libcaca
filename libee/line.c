@@ -28,7 +28,7 @@
 #include "ee.h"
 
 static uint8_t clip_bits(int, int);
-static void _ee_draw_line(int, int, int, int, char);
+static void draw_solid_line(int, int, int, int, char);
 
 void ee_draw_line(int x1, int y1, int x2, int y2, char c)
 {
@@ -43,7 +43,7 @@ void ee_draw_line(int x1, int y1, int x2, int y2, char c)
     if(bits1 == 0)
     {
         if(bits2 == 0)
-            _ee_draw_line(x1, y1, x2, y2, c);
+            draw_solid_line(x1, y1, x2, y2, c);
         else
             ee_draw_line(x2, y2, x1, y1, c);
 
@@ -76,7 +76,7 @@ void ee_draw_line(int x1, int y1, int x2, int y2, char c)
     ee_draw_line(x1, y1, x2, y2, c);
 }
 
-static void _ee_draw_line(int x1, int y1, int x2, int y2, char c)
+static void draw_solid_line(int x1, int y1, int x2, int y2, char c)
 {
     int dx = abs(x2-x1);
     int dy = abs(y2-y1);

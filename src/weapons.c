@@ -27,7 +27,6 @@
 static void draw_bomb(int x, int y, int vx, int vy);
 static void draw_nuke(int x, int y, int frame);
 static void draw_beam(int x, int y, int frame);
-static void draw_circle(int x, int y, int r, char c);
 static void draw_fragbomb(int x, int y, int frame);
 
 void init_weapons(game *g, weapons *wp)
@@ -703,32 +702,11 @@ static void draw_nuke(int x, int y, int frame)
 
     /* Lots of duplicate pixels, but we don't care */
     ee_color(EE_BLUE);
-    draw_circle(x, y, r++, ':');
+    ee_draw_circle(x, y, r++, ':');
     ee_color(EE_CYAN);
-    draw_circle(x, y, r++, '%');
+    ee_draw_circle(x, y, r++, '%');
     ee_color(EE_WHITE);
-    draw_circle(x, y, r++, '#');
-    draw_circle(x, y, r++, '#');
-}
-
-static void draw_circle(int x, int y, int r, char c)
-{
-    int test, dx, dy;
-
-    /* Optimized Bresenham. Kick ass. */
-    for(test = 0, dx = 0, dy = r ; dx <= dy ; dx++)
-    {
-        ee_putcharTO(x + dx, y + dy / 2, c);
-        ee_putcharTO(x - dx, y + dy / 2, c);
-        ee_putcharTO(x + dx, y - dy / 2, c);
-        ee_putcharTO(x - dx, y - dy / 2, c);
-
-        ee_putcharTO(x + dy, y + dx / 2, c);
-        ee_putcharTO(x - dy, y + dx / 2, c);
-        ee_putcharTO(x + dy, y - dx / 2, c);
-        ee_putcharTO(x - dy, y - dx / 2, c);
-
-        test += test > 0 ? dx - dy-- : dx;
-    }
+    ee_draw_circle(x, y, r++, '#');
+    ee_draw_circle(x, y, r++, '#');
 }
 
