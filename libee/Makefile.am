@@ -15,6 +15,12 @@ CPPFLAGS_ncurses = -DUSE_NCURSES
 endif
 
 lib_LIBRARIES = libee.a
-libee_a_SOURCES = ee.c ee.h io.c math.c
+libee_a_SOURCES = \
+	ee.c \
+	ee.h \
+	io.c \
+	line.c \
+	math.c \
+	$(NULL)
 libee_a_CPPFLAGS = $(CPPFLAGS_slang) $(CPPFLAGS_ncurses)
 
