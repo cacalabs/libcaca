@@ -34,18 +34,19 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
 #include "ee.h"
 #include "ee_internals.h"
 
-static int ee_color = 0;
+static int _ee_color = 0;
 
 void ee_set_color(int color)
 {
     if(color < 0 || color > 15)
         return;
 
-    ee_color = color;
+    _ee_color = color;
 #if defined(USE_SLANG)
     SLsmg_set_color(color + 1);
 #elif defined(USE_NCURSES)
@@ -57,7 +58,7 @@ void ee_set_color(int color)
 
 int ee_get_color(void)
 {
-    return ee_color;
+    return _ee_color;
 }
 
 void ee_putchar(int x, int y, char c)
@@ -73,7 +74,7 @@ void ee_putchar(int x, int y, char c)
     addch(c);
 #elif defined(USE_CONIO)
     _ee_screen[2 * (x + y * ee_get_width())] = c;
-    _ee_screen[2 * (x + y * ee_get_width()) + 1] = ee_color;
+    _ee_screen[2 * (x + y * ee_get_width()) + 1] = _ee_color;
 //    gotoxy(x + 1, y + 1);
 //    putch(c);
 #endif
@@ -115,11 +116,34 @@ void ee_putstr(int x, int y, const char *s)
     while(*s)
     {
         *buf++ = *s++;
-        *buf++ = ee_color;
+        *buf++ = _ee_color;
     }
 //    gotoxy(x + 1, y + 1);
 //    cputs(s);
 #endif
+}
+
+void ee_printf(int x, int y, const char *format, ...)
+{
+    char tmp[BUFSIZ];
+    char *buf = tmp;
+    va_list args;
+
+    if(y < 0 || y >= ee_get_height() || x >= ee_get_width())
+        return;
+
+    if(ee_get_width() - x + 1 > BUFSIZ)
+        buf = malloc(ee_get_width() - x + 1);
+
+    va_start(args, format);
+    vsnprintf(buf, ee_get_width() - x + 1, format, args);
+    buf[ee_get_width() - x] = '\0';
+    va_end(args);
+
+    ee_putstr(x, y, buf);
+
+    if(buf != tmp)
+        free(buf);
 }
 
 void ee_clear(void)

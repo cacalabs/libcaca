@@ -51,8 +51,6 @@ enum ee_colors
     EE_WHITE = 15
 };
 
-extern const char *ee_color_names[16];
-
 /*
  * Types
  */
@@ -66,6 +64,7 @@ void ee_set_delay(unsigned int);
 unsigned int ee_get_rendertime(void);
 unsigned int ee_get_width(void);
 unsigned int ee_get_height(void);
+const char *ee_get_color_name(unsigned int);
 void ee_refresh(void);
 void ee_end(void);
 
@@ -75,6 +74,7 @@ void ee_set_color(int);
 int ee_get_color(void);
 void ee_putchar(int, int, char);
 void ee_putstr(int, int, const char *);
+void ee_printf(int, int, const char *, ...);
 void ee_clear(void);
 
 void ee_draw_line(int, int, int, int, char);

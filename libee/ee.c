@@ -45,27 +45,6 @@
 #include "ee.h"
 #include "ee_internals.h"
 
-/* Global array with color names */
-const char *ee_color_names[16] =
-{
-    "black",
-    "blue",
-    "green",
-    "cyan",
-    "red",
-    "magenta",
-    "brown",
-    "lightgray",
-    "darkgray",
-    "lightblue",
-    "lightgreen",
-    "lightcyan",
-    "lightred",
-    "lightmagenta",
-    "yellow",
-    "white",
-};
-
 static unsigned int _ee_delay;
 static unsigned int _ee_rendertime;
 char *_ee_empty_line;
@@ -227,6 +206,34 @@ unsigned int ee_get_rendertime(void)
     return _ee_rendertime;
 }
 
+const char *ee_get_color_name(unsigned int color)
+{
+    static const char *color_names[16] =
+    {
+        "black",
+        "blue",
+        "green",
+        "cyan",
+        "red",
+        "magenta",
+        "brown",
+        "light gray",
+        "dark gray",
+        "light blue",
+        "light green",
+        "light cyan",
+        "light red",
+        "light magenta",
+        "yellow",
+        "white",
+    };
+
+    if(color < 0 || color > 15)
+        return "unknown color";
+
+    return color_names[color];
+}
+
 static unsigned int _ee_getticks(void)
 {
     static unsigned int last_sec = 0, last_usec = 0;
@@ -249,6 +256,7 @@ static unsigned int _ee_getticks(void)
 
 void ee_refresh(void)
 {
+#define IDLE_USEC 10000
     static unsigned int lastticks = 0;
     unsigned int ticks = lastticks + _ee_getticks();
 
@@ -265,8 +273,9 @@ void ee_refresh(void)
 #endif
 
     /* Wait until _ee_delay + time of last call */
-    for(ticks += _ee_getticks(); ticks < _ee_delay; ticks += _ee_getticks())
-        usleep(10000);
+    ticks += _ee_getticks();
+    for(; ticks < _ee_delay - IDLE_USEC; ticks += _ee_getticks())
+        usleep(IDLE_USEC);
 
     /* Update the sliding mean of the render time */
     _ee_rendertime = (7 * _ee_rendertime + ticks) / 8;

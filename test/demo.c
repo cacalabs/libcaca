@@ -40,9 +40,8 @@ static void demo_ellipses(void);
 static void demo_triangles(void);
 static void demo_sprites(void);
 
-int force_clipping = 0;
+int bounds = 0;
 int outline = 0;
-int thin = 0;
 struct ee_sprite *sprite = NULL;
 
 int main(int argc, char **argv)
@@ -62,79 +61,88 @@ int main(int argc, char **argv)
 
     /* Main menu */
     display_menu();
+    ee_refresh();
 
     /* Go ! */
     while(!quit)
     {
         char key = ee_get_key();
+
         if(key && demo)
         {
             display_menu();
+            ee_refresh();
             demo = NULL;
         }
         else if(key)
         {
+        handle_key:
             switch(key)
             {
             case 'q':
+            case 'Q':
                 demo = NULL;
                 quit = 1;
                 break;
+            case 'o':
+            case 'O':
+                outline = (outline + 1) % 3;
+                display_menu();
+                break;
+            case 'b':
+            case 'B':
+                bounds = (bounds + 1) % 2;
+                display_menu();
+                break;
             case 'c':
-                ee_clear();
                 demo = demo_color;
                 break;
-            case '0':
-                ee_clear();
+            case 'f':
+            case 'F':
                 demo = demo_all;
                 break;
             case '1':
-                ee_clear();
                 demo = demo_dots;
                 break;
             case '2':
-                ee_clear();
                 demo = demo_lines;
-                thin = 0;
                 break;
             case '3':
-                ee_clear();
-                demo = demo_lines;
-                thin = 1;
+                demo = demo_boxes;
                 break;
             case '4':
-                ee_clear();
-                demo = demo_boxes;
-                outline = 0;
+                demo = demo_triangles;
                 break;
             case '5':
-                ee_clear();
-                demo = demo_boxes;
-                outline = 1;
-                break;
-            case '6':
-                ee_clear();
                 demo = demo_ellipses;
                 break;
-            case '7':
-                ee_clear();
-                demo = demo_triangles;
-                outline = 0;
-                break;
-            case '8':
-                ee_clear();
-                demo = demo_triangles;
-                outline = 1;
-                break;
-            case '9':
-                ee_clear();
+            case 's':
+            case 'S':
                 demo = demo_sprites;
                 break;
             }
+
+            if(demo)
+                ee_clear();
+
+            key = ee_get_key();
+            if(key)
+                goto handle_key;
+
+            ee_refresh();
         }
 
         if(demo)
+        {
             demo();
+
+            ee_set_color(EE_WHITE);
+            ee_draw_thin_box(1, 1, ee_get_width() - 2, ee_get_height() - 2);
+            ee_printf(4, 1, "[%i.%i fps]----",
+                            1000000 / ee_get_rendertime(),
+                            (10000000 / ee_get_rendertime()) % 10);
+            ee_refresh();
+        }
     }
 
     /* Clean up */
@@ -156,20 +164,23 @@ static void display_menu(void)
     ee_putstr((xo - strlen("libee demo")) / 2, 3, "libee demo");
     ee_putstr((xo - strlen("============")) / 2, 4, "============");
 
-    ee_putstr(4, 6, "0: complete demo");
-    ee_putstr(4, 7, "1: dots demo");
-    ee_putstr(4, 8, "2: lines demo");
-    ee_putstr(4, 9, "3: thin lines demo");
-    ee_putstr(4, 10, "4: boxes demo");
-    ee_putstr(4, 11, "5: outlined boxes demo");
-    ee_putstr(4, 12, "6: ellipses demo");
-    ee_putstr(4, 13, "7: triangles demo");
-    ee_putstr(4, 14, "8: outlined triangles demo");
-    ee_putstr(4, 15, "9: sprites demo");
+    ee_putstr(4, 6, "demos:");
+    ee_putstr(4, 7, "'f': full");
+    ee_putstr(4, 8, "'1': dots");
+    ee_putstr(4, 9, "'2': lines");
+    ee_putstr(4, 10, "'3': boxes");
+    ee_putstr(4, 11, "'4': triangles");
+    ee_putstr(4, 12, "'5': ellipses");
+    ee_putstr(4, 13, "'s': sprites");
+    ee_putstr(4, 14, "'c': color");
 
-    ee_putstr(4, yo - 2, "q: quit");
+    ee_putstr(4, 16, "settings:");
+    ee_printf(4, 17, "'o': outline: %s",
+              outline == 0 ? "none" : outline == 1 ? "solid" : "thin");
+    ee_printf(4, 18, "'b': drawing boundaries: %s",
+              bounds == 0 ? "screen" : "infinite");
 
-    ee_refresh();
+    ee_putstr(4, yo - 2, "'q': quit");
 }
 
 static void demo_all(void)
@@ -267,8 +278,6 @@ static void demo_all(void)
     ee_draw_sprite(ee_get_width() / 2 + cos(0.02*i) * ee_get_width() / 4,
                    ee_get_height() / 2 + sin(0.02*i) * ee_get_height() / 3,
                    sprite, 0);
-
-    ee_refresh();
 }
 
 static void demo_dots(void)
@@ -283,7 +292,6 @@ static void demo_dots(void)
         ee_set_color(ee_rand(0, 15));
         ee_putchar(ee_rand(0, xmax), ee_rand(0, ymax), '#');
     }
-    ee_refresh();
 }
 
 static void demo_color(void)
@@ -294,13 +302,12 @@ static void demo_color(void)
     ee_clear();
     for(i = 0; i < 16; i++)
     {
-        sprintf(buf, "'%c': %i (%s)", 'a' + i, i, ee_color_names[i]);
+        sprintf(buf, "'%c': %i (%s)", 'a' + i, i, ee_get_color_name(i));
         ee_set_color(EE_WHITE);
         ee_putstr(4, i + 3, buf);
         ee_set_color(i);
         ee_putstr(40, i + 3, "XXXXXXXXXX-XX--X----------");
     }
-    ee_refresh();
 }
 
 static void demo_lines(void)
@@ -309,7 +316,7 @@ static void demo_lines(void)
     int h = ee_get_height();
     int xa, ya, xb, yb;
 
-    if(force_clipping)
+    if(bounds)
     {
         xa = ee_rand(- w, 2 * w); ya = ee_rand(- h, 2 * h);
         xb = ee_rand(- w, 2 * w); yb = ee_rand(- h, 2 * h);
@@ -321,12 +328,10 @@ static void demo_lines(void)
     }
 
     ee_set_color(ee_rand(0, 15));
-    if(thin)
+    if(outline > 1)
         ee_draw_thin_line(xa, ya, xb, yb);
     else
         ee_draw_line(xa, ya, xb, yb, '#');
-
-    ee_refresh();
 }
 
 static void demo_boxes(void)
@@ -335,7 +340,7 @@ static void demo_boxes(void)
     int h = ee_get_height();
     int xa, ya, xb, yb;
 
-    if(force_clipping)
+    if(bounds)
     {
         xa = ee_rand(- w, 2 * w); ya = ee_rand(- h, 2 * h);
         xb = ee_rand(- w, 2 * w); yb = ee_rand(- h, 2 * h);
@@ -349,13 +354,11 @@ static void demo_boxes(void)
     ee_set_color(ee_rand(0, 15));
     ee_fill_box(xa, ya, xb, yb, '#');
 
-    if(outline)
-    {
-        ee_set_color(ee_rand(0, 15));
+    ee_set_color(ee_rand(0, 15));
+    if(outline == 2)
         ee_draw_thin_box(xa, ya, xb, yb);
-    }
-
-    ee_refresh();
+    else if(outline == 1)
+        ee_draw_box(xa, ya, xb, yb, '#');
 }
 
 static void demo_ellipses(void)
@@ -364,7 +367,7 @@ static void demo_ellipses(void)
     int h = ee_get_height();
     int x, y, a, b;
 
-    if(force_clipping)
+    if(bounds)
     {
         x = ee_rand(- w, 2 * w); y = ee_rand(- h, 2 * h);
         a = ee_rand(0, w); b = ee_rand(0, h);
@@ -382,13 +385,11 @@ static void demo_ellipses(void)
     ee_set_color(ee_rand(0, 15));
     ee_fill_ellipse(x, y, a, b, '#');
 
-    if(outline)
-    {
-        ee_set_color(ee_rand(0, 15));
+    ee_set_color(ee_rand(0, 15));
+    if(outline == 2)
         ee_draw_thin_ellipse(x, y, a, b);
-    }
-
-    ee_refresh();
+    else if(outline == 1)
+        ee_draw_ellipse(x, y, a, b, '#');
 }
 
 static void demo_triangles(void)
@@ -397,7 +398,7 @@ static void demo_triangles(void)
     int h = ee_get_height();
     int xa, ya, xb, yb, xc, yc;
 
-    if(force_clipping)
+    if(bounds)
     {
         xa = ee_rand(- w, 2 * w); ya = ee_rand(- h, 2 * h);
         xb = ee_rand(- w, 2 * w); yb = ee_rand(- h, 2 * h);
@@ -414,19 +415,16 @@ static void demo_triangles(void)
     ee_set_color(ee_rand(0, 15));
     ee_fill_triangle(xa, ya, xb, yb, xc, yc, '#');
 
-    if(outline)
-    {
-        ee_set_color(ee_rand(0, 15));
+    ee_set_color(ee_rand(0, 15));
+    if(outline == 2)
         ee_draw_thin_triangle(xa, ya, xb, yb, xc, yc);
-    }
-
-    ee_refresh();
+    else if(outline == 1)
+        ee_draw_triangle(xa, ya, xb, yb, xc, yc, '#');
 }
 
 static void demo_sprites(void)
 {
     ee_draw_sprite(ee_rand(0, ee_get_width() - 1),
                    ee_rand(0, ee_get_height() - 1), sprite, 0);
-    ee_refresh();
 }
 
