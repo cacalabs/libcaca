@@ -40,6 +40,9 @@
 #include "caca.h"
 
 /* Local macros */
+#define MODE_IMAGE 1
+#define MODE_FILES 2
+
 #define STATUS_DITHERING 1
 #define STATUS_ANTIALIASING 2
 #define STATUS_BACKGROUND 3
@@ -49,6 +52,8 @@
 #define PAD_STEP 0.15
 
 /* Local functions */
+static void print_status(void);
+static void print_help(int, int);
 static void set_zoom(int);
 static void load_image(char const *);
 static void unload_image(void);
@@ -72,7 +77,7 @@ unsigned int red[256], green[256], blue[256], alpha[256];
 
 float zoomtab[ZOOM_MAX + 1];
 float xfactor = 1.0, yfactor = 1.0, dx = 0.5, dy = 0.5;
-int zoom = 0, fullscreen = 0, ww, wh;
+int zoom = 0, fullscreen = 0, mode, ww, wh;
 
 int main(int argc, char **argv)
 {
@@ -362,18 +367,9 @@ int main(int argc, char **argv)
 
         if(!fullscreen)
         {
-            caca_set_color(CACA_COLOR_WHITE, CACA_COLOR_BLUE);
-            caca_draw_line(0, 0, ww - 1, 0, ' ');
-            caca_draw_line(0, wh - 2, ww - 1, wh - 2, '-');
-            caca_putstr(0, 0, "q:Quit  np:Next/Prev  +-x:Zoom  "
-                              "hjkl:Move  d:Dithering  a:Antialias");
-            caca_putstr(ww - strlen("?:Help"), 0, "?:Help");
-            caca_printf(3, wh - 2, "cacaview %s", VERSION);
-            caca_printf(ww - 14, wh - 2,
-                        "(zoom: %s%i)", zoom > 0 ? "+" : "", zoom);
+            print_status();
 
             caca_set_color(CACA_COLOR_LIGHTGRAY, CACA_COLOR_BLACK);
-            caca_draw_line(0, wh - 1, ww - 1, wh - 1, ' ');
             switch(status)
             {
                 case STATUS_ANTIALIASING:
@@ -393,20 +389,7 @@ int main(int argc, char **argv)
 
         if(help)
         {
-            caca_set_color(CACA_COLOR_WHITE, CACA_COLOR_BLUE);
-            caca_putstr(ww - 25, 2,  " +: zoom in             ");
-            caca_putstr(ww - 25, 3,  " -: zoom out            ");
-            caca_putstr(ww - 25, 4,  " x: reset zoom          ");
-            caca_putstr(ww - 25, 5,  " ---------------------- ");
-            caca_putstr(ww - 25, 6,  " hjkl: move view        ");
-            caca_putstr(ww - 25, 7,  " arrows: move view      ");
-            caca_putstr(ww - 25, 8,  " ---------------------- ");
-            caca_putstr(ww - 25, 9,  " a: antialiasing method ");
-            caca_putstr(ww - 25, 10, " d: dithering method    ");
-            caca_putstr(ww - 25, 11, " b: background mode     ");
-            caca_putstr(ww - 25, 12, " ---------------------- ");
-            caca_putstr(ww - 25, 13, " ?: help                ");
-            caca_putstr(ww - 25, 14, " q: quit                ");
+            print_help(ww - 25, 2);
         }
 
         caca_refresh();
@@ -418,6 +401,49 @@ int main(int argc, char **argv)
     caca_end();
 
     return 0;
+}
+
+static void print_status(void)
+{
+    caca_set_color(CACA_COLOR_WHITE, CACA_COLOR_BLUE);
+    caca_draw_line(0, 0, ww - 1, 0, ' ');
+    caca_draw_line(0, wh - 2, ww - 1, wh - 2, '-');
+    caca_putstr(0, 0, "q:Quit  np:Next/Prev  +-x:Zoom  "
+                      "hjkl:Move  d:Dithering  a:Antialias");
+    caca_putstr(ww - strlen("?:Help"), 0, "?:Help");
+    caca_printf(3, wh - 2, "cacaview %s", VERSION);
+    caca_printf(ww - 14, wh - 2, "(zoom: %s%i)", zoom > 0 ? "+" : "", zoom);
+
+    caca_set_color(CACA_COLOR_LIGHTGRAY, CACA_COLOR_BLACK);
+    caca_draw_line(0, wh - 1, ww - 1, wh - 1, ' ');
+}
+
+static void print_help(int x, int y)
+{
+    static char const *help[] =
+    {
+        " +: zoom in             ",
+        " -: zoom out            ",
+        " x: reset zoom          ",
+        " ---------------------- ",
+        " hjkl: move view        ",
+        " arrows: move view      ",
+        " ---------------------- ",
+        " a: antialiasing method ",
+        " d: dithering method    ",
+        " b: background mode     ",
+        " ---------------------- ",
+        " ?: help                ",
+        " q: quit                ",
+        NULL
+    };
+
+    int i;
+
+    caca_set_color(CACA_COLOR_WHITE, CACA_COLOR_BLUE);
+
+    for(i = 0; help[i]; i++)
+        caca_putstr(x, y + i, help[i]);
 }
 
 static void set_zoom(int new_zoom)
