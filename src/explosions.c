@@ -20,6 +20,8 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include "config.h"
+
 #include <stdlib.h>
 
 #include "common.h"
@@ -73,7 +75,7 @@ void draw_explosions(game *g, explosions *ex)
 #if 0
         ee_color(GREEN);
         ee_goto(ex->x[i] + 3, ex->y[i]);
-        switch(ee_rand(0,3))
+        switch(ee_rand(0,2))
         {
         case 0:
             ee_putchar('p');

@@ -20,6 +20,8 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include "config.h"
+
 #include <stdlib.h>
 
 #include "common.h"
@@ -125,12 +127,12 @@ void collide_weapons_tunnel(game *g, weapons *wp, tunnel *t, explosions *ex)
                 if(x - 2 <= t->left[y-j])
                 {
                     add_explosion(g, ex, GET_MIN(t->left[y-j], x+3), y-j, 0, 1, EXPLOSION_SMALL);
-                    t->left[y-j] -= ee_rand(0,3);
+                    t->left[y-j] -= ee_rand(0,2);
                 }
                 else if(x + 3 >= t->right[y-j])
                 {
                     add_explosion(g, ex, GET_MAX(t->right[y-j], x-2), y-j, 0, 1, EXPLOSION_SMALL);
-                    t->right[y-j] += ee_rand(0,3);
+                    t->right[y-j] += ee_rand(0,2);
                 }
             }
             break;

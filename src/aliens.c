@@ -20,6 +20,8 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include "config.h"
+
 #include <stdlib.h>
 
 #include "common.h"
@@ -72,7 +74,7 @@ void update_aliens(game *g, aliens *al)
         {
             add_explosion(g, g->ex, al->x[i], al->y[i], 0, 0, EXPLOSION_MEDIUM);
             al->type[i] = ALIEN_NONE;
-            add_bonus(g, g->bo, al->x[i], al->y[i], ee_rand(0,5) ? BONUS_GREEN : BONUS_LIFE);
+            add_bonus(g, g->bo, al->x[i], al->y[i], ee_rand(0,4) ? BONUS_GREEN : BONUS_LIFE);
         }
 
         /* Update coordinates */

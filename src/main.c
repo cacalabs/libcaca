@@ -20,6 +20,8 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include "config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -182,11 +184,11 @@ static void start_game (game *g)
             skip = 0;
 
             /* XXX: to be removed */
-            if(ee_rand(0,10) == 0)
+            if(ee_rand(0, 9) == 0)
             {
                 int list[3] = { ALIEN_FOO, ALIEN_BAR, ALIEN_BAZ };
 
-                add_alien(g, g->al, 0, rand() % g->h / 2, list[ee_rand(0,3)]);
+                add_alien(g, g->al, 0, rand() % g->h / 2, list[ee_rand(0,2)]);
             }
 
             /* Update game rules */
