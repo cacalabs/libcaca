@@ -810,7 +810,7 @@ unsigned int caca_get_rendertime(void)
 
 static unsigned int _caca_getticks(void)
 {
-    static unsigned int last_sec = 0, last_usec = 0;
+    static int last_sec = 0, last_usec = 0;
 
     struct timeval tv;
     unsigned int ticks = 0;
