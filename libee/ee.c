@@ -120,22 +120,21 @@ int ee_get_height(void)
 
 void ee_clear(void)
 {
-#ifdef USE_SLANG
-    //SLsmg_cls();
-    int y;
-    for(y = 0; y < ee_get_height(); y++)
+#if defined(USE_SLANG) || defined(USE_NCURSES)
+    /* We could use SLsmg_cls(), but drawing empty lines is much faster */
+    int x = ee_get_width(), y = ee_get_height();
+    char *empty_line = malloc((x + 1) * sizeof(char));
+
+    memset(empty_line, ' ', x);
+    empty_line[x] = '\0';
+
+    for(y; y--;)
     {
         ee_goto(0, y);
-        ee_putstr("                                                                                ");
+        ee_putstr(empty_line);
     }
-#elif USE_NCURSES
-    //clear();
-    int y;
-    for(y = 0; y < ee_get_height(); y++)
-    {
-        ee_goto(0, y);
-        ee_putstr("                                                                                ");
-    }
+
+    free(empty_line);
 #else
     /* Use dummy driver */
 #endif
