@@ -2,7 +2,7 @@ Source: libcaca
 Section: libs
 Priority: optional
 Maintainer: Sam Hocevar (Debian packages) <sam+deb@zoy.org>
-Build-Depends: debhelper (>= 4.0), slang1-dev
+Build-Depends: debhelper (>= 4.0), slang1-dev, libimlib2-dev
 Standards-Version: 3.6.1.0
 
 Package: libcaca-dev
@@ -14,3 +14,21 @@ Description: text mode graphics library
  .
  This package contains the header files and static libraries needed to
  compile applications or shared objects that use libcaca.
+
+Package: caca-utils
+Section: utils
+Architecture: any
+Depends: ${shlibs:Depends}, slang1-dev
+Description: text mode graphics utilities
+ This package contains utilities and demonstration programs for libcaca, the
+ Colour AsCii Art library.
+ .
+ cacaview is a simple image viewer for the terminal. It opens most image
+ formats such as JPEG, PNG, GIF etc. and renders them on the terminal using
+ ASCII art. The user can zoom and scroll the image and set the dithering
+ method.
+ .
+ cacademo is a simple application that shows the libcaca rendering features
+ such as line and ellipses drawing, triangle filling, and sprite blitting.
+ .
+ caca-spritedit is a simple sprite viewer for libcaca.
