@@ -28,7 +28,7 @@
 
 int ee_rand(int min, int max)
 {
-    return min + (int)((1.0*(max-min)) * rand() / (RAND_MAX+1.0));
+    return min + (int)((1.0*(max-min+1)) * rand() / (RAND_MAX+1.0));
 }
 
 int ee_sqrt(int a)
