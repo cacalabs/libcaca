@@ -46,6 +46,8 @@ int main (int argc, char **argv)
         return 1;
     }
 
+    ee_set_delay(100000);
+
     /* Initialize our program */
     g->w = ee_get_width();
     g->h = ee_get_height();

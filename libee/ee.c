@@ -190,11 +190,6 @@ int ee_init(void)
     return 0;
 }
 
-void ee_set_delay(int usec)
-{
-    _ee_delay = usec;
-}
-
 int ee_get_width(void)
 {
 #if defined(USE_SLANG)
@@ -217,37 +212,35 @@ int ee_get_height(void)
 #endif
 }
 
-#if !defined(USE_CONIO)
-static int64_t local_time(void)
+void ee_set_delay(int usec)
 {
+    _ee_delay = usec;
+}
+
+static unsigned int _ee_getticks(void)
+{
+    static unsigned int last_sec = 0, last_usec = 0;
+
     struct timeval tv;
-    int64_t now;
+    unsigned int ticks = 0;
 
     gettimeofday(&tv, NULL);
-    now = tv.tv_sec;
-    now *= 1000000;
-    now += tv.tv_usec;
-    return now;
+
+    if(last_sec != 0)
+    {
+        ticks = (tv.tv_sec - last_sec) * 1000000 + (tv.tv_usec - last_usec);
+    }
+
+    last_sec = tv.tv_sec;
+    last_usec = tv.tv_usec;
+
+    return ticks;
 }
-#endif
 
 void ee_refresh(void)
 {
-#if !defined(USE_CONIO)
-    static int64_t local_clock = 0;
-    int64_t now;
-
-    if(!local_clock)
-    {
-        /* Initialize local_clock */
-        local_clock = local_time();
-    }
-
-    if(local_time() > local_clock + 10000)
-    {
-        /* If we are late, we shouldn't display anything */
-    }
-#endif
+    static int lastticks = 0;
+    unsigned int ticks = lastticks + _ee_getticks();
 
 #if defined(USE_SLANG)
     SLsmg_refresh();
@@ -261,18 +254,15 @@ void ee_refresh(void)
 #   endif
 #endif
 
-#if !defined(USE_CONIO)
-    now = local_time();
+    /* Wait until _ee_delay + time of last call */
+    for(ticks += _ee_getticks(); ticks < _ee_delay; ticks += _ee_getticks())
+        usleep(10000);
 
-    if(now < local_clock + _ee_delay - 10000)
-    {
-        usleep(local_clock + _ee_delay - 10000 - now);
-    }
+    lastticks = ticks - _ee_delay;
 
-    local_clock += _ee_delay;
-#else
-    delay(5);
-#endif
+    /* If we drifted too much, it's bad, bad, bad. */
+    if(lastticks > _ee_delay)
+        lastticks = 0;
 }
 
 void ee_end(void)

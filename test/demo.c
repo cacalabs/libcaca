@@ -55,6 +55,8 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    ee_set_delay(40000);
+
     /* Initialize data */
     sprite = ee_load_sprite("data/barboss.txt");
 
