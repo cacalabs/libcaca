@@ -42,6 +42,8 @@ typedef unsigned int uint32_t;
 #include "caca.h"
 #include "caca_internals.h"
 
+#define NEW_RENDERER 1
+
 static void mask2shift(unsigned int, int *, int *);
 
 static void get_rgb_default(struct caca_bitmap *, uint8_t *, int, int,
@@ -308,16 +310,17 @@ static void rgb2hsv_default(int r, int g, int b, int *hue, int *sat, int *val)
 void caca_draw_bitmap(int x1, int y1, int x2, int y2,
                       struct caca_bitmap *bitmap, char *pixels)
 {
-    /* FIXME: this code is shite! */
-    static int white_colors[] =
+#if !NEW_RENDERER
+    static const int white_colors[] =
     {
         CACA_COLOR_BLACK,
         CACA_COLOR_DARKGRAY,
         CACA_COLOR_LIGHTGRAY,
         CACA_COLOR_WHITE
     };
+#endif
 
-    static int light_colors[] =
+    static const int light_colors[] =
     {
         CACA_COLOR_LIGHTMAGENTA,
         CACA_COLOR_LIGHTRED,
@@ -328,7 +331,7 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
         CACA_COLOR_LIGHTMAGENTA
     };
 
-    static int dark_colors[] =
+    static const int dark_colors[] =
     {
         CACA_COLOR_MAGENTA,
         CACA_COLOR_RED,
@@ -341,7 +344,7 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
 
     /* FIXME: choose better characters! */
 #   define DENSITY_CHARS 13
-    static char density_chars[] =
+    static const char density_chars[] =
         "    "
         "    "
         ".`  "
@@ -388,9 +391,8 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
         int fromy = h * (y - y1) / (y2 - y1 + 1);
         enum caca_color outfg, outbg;
         char outch;
-#define NEW_DITHERER 1
-#ifdef NEW_DITHERER
-        int distbg, distfg, dist;
+#if NEW_RENDERER
+        int distbg, distfg, dist, hue1, hue2;
 #endif
 
         /* Clip values (yuck) */
@@ -400,7 +402,9 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
         /* First get RGB */
         R = 0, G = 0, B = 0;
         get_rgb_default(bitmap, pixels, fromx, fromy, &r, &g, &b);
-#if 0
+#if 1
+        R += r; G += g; B += b;
+#else
         R += r; G += g; B += b;
         get_rgb_default(bitmap, pixels, fromx - 1, fromy, &r, &g, &b);
         R += r; G += g; B += b;
@@ -411,8 +415,6 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
         get_rgb_default(bitmap, pixels, fromx, fromy + 1, &r, &g, &b);
         R += r; G += g; B += b;
         R /= 5; G /= 5; B /= 5;
-#else
-        R += r; G += g; B += b;
 #endif
 
         /* Now get HSV from RGB */
@@ -420,18 +422,22 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
 
         /* The hard work: calculate foreground and background colours,
          * as well as the most appropriate character to output. */
-#if NEW_DITHERER
-#define XRATIO 5*5
-#define YRATIO 3*3
+#if NEW_RENDERER
+#       define XRATIO 5*5
+#       define YRATIO 3*3
+#       define HRATIO 2*2
+#       define FUZZINESS XRATIO * 0x800
+
         /* distance to black */
         distbg = XRATIO * val * val;
-        distbg += XRATIO * 0x1000 * _get_dither() - XRATIO * 0x8000;
+        distbg += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
         outbg = CACA_COLOR_BLACK;
 
         /* distance to 30% */
         dist = XRATIO * (val - 0x600) * (val - 0x600)
              + YRATIO * sat * sat;
-        dist += XRATIO * 0x1000 * _get_dither() - XRATIO * 0x8000;
+        dist += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
+        dist = dist * 3 / 2;
         if(dist <= distbg)
         {
             outfg = outbg;
@@ -448,7 +454,8 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
         /* check dist to 70% */
         dist = XRATIO * (val - 0xa00) * (val - 0xa00)
              + YRATIO * sat * sat;
-        dist += XRATIO * 0x1000 * _get_dither() - XRATIO * 0x8000;
+        dist += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
+        dist = dist * 3 / 2;
         if(dist <= distbg)
         {
             outfg = outbg;
@@ -465,7 +472,7 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
         /* check dist to white */
         dist = XRATIO * (val - 0x1000) * (val - 0x1000)
              + YRATIO * sat * sat;
-        dist += XRATIO * 0x1000 * _get_dither() - XRATIO * 0x8000;
+        dist += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
         if(dist <= distbg)
         {
             outfg = outbg;
@@ -479,39 +486,85 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
             distfg = dist;
         }
 
-        /* check dist to dark */
+        hue1 = (hue + 0x800) & ~0xfff;
+        if(hue > hue1)
+            hue2 = (hue + 0x1800) & ~0xfff;
+        else
+            hue2 = (hue - 0x800) & ~0xfff;
+
+        /* check dist to 2nd closest dark color */
         dist = XRATIO * (val - 0x600) * (val - 0x600)
-             + YRATIO * (sat - 0x1000) * (sat - 0x1000);
-        dist += XRATIO * 0x1000 * _get_dither() - XRATIO * 0x8000;
+             + YRATIO * (sat - 0x1000) * (sat - 0x1000)
+             + HRATIO * (hue - hue2) * (hue - hue2);
+        dist += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
         dist = dist * 3 / 4;
         if(dist <= distbg)
         {
             outfg = outbg;
             distfg = distbg;
-            outbg = dark_colors[(hue + _get_dither() * 0x10) / 0x1000];
+            outbg = dark_colors[hue2 / 0x1000];
             distbg = dist;
         }
         else if(dist <= distfg)
         {
-            outfg = dark_colors[(hue + _get_dither() * 0x10) / 0x1000];
+            outfg = dark_colors[hue2 / 0x1000];
             distfg = dist;
         }
 
-        /* check dist to light */
+        /* check dist to 2nd closest light color */
         dist = XRATIO * (val - 0x1000) * (val - 0x1000)
-             + YRATIO * (sat - 0x1000) * (sat - 0x1000);
-        dist += XRATIO * 0x1000 * _get_dither() - XRATIO * 0x8000;
+             + YRATIO * (sat - 0x1000) * (sat - 0x1000)
+             + HRATIO * (hue - hue2) * (hue - hue2);
+        dist += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
         dist = dist / 2;
         if(dist <= distbg)
         {
             outfg = outbg;
             distfg = distbg;
-            outbg = light_colors[(hue + _get_dither() * 0x10) / 0x1000];
+            outbg = light_colors[hue2 / 0x1000];
             distbg = dist;
         }
         else if(dist <= distfg)
         {
-            outfg = light_colors[(hue + _get_dither() * 0x10) / 0x1000];
+            outfg = light_colors[hue2 / 0x1000];
+            distfg = dist;
+        }
+
+        /* check dist to closest dark color */
+        dist = XRATIO * (val - 0x600) * (val - 0x600)
+             + YRATIO * (sat - 0x1000) * (sat - 0x1000)
+             + HRATIO * (hue - hue1) * (hue - hue1);
+        dist += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
+        dist = dist * 3 / 4;
+        if(dist <= distbg)
+        {
+            outfg = outbg;
+            distfg = distbg;
+            outbg = dark_colors[hue1 / 0x1000];
+            distbg = dist;
+        }
+        else if(dist <= distfg)
+        {
+            outfg = dark_colors[hue1 / 0x1000];
+            distfg = dist;
+        }
+
+        /* check dist to closest light color */
+        dist = XRATIO * (val - 0x1000) * (val - 0x1000)
+             + YRATIO * (sat - 0x1000) * (sat - 0x1000)
+             + HRATIO * (hue - hue1) * (hue - hue1);
+        dist += FUZZINESS * _get_dither() - 0x80 * FUZZINESS;
+        dist = dist / 2;
+        if(dist <= distbg)
+        {
+            outfg = outbg;
+            distfg = distbg;
+            outbg = light_colors[hue1 / 0x1000];
+            distbg = dist;
+        }
+        else if(dist <= distfg)
+        {
+            outfg = light_colors[hue1 / 0x1000];
             distfg = dist;
         }
 
@@ -520,14 +573,14 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
 
         /* distbg can be > distfg because of dithering fuzziness */
         ch = distbg * 2 * (DENSITY_CHARS - 1) / (distbg + distfg);
-        ch = 4 * ch /*+ _get_dither() / 0x40*/;
+        ch = 4 * ch + _get_dither() / 0x40;
         outch = density_chars[ch];
 
 #else
         outbg = CACA_COLOR_BLACK;
-        if(sat < 0x200 + _get_dither() * 0x8)
+        if((unsigned int)sat < 0x200 + _get_dither() * 0x8)
             outfg = white_colors[1 + (val * 2 + _get_dither() * 0x10) / 0x1000];
-        else if(val > 0x800 + _get_dither() * 0x4)
+        else if((unsigned int)val > 0x800 + _get_dither() * 0x4)
             outfg = light_colors[(hue + _get_dither() * 0x10) / 0x1000];
         else
             outfg = dark_colors[(hue + _get_dither() * 0x10) / 0x1000];
