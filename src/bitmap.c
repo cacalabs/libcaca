@@ -86,7 +86,7 @@ static void increment_random_dither(void);
 
 struct caca_bitmap
 {
-    int bpp, palette;
+    int bpp, has_palette, has_alpha;
     int w, h, pitch;
     int rmask, gmask, bmask, amask;
     int rright, gright, bright, aright;
@@ -136,7 +136,8 @@ struct caca_bitmap *caca_create_bitmap(unsigned int bpp, unsigned int w,
         return NULL;
 
     bitmap->bpp = bpp;
-    bitmap->palette = 0;
+    bitmap->has_palette = 0;
+    bitmap->has_alpha = amask ? 1 : 0;
 
     bitmap->w = w;
     bitmap->h = h;
@@ -160,13 +161,13 @@ struct caca_bitmap *caca_create_bitmap(unsigned int bpp, unsigned int w,
     if(bpp == 8)
     {
         int i;
-        bitmap->palette = 1;
+        bitmap->has_palette = 1;
+        bitmap->has_alpha = 0;
         for(i = 0; i < 256; i++)
         {
             bitmap->red[i] = i * 0xfff / 256;
             bitmap->green[i] = i * 0xfff / 256;
             bitmap->blue[i] = i * 0xfff / 256;
-            bitmap->alpha[i] = 0xfff;
         }
     }
 
@@ -177,7 +178,7 @@ void caca_set_bitmap_palette(struct caca_bitmap *bitmap,
                              unsigned int red[], unsigned int green[],
                              unsigned int blue[], unsigned int alpha[])
 {
-    int i;
+    int i, has_alpha = 0;
 
     if(bitmap->bpp != 8)
         return;
@@ -192,9 +193,16 @@ void caca_set_bitmap_palette(struct caca_bitmap *bitmap,
             bitmap->red[i] = red[i];
             bitmap->green[i] = green[i];
             bitmap->blue[i] = blue[i];
-            bitmap->alpha[i] = alpha[i];
+            if(alpha[i])
+            {
+                bitmap->alpha[i] = alpha[i];
+                has_alpha = 1;
+            }
         }
     }
+
+    if(has_alpha)
+        bitmap->has_alpha = has_alpha;
 }
 
 void caca_free_bitmap(struct caca_bitmap *bitmap)
@@ -245,7 +253,7 @@ static void get_rgba_default(const struct caca_bitmap *bitmap, uint8_t *pixels,
             break;
     }
 
-    if(bitmap->palette)
+    if(bitmap->has_palette)
     {
         *r += bitmap->red[bits];
         *g += bitmap->green[bits];
@@ -456,7 +464,7 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
             get_rgba_default(bitmap, pixels, myx, myy, &r, &g, &b, &a);
         }
 
-        if(a < 0x100)
+        if(bitmap->has_alpha && a < 0x800)
             continue;
 
         /* Now get HSV from RGB */
