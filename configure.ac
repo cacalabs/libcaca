@@ -6,7 +6,7 @@ AC_PREREQ(2.50)
 AC_CONFIG_AUX_DIR(autotools)
 AC_CANONICAL_SYSTEM
 
-AM_INIT_AUTOMAKE(libcaca, 0.1)
+AM_INIT_AUTOMAKE(libcaca, 0.2)
 AM_CONFIG_HEADER(config.h)
 
 AM_PROG_CC_C_O
@@ -24,7 +24,7 @@ AC_ARG_ENABLE(slang,
 AC_ARG_ENABLE(conio,
   [  --enable-conio          DOS conio.h graphics support (default disabled)])
 
-AC_CHECK_HEADERS(inttypes.h)
+AC_CHECK_HEADERS(inttypes.h endian.h)
 AC_CHECK_FUNCS(vsnprintf getenv putenv)
 
 USE_SLANG=false

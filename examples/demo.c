@@ -100,7 +100,7 @@ int main(int argc, char **argv)
                 break;
             case 'd':
             case 'D':
-                dithering = (dithering + 1) % 4;
+                dithering = (dithering + 1) % 5;
                 caca_set_dithering(dithering);
                 display_menu();
                 break;

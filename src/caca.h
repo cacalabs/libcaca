@@ -89,9 +89,10 @@ const char *caca_get_color_name(enum caca_color);
 enum caca_dithering
 {
     CACA_DITHERING_NONE = 0,
-    CACA_DITHERING_ORDERED4 = 1,
-    CACA_DITHERING_ORDERED8 = 2,
-    CACA_DITHERING_RANDOM = 3
+    CACA_DITHERING_ORDERED2 = 1,
+    CACA_DITHERING_ORDERED4 = 2,
+    CACA_DITHERING_ORDERED8 = 3,
+    CACA_DITHERING_RANDOM = 4
 };
 
 const char *caca_get_dithering_name(enum caca_dithering);

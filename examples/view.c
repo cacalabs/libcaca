@@ -28,6 +28,10 @@
 #include <malloc.h>
 #include <unistd.h>
 
+#ifdef HAVE_ENDIAN_H
+#   include <endian.h>
+#endif
+
 #include <Imlib2.h>
 
 #include "caca.h"
@@ -36,6 +40,7 @@ Imlib_Image image = NULL;
 char *pixels = NULL;
 struct caca_bitmap *bitmap = NULL;
 int x, y, w, h;
+unsigned int rmask, gmask, bmask;
 
 int dithering = CACA_DITHERING_ORDERED4;
 
@@ -48,6 +53,20 @@ int main(int argc, char **argv)
 
     char **list = NULL;
     int current = 0, items = 0, opts = 1;
+
+#ifdef HAVE_ENDIAN_H
+    if(__BYTE_ORDER == __BIG_ENDIAN)
+#else
+    rmask = 0x12345678;
+    if(*(char *)&rmask == 0x12)
+#endif
+    {
+        rmask = 0x00ff0000; gmask = 0x0000ff00; bmask = 0x000000ff;
+    }
+    else
+    {
+        rmask = 0x0000ff00; gmask = 0x00ff0000; bmask = 0xff000000;
+    }
 
     /* Initialise libcaca */
     if(caca_init())
@@ -101,11 +120,11 @@ int main(int argc, char **argv)
                 reload = 1;
                 break;
             case CACA_EVENT_KEY_PRESS | 'd':
-                dithering = (dithering + 1) % 4;
+                dithering = (dithering + 1) % 5;
                 update = 1;
                 break;
             case CACA_EVENT_KEY_PRESS | 'D':
-                dithering = (dithering - 1) % 4;
+                dithering = (dithering + 4) % 5;
                 update = 1;
                 break;
             case CACA_EVENT_KEY_PRESS | '+':
@@ -215,7 +234,7 @@ int main(int argc, char **argv)
             if(xn + x > w) x = w - xn;
             if(yn + y > h) y = h - yn;
             newbitmap = caca_create_bitmap(32, 2 * xn, 2 * yn, 4 * w,
-                                       0x0000ff00, 0x00ff0000, 0xff000000);
+                                           rmask, gmask, bmask);
             caca_draw_bitmap(0, 0, ww - 1, wh - 1, newbitmap,
                              pixels + 4 * (x - xn) + 4 * w * (y - yn));
             caca_free_bitmap(newbitmap);
@@ -297,8 +316,7 @@ static void load_image(const char *name)
     y = h / 2;
 
     /* Create the libcaca bitmap */
-    bitmap = caca_create_bitmap(32, w, h, 4 * w,
-                                0x0000ff00, 0x00ff0000, 0xff000000);
+    bitmap = caca_create_bitmap(32, w, h, 4 * w, rmask, gmask, bmask);
     if(!bitmap)
     {
         imlib_free_image();

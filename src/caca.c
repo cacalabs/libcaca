@@ -185,12 +185,13 @@ const char *caca_get_dithering_name(enum caca_dithering dithering)
     static const char *dithering_names[] =
     {
         "no",
+        "2x2 ordered",
         "4x4 ordered",
         "8x8 ordered",
         "random"
     };
 
-    if(dithering < 0 || dithering > 3)
+    if(dithering < 0 || dithering > 4)
         return "unknown";
 
     return dithering_names[dithering];

@@ -53,6 +53,10 @@ static void init_no_dither(int);
 static unsigned int get_no_dither(void);
 static void increment_no_dither(void);
 
+static void init_ordered2_dither(int);
+static unsigned int get_ordered2_dither(void);
+static void increment_ordered2_dither(void);
+
 static void init_ordered4_dither(int);
 static unsigned int get_ordered4_dither(void);
 static void increment_ordered4_dither(void);
@@ -80,6 +84,12 @@ void caca_set_dithering(enum caca_dithering dither)
         _init_dither = init_no_dither;
         _get_dither = get_no_dither;
         _increment_dither = increment_no_dither;
+        break;
+
+    case CACA_DITHERING_ORDERED2:
+        _init_dither = init_ordered2_dither;
+        _get_dither = get_ordered2_dither;
+        _increment_dither = increment_ordered2_dither;
         break;
 
     case CACA_DITHERING_ORDERED4:
@@ -140,10 +150,9 @@ static void mask2shift(unsigned int mask, int *right, int *left)
         mask >>= 1;
         lshift++;
     }
-    *left = 16 - lshift;
+    *left = 12 - lshift;
 }
 
-#include <stdio.h>
 struct caca_bitmap *caca_create_bitmap(int bpp, int w, int h, int pitch,
                                        int rmask, int gmask, int bmask)
 {
@@ -175,7 +184,6 @@ struct caca_bitmap *caca_create_bitmap(int bpp, int w, int h, int pitch,
         mask2shift(gmask, &bitmap->gright, &bitmap->gleft);
         mask2shift(bmask, &bitmap->bright, &bitmap->bleft);
     }
-fprintf(stderr, "shifts: %i %i %i %i %i %i\n", bitmap->rright, bitmap->rleft, bitmap->gright, bitmap->gleft, bitmap->bright, bitmap->bleft);
 
     /* In 8 bpp mode, default to a grayscale palette */
     if(bpp == 8)
@@ -184,9 +192,9 @@ fprintf(stderr, "shifts: %i %i %i %i %i %i\n", bitmap->rright, bitmap->rleft, bi
         bitmap->palette = 1;
         for(i = 0; i < 256; i++)
         {
-            bitmap->red[i] = i * 0x100;
-            bitmap->green[i] = i * 0x100;
-            bitmap->blue[i] = i * 0x100;
+            bitmap->red[i] = i * 0x10;
+            bitmap->green[i] = i * 0x10;
+            bitmap->blue[i] = i * 0x10;
         }
     }
 
@@ -203,9 +211,9 @@ void caca_set_bitmap_palette(struct caca_bitmap *bitmap,
 
     for(i = 0; i < 256; i++)
     {
-        if(red[i] >= 0 && red[i] < 65536 &&
-           green[i] >= 0 && green[i] < 65536 &&
-           blue[i] >= 0 && blue[i] < 65536)
+        if(red[i] >= 0 && red[i] < 0x1000 &&
+           green[i] >= 0 && green[i] < 0x1000 &&
+           blue[i] >= 0 && blue[i] < 0x1000)
         {
             bitmap->red[i] = red[i];
             bitmap->green[i] = green[i];
@@ -280,15 +288,15 @@ static void rgb2hsv_default(int r, int g, int b, int *hue, int *sat, int *val)
 
     if(delta)
     {
-        *sat = 0x1000 * delta / max * 0x10; /* 0 - 0xffff */
+        *sat = 0x1000 * delta / max; /* 0 - 0xfff */
 
-        /* Generate *hue between 0 and 0x5ffff */
+        /* Generate *hue between 0 and 0x5fff */
         if( r == max )
-            *hue = 0x10000 + 0x100 * (g - b) / delta * 0x100;
+            *hue = 0x1000 + 0x1000 * (g - b) / delta;
         else if( g == max )
-            *hue = 0x30000 + 0x100 * (b - r) / delta * 0x100;
+            *hue = 0x3000 + 0x1000 * (b - r) / delta;
         else
-            *hue = 0x50000 + 0x100 * (r - g) / delta * 0x100;
+            *hue = 0x5000 + 0x1000 * (r - g) / delta;
     }
     else
     {
@@ -303,6 +311,7 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
     /* FIXME: this code is shite! */
     static int white_colors[] =
     {
+        CACA_COLOR_BLACK,
         CACA_COLOR_DARKGRAY,
         CACA_COLOR_LIGHTGRAY,
         CACA_COLOR_WHITE
@@ -330,19 +339,23 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
         CACA_COLOR_MAGENTA
     };
 
-    static char foo[] =
+    /* FIXME: choose better characters! */
+#   define DENSITY_CHARS 13
+    static char density_chars[] =
         "    "
-        " ,' "
+        "    "
+        ".`  "
         ",`.'"
-        "i-:^"
-        "|/;\\"
-        "=+ox"
-        "<x%>"
-        "&z$w"
+        "i:-^"
+        "|=+;"
+        "ox/\\"
+        "<>x%"
+        "&$zw"
         "WXKM"
         "#8##"
         "8@8#"
-        "@8@8";
+        "@8@8"
+        "????";
 
     int x, y, w, h, pitch;
 
@@ -364,53 +377,172 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
     }
 
     for(y = y1 > 0 ? y1 : 0; y <= y2 && y <= (int)caca_get_height(); y++)
+        for(x = x1 > 0 ? x1 : 0, _init_dither(y);
+            x <= x2 && x <= (int)caca_get_width();
+            x++)
     {
-        /* Initialize dither tables for the current line */
-        _init_dither(y);
+        int ch;
+        unsigned int r, g, b, R, G, B;
+        int hue, sat, val;
+        int fromx = w * (x - x1) / (x2 - x1 + 1);
+        int fromy = h * (y - y1) / (y2 - y1 + 1);
+        enum caca_color outfg, outbg;
+        char outch;
+#define NEW_DITHERER 1
+#ifdef NEW_DITHERER
+        int distbg, distfg, dist;
+#endif
 
-        /* Dither the current line */
-        for(x = x1 > 0 ? x1 : 0; x <= x2 && x <= (int)caca_get_width(); x++)
+        /* Clip values (yuck) */
+        if(fromx == 0) fromx = 1;
+        if(fromy == 0) fromy = 1;
+
+        /* First get RGB */
+        R = 0, G = 0, B = 0;
+        get_rgb_default(bitmap, pixels, fromx, fromy, &r, &g, &b);
+#if 0
+        R += r; G += g; B += b;
+        get_rgb_default(bitmap, pixels, fromx - 1, fromy, &r, &g, &b);
+        R += r; G += g; B += b;
+        get_rgb_default(bitmap, pixels, fromx, fromy - 1, &r, &g, &b);
+        R += r; G += g; B += b;
+        get_rgb_default(bitmap, pixels, fromx + 1, fromy, &r, &g, &b);
+        R += r; G += g; B += b;
+        get_rgb_default(bitmap, pixels, fromx, fromy + 1, &r, &g, &b);
+        R += r; G += g; B += b;
+        R /= 5; G /= 5; B /= 5;
+#else
+        R += r; G += g; B += b;
+#endif
+
+        /* Now get HSV from RGB */
+        rgb2hsv_default(R, G, B, &hue, &sat, &val);
+
+        /* The hard work: calculate foreground and background colours,
+         * as well as the most appropriate character to output. */
+#if NEW_DITHERER
+#define XRATIO 5*5
+#define YRATIO 3*3
+        /* distance to black */
+        distbg = XRATIO * val * val;
+        distbg += XRATIO * 0x1000 * _get_dither() - XRATIO * 0x8000;
+        outbg = CACA_COLOR_BLACK;
+
+        /* distance to 30% */
+        dist = XRATIO * (val - 0x600) * (val - 0x600)
+             + YRATIO * sat * sat;
+        dist += XRATIO * 0x1000 * _get_dither() - XRATIO * 0x8000;
+        if(dist <= distbg)
         {
-            int ch;
-            unsigned int hue, sat, val, r, g, b, R, G, B;
-            int fromx = w * (x - x1) / (x2 - x1 + 1);
-            int fromy = h * (y - y1) / (y2 - y1 + 1);
-
-            /* Clip values (yuck) */
-            if(fromx == 0) fromx = 1;
-            if(fromy == 0) fromy = 1;
-
-            /* First get RGB */
-            R = 0, G = 0, B = 0;
-            get_rgb_default(bitmap, pixels, fromx, fromy, &r, &g, &b);
-            R += r; G += g; B += b;
-            get_rgb_default(bitmap, pixels, fromx - 1, fromy, &r, &g, &b);
-            R += r; G += g; B += b;
-            get_rgb_default(bitmap, pixels, fromx, fromy - 1, &r, &g, &b);
-            R += r; G += g; B += b;
-            get_rgb_default(bitmap, pixels, fromx + 1, fromy, &r, &g, &b);
-            R += r; G += g; B += b;
-            get_rgb_default(bitmap, pixels, fromx, fromy + 1, &r, &g, &b);
-            R += r; G += g; B += b;
-            R /= 5; G /= 5; B /= 5;
-
-            /* Now get HSV from RGB */
-            rgb2hsv_default(R, G, B, &hue, &sat, &val);
-
-            if(sat < 0x2000 + _get_dither() * 0x80)
-                caca_set_color(white_colors[val * 3 / 0x10000], CACA_COLOR_BLACK);
-            else if(val > 0x8000 + _get_dither() * 0x40)
-                caca_set_color(light_colors[(hue + _get_dither() * 0x100) / 0x10000], CACA_COLOR_BLACK);
-            else
-                caca_set_color(dark_colors[(hue + _get_dither() * 0x100) / 0x10000], CACA_COLOR_BLACK);
-
-            /* FIXME: choose better characters! */
-            ch = (val + 0x20 * _get_dither() - 0x1000 /*???*/) * 10 / 0x10000;
-            ch = 4 * ch + (_get_dither() + 8) / 0x40;
-            caca_putchar(x, y, foo[ch]);
-
-            _increment_dither();
+            outfg = outbg;
+            distfg = distbg;
+            outbg = CACA_COLOR_DARKGRAY;
+            distbg = dist;
         }
+        else
+        {
+            outfg = CACA_COLOR_DARKGRAY;
+            distfg = dist;
+        }
+
+        /* check dist to 70% */
+        dist = XRATIO * (val - 0xa00) * (val - 0xa00)
+             + YRATIO * sat * sat;
+        dist += XRATIO * 0x1000 * _get_dither() - XRATIO * 0x8000;
+        if(dist <= distbg)
+        {
+            outfg = outbg;
+            distfg = distbg;
+            outbg = CACA_COLOR_LIGHTGRAY;
+            distbg = dist;
+        }
+        else if(dist <= distfg)
+        {
+            outfg = CACA_COLOR_LIGHTGRAY;
+            distfg = dist;
+        }
+
+        /* check dist to white */
+        dist = XRATIO * (val - 0x1000) * (val - 0x1000)
+             + YRATIO * sat * sat;
+        dist += XRATIO * 0x1000 * _get_dither() - XRATIO * 0x8000;
+        if(dist <= distbg)
+        {
+            outfg = outbg;
+            distfg = distbg;
+            outbg = CACA_COLOR_WHITE;
+            distbg = dist;
+        }
+        else if(dist <= distfg)
+        {
+            outfg = CACA_COLOR_WHITE;
+            distfg = dist;
+        }
+
+        /* check dist to dark */
+        dist = XRATIO * (val - 0x600) * (val - 0x600)
+             + YRATIO * (sat - 0x1000) * (sat - 0x1000);
+        dist += XRATIO * 0x1000 * _get_dither() - XRATIO * 0x8000;
+        dist = dist * 3 / 4;
+        if(dist <= distbg)
+        {
+            outfg = outbg;
+            distfg = distbg;
+            outbg = dark_colors[(hue + _get_dither() * 0x10) / 0x1000];
+            distbg = dist;
+        }
+        else if(dist <= distfg)
+        {
+            outfg = dark_colors[(hue + _get_dither() * 0x10) / 0x1000];
+            distfg = dist;
+        }
+
+        /* check dist to light */
+        dist = XRATIO * (val - 0x1000) * (val - 0x1000)
+             + YRATIO * (sat - 0x1000) * (sat - 0x1000);
+        dist += XRATIO * 0x1000 * _get_dither() - XRATIO * 0x8000;
+        dist = dist / 2;
+        if(dist <= distbg)
+        {
+            outfg = outbg;
+            distfg = distbg;
+            outbg = light_colors[(hue + _get_dither() * 0x10) / 0x1000];
+            distbg = dist;
+        }
+        else if(dist <= distfg)
+        {
+            outfg = light_colors[(hue + _get_dither() * 0x10) / 0x1000];
+            distfg = dist;
+        }
+
+        if(distbg <= 0) distbg = 1;
+        if(distfg <= 0) distfg = 1;
+
+        /* distbg can be > distfg because of dithering fuzziness */
+        ch = distbg * 2 * (DENSITY_CHARS - 1) / (distbg + distfg);
+        ch = 4 * ch /*+ _get_dither() / 0x40*/;
+        outch = density_chars[ch];
+
+#else
+        outbg = CACA_COLOR_BLACK;
+        if(sat < 0x200 + _get_dither() * 0x8)
+            outfg = white_colors[1 + (val * 2 + _get_dither() * 0x10) / 0x1000];
+        else if(val > 0x800 + _get_dither() * 0x4)
+            outfg = light_colors[(hue + _get_dither() * 0x10) / 0x1000];
+        else
+            outfg = dark_colors[(hue + _get_dither() * 0x10) / 0x1000];
+
+        ch = (val + 0x2 * _get_dither()) * 10 / 0x1000;
+        ch = 4 * ch + _get_dither() / 0x40;
+        outch = density_chars[ch];
+
+#endif
+
+        /* Now output the character */
+        caca_set_color(outfg, outbg);
+        caca_putchar(x, y, outch);
+
+        _increment_dither();
     }
 }
 
@@ -434,6 +566,34 @@ static unsigned int get_no_dither(void)
 static void increment_no_dither(void)
 {
     return;
+}
+
+/*
+ * Ordered 2 dithering
+ */
+static unsigned int *ordered2_table;
+static unsigned int ordered2_index;
+
+static void init_ordered2_dither(int line)
+{
+    static unsigned int dither2x2[] =
+    {
+        0x00, 0x80,
+        0xc0, 0x40,
+    };
+
+    ordered2_table = dither2x2 + (line % 2) * 2;
+    ordered2_index = 0;
+}
+
+static unsigned int get_ordered2_dither(void)
+{
+    return ordered2_table[ordered2_index];
+}
+
+static void increment_ordered2_dither(void)
+{
+    ordered2_index = (ordered2_index + 1) % 2;
 }
 
 /*
