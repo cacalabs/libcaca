@@ -98,23 +98,27 @@ static void start_game (game *g)
                     p->dir = -3;
                     break;
                 case 'j':
-                    //if( p->y < g->h - 2 ) p->y += 1;
+                    if( p->y < g->h - 2 ) p->y += 1;
                     break;
                 case 'k':
-                    //if( p->y > 1 ) p->y -= 1;
+                    if( p->y > 1 ) p->y -= 1;
                     break;
                 case 'l':
                     p->dir = 3;
                     break;
                 case '\r':
-                    add_explosion( g, ex, p->x + 2, p->y, 0, 0, 2 );
+                    if( p->nuke == 0 )
+                    {
+                        p->nuke = 40;
+                        add_weapon( g, wp, p->x + 2, p->y, 2 );
+                    }
                     break;
                 case ' ':
                     if( p->weapon == 0 )
                     {
                         p->weapon = 4;
-                        add_weapon( g, wp, p->x, p->y );
-                        add_weapon( g, wp, p->x + 5, p->y );
+                        add_weapon( g, wp, p->x, p->y, 1 );
+                        add_weapon( g, wp, p->x + 5, p->y, 1 );
                     }
                     break;
             }

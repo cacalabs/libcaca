@@ -12,6 +12,7 @@ player * create_player( game *g )
     p->y = g->h - 3;
     p->dir = 0;
     p->weapon = 0;
+    p->nuke = 0;
 
     return p;
 }
@@ -49,6 +50,11 @@ void update_player( game *g, player *p )
     if( p->weapon )
     {
         p->weapon--;
+    }
+
+    if( p->nuke )
+    {
+        p->nuke--;
     }
 
     if( p->dir < 0 )

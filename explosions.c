@@ -1,12 +1,10 @@
 
 #include <stdlib.h>
-#include <math.h>
 
 #include "common.h"
 
 static void draw_small_explosion( int x, int y, int frame );
 static void draw_big_explosion( int x, int y, int frame );
-static void draw_huge_explosion( int x, int y, int frame );
 
 void init_explosions( game *g, explosions *ex )
 {
@@ -85,9 +83,6 @@ void draw_explosions( game *g, explosions *ex )
 
         switch( ex->type[i] )
         {
-            case 2:
-                draw_huge_explosion( ex->x[i], ex->y[i], ex->n[i] );
-                break;
             case 1:
                 draw_big_explosion( ex->x[i], ex->y[i], ex->n[i] );
                 break;
@@ -306,100 +301,5 @@ static void draw_big_explosion( int x, int y, int frame )
         GFX_WRITE( '`' );
         break;
     }
-}
-
-static void draw_circle( int x, int y, float r );
-
-static void draw_huge_explosion( int x, int y, int frame )
-{
-    float r = 1.5 * (30 - frame);
-
-    GFX_COLOR( BLUE );
-    draw_circle( x, y, r );
-
-    r += 0.7;
-
-    GFX_COLOR( CYAN );
-    draw_circle( x, y, r );
-
-    r += 0.7;
-
-    GFX_COLOR( WHITE );
-    draw_circle( x, y, r );
-}
-
-static void draw_circle( int x, int y, float r )
-{
-#if 1
-    float c;
-
-    for( c = 0 ; c <= 90 ; c += 1 )
-    {
-        float dx = 0.5 + r * 2.0 * sin( c * M_PI / 180.0 );
-        float dy = 0.5 + r * cos( c * M_PI / 180.0 );
-
-        GFX_GOTO( x + dx, y + dy );
-        GFX_WRITE( '#' );
-        GFX_GOTO( x - dx, y + dy );
-        GFX_WRITE( '#' );
-        GFX_GOTO( x + dx, y - dy );
-        GFX_WRITE( '#' );
-        GFX_GOTO( x - dx, y - dy );
-        GFX_WRITE( '#' );
-    }
-#endif
-
-#if 0
-int dx,dy,a2,b2, S, T;
-float a = r*8, b = r*2;
-
- a2 = a*a;
- b2 = b*b;
- dx = 0;
- dy = b;
- S = a2*(1-2*b) + 2*b2;
- T = b2 - 2*a2*(2*b-1);
-        GFX_GOTO( x + dx, y + dy );
-        GFX_WRITE( '#' );
-        GFX_GOTO( x - dx, y + dy );
-        GFX_WRITE( '#' );
-        GFX_GOTO( x + dx, y - dy );
-        GFX_WRITE( '#' );
-        GFX_GOTO( x - dx, y - dy );
-        GFX_WRITE( '#' );
-
- do
-   {
-    if (S<0)
-       {
-        S += 2*b2*(2*x+3);
-        T += 4*b2*(x+1);
-        dx++;
-       }
-      else if (T<0)
-          {
-           S += 2*b2*(2*x+3) - 4*a2*(dy-1);
-           T += 4*b2*(x+1) - 2*a2*(2*dy-3);
-           dx++;
-           dy--;
-          }
-         else
-          {
-           S -= 4*a2*(dy-1);
-           T -= 2*a2*(2*dy-3);
-           dy--;
-          }
-        GFX_GOTO( x + dx, y + dy );
-        GFX_WRITE( '#' );
-        GFX_GOTO( x - dx, y + dy );
-        GFX_WRITE( '#' );
-        GFX_GOTO( x + dx, y - dy );
-        GFX_WRITE( '#' );
-        GFX_GOTO( x - dx, y - dy );
-        GFX_WRITE( '#' );
-   }
- while (dy>0);
-#endif
-
 }
 

@@ -1,6 +1,6 @@
 
 #define STARS 50
-#define SHOTS 50
+#define WEAPONS 50
 #define ROCKS 10
 #define ALIENS 10
 #define EXPLOSIONS 20
@@ -16,6 +16,8 @@
 #   define GFX_GOTO(x,y) move(y,x)
 #   define GFX_WRITE(x) addch(x)
 #endif
+
+#define GFX_WRITETO(x,y,c) do{ GFX_GOTO(x,y); GFX_WRITE(c); }while(0)
 
 #define GET_RAND(p,q) ((p)+(int)((1.0*((q)-(p)))*rand()/(RAND_MAX+1.0)))
 
@@ -54,9 +56,11 @@ typedef struct
 
 typedef struct
 {
-    int x[SHOTS];
-    int y[SHOTS];
-    int v[SHOTS];
+    int x[WEAPONS];
+    int y[WEAPONS];
+    int v[WEAPONS];
+    int n[WEAPONS];
+    int type[WEAPONS];
 
 } weapons;
 
@@ -64,7 +68,7 @@ typedef struct
 {
     int x, y;
     int dir;
-    int weapon;
+    int weapon, nuke;
 
 } player;
 
@@ -112,7 +116,7 @@ void update_player( game *g, player *p );
 void init_weapons( game *g, weapons *wp );
 void draw_weapons( game *g, weapons *wp );
 void update_weapons( game *g, weapons *wp );
-void add_weapon( game *g, weapons *wp, int x, int y );
+void add_weapon( game *g, weapons *wp, int x, int y, int type );
 
 void init_starfield( game *g, starfield *s );
 void draw_starfield( game *g, starfield *s );

@@ -7,7 +7,7 @@ void collide_weapons_tunnel( game *g, weapons *wp, tunnel *t, explosions *ex )
 {
     int i;
 
-    for( i = 0; i < SHOTS; i++ )
+    for( i = 0; i < WEAPONS; i++ )
     {
         if( wp->y[i] >= 0 )
         {
@@ -59,47 +59,77 @@ void collide_weapons_aliens( game *g, weapons *wp, aliens *al, explosions *ex )
 {
     int i, j;
 
-    for( i = 0; i < SHOTS; i++ )
+    for( i = 0; i < WEAPONS; i++ )
     {
         if( wp->y[i] >= 0 )
         {
             int ok = 0;
+            int r;
 
-            for( j = 0; j < ALIENS; j++ )
+            switch( wp->type[i] )
             {
-                if( wp->x[i] >= al->x[j]
-                     && wp->x[i] <= al->x[j] + 4
-                     && wp->y[i] >= al->y[j]
-                     && wp->y[i] <= al->y[j] + 2 )
+            case 2:
+                /* Big nuke */
+                r = (34 - wp->n[i]) * (34 - wp->n[i]) / 10;
+
+                for( j = 0; j < ALIENS; j++ )
                 {
-                    al->life[j]--;
-                    if( al->life[j] == 0 )
+                    if( al->x[j] < 0 )
                     {
+                        continue;
+                    }
+
+                    if( (al->x[j] - wp->x[i]) * (al->x[j] - wp->x[i])
+                          + 4 * (al->y[j] - wp->y[i]) * (al->y[j] - wp->y[i])
+                        <= r * r )
+                    {
+                        /* Kill alien, not nuke */
+                        add_explosion( g, ex, al->x[j], al->y[j], 0, 0, 1 );
                         al->x[j] = -1;
                         al->y[j] = -1;
-                        add_explosion( g, ex, wp->x[i], wp->y[i], 0, 0, 1 );
                     }
-                    ok = 1;
                 }
-                else if( wp->x[i] >= al->x[j]
-                          && wp->x[i] <= al->x[j] + 4
-                          && wp->y[i]+1 >= al->y[j]
-                          && wp->y[i]+1 <= al->y[j] + 2 )
-                {
-                    al->life[j]--;
-                    if( al->life[j] == 0 )
-                    {
-                        al->x[j] = -1;
-                        al->y[j] = -1;
-                        add_explosion( g, ex, wp->x[i], wp->y[i]+1, 0, 0, 1 );
-                    }
-                    ok = 1;
-                }
-            }
+                break;
 
-            if( ok )
-            {
-                wp->y[i] = -1;
+            case 1:
+            default:
+                for( j = 0; j < ALIENS; j++ )
+                {
+                    if( wp->x[i] >= al->x[j]
+                         && wp->x[i] <= al->x[j] + 4
+                         && wp->y[i] >= al->y[j]
+                         && wp->y[i] <= al->y[j] + 2 )
+                    {
+                        al->life[j]--;
+                        if( al->life[j] == 0 )
+                        {
+                            al->x[j] = -1;
+                            al->y[j] = -1;
+                            add_explosion( g, ex, wp->x[i], wp->y[i], 0, 0, 1 );
+                        }
+                        ok = 1;
+                    }
+                    else if( wp->x[i] >= al->x[j]
+                              && wp->x[i] <= al->x[j] + 4
+                              && wp->y[i]+1 >= al->y[j]
+                              && wp->y[i]+1 <= al->y[j] + 2 )
+                    {
+                        al->life[j]--;
+                        if( al->life[j] == 0 )
+                        {
+                            al->x[j] = -1;
+                            al->y[j] = -1;
+                            add_explosion( g, ex, wp->x[i], wp->y[i]+1, 0, 0, 1 );
+                        }
+                        ok = 1;
+                    }
+                }
+
+                if( ok )
+                {
+                    wp->y[i] = -1;
+                }
+                break;
             }
         }
     }
