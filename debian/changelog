@@ -1,3 +1,10 @@
+libcaca (0.3-2) unstable; urgency=low
+
+  * debian/rules:
+    + Moved cacafire to the caca-utils package.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Thu, 18 Dec 2003 10:32:19 +0100
+
 libcaca (0.3-1) unstable; urgency=low
 
   * New upstream release.

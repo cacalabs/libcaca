@@ -21,6 +21,8 @@ Package: caca-utils
 Section: utils
 Architecture: any
 Depends: ${shlibs:Depends}
+Conflicts: libcaca-dev (<= 0.3-1)
+Replaces: libcaca-dev (<= 0.3-1)
 Description: text mode graphics utilities
  This package contains utilities and demonstration programs for libcaca, the
  Colour AsCii Art library.
