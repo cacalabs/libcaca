@@ -18,7 +18,7 @@ Description: text mode graphics library
 Package: caca-utils
 Section: utils
 Architecture: any
-Depends: ${shlibs:Depends}, slang1-dev
+Depends: ${shlibs:Depends}
 Description: text mode graphics utilities
  This package contains utilities and demonstration programs for libcaca, the
  Colour AsCii Art library.
