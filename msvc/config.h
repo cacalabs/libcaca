@@ -44,7 +44,7 @@
 /* #undef USE_SLANG */
 #define USE_WIN32 1
 /* #undef USE_X11 */
-#define VERSION "0.7"
+#define VERSION "0.8"
 /* #undef const */
 #ifndef __cplusplus
 #define inline __inline

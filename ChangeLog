@@ -1,4 +1,420 @@
 ------------------------------------------------------------------------
+r251 | sam | 2004-01-18 05:17:35 +0100 (Sun, 18 Jan 2004) | 5 lines
+Changed paths:
+   M /trunk/examples/cacaview.c
+   M /trunk/src/event.c
+   M /trunk/src/graphics.c
+
+  * src/graphics.c:
+    + When resizing under X11, copy the old pixmap to the new one.
+  * examples/cacaview.c:
+    + Resizing support.
+
+------------------------------------------------------------------------
+r250 | sam | 2004-01-18 05:01:32 +0100 (Sun, 18 Jan 2004) | 5 lines
+Changed paths:
+   M /trunk/src/caca_internals.h
+   M /trunk/src/event.c
+   M /trunk/src/graphics.c
+
+  * src/event.c:
+    + Refresh the X11 window when an exposure event is received.
+    + When resizing the X11 window, start showing extra characters when two
+      thirds are visible.
+
+------------------------------------------------------------------------
+r249 | sam | 2004-01-17 23:32:39 +0100 (Sat, 17 Jan 2004) | 6 lines
+Changed paths:
+   M /trunk/TODO
+   M /trunk/examples/cacaview.c
+   M /trunk/src/caca.h
+   M /trunk/src/graphics.c
+
+  * src/graphics.c:
+    + Renamed caca_set_title() to caca_set_window_title().
+    + Implemented caca_get_window_width() and caca_get_window_height().
+  * examples/cacaview.c:
+    + Set the window title to cacaview.
+
+------------------------------------------------------------------------
+r248 | sam | 2004-01-14 11:34:20 +0100 (Wed, 14 Jan 2004) | 8 lines
+Changed paths:
+   M /trunk/src/bitmap.c
+   M /trunk/src/event.c
+
+  * src/event.c:
+    + Make sure the mouse coordinates stay within the screen boundaries even
+      if the window was resized.
+  * src/bitmap.c:
+    + Fixed a buffer underflow in the rendering routine that caused the bottom
+      and rightmost pixels to be missed in certain conditions.
+    + Minor speed optimisation.
+
+------------------------------------------------------------------------
+r247 | sam | 2004-01-14 11:32:04 +0100 (Wed, 14 Jan 2004) | 3 lines
+Changed paths:
+   M /trunk/test
+   M /trunk/test/Makefile.am
+   A /trunk/test/colors.c (from /trunk/examples/demo.c:243)
+
+  * test/colors.c:
+    + Extracted the colour test from examples/demo.c.
+
+------------------------------------------------------------------------
+r246 | sam | 2004-01-13 23:33:09 +0100 (Tue, 13 Jan 2004) | 5 lines
+Changed paths:
+   M /trunk/src/caca_internals.h
+   M /trunk/src/event.c
+   M /trunk/src/graphics.c
+   M /trunk/test/event.c
+
+  * src/graphics.c src/event.c:
+    + The ncurses and S-Lang drivers properly return CACA_EVENT_RESIZE.
+  * test/event.c:
+    + Display CACA_EVENT_RESIZE.
+
+------------------------------------------------------------------------
+r245 | sam | 2004-01-13 22:08:43 +0100 (Tue, 13 Jan 2004) | 3 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/msvc/config.h
+   M /trunk/src/graphics.c
+
+  * src/graphics.c:
+    + Resize handling in the ncurses and slang drivers.
+
+------------------------------------------------------------------------
+r244 | sam | 2004-01-13 21:03:48 +0100 (Tue, 13 Jan 2004) | 8 lines
+Changed paths:
+   M /trunk/examples/aafire.c
+   M /trunk/src/caca.h
+   M /trunk/src/caca_internals.h
+   M /trunk/src/event.c
+   M /trunk/src/graphics.c
+
+  * src/event.c:
+    + Added the CACA_EVENT_RESIZE event.
+    + Added caca_get_mouse_x() and caca_get_mouse_y().
+  * src/graphics.c:
+    + Window resize handling in the X11 driver.
+  * examples/aafire.c:
+    + Fixed a bad assumption in the resize handling code.
+
+------------------------------------------------------------------------
+r243 | sam | 2004-01-13 17:45:45 +0100 (Tue, 13 Jan 2004) | 5 lines
+Changed paths:
+   M /trunk/build-win32
+   M /trunk/configure.ac
+   M /trunk/debian/rules
+   M /trunk/doc/Makefile.am
+   M /trunk/libcaca.spec
+
+  * configure.ac:
+    + Added --disable-doc to let the user not build documentation.
+  * build-win32:
+    + Do not build documentation.
+
+------------------------------------------------------------------------
+r242 | sam | 2004-01-13 16:01:22 +0100 (Tue, 13 Jan 2004) | 7 lines
+Changed paths:
+   M /trunk/THANKS
+   M /trunk/src/Makefile.am
+   A /trunk/src/event.c (from /trunk/src/io.c:238)
+   M /trunk/src/graphics.c
+   D /trunk/src/io.c
+
+  * src/graphics.c:
+    + Fixed a typo preventing Win32 builds.
+  * src/event.c:
+    + Renamed io.c into event.c.
+  * THANKS:
+    + Added Gentoo, NetBSD and FreeBSD porters.
+
+------------------------------------------------------------------------
+r241 | sam | 2004-01-13 10:55:32 +0100 (Tue, 13 Jan 2004) | 13 lines
+Changed paths:
+   M /trunk/Makefile.am
+   M /trunk/configure.ac
+   M /trunk/examples/aafire.c
+   M /trunk/examples/cacaview.c
+   A /trunk/msvc
+   A /trunk/msvc/Makefile.am
+   A /trunk/msvc/cacaball.vcproj
+   A /trunk/msvc/cacademo.vcproj
+   A /trunk/msvc/cacafire.vcproj
+   A /trunk/msvc/cacamoir.vcproj
+   A /trunk/msvc/cacaplas.vcproj
+   A /trunk/msvc/cacaview.vcproj
+   A /trunk/msvc/config.h
+   A /trunk/msvc/libcaca.sln
+   A /trunk/msvc/libcaca.vcproj
+   M /trunk/src/caca.c
+   M /trunk/src/graphics.c
+   M /trunk/src/time.c
+
+  * configure.ac:
+    + Check for sys/times.h and unistd.h.
+    + Added calls to AC_C_CONST and AC_C_INLINE.
+  * src/time.c src/graphics.c:
+    + Fixes for MSVC compilation warnings.
+    + Additional sanity checks in the Win32 driver.
+  * src/caca.c:
+    + Use raw()/noraw() in the curses driver instead of cbreak().
+  * msvc/libcaca.sln:
+    + Added an MSVC solution.
+  * examples/aafire.c:
+    + Slightly reduced the maximum cacafire framerate.
+
+------------------------------------------------------------------------
+r240 | sam | 2004-01-12 18:30:09 +0100 (Mon, 12 Jan 2004) | 5 lines
+Changed paths:
+   M /trunk/NOTES
+   M /trunk/examples/cacaview.c
+   M /trunk/src/caca.h
+   M /trunk/src/graphics.c
+
+  * src/graphics.c:
+    + Implemented caca_set_title() for X11 and Win32.
+  * examples/cacaview.c:
+    + Use caca_set_title() to set the window title to "cacaview".
+
+------------------------------------------------------------------------
+r239 | sam | 2004-01-12 17:22:35 +0100 (Mon, 12 Jan 2004) | 2 lines
+Changed paths:
+   M /trunk/Makefile.am
+   M /trunk/autotools/Makefile.am
+   M /trunk/debian/Makefile.am
+   M /trunk/doc/Makefile.am
+   M /trunk/examples/Makefile.am
+   M /trunk/src/Makefile.am
+   M /trunk/test/Makefile.am
+
+  * Fixed $Id in all Makefile.am files.
+
+------------------------------------------------------------------------
+r238 | sam | 2004-01-12 17:21:34 +0100 (Mon, 12 Jan 2004) | 3 lines
+Changed paths:
+   M /trunk/Makefile.am
+   M /trunk/autotools/Makefile.am
+   A /trunk/build-win32
+   M /trunk/debian/Makefile.am
+   M /trunk/doc/Makefile.am
+   M /trunk/examples/Makefile.am
+   M /trunk/src/Makefile.am
+   M /trunk/test/Makefile.am
+
+  * build-win32:
+    + Win32 cross-compilation script.
+
+------------------------------------------------------------------------
+r237 | sam | 2004-01-12 16:28:27 +0100 (Mon, 12 Jan 2004) | 5 lines
+Changed paths:
+   M /trunk/NEWS
+   M /trunk/debian/control
+   M /trunk/debian/rules
+   M /trunk/doc/Makefile.am
+   M /trunk/doc/cacademo.1
+   M /trunk/examples
+   M /trunk/examples/Makefile.am
+   D /trunk/examples/cacacirc.c
+   A /trunk/examples/cacamoir.c (from /trunk/examples/cacacirc.c:236)
+   M /trunk/libcaca.spec
+
+  * examples/cacamoir.c:
+    + Renamed cacacirc to cacamoir.
+  * libcaca.spec debian/ doc/:
+    + Added cacamoir to the distributed files.
+
+------------------------------------------------------------------------
+r236 | sam | 2004-01-12 15:25:46 +0100 (Mon, 12 Jan 2004) | 8 lines
+Changed paths:
+   M /trunk/examples
+   M /trunk/examples/Makefile.am
+   M /trunk/examples/cacaball.c
+   A /trunk/examples/cacacirc.c
+   M /trunk/examples/cacaplas.c
+
+  * examples/cacaballs.c:
+    + Bigger metaballs, less metaballs.
+    + Rotating palette.
+  * examples/cacaplas.c:
+    + Slightly decreased speed.
+  * examples/cacacirc.c:
+    + New effect.
+
+------------------------------------------------------------------------
+r235 | sam | 2004-01-12 15:01:40 +0100 (Mon, 12 Jan 2004) | 3 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/src/time.c
+
+  * configure.ac:
+    + Better win32 check for Sleep().
+
+------------------------------------------------------------------------
+r234 | sam | 2004-01-11 19:09:01 +0100 (Sun, 11 Jan 2004) | 5 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/examples/cacaview.c
+   M /trunk/src/time.c
+
+  * configure.ac src/time.c:
+    + Look for Sleep in -lkernel32.
+  * examples/cacaview.c:
+    + Use caca_wait_event() instead of usleep()/caca_get_event(). 
+
+------------------------------------------------------------------------
+r233 | sam | 2004-01-11 06:09:02 +0100 (Sun, 11 Jan 2004) | 3 lines
+Changed paths:
+   M /trunk/NOTES
+   M /trunk/examples/cacaview.c
+   M /trunk/src/caca.c
+   M /trunk/src/caca_internals.h
+   M /trunk/src/graphics.c
+   M /trunk/src/io.c
+   M /trunk/src/time.c
+
+  * src/caca.c src/graphics.c src/io.c src/time.c:
+    + Native win32 port.
+
+------------------------------------------------------------------------
+r232 | sam | 2004-01-11 02:45:57 +0100 (Sun, 11 Jan 2004) | 10 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/src/caca.c
+   M /trunk/src/caca_internals.h
+   M /trunk/src/graphics.c
+   M /trunk/src/io.c
+   M /trunk/src/time.c
+   M /trunk/test/event.c
+
+  * configure.ac:
+    + Check for gettimeofday().
+  * src/time.c:
+    + Created _caca_time().
+    + Ported _caca_getticks() to the Win32 API.
+  * src/caca.c:
+    + Properly builds on Win32.
+  * test/event.c:
+    + Added <stdlib.h> because we use malloc().
+
+------------------------------------------------------------------------
+r231 | sam | 2004-01-10 20:59:50 +0100 (Sat, 10 Jan 2004) | 5 lines
+Changed paths:
+   M /trunk/NEWS
+   M /trunk/THANKS
+   M /trunk/examples/cacaplas.c
+
+  * THANKS examples/cacaplas.c:
+    + Updated credits.
+  * NEWS:
+    + Forthcoming 0.8 news.
+
+------------------------------------------------------------------------
+r230 | sam | 2004-01-10 20:53:14 +0100 (Sat, 10 Jan 2004) | 5 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/examples
+   M /trunk/examples/Makefile.am
+   A /trunk/examples/cacaplas.c
+
+  * configure.ac:
+    + Check for -lm.
+  * examples/cacaplas.c:
+    + New demo, cacaplas, that displays a colour plasma.
+
+------------------------------------------------------------------------
+r229 | sam | 2004-01-10 20:29:12 +0100 (Sat, 10 Jan 2004) | 12 lines
+Changed paths:
+   M /trunk/src/caca.h
+   M /trunk/src/graphics.c
+   M /trunk/src/io.c
+   M /trunk/test/event.c
+
+  * src/graphics:
+    + Initialise the char buffers in the X11 driver.
+  * src/io.c:
+    + caca_get_event() and caca_wait_event() immediately return zero if
+      event_mask is zero.
+    + Added support for the Home, End, PgUp and PgDown keys.
+    + In the S-Lang driver, added a call to SLang_getkey() before the call to
+      SLkp_getkey(), otherwise a single Escape call will not be interpreted.
+  * test/event.c:
+    + The "quit" sequence now quits the program, instead of "q" alone.
+    + Added a status bar below.
+
+------------------------------------------------------------------------
+r228 | sam | 2004-01-09 10:51:53 +0100 (Fri, 09 Jan 2004) | 16 lines
+Changed paths:
+   M /trunk/BUGS
+   M /trunk/NOTES
+   M /trunk/README
+   M /trunk/configure.ac
+   M /trunk/src/Makefile.am
+   M /trunk/src/caca.c
+   M /trunk/src/caca_internals.h
+   M /trunk/src/graphics.c
+   M /trunk/src/io.c
+   A /trunk/src/time.c
+   M /trunk/test/event.c
+
+  * test/event.c:
+    + Do not refresh after each event, but only when there is no event
+      pending.
+    + If the pressed key is a printable character, display it.
+  * src/time.c:
+    + Moved _caca_getticks() to this file.
+  * src/caca.c:
+    + Set the escape delay to a very low value in the ncurses driver,
+      because I don't want escape sequences to be entered manually.
+  * src/io.c:
+    + Autorepeat emulation in the ncurses and slang drivers: do not
+      immediately send the key release event.
+  * configure.ac:
+    + Check for usleep.
+    + Improvements in the win32 platform detection.
+
+------------------------------------------------------------------------
+r227 | sam | 2004-01-08 19:40:29 +0100 (Thu, 08 Jan 2004) | 5 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/src/graphics.c
+   M /trunk/test/event.c
+
+  * test/event.c:
+    + Display at least two digits for keycodes.
+  * configure.ac:
+    + ScreenUpdate is actually mandatory for our conio driver.
+
+------------------------------------------------------------------------
+r226 | sam | 2004-01-08 11:22:14 +0100 (Thu, 08 Jan 2004) | 10 lines
+Changed paths:
+   M /trunk/src/graphics.c
+   M /trunk/src/io.c
+   M /trunk/test/event.c
+
+  * src/io.c:
+    + Use SLkp_getkey instead of SLang_getkey so that escape sequences are
+      directly interpreted.
+    + Major rehandling of the event code. All output drivers are now
+      correctly separated.
+  * src/graphics.c:
+    + Fixed a compilation warning.
+  * test/event.c:
+    + More human-readable event printing.
+
+------------------------------------------------------------------------
+r225 | sam | 2004-01-07 19:36:41 +0100 (Wed, 07 Jan 2004) | 2 lines
+Changed paths:
+   A /branches/0.7 (from /trunk:224)
+   M /branches/0.7/ChangeLog
+   M /branches/0.7/libcaca.spec
+   M /trunk/ChangeLog
+   M /trunk/libcaca.spec
+
+  * 0.7 branch.
+
+------------------------------------------------------------------------
 r224 | sam | 2004-01-07 19:22:44 +0100 (Wed, 07 Jan 2004) | 3 lines
 Changed paths:
    M /trunk/configure.ac
