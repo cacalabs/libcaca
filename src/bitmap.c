@@ -29,7 +29,7 @@
 
 #include "config.h"
 
-#ifdef HAVE_INTTYPES_H
+#if defined(HAVE_INTTYPES_H)
 #   include <inttypes.h>
 #else
 typedef unsigned char uint8_t;
@@ -37,7 +37,7 @@ typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
 #endif
 
-#ifdef HAVE_ENDIAN_H
+#if defined(HAVE_ENDIAN_H)
 #   include <endian.h>
 #endif
 
@@ -256,7 +256,7 @@ static void get_rgba_default(const struct caca_bitmap *bitmap, uint8_t *pixels,
             break;
         case 3:
         {
-#ifdef HAVE_ENDIAN_H
+#if defined(HAVE_ENDIAN_H)
             if(__BYTE_ORDER == __BIG_ENDIAN)
 #else
             /* This is compile-time optimised with at least -O1 or -Os */

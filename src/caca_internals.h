@@ -30,6 +30,27 @@
 #ifndef __CACA_INTERNALS_H__
 #define __CACA_INTERNALS_H__
 
+/* Graphics driver */
+enum caca_driver
+{
+#if defined(USE_CONIO)
+    CACA_DRIVER_CONIO = 1,
+#endif
+#if defined(USE_NCURSES)
+    CACA_DRIVER_NCURSES = 2,
+#endif
+#if defined(USE_SLANG)
+    CACA_DRIVER_SLANG = 3,
+#endif
+#if defined(USE_X11)
+    CACA_DRIVER_X11 = 4,
+#endif
+    CACA_DRIVER_NONE = 0
+};
+
+extern enum caca_driver _caca_driver;
+
+/* Initialisation functions */
 extern int _caca_init_graphics(void);
 extern int _caca_end_graphics(void);
 

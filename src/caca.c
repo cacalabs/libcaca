@@ -33,15 +33,16 @@
 
 #if defined(USE_SLANG)
 #   include <slang.h>
-#elif defined(USE_NCURSES)
+#endif
+#if defined(USE_NCURSES)
 #   include <curses.h>
-#elif defined(USE_CONIO)
+#endif
+#if defined(USE_CONIO)
 #   include <dos.h>
 #   include <conio.h>
-#elif defined(USE_X11)
+#endif
+#if defined(USE_X11)
 #   include <X11/Xlib.h>
-#else
-#   error "no graphics library detected"
 #endif
 
 #include <stdlib.h>
@@ -50,8 +51,11 @@
 #include "caca.h"
 #include "caca_internals.h"
 
+static void caca_init_driver(void);
 static void caca_init_features(void);
 static void caca_init_terminal(void);
+
+enum caca_driver _caca_driver;
 
 #if defined(USE_NCURSES)
 static mmask_t oldmask;
@@ -68,62 +72,81 @@ int caca_init(void)
     mmask_t newmask;
 #endif
 
+    caca_init_driver();
+
+    if(_caca_driver == CACA_DRIVER_NONE)
+        return -1;
+
     caca_init_features();
     caca_init_terminal();
 
 #if defined(USE_SLANG)
-    /* Initialize slang library */
-    SLsig_block_signals();
-    SLtt_get_terminfo();
-
-    if(SLkp_init() == -1)
+    if(_caca_driver == CACA_DRIVER_SLANG)
     {
+        /* Initialise slang library */
+        SLsig_block_signals();
+        SLtt_get_terminfo();
+
+        if(SLkp_init() == -1)
+        {
+            SLsig_unblock_signals();
+            return -1;
+        }
+
+        SLang_init_tty(-1, 0, 1);
+
+        if(SLsmg_init_smg() == -1)
+        {
+            SLsig_unblock_signals();
+            return -1;
+        }
+
         SLsig_unblock_signals();
-        return -1;
+
+        SLsmg_cls();
+        SLtt_set_cursor_visibility(0);
+        SLkp_define_keysym("\e[M", 1001);
+        SLtt_set_mouse_mode(1, 0);
+        SLsmg_refresh();
+
+        /* Disable scrolling so that hashmap scrolling optimization code
+         * does not cause ugly refreshes due to slow terminals */
+        SLtt_Term_Cannot_Scroll = 1;
     }
-
-    SLang_init_tty(-1, 0, 1);
-
-    if(SLsmg_init_smg() == -1)
-    {
-        SLsig_unblock_signals();
-        return -1;
-    }
-
-    SLsig_unblock_signals();
-
-    SLsmg_cls();
-    SLtt_set_cursor_visibility(0);
-    SLkp_define_keysym("\e[M", 1001);
-    SLtt_set_mouse_mode(1, 0);
-    SLsmg_refresh();
-
-    /* Disable scrolling so that hashmap scrolling optimization code
-     * does not cause ugly refreshes due to slow terminals */
-    SLtt_Term_Cannot_Scroll = 1;
-
-#elif defined(USE_NCURSES)
-    initscr();
-    keypad(stdscr, TRUE);
-    nonl();
-    cbreak();
-    noecho();
-    nodelay(stdscr, TRUE);
-    curs_set(0);
-
-    /* Activate mouse */
-    newmask = ALL_MOUSE_EVENTS;
-    mousemask(newmask, &oldmask);
-
-#elif defined(USE_CONIO)
-    _wscroll = 0;
-    _setcursortype(_NOCURSOR);
-    clrscr();
-
-#elif defined(USE_X11)
-    /* Nothing to do */
-
+    else
 #endif
+#if defined(USE_NCURSES)
+    if(_caca_driver == CACA_DRIVER_NCURSES)
+    {
+        initscr();
+        keypad(stdscr, TRUE);
+        nonl();
+        cbreak();
+        noecho();
+        nodelay(stdscr, TRUE);
+        curs_set(0);
+
+        /* Activate mouse */
+        newmask = ALL_MOUSE_EVENTS;
+        mousemask(newmask, &oldmask);
+    }
+    else
+#endif
+#if defined(USE_CONIO)
+    if(_caca_driver == CACA_DRIVER_CONIO)
+    {
+        _wscroll = 0;
+        _setcursortype(_NOCURSOR);
+        clrscr();
+    }
+    else
+#endif
+#if defined(USE_X11)
+    {
+        /* Nothing to do */
+    }
+#endif
+
     if(_caca_init_graphics())
         return -1;
 
@@ -281,24 +304,96 @@ void caca_end(void)
     _caca_end_graphics();
 
 #if defined(USE_SLANG)
-    SLtt_set_mouse_mode(0, 0);
-    SLtt_set_cursor_visibility(1);
-    SLang_reset_tty();
-    SLsmg_reset_smg();
-#elif defined(USE_NCURSES)
-    mousemask(oldmask, NULL);
-    curs_set(1);
-    endwin();
-#elif defined(USE_CONIO)
-    _wscroll = 1;
-    textcolor((enum COLORS)WHITE);
-    textbackground((enum COLORS)BLACK);
-    gotoxy(_caca_width, _caca_height);
-    cputs("\r\n");
-    _setcursortype(_NORMALCURSOR);
-#elif defined(USE_X11)
-    /* Nothing to do */
+    if(_caca_driver == CACA_DRIVER_SLANG)
+    {
+        SLtt_set_mouse_mode(0, 0);
+        SLtt_set_cursor_visibility(1);
+        SLang_reset_tty();
+        SLsmg_reset_smg();
+    }
+    else
 #endif
+#if defined(USE_NCURSES)
+    if(_caca_driver == CACA_DRIVER_NCURSES)
+    {
+        mousemask(oldmask, NULL);
+        curs_set(1);
+        endwin();
+    }
+    else
+#endif
+#if defined(USE_CONIO)
+    if(_caca_driver == USE_CONIO)
+    {
+        _wscroll = 1;
+        textcolor((enum COLORS)WHITE);
+        textbackground((enum COLORS)BLACK);
+        gotoxy(_caca_width, _caca_height);
+        cputs("\r\n");
+        _setcursortype(_NORMALCURSOR);
+    }
+    else
+#endif
+#if defined(USE_X11)
+    if(_caca_driver == USE_X11)
+    {
+        /* Nothing to do */
+    }
+#endif
+}
+
+static void caca_init_driver(void)
+{
+#if defined(HAVE_GETENV) && defined(HAVE_STRCASECMP)
+    char *var = getenv("CACA_DRIVER");
+
+    /* If the environment variable was set, use it */
+    if(var && *var)
+    {
+#if defined(USE_CONIO)
+        if(!strcasecmp(var, "conio"))
+            _caca_driver = CACA_DRIVER_CONIO;
+        else
+#endif
+#if defined(USE_NCURSES)
+        if(!strcasecmp(var, "ncurses"))
+            _caca_driver = CACA_DRIVER_NCURSES;
+        else
+#endif
+#if defined(USE_SLANG)
+        if(!strcasecmp(var, "slang"))
+            _caca_driver = CACA_DRIVER_SLANG;
+        else
+#endif
+#if defined(USE_X11)
+        if(!strcasecmp(var, "x11"))
+            _caca_driver = CACA_DRIVER_X11;
+        else
+#endif
+        _caca_driver = CACA_DRIVER_NONE;
+
+        return;
+    }
+#endif
+
+#if defined(USE_CONIO)
+    _caca_driver = CACA_DRIVER_CONIO;
+    return;
+#endif
+#if defined(USE_NCURSES)
+    _caca_driver = CACA_DRIVER_NCURSES;
+    return;
+#endif
+#if defined(USE_SLANG)
+    _caca_driver = CACA_DRIVER_SLANG;
+    return;
+#endif
+#if defined(USE_X11)
+    _caca_driver = CACA_DRIVER_X11;
+    return;
+#endif
+    _caca_driver = CACA_DRIVER_NONE;
+    return;
 }
 
 static void caca_init_features(void)
@@ -351,6 +446,10 @@ static void caca_init_terminal(void)
      && (defined(USE_SLANG) || defined(USE_NCURSES))
     char *term, *colorterm, *other;
 
+    if(_caca_driver != CACA_DRIVER_NCURSES &&
+       _caca_driver != CACA_DRIVER_SLANG)
+        return;
+
     term = getenv("TERM");
     colorterm = getenv("COLORTERM");
 
@@ -360,11 +459,14 @@ static void caca_init_terminal(void)
         if(colorterm && !strcmp(colorterm, "gnome-terminal"))
         {
 #if defined(USE_NCURSES)
-            SCREEN *screen;
-            screen = newterm("xterm-16color", stdout, stdin);
-            if(screen == NULL)
-                return;
-            endwin();
+            if(_caca_driver == USE_NCURSES)
+            {
+                SCREEN *screen;
+                screen = newterm("xterm-16color", stdout, stdin);
+                if(screen == NULL)
+                    return;
+                endwin();
+            }
 #endif
             (void)putenv("TERM=xterm-16color");
             return;
@@ -375,11 +477,14 @@ static void caca_init_terminal(void)
         if(other)
         {
 #if defined(USE_NCURSES)
-            SCREEN *screen;
-            screen = newterm("xterm-16color", stdout, stdin);
-            if(screen == NULL)
-                return;
-            endwin();
+            if(_caca_driver == USE_NCURSES)
+            {
+                SCREEN *screen;
+                screen = newterm("xterm-16color", stdout, stdin);
+                if(screen == NULL)
+                    return;
+                endwin();
+            }
 #endif
             (void)putenv("TERM=xterm-16color");
             return;

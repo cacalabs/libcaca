@@ -31,20 +31,21 @@
 
 #if defined(USE_SLANG)
 #   include <slang.h>
-#elif defined(USE_NCURSES)
+#endif
+#if defined(USE_NCURSES)
 #   include <curses.h>
-#elif defined(USE_CONIO)
+#endif
+#if defined(USE_CONIO)
 #   include <conio.h>
 #   if defined(SCREENUPDATE_IN_PC_H)
 #       include <pc.h>
 #   endif
-#elif defined(USE_X11)
+#endif
+#if defined(USE_X11)
 #   include <X11/Xlib.h>
-#else
-#   error "no graphics library detected"
 #endif
 
-#ifdef HAVE_INTTYPES_H
+#if defined(HAVE_INTTYPES_H)
 #   include <inttypes.h>
 #endif
 
@@ -112,16 +113,32 @@ void caca_set_color(enum caca_color fgcolor, enum caca_color bgcolor)
 
     _caca_fgcolor = fgcolor;
     _caca_bgcolor = bgcolor;
+    switch(_caca_driver)
+    {
 #if defined(USE_SLANG)
-    SLsmg_set_color((bgcolor + 16 * fgcolor) /*% 128*/);
-#elif defined(USE_NCURSES)
-    attrset(ncurses_attr[fgcolor + 16 * bgcolor]);
-#elif defined(USE_CONIO)
-    textbackground(bgcolor);
-    textcolor(fgcolor);
-#elif defined(USE_X11)
-    /* FIXME */
+    case CACA_DRIVER_SLANG:
+        SLsmg_set_color((bgcolor + 16 * fgcolor) /*% 128*/);
+        break;
 #endif
+#if defined(USE_NCURSES)
+    case CACA_DRIVER_NCURSES:
+        attrset(ncurses_attr[fgcolor + 16 * bgcolor]);
+        break;
+#endif
+#if defined(USE_CONIO)
+    case CACA_DRIVER_CONIO:
+        textbackground(bgcolor);
+        textcolor(fgcolor);
+        break;
+#endif
+#if defined(USE_X11)
+    case CACA_DRIVER_X11:
+        /* FIXME */
+        break;
+#endif
+    default:
+        break;
+    }
 }
 
 /**
@@ -161,22 +178,38 @@ void caca_putchar(int x, int y, char c)
        y < 0 || y >= (int)_caca_height)
         return;
 
+    switch(_caca_driver)
+    {
 #if defined(USE_SLANG)
-    SLsmg_gotorc(y, x);
-    SLsmg_write_char(c);
-#elif defined(USE_NCURSES)
-    move(y, x);
-    addch(c);
-#elif defined(USE_CONIO)
-    data = conio_screen + 2 * (x + y * _caca_width);
-    data[0] = c;
-    data[1] = (_caca_bgcolor << 4) | _caca_fgcolor;
-//    gotoxy(x + 1, y + 1);
-//    putch(c);
-#elif defined(USE_X11)
-    x11_screen[x + y * _caca_width] =
-        ((int)c << 8) | ((int)_caca_bgcolor << 4) | (int)_caca_fgcolor;
+    case CACA_DRIVER_SLANG:
+        SLsmg_gotorc(y, x);
+        SLsmg_write_char(c);
+        break;
 #endif
+#if defined(USE_NCURSES)
+    case CACA_DRIVER_NCURSES:
+        move(y, x);
+        addch(c);
+        break;
+#endif
+#if defined(USE_CONIO)
+    case CACA_DRIVER_CONIO:
+        data = conio_screen + 2 * (x + y * _caca_width);
+        data[0] = c;
+        data[1] = (_caca_bgcolor << 4) | _caca_fgcolor;
+//        gotoxy(x + 1, y + 1);
+//        putch(c);
+        break;
+#endif
+#if defined(USE_X11)
+    case CACA_DRIVER_X11:
+        x11_screen[x + y * _caca_width] =
+            ((int)c << 8) | ((int)_caca_bgcolor << 4) | (int)_caca_fgcolor;
+        break;
+#endif
+    default:
+        break;
+    }
 }
 
 /**
@@ -190,9 +223,10 @@ void caca_putchar(int x, int y, char c)
 void caca_putstr(int x, int y, const char *s)
 {
 #if defined(USE_CONIO)
-    char *buf;
-#elif defined(USE_X11)
-    int *buf;
+    char *charbuf;
+#endif
+#if defined(USE_X11)
+    int *intbuf;
 #endif
     unsigned int len;
 
@@ -217,26 +251,43 @@ void caca_putstr(int x, int y, const char *s)
         s = _caca_scratch_line;
     }
 
-#if defined(USE_SLANG)
-    SLsmg_gotorc(y, x);
-    SLsmg_write_string((char *)(intptr_t)s);
-#elif defined(USE_NCURSES)
-    move(y, x);
-    addstr(s);
-#elif defined(USE_CONIO)
-    buf = conio_screen + 2 * (x + y * _caca_width);
-    while(*s)
+    switch(_caca_driver)
     {
-        *buf++ = *s++;
-        *buf++ = (_caca_bgcolor << 4) | _caca_fgcolor;
-    }
-//    gotoxy(x + 1, y + 1);
-//    cputs(s);
-#elif defined(USE_X11)
-    buf = x11_screen + x + y * _caca_width;
-    while(*s)
-        *buf++ = ((int)*s++ << 8) | ((int)_caca_bgcolor << 4) | (int)_caca_fgcolor;
+#if defined(USE_SLANG)
+    case CACA_DRIVER_SLANG:
+        SLsmg_gotorc(y, x);
+        SLsmg_write_string((char *)(intptr_t)s);
+        break;
 #endif
+#if defined(USE_NCURSES)
+    case CACA_DRIVER_NCURSES:
+        move(y, x);
+        addstr(s);
+        break;
+#endif
+#if defined(USE_CONIO)
+    case CACA_DRIVER_CONIO:
+        charbuf = conio_screen + 2 * (x + y * _caca_width);
+        while(*s)
+        {
+            *charbuf++ = *s++;
+            *charbuf++ = (_caca_bgcolor << 4) | _caca_fgcolor;
+        }
+//        gotoxy(x + 1, y + 1);
+//        cputs(s);
+        break;
+#endif
+#if defined(USE_X11)
+    case CACA_DRIVER_X11:
+        intbuf = x11_screen + x + y * _caca_width;
+        while(*s)
+            *intbuf++ = ((int)*s++ << 8)
+                         | ((int)_caca_bgcolor << 4) | (int)_caca_fgcolor;
+        break;
+#endif
+    default:
+        break;
+    }
 }
 
 /**
@@ -298,231 +349,249 @@ void caca_clear(void)
 int _caca_init_graphics(void)
 {
 #if defined(USE_SLANG)
-    /* See SLang ref., 5.4.4. */
-    static char *slang_colors[16] =
+    if(_caca_driver == CACA_DRIVER_SLANG)
     {
-        /* Standard colours */
-        "black",
-        "blue",
-        "green",
-        "cyan",
-        "red",
-        "magenta",
-        "brown",
-        "lightgray",
-        /* Bright colours */
-        "gray",
-        "brightblue",
-        "brightgreen",
-        "brightcyan",
-        "brightred",
-        "brightmagenta",
-        "yellow",
-        "white",
-    };
-
-    int fg, bg;
-
-    for(fg = 0; fg < 16; fg++)
-        for(bg = 0; bg < 16; bg++)
+        /* See SLang ref., 5.4.4. */
+        static char *slang_colors[16] =
         {
-            int i = bg + 16 * fg;
-            SLtt_set_color(i, NULL, slang_colors[fg], slang_colors[bg]);
-        }
+            /* Standard colours */
+            "black",
+            "blue",
+            "green",
+            "cyan",
+            "red",
+            "magenta",
+            "brown",
+            "lightgray",
+            /* Bright colours */
+            "gray",
+            "brightblue",
+            "brightgreen",
+            "brightcyan",
+            "brightred",
+            "brightmagenta",
+            "yellow",
+            "white",
+        };
 
-    /* Disable alt charset support so that we get all 256 colour pairs */
-    SLtt_Has_Alt_Charset = 0;
+        int fg, bg;
 
-    _caca_width = SLtt_Screen_Cols;
-    _caca_height = SLtt_Screen_Rows;
-
-#elif defined(USE_NCURSES)
-    static int curses_colors[] =
-    {
-        /* Standard curses colours */
-        COLOR_BLACK,
-        COLOR_BLUE,
-        COLOR_GREEN,
-        COLOR_CYAN,
-        COLOR_RED,
-        COLOR_MAGENTA,
-        COLOR_YELLOW,
-        COLOR_WHITE,
-        /* Extra values for xterm-16color */
-        COLOR_BLACK + 8,
-        COLOR_BLUE + 8,
-        COLOR_GREEN + 8,
-        COLOR_CYAN + 8,
-        COLOR_RED + 8,
-        COLOR_MAGENTA + 8,
-        COLOR_YELLOW + 8,
-        COLOR_WHITE + 8
-    };
-
-    int fg, bg, max;
-
-    /* Activate colour */
-    start_color();
-
-    /* If COLORS == 16, it means the terminal supports full bright colours
-     * using setab and setaf (will use \e[90m \e[91m etc. for colours >= 8),
-     * we can build 16*16 colour pairs.
-     * If COLORS == 8, it means the terminal does not know about bright
-     * colours and we need to get them through A_BOLD and A_BLINK (\e[1m
-     * and \e[5m). We can only build 8*8 colour pairs. */
-    max = COLORS >= 16 ? 16 : 8;
-
-    for(bg = 0; bg < max; bg++)
-        for(fg = 0; fg < max; fg++)
-        {
-            /* Use ((max + 7 - fg) % max) instead of fg so that colour 0
-             * is light gray on black, since some terminals don't like
-             * this colour pair to be redefined. */
-            int col = ((max + 7 - fg) % max) + max * bg;
-            init_pair(col, curses_colors[fg], curses_colors[bg]);
-            ncurses_attr[fg + 16 * bg] = COLOR_PAIR(col);
-
-            if(max == 8)
+        for(fg = 0; fg < 16; fg++)
+            for(bg = 0; bg < 16; bg++)
             {
-                /* Bright fg on simple bg */
-                ncurses_attr[fg + 8 + 16 * bg] = A_BOLD | COLOR_PAIR(col);
-                /* Simple fg on bright bg */
-                ncurses_attr[fg + 16 * (bg + 8)] = A_BLINK | COLOR_PAIR(col);
-                /* Bright fg on bright bg */
-                ncurses_attr[fg + 8 + 16 * (bg + 8)] = A_BLINK | A_BOLD
-                                                        | COLOR_PAIR(col);
+                int i = bg + 16 * fg;
+                SLtt_set_color(i, NULL, slang_colors[fg], slang_colors[bg]);
             }
+
+        /* Disable alt charset support so that we get all 256 colour pairs */
+        SLtt_Has_Alt_Charset = 0;
+
+        _caca_width = SLtt_Screen_Cols;
+        _caca_height = SLtt_Screen_Rows;
+    }
+    else
+#endif
+#if defined(USE_NCURSES)
+    if(_caca_driver == CACA_DRIVER_NCURSES)
+    {
+        static int curses_colors[] =
+        {
+            /* Standard curses colours */
+            COLOR_BLACK,
+            COLOR_BLUE,
+            COLOR_GREEN,
+            COLOR_CYAN,
+            COLOR_RED,
+            COLOR_MAGENTA,
+            COLOR_YELLOW,
+            COLOR_WHITE,
+            /* Extra values for xterm-16color */
+            COLOR_BLACK + 8,
+            COLOR_BLUE + 8,
+            COLOR_GREEN + 8,
+            COLOR_CYAN + 8,
+            COLOR_RED + 8,
+            COLOR_MAGENTA + 8,
+            COLOR_YELLOW + 8,
+            COLOR_WHITE + 8
+        };
+
+        int fg, bg, max;
+
+        /* Activate colour */
+        start_color();
+
+        /* If COLORS == 16, it means the terminal supports full bright colours
+         * using setab and setaf (will use \e[90m \e[91m etc. for colours >= 8),
+         * we can build 16*16 colour pairs.
+         * If COLORS == 8, it means the terminal does not know about bright
+         * colours and we need to get them through A_BOLD and A_BLINK (\e[1m
+         * and \e[5m). We can only build 8*8 colour pairs. */
+        max = COLORS >= 16 ? 16 : 8;
+
+        for(bg = 0; bg < max; bg++)
+            for(fg = 0; fg < max; fg++)
+            {
+                /* Use ((max + 7 - fg) % max) instead of fg so that colour 0
+                 * is light gray on black, since some terminals don't like
+                 * this colour pair to be redefined. */
+                int col = ((max + 7 - fg) % max) + max * bg;
+                init_pair(col, curses_colors[fg], curses_colors[bg]);
+                ncurses_attr[fg + 16 * bg] = COLOR_PAIR(col);
+
+                if(max == 8)
+                {
+                    /* Bright fg on simple bg */
+                    ncurses_attr[fg + 8 + 16 * bg] = A_BOLD | COLOR_PAIR(col);
+                    /* Simple fg on bright bg */
+                    ncurses_attr[fg + 16 * (bg + 8)] = A_BLINK
+                                                        | COLOR_PAIR(col);
+                    /* Bright fg on bright bg */
+                    ncurses_attr[fg + 8 + 16 * (bg + 8)] = A_BLINK | A_BOLD
+                                                            | COLOR_PAIR(col);
+                }
+            }
+
+        _caca_width = COLS;
+        _caca_height = LINES;
+    }
+    else
+#endif
+#if defined(USE_CONIO)
+    if(_caca_driver == CACA_DRIVER_CONIO)
+    {
+        gettextinfo(&conio_ti);
+        conio_screen = malloc(2 * conio_ti.screenwidth
+                                 * conio_ti.screenheight * sizeof(char));
+        if(conio_screen == NULL)
+            return -1;
+#   if defined(SCREENUPDATE_IN_PC_H)
+        ScreenRetrieve(conio_screen);
+#   else
+        /* FIXME */
+#   endif
+        _caca_width = conio_ti.screenwidth;
+        _caca_height = conio_ti.screenheight;
+    }
+    else
+#endif
+#if defined(USE_X11)
+    if(_caca_driver == CACA_DRIVER_X11)
+    {
+        static int x11_palette[] =
+        {
+            /* Standard curses colours */
+            0, 0, 0,
+            0, 0, 32768,
+            0, 32768, 0,
+            0, 32768, 32768,
+            32768, 0, 0,
+            32768, 0, 32768,
+            32768, 32768, 0,
+            32768, 32768, 32768,
+            /* Extra values for xterm-16color */
+            16384, 16384, 16384,
+            16384, 16384, 65535,
+            16384, 65535, 16384,
+            16384, 65535, 65535,
+            65535, 16384, 16384,
+            65535, 16384, 65535,
+            65535, 65535, 16384,
+            65535, 65535, 65535,
+        };
+
+        Colormap colormap;
+        const char *font_name = "8x13bold";
+        int i;
+
+        if(getenv("CACA_WIDTH"))
+            _caca_width = atoi(getenv("CACA_WIDTH"));
+        if(!_caca_width)
+            _caca_width = 80;
+
+        if(getenv("CACA_HEIGHT"))
+            _caca_height = atoi(getenv("CACA_HEIGHT"));
+        if(!_caca_height)
+            _caca_height = 32;
+
+        x11_screen = malloc(_caca_width * _caca_height * sizeof(int));
+        if(x11_screen == NULL)
+            return -1;
+
+        x11_dpy = XOpenDisplay(NULL);
+        if(x11_dpy == NULL)
+        {
+            free(x11_screen);
+            return -1;
         }
 
-    _caca_width = COLS;
-    _caca_height = LINES;
+        if(getenv("CACA_FONT"))
+            font_name = getenv("CACA_FONT");
 
-#elif defined(USE_CONIO)
-    gettextinfo(&conio_ti);
-    conio_screen = malloc(2 * conio_ti.screenwidth
-                             * conio_ti.screenheight * sizeof(char));
-    if(conio_screen == NULL)
-        return -1;
-#   if defined(SCREENUPDATE_IN_PC_H)
-    ScreenRetrieve(conio_screen);
-#   else
-    /* FIXME */
-#   endif
-    _caca_width = conio_ti.screenwidth;
-    _caca_height = conio_ti.screenheight;
+        x11_font = XLoadFont(x11_dpy, font_name);
+        if(!x11_font)
+        {
+            XCloseDisplay(x11_dpy);
+            free(x11_screen);
+            return -1;
+        }
 
-#elif defined(USE_X11)
-    static int x11_palette[] =
-    {
-        /* Standard curses colours */
-        0, 0, 0,
-        0, 0, 32768,
-        0, 32768, 0,
-        0, 32768, 32768,
-        32768, 0, 0,
-        32768, 0, 32768,
-        32768, 32768, 0,
-        32768, 32768, 32768,
-        /* Extra values for xterm-16color */
-        16384, 16384, 16384,
-        16384, 16384, 65535,
-        16384, 65535, 16384,
-        16384, 65535, 65535,
-        65535, 16384, 16384,
-        65535, 16384, 65535,
-        65535, 65535, 16384,
-        65535, 65535, 65535,
-    };
+        x11_font_struct = XQueryFont(x11_dpy, x11_font);
+        if(!x11_font_struct)
+        {
+            XUnloadFont(x11_dpy, x11_font);
+            XCloseDisplay(x11_dpy);
+            free(x11_screen);
+            return -1;
+        }
 
-    Colormap colormap;
-    const char *font_name = "8x13bold";
-    int i;
+        x11_font_width = x11_font_struct->max_bounds.width;
+        x11_font_height = x11_font_struct->max_bounds.ascent
+                             + x11_font_struct->max_bounds.descent;
+        x11_font_offset = x11_font_struct->max_bounds.descent;
 
-    if(getenv("CACA_WIDTH"))
-        _caca_width = atoi(getenv("CACA_WIDTH"));
-    if(!_caca_width)
-        _caca_width = 80;
+        colormap = DefaultColormap(x11_dpy, DefaultScreen(x11_dpy));
+        for(i = 0; i < 16; i++)
+        {
+            XColor color;
+            color.red = x11_palette[i * 3];
+            color.green = x11_palette[i * 3 + 1];
+            color.blue = x11_palette[i * 3 + 2];
+            XAllocColor(x11_dpy, colormap, &color);
+            x11_colors[i] = color.pixel;
+        }
 
-    if(getenv("CACA_HEIGHT"))
-        _caca_height = atoi(getenv("CACA_HEIGHT"));
-    if(!_caca_height)
-        _caca_height = 32;
+        x11_window = XCreateSimpleWindow(x11_dpy, DefaultRootWindow(x11_dpy),
+                                           0, 0, _caca_width * x11_font_width,
+                                           _caca_height * x11_font_height, 0,
+                                           x11_colors[0], x11_colors[0]);
+        XSelectInput(x11_dpy, x11_window, StructureNotifyMask);
+        XMapWindow(x11_dpy, x11_window);
 
-    x11_screen = malloc(_caca_width * _caca_height * sizeof(int));
-    if(x11_screen == NULL)
-        return -1;
+        x11_gc = XCreateGC(x11_dpy, x11_window, 0, NULL);
+        XSetForeground(x11_dpy, x11_gc, x11_colors[15]);
+        XSetFont(x11_dpy, x11_gc, x11_font);
 
-    x11_dpy = XOpenDisplay(NULL);
-    if(x11_dpy == NULL)
-    {
-        free(x11_screen);
-        return -1;
+        for(;;)
+        {
+            XEvent event;
+            XNextEvent(x11_dpy, &event);
+            if (event.type == MapNotify)
+                break;
+        }
+
+        XSelectInput(x11_dpy, x11_window, KeyPressMask);
+
+        XSync(x11_dpy, False);
+
+        x11_pixmap = XCreatePixmap(x11_dpy, x11_window,
+                                   _caca_width * x11_font_width,
+                                   _caca_height * x11_font_height,
+                                   DefaultDepth(x11_dpy,
+                                                DefaultScreen(x11_dpy)));
     }
-
-    if(getenv("CACA_FONT"))
-        font_name = getenv("CACA_FONT");
-
-    x11_font = XLoadFont(x11_dpy, font_name);
-    if(!x11_font)
-    {
-        XCloseDisplay(x11_dpy);
-        free(x11_screen);
-        return -1;
-    }
-
-    x11_font_struct = XQueryFont(x11_dpy, x11_font);
-    if(!x11_font_struct)
-    {
-        XUnloadFont(x11_dpy, x11_font);
-        XCloseDisplay(x11_dpy);
-        free(x11_screen);
-        return -1;
-    }
-
-    x11_font_width = x11_font_struct->max_bounds.width;
-    x11_font_height = x11_font_struct->max_bounds.ascent
-                         + x11_font_struct->max_bounds.descent;
-    x11_font_offset = x11_font_struct->max_bounds.descent;
-
-    colormap = DefaultColormap(x11_dpy, DefaultScreen(x11_dpy));
-    for(i = 0; i < 16; i++)
-    {
-        XColor color;
-        color.red = x11_palette[i * 3];
-        color.green = x11_palette[i * 3 + 1];
-        color.blue = x11_palette[i * 3 + 2];
-        XAllocColor(x11_dpy, colormap, &color);
-        x11_colors[i] = color.pixel;
-    }
-
-    x11_window = XCreateSimpleWindow(x11_dpy, DefaultRootWindow(x11_dpy),
-                                       0, 0, _caca_width * x11_font_width,
-                                       _caca_height * x11_font_height, 0,
-                                       x11_colors[0], x11_colors[0]);
-    XSelectInput(x11_dpy, x11_window, StructureNotifyMask);
-    XMapWindow(x11_dpy, x11_window);
-
-    x11_gc = XCreateGC(x11_dpy, x11_window, 0, NULL);
-    XSetForeground(x11_dpy, x11_gc, x11_colors[15]);
-    XSetFont(x11_dpy, x11_gc, x11_font);
-
-    for(;;)
-    {
-        XEvent event;
-        XNextEvent(x11_dpy, &event);
-        if (event.type == MapNotify)
-            break;
-    }
-
-    XSelectInput(x11_dpy, x11_window, KeyPressMask);
-
-    XSync(x11_dpy, False);
-
-    x11_pixmap = XCreatePixmap(x11_dpy, x11_window,
-                               _caca_width * x11_font_width,
-                               _caca_height * x11_font_height,
-                               DefaultDepth(x11_dpy, DefaultScreen(x11_dpy)));
 #endif
+
     _caca_empty_line = malloc(_caca_width + 1);
     memset(_caca_empty_line, ' ', _caca_width);
     _caca_empty_line[_caca_width] = '\0';
@@ -539,19 +608,29 @@ int _caca_end_graphics(void)
 {
 #if defined(USE_SLANG)
     /* Nothing to do */
-#elif defined(USE_NCURSES)
+#endif
+#if defined(USE_NCURSES)
     /* Nothing to do */
-#elif defined(USE_CONIO)
-    free(conio_screen);
-#elif defined(USE_X11)
-    XSync(x11_dpy, False);
-    XFreePixmap(x11_dpy, x11_pixmap);
-    XFreeFont(x11_dpy, x11_font_struct);
-    XFreeGC(x11_dpy, x11_gc);
-    XUnmapWindow(x11_dpy, x11_window);
-    XDestroyWindow(x11_dpy, x11_window);
-    XCloseDisplay(x11_dpy);
-    free(x11_screen);
+#endif
+#if defined(USE_CONIO)
+    if(_caca_driver == CACA_DRIVER_CONIO)
+    {
+        free(conio_screen);
+    }
+    else
+#endif
+#if defined(USE_X11)
+    if(_caca_driver == CACA_DRIVER_X11)
+    {
+        XSync(x11_dpy, False);
+        XFreePixmap(x11_dpy, x11_pixmap);
+        XFreeFont(x11_dpy, x11_font_struct);
+        XFreeGC(x11_dpy, x11_gc);
+        XUnmapWindow(x11_dpy, x11_window);
+        XDestroyWindow(x11_dpy, x11_window);
+        XCloseDisplay(x11_dpy);
+        free(x11_screen);
+    }
 #endif
     free(_caca_empty_line);
 
@@ -611,35 +690,54 @@ void caca_refresh(void)
     int ticks = lastticks + _caca_getticks();
 
 #if defined(USE_SLANG)
-    SLsmg_refresh();
-#elif defined(USE_NCURSES)
-    refresh();
-#elif defined(USE_CONIO)
+    if(_caca_driver == CACA_DRIVER_SLANG)
+    {
+        SLsmg_refresh();
+    }
+    else
+#endif
+#if defined(USE_NCURSES)
+    if(_caca_driver == CACA_DRIVER_NCURSES)
+    {
+        refresh();
+    }
+    else
+#endif
+#if defined(USE_CONIO)
+    if(_caca_driver == CACA_DRIVER_CONIO)
+    {
 #   if defined(SCREENUPDATE_IN_PC_H)
-    ScreenUpdate(conio_screen);
+        ScreenUpdate(conio_screen);
 #   else
-    /* FIXME */
+        /* FIXME */
 #   endif
-#elif defined(USE_X11)
-    unsigned int x, y;
+    }
+    else
+#endif
+#if defined(USE_X11)
+    if(_caca_driver == CACA_DRIVER_X11)
+    {
+        unsigned int x, y;
 
-    for(y = 0; y < _caca_height; y++)
-        for(x = 0; x < _caca_width; x++)
-        {
-            int item = x11_screen[x + y * _caca_width];
-            char data = item >> 8;
-            XSetForeground(x11_dpy, x11_gc, x11_colors[(item >> 4) & 0xf]);
-            XFillRectangle(x11_dpy, x11_pixmap, x11_gc,
-                           x * x11_font_width, y * x11_font_height,
-                           x11_font_width, x11_font_height);
-            XSetForeground(x11_dpy, x11_gc, x11_colors[item & 0xf]);
-            XDrawString(x11_dpy, x11_pixmap, x11_gc, x * x11_font_width,
-                        (y + 1) * x11_font_height - x11_font_offset, &data, 1);
-        }
-    XCopyArea(x11_dpy, x11_pixmap, x11_window, x11_gc, 0, 0,
-              _caca_width * x11_font_width, _caca_height * x11_font_height,
-              0, 0);
-    XFlush(x11_dpy);
+        for(y = 0; y < _caca_height; y++)
+            for(x = 0; x < _caca_width; x++)
+            {
+                int item = x11_screen[x + y * _caca_width];
+                char data = item >> 8;
+                XSetForeground(x11_dpy, x11_gc, x11_colors[(item >> 4) & 0xf]);
+                XFillRectangle(x11_dpy, x11_pixmap, x11_gc,
+                               x * x11_font_width, y * x11_font_height,
+                               x11_font_width, x11_font_height);
+                XSetForeground(x11_dpy, x11_gc, x11_colors[item & 0xf]);
+                XDrawString(x11_dpy, x11_pixmap, x11_gc, x * x11_font_width,
+                            (y + 1) * x11_font_height - x11_font_offset,
+                            &data, 1);
+            }
+        XCopyArea(x11_dpy, x11_pixmap, x11_window, x11_gc, 0, 0,
+                  _caca_width * x11_font_width, _caca_height * x11_font_height,
+                  0, 0);
+        XFlush(x11_dpy);
+    }
 #endif
 
     /* Wait until _caca_delay + time of last call */

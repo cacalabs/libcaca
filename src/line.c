@@ -30,7 +30,7 @@
 
 #include "config.h"
 
-#ifdef HAVE_INTTYPES_H
+#if defined(HAVE_INTTYPES_H)
 #   include <inttypes.h>
 #else
 typedef unsigned char uint8_t;

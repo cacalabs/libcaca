@@ -31,15 +31,16 @@
 
 #if defined(USE_SLANG)
 #   include <slang.h>
-#elif defined(USE_NCURSES)
+#endif
+#if defined(USE_NCURSES)
 #   include <curses.h>
-#elif defined(USE_CONIO)
+#endif
+#if defined(USE_CONIO)
 #   include <conio.h>
-#elif defined(USE_X11)
+#endif
+#if defined(USE_X11)
 #   include <X11/Xlib.h>
 #   include <X11/Xutil.h>
-#else
-#   error "no graphics library detected"
 #endif
 
 #include "caca.h"
@@ -75,44 +76,47 @@ unsigned int caca_get_event(void)
         return 0;
 
 #if defined(USE_NCURSES)
-    if(keybuf[0] == KEY_MOUSE)
+    if(_caca_driver == CACA_DRIVER_NCURSES)
     {
-        MEVENT mevent;
-        _pop_key();
-        getmouse(&mevent);
+        if(keybuf[0] == KEY_MOUSE)
+        {
+            MEVENT mevent;
+            _pop_key();
+            getmouse(&mevent);
 
-        event |= (1) << 16;
-        event |= (mevent.x) << 8;
-        event |= (mevent.y) << 0;
+            event |= (1) << 16;
+            event |= (mevent.x) << 8;
+            event |= (mevent.y) << 0;
 
-        return CACA_EVENT_MOUSE_CLICK | event;
-    }
+            return CACA_EVENT_MOUSE_CLICK | event;
+        }
 
-    switch(keybuf[0])
-    {
-        case KEY_UP: event = CACA_EVENT_KEY_PRESS | CACA_KEY_UP; break;
-        case KEY_DOWN: event = CACA_EVENT_KEY_PRESS | CACA_KEY_DOWN; break;
-        case KEY_LEFT: event = CACA_EVENT_KEY_PRESS | CACA_KEY_LEFT; break;
-        case KEY_RIGHT: event = CACA_EVENT_KEY_PRESS | CACA_KEY_RIGHT; break;
+        switch(keybuf[0])
+        {
+            case KEY_UP: event = CACA_EVENT_KEY_PRESS | CACA_KEY_UP; break;
+            case KEY_DOWN: event = CACA_EVENT_KEY_PRESS | CACA_KEY_DOWN; break;
+            case KEY_LEFT: event = CACA_EVENT_KEY_PRESS | CACA_KEY_LEFT; break;
+            case KEY_RIGHT: event = CACA_EVENT_KEY_PRESS | CACA_KEY_RIGHT; break;
 
-        case KEY_F(1): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F1; break;
-        case KEY_F(2): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F2; break;
-        case KEY_F(3): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F3; break;
-        case KEY_F(4): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F4; break;
-        case KEY_F(5): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F5; break;
-        case KEY_F(6): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F6; break;
-        case KEY_F(7): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F7; break;
-        case KEY_F(8): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F8; break;
-        case KEY_F(9): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F9; break;
-        case KEY_F(10): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F10; break;
-        case KEY_F(11): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F11; break;
-        case KEY_F(12): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F12; break;
-    }
+            case KEY_F(1): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F1; break;
+            case KEY_F(2): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F2; break;
+            case KEY_F(3): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F3; break;
+            case KEY_F(4): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F4; break;
+            case KEY_F(5): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F5; break;
+            case KEY_F(6): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F6; break;
+            case KEY_F(7): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F7; break;
+            case KEY_F(8): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F8; break;
+            case KEY_F(9): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F9; break;
+            case KEY_F(10): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F10; break;
+            case KEY_F(11): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F11; break;
+            case KEY_F(12): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F12; break;
+        }
 
-    if(event)
-    {
-        _pop_key();
-        return event;
+        if(event)
+        {
+            _pop_key();
+            return event;
+        }
     }
 #endif
 
@@ -205,30 +209,49 @@ static unsigned int _pop_key(void)
 
 static unsigned int _read_key(void)
 {
-#if defined(USE_SLANG)
-    return SLang_input_pending(0) ? SLang_getkey() : 0;
-#elif defined(USE_NCURSES)
-    int key = getch();
-    return (key == ERR) ? 0 : key;
-#elif defined(USE_CONIO)
-    return _conio_kbhit() ? getch() : 0;
-#elif defined(USE_X11)
+#if defined(USE_NCURSES)
+    int intkey;
+#endif
+#if defined(USE_X11)
     XEvent event;
     char key;
+#endif
 
-    while(XCheckWindowEvent(x11_dpy, x11_window, KeyPressMask, &event)
-           == True)
+    switch(_caca_driver)
     {
-        if(event.type == KeyPress)
+#if defined(USE_SLANG)
+    case CACA_DRIVER_SLANG:
+        return SLang_input_pending(0) ? SLang_getkey() : 0;
+#endif
+#if defined(USE_NCURSES)
+    case CACA_DRIVER_NCURSES:
+        intkey = getch();
+        return (intkey == ERR) ? 0 : intkey;
+#endif
+#if defined(USE_CONIO)
+    case CACA_DRIVER_CONIO:
+        return _conio_kbhit() ? getch() : 0;
+#endif
+#if defined(USE_X11)
+    case CACA_DRIVER_X11:
+        while(XCheckWindowEvent(x11_dpy, x11_window, KeyPressMask, &event)
+               == True)
         {
-            //KeySym keysym;
-            //keysym = XKeycodeToKeysym(_caca_dpy, event.xkey.keycode, 0);
-            if(XLookupString(&event.xkey, &key, 1, NULL, NULL))
-                return key;
+            if(event.type == KeyPress)
+            {
+                //KeySym keysym;
+                //keysym = XKeycodeToKeysym(_caca_dpy, event.xkey.keycode, 0);
+                if(XLookupString(&event.xkey, &key, 1, NULL, NULL))
+                    return key;
+            }
         }
+
+        return 0;
+#endif
+    default:
+        break;
     }
 
     return 0;
-#endif
 }
 

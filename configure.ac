@@ -37,13 +37,17 @@ if test "${enable_conio}" = "yes"; then
     AC_DEFINE(SCREENUPDATE_IN_PC_H, 1,
               Define if <pc.h> defines ScreenUpdate.)],[
     AC_MSG_RESULT(no)])
-  AC_DEFINE(USE_CONIO, 1, Define if the backend driver is conio.h)
-elif test "${enable_slang}" = "yes"; then
+  AC_DEFINE(USE_CONIO, 1, Define to activate the conio.h backend driver)
+fi
+
+if test "${enable_slang}" = "yes"; then
   AC_CHECK_HEADERS(slang.h,:,AC_MSG_ERROR([cannot find slang headers]))
   AC_CHECK_LIB(slang,SLkp_init,:,AC_MSG_ERROR([cannot find slang library]))
-  AC_DEFINE(USE_SLANG, 1, Define if the backend driver is slang)
+  AC_DEFINE(USE_SLANG, 1, Define to activate the slang backend driver)
   CACA_LIBS="${CACA_LIBS} -lslang"
-elif test "${enable_x11}" = "yes"; then
+fi
+
+if test "${enable_x11}" = "yes"; then
   AC_PATH_X
   AC_CHECK_LIB(X11, XOpenDisplay,
    [ac_cv_my_have_x11=yes
@@ -54,16 +58,16 @@ elif test "${enable_x11}" = "yes"; then
   if test "${ac_cv_my_have_x11}" != "yes"; then
     AC_MSG_ERROR([cannot find X11 development files])
   fi
-  AC_DEFINE(USE_X11, 1, Define if the backend driver is X11)
+  AC_DEFINE(USE_X11, 1, Define to activate the X11 backend driver)
   CPPFLAGS="${CPPFLAGS} ${X_CFLAGS}"
   CACA_LIBS="${CACA_LIBS} ${X_LIBS}"
-elif test "${enable_ncurses}" != "no"; then
+fi
+
+if test "${enable_ncurses}" != "no"; then
   AC_CHECK_HEADERS(ncurses.h,:,AC_MSG_ERROR([cannot find ncurses headers]))
   AC_CHECK_LIB(ncurses,initscr,:,AC_MSG_ERROR([cannot find ncurses library]))
-  AC_DEFINE(USE_NCURSES, 1, Define if the backend driver is ncurses)
+  AC_DEFINE(USE_NCURSES, 1, Define to activate the ncurses backend driver)
   CACA_LIBS="${CACA_LIBS} -lncurses"
-else
-  AC_MSG_ERROR([could not find any terminal graphics interface])
 fi
 
 AC_SUBST(CACA_LIBS)
