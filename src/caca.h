@@ -101,12 +101,13 @@ enum caca_key
 };
 
 /*
- * Types
+ * Internal types
  */
 struct caca_sprite;
+struct caca_bitmap;
 
 /*
- * Prototypes
+ * Basic functions
  */
 int caca_init(void);
 void caca_set_delay(unsigned int);
@@ -118,8 +119,14 @@ const char *caca_get_color_name(unsigned int);
 void caca_refresh(void);
 void caca_end(void);
 
+/*
+ * Events
+ */
 int caca_get_event(void);
 
+/*
+ * Character graphics
+ */
 void caca_set_color(enum caca_color);
 enum caca_color caca_get_color(void);
 void caca_putchar(int, int, char);
@@ -127,6 +134,9 @@ void caca_putstr(int, int, const char *);
 void caca_printf(int, int, const char *, ...);
 void caca_clear(void);
 
+/*
+ * Graphics primitives
+ */
 void caca_draw_line(int, int, int, int, char);
 void caca_draw_polyline(const int[], const int[], int, char);
 void caca_draw_thin_line(int, int, int, int);
@@ -145,9 +155,15 @@ void caca_draw_triangle(int, int, int, int, int, int, char);
 void caca_draw_thin_triangle(int, int, int, int, int, int);
 void caca_fill_triangle(int, int, int, int, int, int, char);
 
+/*
+ * Maths
+ */
 int caca_rand(int, int);
 unsigned int caca_sqrt(unsigned int);
 
+/*
+ * Sprite handling
+ */
 struct caca_sprite * caca_load_sprite(const char *);
 int caca_get_sprite_frames(struct caca_sprite *);
 int caca_get_sprite_width(struct caca_sprite *, int);
@@ -157,7 +173,12 @@ int caca_get_sprite_dy(struct caca_sprite *, int);
 void caca_draw_sprite(int, int, struct caca_sprite *, int);
 void caca_free_sprite(struct caca_sprite *);
 
-void caca_blit(int, int, int, int, void *, int, int);
+/*
+ * Bitmap handling
+ */
+struct caca_bitmap *caca_create_bitmap(int, int, int, int, int, int, int);
+void caca_draw_bitmap(int, int, int, int, struct caca_bitmap *, char *);
+void caca_free_bitmap(struct caca_bitmap *);
 
 #ifdef __cplusplus
 }

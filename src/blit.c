@@ -83,13 +83,64 @@ void caca_set_dithering(enum caca_dithering dither)
     _caca_dithering = dither;
 }
 
-void caca_blit(int x1, int y1, int x2, int y2, void *pixels, int w, int h)
+struct caca_bitmap
 {
+    int bpp;
+    int w, h, pitch;
+    int rmask, gmask, bmask;
+};
+
+struct caca_bitmap *caca_create_bitmap(int bpp, int w, int h, int pitch,
+                                       int rmask, int gmask, int bmask)
+{
+    struct caca_bitmap *bitmap;
+
+    /* Currently only this format is supported. Will improve later. */
+    if(!w || !h || !pitch || bpp != 32 ||
+       rmask != 0x00ff0000 || gmask != 0x0000ff00 || bmask != 0x000000ff)
+        return NULL;
+
+    bitmap = malloc(sizeof(struct caca_bitmap));
+    if(!bitmap)
+        return NULL;
+
+    bitmap->bpp = bpp;
+
+    bitmap->w = w;
+    bitmap->h = h;
+    bitmap->pitch = pitch;
+
+    bitmap->rmask = rmask;
+    bitmap->gmask = gmask;
+    bitmap->bmask = bmask;
+
+    return bitmap;
+}
+
+void caca_free_bitmap(struct caca_bitmap *bitmap)
+{
+    if(!bitmap)
+        return;
+
+    free(bitmap);
+}
+
+void caca_draw_bitmap(int x1, int y1, int x2, int y2,
+                      struct caca_bitmap *bitmap, char *pixels)
+{
+    /* FIXME: this code is shite! */
     static int white_colors[] = {CACA_COLOR_DARKGRAY, CACA_COLOR_LIGHTGRAY, CACA_COLOR_WHITE};
     static int light_colors[] = {CACA_COLOR_LIGHTMAGENTA, CACA_COLOR_LIGHTRED, CACA_COLOR_YELLOW, CACA_COLOR_LIGHTGREEN, CACA_COLOR_LIGHTCYAN, CACA_COLOR_LIGHTBLUE, CACA_COLOR_LIGHTMAGENTA};
     static int dark_colors[] = {CACA_COLOR_MAGENTA, CACA_COLOR_RED, CACA_COLOR_BROWN, CACA_COLOR_GREEN, CACA_COLOR_CYAN, CACA_COLOR_BLUE, CACA_COLOR_MAGENTA};
     static char foo[] = { ' ', '.', ':', ';', '=', '%', '$', 'W', '#', '8', '@' };
-    int x, y, pitch;
+    int x, y, w, h, pitch;
+
+    if(!bitmap || !pixels)
+        return;
+
+    w = bitmap->w;
+    h = bitmap->h;
+    pitch = bitmap->pitch;
 
     if(x1 > x2)
     {
@@ -101,9 +152,6 @@ void caca_blit(int x1, int y1, int x2, int y2, void *pixels, int w, int h)
         int tmp = y2; y2 = y1; y1 = tmp;
     }
 
-    //pitch = (3 * w + 3) / 4 * 4;
-    pitch = 4 * w;
-
     for(y = y1 > 0 ? y1 : 0; y <= y2 && y <= (int)caca_get_height(); y++)
     {
         /* Initialize dither tables for the current line */
@@ -114,9 +162,7 @@ void caca_blit(int x1, int y1, int x2, int y2, void *pixels, int w, int h)
         {
             int fromx = w * (x - x1) / (x2 - x1 + 1);
             int fromy = h * (y - y1) / (y2 - y1 + 1);
-            //int r = ((unsigned char *)pixels)[3 * fromx + pitch * fromy];
-            //int g = ((unsigned char *)pixels)[3 * fromx + 1 + pitch * fromy];
-            //int b = ((unsigned char *)pixels)[3 * fromx + 2 + pitch * fromy];
+            /* FIXME: bwahaaa, we don't even respect masks */
             int b = ((unsigned char *)pixels)[4 * fromx + pitch * fromy];
             int g = ((unsigned char *)pixels)[4 * fromx + 1 + pitch * fromy];
             int r = ((unsigned char *)pixels)[4 * fromx + 2 + pitch * fromy];

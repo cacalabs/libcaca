@@ -21,10 +21,14 @@ High level stuff
 
    o  Fix the thin ellipse rendering
 
+   o  Support more colour depths, more bitmask orderings
+
 
 Misc
 
    o  Draw a nicer logo sprite
+
+   o  Text edit widget
 
 
 Documentation

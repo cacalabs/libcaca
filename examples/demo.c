@@ -183,6 +183,13 @@ fprintf(stderr, "w %i, h %i, stride %i\n", bufx, bufy, bufpitch);
 
             caca_refresh();
         }
+        else if(event & CACA_EVENT_MOUSE_CLICK)
+        {
+            display_menu();
+            caca_set_color(CACA_COLOR_RED);
+            caca_putstr((event & 0xff00) >> 8, event & 0xff, "|\\");
+            caca_refresh();
+        }
 
         if(demo)
         {
@@ -485,7 +492,9 @@ static void demo_sprites(void)
 
 static void demo_blit(void)
 {
+#if 0
     caca_blit(6, 4, caca_get_width() - 6, caca_get_height() - 4,
               pixels, bufx, bufy);
+#endif
 }
 
