@@ -61,6 +61,11 @@
 #define EE_MAGENTA 10
 
 /*
+ * Types
+ */
+struct ee_sprite;
+
+/*
  * Prototypes
  */
 int ee_init(void);
@@ -80,4 +85,8 @@ void ee_fill_triangle(int, int, int, int, int, int, char);
 
 int ee_rand(int, int);
 int ee_sqrt(int);
+
+struct ee_sprite * ee_load_sprite(const char *);
+void ee_draw_sprite(int, int, struct ee_sprite *);
+void ee_free_sprite(struct ee_sprite *);
 
