@@ -32,6 +32,20 @@
 
 #include "ee.h"
 
+void ee_draw_triangle(int x1, int y1, int x2, int y2, int x3, int y3, char c)
+{
+    ee_draw_line(x1, y1, x2, y2, c);
+    ee_draw_line(x2, y2, x3, y3, c);
+    ee_draw_line(x3, y3, x1, y1, c);
+}
+
+void ee_draw_thin_triangle(int x1, int y1, int x2, int y2, int x3, int y3)
+{
+    ee_draw_thin_line(x1, y1, x2, y2);
+    ee_draw_thin_line(x2, y2, x3, y3);
+    ee_draw_thin_line(x3, y3, x1, y1);
+}
+
 void ee_fill_triangle(int x1, int y1, int x2, int y2, int x3, int y3, char c)
 {
     int x, y, xa, xb, xmax, ymax;

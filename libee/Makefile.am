@@ -10,6 +10,7 @@ libee_a_SOURCES = \
 	io.c \
 	math.c \
 	line.c \
+	box.c \
 	conic.c \
 	triangle.c \
 	sprite.c \

@@ -58,8 +58,18 @@ void ee_clear(void);
 
 void ee_draw_line(int, int, int, int, char);
 void ee_draw_thin_line(int, int, int, int);
+
 void ee_draw_circle(int, int, int, char);
 void ee_draw_ellipse(int, int, int, int, char);
+void ee_draw_thin_ellipse(int, int, int, int);
+void ee_fill_ellipse(int, int, int, int, char);
+
+void ee_draw_box(int, int, int, int, char);
+void ee_draw_thin_box(int, int, int, int);
+void ee_fill_box(int, int, int, int, char);
+
+void ee_draw_triangle(int, int, int, int, int, int, char);
+void ee_draw_thin_triangle(int, int, int, int, int, int);
 void ee_fill_triangle(int, int, int, int, int, int, char);
 
 int ee_rand(int, int);
