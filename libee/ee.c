@@ -26,6 +26,10 @@
 #   include <slang.h>
 #elif USE_NCURSES
 #   include <curses.h>
+#elif USE_CONIO
+#   include <conio.h>
+#else
+#   error "no graphics library detected"
 #endif
 
 #include <stdlib.h>
@@ -37,6 +41,9 @@
 #include "ee.h"
 
 static int _ee_delay;
+#ifdef USE_CONIO
+static struct text_info ti;
+#endif
 
 int ee_init(void)
 {
@@ -97,8 +104,12 @@ int ee_init(void)
     init_pair(EE_CYAN, COLOR_CYAN, COLOR_BLACK);
     init_pair(EE_MAGENTA, COLOR_MAGENTA, COLOR_BLACK);
 
-#else
-    /* Dummy driver */
+#elif USE_CONIO
+    _wscroll = 0;
+    _setcursortype(_NOCURSOR);
+    clrscr();
+    gettextinfo(&ti);
+//window(2, 2, 20, 20);
 
 #endif
     _ee_delay = 0;
@@ -117,8 +128,8 @@ int ee_get_width(void)
     return SLtt_Screen_Cols;
 #elif USE_NCURSES
     return COLS;
-#else
-    return 80;
+#elif USE_CONIO
+    return ti.screenwidth;
 #endif
 }
 
@@ -129,10 +140,11 @@ int ee_get_height(void)
 #elif USE_NCURSES
     return LINES;
 #else
-    return 25;
+    return ti.screenheight;
 #endif
 }
 
+#ifndef USE_CONIO
 static int64_t local_time(void)
 {
     struct timeval tv;
@@ -144,9 +156,11 @@ static int64_t local_time(void)
     now += tv.tv_usec;
     return now;
 }
+#endif
 
 void ee_refresh(void)
 {
+#ifndef USE_CONIO
     static int64_t local_clock = 0;
     int64_t now;
 
@@ -160,15 +174,17 @@ void ee_refresh(void)
     {
         /* If we are late, we shouldn't display anything */
     }
+#endif
 
 #ifdef USE_SLANG
     SLsmg_refresh();
 #elif USE_NCURSES
     refresh();
-#else
-    /* Use dummy driver */
+#elif USE_CONIO
+    /* Do nothing? */
 #endif
 
+#ifndef USE_CONIO
     now = local_time();
 
     if(now < local_clock + _ee_delay - 10000)
@@ -177,6 +193,7 @@ void ee_refresh(void)
     }
 
     local_clock += _ee_delay;
+#endif
 }
 
 void ee_end(void)
@@ -188,8 +205,11 @@ void ee_end(void)
 #elif USE_NCURSES
     curs_set(1);
     endwin();
-#else
-    /* Use dummy driver */
+#elif USE_CONIO
+    _wscroll = 1;
+    ee_set_color(EE_WHITE);
+    ee_putstr(ee_get_width(), ee_get_height()-1, "\r\n");
+    _setcursortype(_NORMALCURSOR);
 #endif
 }
 

@@ -28,8 +28,13 @@
 #   include <curses.h>
 #endif
 
+#ifdef HAVE_INTTYPES_H
+#   include <inttypes.h>
+#else
+typedef unsigned char uint8_t;
+#endif
+
 #include <stdlib.h>
-#include <inttypes.h>
 
 #include "ee.h"
 

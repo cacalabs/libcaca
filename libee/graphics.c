@@ -26,6 +26,10 @@
 #   include <slang.h>
 #elif USE_NCURSES
 #   include <curses.h>
+#elif USE_CONIO
+#   include <conio.h>
+#else
+#   error "no graphics library detected"
 #endif
 
 #include <string.h>
@@ -34,6 +38,21 @@
 #include "ee.h"
 
 static int ee_color = 0;
+#ifdef USE_CONIO
+static enum COLORS dos_colors[] = {
+    0,
+    BLACK,
+    GREEN,
+    YELLOW,
+    WHITE,
+    RED,
+    DARKGRAY,
+    LIGHTGRAY,
+    BLUE,
+    CYAN,
+    MAGENTA
+};
+#endif
 
 void ee_set_color(int color)
 {
@@ -42,8 +61,9 @@ void ee_set_color(int color)
     SLsmg_set_color(color);
 #elif USE_NCURSES
     attrset(COLOR_PAIR(color));
-#else
-    /* Use dummy driver */
+#elif USE_CONIO
+    if(color >= 1 && color <= 10)
+        textcolor(dos_colors[color]);
 #endif
 }
 
@@ -60,8 +80,9 @@ void ee_putchar(int x, int y, char c)
 #elif USE_NCURSES
     move(y,x);
     addch(c);
-#else
-    /* Use dummy driver */
+#elif USE_CONIO
+    gotoxy(x+1,y+1);
+    putch(c);
 #endif
 }
 
@@ -73,15 +94,15 @@ void ee_putstr(int x, int y, char *s)
 #elif USE_NCURSES
     move(y,x);
     addstr(s);
-#else
-    /* Use dummy driver */
+#elif USE_CONIO
+    gotoxy(x+1,y+1);
+    cputs(s);
 #endif
 }
 
 void ee_clear(void)
 {
-#if defined(USE_SLANG) || defined(USE_NCURSES)
-    /* We could use SLsmg_cls(), but drawing empty lines is much faster */
+    /* We could use SLsmg_cls() etc., but drawing empty lines is much faster */
     int x = ee_get_width(), y = ee_get_height();
     char *empty_line = malloc((x + 1) * sizeof(char));
 
@@ -94,8 +115,5 @@ void ee_clear(void)
     }
 
     free(empty_line);
-#else
-    /* Use dummy driver */
-#endif
 }
 

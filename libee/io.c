@@ -26,6 +26,10 @@
 #   include <slang.h>
 #elif USE_NCURSES
 #   include <curses.h>
+#elif USE_CONIO
+#   include <conio.h>
+#else
+#   error "no graphics library detected"
 #endif
 
 #include "ee.h"
@@ -44,8 +48,8 @@ char ee_get_key(void)
     {
         return key;
     }
-#else
-    return 0;
+#elif USE_CONIO
+    return _conio_kbhit() ? getch() : 0;
 
 #endif
 

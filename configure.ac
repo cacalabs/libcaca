@@ -18,10 +18,17 @@ AC_ARG_ENABLE(slang,
   [  --enable-slang          slang graphics support (default enabled)])
 AC_ARG_ENABLE(ncurses,
   [  --enable-ncurses        ncurses graphics support (default disabled)])
+AC_ARG_ENABLE(conio,
+  [  --enable-conio          DOS conio.h graphics support (default disabled)])
 
 USE_SLANG=false
 USE_NCURSES=false
-if test "${enable_ncurses}" = "yes"; then
+USE_CONIO=false
+if test "${enable_conio}" = "yes"; then
+  AC_CHECK_HEADER(conio.h,:,AC_MSG_ERROR([cannot find conio.h header]))
+  AC_DEFINE(USE_CONIO, 1, Define if the backend driver is conio.h)
+  USE_CONIO=:
+elif test "${enable_ncurses}" = "yes"; then
   AC_CHECK_HEADER(ncurses.h,:,AC_MSG_ERROR([cannot find ncurses headers]))
   AC_CHECK_LIB(ncurses,initscr,:,AC_MSG_ERROR([cannot find ncurses library]))
   AC_DEFINE(USE_NCURSES, 1, Define if the backend driver is ncurses)
