@@ -111,21 +111,22 @@ int main(int argc, char **argv)
     /* Go ! */
     while(!quit)
     {
-        int ww = caca_get_width();
-        int wh = caca_get_height();
-
+        int ww, wh;
         unsigned int event, new_status = 0, new_help = 0;
 
+        ww = caca_get_width();
+        wh = caca_get_height();
+
         if(update)
-            event = caca_get_event(CACA_EVENT_KEY_PRESS);
+            event = caca_get_event(CACA_EVENT_KEY_PRESS | CACA_EVENT_RESIZE);
         else
-            event = caca_wait_event(CACA_EVENT_KEY_PRESS);
+            event = caca_wait_event(CACA_EVENT_KEY_PRESS | CACA_EVENT_RESIZE);
 
         while(event)
         {
             unsigned int key = event & 0x00ffffff;
 
-            switch(key)
+            if(key) switch(key)
             {
             case 'n':
             case 'N':
@@ -231,6 +232,14 @@ int main(int argc, char **argv)
                 break;
             }
 
+            if(event == CACA_EVENT_RESIZE)
+            {
+                caca_refresh();
+                ww = caca_get_width();
+                wh = caca_get_height();
+                update = 1;
+            }
+
             if(status || new_status)
                 status = new_status;
 
@@ -258,6 +267,8 @@ int main(int argc, char **argv)
             caca_set_color(CACA_COLOR_WHITE, CACA_COLOR_BLUE);
             caca_putstr((ww - strlen(buffer)) / 2, wh / 2, buffer);
             caca_refresh();
+            ww = caca_get_width();
+            wh = caca_get_height();
 
             unload_image();
             load_image(list[current]);

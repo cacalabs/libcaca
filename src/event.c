@@ -273,10 +273,10 @@ static unsigned int _lowlevel_event(void)
             {
                 unsigned int w, h;
 
-                h = (xevent.xconfigure.height + x11_font_height / 3)
-                      / x11_font_height;
                 w = (xevent.xconfigure.width + x11_font_width / 3)
                       / x11_font_width;
+                h = (xevent.xconfigure.height + x11_font_height / 3)
+                      / x11_font_height;
 
                 if(w == _caca_width && h == _caca_height)
                     continue;

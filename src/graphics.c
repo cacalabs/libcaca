@@ -1320,18 +1320,25 @@ static void caca_handle_resize(void)
 #if defined(USE_X11)
     if(_caca_driver == CACA_DRIVER_X11)
     {
+        Pixmap new_pixmap;
+
         _caca_width = x11_new_width;
         _caca_height = x11_new_height;
 
-        XFreePixmap(x11_dpy, x11_pixmap);
         free(x11_char);
         free(x11_attr);
 
-        x11_pixmap = XCreatePixmap(x11_dpy, x11_window,
+        new_pixmap = XCreatePixmap(x11_dpy, x11_window,
                                    _caca_width * x11_font_width,
                                    _caca_height * x11_font_height,
                                    DefaultDepth(x11_dpy,
                                                 DefaultScreen(x11_dpy)));
+        XCopyArea(x11_dpy, x11_pixmap, new_pixmap, x11_gc, 0, 0,
+                  old_width * x11_font_width, old_height * x11_font_height,
+                  0, 0);
+        XFreePixmap(x11_dpy, x11_pixmap);
+        x11_pixmap = new_pixmap;
+
         x11_char = malloc(_caca_width * _caca_height * sizeof(int));
         memset(x11_char, 0, _caca_width * _caca_height * sizeof(int));
         x11_attr = malloc(_caca_width * _caca_height * sizeof(int));
