@@ -1,4 +1,16 @@
 ------------------------------------------------------------------------
+r259 | sam | 2004-02-02 03:54:43 +0100 (Mon, 02 Feb 2004) | 2 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/NEWS
+   M /trunk/configure.ac
+   M /trunk/debian/changelog
+   M /trunk/libcaca.spec
+   M /trunk/msvc/config.h
+
+  * 0.9 release.
+
+------------------------------------------------------------------------
 r258 | sam | 2004-01-26 11:52:30 +0100 (Mon, 26 Jan 2004) | 5 lines
 Changed paths:
    M /trunk/configure.ac
