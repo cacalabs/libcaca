@@ -292,7 +292,7 @@ static void demo_color(void)
     ee_clear();
     for(i = 0; i < 16; i++)
     {
-        sprintf(buf, "color %i (%s)\n", i, ee_color_names[i]);
+        sprintf(buf, "'%c': %i (%s)", 'a' + i, i, ee_color_names[i]);
         ee_set_color(EE_WHITE);
         ee_putstr(4, i + 3, buf);
         ee_set_color(i);

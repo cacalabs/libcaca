@@ -38,7 +38,7 @@ starfield * create_starfield(game *g)
         s[i].x = ee_rand(0, g->w - 1);
         s[i].y = ee_rand(0, g->h - 1);
         s[i].z = ee_rand(1, 3);
-        s[i].c = ee_rand(6, 7);
+        s[i].c = ee_rand(0, 1) ? EE_LIGHTGRAY : EE_DARKGRAY;
         s[i].ch = ee_rand(0, 1) ? '.' : '\'';
     }
 
@@ -70,7 +70,7 @@ void update_starfield(game *g, starfield *s)
             s[i].x = ee_rand(0, g->w - 1);
             s[i].y = 0;
             s[i].z = ee_rand(1, 2);
-            s[i].c = ee_rand(6, 7);
+            s[i].c = ee_rand(0, 1) ? EE_LIGHTGRAY : EE_DARKGRAY;
             s[i].ch = ee_rand(0, 1) ? '.' : '\'';
         }
         else if(s[i].y < g->h-1)
