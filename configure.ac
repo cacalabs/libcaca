@@ -157,6 +157,7 @@ AC_CONFIG_FILES([
   Makefile
   src/Makefile
   examples/Makefile
+  test/Makefile
   doc/Makefile
   doc/doxygen.cfg
   autotools/Makefile

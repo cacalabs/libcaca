@@ -1,5 +1,5 @@
 ###############################################################################
-# Automake targets and declarations for libcaca tests
+# Automake targets and declarations for libcaca example programs
 ###############################################################################
 
 pkgdata_DATA = caca.txt
