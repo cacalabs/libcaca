@@ -1,6 +1,6 @@
 %define name  libcaca
 %define version 0.6
-%define release 1
+%define release 2
 
 Name: %{name}
 Version: %{version}
@@ -14,7 +14,7 @@ BuildRoot: %{_tmppath}/%{name}-buildroot
 Prefix: %{_prefix}
 Buildrequires: XFree86-devel, ncurses-devel >= 5, slang-devel
 Buildrequires: imlib2-devel
-Buildrequires: doxygen, tetex-latex
+Buildrequires: doxygen, tetex-latex, tetex-dvips
 
 Summary: Text mode graphics library
 %description
@@ -75,9 +75,9 @@ make
 %install
 rm -rf %{buildroot}
 %makeinstall
-mv %{buildroot}/%{_prefix}/share/doc/libcaca-dev %{buildroot}/%{_prefix}/share/doc/libcaca-devel
-mkdir %{buildroot}/%{_prefix}/share/doc/caca-utils
-cp `find %{buildroot}/%{_prefix}/share/doc/libcaca-devel/ -name '[A-Z]*'` %{buildroot}/%{_prefix}/share/doc/caca-utils/
+mv %{buildroot}/%{_prefix}/share/doc/libcaca-dev %{buildroot}/%{_prefix}/share/doc/libcaca-devel-%{version}
+mkdir %{buildroot}/%{_prefix}/share/doc/caca-utils-%{version}
+cp `find %{buildroot}/%{_prefix}/share/doc/libcaca-devel-%{version}/ -name '[A-Z]*'` %{buildroot}/%{_prefix}/share/doc/caca-utils-%{version}/
 
 %clean
 rm -rf %{buildroot}
@@ -87,7 +87,7 @@ rm -rf %{buildroot}
 %{_libdir}/*
 %{_prefix}/bin/caca-config
 %{_prefix}/include/*
-%{_prefix}/share/doc/libcaca-devel/*
+%{_prefix}/share/doc/libcaca-devel-%{version}/*
 %{_prefix}/share/man/man1/caca-config.1*
 %{_prefix}/share/man/man3/*
 
@@ -97,7 +97,7 @@ rm -rf %{buildroot}
 %{_prefix}/bin/cacafire
 %{_prefix}/bin/cacaview
 %{_prefix}/bin/caca-spritedit
-%{_prefix}/share/doc/caca-utils/*
+%{_prefix}/share/doc/caca-utils-%{version}/*
 %{_prefix}/share/libcaca/*
 %{_prefix}/share/man/man1/cacademo.1*
 %{_prefix}/share/man/man1/cacafire.1*
@@ -105,8 +105,15 @@ rm -rf %{buildroot}
 %{_prefix}/share/man/man1/caca-spritedit.1*
 
 %changelog
+* Sat Jan 4 2004 Sam Hocevar (RPM packages) <sam+rpm@zoy.org> 0.6-2
+- install documentation into {doc}/package-version instead of {doc}/package
+- added tetex-dvips to the build dependencies
+
 * Sat Jan 3 2004 Sam Hocevar (RPM packages) <sam+rpm@zoy.org> 0.6-1
 - new release
+- more detailed descriptions
+- split the RPM into libcaca-devel and caca-utils
+- packages are rpmlint clean
 
 * Mon Dec 29 2003 Richard Zidlicky <rz@linux-m68k.org> 0.5-1
 - created specfile
