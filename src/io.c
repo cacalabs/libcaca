@@ -70,6 +70,85 @@ unsigned int caca_get_event(void)
 {
     unsigned int event = 0;
 
+#if defined(USE_X11)
+    if(_caca_driver == CACA_DRIVER_X11)
+    {
+        XEvent xevent;
+        static unsigned int x11_x = 0, x11_y = 0;
+        long int xevent_mask = KeyPressMask | KeyReleaseMask | ButtonPressMask
+                                | ButtonReleaseMask | PointerMotionMask;
+        char key;
+
+        while(XCheckWindowEvent(x11_dpy, x11_window, xevent_mask, &xevent)
+               == True)
+        {
+            KeySym keysym;
+
+            if(xevent.type == MotionNotify)
+            {
+                unsigned int x = xevent.xmotion.x / x11_font_width;
+                unsigned int y = xevent.xmotion.y / x11_font_height;
+
+                if(x11_x == x && x11_y == y)
+                    continue;
+
+                if(x >= _caca_width)
+                    x = _caca_width - 1;
+                if(y >= _caca_height)
+                    y = _caca_height - 1;
+
+                x11_x = x & 0xfff;
+                x11_y = y & 0xfff;
+
+                return CACA_EVENT_MOUSE_MOTION | (x << 12) | (y << 0);
+            }
+
+            if(xevent.type == ButtonPress)
+                return CACA_EVENT_MOUSE_PRESS | 1;
+
+            if(xevent.type == ButtonPress)
+                return CACA_EVENT_MOUSE_RELEASE | 1;
+
+            if(xevent.type == KeyPress)
+                event |= CACA_EVENT_KEY_PRESS;
+            else if(xevent.type == KeyRelease)
+                event |= CACA_EVENT_KEY_RELEASE;
+            else
+                return 0;
+
+            if(XLookupString(&xevent.xkey, &key, 1, NULL, NULL))
+                return event | key;
+
+            keysym = XKeycodeToKeysym(x11_dpy, xevent.xkey.keycode, 0);
+            switch(keysym)
+            {
+            case XK_F1:    return event | CACA_KEY_F1;
+            case XK_F2:    return event | CACA_KEY_F2;
+            case XK_F3:    return event | CACA_KEY_F3;
+            case XK_F4:    return event | CACA_KEY_F4;
+            case XK_F5:    return event | CACA_KEY_F5;
+            case XK_F6:    return event | CACA_KEY_F6;
+            case XK_F7:    return event | CACA_KEY_F7;
+            case XK_F8:    return event | CACA_KEY_F8;
+            case XK_F9:    return event | CACA_KEY_F9;
+            case XK_F10:   return event | CACA_KEY_F10;
+            case XK_F11:   return event | CACA_KEY_F11;
+            case XK_F12:   return event | CACA_KEY_F12;
+            case XK_F13:   return event | CACA_KEY_F13;
+            case XK_F14:   return event | CACA_KEY_F14;
+            case XK_F15:   return event | CACA_KEY_F15;
+            case XK_Left:  return event | CACA_KEY_LEFT;
+            case XK_Right: return event | CACA_KEY_RIGHT;
+            case XK_Up:    return event | CACA_KEY_UP;
+            case XK_Down:  return event | CACA_KEY_DOWN;
+            default:       return 0;
+            }
+        }
+
+        return 0;
+    }
+#endif
+
     /* Read all available key events and push them into the buffer */
     while(keys < KEY_BUFLEN)
     {
@@ -96,7 +175,7 @@ unsigned int caca_get_event(void)
             event |= (mevent.x) << 8;
             event |= (mevent.y) << 0;
 
-            return CACA_EVENT_MOUSE_CLICK | event;
+            return CACA_EVENT_MOUSE_PRESS | event;
         }
 
         switch(keybuf[0])
@@ -168,7 +247,7 @@ unsigned int caca_get_event(void)
         event |= (_pop_key() - '!') << 8;
         event |= (_pop_key() - '!') << 0;
 
-        return CACA_EVENT_MOUSE_CLICK | event;
+        return CACA_EVENT_MOUSE_PRESS | event;
     }
     else if(keybuf[0] == '[' && keybuf[1] == '1' && keybuf[3] == '~' &&
             keybuf[2] >= '5' && keybuf[2] != '6' && keybuf[2] <= '9')
@@ -251,10 +330,6 @@ static unsigned int _read_key(void)
     int intkey;
 #endif
 #if defined(USE_X11)
-    XEvent event;
-    static int x11_x = 0, x11_y = 0;
-    long int event_mask = KeyPressMask | ButtonPressMask | PointerMotionMask;
-    char key;
 #endif
 
     switch(_caca_driver)
@@ -274,65 +349,6 @@ static unsigned int _read_key(void)
 #endif
 #if defined(USE_X11)
     case CACA_DRIVER_X11:
-        while(XCheckWindowEvent(x11_dpy, x11_window, event_mask, &event)
-               == True)
-        {
-            KeySym keysym;
-
-            if(event.type == MotionNotify)
-            {
-                x11_x = event.xmotion.x;
-                x11_y = event.xmotion.y;
-                continue;
-            }
-
-            if(event.type == ButtonPress)
-            {
-                unsigned int x = x11_x / x11_font_width;
-                unsigned int y = x11_y / x11_font_height;
-
-                if(x >= _caca_width)
-                    x = _caca_width - 1;
-                if(y >= _caca_height)
-                    y = _caca_height - 1;
-
-                return CACA_EVENT_MOUSE_CLICK
-                        | (1 << 16) | (x << 8) | (y << 0);
-            }
-
-            if(event.type != KeyPress)
-                continue;
-
-            if(XLookupString(&event.xkey, &key, 1, NULL, NULL))
-                return key;
-
-            keysym = XKeycodeToKeysym(x11_dpy, event.xkey.keycode, 0);
-            switch(keysym)
-            {
-            case XK_F1:    return CACA_KEY_F1;
-            case XK_F2:    return CACA_KEY_F2;
-            case XK_F3:    return CACA_KEY_F3;
-            case XK_F4:    return CACA_KEY_F4;
-            case XK_F5:    return CACA_KEY_F5;
-            case XK_F6:    return CACA_KEY_F6;
-            case XK_F7:    return CACA_KEY_F7;
-            case XK_F8:    return CACA_KEY_F8;
-            case XK_F9:    return CACA_KEY_F9;
-            case XK_F10:   return CACA_KEY_F10;
-            case XK_F11:   return CACA_KEY_F11;
-            case XK_F12:   return CACA_KEY_F12;
-            case XK_F13:   return CACA_KEY_F13;
-            case XK_F14:   return CACA_KEY_F14;
-            case XK_F15:   return CACA_KEY_F15;
-            case XK_Left:  return CACA_KEY_LEFT;
-            case XK_Right: return CACA_KEY_RIGHT;
-            case XK_Up:    return CACA_KEY_UP;
-            case XK_Down:  return CACA_KEY_DOWN;
-            default:       return 0;
-            }
-        }
-
-        return 0;
 #endif
     default:
         break;

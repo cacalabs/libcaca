@@ -175,10 +175,12 @@ enum caca_feature
  */
 enum caca_event
 {
-    CACA_EVENT_NONE =        0x00000000, /**< No event. */
-    CACA_EVENT_KEY_PRESS =   0x01000000, /**< A key was pressed. */
-    CACA_EVENT_KEY_RELEASE = 0x02000000, /**< A key was released. */
-    CACA_EVENT_MOUSE_CLICK = 0x04000000 /**< A mouse button was clicked. */
+    CACA_EVENT_NONE =          0x00000000, /**< No event. */
+    CACA_EVENT_KEY_PRESS =     0x01000000, /**< A key was pressed. */
+    CACA_EVENT_KEY_RELEASE =   0x02000000, /**< A key was released. */
+    CACA_EVENT_MOUSE_PRESS =   0x04000000, /**< A mouse button was pressed. */
+    CACA_EVENT_MOUSE_RELEASE = 0x08000000, /**< A mouse button was released. */
+    CACA_EVENT_MOUSE_MOTION =  0x10000000  /**< The mouse was moved. */
 };
 
 /** \brief Special key values.

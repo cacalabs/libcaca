@@ -71,91 +71,95 @@ int main(int argc, char **argv)
     /* Go ! */
     while(!quit)
     {
-        int event = caca_get_event();
+        int menu = 0, mouse = 0, xmouse = 0, ymouse = 0;
+        int event;
 
-        if(event && demo)
+        while((event = caca_get_event()))
         {
-            display_menu();
-            caca_refresh();
-            demo = NULL;
-        }
-        else if(event & CACA_EVENT_KEY_PRESS)
-        {
-        handle_key:
-            switch(event & 0xffff)
+            if(demo && (event & CACA_EVENT_KEY_PRESS))
             {
-            case 'q':
-            case 'Q':
+                menu = 1;
                 demo = NULL;
-                quit = 1;
-                break;
-            case 'o':
-            case 'O':
-                outline = (outline + 1) % 3;
-                display_menu();
-                break;
-            case 'b':
-            case 'B':
-                bounds = (bounds + 1) % 2;
-                display_menu();
-                break;
-            case 'd':
-            case 'D':
-                dithering = (dithering + 1) % 5;
-                caca_set_dithering(dithering);
-                display_menu();
-                break;
-            case 'c':
-                demo = demo_color;
-                break;
-            case 'f':
-            case 'F':
-                demo = demo_all;
-                break;
-            case '1':
-                demo = demo_dots;
-                break;
-            case '2':
-                demo = demo_lines;
-                break;
-            case '3':
-                demo = demo_boxes;
-                break;
-            case '4':
-                demo = demo_triangles;
-                break;
-            case '5':
-                demo = demo_ellipses;
-                break;
-            case 's':
-            case 'S':
-                if(sprite)
-                    demo = demo_sprites;
-                break;
-            case 'r':
-            case 'R':
-                demo = demo_render;
-                break;
             }
+            else if(event & CACA_EVENT_KEY_PRESS)
+            {
+                switch(event & 0xffff)
+                {
+                case 'q':
+                case 'Q':
+                    demo = NULL;
+                    quit = 1;
+                    break;
+                case 'o':
+                case 'O':
+                    outline = (outline + 1) % 3;
+                    display_menu();
+                    break;
+                case 'b':
+                case 'B':
+                    bounds = (bounds + 1) % 2;
+                    display_menu();
+                    break;
+                case 'd':
+                case 'D':
+                    dithering = (dithering + 1) % 5;
+                    caca_set_dithering(dithering);
+                    display_menu();
+                    break;
+                case 'c':
+                    demo = demo_color;
+                    break;
+                case 'f':
+                case 'F':
+                    demo = demo_all;
+                    break;
+                case '1':
+                    demo = demo_dots;
+                    break;
+                case '2':
+                    demo = demo_lines;
+                    break;
+                case '3':
+                    demo = demo_boxes;
+                    break;
+                case '4':
+                    demo = demo_triangles;
+                    break;
+                case '5':
+                    demo = demo_ellipses;
+                    break;
+                case 's':
+                case 'S':
+                    if(sprite)
+                        demo = demo_sprites;
+                    break;
+                case 'r':
+                case 'R':
+                    demo = demo_render;
+                    break;
+                }
 
-        handle_event:
-            event = caca_get_event();
-            if(event & CACA_EVENT_KEY_PRESS)
-                goto handle_key;
-            else if(event)
-                goto handle_event;
-
-            caca_refresh();
-
-            if(demo)
-                caca_clear();
+                if(demo)
+                    caca_clear();
+            }
+            else if(event & CACA_EVENT_MOUSE_MOTION)
+            {
+                mouse = 1;
+                xmouse = (event & 0xfff000) >> 12;
+                ymouse = event & 0xfff;
+            }
         }
-        else if(event & CACA_EVENT_MOUSE_CLICK)
+
+        if(menu || (mouse && !demo))
         {
             display_menu();
-            caca_set_color(CACA_COLOR_RED, CACA_COLOR_BLACK);
-            caca_putstr((event & 0xff00) >> 8, event & 0xff, "|\\");
+            if(mouse && !demo)
+            {
+                caca_set_color(CACA_COLOR_RED, CACA_COLOR_BLACK);
+                caca_putstr(xmouse, ymouse, "|\\");
+            }
             caca_refresh();
+            mouse = menu = 0;
         }
 
         if(demo)
