@@ -34,7 +34,7 @@ Imlib_Image image = NULL;
 char *pixels = NULL;
 struct caca_bitmap *bitmap = NULL;
 
-int dithering = 0;
+int dithering = 1;
 const enum caca_dithering dithering_list[] =
     { CACA_DITHER_NONE, CACA_DITHER_ORDERED, CACA_DITHER_RANDOM };
 
@@ -109,19 +109,19 @@ int main(int argc, char **argv)
                 update = 1;
                 break;
             case CACA_EVENT_KEY_PRESS | CACA_KEY_UP:
-                if(zoom > 0) y -= h / (2 + zoom) / 8;
+                if(zoom > 0) y -= 1 + h / (2 + zoom) / 8;
                 update = 1;
                 break;
             case CACA_EVENT_KEY_PRESS | CACA_KEY_DOWN:
-                if(zoom > 0) y += h / (2 + zoom) / 8;
+                if(zoom > 0) y += 1 + h / (2 + zoom) / 8;
                 update = 1;
                 break;
             case CACA_EVENT_KEY_PRESS | CACA_KEY_LEFT:
-                if(zoom > 0) x -= w / (2 + zoom) / 8;
+                if(zoom > 0) x -= 1 + w / (2 + zoom) / 8;
                 update = 1;
                 break;
             case CACA_EVENT_KEY_PRESS | CACA_KEY_RIGHT:
-                if(zoom > 0) x += w / (2 + zoom) / 8;
+                if(zoom > 0) x += 1 + w / (2 + zoom) / 8;
                 update = 1;
                 break;
             case CACA_EVENT_KEY_PRESS | 'q':

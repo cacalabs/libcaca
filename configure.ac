@@ -70,6 +70,10 @@ case "${target_os}" in
 esac
 AM_CONDITIONAL(NEED_PIC, ${NEED_PIC})
 
+# Build cacaview?
+AC_PATH_PROG(IMLIB2_CONFIG, imlib2-config, no)
+AM_CONDITIONAL(IMLIB2_CONFIG, test "${IMLIB2_CONFIG}" != "no")
+
 # Build documentation?
 AC_PATH_PROG(DOXYGEN, doxygen, no)
 AM_CONDITIONAL(DOXYGEN, test "${DOXYGEN}" != "no")
