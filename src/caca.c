@@ -204,7 +204,7 @@ void caca_end(void)
 static void caca_init_terminal(void)
 {
 #if defined(HAVE_GETENV) && defined(HAVE_PUTENV)
-    char *term, *colorterm, *misc;
+    char *term, *colorterm, *other;
 
     term = getenv("TERM");
     colorterm = getenv("COLORTERM");
@@ -214,14 +214,28 @@ static void caca_init_terminal(void)
         /* If we are using gnome-terminal, it's really a 16 colour terminal */
         if(colorterm && !strcmp(colorterm, "gnome-terminal"))
         {
+#if defined(USE_NCURSES)
+            SCREEN *screen;
+            screen = newterm("xterm-16color", stdout, stdin);
+            if(screen == NULL)
+                return;
+            endwin();
+#endif
             (void)putenv("TERM=xterm-16color");
             return;
         }
 
         /* Ditto if we are using Konsole */
-        misc = getenv("KONSOLE_DCOP_SESSION");
-        if(misc)
+        other = getenv("KONSOLE_DCOP_SESSION");
+        if(other)
         {
+#if defined(USE_NCURSES)
+            SCREEN *screen;
+            screen = newterm("xterm-16color", stdout, stdin);
+            if(screen == NULL)
+                return;
+            endwin();
+#endif
             (void)putenv("TERM=xterm-16color");
             return;
         }
