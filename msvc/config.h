@@ -12,6 +12,8 @@
 #define HAVE_MEMORY_H 1
 /* #undef HAVE_NCURSES_H */
 #define HAVE_PUTENV 1
+/* #undef HAVE_RESIZETERM */
+/* #undef HAVE_RESIZE_TERM */
 /* #undef HAVE_SIGNAL */
 /* #undef HAVE_SIGNAL_H */
 /* #undef HAVE_SLANG_H */

@@ -1309,7 +1309,11 @@ static void caca_handle_resize(void)
         {
             _caca_width = size.ws_col;
             _caca_height = size.ws_row;
+#if defined(HAVE_RESIZE_TERM)
             resize_term(_caca_height, _caca_width);
+#else
+            resizeterm(_caca_height, _caca_width);
+#endif
             wrefresh(curscr);
         }
     }

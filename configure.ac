@@ -127,7 +127,12 @@ if test "${enable_ncurses}" != "no"; then
      [ac_cv_my_have_ncurses="yes"
       AC_DEFINE(USE_NCURSES, 1, Define to activate the ncurses backend driver)
       CACA_LIBS="${CACA_LIBS} -lncurses"
-      CACA_DRIVERS="${CACA_DRIVERS} ncurses"])])
+      CACA_DRIVERS="${CACA_DRIVERS} ncurses"
+      dnl  Check for resizeterm or resize_term
+      SAVED_LIBS="${LIBS}"
+      LIBS="${LIBS} -lncurses"
+      AC_CHECK_FUNCS(resizeterm resize_term)
+      LIBS="${SAVED_LIBS}"])])
   if test "${ac_cv_my_have_ncurses}" = "no" -a "${enable_ncurses}" = "yes"; then
     AC_MSG_ERROR([cannot find ncurses development files])
   fi
