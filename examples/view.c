@@ -28,10 +28,6 @@
 #include <malloc.h>
 #include <unistd.h>
 
-#ifdef HAVE_ENDIAN_H
-#   include <endian.h>
-#endif
-
 #include <Imlib2.h>
 
 #include "caca.h"
@@ -40,7 +36,7 @@ Imlib_Image image = NULL;
 char *pixels = NULL;
 struct caca_bitmap *bitmap = NULL;
 int x, y, w, h;
-unsigned int rmask, gmask, bmask;
+const unsigned int rmask = 0x00ff0000, gmask = 0x0000ff00, bmask = 0x000000ff;
 
 int dithering = CACA_DITHERING_ORDERED4;
 
@@ -53,20 +49,6 @@ int main(int argc, char **argv)
 
     char **list = NULL;
     int current = 0, items = 0, opts = 1;
-
-#ifdef HAVE_ENDIAN_H
-    if(__BYTE_ORDER == __BIG_ENDIAN)
-#else
-    rmask = 0x12345678;
-    if(*(char *)&rmask == 0x12)
-#endif
-    {
-        rmask = 0x0000ff00; gmask = 0x00ff0000; bmask = 0xff000000;
-    }
-    else
-    {
-        rmask = 0x00ff0000; gmask = 0x0000ff00; bmask = 0x000000ff;
-    }
 
     /* Initialise libcaca */
     if(caca_init())
