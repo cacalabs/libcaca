@@ -8,7 +8,7 @@ Standards-Version: 3.6.1.0
 Package: libcaca-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, slang1-dev
 Description: text mode graphics library
  libcaca is the Colour AsCii Art library.
  .
