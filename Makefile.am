@@ -2,7 +2,7 @@
 # Automake targets and declarations for ttyvaders
 ###############################################################################
 
-SUBDIRS = src
+SUBDIRS = libee test src
 DIST_SUBDIRS = $(SUBDIRS) autotools debian
 
 EXTRA_DIST = doc/shapes.txt bootstrap

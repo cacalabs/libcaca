@@ -12,6 +12,7 @@ AM_CONFIG_HEADER(config.h)
 
 AM_PROG_CC_C_O
 AC_PROG_CPP
+AC_PROG_RANLIB
 
 AC_ARG_ENABLE(slang,
   [  --enable-slang          slang graphics support (default enabled)])
@@ -41,6 +42,8 @@ AM_CONDITIONAL(USE_NCURSES, ${USE_NCURSES})
 
 AC_OUTPUT([
   Makefile
+  libee/Makefile
+  test/Makefile
   src/Makefile
   autotools/Makefile
   debian/Makefile

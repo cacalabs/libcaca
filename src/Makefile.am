@@ -26,7 +26,6 @@ ttyvaders_SOURCES = \
 	collide.c \
 	common.h \
 	explosions.c \
-	../libee/ee.c \
 	main.c \
 	math.c \
 	overlay.c \
@@ -37,5 +36,5 @@ ttyvaders_SOURCES = \
 	$(NULL)
 
 ttyvaders_CPPFLAGS = $(CPPFLAGS_slang) $(CPPFLAGS_ncurses)
-ttyvaders_LDADD = $(LDFLAGS_slang) $(LDFLAGS_ncurses)
+ttyvaders_LDADD = ../libee/libee.a $(LDFLAGS_slang) $(LDFLAGS_ncurses)
 
