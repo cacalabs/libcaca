@@ -1,4 +1,52 @@
 ------------------------------------------------------------------------
+r179 | sam | 2003-12-25 22:36:52 +0100 (Thu, 25 Dec 2003) | 3 lines
+Changed paths:
+   M /trunk/NEWS
+   M /trunk/configure.ac
+   M /trunk/debian/changelog
+
+  * configure.ac NEWS debian/changelog:
+    + New 0.5 release.
+
+------------------------------------------------------------------------
+r178 | sam | 2003-12-25 22:28:55 +0100 (Thu, 25 Dec 2003) | 5 lines
+Changed paths:
+   M /trunk/BUGS
+   M /trunk/NOTES
+   M /trunk/configure.ac
+   M /trunk/src/graphics.c
+
+  * NOTES BUGS:
+    + Updated information about the S-Lang colour pair shortage bug.
+  * src/graphics.c:
+    + Implemented the solution explained in NOTES.
+
+------------------------------------------------------------------------
+r177 | sam | 2003-12-25 19:09:58 +0100 (Thu, 25 Dec 2003) | 3 lines
+Changed paths:
+   M /trunk/src/caca.c
+
+  * src/caca.c:
+    + Fixed a compilation bug reported by Thomas Klausner <wiz@NetBSD.org>.
+
+------------------------------------------------------------------------
+r176 | sam | 2003-12-25 19:08:46 +0100 (Thu, 25 Dec 2003) | 3 lines
+Changed paths:
+   M /trunk/NOTES
+
+  * NOTES:
+    + Added a section with a proposed solution to the slang problem.
+
+------------------------------------------------------------------------
+r175 | sam | 2003-12-25 11:18:37 +0100 (Thu, 25 Dec 2003) | 2 lines
+Changed paths:
+   A /branches/0.4 (from /trunk:174)
+   M /branches/0.4/ChangeLog
+   M /trunk/ChangeLog
+
+  * 0.4 branch.
+
+------------------------------------------------------------------------
 r174 | sam | 2003-12-25 00:58:32 +0100 (Thu, 25 Dec 2003) | 5 lines
 Changed paths:
    M /trunk/configure.ac
