@@ -110,7 +110,7 @@ unsigned int caca_get_event(void)
             if(xevent.type == ButtonPress)
                 return CACA_EVENT_MOUSE_PRESS | 1;
 
-            if(xevent.type == ButtonPress)
+            if(xevent.type == ButtonRelease)
                 return CACA_EVENT_MOUSE_RELEASE | 1;
 
             if(xevent.type == KeyPress)
