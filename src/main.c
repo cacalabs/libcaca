@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: main.c,v 1.10 2002/12/23 10:06:27 sam Exp $
+ *   $Id: main.c,v 1.11 2002/12/23 12:03:31 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -75,11 +75,6 @@ static void start_game (game *g)
     init_aliens( g, g->al );
 
     /* Temporary stuff */
-    for( i = 0; i < 5; i++ )
-    {
-        add_alien( g, g->al, rand() % g->w, rand() % g->h / 2, ALIEN_POOLP );
-    }
-
     g->t->w = 25;
 
     while( !quit )
@@ -146,17 +141,17 @@ static void start_game (game *g)
                     if( g->p->weapon == 0 )
                     {
                         g->p->weapon = 4;
-                        add_weapon( g, g->wp, g->p->x << 4, g->p->y << 4, 0, -16, WEAPON_LASER );
-                        add_weapon( g, g->wp, (g->p->x + 5) << 4, g->p->y << 4, 0, -16, WEAPON_LASER );
+                        add_weapon( g, g->wp, g->p->x << 4, g->p->y << 4, 0, -32, WEAPON_LASER );
+                        add_weapon( g, g->wp, (g->p->x + 5) << 4, g->p->y << 4, 0, -32, WEAPON_LASER );
                         /* Extra shtuph */
                         add_weapon( g, g->wp, g->p->x << 4, g->p->y << 4, -24, -16, WEAPON_SEEKER );
                         add_weapon( g, g->wp, (g->p->x + 5) << 4, g->p->y << 4, 24, -16, WEAPON_SEEKER );
                         /* More shtuph */
-                        add_weapon( g, g->wp, (g->p->x + 1) << 4, (g->p->y - 1) << 4, 0, -16, WEAPON_LASER );
-                        add_weapon( g, g->wp, (g->p->x + 4) << 4, (g->p->y - 1) << 4, 0, -16, WEAPON_LASER );
+                        add_weapon( g, g->wp, (g->p->x + 1) << 4, (g->p->y - 1) << 4, 0, -32, WEAPON_LASER );
+                        add_weapon( g, g->wp, (g->p->x + 4) << 4, (g->p->y - 1) << 4, 0, -32, WEAPON_LASER );
                         /* Even more shtuph */
-                        add_weapon( g, g->wp, (g->p->x + 2) << 4, (g->p->y - 1) << 4, 0, -16, WEAPON_LASER );
-                        add_weapon( g, g->wp, (g->p->x + 3) << 4, (g->p->y - 1) << 4, 0, -16, WEAPON_LASER );
+                        add_weapon( g, g->wp, (g->p->x + 2) << 4, (g->p->y - 1) << 4, 0, -32, WEAPON_LASER );
+                        add_weapon( g, g->wp, (g->p->x + 3) << 4, (g->p->y - 1) << 4, 0, -32, WEAPON_LASER );
                         /* Extra shtuph */
                         add_weapon( g, g->wp, g->p->x << 4, g->p->y << 4, -32, 0, WEAPON_SEEKER );
                         add_weapon( g, g->wp, (g->p->x + 5) << 4, g->p->y << 4, 32, 0, WEAPON_SEEKER );
@@ -209,9 +204,9 @@ static void start_game (game *g)
 
         /* Print starfield, tunnel, aliens, player and explosions */
         draw_starfield( g, g->sf );
+        draw_aliens( g, g->al );
         draw_tunnel( g, g->t );
         draw_bonus( g, g->bo );
-        draw_aliens( g, g->al );
         draw_explosions( g, g->ex );
         draw_weapons( g, g->wp );
         draw_player( g, g->p );
@@ -224,6 +219,6 @@ static void start_game (game *g)
 
     free_starfield( g, g->sf );
     free_tunnel( g->t );
-//    free_player( g->p );
+    free_player( g->p );
 }
 
