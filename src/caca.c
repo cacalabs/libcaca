@@ -137,8 +137,9 @@ int caca_init(void)
         curs_set(0);
 
         /* Activate mouse */
-        newmask = ALL_MOUSE_EVENTS;
+        newmask = REPORT_MOUSE_POSITION | ALL_MOUSE_EVENTS;
         mousemask(newmask, &oldmask);
+        mouseinterval(-1); /* No click emulation */
     }
     else
 #endif

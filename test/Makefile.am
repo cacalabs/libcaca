@@ -2,11 +2,15 @@
 # Automake targets and declarations for libcaca test programs
 ###############################################################################
 
-noinst_PROGRAMS = dithering hsv optipal spritedit
+noinst_PROGRAMS = dithering event hsv optipal spritedit
 
 dithering_SOURCES = dithering.c
 dithering_LDADD = ../src/libcaca.a @CACA_LIBS@
 dithering_CPPFLAGS = -I$(top_srcdir)/src
+
+event_SOURCES = event.c
+event_LDADD = ../src/libcaca.a @CACA_LIBS@
+event_CPPFLAGS = -I$(top_srcdir)/src
 
 hsv_SOURCES = hsv.c
 hsv_LDADD = ../src/libcaca.a @CACA_LIBS@

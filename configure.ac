@@ -74,6 +74,7 @@ if test "${enable_x11}" != "no"; then
     CACA_DRIVERS="${CACA_DRIVERS} x11"],
    [ac_cv_my_have_x11="no"],
    [[-lXt -L${x_libraries}]])
+  AC_CHECK_HEADERS(X11/XKBlib.h)
   if test "${ac_cv_my_have_x11}" != "yes" -a "${enable_x11}" = "yes"; then
     AC_MSG_ERROR([cannot find X11 development files])
   fi

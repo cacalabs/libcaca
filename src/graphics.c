@@ -156,6 +156,9 @@ static int x11_colors[16];
 static Font x11_font;
 static XFontStruct *x11_font_struct;
 static int x11_font_offset;
+#if defined(HAVE_X11_XKBLIB_H)
+static Bool x11_detect_autorepeat;
+#endif
 #endif
 
 static char *_caca_empty_line;
@@ -714,8 +717,16 @@ int _caca_init_graphics(void)
                 break;
         }
 
+        /* Disable autorepeat */
+#if defined(HAVE_X11_XKBLIB_H)
+        XkbSetDetectableAutoRepeat(x11_dpy, True, &x11_detect_autorepeat);
+        if(!x11_detect_autorepeat)
+            XAutoRepeatOff(x11_dpy);
+#endif
+
         XSelectInput(x11_dpy, x11_window,
-                     KeyPressMask | ButtonPressMask | PointerMotionMask);
+                     KeyPressMask | KeyReleaseMask | ButtonPressMask
+                      | ButtonReleaseMask | PointerMotionMask);
 
         XSync(x11_dpy, False);
 
@@ -762,6 +773,10 @@ int _caca_end_graphics(void)
     if(_caca_driver == CACA_DRIVER_X11)
     {
         XSync(x11_dpy, False);
+#if defined(HAVE_X11_XKBLIB_H)
+        if(!x11_detect_autorepeat)
+            XAutoRepeatOn(x11_dpy);
+#endif
         XFreePixmap(x11_dpy, x11_pixmap);
         XFreeFont(x11_dpy, x11_font_struct);
         XFreeGC(x11_dpy, x11_gc);
