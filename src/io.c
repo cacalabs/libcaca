@@ -216,7 +216,7 @@ static unsigned int _read_key(void)
     XEvent event;
     char key;
 
-    while(XCheckWindowEvent(_caca_dpy, _caca_window, KeyPressMask, &event)
+    while(XCheckWindowEvent(x11_dpy, x11_window, KeyPressMask, &event)
            == True)
     {
         if(event.type == KeyPress)
