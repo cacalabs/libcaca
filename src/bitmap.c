@@ -45,6 +45,7 @@ typedef unsigned int uint32_t;
 #include <stdlib.h>
 #include <limits.h>
 #include <string.h>
+#include <math.h>
 
 #include "caca.h"
 #include "caca_internals.h"
@@ -170,6 +171,8 @@ struct caca_bitmap
     int rleft, gleft, bleft, aleft;
     void (*get_hsv)(struct caca_bitmap *, char *, int, int);
     int red[256], green[256], blue[256], alpha[256];
+    float gammaval;
+    int gammatab[4097];
 };
 #endif
 
@@ -223,6 +226,7 @@ struct caca_bitmap *caca_create_bitmap(unsigned int bpp, unsigned int w,
                                        unsigned int bmask, unsigned int amask)
 {
     struct caca_bitmap *bitmap;
+    int i;
 
     /* Minor sanity test */
     if(!w || !h || !pitch || bpp > 32 || bpp < 8)
@@ -257,7 +261,6 @@ struct caca_bitmap *caca_create_bitmap(unsigned int bpp, unsigned int w,
     /* In 8 bpp mode, default to a grayscale palette */
     if(bpp == 8)
     {
-        int i;
         bitmap->has_palette = 1;
         bitmap->has_alpha = 0;
         for(i = 0; i < 256; i++)
@@ -267,6 +270,10 @@ struct caca_bitmap *caca_create_bitmap(unsigned int bpp, unsigned int w,
             bitmap->blue[i] = i * 0xfff / 256;
         }
     }
+
+    /* Default gamma value */
+    for(i = 0; i < 4096; i++)
+        bitmap->gammatab[i] = i;
 
     return bitmap;
 }
@@ -311,6 +318,27 @@ void caca_set_bitmap_palette(struct caca_bitmap *bitmap,
     }
 
     bitmap->has_alpha = has_alpha;
+}
+
+/**
+ * \brief Set the gamma of a bitmap object.
+ *
+ * Set the gamma of bitmap.
+ *
+ * \param bitmap Bitmap object.
+ * \param red Gamma value.
+ */
+void caca_set_bitmap_gamma(struct caca_bitmap *bitmap, float gammaval)
+{
+    int i;
+
+    if(gammaval <= 0.0)
+        return;
+
+    bitmap->gammaval = gammaval;
+
+    for(i = 0; i < 4096; i++)
+        bitmap->gammatab[i] = 4096.0 * powf((float)i / 4096.0, 1.0 / gammaval);
 }
 
 /**
@@ -370,16 +398,16 @@ static void get_rgba_default(struct caca_bitmap const *bitmap, uint8_t *pixels,
 
     if(bitmap->has_palette)
     {
-        *r += bitmap->red[bits];
-        *g += bitmap->green[bits];
-        *b += bitmap->blue[bits];
+        *r += bitmap->gammatab[bitmap->red[bits]];
+        *g += bitmap->gammatab[bitmap->green[bits]];
+        *b += bitmap->gammatab[bitmap->blue[bits]];
         *a += bitmap->alpha[bits];
     }
     else
     {
-        *r += ((bits & bitmap->rmask) >> bitmap->rright) << bitmap->rleft;
-        *g += ((bits & bitmap->gmask) >> bitmap->gright) << bitmap->gleft;
-        *b += ((bits & bitmap->bmask) >> bitmap->bright) << bitmap->bleft;
+        *r += bitmap->gammatab[((bits & bitmap->rmask) >> bitmap->rright) << bitmap->rleft];
+        *g += bitmap->gammatab[((bits & bitmap->gmask) >> bitmap->gright) << bitmap->gleft];
+        *b += bitmap->gammatab[((bits & bitmap->bmask) >> bitmap->bright) << bitmap->bleft];
         *a += ((bits & bitmap->amask) >> bitmap->aright) << bitmap->aleft;
     }
 }

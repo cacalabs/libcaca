@@ -347,6 +347,7 @@ struct caca_bitmap *caca_create_bitmap(unsigned int, unsigned int,
 void caca_set_bitmap_palette(struct caca_bitmap *,
                              unsigned int r[], unsigned int g[],
                              unsigned int b[], unsigned int a[]);
+void caca_set_bitmap_gamma(struct caca_bitmap *, float);
 void caca_draw_bitmap(int, int, int, int, struct caca_bitmap const *, void *);
 void caca_free_bitmap(struct caca_bitmap *);
 /*  @} */
