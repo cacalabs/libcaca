@@ -1,30 +1,30 @@
 /*
- *   libcaca       ASCII-Art library
- *   Copyright (c) 2002, 2003 Sam Hocevar <sam@zoy.org>
- *                 All Rights Reserved
+ *  libcaca       ASCII-Art library
+ *  Copyright (c) 2002, 2003 Sam Hocevar <sam@zoy.org>
+ *                All Rights Reserved
  *
- *   This library is free software; you can redistribute it and/or
- *   modify it under the terms of the GNU Lesser General Public
- *   License as published by the Free Software Foundation; either
- *   version 2 of the License, or (at your option) any later version.
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2 of the License, or (at your option) any later version.
  *
- *   This library is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *   Lesser General Public License for more details.
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
  *
- *   You should have received a copy of the GNU Lesser General Public
- *   License along with this library; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- *   02111-1307  USA
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+ *  02111-1307  USA
  */
 
-/**  \file io.c
- *   \version \$Id$
- *   \author Sam Hocevar <sam@zoy.org>
- *   \brief Event handling functions
+/** \file io.c
+ *  \version \$Id$
+ *  \author Sam Hocevar <sam@zoy.org>
+ *  \brief Event handling functions
  *
- *   This file contains event handling functions for keyboard and mouse input.
+ *  This file contains event handling functions for keyboard and mouse input.
  */
 
 #include "config.h"
@@ -54,8 +54,12 @@ static unsigned int _read_key(void);
 static unsigned int keybuf[KEY_BUFLEN + 1]; /* zero-terminated */
 static int keys = 0;
 
-/**
- * \brief Get the next mouse or keyboard input event.
+/** \brief Get the next mouse or keyboard input event.
+ *
+ *  This function polls the event queue for mouse or keyboard events and
+ *  returns the event. It is non-blocking and returns zero if no event is
+ *  pending in the queue. See also caca_wait_event() for a blocking version
+ *  of this function.
  *
  * \return The next event in the queue, or 0 if no event is pending.
  */
@@ -185,6 +189,31 @@ unsigned int caca_get_event(void)
     /* Unknown escape sequence: return the ESC key */
     return CACA_EVENT_KEY_PRESS | '\x1b';
 }
+
+/** \brief Wait for the next mouse or keyboard input event.
+ *
+ *  This function returns the first mouse or keyboard event in the queue. If
+ *  no event is pending, it blocks until an event is received. See also
+ *  caca_get_event() for a non-blocking version of this function.
+ *
+ *  \return The next event in the queue.
+ */
+unsigned int caca_wait_event(void)
+{
+    for( ; ; )
+    {
+        unsigned int event = caca_get_event();
+
+        if(event)
+            return event;
+
+        usleep(1000);
+    }
+}
+
+/*
+ * XXX: The following functions are local.
+ */
 
 static void _push_key(unsigned int key)
 {

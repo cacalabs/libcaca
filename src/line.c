@@ -1,31 +1,31 @@
 /*
- *   libcaca       ASCII-Art library
- *   Copyright (c) 2002, 2003 Sam Hocevar <sam@zoy.org>
- *                 All Rights Reserved
+ *  libcaca       ASCII-Art library
+ *  Copyright (c) 2002, 2003 Sam Hocevar <sam@zoy.org>
+ *                All Rights Reserved
  *
- *   This library is free software; you can redistribute it and/or
- *   modify it under the terms of the GNU Lesser General Public
- *   License as published by the Free Software Foundation; either
- *   version 2 of the License, or (at your option) any later version.
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2 of the License, or (at your option) any later version.
  *
- *   This library is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *   Lesser General Public License for more details.
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
  *
- *   You should have received a copy of the GNU Lesser General Public
- *   License along with this library; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- *   02111-1307  USA
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+ *  02111-1307  USA
  */
 
-/**  \file line.c
- *   \version \$Id$
- *   \author Sam Hocevar <sam@zoy.org>
- *   \brief Line drawing functions
+/** \file line.c
+ *  \version \$Id$
+ *  \author Sam Hocevar <sam@zoy.org>
+ *  \brief Line drawing functions
  *
- *   This file contains line and polyline drawing functions, with both thin
- *   and thick styles.
+ *  This file contains line and polyline drawing functions, with both thin
+ *  and thick styles.
  */
 
 #include "config.h"
@@ -78,9 +78,9 @@ void caca_draw_line(int x1, int y1, int x2, int y2, char c)
 
 /**
  * \brief Draw a polyline on the screen using the given character and
- *        coordinate arrays. The first and last points are not connected,
- *        so in order to draw a polygon you need to specify the starting
- *        point at the end of the list as well.
+ *       coordinate arrays. The first and last points are not connected,
+ *       so in order to draw a polygon you need to specify the starting
+ *       point at the end of the list as well.
  *
  * \param x Array of X coordinates. Must have \p n + 1 elements.
  * \param y Array of Y coordinates. Must have \p n + 1 elements.
@@ -127,9 +127,9 @@ void caca_draw_thin_line(int x1, int y1, int x2, int y2)
 
 /**
  * \brief Draw a thin polyline on the screen using the given coordinate
- *        arrays and with ASCII art. The first and last points are not
- *        connected, so in order to draw a polygon you need to specify the
- *        starting point at the end of the list as well.
+ *       arrays and with ASCII art. The first and last points are not
+ *       connected, so in order to draw a polygon you need to specify the
+ *       starting point at the end of the list as well.
  *
  * \param x Array of X coordinates. Must have \p n + 1 elements.
  * \param y Array of Y coordinates. Must have \p n + 1 elements.
@@ -239,7 +239,7 @@ static uint8_t clip_bits(int x, int y)
 
 /**
  * \brief Solid line drawing function, using Bresenham's mid-point line
- *        scan-conversion algorithm.
+ *       scan-conversion algorithm.
  *
  * \param s a line structure
  * \return void

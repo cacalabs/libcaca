@@ -1,30 +1,30 @@
 /*
- *   libcaca       ASCII-Art library
- *   Copyright (c) 2002, 2003 Sam Hocevar <sam@zoy.org>
- *                 All Rights Reserved
+ *  libcaca       ASCII-Art library
+ *  Copyright (c) 2002, 2003 Sam Hocevar <sam@zoy.org>
+ *                All Rights Reserved
  *
- *   This library is free software; you can redistribute it and/or
- *   modify it under the terms of the GNU Lesser General Public
- *   License as published by the Free Software Foundation; either
- *   version 2 of the License, or (at your option) any later version.
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2 of the License, or (at your option) any later version.
  *
- *   This library is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *   Lesser General Public License for more details.
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
  *
- *   You should have received a copy of the GNU Lesser General Public
- *   License along with this library; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- *   02111-1307  USA
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+ *  02111-1307  USA
  */
 
-/**  \file graphics.c
- *   \version \$Id$
- *   \author Sam Hocevar <sam@zoy.org>
- *   \brief Character drawing functions
+/** \file graphics.c
+ *  \version \$Id$
+ *  \author Sam Hocevar <sam@zoy.org>
+ *  \brief Character drawing functions
  *
- *   This file contains character and string drawing functions.
+ *  This file contains character and string drawing functions.
  */
 
 #include "config.h"
@@ -99,12 +99,14 @@ static unsigned int _caca_rendertime;
 static enum caca_color _caca_fgcolor = CACA_COLOR_LIGHTGRAY;
 static enum caca_color _caca_bgcolor = CACA_COLOR_BLACK;
 
-/**
- * \brief Set the default colour pair.
+/** \brief Set the default colour pair.
  *
- * \param fgcolor The desired foreground colour.
- * \param bgcolor The desired background colour.
- * \return void
+ *  This function sets the default colour pair. String functions such as
+ *  caca_printf() and graphical primitive functions such as caca_draw_line()
+ *  will use these colour pairs.
+ *
+ *  \param fgcolor The requested foreground colour.
+ *  \param bgcolor The requested background colour.
  */
 void caca_set_color(enum caca_color fgcolor, enum caca_color bgcolor)
 {
@@ -141,33 +143,39 @@ void caca_set_color(enum caca_color fgcolor, enum caca_color bgcolor)
     }
 }
 
-/**
- * \brief Get the current foreground colour.
+/** \brief Get the current foreground colour.
  *
- * \return The current foreground colour.
+ *  This function returns the current foreground colour that was set with
+ *  caca_set_color().
+ *
+ *  \return The current foreground colour.
  */
 enum caca_color caca_get_fg_color(void)
 {
     return _caca_fgcolor;
 }
 
-/**
- * \brief Get the current background colour.
+/** \brief Get the current background colour.
  *
- * \return The current background colour.
+ *  This function returns the current background colour that was set with
+ *  caca_set_color().
+ *
+ *  \return The current background colour.
  */
 enum caca_color caca_get_bg_color(void)
 {
     return _caca_bgcolor;
 }
 
-/**
- * \brief Print a character at given coordinates.
+/** \brief Print a character.
  *
- * \param x The X coordinate of the character.
- * \param y The Y coordinate of the character.
- * \param c The character to print.
- * \return void
+ *  This function prints a character at the given coordinates, using the
+ *  default foreground and background values. If the coordinates are outside
+ *  the screen boundaries, nothing is printed.
+ *
+ *  \param x X coordinate.
+ *  \param y Y coordinate.
+ *  \param c The character to print.
  */
 void caca_putchar(int x, int y, char c)
 {
@@ -212,13 +220,16 @@ void caca_putchar(int x, int y, char c)
     }
 }
 
-/**
- * \brief Print a string at given coordinates.
+/** \brief Print a string.
  *
- * \param x The X coordinate of the string.
- * \param y The Y coordinate of the string.
- * \param s The string to print.
- * \return void
+ *  This function prints a string at the given coordinates, using the
+ *  default foreground and background values. The coordinates may be outside
+ *  the screen boundaries (eg. a negative Y coordinate) and the string will
+ *  be cropped accordingly if it is too long.
+ *
+ *  \param x X coordinate.
+ *  \param y Y coordinate.
+ *  \param s The string to print.
  */
 void caca_putstr(int x, int y, const char *s)
 {
@@ -290,14 +301,18 @@ void caca_putstr(int x, int y, const char *s)
     }
 }
 
-/**
- * \brief Format a string at given coordinates.
+/** \brief Format a string.
  *
- * \param x The X coordinate of the string.
- * \param y The Y coordinate of the string.
- * \param format The format string to print.
- * \param ... Arguments to the format string.
- * \return void
+ *  This function formats a string at the given coordinates, using the
+ *  default foreground and background values. The coordinates may be outside
+ *  the screen boundaries (eg. a negative Y coordinate) and the string will
+ *  be cropped accordingly if it is too long. The syntax of the format
+ *  string is the same as for the C printf() function.
+ *
+ *  \param x X coordinate.
+ *  \param y Y coordinate.
+ *  \param format The format string to print.
+ *  \param ... Arguments to the format string.
  */
 void caca_printf(int x, int y, const char *format, ...)
 {
@@ -326,10 +341,9 @@ void caca_printf(int x, int y, const char *format, ...)
         free(buf);
 }
 
-/**
- * \brief Clear the screen.
+/** \brief Clear the screen.
  *
- * \return void
+ *  This function clears the screen using a black background.
  */
 void caca_clear(void)
 {
@@ -637,21 +651,31 @@ int _caca_end_graphics(void)
     return 0;
 }
 
-/**
- * \brief Set the refresh delay.
+/** \brief Set the refresh delay.
  *
- * \param usec The refresh delay in microseconds.
- * \return void
+ *  This function sets the refresh delay in microseconds. The refresh delay
+ *  is used by caca_refresh() to achieve constant framerate. See the
+ *  caca_refresh() documentation for more details.
+ *
+ *  If the argument is zero, constant framerate is disabled. This is the
+ *  default behaviour.
+ *
+ *  \param usec The refresh delay in microseconds.
  */
 void caca_set_delay(unsigned int usec)
 {
     _caca_delay = usec;
 }
 
-/**
- * \brief Get the average rendering time.
+/** \brief Get the average rendering time.
  *
- * \return The render time in microseconds.
+ *  This function returns the average rendering time, which is the average
+ *  measured time between two caca_refresh() calls, in microseconds. If
+ *  constant framerate was activated by calling caca_set_delay(), the average
+ *  rendering time will not be considerably shorter than the requested delay
+ *  even if the real rendering time was shorter.
+ *
+ *  \return The render time in microseconds.
  */
 unsigned int caca_get_rendertime(void)
 {
@@ -678,10 +702,16 @@ static unsigned int _caca_getticks(void)
     return ticks;
 }
 
-/**
- * \brief Flush pending changes and redraw the screen.
+/** \brief Flush pending changes and redraw the screen.
  *
- * \return void
+ *  This function flushes all graphical operations and prints them to the
+ *  screen. Nothing will show on the screen caca_refresh() is not called.
+ *
+ *  If caca_set_delay() was called with a non-zero value, caca_refresh()
+ *  will use that value to achieve constant framerate: if two consecutive
+ *  calls to caca_refresh() are within a time range shorter than the value
+ *  set with caca_set_delay(), the second call will wait a bit before
+ *  performing the screen refresh.
  */
 void caca_refresh(void)
 {

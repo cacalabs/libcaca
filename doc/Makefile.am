@@ -1,4 +1,4 @@
-EXTRA_DIST = doxygen.cfg footer.html header.html $(man_MANS)
+EXTRA_DIST = doxygen.cfg.in footer.html header.html $(man_MANS)
 
 man_MANS = caca-config.1 cacademo.1 caca-spritedit.1 cacaview.1
 
@@ -20,6 +20,6 @@ endif
 
 clean: clean-local
 clean-local:
-	-rm -Rf html latex
+	-rm -Rf html latex man
 	-rm -f stamp-latex stamp-doxygen
 

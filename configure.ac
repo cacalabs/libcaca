@@ -116,6 +116,7 @@ AC_CONFIG_FILES([
   src/Makefile
   examples/Makefile
   doc/Makefile
+  doc/doxygen.cfg
   autotools/Makefile
   debian/Makefile
 ])

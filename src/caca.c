@@ -1,32 +1,32 @@
 /*
- *   libcaca       ASCII-Art library
- *   Copyright (c) 2002, 2003 Sam Hocevar <sam@zoy.org>
- *                 All Rights Reserved
+ *  libcaca       ASCII-Art library
+ *  Copyright (c) 2002, 2003 Sam Hocevar <sam@zoy.org>
+ *                All Rights Reserved
  *
- *   This library is free software; you can redistribute it and/or
- *   modify it under the terms of the GNU Lesser General Public
- *   License as published by the Free Software Foundation; either
- *   version 2 of the License, or (at your option) any later version.
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2 of the License, or (at your option) any later version.
  *
- *   This library is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *   Lesser General Public License for more details.
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
  *
- *   You should have received a copy of the GNU Lesser General Public
- *   License along with this library; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- *   02111-1307  USA
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+ *  02111-1307  USA
  */
 
-/**  \file caca.c
- *   \version \$Id$
- *   \author Sam Hocevar <sam@zoy.org>
- *   \brief Main \e libcaca functions
+/** \file caca.c
+ *  \version \$Id$
+ *  \author Sam Hocevar <sam@zoy.org>
+ *  \brief Main \e libcaca functions
  *
- *   This file contains the main functions used by \e libcaca applications to
- *   initialise the library, get the screen properties, set the framerate and
- *   so on.
+ *  This file contains the main functions used by \e libcaca applications to
+ *  initialise the library, get the screen properties, set the framerate and
+ *  so on.
  */
 
 #include "config.h"
@@ -61,10 +61,14 @@ enum caca_driver _caca_driver;
 static mmask_t oldmask;
 #endif
 
-/**
- * \brief Initialise libcaca.
+/** \brief Initialise \e libcaca.
  *
- * \return 0 upon success, a non-zero value if an error occurs.
+ *  This function initialises internal \e libcaca structures and the backend
+ *  that will be used for subsequent graphical operations. It must be the
+ *  first \e libcaca function to be called in a function. caca_end() should
+ *  be called at the end of the program to free all allocated resources.
+ *
+ *  \return 0 upon success, a non-zero value if an error occurs.
  */
 int caca_init(void)
 {
@@ -153,20 +157,22 @@ int caca_init(void)
     return 0;
 }
 
-/**
- * \brief Get the screen width.
+/** \brief Get the screen width.
  *
- * \return The screen width, in character cells.
+ *  This function returns the current screen width, in character cells.
+ *
+ *  \return The screen width.
  */
 unsigned int caca_get_width(void)
 {
     return _caca_width;
 }
 
-/**
- * \brief Get the screen height.
+/** \brief Get the screen height.
  *
- * \return The screen height, in character cells.
+ *  This function returns the current screen height, in character cells.
+ *
+ *  \return The screen height.
  */
 unsigned int caca_get_height(void)
 {
@@ -209,11 +215,14 @@ const char *caca_get_color_name(enum caca_color color)
     return color_names[color];
 }
 
-/**
- * \brief Get the current value of a feature.
+/** \brief Get the current value of a feature.
  *
- * \param feature The requested feature.
- * \return The current value of the feature.
+ *  This function retrieves the value of an internal \e libcaca feature. A
+ *  generic feature value is expected, such as CACA_ANTIALIASING.
+ *
+ *  \param feature The requested feature.
+ *  \return The current value of the feature or CACA_UNKNOWN_FEATURE if an
+ *          error occurred..
  */
 enum caca_feature caca_get_feature(enum caca_feature feature)
 {
@@ -231,11 +240,14 @@ enum caca_feature caca_get_feature(enum caca_feature feature)
     }
 }
 
-/**
- * \brief Set a feature.
+/** \brief Set a feature.
  *
- * \param feature The wanted feature.
- * \return void
+ *  This function sets an internal \e libcaca feature such as the antialiasing
+ *  or dithering modes. If a specific feature such as CACA_DITHERING_RANDOM,
+ *  caca_set_feature() will set it immediately. If a generic feature is given
+ *  instead, such as CACA_DITHERING, the default value will be used instead.
+ *
+ *  \param feature The requested feature.
  */
 void caca_set_feature(enum caca_feature feature)
 {
@@ -298,10 +310,11 @@ const char *caca_get_feature_name(enum caca_feature feature)
     }
 }
 
-/**
- * \brief Uninitialise libcaca.
+/** \brief Uninitialise \e libcaca.
  *
- * \return void
+ *  This function frees all resources allocated by caca_init(). After
+ *  caca_end() has been called, no other \e libcaca functions may be used
+ *  unless a new call to caca_init() is done.
  */
 void caca_end(void)
 {
@@ -345,6 +358,10 @@ void caca_end(void)
     }
 #endif
 }
+
+/*
+ * XXX: The following functions are local.
+ */
 
 static void caca_init_driver(void)
 {
