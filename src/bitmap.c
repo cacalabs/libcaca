@@ -438,7 +438,7 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
 
     /* FIXME: choose better characters! */
 #if !defined(_DOXYGEN_SKIP_ME)
-#   define DENSITY_CHARS ((sizeof(density_chars)/sizeof(char const))-1)
+#   define DENSITY_CHARS ((sizeof(density_chars)/sizeof(char const)/4)-1)
 #endif
     static char const density_chars[] =
         "    "
