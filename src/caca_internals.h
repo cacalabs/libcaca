@@ -30,6 +30,8 @@
 #ifndef __CACA_INTERNALS_H__
 #define __CACA_INTERNALS_H__
 
+extern int _caca_init_graphics(void);
+
 #if defined(USE_NCURSES)
 extern int _caca_attr[];
 #endif

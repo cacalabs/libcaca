@@ -25,7 +25,7 @@ AC_ARG_ENABLE(conio,
   [  --enable-conio          DOS conio.h graphics support (default disabled)])
 
 AC_CHECK_HEADERS(inttypes.h)
-AC_CHECK_FUNCS(vsnprintf)
+AC_CHECK_FUNCS(vsnprintf getenv putenv)
 
 USE_SLANG=false
 USE_NCURSES=false
