@@ -38,6 +38,8 @@
 #elif defined(USE_CONIO)
 #   include <dos.h>
 #   include <conio.h>
+#elif defined(USE_X11)
+#   include <X11/Xlib.h>
 #else
 #   error "no graphics library detected"
 #endif
@@ -112,6 +114,9 @@ int caca_init(void)
     _wscroll = 0;
     _setcursortype(_NOCURSOR);
     clrscr();
+
+#elif defined(USE_X11)
+    /* Nothing to do */
 
 #endif
     if(_caca_init_graphics())
@@ -229,6 +234,8 @@ const char *caca_get_feature_name(enum caca_feature feature)
 
 void caca_end(void)
 {
+    _caca_end_graphics();
+
 #if defined(USE_SLANG)
     SLtt_set_mouse_mode(0, 0);
     SLtt_set_cursor_visibility(1);
@@ -245,6 +252,8 @@ void caca_end(void)
     gotoxy(_caca_width, _caca_height);
     cputs("\r\n");
     _setcursortype(_NORMALCURSOR);
+#elif defined(USE_X11)
+    /* Nothing to do */
 #endif
 }
 
@@ -294,7 +303,8 @@ static void caca_init_features(void)
 
 static void caca_init_terminal(void)
 {
-#if defined(HAVE_GETENV) && defined(HAVE_PUTENV)
+#if defined(HAVE_GETENV) && defined(HAVE_PUTENV) \
+     && (defined(USE_SLANG) || defined(USE_NCURSES))
     char *term, *colorterm, *other;
 
     term = getenv("TERM");

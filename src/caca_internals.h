@@ -31,6 +31,7 @@
 #define __CACA_INTERNALS_H__
 
 extern int _caca_init_graphics(void);
+extern int _caca_end_graphics(void);
 
 /* Cached screen size */
 extern unsigned int _caca_width;
@@ -40,5 +41,11 @@ extern unsigned int _caca_height;
 extern enum caca_feature _caca_background;
 extern enum caca_feature _caca_dithering;
 extern enum caca_feature _caca_antialiasing;
+
+#if defined(USE_X11)
+#include <X11/Xlib.h>
+extern Display *_caca_dpy;
+extern Window _caca_window;
+#endif
 
 #endif /* __CACA_INTERNALS_H__ */

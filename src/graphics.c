@@ -38,6 +38,8 @@
 #   if defined(SCREENUPDATE_IN_PC_H)
 #       include <pc.h>
 #   endif
+#elif defined(USE_X11)
+#   include <X11/Xlib.h>
 #else
 #   error "no graphics library detected"
 #endif
@@ -75,6 +77,12 @@ static struct text_info ti;
 static char *_caca_screen;
 #endif
 
+#if defined(USE_X11)
+Display *_caca_dpy;
+Window _caca_window;
+GC _caca_gc;
+#endif
+
 static char *_caca_empty_line;
 static char *_caca_scratch_line;
 
@@ -98,6 +106,8 @@ void caca_set_color(enum caca_color fgcolor, enum caca_color bgcolor)
 #elif defined(USE_CONIO)
     textbackground(bgcolor);
     textcolor(fgcolor);
+#elif defined(USE_X11)
+    /* FIXME */
 #endif
 }
 
@@ -132,6 +142,8 @@ void caca_putchar(int x, int y, char c)
     data[1] = (_caca_bgcolor << 4) | _caca_fgcolor;
 //    gotoxy(x + 1, y + 1);
 //    putch(c);
+#elif defined(USE_X11)
+    /* FIXME */
 #endif
 }
 
@@ -175,6 +187,8 @@ void caca_putstr(int x, int y, const char *s)
     }
 //    gotoxy(x + 1, y + 1);
 //    cputs(s);
+#elif defined(USE_X11)
+    /* FIXME */
 #endif
 }
 
@@ -335,6 +349,42 @@ int _caca_init_graphics(void)
     _caca_width = ti.screenwidth;
     _caca_height = ti.screenheight;
 
+#elif defined(USE_X11)
+    int black_color;
+    int white_color;
+
+    _caca_dpy = XOpenDisplay(NULL);
+    if(_caca_dpy == NULL)
+        return -1;
+
+    black_color = BlackPixel(_caca_dpy, DefaultScreen(_caca_dpy));
+    white_color = WhitePixel(_caca_dpy, DefaultScreen(_caca_dpy));
+
+    _caca_window = XCreateSimpleWindow(_caca_dpy, DefaultRootWindow(_caca_dpy),
+                                       0, 0, 400, 300, 0,
+                                       black_color, black_color);
+    XSelectInput(_caca_dpy, _caca_window, StructureNotifyMask);
+    XMapWindow(_caca_dpy, _caca_window);
+
+    _caca_gc = XCreateGC(_caca_dpy, _caca_window, 0, NULL);
+    XSetForeground(_caca_dpy, _caca_gc, white_color);
+
+    for(;;)
+    {
+        XEvent event;
+        XNextEvent(_caca_dpy, &event);
+        if (event.type == MapNotify)
+            break;
+    }
+
+    XSelectInput(_caca_dpy, _caca_window, KeyPressMask);
+
+    /* FIXME */
+    _caca_width = 80;
+    _caca_height = 24;
+
+    XSync(_caca_dpy, False);
+
 #endif
     _caca_empty_line = malloc(_caca_width + 1);
     memset(_caca_empty_line, ' ', _caca_width);
@@ -344,6 +394,26 @@ int _caca_init_graphics(void)
 
     _caca_delay = 0;
     _caca_rendertime = 0;
+
+    return 0;
+}
+
+int _caca_end_graphics(void)
+{
+#if defined(USE_SLANG)
+    /* Nothing to do */
+#elif defined(USE_NCURSES)
+    /* Nothing to do */
+#elif defined(USE_CONIO)
+    free(_caca_screen);
+#elif defined(USE_X11)
+    XSync(_caca_dpy, False);
+    XFreeGC(_caca_dpy, _caca_gc);
+    XUnmapWindow(_caca_dpy, _caca_window);
+    XDestroyWindow(_caca_dpy, _caca_window);
+    XCloseDisplay(_caca_dpy);
+#endif
+    free(_caca_empty_line);
 
     return 0;
 }
@@ -394,6 +464,9 @@ void caca_refresh(void)
 #   else
     /* FIXME */
 #   endif
+#elif defined(USE_X11)
+    /* FIXME */
+    XFlush(_caca_dpy);
 #endif
 
     /* Wait until _caca_delay + time of last call */

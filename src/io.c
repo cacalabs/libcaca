@@ -35,6 +35,9 @@
 #   include <curses.h>
 #elif defined(USE_CONIO)
 #   include <conio.h>
+#elif defined(USE_X11)
+#   include <X11/Xlib.h>
+#   include <X11/Xutil.h>
 #else
 #   error "no graphics library detected"
 #endif
@@ -204,6 +207,23 @@ static unsigned int _read_key(void)
     return (key == ERR) ? 0 : key;
 #elif defined(USE_CONIO)
     return _conio_kbhit() ? getch() : 0;
+#elif defined(USE_X11)
+    XEvent event;
+    char key;
+
+    while(XCheckWindowEvent(_caca_dpy, _caca_window, KeyPressMask, &event)
+           == True)
+    {
+        if(event.type == KeyPress)
+        {
+            //KeySym keysym;
+            //keysym = XKeycodeToKeysym(_caca_dpy, event.xkey.keycode, 0);
+            if(XLookupString(&event.xkey, &key, 1, NULL, NULL))
+                return key;
+        }
+    }
+
+    return 0;
 #endif
 }
 

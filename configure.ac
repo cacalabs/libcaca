@@ -23,6 +23,8 @@ AC_ARG_ENABLE(slang,
   [  --enable-slang          slang graphics support (default disabled)])
 AC_ARG_ENABLE(conio,
   [  --enable-conio          DOS conio.h graphics support (default disabled)])
+AC_ARG_ENABLE(x11,
+  [  --enable-x11            X11 support (default disabled)])
 
 AC_CHECK_HEADERS(inttypes.h endian.h)
 AC_CHECK_FUNCS(vsnprintf getenv putenv strcasecmp)
@@ -41,6 +43,20 @@ elif test "${enable_slang}" = "yes"; then
   AC_CHECK_LIB(slang,SLkp_init,:,AC_MSG_ERROR([cannot find slang library]))
   AC_DEFINE(USE_SLANG, 1, Define if the backend driver is slang)
   CACA_LIBS="${CACA_LIBS} -lslang"
+elif test "${enable_x11}" = "yes"; then
+  AC_PATH_X
+  AC_CHECK_LIB(X11, XOpenDisplay,
+   [ac_cv_my_have_x11=yes
+    X_CFLAGS="-I${x_includes}"
+    X_LIBS="-lX11 -L${x_libraries}"],
+   [ac_cv_my_have_x11=no],
+   [[-lXt -L${x_libraries}]])
+  if test "${ac_cv_my_have_x11}" != "yes"; then
+    AC_MSG_ERROR([cannot find X11 development files])
+  fi
+  AC_DEFINE(USE_X11, 1, Define if the backend driver is X11)
+  CPPFLAGS="${CPPFLAGS} ${X_CFLAGS}"
+  CACA_LIBS="${CACA_LIBS} ${X_LIBS}"
 elif test "${enable_ncurses}" != "no"; then
   AC_CHECK_HEADER(ncurses.h,:,AC_MSG_ERROR([cannot find ncurses headers]))
   AC_CHECK_LIB(ncurses,initscr,:,AC_MSG_ERROR([cannot find ncurses library]))
