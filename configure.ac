@@ -91,15 +91,14 @@ else
 fi
 AM_CONDITIONAL(LATEX, test "${LATEX}" != "no")
 
-AC_OUTPUT([
+AC_CONFIG_FILES([
   Makefile
   src/Makefile
   examples/Makefile
   doc/Makefile
   autotools/Makefile
   debian/Makefile
-  caca-config
-],[
-  chmod 0755 caca-config
 ])
+AC_CONFIG_FILES([caca-config], [chmod 0755 caca-config])
+AC_OUTPUT
 

@@ -9,10 +9,6 @@ exec_prefix=@exec_prefix@
 lib_dir=@libdir@
 include_dir=@includedir@
 
-@USE_SLANG_TRUE@libs_slang="-lslang"
-@USE_NCURSES_TRUE@libs_ncurses="-lncurses"
-libs="$libs_slang $libs_ncurses"
-
 usage()
 {
   cat <<EOF
@@ -113,11 +109,11 @@ fi
 
 if test "$echo_libs" = "yes"
 then
-  echo -L@libdir@ -lcaca $libs
+  echo -L@libdir@ -lcaca @CACA_LIBS@
 fi
 
 @NEED_PIC_TRUE@if test "$echo_plugin_libs" = "yes"
 @NEED_PIC_TRUE@then
-@NEED_PIC_TRUE@  echo -L@libdir@ -lcaca_pic $libs
+@NEED_PIC_TRUE@  echo -L@libdir@ -lcaca_pic @CACA_LIBS@
 @NEED_PIC_TRUE@fi
 
