@@ -36,8 +36,8 @@
 
 #define METASIZE 128
 
+static void create_ball(void);
 static void draw_ball(unsigned int, unsigned int);
-static void generate_ball(void);
 
 static unsigned char pixels[XSIZ * YSIZ];
 static unsigned char metaball[METASIZE * METASIZE];
@@ -64,6 +64,10 @@ int main(int argc, char **argv)
         a[p] = 0x0;
     }
 
+    /* Crop the palette */
+    for(p = 0; p < 150; p++)
+        r[p] = g[p] = b[p] = a[p] = 0x0;
+
     /* Create the bitmap */
     caca_bitmap = caca_create_bitmap(8, XSIZ, YSIZ, XSIZ, 0, 0, 0, 0);
 
@@ -71,7 +75,7 @@ int main(int argc, char **argv)
     caca_set_bitmap_palette(caca_bitmap, r, g, b, a);
 
     /* Generate ball sprite */
-    generate_ball();
+    create_ball();
 
     /* Go ! */
     while(!caca_get_event(CACA_EVENT_KEY_PRESS))
@@ -113,7 +117,7 @@ int main(int argc, char **argv)
 
 /* Generate ball sprite
  * You should read the comments, I already wrote that before ... */
-static void generate_ball(void)
+static void create_ball(void)
 {
     int x, y;
     float distance;
@@ -135,7 +139,7 @@ static void draw_ball(unsigned int bx, unsigned int by)
     unsigned int i, e = 0;
     unsigned int b = (by * XSIZ) + bx;
 
-    for( i = 0; i < METASIZE * METASIZE; i++)
+    for(i = 0; i < METASIZE * METASIZE; i++)
     {
         color = pixels[b] + metaball[i];
 
@@ -152,3 +156,4 @@ static void draw_ball(unsigned int bx, unsigned int by)
         e++;
     }
 }
+

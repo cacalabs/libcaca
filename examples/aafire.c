@@ -1,10 +1,7 @@
 /*
  *  cacafire      fire demo for libcaca
  *  Copyright (c) 2003 Sam Hocevar <sam@zoy.org>
- *                Jan Hubicka (hubicka@freesoft.cz)
- *                Thomas A. K. Kjaer (takjaer@daimi.aau.dk)
- *                Tim Newsome (nuisance@cmu.edu)
- *                Kamil Toman (toman@artax.karlin.mff.cuni.cz)
+ *                1998, 1999, 2001 Jan Hubicka <hubicka@freesoft.cz>
  *                All Rights Reserved
  *
  *  $Id$
