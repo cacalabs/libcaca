@@ -443,9 +443,9 @@ void caca_putstr(int x, int y, char const *s)
 
     if(x < 0)
     {
-        len -= -x;
-        if(len < 0)
+        if(len < (unsigned int)-x)
             return;
+        len -= -x;
         s += -x;
         x = 0;
     }

@@ -278,7 +278,7 @@ static unsigned int _lowlevel_event(void)
                 h = (xevent.xconfigure.height + x11_font_height / 3)
                       / x11_font_height;
 
-                if(w == _caca_width && h == _caca_height)
+                if(!w || !h || (w == _caca_width && h == _caca_height))
                     continue;
 
                 x11_new_width = w;
@@ -370,6 +370,7 @@ static unsigned int _lowlevel_event(void)
         if(_caca_resize_event)
         {
             _caca_resize_event = 0;
+            _caca_resize = 1;
             return CACA_EVENT_RESIZE;
         }
 
@@ -553,6 +554,7 @@ static unsigned int _lowlevel_event(void)
         if(_caca_resize_event)
         {
             _caca_resize_event = 0;
+            _caca_resize = 1;
             return CACA_EVENT_RESIZE;
         }
 
@@ -723,7 +725,7 @@ static unsigned int _lowlevel_event(void)
 #if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO)
 static void _push_event(unsigned int event)
 {
-    if(events == EVENTBUF_LEN)
+    if(!event || events == EVENTBUF_LEN)
         return;
     eventbuf[events] = event;
     events++;

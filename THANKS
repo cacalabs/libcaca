@@ -3,6 +3,7 @@ $Id$
 Derk-Jan Hartman <thedj@users.sourceforge.net> - Gentoo ebuild file
 Gildas Bazin <gbazin@netcourrier.com> - win32 driver improvements
 Jan Hubicka <hubicka@freesoft.cz> - aafire
+Ladislav Hagara <hgr@vabo.cz> - Source Mage spell
 Michele Bini <mibin@tin.it> - original SDL plasma
 Philip Balinov - Slackware package
 Richard Zidlicky <rz@linux-m68k.org> - rpm specfile
