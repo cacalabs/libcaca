@@ -137,6 +137,9 @@ static void print_event(int x, int y, unsigned int event)
         caca_printf(x, y, "CACA_EVENT_MOUSE_RELEASE %u",
                     event & 0x00ffffff);
         break;
+    case CACA_EVENT_RESIZE:
+        caca_printf(x, y, "CACA_EVENT_RESIZE");
+        break;
     default:
         caca_printf(x, y, "CACA_EVENT_UNKNOWN");
     }

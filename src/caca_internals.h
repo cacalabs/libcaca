@@ -73,8 +73,8 @@ extern unsigned int _caca_getticks(struct caca_timer *);
 /* Cached screen size */
 extern unsigned int _caca_width;
 extern unsigned int _caca_height;
-extern unsigned int _caca_new_width;
-extern unsigned int _caca_new_height;
+extern int _caca_resize;
+extern int _caca_resize_event;
 
 /* Internal libcaca features */
 extern enum caca_feature _caca_background;
@@ -87,6 +87,7 @@ extern Display *x11_dpy;
 extern Window x11_window;
 extern long int x11_event_mask;
 extern int x11_font_width, x11_font_height;
+extern unsigned int x11_new_width, x11_new_height;
 #endif
 
 #if defined(USE_WIN32)

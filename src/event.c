@@ -262,8 +262,13 @@ static unsigned int _lowlevel_event(void)
                 if(w == _caca_width && h == _caca_height)
                     continue;
 
-                _caca_new_width = w;
-                _caca_new_height = h;
+                x11_new_width = w;
+                x11_new_height = h;
+
+                if(_caca_resize)
+                    continue;
+
+                _caca_resize = 1;
 
                 return CACA_EVENT_RESIZE;
             }
@@ -341,7 +346,15 @@ static unsigned int _lowlevel_event(void)
 #if defined(USE_NCURSES)
     if(_caca_driver == CACA_DRIVER_NCURSES)
     {
-        int intkey = getch();
+        int intkey;
+
+        if(_caca_resize_event)
+        {
+            _caca_resize_event = 0;
+            return CACA_EVENT_RESIZE;
+        }
+
+        intkey = getch();
         if(intkey == ERR)
             return CACA_EVENT_NONE;
 
@@ -517,6 +530,12 @@ static unsigned int _lowlevel_event(void)
     if(_caca_driver == CACA_DRIVER_SLANG)
     {
         int intkey;
+
+        if(_caca_resize_event)
+        {
+            _caca_resize_event = 0;
+            return CACA_EVENT_RESIZE;
+        }
 
         if(!SLang_input_pending(0))
             return CACA_EVENT_NONE;

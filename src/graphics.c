@@ -85,8 +85,8 @@ typedef unsigned char uint8_t;
 #if !defined(_DOXYGEN_SKIP_ME)
 unsigned int _caca_width = 0;
 unsigned int _caca_height = 0;
-unsigned int _caca_new_width = 0;
-unsigned int _caca_new_height = 0;
+int _caca_resize = 0;
+int _caca_resize_event = 0;
 #endif
 
 /*
@@ -166,6 +166,7 @@ Window x11_window;
 long int x11_event_mask = KeyPressMask | KeyReleaseMask | ButtonPressMask
             | ButtonReleaseMask | PointerMotionMask | StructureNotifyMask;
 int x11_font_width, x11_font_height;
+unsigned int x11_new_width, x11_new_height;
 static GC x11_gc;
 static Pixmap x11_pixmap;
 static uint8_t *x11_char, *x11_attr;
@@ -826,6 +827,8 @@ int _caca_init_graphics(void)
                                    _caca_height * x11_font_height,
                                    DefaultDepth(x11_dpy,
                                                 DefaultScreen(x11_dpy)));
+
+        x11_new_width = x11_new_height = 0;
     }
     else
 #endif
@@ -906,9 +909,6 @@ int _caca_init_graphics(void)
     _caca_empty_line[_caca_width] = '\0';
 
     _caca_scratch_line = malloc(_caca_width + 1);
-
-    _caca_new_width = _caca_width;
-    _caca_new_height = _caca_height;
 
     _caca_delay = 0;
     _caca_rendertime = 0;
@@ -1184,8 +1184,11 @@ void caca_refresh(void)
         /* Dummy */
     }
 
-    if(_caca_width != _caca_new_width || _caca_height != _caca_new_height)
+    if(_caca_resize)
+    {
+        _caca_resize = 0;
         caca_handle_resize();
+    }
 
     /* Wait until _caca_delay + time of last call */
     ticks += _caca_getticks(&timer);
@@ -1214,32 +1217,30 @@ static void caca_handle_resize(void)
     unsigned int old_width = _caca_width;
     unsigned int old_height = _caca_height;
 
-    _caca_width = _caca_new_width;
-    _caca_height = _caca_new_height;
-
-    if(_caca_width != old_width)
-    {
-        free(_caca_empty_line);
-        _caca_empty_line = malloc(_caca_width + 1);
-        memset(_caca_empty_line, ' ', _caca_width);
-        _caca_empty_line[_caca_width] = '\0';
-
-        free(_caca_scratch_line);
-        _caca_scratch_line = malloc(_caca_width + 1);
-    }
-
 #if defined(USE_SLANG)
     if(_caca_driver == CACA_DRIVER_SLANG)
     {
-        SLsmg_reinit_smg();
+        SLtt_get_screen_size();
+        _caca_width = SLtt_Screen_Cols;
+        _caca_height = SLtt_Screen_Rows;
+
+        if(_caca_width != old_width || _caca_height != old_height)
+            SLsmg_reinit_smg();
     }
     else
 #endif
 #if defined(USE_NCURSES)
     if(_caca_driver == CACA_DRIVER_NCURSES)
     {
-        resize_term(_caca_height, _caca_width);
-        wrefresh(curscr);
+        struct winsize size;
+
+        if(ioctl(fileno(stdout), TIOCGWINSZ, &size) == 0)
+        {
+            _caca_width = size.ws_col;
+            _caca_height = size.ws_row;
+            resize_term(_caca_height, _caca_width);
+            wrefresh(curscr);
+        }
     }
     else
 #endif
@@ -1252,6 +1253,9 @@ static void caca_handle_resize(void)
 #if defined(USE_X11)
     if(_caca_driver == CACA_DRIVER_X11)
     {
+        _caca_width = x11_new_width;
+        _caca_height = x11_new_height;
+
         XFreePixmap(x11_dpy, x11_pixmap);
         free(x11_char);
         free(x11_attr);
@@ -1276,6 +1280,17 @@ static void caca_handle_resize(void)
 #endif
     {
         /* Dummy */
+    }
+
+    if(_caca_width != old_width)
+    {
+        free(_caca_empty_line);
+        _caca_empty_line = malloc(_caca_width + 1);
+        memset(_caca_empty_line, ' ', _caca_width);
+        _caca_empty_line[_caca_width] = '\0';
+
+        free(_caca_scratch_line);
+        _caca_scratch_line = malloc(_caca_width + 1);
     }
 }
 
@@ -1335,31 +1350,7 @@ static int x11_error_handler(Display *dpy, XErrorEvent *event)
 #if defined(HAVE_SIGNAL) && (defined(USE_NCURSES) || defined(USE_SLANG))
 static RETSIGTYPE sigwinch_handler(int sig)
 {
-    struct winsize size;
-
-#if defined(USE_SLANG)
-    if(_caca_driver == CACA_DRIVER_SLANG)
-    {
-        SLtt_get_screen_size();
-        _caca_new_width = SLtt_Screen_Cols;
-        _caca_new_height = SLtt_Screen_Rows;
-    }
-    else
-#endif
-#if defined(USE_NCURSES)
-    if(_caca_driver == CACA_DRIVER_NCURSES)
-    {
-        if(ioctl(fileno(stdout), TIOCGWINSZ, &size) == 0)
-        {
-            _caca_new_width = size.ws_col;
-            _caca_new_height = size.ws_row;
-        }
-    }
-    else
-#endif
-    {
-        /* Dummy */
-    }
+    _caca_resize_event = 1;
 
     signal(SIGWINCH, sigwinch_handler);;
 }
