@@ -120,15 +120,23 @@ case "${target_os}" in
 esac
 AM_CONDITIONAL(NEED_PIC, ${NEED_PIC})
 
-# Build cacaview?
+# Use Imlib2?
+ac_cv_my_have_imlib2="no"
+AC_ARG_ENABLE(imlib2,
+  [  --enable-imlib2         Imlib2 graphics support (default enabled)])
 save_CPPFLAGS="${CPPFLAGS}"
-AC_PATH_PROG(IMLIB2_CONFIG, imlib2-config, no)
-if test "${IMLIB2_CONFIG}" != "no"; then
-  CPPFLAGS="${CPPFLAGS} `imlib2-config --cflags` -DX_DISPLAY_MISSING=1"
+if test "${enable_imlib2}" != "no"; then
+  AC_PATH_PROG(IMLIB2_CONFIG, imlib2-config, no)
+  if test "${IMLIB2_CONFIG}" != "no"; then
+    CPPFLAGS="${CPPFLAGS} `imlib2-config --cflags` -DX_DISPLAY_MISSING=1"
+  fi
+  AC_CHECK_HEADERS(Imlib2.h,
+    ac_cv_my_have_imlib2="yes",
+   [ac_cv_my_have_imlib2="no"
+    AC_MSG_ERROR([[cannot find Imlib2 development files. Without Imlib2, cacaview will only open BMP files; if this is really what you want, re-run configure with '--disable-imlib2'.]])])
+  CPPFLAGS="${save_CPPFLAGS}"
 fi
-AC_CHECK_HEADERS(Imlib2.h, USE_IMLIB2=:, USE_IMLIB2=false)
-CPPFLAGS="${save_CPPFLAGS}"
-AM_CONDITIONAL(USE_IMLIB2, ${USE_IMLIB2})
+AM_CONDITIONAL(USE_IMLIB2, test "${ac_cv_my_have_imlib2}" = "yes")
 
 # Build documentation?
 AC_PATH_PROG(DOXYGEN, doxygen, no)
