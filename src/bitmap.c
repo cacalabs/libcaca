@@ -41,7 +41,10 @@ typedef unsigned int uint32_t;
 #   include <endian.h>
 #endif
 
+#include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
+#include <string.h>
 
 #include "caca.h"
 #include "caca_internals.h"
@@ -79,6 +82,27 @@ static int const hsv_palette[] =
     2,    0x0,    0xfff,  0xfff  /* light red */
 };
 
+/* RGB palette for the new colour picker */
+static int rgb_palette[] =
+{
+    0x0,   0x0,   0x0,
+    0x0,   0x0,   0x7ff,
+    0x0,   0x7ff, 0x0,
+    0x0,   0x7ff, 0x7ff,
+    0x7ff, 0x0,   0x0,
+    0x7ff, 0x0,   0x7ff,
+    0x7ff, 0x7ff, 0x0,
+    0x7ff, 0x7ff, 0x7ff,
+    0x3ff, 0x3ff, 0x3ff,
+    0x000, 0x000, 0xfff,
+    0x000, 0xfff, 0x000,
+    0x000, 0xfff, 0xfff,
+    0xfff, 0x000, 0x000,
+    0xfff, 0x000, 0xfff,
+    0xfff, 0xfff, 0x000,
+    0xfff, 0xfff, 0xfff,
+};
+
 #if !defined(_DOXYGEN_SKIP_ME)
 #define HSV_XRATIO 6
 #define HSV_YRATIO 3
@@ -107,6 +131,7 @@ static void get_rgba_default(struct caca_bitmap const *, uint8_t *, int, int,
                              unsigned int *, unsigned int *, unsigned int *,
                              unsigned int *);
 static inline void rgb2hsv_default(int, int, int, int *, int *, int *);
+static inline int sq(int);
 
 /* Dithering methods */
 static void init_no_dither(int);
@@ -384,6 +409,11 @@ static inline void rgb2hsv_default(int r, int g, int b,
     }
 }
 
+static inline int sq(int x)
+{
+    return x * x;
+}
+
 /**
  * \brief Draw a bitmap on the screen.
  *
@@ -404,6 +434,9 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
     void (*_init_dither) (int);
     unsigned int (*_get_dither) (void);
     void (*_increment_dither) (void);
+
+    int *floyd_steinberg, *fs_r, *fs_g, *fs_b;
+    int fs_length;
 
     /* Only used when background is black */
     static int const white_colors[] =
@@ -438,19 +471,17 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
 
     /* FIXME: choose better characters! */
 #if !defined(_DOXYGEN_SKIP_ME)
-#   define DENSITY_CHARS ((sizeof(density_chars)/sizeof(char const)/4)-1)
+#   define DCHMAX ((sizeof(density_chars)/sizeof(char const)/4)-1)
 #endif
     static char const density_chars[] =
         "    "
-        ".   "
-        "..  "
         "...."
         "::::"
         ";=;="
         "tftf"
         "%$%$"
-        "&KSZ"
-        "WXGM"
+        "SK&Z"
+        "XWGM"
         "@@@@"
         "8888"
         "####"
@@ -515,16 +546,28 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
         return;
     }
 
+    fs_length = ((int)_caca_width <= x2 ? (int)_caca_width : x2) + 1;
+    floyd_steinberg = malloc(3 * (fs_length + 2) * sizeof(int));
+    memset(floyd_steinberg, 0, 3 * (fs_length + 2) * sizeof(int));
+    fs_r = floyd_steinberg + 1;
+    fs_g = fs_r + fs_length + 2;
+    fs_b = fs_g + fs_length + 2;
+
     for(y = y1 > 0 ? y1 : 0; y <= y2 && y <= (int)_caca_height; y++)
+    {
+        int remain_r = 0, remain_g = 0, remain_b = 0;
+        int remain_r_next = 0, remain_g_next = 0, remain_b_next = 0;
+
         for(x = x1 > 0 ? x1 : 0, _init_dither(y);
             x <= x2 && x <= (int)_caca_width;
             x++)
     {
-        int ch;
-        unsigned int r, g, b, a;
-        int hue, sat, val;
-        int fromx, fromy, tox, toy, myx, myy, dots;
-        enum caca_color outfg, outbg;
+        unsigned int i;
+        int ch = 0, distmin;
+        int r, g, b, a, fg_r, fg_g, fg_b, bg_r, bg_g, bg_b;
+        int fromx, fromy, tox, toy, myx, myy, dots, dist;
+
+        enum caca_color outfg = 0, outbg = 0;
         char outch;
 
         r = g = b = a = 0;
@@ -573,61 +616,94 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
         }
 
         if(bitmap->has_alpha && a < 0x800)
+        {
+            remain_r = remain_g = remain_b = 0;
+            fs_r[x] = 0;
+            fs_g[x] = 0;
+            fs_b[x] = 0;
             continue;
-
-        /* Now get HSV from RGB */
-        rgb2hsv_default(r, g, b, &hue, &sat, &val);
-
-        /* The hard work: calculate foreground and background colours,
-         * as well as the most appropriate character to output. */
-        if(_caca_background == CACA_BACKGROUND_SOLID)
-        {
-            unsigned char point;
-            int distfg, distbg;
-
-            lookup_colors[4] = dark_colors[1 + hue / 0x1000];
-            lookup_colors[5] = light_colors[1 + hue / 0x1000];
-            lookup_colors[6] = dark_colors[hue / 0x1000];
-            lookup_colors[7] = light_colors[hue / 0x1000];
-
-            point = hsv_distances[(val + _get_dither() * (0x1000 / LOOKUP_VAL)
-                                    / 0x100) * (LOOKUP_VAL - 1) / 0x1000]
-                                 [(sat + _get_dither() * (0x1000 / LOOKUP_SAT)
-                                    / 0x100) * (LOOKUP_SAT - 1) / 0x1000]
-                                 [((hue & 0xfff) + _get_dither()
-                                            * (0x1000 / LOOKUP_HUE) / 0x100)
-                                            * (LOOKUP_HUE - 1) / 0x1000];
-
-            distfg = HSV_DISTANCE(hue % 0xfff, sat, val, (point >> 4));
-            distbg = HSV_DISTANCE(hue % 0xfff, sat, val, (point & 0xf));
-
-            /* Sanity check due to the lack of precision in hsv_distances,
-             * and distbg can be > distfg because of dithering fuzziness. */
-            if(distbg > distfg)
-                distbg = distfg;
-
-            outfg = lookup_colors[(point >> 4)];
-            outbg = lookup_colors[(point & 0xf)];
-
-            ch = distbg * 2 * (DENSITY_CHARS - 1) / (distbg + distfg);
-            ch = 4 * ch + _get_dither() / 0x40;
-            outch = density_chars[ch];
         }
-        else
-        {
-            outbg = CACA_COLOR_BLACK;
-            if((unsigned int)sat < 0x200 + _get_dither() * 0x8)
-                outfg = white_colors[1 + (val * 2 + _get_dither() * 0x10)
-                                       / 0x1000];
-            else if((unsigned int)val > 0x800 + _get_dither() * 0x4)
-                outfg = light_colors[(hue + _get_dither() * 0x10) / 0x1000];
-            else
-                outfg = dark_colors[(hue + _get_dither() * 0x10) / 0x1000];
 
-            ch = (val + 0x2 * _get_dither()) * 10 / 0x1000;
-            ch = 4 * ch + _get_dither() / 0x40;
-            outch = density_chars[ch];
+        r += remain_r;
+        g += remain_g;
+        b += remain_b;
+        r += remain_r_next;
+        g += remain_g_next;
+        b += remain_b_next;
+        remain_r_next = fs_r[x+1];
+        remain_g_next = fs_g[x+1];
+        remain_b_next = fs_b[x+1];
+
+        distmin = INT_MAX;
+        for(i = 0; i < 16; i++)
+        {
+            dist = sq(r - rgb_palette[i * 3])
+                 + sq(g - rgb_palette[i * 3 + 1])
+                 + sq(b - rgb_palette[i * 3 + 2]);
+            if(dist < distmin)
+            {
+                outbg = i;
+                distmin = dist;
+            }
         }
+        bg_r = rgb_palette[outbg * 3];
+        bg_g = rgb_palette[outbg * 3 + 1];
+        bg_b = rgb_palette[outbg * 3 + 2];
+
+        distmin = INT_MAX;
+        for(i = 0; i < 16; i++)
+        {
+            if(i == outbg)
+                continue;
+            dist = sq(r - rgb_palette[i * 3])
+                 + sq(g - rgb_palette[i * 3 + 1])
+                 + sq(b - rgb_palette[i * 3 + 2]);
+            if(dist < distmin)
+            {
+                outfg = i;
+                distmin = dist;
+            }
+        }
+        fg_r = rgb_palette[outfg * 3];
+        fg_g = rgb_palette[outfg * 3 + 1];
+        fg_b = rgb_palette[outfg * 3 + 2];
+
+        distmin = INT_MAX;
+        for(i = 0; i < DCHMAX - 1; i++)
+	{
+            int newr = i * fg_r + ((2*DCHMAX-1) - i) * bg_r;
+            int newg = i * fg_g + ((2*DCHMAX-1) - i) * bg_g;
+            int newb = i * fg_b + ((2*DCHMAX-1) - i) * bg_b;
+            dist = abs(r * (2*DCHMAX-1) - newr)
+                 * abs(g * (2*DCHMAX-1) - newg)
+                 * abs(b * (2*DCHMAX-1) - newb);
+
+            if(dist < distmin)
+            {
+                ch = i;
+                distmin = dist;
+            }
+        }
+        outch = density_chars[4 * ch];
+
+        remain_r = r - (fg_r * ch + bg_r * ((2*DCHMAX-1) - ch)) / (2*DCHMAX-1);
+        remain_g = g - (fg_g * ch + bg_g * ((2*DCHMAX-1) - ch)) / (2*DCHMAX-1);
+        remain_b = b - (fg_b * ch + bg_b * ((2*DCHMAX-1) - ch)) / (2*DCHMAX-1);
+        remain_r_next = fs_r[x+1];
+        remain_g_next = fs_g[x+1];
+        remain_b_next = fs_b[x+1];
+        fs_r[x-1] += 3 * remain_r / 16;
+        fs_g[x-1] += 3 * remain_g / 16;
+        fs_b[x-1] += 3 * remain_b / 16;
+        fs_r[x] = 5 * remain_r / 16;
+        fs_g[x] = 5 * remain_g / 16;
+        fs_b[x] = 5 * remain_b / 16;
+        fs_r[x+1] = 1 * remain_r / 16;
+        fs_g[x+1] = 1 * remain_g / 16;
+        fs_b[x+1] = 1 * remain_b / 16;
+        remain_r = 7 * remain_r / 16;
+        remain_g = 7 * remain_g / 16;
+        remain_b = 7 * remain_b / 16;
 
         /* Now output the character */
         caca_set_color(outfg, outbg);
@@ -635,6 +711,10 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
 
         _increment_dither();
     }
+        /* end loop */
+    }
+
+    free(floyd_steinberg);
 }
 
 #if !defined(_DOXYGEN_SKIP_ME)
