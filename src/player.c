@@ -57,7 +57,7 @@ void draw_player(game *g, player *p)
     if(p->dead)
         return;
 
-    ee_draw_sprite(p->x, p->y, ship_sprite);
+    ee_draw_sprite(p->x, p->y, ship_sprite, 0);
 }
 
 void update_player(game *g, player *p)

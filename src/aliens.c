@@ -26,10 +26,6 @@
 
 #include "common.h"
 
-static void draw_alien_foo(game *, int, int, int);
-static void draw_alien_bar(game *, int, int, int);
-static void draw_alien_baz(game *, int, int, int);
-
 struct ee_sprite *foo_sprite;
 struct ee_sprite *bar_sprite;
 struct ee_sprite *baz_sprite;
@@ -57,13 +53,13 @@ void draw_aliens(game *g, aliens *al)
         switch(al->type[i])
         {
             case ALIEN_FOO:
-                draw_alien_foo(g, al->x[i], al->y[i], al->img[i] % 8);
+                ee_draw_sprite(al->x[i], al->y[i], foo_sprite, al->img[i] % 8);
                 break;
             case ALIEN_BAR:
-                draw_alien_bar(g, al->x[i], al->y[i], al->img[i] % 2);
+                ee_draw_sprite(al->x[i], al->y[i], bar_sprite, al->img[i] % 2);
                 break;
             case ALIEN_BAZ:
-                draw_alien_baz(g, al->x[i], al->y[i], al->img[i] % 6);
+                ee_draw_sprite(al->x[i], al->y[i], baz_sprite, al->img[i] % 6);
                 break;
             case ALIEN_NONE:
                 break;
@@ -137,23 +133,4 @@ void add_alien(game *g, aliens *al, int x, int y, int type)
         }
     }
 }
-
-static void draw_alien_bar(game *g, int x, int y, int frame)
-{
-    ee_set_sprite_frame(bar_sprite, frame);
-    ee_draw_sprite(x, y, bar_sprite);
-}
-
-static void draw_alien_baz(game *g, int x, int y, int frame)
-{
-    ee_set_sprite_frame(baz_sprite, frame);
-    ee_draw_sprite(x, y, baz_sprite);
-}
-
-static void draw_alien_foo(game *g, int x, int y, int frame)
-{
-    ee_set_sprite_frame(foo_sprite, frame);
-    ee_draw_sprite(x, y, foo_sprite);
-}
-
 

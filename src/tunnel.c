@@ -71,7 +71,7 @@ void draw_tunnel(game *g, tunnel *t)
     int i, j;
     char c;
 
-    ee_color(EE_GREEN);
+    ee_set_color(EE_GREEN);
 
     /* Left border */
     for(i = 0; i < g->h ; i++)
@@ -109,7 +109,7 @@ void draw_tunnel(game *g, tunnel *t)
         ee_putchar(t->right[i] - 1, i, c);
     }
 
-    ee_color(EE_RED);
+    ee_set_color(EE_RED);
 
     /* Left concrete */
     for(i = 0; i < g->h ; i++)

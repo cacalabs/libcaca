@@ -142,7 +142,7 @@ static void display_menu(void)
     int yo = ee_get_height() - 2;
 
     ee_clear();
-    ee_color(EE_WHITE);
+    ee_set_color(EE_WHITE);
     ee_draw_line(xo, yo, 1, yo, '.');
     ee_draw_line(1, yo, 1, 1, ':');
     ee_draw_line(xo, 1, xo, yo, ':');
@@ -178,7 +178,7 @@ static void demo_all(void)
     ee_clear();
 
     /* Draw the sun */
-    ee_color(EE_YELLOW);
+    ee_set_color(EE_YELLOW);
     xo = ee_get_width() / 4;
     yo = ee_get_height() / 4 + 5 * sin(0.03*i);
 
@@ -190,9 +190,9 @@ static void demo_all(void)
     }
 
     j = 15 + sin(0.03*i) * 8;
-    ee_color(EE_WHITE);
+    ee_set_color(EE_WHITE);
     ee_fill_ellipse(xo, yo, j, j / 2, '#');
-    ee_color(EE_YELLOW);
+    ee_set_color(EE_YELLOW);
     ee_draw_ellipse(xo, yo, j, j / 2, '#');
 
     /* Draw the pyramid */
@@ -208,19 +208,19 @@ static void demo_all(void)
     x3 = ee_get_width() / 4 - sin(0.02*i) * 5;
     y3 = ee_get_height() * 3 / 4 + cos(0.02*i) * 5;
 
-    ee_color(EE_GREEN);
+    ee_set_color(EE_GREEN);
     ee_fill_triangle(xo, yo, x2, y2, x1, y1, '%');
-    ee_color(EE_YELLOW);
+    ee_set_color(EE_YELLOW);
     ee_draw_thin_triangle(xo, yo, x2, y2, x1, y1);
 
-    ee_color(EE_RED);
+    ee_set_color(EE_RED);
     ee_fill_triangle(x1, y1, x2, y2, x3, y3, '#');
-    ee_color(EE_YELLOW);
+    ee_set_color(EE_YELLOW);
     ee_draw_thin_triangle(x1, y1, x2, y2, x3, y3);
 
-    ee_color(EE_BLUE);
+    ee_set_color(EE_BLUE);
     ee_fill_triangle(xo, yo, x2, y2, x3, y3, '%');
-    ee_color(EE_YELLOW);
+    ee_set_color(EE_YELLOW);
     ee_draw_thin_triangle(xo, yo, x2, y2, x3, y3);
 
     /* Draw a background triangle */
@@ -233,7 +233,7 @@ static void demo_all(void)
     x3 = ee_get_width() / 3;
     y3 = ee_get_height() - 3;
 
-    ee_color(EE_CYAN);
+    ee_set_color(EE_CYAN);
     ee_draw_thin_triangle(x1, y1, x2, y2, x3, y3);
 
     xo = ee_get_width() / 2 + cos(0.027*i) * ee_get_width() / 3;
@@ -244,13 +244,13 @@ static void demo_all(void)
     ee_draw_thin_line(x3, y3, xo, yo);
 
     /* Draw a sprite on the pyramid */
-    ee_draw_sprite(xo, yo, sprite);
+    ee_draw_sprite(xo, yo, sprite, 0);
 
     /* Draw a trail behind the foreground sprite */
     for(j = i - 60; j < i; j++)
     {
         int delta = ee_rand(-5, 5);
-        ee_color(ee_rand(1, 10));
+        ee_set_color(ee_rand(1, 10));
         ee_putchar(ee_get_width() / 2
                     + cos(0.02*j) * (delta + ee_get_width() / 4),
                    ee_get_height() / 2
@@ -261,7 +261,7 @@ static void demo_all(void)
     /* Draw foreground sprite */
     ee_draw_sprite(ee_get_width() / 2 + cos(0.02*i) * ee_get_width() / 4,
                    ee_get_height() / 2 + sin(0.02*i) * ee_get_height() / 3,
-                   sprite);
+                   sprite, 0);
 
     ee_refresh();
 }
@@ -275,7 +275,7 @@ static void demo_dots(void)
     for(i = 1000; i--;)
     {
         /* Putpixel */
-        ee_color(ee_rand(1, 10));
+        ee_set_color(ee_rand(1, 10));
         ee_putchar(ee_rand(0, xmax), ee_rand(0, ymax), '#');
     }
     ee_refresh();
@@ -298,7 +298,7 @@ static void demo_lines(void)
         x2 = ee_rand(0, w - 1); y2 = ee_rand(0, h - 1);
     }
 
-    ee_color(ee_rand(1, 10));
+    ee_set_color(ee_rand(1, 10));
     if(thin)
         ee_draw_thin_line(x1, y1, x2, y2);
     else
@@ -324,12 +324,12 @@ static void demo_boxes(void)
         x2 = ee_rand(0, w - 1); y2 = ee_rand(0, h - 1);
     }
 
-    ee_color(ee_rand(1, 10));
+    ee_set_color(ee_rand(1, 10));
     ee_fill_box(x1, y1, x2, y2, '#');
 
     if(outline)
     {
-        ee_color(ee_rand(1, 10));
+        ee_set_color(ee_rand(1, 10));
         ee_draw_thin_box(x1, y1, x2, y2);
     }
 
@@ -357,12 +357,12 @@ static void demo_ellipses(void)
         } while(x - a < 0 || x + a >= w || y - b < 0 || y + b >= h);
     }
 
-    ee_color(ee_rand(1, 10));
+    ee_set_color(ee_rand(1, 10));
     ee_fill_ellipse(x, y, a, b, '#');
 
     if(outline)
     {
-        ee_color(ee_rand(1, 10));
+        ee_set_color(ee_rand(1, 10));
         ee_draw_thin_ellipse(x, y, a, b);
     }
 
@@ -389,12 +389,12 @@ static void demo_triangles(void)
         x3 = ee_rand(0, w - 1); y3 = ee_rand(0, h - 1);
     }
 
-    ee_color(ee_rand(1, 10));
+    ee_set_color(ee_rand(1, 10));
     ee_fill_triangle(x1, y1, x2, y2, x3, y3, '#');
 
     if(outline)
     {
-        ee_color(ee_rand(1, 10));
+        ee_set_color(ee_rand(1, 10));
         ee_draw_thin_triangle(x1, y1, x2, y2, x3, y3);
     }
 
@@ -404,7 +404,7 @@ static void demo_triangles(void)
 static void demo_sprites(void)
 {
     ee_draw_sprite(ee_rand(0, ee_get_width() - 1),
-                   ee_rand(0, ee_get_height() - 1), sprite);
+                   ee_rand(0, ee_get_height() - 1), sprite, 0);
     ee_refresh();
 }
 

@@ -56,20 +56,20 @@ void draw_weapons(game *g, weapons *wp)
         switch(wp->type[i])
         {
             case WEAPON_LASER:
-                ee_color(EE_WHITE);
+                ee_set_color(EE_WHITE);
                 ee_putchar(wp->x[i] >> 4, wp->y[i] >> 4, '|');
-                ee_color(EE_CYAN);
+                ee_set_color(EE_CYAN);
                 ee_putchar(wp->x[i] >> 4, (wp->y[i] >> 4) + 1, '|');
                 break;
             case WEAPON_SEEKER:
-                ee_color(EE_CYAN);
+                ee_set_color(EE_CYAN);
                 ee_putchar(wp->x3[i] >> 4, wp->y3[i] >> 4, '.');
                 ee_putchar(wp->x2[i] >> 4, wp->y2[i] >> 4, 'o');
-                ee_color(EE_WHITE);
+                ee_set_color(EE_WHITE);
                 ee_putchar(wp->x[i] >> 4, wp->y[i] >> 4, '@');
                 break;
             case WEAPON_BOMB:
-                ee_color(EE_GRAY);
+                ee_set_color(EE_GRAY);
                 ee_putchar((wp->x[i] - wp->vx[i]) >> 4, (wp->y[i] - wp->vy[i]) >> 4, '.');
                 ee_putchar((wp->x3[i] - wp->vx[i]) >> 4, (wp->y3[i] - wp->vy[i]) >> 4, '.');
                 ee_putchar((wp->x2[i] - wp->vx[i]) >> 4, (wp->y2[i] - wp->vy[i]) >> 4, '.');
@@ -333,19 +333,16 @@ static void draw_bomb(int x, int y, int vx, int vy)
         }
     }
 
-    ee_set_sprite_frame(bomb_sprite, frame);
-    ee_draw_sprite(x, y, bomb_sprite);
+    ee_draw_sprite(x, y, bomb_sprite, frame);
 }
 
 static void draw_fragbomb(int x, int y, int frame)
 {
     /* Draw the head */
-    ee_set_sprite_frame(fragbomb_sprite, frame & 1);
-    ee_draw_sprite(x, y, fragbomb_sprite);
+    ee_draw_sprite(x, y, fragbomb_sprite, frame & 1);
 
     /* Draw the tail */
-    ee_set_sprite_frame(fragbomb_sprite, 2 + (frame % 4));
-    ee_draw_sprite(x, y, fragbomb_sprite);
+    ee_draw_sprite(x, y, fragbomb_sprite, 2 + (frame % 4));
 }
 
 static void draw_beam(int x, int y, int frame)
@@ -356,84 +353,84 @@ static void draw_beam(int x, int y, int frame)
     switch(frame)
     {
         case 24:
-            ee_color(EE_WHITE);
+            ee_set_color(EE_WHITE);
             ee_putstr(x, y-3, "__");
             ee_putchar(x-1, y-2, '\'');
             ee_putchar(x+2, y-2, '`');
             break;
         case 23:
-            ee_color(EE_CYAN);
+            ee_set_color(EE_CYAN);
             ee_putstr(x, y-3, "__");
-            ee_color(EE_WHITE);
+            ee_set_color(EE_WHITE);
             ee_putstr(x-2, y-2, "-'");
             ee_putstr(x+2, y-2, "`-");
             break;
         case 22:
-            ee_color(EE_CYAN);
+            ee_set_color(EE_CYAN);
             ee_putstr(x, y-3, "__");
             ee_putchar(x-1, y-2, '\'');
             ee_putchar(x+2, y-2, '`');
-            ee_color(EE_WHITE);
+            ee_set_color(EE_WHITE);
             ee_putstr(x-3, y-2, ",-");
             ee_putstr(x+3, y-2, "-.");
             break;
         case 21:
-            ee_color(EE_CYAN);
+            ee_set_color(EE_CYAN);
             ee_putstr(x-1, y-3, "____");
             ee_putchar(x-2, y-2, '\'');
             ee_putchar(x+3, y-2, '`');
-            ee_color(EE_WHITE);
+            ee_set_color(EE_WHITE);
             ee_putstr(x-4, y-2, ",-");
             ee_putstr(x+4, y-2, "-.");
             break;
         case 20:
-            ee_color(EE_WHITE);
+            ee_set_color(EE_WHITE);
             ee_putstr(x, y-3, "%%");
             ee_putchar(x-4, y-2, ',');
             ee_putchar(x+5, y-2, '.');
-            ee_color(EE_CYAN);
+            ee_set_color(EE_CYAN);
             ee_putchar(x-1, y-3, ':');
             ee_putchar(x+2, y-3, ':');
             ee_putstr(x-3, y-2, "-'");
             ee_putstr(x+3, y-2, "`-");
             break;
         case 19:
-            ee_color(EE_WHITE);
+            ee_set_color(EE_WHITE);
             ee_putstr(x, y-4, "%%");
             ee_putstr(x, y-3, "##");
-            ee_color(EE_CYAN);
+            ee_set_color(EE_CYAN);
             ee_putchar(x-1, y-4, ':');
             ee_putchar(x+2, y-4, ':');
             ee_putchar(x-1, y-3, '%');
             ee_putchar(x+2, y-3, '%');
             ee_putstr(x-4, y-2, ",-'");
             ee_putstr(x+3, y-2, "`-.");
-            ee_color(EE_BLUE);
+            ee_set_color(EE_BLUE);
             ee_putchar(x-2, y-3, ':');
             ee_putchar(x+3, y-3, ':');
             break;
         case 18:
         default:
             r = (18 - frame) * (18 - frame);
-            ee_color(EE_WHITE);
+            ee_set_color(EE_WHITE);
             ee_putstr(x-1, y-5-r, ":%%:");
             ee_putstr(x-1, y-4-r, "%##%");
-            ee_color(EE_CYAN);
+            ee_set_color(EE_CYAN);
             ee_putchar(x-2, y-4-r, ':');
             ee_putchar(x+3, y-4-r, ':');
             ee_putchar(x-2, y-2, '\'');
             ee_putchar(x+3, y-2, '`');
-            ee_color(EE_BLUE);
+            ee_set_color(EE_BLUE);
             ee_putchar(x-3, y-2, ':');
             ee_putchar(x+4, y-2, ':');
             for(i = 0; i <= r; i++)
             {
-                ee_color(EE_WHITE);
+                ee_set_color(EE_WHITE);
                 ee_putstr(x-1, y-3-i, ((i+frame) % 5) ? "####" : "%%%%");
-                ee_color(EE_CYAN);
+                ee_set_color(EE_CYAN);
                 ee_putchar(x-2, y-3-i, '%');
                 ee_putchar(x+3, y-3-i, '%');
-                ee_color(EE_BLUE);
+                ee_set_color(EE_BLUE);
                 ee_putchar(x-3, y-3-i, ':');
                 ee_putchar(x+4, y-3-i, ':');
             }
@@ -446,14 +443,14 @@ static void draw_nuke(int x, int y, int frame)
     int r = (29 - frame) * (29 - frame) / 8;
 
     /* Lots of duplicate pixels, but we don't care */
-    ee_color(EE_BLUE);
+    ee_set_color(EE_BLUE);
     ee_draw_ellipse(x, y, r, r / 2, ':');
     ee_draw_ellipse(x, y, r + 1, r / 2, ':');
     ee_draw_ellipse(x, y, r + 2, r / 2, ':');
-    ee_color(EE_CYAN);
+    ee_set_color(EE_CYAN);
     ee_draw_ellipse(x, y, r + 2, r / 2 + 1, '%');
     ee_draw_ellipse(x, y, r + 3, r / 2 + 1, '%');
-    ee_color(EE_WHITE);
+    ee_set_color(EE_WHITE);
     ee_draw_ellipse(x, y, r + 3, r / 2 + 2, '#');
     ee_draw_ellipse(x, y, r + 4, r / 2 + 2, '#');
     ee_draw_ellipse(x, y, r + 4, r / 2 + 3, '#');

@@ -67,7 +67,7 @@ void ee_draw_thin_box(int x1, int y1, int x2, int y2)
         for(x = x1 < 0 ? 1 : x1 + 1; x < x2 && x < xmax; x++)
             ee_putchar(x, y1, '-');
 
-    if(y2 < ymax)
+    if(y2 <= ymax)
         for(x = x1 < 0 ? 1 : x1 + 1; x < x2 && x < xmax; x++)
             ee_putchar(x, y2, '-');
 
@@ -75,7 +75,7 @@ void ee_draw_thin_box(int x1, int y1, int x2, int y2)
         for(y = y1 < 0 ? 1 : y1 + 1; y < y2 && y < ymax; y++)
             ee_putchar(x1, y, '|');
 
-    if(x2 < xmax)
+    if(x2 <= xmax)
         for(y = y1 < 0 ? 1 : y1 + 1; y < y2 && y < ymax; y++)
             ee_putchar(x2, y, '|');
 

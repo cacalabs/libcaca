@@ -44,7 +44,6 @@ struct ee_frame
 
 struct ee_sprite
 {
-    int f;
     int nf;
     struct ee_frame *frames;
 };
@@ -60,7 +59,6 @@ struct ee_sprite *ee_load_sprite(const char *file)
         return NULL;
 
     sprite = malloc(sizeof(struct ee_sprite));
-    sprite->f = 0;
     sprite->nf = 0;
     sprite->frames = NULL;
 
@@ -136,34 +134,72 @@ struct ee_sprite *ee_load_sprite(const char *file)
     return sprite;
 }
 
-void ee_set_sprite_frame(struct ee_sprite *sprite, int f)
+int ee_get_sprite_frames(struct ee_sprite *sprite)
 {
+    if(sprite == NULL)
+        return 0;
+
+    return sprite->nf;
+}
+
+int ee_get_sprite_width(struct ee_sprite *sprite, int f)
+{
+    if(sprite == NULL)
+        return 0;
+
+    if(f < 0 || f >= sprite->nf)
+        return 0;
+
+    return sprite->frames[f].w;
+}
+
+int ee_get_sprite_height(struct ee_sprite *sprite, int f)
+{
+    if(sprite == NULL)
+        return 0;
+
+    if(f < 0 || f >= sprite->nf)
+        return 0;
+
+    return sprite->frames[f].h;
+}
+
+int ee_get_sprite_dx(struct ee_sprite *sprite, int f)
+{
+    if(sprite == NULL)
+        return 0;
+
+    if(f < 0 || f >= sprite->nf)
+        return 0;
+
+    return sprite->frames[f].dx;
+}
+
+int ee_get_sprite_dy(struct ee_sprite *sprite, int f)
+{
+    if(sprite == NULL)
+        return 0;
+
+    if(f < 0 || f >= sprite->nf)
+        return 0;
+
+    return sprite->frames[f].dy;
+}
+
+void ee_draw_sprite(int x, int y, struct ee_sprite *sprite, int f)
+{
+    int i, j, oldcol;
+    struct ee_frame *frame;
+
     if(sprite == NULL)
         return;
 
     if(f < 0 || f >= sprite->nf)
         return;
 
-    sprite->f = f;
-}
+    frame = &sprite->frames[f];
 
-int ee_get_sprite_frame(struct ee_sprite *sprite)
-{
-    if(sprite == NULL)
-        return -1;
-
-    return sprite->f;
-}
-
-void ee_draw_sprite(int x, int y, struct ee_sprite *sprite)
-{
-    int i, j;
-    struct ee_frame *frame;
-
-    if(sprite == NULL)
-        return;
-
-    frame = &sprite->frames[sprite->f];
+    oldcol = ee_get_color();
 
     for(j = 0; j < frame->h; j++)
     {
@@ -172,12 +208,14 @@ void ee_draw_sprite(int x, int y, struct ee_sprite *sprite)
             int col = frame->color[frame->w * j + i];
             if(col >= 0)
             {
-                ee_color(col);
+                ee_set_color(col);
                 ee_putchar(x + i - frame->dx, y + j - frame->dy,
                            frame->chars[frame->w * j + i]);
             }
         }
     }
+
+    ee_set_color(oldcol);
 }
 
 void ee_free_sprite(struct ee_sprite *sprite)

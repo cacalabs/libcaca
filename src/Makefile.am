@@ -21,6 +21,7 @@ ttyvaders_SOURCES = \
 	collide.c \
 	common.h \
 	explosions.c \
+	intro.c \
 	main.c \
 	overlay.c \
 	player.c \

@@ -48,6 +48,8 @@ int main (int argc, char **argv)
     g->w = ee_get_width();
     g->h = ee_get_height();
 
+intro();
+
     /* Go ! */
     start_game(g);
 

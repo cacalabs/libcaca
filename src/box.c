@@ -43,7 +43,7 @@ void draw_box(game *g, box *b)
 {
     int j, frame;
 
-    ee_color(EE_YELLOW);
+    ee_set_color(EE_YELLOW);
 
     /* Draw the thin horizontal line */
     if(b->frame < 8)
@@ -66,7 +66,7 @@ void draw_box(game *g, box *b)
     ee_draw_line(b->x + b->w / 2 - 1, b->y - b->h * (frame - 8) / 8,
                  b->x + b->w / 2 - 1, b->y + b->h * (frame - 8) / 8 - 1, 'X');
 
-    ee_color(EE_BLACK);
+    ee_set_color(EE_BLACK);
 
     for(j = b->y - b->h * (frame - 8) / 8 + 1;
          j < b->y + b->h * (frame - 8) / 8;
@@ -82,7 +82,7 @@ void draw_box(game *g, box *b)
     }
 
     /* Draw the text inside the frame */
-    ee_color(EE_YELLOW);
+    ee_set_color(EE_YELLOW);
 
     /* FIXME: use a font */
     ee_putstr(b->x - b->w / 2 + 12, b->y - b->h / 2 + 2,

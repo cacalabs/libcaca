@@ -32,49 +32,49 @@ void draw_status(game *g)
     static char dashes30[] = "==============================";
 
     /* Draw life jauge */
-    ee_color(EE_GRAY);
+    ee_set_color(EE_GRAY);
     ee_putstr(4, 1, dots30);
 
     if(g->p->life > MAX_LIFE * 7 / 10)
     {
-        ee_color(EE_GREEN);
+        ee_set_color(EE_GREEN);
     }
     else if(g->p->life > MAX_LIFE * 3 / 10)
     {
-        ee_color(EE_YELLOW);
+        ee_set_color(EE_YELLOW);
     }
     else
     {
-        ee_color(EE_RED);
+        ee_set_color(EE_RED);
     }
 
     ee_putstr(4, 1, dashes30 + (MAX_LIFE - g->p->life) * 30 / MAX_LIFE);
 
-    ee_color(EE_WHITE);
+    ee_set_color(EE_WHITE);
     ee_putstr(1, 1, "L |");
     ee_putstr(34, 1, "|");
 
     /* Draw weapon jauge */
-    ee_color(EE_GRAY);
+    ee_set_color(EE_GRAY);
     ee_putstr(42, 1, dots30 + 10);
 
     if(g->p->special > MAX_SPECIAL * 9 / 10)
     {
-        ee_color(EE_WHITE);
+        ee_set_color(EE_WHITE);
     }
     else if(g->p->special > MAX_SPECIAL * 3 / 10)
     {
-        ee_color(EE_CYAN);
+        ee_set_color(EE_CYAN);
     }
     else
     {
-        ee_color(EE_BLUE);
+        ee_set_color(EE_BLUE);
     }
 
     ee_putstr(42, 1, dashes30 + 10
                        + (MAX_SPECIAL - g->p->special) * 20 / MAX_SPECIAL);
 
-    ee_color(EE_WHITE);
+    ee_set_color(EE_WHITE);
     ee_putstr(39, 1, "S |");
     ee_putstr(62, 1, "|");
 }

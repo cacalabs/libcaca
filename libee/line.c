@@ -68,6 +68,23 @@ void ee_draw_line(int x1, int y1, int x2, int y2, char c)
     clip_line(&s);
 }
 
+void ee_draw_polyline(int x[], int y[], int n, char c)
+{
+    int i;
+    struct line s;
+    s.c = c;
+    s.draw = draw_solid_line;
+
+    for(i = 0; i < n; i++)
+    {
+        s.x1 = x[i];
+        s.y1 = y[i];
+        s.x2 = x[i+1];
+        s.y2 = y[i+1];
+        clip_line(&s);
+    }
+}
+
 /**
  * \brief Draw a thin line on the screen, using ASCII art.
  *
@@ -86,6 +103,22 @@ void ee_draw_thin_line(int x1, int y1, int x2, int y2)
     s.y2 = y2;
     s.draw = draw_thin_line;
     clip_line(&s);
+}
+
+void ee_draw_thin_polyline(int x[], int y[], int n)
+{
+    int i;
+    struct line s;
+    s.draw = draw_thin_line;
+
+    for(i = 0; i < n; i++)
+    {
+        s.x1 = x[i];
+        s.y1 = y[i];
+        s.x2 = x[i+1];
+        s.y2 = y[i+1];
+        clip_line(&s);
+    }
 }
 
 /*

@@ -20,6 +20,14 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#ifndef __EE_H__
+#define __EE_H__
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 /*
  * Colors
  */
@@ -51,13 +59,16 @@ void ee_end(void);
 
 char ee_get_key(void);
 
-void ee_color(int);
+void ee_set_color(int);
+int ee_get_color(void);
 void ee_putchar(int, int, char);
 void ee_putstr(int, int, char *);
 void ee_clear(void);
 
 void ee_draw_line(int, int, int, int, char);
+void ee_draw_polyline(int[], int[], int, char);
 void ee_draw_thin_line(int, int, int, int);
+void ee_draw_thin_polyline(int[], int[], int);
 
 void ee_draw_circle(int, int, int, char);
 void ee_draw_ellipse(int, int, int, int, char);
@@ -76,8 +87,16 @@ int ee_rand(int, int);
 int ee_sqrt(int);
 
 struct ee_sprite * ee_load_sprite(const char *);
-void ee_set_sprite_frame(struct ee_sprite *, int);
-int ee_get_sprite_frame(struct ee_sprite *);
-void ee_draw_sprite(int, int, struct ee_sprite *);
+int ee_get_sprite_frames(struct ee_sprite *);
+int ee_get_sprite_width(struct ee_sprite *, int);
+int ee_get_sprite_height(struct ee_sprite *, int);
+int ee_get_sprite_dx(struct ee_sprite *, int);
+int ee_get_sprite_dy(struct ee_sprite *, int);
+void ee_draw_sprite(int, int, struct ee_sprite *, int);
 void ee_free_sprite(struct ee_sprite *);
 
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* __EE_H__ */

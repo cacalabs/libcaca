@@ -51,12 +51,12 @@ void draw_bonus(game *g, bonus *bo)
         switch(bo->type[i])
         {
             case BONUS_GREEN:
-                ee_set_sprite_frame(gem_sprite, (bo->n[i]/2 % 3) ? 0 : 1);
-                ee_draw_sprite(bo->x[i], bo->y[i], gem_sprite);
+                ee_draw_sprite(bo->x[i], bo->y[i], gem_sprite,
+                               (bo->n[i]/2 % 3) ? 0 : 1);
                 break;
             case BONUS_LIFE:
-                ee_set_sprite_frame(heart_sprite, (bo->n[i] % 3) ? 0 : 1);
-                ee_draw_sprite(bo->x[i], bo->y[i], heart_sprite);
+                ee_draw_sprite(bo->x[i], bo->y[i], heart_sprite,
+                               (bo->n[i] % 3) ? 0 : 1);
                 break;
             case BONUS_NONE:
                 break;

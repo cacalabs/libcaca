@@ -26,9 +26,6 @@
 
 #include "common.h"
 
-static void draw_small_explosion(int x, int y, int frame);
-static void draw_medium_explosion(int x, int y, int frame);
-
 struct ee_sprite *medium_sprite;
 struct ee_sprite *small_sprite;
 
@@ -79,7 +76,7 @@ void draw_explosions(game *g, explosions *ex)
     for(i = 0; i < EXPLOSIONS; i++)
     {
 #if 0
-        ee_color(GREEN);
+        ee_set_color(GREEN);
         ee_goto(ex->x[i] + 3, ex->y[i]);
         switch(ee_rand(0,2))
         {
@@ -106,10 +103,12 @@ void draw_explosions(game *g, explosions *ex)
         switch(ex->type[i])
         {
             case EXPLOSION_MEDIUM:
-                draw_medium_explosion(ex->x[i], ex->y[i], ex->n[i]);
+                ee_draw_sprite(ex->x[i], ex->y[i], medium_sprite,
+                               10 - ex->n[i]);
                 break;
             case EXPLOSION_SMALL:
-                draw_small_explosion(ex->x[i], ex->y[i], ex->n[i]);
+                ee_draw_sprite(ex->x[i], ex->y[i], small_sprite,
+                               6 - ex->n[i]);
                 break;
             case EXPLOSION_NONE:
                 break;
@@ -139,17 +138,5 @@ void update_explosions(game *g, explosions *ex)
                 break;
         }
     }
-}
-
-static void draw_small_explosion(int x, int y, int frame)
-{
-    ee_set_sprite_frame(small_sprite, 6 - frame);
-    ee_draw_sprite(x, y, small_sprite);
-}
-
-static void draw_medium_explosion(int x, int y, int frame)
-{
-    ee_set_sprite_frame(medium_sprite, 10 - frame);
-    ee_draw_sprite(x, y, medium_sprite);
 }
 

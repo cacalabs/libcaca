@@ -33,8 +33,11 @@
 
 #include "ee.h"
 
-void ee_color(int color)
+static int ee_color = 0;
+
+void ee_set_color(int color)
 {
+    ee_color = color;
 #ifdef USE_SLANG
     SLsmg_set_color(color);
 #elif USE_NCURSES
@@ -42,6 +45,11 @@ void ee_color(int color)
 #else
     /* Use dummy driver */
 #endif
+}
+
+int ee_get_color(void)
+{
+    return ee_color;
 }
 
 void ee_putchar(int x, int y, char c)
