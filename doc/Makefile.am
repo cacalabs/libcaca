@@ -23,7 +23,9 @@ endif
 stamp-latex: stamp-doxygen
 if DOXYGEN
 if LATEX
-	rm -f latex/libcaca.ps
+	rm -f latex/libcaca.tex latex/libcaca.ps
+	mv latex/refman.tex latex/libcaca.tex
+	sed 's/setlength{/renewcommand{/' latex/libcaca.tex > latex/refman.tex
 	cd latex && $(MAKE) $(AM_CFLAGS) ps
 	mv latex/refman.ps latex/libcaca.ps
 	touch stamp-latex

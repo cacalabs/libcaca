@@ -143,11 +143,15 @@ AM_CONDITIONAL(DOXYGEN, test "${DOXYGEN}" != "no")
 
 # Build LaTeX documentation?
 AC_PATH_PROG(LATEX, latex, no)
+AC_PATH_PROG(DVIPS, dvips, no)
+if test "${DVIPS}" = "no"; then
+  LATEX="no"
+fi
 AC_MSG_CHECKING(for a4wide.sty)
 if test -f /usr/share/texmf/tex/latex/misc/a4wide.sty; then
   AC_MSG_RESULT(yes)
 else
-  LATEX=no
+  LATEX="no"
   AC_MSG_RESULT(no)
 fi
 AM_CONDITIONAL(LATEX, test "${LATEX}" != "no")
