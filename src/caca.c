@@ -39,7 +39,11 @@
 #   endif
 #endif
 #if defined(USE_NCURSES)
-#   include <curses.h>
+#   if defined(HAVE_NCURSES_H)
+#       include <ncurses.h>
+#   else
+#       include <curses.h>
+#   endif
 #endif
 #if defined(USE_CONIO)
 #   include <dos.h>

@@ -122,7 +122,7 @@ fi
 
 if test "${enable_ncurses}" != "no"; then
   ac_cv_my_have_ncurses="no"
-  AC_CHECK_HEADERS(ncurses.h,
+  AC_CHECK_HEADERS(curses.h ncurses.h,
    [AC_CHECK_LIB(ncurses, initscr,
      [ac_cv_my_have_ncurses="yes"
       AC_DEFINE(USE_NCURSES, 1, Define to activate the ncurses backend driver)

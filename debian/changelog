@@ -1,3 +1,10 @@
+libcaca (0.8-2) unstable; urgency=low
+
+  * src/caca.c src/event.c src/graphics.c:
+    + Include <ncurses.h> instead of <curses.h> to fix m68k FTBFS.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Mon, 26 Jan 2004 11:47:32 +0100
+
 libcaca (0.8-1) unstable; urgency=low
 
   * New upstream release.
