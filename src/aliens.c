@@ -30,6 +30,10 @@ static void draw_alien_foo(game *, int, int, int);
 static void draw_alien_bar(game *, int, int, int);
 static void draw_alien_baz(game *, int, int, int);
 
+struct ee_sprite *foo_sprite;
+struct ee_sprite *bar_sprite;
+struct ee_sprite *baz_sprite;
+
 void init_aliens(game *g, aliens *al)
 {
     int i;
@@ -38,6 +42,10 @@ void init_aliens(game *g, aliens *al)
     {
         al->type[i] = ALIEN_NONE;
     }
+
+    foo_sprite = ee_load_sprite("data/foo_fighter");
+    bar_sprite = ee_load_sprite("data/bar_fighter");
+    baz_sprite = ee_load_sprite("data/baz_fighter");
 }
 
 void draw_aliens(game *g, aliens *al)
@@ -132,130 +140,20 @@ void add_alien(game *g, aliens *al, int x, int y, int type)
 
 static void draw_alien_bar(game *g, int x, int y, int frame)
 {
-    switch(frame)
-    {
-    case 0:
-        ee_color(EE_MAGENTA);
-        ee_goto(x, y);
-        ee_putstr(",---.");
-        ee_goto(x, y+1);
-        ee_putchar('\\');
-        ee_color(EE_WHITE);
-        ee_putstr("o O");
-        ee_color(EE_MAGENTA);
-        ee_putchar('/');
-        ee_goto(x, y+2);
-        ee_putstr("^^^^^");
-        break;
-    case 1:
-        ee_color(EE_MAGENTA);
-        ee_goto(x, y);
-        ee_putstr(",---.");
-        ee_goto(x, y+1);
-        ee_putchar('\\');
-        ee_color(EE_WHITE);
-        ee_putstr("O o");
-        ee_color(EE_MAGENTA);
-        ee_putchar('/');
-        ee_goto(x, y+2);
-        ee_putstr("^^^^^");
-        break;
-    }
+    ee_set_sprite_frame(bar_sprite, frame);
+    ee_draw_sprite(x, y, bar_sprite);
 }
 
 static void draw_alien_baz(game *g, int x, int y, int frame)
 {
-    ee_color(EE_GREEN);
-    ee_goto(x, y-1);
-    ee_putstr("__");
-
-    ee_goto(x-1, y);
-    ee_putchar('/');
-    ee_goto(x+2, y);
-    ee_putchar('\\');
-
-    switch(frame)
-    {
-    case 3:
-        ee_goto(x-2, y+1);
-        ee_putstr("//'`\\\\");
-        break;
-    case 4:
-    case 2:
-        ee_goto(x-2, y+1);
-        ee_putstr("/(~~)\\");
-        break;
-    case 5:
-    case 1:
-        ee_goto(x-2, y+1);
-        ee_putstr("((^^))");
-        break;
-    case 0:
-        ee_goto(x-1, y+1);
-        ee_putstr("\\\\//");
-        break;
-    }
-
-    ee_color(EE_WHITE);
-    ee_goto(x, y);
-    ee_putstr("oo");
+    ee_set_sprite_frame(baz_sprite, frame);
+    ee_draw_sprite(x, y, baz_sprite);
 }
 
 static void draw_alien_foo(game *g, int x, int y, int frame)
 {
-    ee_color(EE_YELLOW);
-
-    switch(frame)
-    {
-    case 0:
-        ee_goto(x, y);
-        ee_putchar('.');
-        ee_goto(x+6, y);
-        ee_putchar(',');
-        ee_goto(x+1, y+1);
-        ee_putstr("\\ X /");
-        break;
-    case 7:
-    case 1:
-        ee_goto(x-1, y);
-        ee_putchar('.');
-        ee_goto(x+7, y);
-        ee_putchar(',');
-        ee_goto(x, y+1);
-        ee_putstr("`- X -'");
-        break;
-    case 6:
-    case 2:
-        ee_goto(x-1, y+1);
-        ee_putstr("`-- X --'");
-        break;
-    case 5:
-    case 3:
-        ee_goto(x, y+1);
-        ee_putstr(",- X -.");
-        ee_goto(x-1, y+2);
-        ee_putchar('\'');
-        ee_goto(x+7, y+2);
-        ee_putchar('`');
-        break;
-    case 4:
-        ee_goto(x+1, y+1);
-        ee_putstr(", X .");
-        ee_goto(x, y+2);
-        ee_putchar('/');
-        ee_goto(x+6, y+2);
-        ee_putchar('\\');
-        break;
-    }
-
-    ee_goto(x+2, y+2);
-    ee_putstr("`V'");
-
-    ee_color(EE_WHITE);
-    ee_goto(x+2, y+1);
-    ee_putchar('o');
-    ee_goto(x+4, y+1);
-    ee_putchar('o');
+    ee_set_sprite_frame(foo_sprite, frame);
+    ee_draw_sprite(x, y, foo_sprite);
 }
 
 

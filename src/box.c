@@ -41,60 +41,39 @@ box * create_box(game *g, int x, int y, int w, int h)
 
 void draw_box(game *g, box *b)
 {
-    int i, j, frame;
+    int j, frame;
 
     ee_color(EE_YELLOW);
 
     /* Draw the thin horizontal line */
     if(b->frame < 8)
     {
-        for(i = b->x - b->w * b->frame / 16 ;
-             i < b->x + b->w * b->frame / 16 ;
-             i++)
-        {
-            ee_goto(i, b->y);
-            ee_putchar('X');
-        }
-
+        ee_draw_line(b->x - b->w * b->frame / 16, b->y,
+                     b->x + b->w * b->frame / 16 - 1, b->y, 'X');
         return;
     }
 
     /* Draw the frame */
     frame = b->frame < 12 ? b->frame : 12;
 
-    for(i = b->x - b->w / 2 ;
-         i < b->x + b->w / 2 ;
-         i++)
-    {
-        ee_goto(i, b->y - b->h * (frame - 8) / 8);
-        ee_putchar('X');
-        ee_goto(i, b->y + b->h * (frame - 8) / 8);
-        ee_putchar('X');
-    }
+    ee_draw_line(b->x - b->w / 2, b->y - b->h * (frame - 8) / 8,
+                 b->x + b->w / 2 - 1, b->y - b->h * (frame - 8) / 8, 'X');
+    ee_draw_line(b->x - b->w / 2, b->y + b->h * (frame - 8) / 8,
+                 b->x + b->w / 2 - 1, b->y + b->h * (frame - 8) / 8, 'X');
 
-    for(j = b->y - b->h * (frame - 8) / 8 ;
-         j < b->y + b->h * (frame - 8) / 8 ;
-         j++)
-    {
-        ee_goto(b->x - b->w / 2, j);
-        ee_putchar('X');
-        ee_goto(b->x + b->w / 2 - 1, j);
-        ee_putchar('X');
-    }
+    ee_draw_line(b->x - b->w / 2, b->y - b->h * (frame - 8) / 8,
+                 b->x - b->w / 2, b->y + b->h * (frame - 8) / 8 - 1, 'X');
+    ee_draw_line(b->x + b->w / 2 - 1, b->y - b->h * (frame - 8) / 8,
+                 b->x + b->w / 2 - 1, b->y + b->h * (frame - 8) / 8 - 1, 'X');
 
     ee_color(EE_BLACK);
 
-    for(j = b->y - b->h * (frame - 8) / 8 + 1 ;
-         j < b->y + b->h * (frame - 8) / 8 ;
+    for(j = b->y - b->h * (frame - 8) / 8 + 1;
+         j < b->y + b->h * (frame - 8) / 8;
          j++)
     {
-        for(i = b->x - b->w / 2 + 1 ;
-             i < b->x + b->w / 2 - 1 ;
-             i++)
-        {
-            ee_goto(i, j);
-            ee_putchar('X');
-        }
+        ee_draw_line(b->x - b->w / 2 + 1, j,
+                     b->x + b->w / 2 - 2, j, 'X');
     }
 
     if(b->frame < 12)

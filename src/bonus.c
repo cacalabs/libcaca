@@ -26,6 +26,9 @@
 
 #include "common.h"
 
+struct ee_sprite *heart_sprite;
+struct ee_sprite *gem_sprite;
+
 void init_bonus(game *g, bonus *bo)
 {
     int i;
@@ -34,6 +37,9 @@ void init_bonus(game *g, bonus *bo)
     {
         bo->type[i] = BONUS_NONE;
     }
+
+    heart_sprite = ee_load_sprite("data/heart");
+    gem_sprite = ee_load_sprite("data/gem");
 }
 
 void draw_bonus(game *g, bonus *bo)
@@ -45,30 +51,12 @@ void draw_bonus(game *g, bonus *bo)
         switch(bo->type[i])
         {
             case BONUS_GREEN:
-                ee_color((bo->n[i]/2 % 3) ? EE_GREEN : EE_WHITE);
-                ee_goto(bo->x[i]+1, bo->y[i]-1);
-                ee_putchar('_');
-                ee_goto(bo->x[i], bo->y[i]);
-                ee_putstr("/ \\");
-                ee_goto(bo->x[i], bo->y[i]+1);
-                ee_putstr("\\_/");
-                ee_color(EE_WHITE);
-                ee_goto(bo->x[i]+1, bo->y[i]);
-                ee_putchar('g');
+                ee_set_sprite_frame(gem_sprite, (bo->n[i]/2 % 3) ? 0 : 1);
+                ee_draw_sprite(bo->x[i], bo->y[i], gem_sprite);
                 break;
             case BONUS_LIFE:
-                ee_color((bo->n[i] % 3) ? EE_RED : EE_WHITE);
-                ee_goto(bo->x[i]+1, bo->y[i]-1);
-                ee_putchar('_');
-                ee_goto(bo->x[i]+3, bo->y[i]-1);
-                ee_putchar('_');
-                ee_goto(bo->x[i], bo->y[i]);
-                ee_putstr("( ' )");
-                ee_goto(bo->x[i]+1, bo->y[i]+1);
-                ee_putstr("`v'");
-                ee_color(EE_WHITE);
-                ee_goto(bo->x[i]+3, bo->y[i]);
-                ee_putchar('^');
+                ee_set_sprite_frame(heart_sprite, (bo->n[i] % 3) ? 0 : 1);
+                ee_draw_sprite(bo->x[i], bo->y[i], heart_sprite);
                 break;
             case BONUS_NONE:
                 break;

@@ -24,6 +24,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "ee.h"
 
@@ -87,6 +88,8 @@ struct ee_sprite *ee_load_sprite(const char *file)
 
         for(y = 0; y < h; y++)
         {
+            memset(buf, ' ', w);
+            buf[w] = '\0';
             if(!fgets(buf, BUFSIZ, fd))
                 goto failed;
 
@@ -96,6 +99,8 @@ struct ee_sprite *ee_load_sprite(const char *file)
 
         for(y = 0; y < h; y++)
         {
+            memset(buf, ' ', w);
+            buf[w] = '\0';
             if(!fgets(buf, BUFSIZ, fd))
                 goto failed;
 
@@ -123,6 +128,19 @@ struct ee_sprite *ee_load_sprite(const char *file)
     return sprite;
 }
 
+void ee_set_sprite_frame(struct ee_sprite *sprite, int f)
+{
+    if(f < 0 || f >= sprite->nf)
+        return;
+
+    sprite->f = f;
+}
+
+int ee_get_sprite_frame(struct ee_sprite *sprite)
+{
+    return sprite->f;
+}
+
 void ee_draw_sprite(int x, int y, struct ee_sprite *sprite)
 {
     int i, j;
@@ -145,6 +163,16 @@ void ee_draw_sprite(int x, int y, struct ee_sprite *sprite)
 
 void ee_free_sprite(struct ee_sprite *sprite)
 {
+    int i;
+
+    for(i = sprite->nf; i--;)
+    {
+        struct ee_frame *frame = &sprite->frames[i];
+        free(frame->chars);
+        free(frame->color);
+    }
+
+    free(sprite->frames);
     free(sprite);
 }
 
