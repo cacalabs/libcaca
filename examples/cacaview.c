@@ -114,7 +114,12 @@ int main(int argc, char **argv)
 
         unsigned int event, new_status = 0, new_help = 0;
 
-        while((event = caca_get_event(CACA_EVENT_KEY_PRESS)))
+        if(update)
+            event = caca_get_event(CACA_EVENT_KEY_PRESS);
+        else
+            event = caca_wait_event(CACA_EVENT_KEY_PRESS);
+
+        while(event)
         {
             unsigned int key = event & 0x00ffffff;
 
@@ -229,6 +234,8 @@ int main(int argc, char **argv)
 
             if(help || new_help)
                 help = new_help;
+
+            event = caca_get_event(CACA_EVENT_KEY_PRESS);
         }
 
         if(items && reload)
@@ -256,16 +263,6 @@ int main(int argc, char **argv)
             update = 1;
 
             free(buffer);
-        }
-
-        if(!update)
-        {
-#if defined(HAVE_USLEEP)
-            usleep(10000);
-#elif defined(HAVE_SLEEP)
-            Sleep(10);
-#endif
-            continue;
         }
 
         caca_clear();

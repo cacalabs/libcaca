@@ -29,7 +29,13 @@ AC_ARG_ENABLE(x11,
   [  --enable-x11            X11 support (autodetected)])
 
 AC_CHECK_HEADERS(inttypes.h endian.h)
-AC_CHECK_FUNCS(vsnprintf getenv putenv strcasecmp usleep Sleep gettimeofday)
+AC_CHECK_FUNCS(vsnprintf getenv putenv strcasecmp usleep gettimeofday)
+case "${target_os}" in
+  *mingw32*|*cygwin*)
+    AC_CHECK_LIB(kernel32, Sleep,
+                 [AC_DEFINE(HAVE_KERNEL32_SLEEP, 1, [Define if you have Windows' Sleep])])
+    ;;
+esac
 AC_CHECK_LIB(m, sin, MATH_LIBS="${MATH_LIBS} -lm")
 
 CACA_DRIVERS="" 
