@@ -34,7 +34,7 @@ static void unused_colors(void);
 static int slang_assoc[16*16], palette[16*16];
 
 /* 6 colours in hue order */
-static const enum caca_color hue_list[] =
+static enum caca_color const hue_list[] =
 {
     CACA_COLOR_RED,
     CACA_COLOR_BROWN,
@@ -75,7 +75,7 @@ int main(void)
     unused_colors();
 
     /* Output the palette */
-    printf("const static int slang_palette[2*16*16] =\n{\n");
+    printf("static int const slang_palette[2*16*16] =\n{\n");
     for(i = 0; i < 16 * 16; i++)
     {
         if((i % 8) == 0) printf("    ");
@@ -85,7 +85,7 @@ int main(void)
     printf("};\n\n");
 
     /* Output the association table */
-    printf("const static int slang_assoc[16*16] =\n{\n");
+    printf("static int const slang_assoc[16*16] =\n{\n");
     for(i = 0; i < 16 * 16; i++)
     {
         if((i % 16) == 0) printf("    ");

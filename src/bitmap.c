@@ -58,7 +58,7 @@ enum caca_feature _caca_antialiasing;
  */
 static void mask2shift(unsigned int, int *, int *);
 
-static void get_rgba_default(const struct caca_bitmap *, uint8_t *, int, int,
+static void get_rgba_default(struct caca_bitmap const *, uint8_t *, int, int,
                              unsigned int *, unsigned int *, unsigned int *,
                              unsigned int *);
 static void rgb2hsv_default(int, int, int, int *, int *, int *);
@@ -241,7 +241,7 @@ void caca_free_bitmap(struct caca_bitmap *bitmap)
     free(bitmap);
 }
 
-static void get_rgba_default(const struct caca_bitmap *bitmap, uint8_t *pixels,
+static void get_rgba_default(struct caca_bitmap const *bitmap, uint8_t *pixels,
                              int x, int y, unsigned int *r, unsigned int *g,
                              unsigned int *b, unsigned int *a)
 {
@@ -260,8 +260,8 @@ static void get_rgba_default(const struct caca_bitmap *bitmap, uint8_t *pixels,
             if(__BYTE_ORDER == __BIG_ENDIAN)
 #else
             /* This is compile-time optimised with at least -O1 or -Os */
-            const uint32_t rmask = 0x12345678;
-            if(*(const uint8_t *)&rmask == 0x12)
+            uint32_t const rmask = 0x12345678;
+            if(*(uint8_t const *)&rmask == 0x12)
 #endif
                 bits = ((uint32_t)pixels[0] << 16) |
                        ((uint32_t)pixels[1] << 8) |
@@ -339,7 +339,7 @@ static void rgb2hsv_default(int r, int g, int b, int *hue, int *sat, int *val)
  * \return void
  */
 void caca_draw_bitmap(int x1, int y1, int x2, int y2,
-                      const struct caca_bitmap *bitmap, void *pixels)
+                      struct caca_bitmap const *bitmap, void *pixels)
 {
     /* Current dithering method */
     void (*_init_dither) (int);
@@ -347,7 +347,7 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
     void (*_increment_dither) (void);
 
     /* Only used when background is black */
-    static const int white_colors[] =
+    static int const white_colors[] =
     {
         CACA_COLOR_BLACK,
         CACA_COLOR_DARKGRAY,
@@ -355,7 +355,7 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
         CACA_COLOR_WHITE
     };
 
-    static const int light_colors[] =
+    static int const light_colors[] =
     {
         CACA_COLOR_LIGHTMAGENTA,
         CACA_COLOR_LIGHTRED,
@@ -366,7 +366,7 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
         CACA_COLOR_LIGHTMAGENTA
     };
 
-    static const int dark_colors[] =
+    static int const dark_colors[] =
     {
         CACA_COLOR_MAGENTA,
         CACA_COLOR_RED,
@@ -379,7 +379,7 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
 
     /* FIXME: choose better characters! */
 #   define DENSITY_CHARS 13
-    static const char density_chars[] =
+    static char const density_chars[] =
         "    "
         ".   "
         "..  "

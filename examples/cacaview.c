@@ -42,7 +42,7 @@
 #define STATUS_BACKGROUND 3
 
 /* Local functions */
-static void load_image(const char *);
+static void load_image(char const *);
 static void unload_image(void);
 static void draw_checkers(unsigned int, unsigned int,
                           unsigned int, unsigned int);
@@ -405,7 +405,7 @@ static void unload_image(void)
     bitmap = NULL;
 }
 
-static void load_image(const char *name)
+static void load_image(char const *name)
 {
 #if defined(HAVE_IMLIB2_H)
     /* Load the new image */

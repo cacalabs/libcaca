@@ -56,7 +56,7 @@ struct caca_sprite
  * \param file The filename.
  * \return The sprite, or NULL if an error occured.
  */
-struct caca_sprite *caca_load_sprite(const char *file)
+struct caca_sprite *caca_load_sprite(char const *file)
 {
     char buf[BUFSIZ];
     struct caca_sprite *sprite;
@@ -177,7 +177,7 @@ sprite_alloc_failed:
  * \param sprite The sprite.
  * \return The number of frames.
  */
-int caca_get_sprite_frames(const struct caca_sprite *sprite)
+int caca_get_sprite_frames(struct caca_sprite const *sprite)
 {
     if(sprite == NULL)
         return 0;
@@ -192,7 +192,7 @@ int caca_get_sprite_frames(const struct caca_sprite *sprite)
  * \param f The frame index.
  * \return The width of the given frame of the sprite.
  */
-int caca_get_sprite_width(const struct caca_sprite *sprite, int f)
+int caca_get_sprite_width(struct caca_sprite const *sprite, int f)
 {
     if(sprite == NULL)
         return 0;
@@ -210,7 +210,7 @@ int caca_get_sprite_width(const struct caca_sprite *sprite, int f)
  * \param f The frame index.
  * \return The height of the given frame of the sprite.
  */
-int caca_get_sprite_height(const struct caca_sprite *sprite, int f)
+int caca_get_sprite_height(struct caca_sprite const *sprite, int f)
 {
     if(sprite == NULL)
         return 0;
@@ -228,7 +228,7 @@ int caca_get_sprite_height(const struct caca_sprite *sprite, int f)
  * \param f The frame index.
  * \return The X coordinate of the given frame's handle.
  */
-int caca_get_sprite_dx(const struct caca_sprite *sprite, int f)
+int caca_get_sprite_dx(struct caca_sprite const *sprite, int f)
 {
     if(sprite == NULL)
         return 0;
@@ -246,7 +246,7 @@ int caca_get_sprite_dx(const struct caca_sprite *sprite, int f)
  * \param f The frame index.
  * \return The Y coordinate of the given frame's handle.
  */
-int caca_get_sprite_dy(const struct caca_sprite *sprite, int f)
+int caca_get_sprite_dy(struct caca_sprite const *sprite, int f)
 {
     if(sprite == NULL)
         return 0;
@@ -267,7 +267,7 @@ int caca_get_sprite_dy(const struct caca_sprite *sprite, int f)
  * \param f The frame index.
  * \return void
  */
-void caca_draw_sprite(int x, int y, const struct caca_sprite *sprite, int f)
+void caca_draw_sprite(int x, int y, struct caca_sprite const *sprite, int f)
 {
     int i, j;
     enum caca_color oldfg, oldbg;

@@ -222,7 +222,7 @@ int caca_init(void);
 void caca_set_delay(unsigned int);
 enum caca_feature caca_get_feature(enum caca_feature);
 void caca_set_feature(enum caca_feature);
-const char *caca_get_feature_name(enum caca_feature);
+char const *caca_get_feature_name(enum caca_feature);
 unsigned int caca_get_rendertime(void);
 unsigned int caca_get_width(void);
 unsigned int caca_get_height(void);
@@ -248,10 +248,10 @@ unsigned int caca_wait_event(void);
 void caca_set_color(enum caca_color, enum caca_color);
 enum caca_color caca_get_fg_color(void);
 enum caca_color caca_get_bg_color(void);
-const char *caca_get_color_name(enum caca_color);
+char const *caca_get_color_name(enum caca_color);
 void caca_putchar(int, int, char);
-void caca_putstr(int, int, const char *);
-void caca_printf(int, int, const char *, ...);
+void caca_putstr(int, int, char const *);
+void caca_printf(int, int, char const *, ...);
 void caca_clear(void);
 /*  @} */
 
@@ -262,9 +262,9 @@ void caca_clear(void);
  *
  *  @{ */
 void caca_draw_line(int, int, int, int, char);
-void caca_draw_polyline(const int x[], const int y[], int, char);
+void caca_draw_polyline(int const x[], int const y[], int, char);
 void caca_draw_thin_line(int, int, int, int);
-void caca_draw_thin_polyline(const int x[], const int y[], int);
+void caca_draw_thin_polyline(int const x[], int const y[], int);
 
 void caca_draw_circle(int, int, int, char);
 void caca_draw_ellipse(int, int, int, int, char);
@@ -296,13 +296,13 @@ unsigned int caca_sqrt(unsigned int);
  *
  *  @{ */
 struct caca_sprite;
-struct caca_sprite * caca_load_sprite(const char *);
-int caca_get_sprite_frames(const struct caca_sprite *);
-int caca_get_sprite_width(const struct caca_sprite *, int);
-int caca_get_sprite_height(const struct caca_sprite *, int);
-int caca_get_sprite_dx(const struct caca_sprite *, int);
-int caca_get_sprite_dy(const struct caca_sprite *, int);
-void caca_draw_sprite(int, int, const struct caca_sprite *, int);
+struct caca_sprite * caca_load_sprite(char const *);
+int caca_get_sprite_frames(struct caca_sprite const *);
+int caca_get_sprite_width(struct caca_sprite const *, int);
+int caca_get_sprite_height(struct caca_sprite const *, int);
+int caca_get_sprite_dx(struct caca_sprite const *, int);
+int caca_get_sprite_dy(struct caca_sprite const *, int);
+void caca_draw_sprite(int, int, struct caca_sprite const *, int);
 void caca_free_sprite(struct caca_sprite *);
 /*  @} */
 
@@ -320,7 +320,7 @@ struct caca_bitmap *caca_create_bitmap(unsigned int, unsigned int,
 void caca_set_bitmap_palette(struct caca_bitmap *,
                              unsigned int r[], unsigned int g[],
                              unsigned int b[], unsigned int a[]);
-void caca_draw_bitmap(int, int, int, int, const struct caca_bitmap *, void *);
+void caca_draw_bitmap(int, int, int, int, struct caca_bitmap const *, void *);
 void caca_free_bitmap(struct caca_bitmap *);
 /*  @} */
 

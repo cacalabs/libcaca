@@ -188,9 +188,9 @@ unsigned int caca_get_height(void)
  *  \param color The colour value.
  *  \return A static string containing the colour's name.
  */
-const char *caca_get_color_name(enum caca_color color)
+char const *caca_get_color_name(enum caca_color color)
 {
-    static const char *color_names[] =
+    static char const *color_names[] =
     {
         "black",
         "blue",
@@ -291,7 +291,7 @@ void caca_set_feature(enum caca_feature feature)
  *  \param feature The feature value.
  *  \return A static string containing the feature's name.
  */
-const char *caca_get_feature_name(enum caca_feature feature)
+char const *caca_get_feature_name(enum caca_feature feature)
 {
     switch(feature)
     {

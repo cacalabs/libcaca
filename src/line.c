@@ -88,7 +88,7 @@ void caca_draw_line(int x1, int y1, int x2, int y2, char c)
  * \param c Character to draw the lines with.
  * \return void
  */
-void caca_draw_polyline(const int x[], const int y[], int n, char c)
+void caca_draw_polyline(int const x[], int const y[], int n, char c)
 {
     int i;
     struct line s;
@@ -136,7 +136,7 @@ void caca_draw_thin_line(int x1, int y1, int x2, int y2)
  * \param n Number of lines to draw.
  * \return void
  */
-void caca_draw_thin_polyline(const int x[], const int y[], int n)
+void caca_draw_thin_polyline(int const x[], int const y[], int n)
 {
     int i;
     struct line s;

@@ -50,7 +50,7 @@ static aa_palette palette;
 #endif
 static unsigned int table[MAXTABLE];
 #ifdef LIBCACA
-const static int pal[] =
+static int const pal[] =
 #else
 __AA_CONST static int pal[] =
 #endif
