@@ -17,58 +17,84 @@ dnl AC_PROG_EGREP only exists in autoconf 2.54+, so we use AC_EGREP_CPP right
 dnl now otherwise it might be set in an obscure if statement.
 AC_EGREP_CPP(foo,foo)
 
+AC_ARG_ENABLE(slang,
+  [  --enable-slang          slang graphics support (default enabled)])
 AC_ARG_ENABLE(ncurses,
   [  --enable-ncurses        ncurses graphics support (default enabled)])
-AC_ARG_ENABLE(slang,
-  [  --enable-slang          slang graphics support (default disabled)])
 AC_ARG_ENABLE(conio,
   [  --enable-conio          DOS conio.h graphics support (default disabled)])
 AC_ARG_ENABLE(x11,
-  [  --enable-x11            X11 support (default disabled) (EXPERIMENTAL)])
+  [  --enable-x11            X11 support (default disabled) (default enabled)])
 
 AC_CHECK_HEADERS(inttypes.h endian.h)
 AC_CHECK_FUNCS(vsnprintf getenv putenv strcasecmp)
 
+CACA_DRIVERS="" 
+
 if test "${enable_conio}" = "yes"; then
   AC_CHECK_HEADERS(conio.h,:,AC_MSG_ERROR([cannot find conio.h header]))
   AC_MSG_CHECKING(for ScreenUpdate in pc.h)
-  AC_EGREP_HEADER(ScreenUpdate,pc.h,[
-    AC_MSG_RESULT(yes)
+  AC_EGREP_HEADER(ScreenUpdate,pc.h,
+   [AC_MSG_RESULT(yes)
     AC_DEFINE(SCREENUPDATE_IN_PC_H, 1,
-              Define if <pc.h> defines ScreenUpdate.)],[
-    AC_MSG_RESULT(no)])
+              Define if <pc.h> defines ScreenUpdate.)],
+   [AC_MSG_RESULT(no)])
+  CACA_DRIVERS="${CACA_DRIVERS} conio"
   AC_DEFINE(USE_CONIO, 1, Define to activate the conio.h backend driver)
 fi
 
-if test "${enable_slang}" = "yes"; then
-  AC_CHECK_HEADERS(slang.h,:,AC_MSG_ERROR([cannot find slang headers]))
-  AC_CHECK_LIB(slang,SLkp_init,:,AC_MSG_ERROR([cannot find slang library]))
-  AC_DEFINE(USE_SLANG, 1, Define to activate the slang backend driver)
-  CPPFLAGS="${CPPFLAGS} -DOPTIMISE_SLANG_PALETTE=1"
-  CACA_LIBS="${CACA_LIBS} -lslang"
+if test "${enable_slang}" != "no"; then
+  AC_CHECK_HEADERS(slang.h,
+   [AC_CHECK_LIB(slang, SLkp_init,
+     [ac_cv_my_have_slang="yes"
+      AC_DEFINE(USE_SLANG, 1, Define to activate the slang backend driver)
+      CPPFLAGS="${CPPFLAGS} -DOPTIMISE_SLANG_PALETTE=1"
+      CACA_LIBS="${CACA_LIBS} -lslang"
+      CACA_DRIVERS="${CACA_DRIVERS} slang"],
+     [ac_cv_my_have_slang="no"])],
+   [ac_cv_my_have_slang="no"])
+  if test "${ac_cv_my_have_slang}" = "no" -a "${enable_slang}" = "yes"; then
+    AC_MSG_ERROR([cannot find slang development files])
+  fi
 fi
 
-if test "${enable_x11}" = "yes"; then
+if test "${enable_x11}" != "no"; then
   AC_PATH_X
   AC_CHECK_LIB(X11, XOpenDisplay,
-   [ac_cv_my_have_x11=yes
+   [ac_cv_my_have_x11="yes"
     if test -n "${x_includes}"; then X_CFLAGS="-I${x_includes}"; fi
-    if test -n "${x_libraries}"; then X_LIBS="-lX11 -L${x_libraries}"; fi],
-   [ac_cv_my_have_x11=no],
+    if test -n "${x_libraries}"; then X_LIBS="-lX11 -L${x_libraries}"; fi
+    AC_DEFINE(USE_X11, 1, Define to activate the X11 backend driver)
+    CPPFLAGS="${CPPFLAGS} ${X_CFLAGS}"
+    CACA_LIBS="${CACA_LIBS} ${X_LIBS}"
+    CACA_DRIVERS="${CACA_DRIVERS} x11"],
+   [ac_cv_my_have_x11="no"],
    [[-lXt -L${x_libraries}]])
-  if test "${ac_cv_my_have_x11}" != "yes"; then
+  if test "${ac_cv_my_have_x11}" != "yes" -a "${enable_x11}" = "yes"; then
     AC_MSG_ERROR([cannot find X11 development files])
   fi
-  AC_DEFINE(USE_X11, 1, Define to activate the X11 backend driver)
-  CPPFLAGS="${CPPFLAGS} ${X_CFLAGS}"
-  CACA_LIBS="${CACA_LIBS} ${X_LIBS}"
 fi
 
 if test "${enable_ncurses}" != "no"; then
-  AC_CHECK_HEADERS(ncurses.h,:,AC_MSG_ERROR([cannot find ncurses headers]))
-  AC_CHECK_LIB(ncurses,initscr,:,AC_MSG_ERROR([cannot find ncurses library]))
-  AC_DEFINE(USE_NCURSES, 1, Define to activate the ncurses backend driver)
-  CACA_LIBS="${CACA_LIBS} -lncurses"
+  AC_CHECK_HEADERS(ncurses.h,
+   [AC_CHECK_LIB(ncurses, initscr,
+     [ac_cv_my_have_ncurses="yes"
+      AC_DEFINE(USE_NCURSES, 1, Define to activate the ncurses backend driver)
+      CACA_LIBS="${CACA_LIBS} -lncurses"
+      CACA_DRIVERS="${CACA_DRIVERS} ncurses"],
+     [ac_cv_my_have_ncurses="no"])],
+   [ac_cv_my_have_ncurses="no"])
+  if test "${ac_cv_my_have_ncurses}" = "no" -a "${enable_ncurses}" = "yes"; then
+    AC_MSG_ERROR([cannot find ncurses development files])
+  fi
+fi
+
+AC_MSG_CHECKING(valid output drivers)
+if test -z "${CACA_DRIVERS}"; then
+  AC_MSG_RESULT(no)
+  AC_MSG_ERROR([no output drivers were selected!])
+else
+  AC_MSG_RESULT([${CACA_DRIVERS}])
 fi
 
 AC_SUBST(CACA_LIBS)
