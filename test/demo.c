@@ -35,6 +35,7 @@ static void demo_dots(void);
 static void demo_lines(void);
 static void demo_thin_lines(void);
 static void demo_circles(void);
+static void demo_ellipses(void);
 static void demo_triangles(void);
 static void demo_outlined_triangles(void);
 static void demo_sprites(void);
@@ -97,13 +98,17 @@ int main(int argc, char **argv)
                 break;
             case '5':
                 ee_clear();
-                demo = demo_triangles;
+                demo = demo_ellipses;
                 break;
             case '6':
                 ee_clear();
-                demo = demo_outlined_triangles;
+                demo = demo_triangles;
                 break;
             case '7':
+                ee_clear();
+                demo = demo_outlined_triangles;
+                break;
+            case '8':
                 ee_clear();
                 demo = demo_sprites;
                 break;
@@ -149,11 +154,13 @@ static void display_menu(void)
     ee_goto(4, 10);
     ee_putstr("4: circles demo");
     ee_goto(4, 11);
-    ee_putstr("5: triangles demo");
+    ee_putstr("5: ellipses demo");
     ee_goto(4, 12);
-    ee_putstr("6: outlined triangles demo");
+    ee_putstr("6: triangles demo");
     ee_goto(4, 13);
-    ee_putstr("7: sprites demo");
+    ee_putstr("7: outlined triangles demo");
+    ee_goto(4, 14);
+    ee_putstr("8: sprites demo");
 
     ee_goto(4, yo - 2);
     ee_putstr("q: quit");
@@ -357,6 +364,41 @@ static void demo_circles(void)
 
         ee_color(ee_rand(1, 10));
         ee_draw_circle(x, y, r, '#');
+    }
+
+    ee_refresh();
+}
+
+static void demo_ellipses(void)
+{
+    int w = ee_get_width();
+    int h = ee_get_height();
+
+    /* Draw circles */
+    if(force_clipping)
+    {
+        ee_color(ee_rand(1, 10));
+        ee_draw_ellipse(ee_rand(- w, 2 * w),
+                        ee_rand(- h, 2 * h),
+                        ee_rand(0, w),
+                        ee_rand(0, h),
+                        '#');
+    }
+    else
+    {
+        int x = ee_rand(0, w);
+        int y = ee_rand(0, h);
+        int a = ee_rand(0, w);
+        int b = ee_rand(0, h);
+
+        if(x - a < 0 || x + a >= w || y - b < 0 || y + b >= h)
+        {
+            demo_ellipses();
+            return;
+        }
+
+        ee_color(ee_rand(1, 10));
+        ee_draw_ellipse(x, y, a, b, '#');
     }
 
     ee_refresh();
