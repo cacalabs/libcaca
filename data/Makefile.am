@@ -1,14 +1,14 @@
 NULL = 
 EXTRA_DIST = \
-	foo_fighter \
-	bar_fighter \
-	bar_boss \
-	baz_fighter \
-	explosion_medium \
-	explosion_small \
-	item_gem \
-	item_heart \
-	ship_green \
-	weapon_bomb \
-	weapon_fragbomb \
+	barboss.txt \
+	barfight.txt \
+	bazfight.txt \
+	bongem.txt \
+	bonheart.txt \
+	foofight.txt \
+	ship.txt \
+	wpnbomb.txt \
+	wpnfrag.txt \
+	xplmed.txt \
+	xplsmall.txt \
 	$(NULL)

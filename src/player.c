@@ -42,7 +42,7 @@ player * create_player(game *g)
     p->life = MAX_LIFE;
     p->dead = 0;
 
-    ship_sprite = ee_load_sprite("data/ship_green");
+    ship_sprite = ee_load_sprite("data/ship.txt");
 
     return p;
 }

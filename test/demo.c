@@ -56,7 +56,7 @@ int main(int argc, char **argv)
     }
 
     /* Initialize data */
-    sprite = ee_load_sprite("data/bar_boss");
+    sprite = ee_load_sprite("data/barboss.txt");
 
     /* Main menu */
     display_menu();

@@ -38,8 +38,8 @@ void init_bonus(game *g, bonus *bo)
         bo->type[i] = BONUS_NONE;
     }
 
-    heart_sprite = ee_load_sprite("data/heart");
-    gem_sprite = ee_load_sprite("data/gem");
+    heart_sprite = ee_load_sprite("data/bonheart.txt");
+    gem_sprite = ee_load_sprite("data/bongem.txt");
 }
 
 void draw_bonus(game *g, bonus *bo)

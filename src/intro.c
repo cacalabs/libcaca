@@ -30,9 +30,9 @@
 
 void intro(void)
 {
-    struct ee_sprite *foo_sprite = ee_load_sprite("data/foo_fighter");
-    struct ee_sprite *bar_sprite = ee_load_sprite("data/bar_fighter");
-    struct ee_sprite *baz_sprite = ee_load_sprite("data/baz_fighter");
+    struct ee_sprite *foo_sprite = ee_load_sprite("data/foofight.txt");
+    struct ee_sprite *bar_sprite = ee_load_sprite("data/barfight.txt");
+    struct ee_sprite *baz_sprite = ee_load_sprite("data/bazfight.txt");
 
     int frame = 0;
 

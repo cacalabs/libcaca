@@ -39,9 +39,9 @@ void init_aliens(game *g, aliens *al)
         al->type[i] = ALIEN_NONE;
     }
 
-    foo_sprite = ee_load_sprite("data/foo_fighter");
-    bar_sprite = ee_load_sprite("data/bar_fighter");
-    baz_sprite = ee_load_sprite("data/baz_fighter");
+    foo_sprite = ee_load_sprite("data/foofight.txt");
+    bar_sprite = ee_load_sprite("data/barfight.txt");
+    baz_sprite = ee_load_sprite("data/bazfight.txt");
 }
 
 void draw_aliens(game *g, aliens *al)

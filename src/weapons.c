@@ -43,8 +43,8 @@ void init_weapons(game *g, weapons *wp)
         wp->type[i] = WEAPON_NONE;
     }
 
-    bomb_sprite = ee_load_sprite("data/weapon_bomb");
-    fragbomb_sprite = ee_load_sprite("data/weapon_fragbomb");
+    bomb_sprite = ee_load_sprite("data/wpnbomb.txt");
+    fragbomb_sprite = ee_load_sprite("data/wpnfrag.txt");
 }
 
 void draw_weapons(game *g, weapons *wp)

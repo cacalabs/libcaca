@@ -38,8 +38,8 @@ void init_explosions(game *g, explosions *ex)
         ex->type[i] = EXPLOSION_NONE;
     }
 
-    medium_sprite = ee_load_sprite("data/explosion_medium");
-    small_sprite = ee_load_sprite("data/explosion_small");
+    medium_sprite = ee_load_sprite("data/xplmed.txt");
+    small_sprite = ee_load_sprite("data/xplsmall.txt");
 }
 
 void add_explosion(game *g, explosions *ex, int x, int y, int vx, int vy, int type)
