@@ -1,5 +1,14 @@
 $Id$
 
+Changes between 0.5 and 0.6:
+----------------------------
+
+  * 30% speed increase in the bitmap rendering routine
+  * mouse support and various speed optimisations in the X11 driver
+  * X11 is now the preferred driver
+  * improved documentation
+  * minor bugfixes
+
 Changes between 0.4 and 0.5:
 ----------------------------
 

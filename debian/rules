@@ -49,12 +49,13 @@ install: build
 
 	mv debian/libcaca-dev/usr/share/libcaca debian/caca-utils/usr/share
 	mv debian/libcaca-dev/usr/share/man/man1/cacademo.1 \
-	   debian/caca-utils/usr/share/man/man1
-	ln -s cacademo.1 debian/caca-utils/usr/share/man/man1/cacafire.1
+	   debian/caca-utils/usr/share/man/man1/
+	mv debian/libcaca-dev/usr/share/man/man1/cacafire.1 \
+	   debian/caca-utils/usr/share/man/man1/
 	mv debian/libcaca-dev/usr/share/man/man1/cacaview.1 \
-	   debian/caca-utils/usr/share/man/man1
+	   debian/caca-utils/usr/share/man/man1/
 	mv debian/libcaca-dev/usr/share/man/man1/caca-spritedit.1 \
-	   debian/caca-utils/usr/share/man/man1
+	   debian/caca-utils/usr/share/man/man1/
 
 	cp debian/libcaca-dev/usr/share/doc/libcaca-dev/README \
 	   debian/libcaca-dev/usr/share/doc/libcaca-dev/BUGS \

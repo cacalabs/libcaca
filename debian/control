@@ -9,7 +9,7 @@ Package: libcaca-dev
 Section: libdevel
 Architecture: any
 Depends: ${shlibs:Depends}, libncurses5-dev, slang1-dev, xlibs-dev
-Description: text mode graphics library
+Description: development files for libcaca
  libcaca is the Colour AsCii Art library. It provides high level functions
  for colour text drawing, simple primitives for line, polygon and ellipse
  drawing, as well as powerful image to text conversion routines.
