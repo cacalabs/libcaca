@@ -2,12 +2,14 @@ $Id$
 
 Video rendering
 
-   o  ncurses' hashmap scrolling optimization code causes the screen to
-      occasionally flicker because it tries to optimize the vertical
+   o  ncurses' hashmap scrolling optimisation code causes the screen to
+      occasionally flicker because it tries to optimise the vertical
       scrolling.
 
-   o  Slang cannot display 256 colour pairs under Unix. This is partially
-      solved by the OPTIMISE_SLANG_PALETTE code.
-
    o  the X11 driver is very slow.
+
+   o  some terminal emulators (Konsole, or the Linux VGA console) honour
+      the blink attribute instead of using it for bold or bright like any
+      other terminal emulator, hence reducing the amount of available
+      colour pairs.
 

@@ -38,8 +38,8 @@ clean-local:
 install-data-local:
 if DOXYGEN
 	$(mkinstalldirs) $(DESTDIR)$(datadir)/doc/libcaca-dev/html
-	cp html/*.html $(DESTDIR)$(datadir)/doc/libcaca-dev/html
-	cp html/*.gif html/*.png $(DESTDIR)$(datadir)/doc/libcaca-dev/html
+	cp `find html -name '*.html' -o -name '*.gif' -o -name '*.png'` \
+	  $(DESTDIR)$(datadir)/doc/libcaca-dev/html
 	$(mkinstalldirs) $(DESTDIR)$(mandir)/man3
 	cp man/man3/*.3caca $(DESTDIR)$(mandir)/man3
 endif

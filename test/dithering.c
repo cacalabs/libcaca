@@ -51,7 +51,6 @@ int main(void)
     for(x = 0; x < 100; x++)
         for(y = 0; y < 100; y++)
     {
-        int color = CACA_COLOR_WHITE;
         char ch = '?';
 
         /* distance to black */
