@@ -1,5 +1,5 @@
 /*
- *   libee         ASCII-Art library
+ *   libcaca       ASCII-Art library
  *   Copyright (c) 2002, 2003 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
@@ -30,8 +30,8 @@ typedef unsigned char uint8_t;
 
 #include <stdlib.h>
 
-#include "ee.h"
-#include "ee_internals.h"
+#include "caca.h"
+#include "caca_internals.h"
 
 struct line
 {
@@ -56,7 +56,7 @@ static void draw_thin_line(struct line*);
  * \param c Character to draw the line with.
  * \return nothing
  */
-void ee_draw_line(int x1, int y1, int x2, int y2, char c)
+void caca_draw_line(int x1, int y1, int x2, int y2, char c)
 {
     struct line s;
     s.x1 = x1;
@@ -68,7 +68,7 @@ void ee_draw_line(int x1, int y1, int x2, int y2, char c)
     clip_line(&s);
 }
 
-void ee_draw_polyline(const int x[], const int y[], int n, char c)
+void caca_draw_polyline(const int x[], const int y[], int n, char c)
 {
     int i;
     struct line s;
@@ -94,7 +94,7 @@ void ee_draw_polyline(const int x[], const int y[], int n, char c)
  * \param y2 Y coordinate of the second point.
  * \return nothing
  */
-void ee_draw_thin_line(int x1, int y1, int x2, int y2)
+void caca_draw_thin_line(int x1, int y1, int x2, int y2)
 {
     struct line s;
     s.x1 = x1;
@@ -105,7 +105,7 @@ void ee_draw_thin_line(int x1, int y1, int x2, int y2)
     clip_line(&s);
 }
 
-void ee_draw_thin_polyline(const int x[], const int y[], int n)
+void caca_draw_thin_polyline(const int x[], const int y[], int n)
 {
     int i;
     struct line s;
@@ -163,7 +163,7 @@ static void clip_line(struct line* s)
     }
     else if(bits1 & (1<<1))
     {
-        int xmax = ee_get_width() - 1;
+        int xmax = caca_get_width() - 1;
         s->y1 = s->y2 - (s->x2 - xmax) * (s->y2 - s->y1) / (s->x2 - s->x1);
         s->x1 = xmax;
     }
@@ -174,7 +174,7 @@ static void clip_line(struct line* s)
     }
     else if(bits1 & (1<<3))
     {
-        int ymax = ee_get_height() - 1;
+        int ymax = caca_get_height() - 1;
         s->x1 = s->x2 - (s->y2 - ymax) * (s->x2 - s->x1) / (s->y2 - s->y1);
         s->y1 = ymax;
     }
@@ -195,12 +195,12 @@ static uint8_t clip_bits(int x, int y)
 
     if(x < 0)
         b |= (1<<0);
-    else if(x >= ee_get_width())
+    else if(x >= caca_get_width())
         b |= (1<<1);
 
     if(y < 0)
         b |= (1<<2);
-    else if(y >= ee_get_height())
+    else if(y >= caca_get_height())
         b |= (1<<3);
 
     return b;
@@ -235,7 +235,7 @@ static void draw_solid_line(struct line* s)
 
         for(; dx>=0; dx--)
         {
-            ee_putchar(x1, y1, s->c);
+            caca_putchar(x1, y1, s->c);
             if(delta > 0)
             {
                 x1 += xinc;
@@ -257,7 +257,7 @@ static void draw_solid_line(struct line* s)
 
         for(; dy >= 0; dy--)
         {
-            ee_putchar(x1, y1, s->c);
+            caca_putchar(x1, y1, s->c);
             if(delta > 0)
             {
                 x1 += xinc;
@@ -329,7 +329,7 @@ static void draw_thin_line(struct line* s)
         {
             if(delta > 0)
             {
-                ee_putchar(x1, y1, charmapy[1]);
+                caca_putchar(x1, y1, charmapy[1]);
                 x1++;
                 y1 += yinc;
                 delta += dpru;
@@ -338,9 +338,9 @@ static void draw_thin_line(struct line* s)
             else
             {
                 if(prev)
-                    ee_putchar(x1, y1, charmapy[0]);
+                    caca_putchar(x1, y1, charmapy[0]);
                 else
-                    ee_putchar(x1, y1, '-');
+                    caca_putchar(x1, y1, '-');
                 x1++;
                 delta += dpr;
                 prev = 0;
@@ -357,15 +357,15 @@ static void draw_thin_line(struct line* s)
         {
             if(delta > 0)
             {
-                ee_putchar(x1, y1, charmapx[0]);
-                ee_putchar(x1 + 1, y1, charmapx[1]);
+                caca_putchar(x1, y1, charmapx[0]);
+                caca_putchar(x1 + 1, y1, charmapx[1]);
                 x1++;
                 y1 += yinc;
                 delta += dpru;
             }
             else
             {
-                ee_putchar(x1, y1, '|');
+                caca_putchar(x1, y1, '|');
                 y1 += yinc;
                 delta += dpr;
             }

@@ -60,7 +60,7 @@ CFLAGS="${CFLAGS} -Wall -Wpointer-arith -Wcast-align -Wcast-qual -Wstrict-protot
 
 AC_OUTPUT([
   Makefile
-  libee/Makefile
+  libcaca/Makefile
   test/Makefile
   src/Makefile
   autotools/Makefile

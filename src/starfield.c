@@ -37,11 +37,11 @@ starfield * create_starfield(game *g)
 
     for(i = 0; i < STARS; i++)
     {
-        s[i].x = ee_rand(0, g->w - 1);
-        s[i].y = ee_rand(0, g->h - 1);
-        s[i].z = ee_rand(1, 3);
-        s[i].c = ee_rand(0, 1) ? EE_LIGHTGRAY : EE_DARKGRAY;
-        s[i].ch = ee_rand(0, 1) ? '.' : '\'';
+        s[i].x = caca_rand(0, g->w - 1);
+        s[i].y = caca_rand(0, g->h - 1);
+        s[i].z = caca_rand(1, 3);
+        s[i].c = caca_rand(0, 1) ? EE_LIGHTGRAY : EE_DARKGRAY;
+        s[i].ch = caca_rand(0, 1) ? '.' : '\'';
     }
 
     return s;
@@ -55,8 +55,8 @@ void draw_starfield(game *g, starfield *s)
     {
         if(s[i].x >= 0)
         {
-            ee_set_color(s[i].c);
-            ee_putchar(s[i].x, s[i].y, s[i].ch);
+            caca_set_color(s[i].c);
+            caca_putchar(s[i].x, s[i].y, s[i].ch);
         }
     }
 }
@@ -69,11 +69,11 @@ void update_starfield(game *g, starfield *s)
     {
         if(s[i].x < 0)
         {
-            s[i].x = ee_rand(0, g->w - 1);
+            s[i].x = caca_rand(0, g->w - 1);
             s[i].y = 0;
-            s[i].z = ee_rand(1, 2);
-            s[i].c = ee_rand(0, 1) ? EE_LIGHTGRAY : EE_DARKGRAY;
-            s[i].ch = ee_rand(0, 1) ? '.' : '\'';
+            s[i].z = caca_rand(1, 2);
+            s[i].c = caca_rand(0, 1) ? EE_LIGHTGRAY : EE_DARKGRAY;
+            s[i].ch = caca_rand(0, 1) ? '.' : '\'';
         }
         else if(s[i].y < g->h-1)
         {

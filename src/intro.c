@@ -30,27 +30,27 @@
 
 void intro(void)
 {
-    struct ee_sprite *foo_sprite = ee_load_sprite("data/foofight.txt");
-    struct ee_sprite *bar_sprite = ee_load_sprite("data/barfight.txt");
-    struct ee_sprite *baz_sprite = ee_load_sprite("data/bazfight.txt");
+    struct caca_sprite *foo_sprite = caca_load_sprite("data/foofight.txt");
+    struct caca_sprite *bar_sprite = caca_load_sprite("data/barfight.txt");
+    struct caca_sprite *baz_sprite = caca_load_sprite("data/bazfight.txt");
 
     int frame = 0;
 
-    while(ee_get_key() == 0)
+    while(caca_get_key() == 0)
     {
         int i, xo, yo, x[5], y[5];
 
         frame++;
 
-        ee_clear();
+        caca_clear();
 
-        xo = ee_get_width() / 2;
-        yo = ee_get_height() / 2;
+        xo = caca_get_width() / 2;
+        yo = caca_get_height() / 2;
 
-        ee_set_color(EE_RED);
-        ee_fill_ellipse(xo, yo, 16, 8, '#');
-        ee_set_color(EE_GREEN);
-        ee_draw_thin_ellipse(xo, yo, 16, 8);
+        caca_set_color(EE_RED);
+        caca_fill_ellipse(xo, yo, 16, 8, '#');
+        caca_set_color(EE_GREEN);
+        caca_draw_thin_ellipse(xo, yo, 16, 8);
 
         for(i = 0; i < 4; i ++)
         {
@@ -60,16 +60,16 @@ void intro(void)
         x[4] = x[0];
         y[4] = y[0];
 
-        ee_set_color(EE_BLACK);
-        ee_fill_triangle(x[0], y[0], x[1], y[1], x[2], y[2], ' ');
-        ee_fill_triangle(x[0], y[0], x[3], y[3], x[2], y[2], ' ');
-        ee_draw_line(x[0], y[0], x[2], y[2], ' ');
-        ee_set_color(EE_GREEN);
-        ee_draw_thin_polyline(x, y, 4);
+        caca_set_color(EE_BLACK);
+        caca_fill_triangle(x[0], y[0], x[1], y[1], x[2], y[2], ' ');
+        caca_fill_triangle(x[0], y[0], x[3], y[3], x[2], y[2], ' ');
+        caca_draw_line(x[0], y[0], x[2], y[2], ' ');
+        caca_set_color(EE_GREEN);
+        caca_draw_thin_polyline(x, y, 4);
 
-        ee_draw_sprite(xo, yo, foo_sprite, frame % 5);
+        caca_draw_sprite(xo, yo, foo_sprite, frame % 5);
 
-        ee_refresh();
+        caca_refresh();
 
         usleep(40000);
     }

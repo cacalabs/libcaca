@@ -77,7 +77,7 @@ void draw_tunnel(game *g, tunnel *t)
     int i, j;
     char c;
 
-    ee_set_color(EE_GREEN);
+    caca_set_color(EE_GREEN);
 
     /* Left border */
     for(i = 0; i < g->h ; i++)
@@ -90,11 +90,11 @@ void draw_tunnel(game *g, tunnel *t)
         else
             c = (i == 0 || t->left[i] > t->left[i-1]) ? '\\' : '<';
 
-        ee_putchar(t->left[i] + 1, i, c);
+        caca_putchar(t->left[i] + 1, i, c);
 
         if(i + 1 < g->h)
             for(j = 1; j < t->left[i+1] - t->left[i]; j++)
-                ee_putchar(t->left[i] + j + 1, i, '_');
+                caca_putchar(t->left[i] + j + 1, i, '_');
     }
 
     /* Right border */
@@ -110,22 +110,22 @@ void draw_tunnel(game *g, tunnel *t)
 
         if(i + 1 < g->h)
             for(j = 1; j < t->right[i] - t->right[i+1]; j++)
-                ee_putchar(t->right[i+1] + j - 1, i, '_');
+                caca_putchar(t->right[i+1] + j - 1, i, '_');
 
-        ee_putchar(t->right[i] - 1, i, c);
+        caca_putchar(t->right[i] - 1, i, c);
     }
 
-    ee_set_color(EE_RED);
+    caca_set_color(EE_RED);
 
     /* Left concrete */
     for(i = 0; i < g->h ; i++)
         for(j = 0 ; j <= t->left[i]; j++)
-            ee_putchar(j, i, '#');
+            caca_putchar(j, i, '#');
 
     /* Right concrete */
     for(i = 0; i < g->h ; i++)
         for(j = t->right[i] ; j < g->w ; j++)
-            ee_putchar(j, i, '#');
+            caca_putchar(j, i, '#');
 }
 
 void update_tunnel(game *g, tunnel *t)
@@ -141,8 +141,8 @@ void update_tunnel(game *g, tunnel *t)
     }
 
     /* Generate new values */
-    i = delta[ee_rand(0,5)];
-    j = delta[ee_rand(0,5)];
+    i = delta[caca_rand(0,5)];
+    j = delta[caca_rand(0,5)];
 
     /* Check in which direction we need to alter tunnel */
     if(t->right[1] - t->left[1] < t->w)

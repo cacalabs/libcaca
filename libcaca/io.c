@@ -1,5 +1,5 @@
 /*
- *   libee         ASCII-Art library
+ *   libcaca       ASCII-Art library
  *   Copyright (c) 2002, 2003 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
@@ -22,38 +22,31 @@
 
 #include "config.h"
 
-#include <stdlib.h>
+#if defined(USE_SLANG)
+#   include <slang.h>
+#elif defined(USE_NCURSES)
+#   include <curses.h>
+#elif defined(USE_CONIO)
+#   include <conio.h>
+#else
+#   error "no graphics library detected"
+#endif
 
-#include "ee.h"
-#include "ee_internals.h"
+#include "caca.h"
+#include "caca_internals.h"
 
-int ee_rand(int min, int max)
+char caca_get_key(void)
 {
-    return min + (int)((1.0*(max-min+1)) * rand() / (RAND_MAX+1.0));
-}
+#if defined(USE_SLANG)
+    return SLang_input_pending(0) ? SLang_getkey() : 0;
 
-unsigned int ee_sqrt(unsigned int a)
-{
-    if(a == 0)
-        return 0;
+#elif defined(USE_NCURSES)
+    char key = getch();
+    return key != ERR ? key : 0;
 
-    if(a < 1000000000)
-    {
-        unsigned int x = a < 10 ? 1
-                       : a < 1000 ? 10
-                       : a < 100000 ? 100
-                       : a < 10000000 ? 1000
-                       : 10000;
+#elif defined(USE_CONIO)
+    return _conio_kbhit() ? getch() : 0;
 
-        /* Newton's method. Three iterations would be more than enough. */
-        x = (x * x + a) / x / 2;
-        x = (x * x + a) / x / 2;
-        x = (x * x + a) / x / 2;
-        x = (x * x + a) / x / 2;
-
-        return x;
-    }
-
-    return 2 * ee_sqrt(a / 4);
+#endif
 }
 

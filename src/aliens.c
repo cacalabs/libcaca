@@ -26,9 +26,9 @@
 
 #include "common.h"
 
-struct ee_sprite *foo_sprite;
-struct ee_sprite *bar_sprite;
-struct ee_sprite *baz_sprite;
+struct caca_sprite *foo_sprite;
+struct caca_sprite *bar_sprite;
+struct caca_sprite *baz_sprite;
 
 void init_aliens(game *g, aliens *al)
 {
@@ -39,9 +39,9 @@ void init_aliens(game *g, aliens *al)
         al->type[i] = ALIEN_NONE;
     }
 
-    foo_sprite = ee_load_sprite("data/foofight.txt");
-    bar_sprite = ee_load_sprite("data/barfight.txt");
-    baz_sprite = ee_load_sprite("data/bazfight.txt");
+    foo_sprite = caca_load_sprite("data/foofight.txt");
+    bar_sprite = caca_load_sprite("data/barfight.txt");
+    baz_sprite = caca_load_sprite("data/bazfight.txt");
 }
 
 void draw_aliens(game *g, aliens *al)
@@ -53,13 +53,13 @@ void draw_aliens(game *g, aliens *al)
         switch(al->type[i])
         {
             case ALIEN_FOO:
-                ee_draw_sprite(al->x[i], al->y[i], foo_sprite, al->img[i] % 8);
+                caca_draw_sprite(al->x[i], al->y[i], foo_sprite, al->img[i] % 8);
                 break;
             case ALIEN_BAR:
-                ee_draw_sprite(al->x[i], al->y[i], bar_sprite, al->img[i] % 2);
+                caca_draw_sprite(al->x[i], al->y[i], bar_sprite, al->img[i] % 2);
                 break;
             case ALIEN_BAZ:
-                ee_draw_sprite(al->x[i], al->y[i], baz_sprite, al->img[i] % 6);
+                caca_draw_sprite(al->x[i], al->y[i], baz_sprite, al->img[i] % 6);
                 break;
             case ALIEN_NONE:
                 break;
@@ -78,7 +78,7 @@ void update_aliens(game *g, aliens *al)
         {
             add_explosion(g, g->ex, al->x[i], al->y[i], 0, 0, EXPLOSION_MEDIUM);
             al->type[i] = ALIEN_NONE;
-            add_bonus(g, g->bo, al->x[i], al->y[i], ee_rand(0,4) ? BONUS_GREEN : BONUS_LIFE);
+            add_bonus(g, g->bo, al->x[i], al->y[i], caca_rand(0,4) ? BONUS_GREEN : BONUS_LIFE);
         }
 
         /* Update coordinates */

@@ -1,5 +1,5 @@
 /*
- *   libee         ASCII-Art library
+ *   libcaca       ASCII-Art library
  *   Copyright (c) 2002, 2003 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
@@ -24,18 +24,18 @@
 
 #include <stdlib.h>
 
-#include "ee.h"
-#include "ee_internals.h"
+#include "caca.h"
+#include "caca_internals.h"
 
-void ee_draw_box(int x1, int y1, int x2, int y2, char c)
+void caca_draw_box(int x1, int y1, int x2, int y2, char c)
 {
-    ee_draw_line(x1, y1, x1, y2, c);
-    ee_draw_line(x1, y2, x2, y2, c);
-    ee_draw_line(x2, y2, x2, y1, c);
-    ee_draw_line(x2, y1, x1, y1, c);
+    caca_draw_line(x1, y1, x1, y2, c);
+    caca_draw_line(x1, y2, x2, y2, c);
+    caca_draw_line(x2, y2, x2, y1, c);
+    caca_draw_line(x2, y1, x1, y1, c);
 }
 
-void ee_draw_thin_box(int x1, int y1, int x2, int y2)
+void caca_draw_thin_box(int x1, int y1, int x2, int y2)
 {
     int x, y, xmax, ymax;
 
@@ -51,8 +51,8 @@ void ee_draw_thin_box(int x1, int y1, int x2, int y2)
         y1 = y2; y2 = tmp;
     }
 
-    xmax = ee_get_width() - 1;
-    ymax = ee_get_height() - 1;
+    xmax = caca_get_width() - 1;
+    ymax = caca_get_height() - 1;
 
     if(x2 < 0 || y2 < 0 || x1 > xmax || y1 > ymax)
         return;
@@ -60,35 +60,35 @@ void ee_draw_thin_box(int x1, int y1, int x2, int y2)
     /* Draw edges */
     if(y1 >= 0)
         for(x = x1 < 0 ? 1 : x1 + 1; x < x2 && x < xmax; x++)
-            ee_putchar(x, y1, '-');
+            caca_putchar(x, y1, '-');
 
     if(y2 <= ymax)
         for(x = x1 < 0 ? 1 : x1 + 1; x < x2 && x < xmax; x++)
-            ee_putchar(x, y2, '-');
+            caca_putchar(x, y2, '-');
 
     if(x1 >= 0)
         for(y = y1 < 0 ? 1 : y1 + 1; y < y2 && y < ymax; y++)
-            ee_putchar(x1, y, '|');
+            caca_putchar(x1, y, '|');
 
     if(x2 <= xmax)
         for(y = y1 < 0 ? 1 : y1 + 1; y < y2 && y < ymax; y++)
-            ee_putchar(x2, y, '|');
+            caca_putchar(x2, y, '|');
 
     /* Draw corners */
     if(x1 >= 0 && y1 >= 0)
-        ee_putchar(x1, y1, ',');
+        caca_putchar(x1, y1, ',');
 
     if(x1 >= 0 && y2 <= ymax)
-        ee_putchar(x1, y2, '`');
+        caca_putchar(x1, y2, '`');
 
     if(x2 <= xmax && y1 >= 0)
-        ee_putchar(x2, y1, '.');
+        caca_putchar(x2, y1, '.');
 
     if(x2 <= xmax && y2 <= ymax)
-        ee_putchar(x2, y2, '\'');
+        caca_putchar(x2, y2, '\'');
 }
 
-void ee_fill_box(int x1, int y1, int x2, int y2, char c)
+void caca_fill_box(int x1, int y1, int x2, int y2, char c)
 {
     int x, y, xmax, ymax;
 
@@ -104,8 +104,8 @@ void ee_fill_box(int x1, int y1, int x2, int y2, char c)
         y1 = y2; y2 = tmp;
     }
 
-    xmax = ee_get_width() - 1;
-    ymax = ee_get_height() - 1;
+    xmax = caca_get_width() - 1;
+    ymax = caca_get_height() - 1;
 
     if(x2 < 0 || y2 < 0 || x1 > xmax || y1 > ymax)
         return;
@@ -117,6 +117,6 @@ void ee_fill_box(int x1, int y1, int x2, int y2, char c)
 
     for(y = y1; y <= y2; y++)
         for(x = x1; x <= x2; x++)
-            ee_putchar(x, y, c);
+            caca_putchar(x, y, c);
 }
 

@@ -26,7 +26,7 @@
 
 #include "common.h"
 
-struct ee_sprite *ship_sprite;
+struct caca_sprite *ship_sprite;
 
 /* Init tunnel */
 player * create_player(game *g)
@@ -44,7 +44,7 @@ player * create_player(game *g)
     p->life = MAX_LIFE;
     p->dead = 0;
 
-    ship_sprite = ee_load_sprite("data/ship.txt");
+    ship_sprite = caca_load_sprite("data/ship.txt");
 
     return p;
 }
@@ -59,7 +59,7 @@ void draw_player(game *g, player *p)
     if(p->dead)
         return;
 
-    ee_draw_sprite(p->x, p->y, ship_sprite, 0);
+    caca_draw_sprite(p->x, p->y, ship_sprite, 0);
 }
 
 void update_player(game *g, player *p)

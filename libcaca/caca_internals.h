@@ -1,5 +1,5 @@
 /*
- *   libee         ASCII-Art library
+ *   libcaca       ASCII-Art library
  *   Copyright (c) 2002, 2003 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
@@ -24,14 +24,14 @@
 #define __EE_INTERNALS_H__
 
 #if defined(USE_NCURSES)
-extern int _ee_attr[];
+extern int _caca_attr[];
 #endif
 
 #if defined(USE_CONIO)
-extern char *_ee_screen;
+extern char *_caca_screen;
 #endif
 
-extern char *_ee_empty_line;
-extern char *_ee_scratch_line;
+extern char *_caca_empty_line;
+extern char *_caca_scratch_line;
 
 #endif /* __EE_INTERNALS_H__ */

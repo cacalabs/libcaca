@@ -1,12 +1,12 @@
 ###############################################################################
-# Automake targets and declarations for libee
+# Automake targets and declarations for libcaca
 ###############################################################################
 
-lib_LIBRARIES = libee.a
-libee_a_SOURCES = \
-	ee.c \
-	ee.h \
-	ee_internals.h \
+lib_LIBRARIES = libcaca.a
+libcaca_a_SOURCES = \
+	caca.c \
+	caca.h \
+	caca_internals.h \
 	graphics.c \
 	io.c \
 	math.c \

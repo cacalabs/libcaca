@@ -41,16 +41,16 @@ int main (int argc, char **argv)
 
     srand(time(NULL));
 
-    if(ee_init())
+    if(caca_init())
     {
         return 1;
     }
 
-    ee_set_delay(100000);
+    caca_set_delay(100000);
 
     /* Initialize our program */
-    g->w = ee_get_width();
-    g->h = ee_get_height();
+    g->w = caca_get_width();
+    g->h = caca_get_height();
 
 intro();
 
@@ -58,7 +58,7 @@ intro();
     start_game(g);
 
     /* Clean up */
-    ee_end();
+    caca_end();
 
     return 0;
 }
@@ -100,7 +100,7 @@ static void start_game (game *g)
     {
         char key;
 
-        while((key = ee_get_key()))
+        while((key = caca_get_key()))
         {
             switch(key)
             {
@@ -198,11 +198,11 @@ static void start_game (game *g)
             skip = 0;
 
             /* XXX: to be removed */
-            if(ee_rand(0, 9) == 0)
+            if(caca_rand(0, 9) == 0)
             {
                 int list[3] = { ALIEN_FOO, ALIEN_BAR, ALIEN_BAZ };
 
-                add_alien(g, g->al, 0, rand() % g->h / 2, list[ee_rand(0,2)]);
+                add_alien(g, g->al, 0, rand() % g->h / 2, list[caca_rand(0,2)]);
             }
 
             /* Update game rules */
@@ -231,7 +231,7 @@ static void start_game (game *g)
         }
 
         /* Clear screen */
-        ee_clear();
+        caca_clear();
 
         /* Print starfield, tunnel, aliens, player and explosions */
         draw_starfield(g, g->sf);
@@ -251,7 +251,7 @@ static void start_game (game *g)
         }
 
         /* Refresh */
-        ee_refresh();
+        caca_refresh();
 
         purcompteur++;
     }

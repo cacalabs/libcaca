@@ -44,7 +44,7 @@ void intro(void);
 /*
  * Graphics primitives
  */
-#include "ee.h"
+#include "caca.h"
 
 /*
  * Useful macros

@@ -45,12 +45,12 @@ void draw_box(game *g, box *b)
 {
     int j, frame;
 
-    ee_set_color(EE_YELLOW);
+    caca_set_color(EE_YELLOW);
 
     /* Draw the thin horizontal line */
     if(b->frame < 8)
     {
-        ee_draw_line(b->x - b->w * b->frame / 16, b->y,
+        caca_draw_line(b->x - b->w * b->frame / 16, b->y,
                      b->x + b->w * b->frame / 16 - 1, b->y, 'X');
         return;
     }
@@ -58,23 +58,23 @@ void draw_box(game *g, box *b)
     /* Draw the frame */
     frame = b->frame < 12 ? b->frame : 12;
 
-    ee_draw_line(b->x - b->w / 2, b->y - b->h * (frame - 8) / 8,
+    caca_draw_line(b->x - b->w / 2, b->y - b->h * (frame - 8) / 8,
                  b->x + b->w / 2 - 1, b->y - b->h * (frame - 8) / 8, 'X');
-    ee_draw_line(b->x - b->w / 2, b->y + b->h * (frame - 8) / 8,
+    caca_draw_line(b->x - b->w / 2, b->y + b->h * (frame - 8) / 8,
                  b->x + b->w / 2 - 1, b->y + b->h * (frame - 8) / 8, 'X');
 
-    ee_draw_line(b->x - b->w / 2, b->y - b->h * (frame - 8) / 8,
+    caca_draw_line(b->x - b->w / 2, b->y - b->h * (frame - 8) / 8,
                  b->x - b->w / 2, b->y + b->h * (frame - 8) / 8 - 1, 'X');
-    ee_draw_line(b->x + b->w / 2 - 1, b->y - b->h * (frame - 8) / 8,
+    caca_draw_line(b->x + b->w / 2 - 1, b->y - b->h * (frame - 8) / 8,
                  b->x + b->w / 2 - 1, b->y + b->h * (frame - 8) / 8 - 1, 'X');
 
-    ee_set_color(EE_BLACK);
+    caca_set_color(EE_BLACK);
 
     for(j = b->y - b->h * (frame - 8) / 8 + 1;
          j < b->y + b->h * (frame - 8) / 8;
          j++)
     {
-        ee_draw_line(b->x - b->w / 2 + 1, j,
+        caca_draw_line(b->x - b->w / 2 + 1, j,
                      b->x + b->w / 2 - 2, j, 'X');
     }
 
@@ -84,18 +84,18 @@ void draw_box(game *g, box *b)
     }
 
     /* Draw the text inside the frame */
-    ee_set_color(EE_YELLOW);
+    caca_set_color(EE_YELLOW);
 
     /* FIXME: use a font */
-    ee_putstr(b->x - b->w / 2 + 12, b->y - b->h / 2 + 2,
+    caca_putstr(b->x - b->w / 2 + 12, b->y - b->h / 2 + 2,
               "XXXX.  .XXXX  X   X  .XXXX  .XXXX  XXXX.");
-    ee_putstr(b->x - b->w / 2 + 12, b->y - b->h / 2 + 3,
+    caca_putstr(b->x - b->w / 2 + 12, b->y - b->h / 2 + 3,
               "X  `X  X'  X  X   X  X'     X'     X  `X");
-    ee_putstr(b->x - b->w / 2 + 12, b->y - b->h / 2 + 4,
+    caca_putstr(b->x - b->w / 2 + 12, b->y - b->h / 2 + 4,
               "XXXX'  XXXXX  X   X  `XXX   XXXX   X   X");
-    ee_putstr(b->x - b->w / 2 + 12, b->y - b->h / 2 + 5,
+    caca_putstr(b->x - b->w / 2 + 12, b->y - b->h / 2 + 5,
               "X'     X' `X  X. ,X     `X  X'     X  ,X");
-    ee_putstr(b->x - b->w / 2 + 12, b->y - b->h / 2 + 6,
+    caca_putstr(b->x - b->w / 2 + 12, b->y - b->h / 2 + 6,
               "X      X   X  `XXXX  XXXX'  `XXXX  XXXX'");
 }
 

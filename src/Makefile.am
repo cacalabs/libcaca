@@ -2,7 +2,7 @@
 # Automake targets and declarations for ttyvaders
 ###############################################################################
 
-AM_CPPFLAGS = -I$(top_srcdir)/libee
+AM_CPPFLAGS = -I$(top_srcdir)/libcaca
 
 if USE_SLANG
 LDFLAGS_slang = -lslang
@@ -29,5 +29,5 @@ ttyvaders_SOURCES = \
 	tunnel.c \
 	weapons.c \
 	$(NULL)
-ttyvaders_LDADD = ../libee/libee.a $(LDFLAGS_slang) $(LDFLAGS_ncurses) -lm
+ttyvaders_LDADD = ../libcaca/libcaca.a $(LDFLAGS_slang) $(LDFLAGS_ncurses) -lm
 

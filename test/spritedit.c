@@ -1,5 +1,5 @@
 /*
- *   spritedit     sprite editor using libee
+ *   spritedit     sprite editor using libcaca
  *   Copyright (c) 2003 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
@@ -24,12 +24,12 @@
 
 #include <stdio.h>
 
-#include "ee.h"
+#include "caca.h"
 
 int main(int argc, char **argv)
 {
     int quit = 0;
-    struct ee_sprite *sprite;
+    struct caca_sprite *sprite;
     int frame = 0;
 
     if(argc < 2)
@@ -38,14 +38,14 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    if(ee_init())
+    if(caca_init())
         return 1;
 
-    sprite = ee_load_sprite(argv[1]);
+    sprite = caca_load_sprite(argv[1]);
 
     if(!sprite)
     {
-        ee_end();
+        caca_end();
         fprintf(stderr, "%s: could not open `%s'.\n", argv[0], argv[1]);
         return 1;
     }
@@ -56,7 +56,7 @@ int main(int argc, char **argv)
         int xa, ya, xb, yb;
         char buf[BUFSIZ];
 
-        switch(ee_get_key())
+        switch(caca_get_key())
         {
         case 0:
             break;
@@ -68,47 +68,47 @@ int main(int argc, char **argv)
                 frame--;
             break;
         case '+':
-            if(frame < ee_get_sprite_frames(sprite) - 1)
+            if(frame < caca_get_sprite_frames(sprite) - 1)
                 frame++;
             break;
         }
 
-        ee_clear();
+        caca_clear();
 
-        ee_set_color(EE_WHITE);
-        ee_draw_thin_box(0, 0, ee_get_width() - 1, ee_get_height() - 1);
+        caca_set_color(EE_WHITE);
+        caca_draw_thin_box(0, 0, caca_get_width() - 1, caca_get_height() - 1);
 
-        ee_putstr(3, 0, "[ Sprite editor for libee ]");
+        caca_putstr(3, 0, "[ Sprite editor for libcaca ]");
 
         sprintf(buf, "sprite `%s'", argv[1]);
-        ee_putstr(3, 2, buf);
-        sprintf(buf, "frame %i/%i", frame, ee_get_sprite_frames(sprite) - 1);
-        ee_putstr(3, 3, buf);
+        caca_putstr(3, 2, buf);
+        sprintf(buf, "frame %i/%i", frame, caca_get_sprite_frames(sprite) - 1);
+        caca_putstr(3, 3, buf);
 
         /* Crosshair */
-        ee_draw_thin_line(57, 2, 57, 18);
-        ee_draw_thin_line(37, 10, 77, 10);
-        ee_putchar(57, 10, '+');
+        caca_draw_thin_line(57, 2, 57, 18);
+        caca_draw_thin_line(37, 10, 77, 10);
+        caca_putchar(57, 10, '+');
 
         /* Boxed sprite */
-        xa = -1 - ee_get_sprite_dx(sprite, frame);
-        ya = -1 - ee_get_sprite_dy(sprite, frame);
-        xb = xa + 1 + ee_get_sprite_width(sprite, frame);
-        yb = ya + 1 + ee_get_sprite_height(sprite, frame);
-        ee_set_color(EE_BLACK);
-        ee_fill_box(57 + xa, 10 + ya, 57 + xb, 10 + yb, ' ');
-        ee_set_color(EE_WHITE);
-        ee_draw_thin_box(57 + xa, 10 + ya, 57 + xb, 10 + yb);
-        ee_draw_sprite(57, 10, sprite, frame);
+        xa = -1 - caca_get_sprite_dx(sprite, frame);
+        ya = -1 - caca_get_sprite_dy(sprite, frame);
+        xb = xa + 1 + caca_get_sprite_width(sprite, frame);
+        yb = ya + 1 + caca_get_sprite_height(sprite, frame);
+        caca_set_color(EE_BLACK);
+        caca_fill_box(57 + xa, 10 + ya, 57 + xb, 10 + yb, ' ');
+        caca_set_color(EE_WHITE);
+        caca_draw_thin_box(57 + xa, 10 + ya, 57 + xb, 10 + yb);
+        caca_draw_sprite(57, 10, sprite, frame);
 
         /* Free sprite */
-        ee_draw_sprite(20, 10, sprite, frame);
+        caca_draw_sprite(20, 10, sprite, frame);
 
-        ee_refresh();
+        caca_refresh();
     }
 
     /* Clean up */
-    ee_end();
+    caca_end();
 
     return 0;
 }

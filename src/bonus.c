@@ -26,8 +26,8 @@
 
 #include "common.h"
 
-struct ee_sprite *heart_sprite;
-struct ee_sprite *gem_sprite;
+struct caca_sprite *heart_sprite;
+struct caca_sprite *gem_sprite;
 
 void init_bonus(game *g, bonus *bo)
 {
@@ -38,8 +38,8 @@ void init_bonus(game *g, bonus *bo)
         bo->type[i] = BONUS_NONE;
     }
 
-    heart_sprite = ee_load_sprite("data/bonheart.txt");
-    gem_sprite = ee_load_sprite("data/bongem.txt");
+    heart_sprite = caca_load_sprite("data/bonheart.txt");
+    gem_sprite = caca_load_sprite("data/bongem.txt");
 }
 
 void draw_bonus(game *g, bonus *bo)
@@ -51,11 +51,11 @@ void draw_bonus(game *g, bonus *bo)
         switch(bo->type[i])
         {
             case BONUS_GREEN:
-                ee_draw_sprite(bo->x[i], bo->y[i], gem_sprite,
+                caca_draw_sprite(bo->x[i], bo->y[i], gem_sprite,
                                (bo->n[i]/2 % 3) ? 0 : 1);
                 break;
             case BONUS_LIFE:
-                ee_draw_sprite(bo->x[i], bo->y[i], heart_sprite,
+                caca_draw_sprite(bo->x[i], bo->y[i], heart_sprite,
                                (bo->n[i] % 3) ? 0 : 1);
                 break;
             case BONUS_NONE:

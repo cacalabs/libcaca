@@ -1,5 +1,5 @@
 /*
- *   libee         ASCII-Art library
+ *   libcaca       ASCII-Art library
  *   Copyright (c) 2002, 2003 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
@@ -42,24 +42,24 @@
 #include <sys/time.h>
 #include <time.h>
 
-#include "ee.h"
-#include "ee_internals.h"
+#include "caca.h"
+#include "caca_internals.h"
 
-static unsigned int _ee_delay;
-static unsigned int _ee_rendertime;
-char *_ee_empty_line;
-char *_ee_scratch_line;
+static unsigned int _caca_delay;
+static unsigned int _caca_rendertime;
+char *_caca_empty_line;
+char *_caca_scratch_line;
 
 #if defined(USE_NCURSES)
-int _ee_attr[16];
+int _caca_attr[16];
 #endif
 
 #if defined(USE_CONIO)
 static struct text_info ti;
-char *_ee_screen;
+char *_caca_screen;
 #endif
 
-int ee_init(void)
+int caca_init(void)
 {
 #if defined(USE_SLANG)
     static char *slang_colors[16] =
@@ -143,38 +143,38 @@ int ee_init(void)
 
     for(i = 0; i < 8; i++)
     {
-        _ee_attr[i] = COLOR_PAIR(1 + i);
-        _ee_attr[i + 8] = A_BOLD | COLOR_PAIR(1 + i);
+        _caca_attr[i] = COLOR_PAIR(1 + i);
+        _caca_attr[i + 8] = A_BOLD | COLOR_PAIR(1 + i);
     }
 
 #elif defined(USE_CONIO)
     gettextinfo(&ti);
-    _ee_screen = malloc(2 * ti.screenwidth * ti.screenheight);
-    if(_ee_screen == NULL)
+    _caca_screen = malloc(2 * ti.screenwidth * ti.screenheight);
+    if(_caca_screen == NULL)
         return -1;
     _wscroll = 0;
     _setcursortype(_NOCURSOR);
     clrscr();
 #   if defined(SCREENUPDATE_IN_PC_H)
-    ScreenRetrieve(_ee_screen);
+    ScreenRetrieve(_caca_screen);
 #   else
     /* FIXME */
 #   endif
 
 #endif
-    _ee_empty_line = malloc(ee_get_width() + 1);
-    memset(_ee_empty_line, ' ', ee_get_width());
-    _ee_empty_line[ee_get_width()] = '\0';
+    _caca_empty_line = malloc(caca_get_width() + 1);
+    memset(_caca_empty_line, ' ', caca_get_width());
+    _caca_empty_line[caca_get_width()] = '\0';
 
-    _ee_scratch_line = malloc(ee_get_width() + 1);
+    _caca_scratch_line = malloc(caca_get_width() + 1);
 
-    _ee_delay = 0;
-    _ee_rendertime = 0;
+    _caca_delay = 0;
+    _caca_rendertime = 0;
 
     return 0;
 }
 
-unsigned int ee_get_width(void)
+unsigned int caca_get_width(void)
 {
 #if defined(USE_SLANG)
     return SLtt_Screen_Cols;
@@ -185,7 +185,7 @@ unsigned int ee_get_width(void)
 #endif
 }
 
-unsigned int ee_get_height(void)
+unsigned int caca_get_height(void)
 {
 #if defined(USE_SLANG)
     return SLtt_Screen_Rows;
@@ -196,17 +196,17 @@ unsigned int ee_get_height(void)
 #endif
 }
 
-void ee_set_delay(unsigned int usec)
+void caca_set_delay(unsigned int usec)
 {
-    _ee_delay = usec;
+    _caca_delay = usec;
 }
 
-unsigned int ee_get_rendertime(void)
+unsigned int caca_get_rendertime(void)
 {
-    return _ee_rendertime;
+    return _caca_rendertime;
 }
 
-const char *ee_get_color_name(unsigned int color)
+const char *caca_get_color_name(unsigned int color)
 {
     static const char *color_names[16] =
     {
@@ -234,7 +234,7 @@ const char *ee_get_color_name(unsigned int color)
     return color_names[color];
 }
 
-static unsigned int _ee_getticks(void)
+static unsigned int _caca_getticks(void)
 {
     static unsigned int last_sec = 0, last_usec = 0;
 
@@ -254,11 +254,11 @@ static unsigned int _ee_getticks(void)
     return ticks;
 }
 
-void ee_refresh(void)
+void caca_refresh(void)
 {
 #define IDLE_USEC 10000
     static unsigned int lastticks = 0;
-    unsigned int ticks = lastticks + _ee_getticks();
+    unsigned int ticks = lastticks + _caca_getticks();
 
 #if defined(USE_SLANG)
     SLsmg_refresh();
@@ -266,28 +266,28 @@ void ee_refresh(void)
     refresh();
 #elif defined(USE_CONIO)
 #   if defined(SCREENUPDATE_IN_PC_H)
-    ScreenUpdate(_ee_screen);
+    ScreenUpdate(_caca_screen);
 #   else
     /* FIXME */
 #   endif
 #endif
 
-    /* Wait until _ee_delay + time of last call */
-    ticks += _ee_getticks();
-    for(; ticks < _ee_delay - IDLE_USEC; ticks += _ee_getticks())
+    /* Wait until _caca_delay + time of last call */
+    ticks += _caca_getticks();
+    for(; ticks < _caca_delay - IDLE_USEC; ticks += _caca_getticks())
         usleep(IDLE_USEC);
 
     /* Update the sliding mean of the render time */
-    _ee_rendertime = (7 * _ee_rendertime + ticks) / 8;
+    _caca_rendertime = (7 * _caca_rendertime + ticks) / 8;
 
-    lastticks = ticks - _ee_delay;
+    lastticks = ticks - _caca_delay;
 
     /* If we drifted too much, it's bad, bad, bad. */
-    if(lastticks > _ee_delay)
+    if(lastticks > _caca_delay)
         lastticks = 0;
 }
 
-void ee_end(void)
+void caca_end(void)
 {
 #if defined(USE_SLANG)
     SLtt_set_cursor_visibility(1);
@@ -300,7 +300,7 @@ void ee_end(void)
     _wscroll = 1;
     textcolor((enum COLORS)WHITE);
     textbackground((enum COLORS)BLACK);
-    gotoxy(ee_get_width(), ee_get_height());
+    gotoxy(caca_get_width(), caca_get_height());
     cputs("\r\n");
     _setcursortype(_NORMALCURSOR);
 #endif

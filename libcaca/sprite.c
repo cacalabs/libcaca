@@ -1,5 +1,5 @@
 /*
- *   libee         ASCII-Art library
+ *   libcaca       ASCII-Art library
  *   Copyright (c) 2002, 2003 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
@@ -26,10 +26,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ee.h"
-#include "ee_internals.h"
+#include "caca.h"
+#include "caca_internals.h"
 
-struct ee_frame
+struct caca_frame
 {
     int w, h;
     int dx, dy;
@@ -37,23 +37,23 @@ struct ee_frame
     int *color;
 };
 
-struct ee_sprite
+struct caca_sprite
 {
     int nf;
-    struct ee_frame *frames;
+    struct caca_frame *frames;
 };
 
-struct ee_sprite *ee_load_sprite(const char *file)
+struct caca_sprite *caca_load_sprite(const char *file)
 {
     char buf[BUFSIZ];
-    struct ee_sprite *sprite;
+    struct caca_sprite *sprite;
     FILE *fd;
 
     fd = fopen(file, "r");
     if(fd == NULL)
         return NULL;
 
-    sprite = malloc(sizeof(struct ee_sprite));
+    sprite = malloc(sizeof(struct caca_sprite));
     if(sprite == NULL)
         goto sprite_alloc_failed;
 
@@ -64,7 +64,7 @@ struct ee_sprite *ee_load_sprite(const char *file)
     {
         int x, y;
         int w = 0, h = 0, dx = 0, dy = 0;
-        struct ee_frame *frame;
+        struct caca_frame *frame;
 
         /* Get width and height */
         if(!fgets(buf, BUFSIZ, fd))
@@ -77,7 +77,7 @@ struct ee_sprite *ee_load_sprite(const char *file)
         if(sprite->nf)
         {
             void *tmp = realloc(sprite->frames,
-                                (sprite->nf + 1) * sizeof(struct ee_frame));
+                                (sprite->nf + 1) * sizeof(struct caca_frame));
             if(tmp == NULL)
                 goto frame_failed;
             sprite->frames = tmp;
@@ -85,7 +85,7 @@ struct ee_sprite *ee_load_sprite(const char *file)
         }
         else
         {
-            sprite->frames = malloc((sprite->nf + 1) * sizeof(struct ee_frame));
+            sprite->frames = malloc((sprite->nf + 1) * sizeof(struct caca_frame));
             if(sprite->frames == NULL)
                 goto sprite_failed;
             sprite->nf++;
@@ -158,7 +158,7 @@ sprite_alloc_failed:
     return NULL;
 }
 
-int ee_get_sprite_frames(struct ee_sprite *sprite)
+int caca_get_sprite_frames(struct caca_sprite *sprite)
 {
     if(sprite == NULL)
         return 0;
@@ -166,7 +166,7 @@ int ee_get_sprite_frames(struct ee_sprite *sprite)
     return sprite->nf;
 }
 
-int ee_get_sprite_width(struct ee_sprite *sprite, int f)
+int caca_get_sprite_width(struct caca_sprite *sprite, int f)
 {
     if(sprite == NULL)
         return 0;
@@ -177,7 +177,7 @@ int ee_get_sprite_width(struct ee_sprite *sprite, int f)
     return sprite->frames[f].w;
 }
 
-int ee_get_sprite_height(struct ee_sprite *sprite, int f)
+int caca_get_sprite_height(struct caca_sprite *sprite, int f)
 {
     if(sprite == NULL)
         return 0;
@@ -188,7 +188,7 @@ int ee_get_sprite_height(struct ee_sprite *sprite, int f)
     return sprite->frames[f].h;
 }
 
-int ee_get_sprite_dx(struct ee_sprite *sprite, int f)
+int caca_get_sprite_dx(struct caca_sprite *sprite, int f)
 {
     if(sprite == NULL)
         return 0;
@@ -199,7 +199,7 @@ int ee_get_sprite_dx(struct ee_sprite *sprite, int f)
     return sprite->frames[f].dx;
 }
 
-int ee_get_sprite_dy(struct ee_sprite *sprite, int f)
+int caca_get_sprite_dy(struct caca_sprite *sprite, int f)
 {
     if(sprite == NULL)
         return 0;
@@ -210,10 +210,10 @@ int ee_get_sprite_dy(struct ee_sprite *sprite, int f)
     return sprite->frames[f].dy;
 }
 
-void ee_draw_sprite(int x, int y, struct ee_sprite *sprite, int f)
+void caca_draw_sprite(int x, int y, struct caca_sprite *sprite, int f)
 {
     int i, j, oldcol;
-    struct ee_frame *frame;
+    struct caca_frame *frame;
 
     if(sprite == NULL)
         return;
@@ -223,7 +223,7 @@ void ee_draw_sprite(int x, int y, struct ee_sprite *sprite, int f)
 
     frame = &sprite->frames[f];
 
-    oldcol = ee_get_color();
+    oldcol = caca_get_color();
 
     for(j = 0; j < frame->h; j++)
     {
@@ -232,17 +232,17 @@ void ee_draw_sprite(int x, int y, struct ee_sprite *sprite, int f)
             int col = frame->color[frame->w * j + i];
             if(col >= 0)
             {
-                ee_set_color(col);
-                ee_putchar(x + i - frame->dx, y + j - frame->dy,
+                caca_set_color(col);
+                caca_putchar(x + i - frame->dx, y + j - frame->dy,
                            frame->chars[frame->w * j + i]);
             }
         }
     }
 
-    ee_set_color(oldcol);
+    caca_set_color(oldcol);
 }
 
-void ee_free_sprite(struct ee_sprite *sprite)
+void caca_free_sprite(struct caca_sprite *sprite)
 {
     int i;
 
@@ -251,7 +251,7 @@ void ee_free_sprite(struct ee_sprite *sprite)
 
     for(i = sprite->nf; i--;)
     {
-        struct ee_frame *frame = &sprite->frames[i];
+        struct caca_frame *frame = &sprite->frames[i];
         free(frame->chars);
         free(frame->color);
     }

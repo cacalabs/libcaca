@@ -26,8 +26,8 @@
 
 #include "common.h"
 
-struct ee_sprite *medium_sprite;
-struct ee_sprite *small_sprite;
+struct caca_sprite *medium_sprite;
+struct caca_sprite *small_sprite;
 
 void init_explosions(game *g, explosions *ex)
 {
@@ -38,8 +38,8 @@ void init_explosions(game *g, explosions *ex)
         ex->type[i] = EXPLOSION_NONE;
     }
 
-    medium_sprite = ee_load_sprite("data/xplmed.txt");
-    small_sprite = ee_load_sprite("data/xplsmall.txt");
+    medium_sprite = caca_load_sprite("data/xplmed.txt");
+    small_sprite = caca_load_sprite("data/xplsmall.txt");
 }
 
 void add_explosion(game *g, explosions *ex, int x, int y, int vx, int vy, int type)
@@ -76,38 +76,38 @@ void draw_explosions(game *g, explosions *ex)
     for(i = 0; i < EXPLOSIONS; i++)
     {
 #if 0
-        ee_set_color(GREEN);
-        ee_goto(ex->x[i] + 3, ex->y[i]);
-        switch(ee_rand(0,2))
+        caca_set_color(GREEN);
+        caca_goto(ex->x[i] + 3, ex->y[i]);
+        switch(caca_rand(0,2))
         {
         case 0:
-            ee_putchar('p');
-            ee_putchar('i');
-            ee_putchar('f');
+            caca_putchar('p');
+            caca_putchar('i');
+            caca_putchar('f');
             break;
         case 1:
-            ee_putchar('p');
-            ee_putchar('a');
-            ee_putchar('f');
+            caca_putchar('p');
+            caca_putchar('a');
+            caca_putchar('f');
             break;
         case 2:
-            ee_putchar('p');
-            ee_putchar('o');
-            ee_putchar('u');
-            ee_putchar('f');
+            caca_putchar('p');
+            caca_putchar('o');
+            caca_putchar('u');
+            caca_putchar('f');
             break;
         }
-        ee_putchar('!');
+        caca_putchar('!');
 #endif
 
         switch(ex->type[i])
         {
             case EXPLOSION_MEDIUM:
-                ee_draw_sprite(ex->x[i], ex->y[i], medium_sprite,
+                caca_draw_sprite(ex->x[i], ex->y[i], medium_sprite,
                                10 - ex->n[i]);
                 break;
             case EXPLOSION_SMALL:
-                ee_draw_sprite(ex->x[i], ex->y[i], small_sprite,
+                caca_draw_sprite(ex->x[i], ex->y[i], small_sprite,
                                6 - ex->n[i]);
                 break;
             case EXPLOSION_NONE:

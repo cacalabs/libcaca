@@ -1,5 +1,5 @@
 /*
- *   libee         ASCII-Art library
+ *   libcaca       ASCII-Art library
  *   Copyright (c) 2002, 2003 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
@@ -30,11 +30,11 @@ typedef unsigned char uint8_t;
 
 #include <stdlib.h>
 
-#include "ee.h"
-#include "ee_internals.h"
+#include "caca.h"
+#include "caca_internals.h"
 
 #include <stdio.h>
-void ee_blit(int x1, int y1, int x2, int y2, void *pixels, int w, int h)
+void caca_blit(int x1, int y1, int x2, int y2, void *pixels, int w, int h)
 {
     char foo[] = { ' ', '.', ':', ';', '=', '$', '%', '@', '#', '8', 'W' };
     int x, y, pitch;
@@ -51,8 +51,8 @@ void ee_blit(int x1, int y1, int x2, int y2, void *pixels, int w, int h)
 
     pitch = (3 * w + 3) / 4 * 4;
 
-    for(y = y1 > 0 ? y1 : 0; y <= y2 && y <= ee_get_height(); y++)
-        for(x = x1 > 0 ? x1 : 0; x <= x2 && x <= ee_get_width(); x++)
+    for(y = y1 > 0 ? y1 : 0; y <= y2 && y <= caca_get_height(); y++)
+        for(x = x1 > 0 ? x1 : 0; x <= x2 && x <= caca_get_width(); x++)
         {
             int fromx = w * (x - x1) / (x2 - x1 + 1);
             int fromy = h * (y - y1) / (y2 - y1 + 1);
@@ -62,7 +62,7 @@ void ee_blit(int x1, int y1, int x2, int y2, void *pixels, int w, int h)
 
             if(r == g && g == b)
             {
-                ee_set_color(EE_LIGHTGRAY);
+                caca_set_color(EE_LIGHTGRAY);
             }
             else
             {
@@ -88,15 +88,15 @@ void ee_blit(int x1, int y1, int x2, int y2, void *pixels, int w, int h)
                     if( hue < 0 )
                         hue += 360;
 
-                    ee_set_color(foo_colors[(int)(hue + 30) / 60]);
+                    caca_set_color(foo_colors[(int)(hue + 30) / 60]);
                 }
                 else
                 {
-                    ee_set_color(EE_LIGHTGRAY);
+                    caca_set_color(EE_LIGHTGRAY);
                 }
             }
 
-            ee_putchar(x, y, foo[(r + g + b) / 3 / 25]);
+            caca_putchar(x, y, foo[(r + g + b) / 3 / 25]);
         }
 }
 

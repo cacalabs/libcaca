@@ -1,5 +1,5 @@
 /*
- *   libee         ASCII-Art library
+ *   libcaca       ASCII-Art library
  *   Copyright (c) 2002, 2003 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
@@ -30,12 +30,12 @@ typedef unsigned char uint8_t;
 
 #include <stdlib.h>
 
-#include "ee.h"
-#include "ee_internals.h"
+#include "caca.h"
+#include "caca_internals.h"
 
 static void ellipsepoints(int, int, int, int, char);
 
-void ee_draw_circle(int x, int y, int r, char c)
+void caca_draw_circle(int x, int y, int r, char c)
 {
     int test, dx, dy;
 
@@ -49,7 +49,7 @@ void ee_draw_circle(int x, int y, int r, char c)
     }
 }
 
-void ee_fill_ellipse(int xo, int yo, int a, int b, char c)
+void caca_fill_ellipse(int xo, int yo, int a, int b, char c)
 {
     int d2;
     int x = 0;
@@ -65,15 +65,15 @@ void ee_fill_ellipse(int xo, int yo, int a, int b, char c)
         else
         {
             d1 += b*b*(2*x*1) + a*a*(-2*y+2);
-            ee_draw_line(xo - x, yo - y, xo + x, yo - y, c);
-            ee_draw_line(xo - x, yo + y, xo + x, yo + y, c);
+            caca_draw_line(xo - x, yo - y, xo + x, yo - y, c);
+            caca_draw_line(xo - x, yo + y, xo + x, yo + y, c);
             y--;
         }
         x++;
     }
 
-    ee_draw_line(xo - x, yo - y, xo + x, yo - y, c);
-    ee_draw_line(xo - x, yo + y, xo + x, yo + y, c);
+    caca_draw_line(xo - x, yo - y, xo + x, yo - y, c);
+    caca_draw_line(xo - x, yo + y, xo + x, yo + y, c);
 
     d2 = b*b*(x+0.5)*(x+0.5) + a*a*(y-1)*(y-1) - a*a*b*b;
     while(y > 0)
@@ -89,12 +89,12 @@ void ee_fill_ellipse(int xo, int yo, int a, int b, char c)
         }
 
         y--;
-        ee_draw_line(xo - x, yo - y, xo + x, yo - y, c);
-        ee_draw_line(xo - x, yo + y, xo + x, yo + y, c);
+        caca_draw_line(xo - x, yo - y, xo + x, yo - y, c);
+        caca_draw_line(xo - x, yo + y, xo + x, yo + y, c);
     }
 }
 
-void ee_draw_ellipse(int xo, int yo, int a, int b, char c)
+void caca_draw_ellipse(int xo, int yo, int a, int b, char c)
 {
     int d2;
     int x = 0;
@@ -136,7 +136,7 @@ void ee_draw_ellipse(int xo, int yo, int a, int b, char c)
     }
 }
 
-void ee_draw_thin_ellipse(int xo, int yo, int a, int b)
+void caca_draw_thin_ellipse(int xo, int yo, int a, int b)
 {
     /* FIXME: this is not correct */
     int d2;
@@ -183,25 +183,25 @@ static void ellipsepoints(int xo, int yo, int x, int y, char c)
 {
     uint8_t b = 0;
 
-    if(xo + x >= 0 && xo + x < ee_get_width())
+    if(xo + x >= 0 && xo + x < caca_get_width())
         b |= 0x1;
-    if(xo - x >= 0 && xo - x < ee_get_width())
+    if(xo - x >= 0 && xo - x < caca_get_width())
         b |= 0x2;
-    if(yo + y >= 0 && yo + y < ee_get_height())
+    if(yo + y >= 0 && yo + y < caca_get_height())
         b |= 0x4;
-    if(yo - y >= 0 && yo - y < ee_get_height())
+    if(yo - y >= 0 && yo - y < caca_get_height())
         b |= 0x8;
 
     if((b & (0x1|0x4)) == (0x1|0x4))
-        ee_putchar(xo + x, yo + y, c);
+        caca_putchar(xo + x, yo + y, c);
 
     if((b & (0x2|0x4)) == (0x2|0x4))
-        ee_putchar(xo - x, yo + y, c);
+        caca_putchar(xo - x, yo + y, c);
 
     if((b & (0x1|0x8)) == (0x1|0x8))
-        ee_putchar(xo + x, yo - y, c);
+        caca_putchar(xo + x, yo - y, c);
 
     if((b & (0x2|0x8)) == (0x2|0x8))
-        ee_putchar(xo - x, yo - y, c);
+        caca_putchar(xo - x, yo - y, c);
 }
 
