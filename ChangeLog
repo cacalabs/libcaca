@@ -1,4 +1,215 @@
 ------------------------------------------------------------------------
+r224 | sam | 2004-01-07 19:22:44 +0100 (Wed, 07 Jan 2004) | 3 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/debian/changelog
+   M /trunk/libcaca.spec
+
+  * configure.ac:
+    + Release 0.7.
+
+------------------------------------------------------------------------
+r223 | sam | 2004-01-07 19:22:08 +0100 (Wed, 07 Jan 2004) | 3 lines
+Changed paths:
+   M /trunk/src/bitmap.c
+
+  * src/bitmap.c:
+    + Fixed a bug in the dithering characters.
+
+------------------------------------------------------------------------
+r222 | sam | 2004-01-07 19:15:10 +0100 (Wed, 07 Jan 2004) | 5 lines
+Changed paths:
+   M /trunk/NEWS
+   M /trunk/src/bitmap.c
+   M /trunk/src/io.c
+
+  * src/io.c:
+    + Do not report mouse motions if the coordinates did not change.
+  * src/bitmap.c:
+    + More documentation.
+
+------------------------------------------------------------------------
+r221 | sam | 2004-01-07 18:19:36 +0100 (Wed, 07 Jan 2004) | 8 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/src/caca.c
+   M /trunk/src/graphics.c
+   M /trunk/src/io.c
+   M /trunk/test
+   M /trunk/test/Makefile.am
+   A /trunk/test/event.c
+
+  * test/event.c:
+    + Small event lister, similar to X11's xev.
+  * src/graphics.c:
+    + If possible, disable autorepeat in the X11 driver.
+  * src/io.c:
+    + Implemented CACA_EVENT_MOUSE_RELEASE in all drivers.
+    + Button number support in CACA_EVENT_MOUSE_{PRESS,RELEASE}.
+
+------------------------------------------------------------------------
+r220 | sam | 2004-01-07 14:06:06 +0100 (Wed, 07 Jan 2004) | 5 lines
+Changed paths:
+   M /trunk/debian/control
+   M /trunk/debian/rules
+   M /trunk/doc/Makefile.am
+   D /trunk/doc/caca-spritedit.1
+   M /trunk/examples/Makefile.am
+   D /trunk/examples/spritedit.c
+   M /trunk/libcaca.spec
+   M /trunk/test/Makefile.am
+   A /trunk/test/spritedit.c (from /trunk/examples/spritedit.c:213)
+
+  * test/spritedit.c:
+    + Moved spritedit to the test/ directory, because it is not mature enough.
+  * libcaca.spec debian/control debian/rules:
+    + Do not install caca-spritedit.
+
+------------------------------------------------------------------------
+r219 | sam | 2004-01-07 13:45:02 +0100 (Wed, 07 Jan 2004) | 8 lines
+Changed paths:
+   M /trunk/NEWS
+   M /trunk/debian/control
+   M /trunk/debian/rules
+   M /trunk/doc/Makefile.am
+   M /trunk/doc/cacademo.1
+   M /trunk/libcaca.spec
+   M /trunk/src/bitmap.c
+   M /trunk/src/caca.c
+   M /trunk/src/caca.h
+   M /trunk/src/conic.c
+   M /trunk/src/graphics.c
+   M /trunk/src/io.c
+   M /trunk/src/line.c
+   M /trunk/src/sprite.c
+
+  * libcaca.spec debian/control:
+    + Updated the package descriptions to include cacaball.
+  * doc/cacademo.1 doc/Makefile.am:
+    + Use the cacademo manpage as the cacaball manpage.
+  * src/:
+    + Added #ifdef _DOXYGEN_SKIP_ME here and there to prvent Doxygen from
+      documenting bizarre stuff.
+
+------------------------------------------------------------------------
+r218 | sam | 2004-01-07 13:42:22 +0100 (Wed, 07 Jan 2004) | 4 lines
+Changed paths:
+   M /trunk/examples/cacaball.c
+
+  * examples/cacaball.c:
+    + 24 metaballs instead of 5, but smaller.
+    + Zoom the bitmap to make more use of the screen area.
+
+------------------------------------------------------------------------
+r217 | sam | 2004-01-06 17:31:27 +0100 (Tue, 06 Jan 2004) | 5 lines
+Changed paths:
+   M /trunk/AUTHORS
+   M /trunk/THANKS
+   M /trunk/examples/aafire.c
+   M /trunk/examples/cacaball.c
+
+  * examples/cacaball.c:
+    + Crop the palette so that it looks a bit more like metaballs.
+  * AUTHORS THANKS:
+    + Credited Jylam and Jan Hubicka.
+
+------------------------------------------------------------------------
+r216 | sam | 2004-01-06 13:46:25 +0100 (Tue, 06 Jan 2004) | 6 lines
+Changed paths:
+   M /trunk/examples/cacaball.c
+
+  * examples/cacaball.c:
+    + Huge coding style overhaul.
+    + Display 5 metaballs instead of 3.
+    + Generate the palette instead of having a static one.
+    + Use a 256x256 back buffer for more smoothness.
+
+------------------------------------------------------------------------
+r215 | sam | 2004-01-06 11:12:22 +0100 (Tue, 06 Jan 2004) | 3 lines
+Changed paths:
+   M /trunk/src/graphics.c
+
+  * src/graphics.c:
+    + Fixed a compilation warning.
+
+------------------------------------------------------------------------
+r214 | sam | 2004-01-05 23:16:55 +0100 (Mon, 05 Jan 2004) | 3 lines
+Changed paths:
+   M /trunk/examples
+   M /trunk/examples/Makefile.am
+   A /trunk/examples/cacaball.c
+
+  * examples/cacaball.c:
+    + Metaballs demo program from Jean-Yves Lamoureux <jylam@lnxscene.org>.
+
+------------------------------------------------------------------------
+r213 | sam | 2004-01-05 19:17:20 +0100 (Mon, 05 Jan 2004) | 4 lines
+Changed paths:
+   M /trunk/examples/aafire.c
+   M /trunk/examples/cacaview.c
+   M /trunk/examples/demo.c
+   M /trunk/examples/spritedit.c
+   M /trunk/src/caca.h
+   M /trunk/src/io.c
+   M /trunk/test/dithering.c
+   M /trunk/test/hsv.c
+
+  * src/io.c:
+    + caca_get_event() and caca_wait_event() now accept a mask as an argument
+      in order to select events.
+
+------------------------------------------------------------------------
+r212 | sam | 2004-01-05 19:10:51 +0100 (Mon, 05 Jan 2004) | 4 lines
+Changed paths:
+   M /trunk/src/graphics.c
+
+  * src/graphics.c:
+    + Fixed a bug that caused an infinite loop if the delay between two
+      caca_refresh() calls was greater than 2000 seconds (or something).
+
+------------------------------------------------------------------------
+r211 | sam | 2004-01-05 19:08:50 +0100 (Mon, 05 Jan 2004) | 5 lines
+Changed paths:
+   M /trunk/examples/cacaview.c
+   M /trunk/src/io.c
+
+  * src/io.c:
+    + Fixed a bug that caused ButtonRelease events to be forgotten under X11.
+  * examples/cacaview.c:
+    + Use <stdlib.h> instead of <malloc.h>.
+
+------------------------------------------------------------------------
+r210 | sam | 2004-01-04 01:45:08 +0100 (Sun, 04 Jan 2004) | 6 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/doc/Makefile.am
+
+  * configure.ac:
+    + Check for dvips in addition to latex.
+  * doc/Makefile.am:
+    + Workaround for a bug in the latex code generated by doxygen
+      in Mandrake 9.1.
+
+------------------------------------------------------------------------
+r209 | sam | 2004-01-04 01:19:53 +0100 (Sun, 04 Jan 2004) | 5 lines
+Changed paths:
+   M /trunk/libcaca.spec
+
+  * libcaca.spec:
+    + Install documentation into %{doc}/package-version/ instead
+      of %{doc}/package/.
+    + Added tetex-dvips to the build dependencies.
+
+------------------------------------------------------------------------
+r208 | sam | 2004-01-04 00:21:27 +0100 (Sun, 04 Jan 2004) | 2 lines
+Changed paths:
+   A /branches/0.6 (from /trunk:207)
+   M /branches/0.6/ChangeLog
+   M /trunk/ChangeLog
+
+  * 0.6 branch.
+
+------------------------------------------------------------------------
 r207 | sam | 2004-01-04 00:15:48 +0100 (Sun, 04 Jan 2004) | 9 lines
 Changed paths:
    M /trunk/NEWS

@@ -1,6 +1,6 @@
 %define name  libcaca
-%define version 0.6
-%define release 2
+%define version 0.7
+%define release 1
 
 Name: %{name}
 Version: %{version}
