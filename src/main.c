@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: main.c,v 1.7 2002/12/22 18:44:12 sam Exp $
+ *   $Id: main.c,v 1.8 2002/12/22 22:17:41 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -129,6 +129,13 @@ static void start_game (game *g)
                         add_weapon( g, g->wp, (g->p->x + 2) << 4, g->p->y << 4, 0, 0, WEAPON_BEAM );
                     }
                     break;
+                case 'd':
+                    if( g->p->nuke == 0 )
+                    {
+                        g->p->nuke = 40;
+                        add_weapon( g, g->wp, (g->p->x + 2) << 4, g->p->y << 4, 0, -16, WEAPON_FRAGBOMB );
+                    }
+                    break;
                 case 'b':
                     if( g->p->weapon == 0 )
                     {
@@ -205,9 +212,9 @@ static void start_game (game *g)
         draw_tunnel( g, g->t );
         draw_bonus( g, g->bo );
         draw_aliens( g, g->al );
-        draw_player( g, g->p );
         draw_explosions( g, g->ex );
         draw_weapons( g, g->wp );
+        draw_player( g, g->p );
 
         /* Refresh */
         refresh_graphics();

@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: weapons.c,v 1.7 2002/12/22 18:44:12 sam Exp $
+ *   $Id: weapons.c,v 1.8 2002/12/22 22:17:41 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ static void draw_bomb( int x, int y, int vx, int vy );
 static void draw_nuke( int x, int y, int frame );
 static void draw_beam( int x, int y, int frame );
 static void draw_circle( int x, int y, int r, char c );
+static void draw_fragbomb( int x, int y, int frame );
 
 void init_weapons( game *g, weapons *wp )
 {
@@ -80,12 +81,16 @@ void draw_weapons( game *g, weapons *wp )
                 gfx_putchar( '.' );
                 draw_bomb( wp->x[i] >> 4, wp->y[i] >> 4, wp->vx[i], wp->vy[i] );
                 break;
+            case WEAPON_FRAGBOMB:
+                draw_fragbomb( wp->x[i] >> 4, wp->y[i] >> 4, wp->n[i] );
+                break;
             case WEAPON_BEAM:
                 draw_beam( wp->x[i] >> 4, wp->y[i] >> 4, wp->n[i] );
                 break;
             case WEAPON_NUKE:
                 draw_nuke( wp->x[i] >> 4, wp->y[i] >> 4, wp->n[i] );
                 break;
+            case WEAPON_LIGHTNING:
             case WEAPON_NONE:
                 break;
         }
@@ -172,6 +177,33 @@ void update_weapons( game *g, weapons *wp )
                               + (dy * 24) / sqrt(dx*dx+dy*dy) ) / 8;
 
                 break;
+            case WEAPON_FRAGBOMB:
+                /* If n was set to -1, the fragbomb exploded */
+                if( wp->n[i] == -1 )
+                {
+                    add_weapon( g, g->wp, wp->x[i] + 24, wp->y[i], 24, 0, WEAPON_SEEKER );
+                    add_weapon( g, g->wp, wp->x[i] - 24, wp->y[i], -24, 0, WEAPON_SEEKER );
+                    add_weapon( g, g->wp, wp->x[i], wp->y[i] + 24, 0, 24, WEAPON_SEEKER );
+                    add_weapon( g, g->wp, wp->x[i], wp->y[i] - 24, 0, -24, WEAPON_SEEKER );
+                    add_weapon( g, g->wp, wp->x[i] + 24, wp->y[i] + 8, 24, 8, WEAPON_SEEKER );
+                    add_weapon( g, g->wp, wp->x[i] - 24, wp->y[i] + 8, -24, 8, WEAPON_SEEKER );
+                    add_weapon( g, g->wp, wp->x[i] + 24, wp->y[i] - 8, 24, -8, WEAPON_SEEKER );
+                    add_weapon( g, g->wp, wp->x[i] - 24, wp->y[i] - 8, -24, -8, WEAPON_SEEKER );
+                    add_weapon( g, g->wp, wp->x[i] + 16, wp->y[i] + 16, 16, 16, WEAPON_SEEKER );
+                    add_weapon( g, g->wp, wp->x[i] - 16, wp->y[i] + 16, -16, 16, WEAPON_SEEKER );
+                    add_weapon( g, g->wp, wp->x[i] + 16, wp->y[i] - 16, 16, -16, WEAPON_SEEKER );
+                    add_weapon( g, g->wp, wp->x[i] - 16, wp->y[i] - 16, -16, -16, WEAPON_SEEKER );
+                    wp->type[i] = WEAPON_NONE;
+                }
+
+                wp->x[i] += wp->vx[i];
+                wp->y[i] += wp->vy[i];
+                wp->n[i]++;
+                if( wp->y[i] < 0 )
+                {
+                    wp->type[i] = WEAPON_NONE;
+                }
+                break;
             case WEAPON_BEAM:
                 wp->x[i] = (g->p->x + 2) << 4;
                 wp->y[i] = g->p->y << 4;
@@ -188,6 +220,7 @@ void update_weapons( game *g, weapons *wp )
                     wp->type[i] = WEAPON_NONE;
                 }
                 break;
+            case WEAPON_LIGHTNING:
             case WEAPON_NONE:
                 break;
         }
@@ -207,9 +240,12 @@ void add_weapon( game *g, weapons *wp, int x, int y, int vx, int vy, int type )
             wp->vx[i] = vx;
             wp->vy[i] = vy;
             wp->type[i] = type;
+            wp->n[i] = 0;
             switch( type )
             {
                 case WEAPON_LASER:
+                    break;
+                case WEAPON_FRAGBOMB:
                     break;
                 case WEAPON_SEEKER:
                 case WEAPON_BOMB:
@@ -409,6 +445,99 @@ static void draw_bomb( int x, int y, int vx, int vy )
                 gfx_putchar( '<' );
             }
         }
+    }
+}
+
+static void draw_fragbomb( int x, int y, int frame )
+{
+    gfx_color( WHITE );
+
+    gfx_color( frame & 1 ? CYAN : WHITE );
+    gfx_goto( x-2, y );
+    gfx_putstr( "(    )" );
+    gfx_goto( x-1, y+1 );
+    gfx_putstr( "`--'" );
+
+    gfx_color( frame & 1 ? WHITE : CYAN );
+    gfx_goto( x-1, y-1 );
+    gfx_putstr( ",--." );
+    gfx_goto( x, y );
+    gfx_putstr( "'," );
+
+    switch( frame % 4 )
+    {
+    case 0:
+        gfx_color( CYAN );
+        gfx_goto( x, y + 2 );
+        gfx_putchar( 'O' );
+        gfx_goto( x + 2, y + 2 );
+        gfx_putchar( 'o' );
+        gfx_goto( x + 1, y + 3 );
+        gfx_putchar( 'o' );
+        gfx_color( GRAY );
+        gfx_goto( x - 1, y + 3 );
+        gfx_putchar( '°' );
+        gfx_goto( x + 2, y + 4 );
+        gfx_putchar( '°' );
+        gfx_goto( x, y + 4 );
+        gfx_putchar( '.' );
+        gfx_goto( x + 1, y + 5 );
+        gfx_putchar( '.' );
+        break;
+    case 1:
+        gfx_color( CYAN );
+        //gfx_goto( x, y + 1 );
+        //gfx_putchar( 'O' );
+        gfx_goto( x + 1, y + 2 );
+        gfx_putchar( 'O' );
+        gfx_goto( x, y + 3 );
+        gfx_putchar( 'o' );
+        gfx_color( GRAY );
+        gfx_goto( x + 2, y + 3 );
+        gfx_putchar( '°' );
+        gfx_goto( x + 1, y + 4 );
+        gfx_putchar( '°' );
+        gfx_goto( x - 1, y + 4 );
+        gfx_putchar( '.' );
+        gfx_goto( x + 2, y + 5 );
+        gfx_putchar( '.' );
+        break;
+    case 2:
+        gfx_color( CYAN );
+        //gfx_goto( x - 1, y + 1 );
+        //gfx_putchar( 'O' );
+        gfx_goto( x + 2, y + 2 );
+        gfx_putchar( 'O' );
+        gfx_goto( x, y + 2 );
+        gfx_putchar( 'o' );
+        gfx_goto( x + 1, y + 3 );
+        gfx_putchar( 'o' );
+        gfx_color( GRAY );
+        gfx_goto( x, y + 4 );
+        gfx_putchar( '°' );
+        gfx_goto( x + 2, y + 4 );
+        gfx_putchar( '.' );
+        gfx_goto( x + 1, y + 5 );
+        gfx_putchar( '.' );
+        break;
+    case 3:
+        gfx_color( CYAN );
+        //gfx_goto( x + 2, y + 1 );
+        //gfx_putchar( 'O' );
+        gfx_goto( x + 1, y + 2 );
+        gfx_putchar( 'O' );
+        gfx_goto( x - 1, y + 2 );
+        gfx_putchar( 'o' );
+        gfx_goto( x + 2, y + 3 );
+        gfx_putchar( 'o' );
+        gfx_color( GRAY );
+        gfx_goto( x, y + 3 );
+        gfx_putchar( '°' );
+        gfx_goto( x + 1, y + 4 );
+        gfx_putchar( '°' );
+        gfx_goto( x, y + 5 );
+        gfx_putchar( '.' );
+        break;
     }
 }
 

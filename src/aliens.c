@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: aliens.c,v 1.6 2002/12/22 18:44:12 sam Exp $
+ *   $Id: aliens.c,v 1.7 2002/12/22 22:17:41 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -67,6 +67,15 @@ void update_aliens( game *g, aliens *al )
 
     for( i = 0; i < ALIENS; i++ )
     {
+        /* If alien died, make it explode */
+        if( al->type[i] != ALIEN_NONE && al->life[i] < 0 )
+        {
+            add_explosion( g, g->ex, al->x[i], al->y[i], 0, 0, EXPLOSION_MEDIUM );
+            al->type[i] = ALIEN_NONE;
+            add_bonus( g, g->bo, al->x[i], al->y[i], GET_RAND(0,5) ? BONUS_GREEN : BONUS_LIFE );
+        }
+
+        /* Update coordinates */
         switch( al->type[i] )
         {
             case ALIEN_POOLP:

@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: collide.c,v 1.6 2002/12/22 18:44:12 sam Exp $
+ *   $Id: collide.c,v 1.7 2002/12/22 22:17:41 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -35,83 +35,92 @@ void collide_weapons_tunnel( game *g, weapons *wp, tunnel *t, explosions *ex )
 
         switch( wp->type[i] )
         {
-            case WEAPON_NONE:
-                break;
-            case WEAPON_SEEKER:
-            case WEAPON_BOMB:
-                if( x <= t->left[y]
-                     || x >= t->right[y] )
+        case WEAPON_LIGHTNING:
+        case WEAPON_NONE:
+            break;
+        case WEAPON_SEEKER:
+        case WEAPON_BOMB:
+        case WEAPON_FRAGBOMB:
+            if( x <= t->left[y]
+                 || x >= t->right[y] )
+            {
+                int damage = wp->type[i] == WEAPON_SEEKER ? 1 : 2;
+
+                add_explosion( g, ex, x, y, 0, 1, wp->type[i] == WEAPON_SEEKER ? EXPLOSION_SMALL : EXPLOSION_MEDIUM );
+
+                if( x <= t->left[y] )
                 {
-                    int damage = wp->type[i] == WEAPON_SEEKER ? 1 : 2;
+                    t->right[y-2] -= damage - 1;
+                    t->left[y-1] -= damage;
+                    t->left[y] -= damage + 1;
+                    t->left[y+1] -= damage;
+                    t->right[y+2] -= damage - 1;
+                }
+                else
+                {
+                    t->right[y-2] += damage - 1;
+                    t->right[y-1] += damage;
+                    t->right[y] += damage + 1;
+                    t->right[y+1] += damage;
+                    t->right[y+2] += damage - 1;
+                }
 
-                    add_explosion( g, ex, x, y, 0, 1, wp->type[i] == WEAPON_SEEKER ? EXPLOSION_SMALL : EXPLOSION_MEDIUM );
-
-                    if( x <= t->left[y] )
-                    {
-                        t->right[y-2] -= damage - 1;
-                        t->left[y-1] -= damage;
-                        t->left[y] -= damage + 1;
-                        t->left[y+1] -= damage;
-                        t->right[y+2] -= damage - 1;
-                    }
-                    else
-                    {
-                        t->right[y-2] += damage - 1;
-                        t->right[y-1] += damage;
-                        t->right[y] += damage + 1;
-                        t->right[y+1] += damage;
-                        t->right[y+2] += damage - 1;
-                    }
-
+                if( wp->type[i] == WEAPON_FRAGBOMB )
+                {
+                    wp->n[i] = -1;
+                }
+                else
+                {
                     wp->type[i] = WEAPON_NONE;
                 }
-                break;
-            case WEAPON_LASER:
-                if( x <= t->left[y+1]
-                     || x >= t->right[y+1] )
+            }
+            break;
+        case WEAPON_LASER:
+            if( x <= t->left[y+1]
+                 || x >= t->right[y+1] )
+            {
+                add_explosion( g, ex, x, y+1, 0, 1, EXPLOSION_SMALL );
+
+                if( x <= t->left[y+1] )
                 {
-                    add_explosion( g, ex, x, y+1, 0, 1, EXPLOSION_SMALL );
-
-                    if( x <= t->left[y+1] )
-                    {
-                        t->left[y]--;
-                        t->left[y+1]-=2;
-                        t->left[y+2]--;
-                    }
-                    else
-                    {
-                        t->right[y]++;
-                        t->right[y+1]+=2;
-                        t->right[y+2]++;
-                    }
-
-                    wp->type[i] = WEAPON_NONE;
+                    t->left[y]--;
+                    t->left[y+1]-=2;
+                    t->left[y+2]--;
                 }
-                else if( x <= t->left[y]
-                          || x >= t->right[y] )
+                else
                 {
-                    add_explosion( g, ex, x, y, 0, 1, EXPLOSION_SMALL );
-
-                    if( x <= t->left[y] )
-                    {
-                        t->left[y-1]--;
-                        t->left[y]-=2;
-                        t->left[y+1]--;
-                    }
-                    else
-                    {
-                        t->right[y-1]++;
-                        t->right[y]+=2;
-                        t->right[y+1]++;
-                    }
-
-                    wp->type[i] = WEAPON_NONE;
+                    t->right[y]++;
+                    t->right[y+1]+=2;
+                    t->right[y+2]++;
                 }
-                break;
-            case WEAPON_NUKE:
-            case WEAPON_BEAM:
-                /* The nuke and the laser do not break the tunnel */
-                break;
+
+                wp->type[i] = WEAPON_NONE;
+            }
+            else if( x <= t->left[y]
+                      || x >= t->right[y] )
+            {
+                add_explosion( g, ex, x, y, 0, 1, EXPLOSION_SMALL );
+
+                if( x <= t->left[y] )
+                {
+                    t->left[y-1]--;
+                    t->left[y]-=2;
+                    t->left[y+1]--;
+                }
+                else
+                {
+                    t->right[y-1]++;
+                    t->right[y]+=2;
+                    t->right[y+1]++;
+                }
+
+                wp->type[i] = WEAPON_NONE;
+            }
+            break;
+        case WEAPON_NUKE:
+        case WEAPON_BEAM:
+            /* The nuke and the laser do not break the tunnel */
+            break;
         }
     }
 }
@@ -130,125 +139,110 @@ void collide_weapons_aliens( game *g, weapons *wp, aliens *al, explosions *ex )
 
         switch( wp->type[i] )
         {
-            case WEAPON_NONE:
-                break;
-            case WEAPON_NUKE:
-                /* Big nuke */
-                r = (29 - wp->n[i]) * (29 - wp->n[i]) / 8;
+        case WEAPON_LIGHTNING:
+        case WEAPON_NONE:
+            break;
+        case WEAPON_NUKE:
+            /* Big nuke */
+            r = (29 - wp->n[i]) * (29 - wp->n[i]) / 8;
 
-                for( j = 0; j < ALIENS; j++ )
+            for( j = 0; j < ALIENS; j++ )
+            {
+                if( al->type[j] == ALIEN_NONE || al->life[j] < 0 )
                 {
-                    if( al->type[j] == ALIEN_NONE )
-                    {
-                        continue;
-                    }
-
-                    if( wp->n[i] == 0 /* Nuke destroys _everything_ */ ||
-                        (al->x[j] - x) * (al->x[j] - x)
-                          + 4 * (al->y[j] - y) * (al->y[j] - y)
-                        <= r * r )
-                    {
-                        /* Kill alien, not nuke */
-                        al->type[j] = ALIEN_NONE;
-                        add_explosion( g, ex, al->x[j], al->y[j], 0, 0, EXPLOSION_MEDIUM );
-                        add_bonus( g, g->bo, al->x[j], al->y[j], GET_RAND(0,5) ? BONUS_GREEN : BONUS_LIFE );
-                    }
-                }
-                break;
-            case WEAPON_BEAM:
-                r = (29 - wp->n[i]) * (29 - wp->n[i]) / 8;
-
-                for( j = 0; j < ALIENS; j++ )
-                {
-                    if( al->type[j] == ALIEN_NONE )
-                    {
-                        continue;
-                    }
-
-                    if( x >= al->x[j] && x <= al->x[j] + 4
-                         && y >= al->y[j] + 2 && y-5-r <= al->y[j] )
-                    {
-                        al->life[j] -= 4;
-                        if( al->life[j] <= 0 )
-                        {
-                            al->type[j] = ALIEN_NONE;
-                            add_explosion( g, ex, al->x[j], al->y[j], 0, 0, EXPLOSION_MEDIUM );
-                            add_bonus( g, g->bo, al->x[j], al->y[j], GET_RAND(0,5) ? BONUS_GREEN : BONUS_LIFE );
-                        }
-                    }
-                }
-                break;
-
-            case WEAPON_LASER:
-                for( j = 0; j < ALIENS; j++ )
-                {
-                    if( al->type[j] == ALIEN_NONE )
-                    {
-                        continue;
-                    }
-
-                    if( x >= al->x[j] && x <= al->x[j] + 4
-                         && y >= al->y[j] && y <= al->y[j] + 2 )
-                    {
-                        al->life[j]--;
-                        if( al->life[j] <= 0 )
-                        {
-                            al->type[j] = ALIEN_NONE;
-                            add_explosion( g, ex, al->x[j], al->y[j], 0, 0, EXPLOSION_MEDIUM );
-                            add_bonus( g, g->bo, al->x[j], al->y[j], GET_RAND(0,5) ? BONUS_GREEN : BONUS_LIFE );
-                        }
-                        ok = 1;
-                    }
-                    else if( x >= al->x[j] && x <= al->x[j] + 4
-                              && y+1 >= al->y[j] && y+1 <= al->y[j] + 2 )
-                    {
-                        al->life[j]--;
-                        if( al->life[j] <= 0 )
-                        {
-                            al->type[j] = ALIEN_NONE;
-                            add_explosion( g, ex, al->x[j], al->y[j]+1, 0, 0, EXPLOSION_MEDIUM );
-                            add_bonus( g, g->bo, al->x[j], al->y[j]+1, GET_RAND(0,5) ? BONUS_GREEN : BONUS_LIFE );
-                        }
-                        ok = 1;
-                    }
+                    continue;
                 }
 
-                if( ok )
+                if( wp->n[i] == 0 /* Nuke destroys _everything_ */ ||
+                    (al->x[j] - x) * (al->x[j] - x)
+                      + 4 * (al->y[j] - y) * (al->y[j] - y)
+                    <= r * r )
                 {
-                    add_explosion( g, ex, x, y+1, 0, 0, EXPLOSION_SMALL );
+                    /* Kill alien, not nuke */
+                    al->life[j] -= 10;
+                }
+            }
+            break;
+
+        case WEAPON_BEAM:
+            r = (29 - wp->n[i]) * (29 - wp->n[i]) / 8;
+
+            for( j = 0; j < ALIENS; j++ )
+            {
+                if( al->type[j] == ALIEN_NONE || al->life[j] < 0 )
+                {
+                    continue;
+                }
+
+                if( x >= al->x[j] && x <= al->x[j] + 4
+                     && y >= al->y[j] + 2 && y-5-r <= al->y[j] )
+                {
+                    al->life[j] -= 4;
+                }
+            }
+            break;
+
+        case WEAPON_LASER:
+            for( j = 0; j < ALIENS; j++ )
+            {
+                if( al->type[j] == ALIEN_NONE || al->life[j] < 0 )
+                {
+                    continue;
+                }
+
+                if( x >= al->x[j] && x <= al->x[j] + 4
+                     && y >= al->y[j] && y <= al->y[j] + 2 )
+                {
+                    al->life[j]--;
+                    ok = 1;
+                }
+                else if( x >= al->x[j] && x <= al->x[j] + 4
+                          && y+1 >= al->y[j] && y+1 <= al->y[j] + 2 )
+                {
+                    al->life[j]--;
+                    ok = 1;
+                }
+            }
+
+            if( ok )
+            {
+                add_explosion( g, ex, x, y+1, 0, 0, EXPLOSION_SMALL );
+                wp->type[i] = WEAPON_NONE;
+            }
+            break;
+
+        case WEAPON_SEEKER:
+        case WEAPON_BOMB:
+        case WEAPON_FRAGBOMB:
+            for( j = 0; j < ALIENS; j++ )
+            {
+                if( al->type[j] == ALIEN_NONE || al->life[j] < 0 )
+                {
+                    continue;
+                }
+
+                if( x >= al->x[j] && x <= al->x[j] + 4
+                     && y >= al->y[j] && y <= al->y[j] + 2 )
+                {
+                    al->life[j] -= wp->type[i] == WEAPON_SEEKER ? 1 : 5;
+                    ok = 1;
+                }
+            }
+
+            if( ok )
+            {
+                add_explosion( g, ex, x, y+1, 0, 0, wp->type[i] == WEAPON_SEEKER ? EXPLOSION_SMALL : EXPLOSION_MEDIUM );
+
+                if( wp->type[i] == WEAPON_FRAGBOMB )
+                {
+                    wp->n[i] = -1;
+                }
+                else
+                {
                     wp->type[i] = WEAPON_NONE;
                 }
-                break;
-
-            case WEAPON_SEEKER:
-            case WEAPON_BOMB:
-                for( j = 0; j < ALIENS; j++ )
-                {
-                    if( al->type[j] == ALIEN_NONE )
-                    {
-                        continue;
-                    }
-
-                    if( x >= al->x[j] && x <= al->x[j] + 4
-                         && y >= al->y[j] && y <= al->y[j] + 2 )
-                    {
-                        al->life[j] -= wp->type[i] == WEAPON_BOMB ? 5 : 1;
-                        if( al->life[j] <= 0 )
-                        {
-                            al->type[j] = ALIEN_NONE;
-                            add_explosion( g, ex, al->x[j], al->y[j], 0, 0, EXPLOSION_MEDIUM );
-                            add_bonus( g, g->bo, al->x[j], al->y[j], GET_RAND(0,5) ? BONUS_GREEN : BONUS_LIFE );
-                        }
-                        ok = 1;
-                    }
-                }
-
-                if( ok )
-                {
-                    add_explosion( g, ex, x, y+1, 0, 0, wp->type[i] == WEAPON_SEEKER ? EXPLOSION_SMALL : EXPLOSION_MEDIUM );
-                    wp->type[i] = WEAPON_NONE;
-                }
-                break;
+            }
+            break;
         }
     }
 }
