@@ -227,12 +227,18 @@ int main(int argc, char **argv)
 
         if(items && reload)
         {
-            char *buffer = malloc(ww + 1);
+            char *buffer;
+            int len = strlen(" Loading `%s'... ") + strlen(list[current]);
+
+            if(len < ww + 1)
+                len = ww + 1;
+
+            buffer = malloc(len);
 
             /* Reset image-specific runtime variables */
             zoom = 0;
 
-            snprintf(buffer, ww, " Loading `%s'... ", list[current]);
+            sprintf(buffer, " Loading `%s'... ", list[current]);
             buffer[ww] = '\0';
             caca_set_color(CACA_COLOR_WHITE, CACA_COLOR_BLUE);
             caca_putstr((ww - strlen(buffer)) / 2, wh / 2, buffer);
@@ -261,8 +267,15 @@ int main(int argc, char **argv)
         }
         else if(!pixels)
         {
-            char *buffer = malloc(ww + 1);
-            snprintf(buffer, ww, " Error loading `%s'. ", list[current]);
+            char *buffer;
+            int len = strlen(" Error loading `%s'. ") + strlen(list[current]);
+
+            if(len < ww + 1)
+                len = ww + 1;
+
+            buffer = malloc(len);
+
+            sprintf(buffer, " Error loading `%s'. ", list[current]);
             buffer[ww] = '\0';
             caca_set_color(CACA_COLOR_WHITE, CACA_COLOR_BLUE);
             caca_putstr((ww - strlen(buffer)) / 2, wh / 2, buffer);
@@ -322,7 +335,7 @@ int main(int argc, char **argv)
             caca_printf(ww - 14, wh - 2,
                         "(zoom: %s%i)", zoom > 0 ? "+" : "", zoom);
 
-            caca_set_color(CACA_COLOR_LIGHTRED, CACA_COLOR_BLACK);
+            caca_set_color(CACA_COLOR_LIGHTGRAY, CACA_COLOR_BLACK);
             caca_draw_line(0, wh - 1, ww - 1, wh - 1, ' ');
             switch(status)
             {

@@ -29,6 +29,7 @@
 #include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "caca.h"
 
 #define XSIZ (caca_get_width() * 2)
@@ -133,6 +134,7 @@ initialize (void)
   caca_bitmap = caca_create_bitmap(8, XSIZ, YSIZ - 2, XSIZ, 0, 0, 0, 0);
   caca_set_bitmap_palette(caca_bitmap, r, g, b, a);
   bitmap = malloc(4 * caca_get_width() * caca_get_height() * sizeof(char));
+  memset(bitmap, 0, 4 * caca_get_width() * caca_get_height());
 #else
   aa_hidecursor (context);
 #endif
