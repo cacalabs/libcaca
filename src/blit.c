@@ -34,10 +34,19 @@ typedef unsigned char uint8_t;
 #include "caca.h"
 #include "caca_internals.h"
 
-#include <stdio.h>
+static enum caca_dithering _caca_dithering = CACA_DITHER_NONE;
+
+void caca_set_dithering(enum caca_dithering dither)
+{
+    if(dither < 0 || dither > 1)
+        return;
+
+    _caca_dithering = dither;
+}
+
 void caca_blit(int x1, int y1, int x2, int y2, void *pixels, int w, int h)
 {
-    char foo[] = { ' ', '.', ':', ';', '=', '$', '%', '@', '#', '8', 'W' };
+    char foo[] = { ' ', '.', ':', ';', '=', '%', '$', 'W', '#', '8', '@' };
     int x, y, pitch;
 
     if(x1 > x2)
@@ -55,49 +64,45 @@ void caca_blit(int x1, int y1, int x2, int y2, void *pixels, int w, int h)
     for(y = y1 > 0 ? y1 : 0; y <= y2 && y <= (int)caca_get_height(); y++)
         for(x = x1 > 0 ? x1 : 0; x <= x2 && x <= (int)caca_get_width(); x++)
         {
+static int light_colors[] = {CACA_COLOR_LIGHTMAGENTA, CACA_COLOR_LIGHTRED, CACA_COLOR_YELLOW, CACA_COLOR_LIGHTGREEN, CACA_COLOR_LIGHTCYAN, CACA_COLOR_LIGHTBLUE, CACA_COLOR_LIGHTMAGENTA};
+static int dark_colors[] = {CACA_COLOR_MAGENTA, CACA_COLOR_RED, CACA_COLOR_BROWN, CACA_COLOR_GREEN, CACA_COLOR_CYAN, CACA_COLOR_BLUE, CACA_COLOR_MAGENTA};
             int fromx = w * (x - x1) / (x2 - x1 + 1);
             int fromy = h * (y - y1) / (y2 - y1 + 1);
             int r = ((unsigned char *)pixels)[3 * fromx + pitch * fromy];
             int g = ((unsigned char *)pixels)[3 * fromx + 1 + pitch * fromy];
             int b = ((unsigned char *)pixels)[3 * fromx + 2 + pitch * fromy];
+            int hue, sat, val;
 
-            if(r == g && g == b)
+            int min = r, max = r, delta;
+            if(min > g) min = g; if(max < g) max = g;
+            if(min > b) min = b; if(max < b) max = b;
+
+            delta = max - min;
+            val = max; /* 0 - 255 */
+            sat = max ? 256 * delta / max : 0; /* 0 - 255 */
+
+            if(sat > caca_rand(64, 128))
             {
-                caca_set_color(EE_LIGHTGRAY);
+                /* XXX: Values are automatically clipped between 0 and 6
+                 * because of delta/2 */
+                if( r == max )
+                    hue = 1 + (float)(g - b + delta / 2 + caca_rand(-40, 40)) / delta;
+                else if( g == max )
+                    hue = 3 + (float)(b - r + delta / 2 + caca_rand(-40, 40)) / delta;
+                else
+                    hue = 5 + (float)(r - g + delta / 2 + caca_rand(-40, 40)) / delta;
+
+                if(val > caca_rand(128, 192))
+                    caca_set_color(light_colors[hue]);
+                else
+                    caca_set_color(dark_colors[hue]);
             }
             else
             {
-                static int foo_colors[6] = {EE_LIGHTRED, EE_YELLOW, EE_LIGHTGREEN, EE_LIGHTCYAN, EE_LIGHTBLUE, EE_LIGHTMAGENTA};
-                float min = r, max = r, delta, hue, sat;
-                if(min > g) min = g; if(max < g) max = g;
-                if(min > b) min = b; if(max < b) max = b;
-
-                delta = max - min;
-
-		sat = max / delta;
-
-                if(delta > 20)
-                {
-                    if( r == max )
-                        hue = (g - b) / delta; // between yellow & magenta
-                    else if( g == max )
-                        hue = 2 + (b - r) / delta; // between cyan & yellow
-                    else
-                        hue = 4 + (r - g) / delta; // between magenta & cyan
-
-                    hue *= 60; // degrees
-                    if( hue < 0 )
-                        hue += 360;
-
-                    caca_set_color(foo_colors[(int)(hue + 30) / 60]);
-                }
-                else
-                {
-                    caca_set_color(EE_LIGHTGRAY);
-                }
+                caca_set_color(CACA_COLOR_LIGHTGRAY);
             }
 
-            caca_putchar(x, y, foo[(r + g + b) / 3 / 25]);
+            caca_putchar(x, y, foo[(r + g + b + caca_rand(-10, 10)) / 3 / 25]);
         }
 }
 

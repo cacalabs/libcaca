@@ -21,8 +21,8 @@
  *   02111-1307  USA
  */
 
-#ifndef __EE_INTERNALS_H__
-#define __EE_INTERNALS_H__
+#ifndef __CACA_INTERNALS_H__
+#define __CACA_INTERNALS_H__
 
 #if defined(USE_NCURSES)
 extern int _caca_attr[];
@@ -35,4 +35,4 @@ extern char *_caca_screen;
 extern char *_caca_empty_line;
 extern char *_caca_scratch_line;
 
-#endif /* __EE_INTERNALS_H__ */
+#endif /* __CACA_INTERNALS_H__ */

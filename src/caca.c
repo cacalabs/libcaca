@@ -125,22 +125,22 @@ int caca_init(void)
 
     start_color();
 
-    init_pair(1 + EE_BLACK,        COLOR_BLACK,   COLOR_BLACK);
-    init_pair(1 + EE_BLUE,         COLOR_BLUE,    COLOR_BLACK);
-    init_pair(1 + EE_GREEN,        COLOR_GREEN,   COLOR_BLACK);
-    init_pair(1 + EE_CYAN,         COLOR_CYAN,    COLOR_BLACK);
-    init_pair(1 + EE_RED,          COLOR_RED,     COLOR_BLACK);
-    init_pair(1 + EE_MAGENTA,      COLOR_MAGENTA, COLOR_BLACK);
-    init_pair(1 + EE_BROWN,        COLOR_YELLOW,  COLOR_BLACK);
-    init_pair(1 + EE_LIGHTGRAY,    COLOR_WHITE,   COLOR_BLACK);
-    init_pair(1 + EE_DARKGRAY,     COLOR_BLACK,   COLOR_BLACK);
-    init_pair(1 + EE_LIGHTBLUE,    COLOR_BLUE,    COLOR_BLACK);
-    init_pair(1 + EE_LIGHTGREEN,   COLOR_GREEN,   COLOR_BLACK);
-    init_pair(1 + EE_LIGHTCYAN,    COLOR_CYAN,    COLOR_BLACK);
-    init_pair(1 + EE_LIGHTRED,     COLOR_RED,     COLOR_BLACK);
-    init_pair(1 + EE_LIGHTMAGENTA, COLOR_MAGENTA, COLOR_BLACK);
-    init_pair(1 + EE_YELLOW,       COLOR_YELLOW,  COLOR_BLACK);
-    init_pair(1 + EE_WHITE,        COLOR_WHITE,   COLOR_BLACK);
+    init_pair(1 + CACA_COLOR_BLACK,        COLOR_BLACK,   COLOR_BLACK);
+    init_pair(1 + CACA_COLOR_BLUE,         COLOR_BLUE,    COLOR_BLACK);
+    init_pair(1 + CACA_COLOR_GREEN,        COLOR_GREEN,   COLOR_BLACK);
+    init_pair(1 + CACA_COLOR_CYAN,         COLOR_CYAN,    COLOR_BLACK);
+    init_pair(1 + CACA_COLOR_RED,          COLOR_RED,     COLOR_BLACK);
+    init_pair(1 + CACA_COLOR_MAGENTA,      COLOR_MAGENTA, COLOR_BLACK);
+    init_pair(1 + CACA_COLOR_BROWN,        COLOR_YELLOW,  COLOR_BLACK);
+    init_pair(1 + CACA_COLOR_LIGHTGRAY,    COLOR_WHITE,   COLOR_BLACK);
+    init_pair(1 + CACA_COLOR_DARKGRAY,     COLOR_BLACK,   COLOR_BLACK);
+    init_pair(1 + CACA_COLOR_LIGHTBLUE,    COLOR_BLUE,    COLOR_BLACK);
+    init_pair(1 + CACA_COLOR_LIGHTGREEN,   COLOR_GREEN,   COLOR_BLACK);
+    init_pair(1 + CACA_COLOR_LIGHTCYAN,    COLOR_CYAN,    COLOR_BLACK);
+    init_pair(1 + CACA_COLOR_LIGHTRED,     COLOR_RED,     COLOR_BLACK);
+    init_pair(1 + CACA_COLOR_LIGHTMAGENTA, COLOR_MAGENTA, COLOR_BLACK);
+    init_pair(1 + CACA_COLOR_YELLOW,       COLOR_YELLOW,  COLOR_BLACK);
+    init_pair(1 + CACA_COLOR_WHITE,        COLOR_WHITE,   COLOR_BLACK);
 
     for(i = 0; i < 8; i++)
     {

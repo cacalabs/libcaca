@@ -76,7 +76,7 @@ int main(int argc, char **argv)
 
         caca_clear();
 
-        caca_set_color(EE_WHITE);
+        caca_set_color(CACA_COLOR_WHITE);
         caca_draw_thin_box(0, 0, caca_get_width() - 1, caca_get_height() - 1);
 
         caca_putstr(3, 0, "[ Sprite editor for libcaca ]");
@@ -96,9 +96,9 @@ int main(int argc, char **argv)
         ya = -1 - caca_get_sprite_dy(sprite, frame);
         xb = xa + 1 + caca_get_sprite_width(sprite, frame);
         yb = ya + 1 + caca_get_sprite_height(sprite, frame);
-        caca_set_color(EE_BLACK);
+        caca_set_color(CACA_COLOR_BLACK);
         caca_fill_box(57 + xa, 10 + ya, 57 + xb, 10 + yb, ' ');
-        caca_set_color(EE_WHITE);
+        caca_set_color(CACA_COLOR_WHITE);
         caca_draw_thin_box(57 + xa, 10 + ya, 57 + xb, 10 + yb);
         caca_draw_sprite(57, 10, sprite, frame);
 

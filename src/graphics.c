@@ -40,9 +40,9 @@
 #include "caca.h"
 #include "caca_internals.h"
 
-static int _caca_color = 0;
+static enum caca_color _caca_color = CACA_COLOR_WHITE;
 
-void caca_set_color(int color)
+void caca_set_color(enum caca_color color)
 {
     if(color < 0 || color > 15)
         return;
@@ -57,7 +57,7 @@ void caca_set_color(int color)
 #endif
 }
 
-int caca_get_color(void)
+enum caca_color caca_get_color(void)
 {
     return _caca_color;
 }

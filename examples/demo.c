@@ -66,13 +66,20 @@ int main(int argc, char **argv)
     caca_set_delay(40000);
 
     /* Initialize data */
-    sprite = caca_load_sprite("data/barboss.txt");
+    sprite = caca_load_sprite("caca.txt");
+    if(!sprite)
+        sprite = caca_load_sprite("examples/caca.txt");
 
 gdk_init (&argc, &argv);
     //pixbuf = gdk_pixbuf_new_from_file("/home/sam/pix/gally4.jpeg", NULL);
     //pixbuf = gdk_pixbuf_new_from_file("/home/sam/pix/badge1.jpeg", NULL);
     //pixbuf = gdk_pixbuf_new_from_file("/home/sam/pix/union.png", NULL);
-    pixbuf = gdk_pixbuf_new_from_file("/home/sam/pix/pikachu.jpeg", NULL);
+    //pixbuf = gdk_pixbuf_new_from_file("/home/sam/pix/pikachu.jpeg", NULL);
+    //pixbuf = gdk_pixbuf_new_from_file("/home/sam/pix/gradient.png", NULL);
+    //pixbuf = gdk_pixbuf_new_from_file("/home/sam/artwork/aboire.png", NULL);
+    //pixbuf = gdk_pixbuf_new_from_file("/home/sam/web/sam.zoy.org/artwork/goret.png", NULL);
+    //pixbuf = gdk_pixbuf_new_from_file("/home/sam/lilkim02.jpg", NULL);
+    pixbuf = gdk_pixbuf_new_from_file("/home/sam/etw.bmp", NULL);
 if(!pixbuf) return -2;
     pixels = gdk_pixbuf_get_pixels(pixbuf);
     bufx = gdk_pixbuf_get_width(pixbuf);
@@ -162,7 +169,7 @@ fprintf(stderr, "w %i, h %i, stride %i\n", bufx, bufy, bufpitch);
         {
             demo();
 
-            caca_set_color(EE_WHITE);
+            caca_set_color(CACA_COLOR_WHITE);
             caca_draw_thin_box(1, 1, caca_get_width() - 2, caca_get_height() - 2);
             caca_printf(4, 1, "[%i.%i fps]----",
                             1000000 / caca_get_rendertime(),
@@ -184,7 +191,7 @@ static void display_menu(void)
     int yo = caca_get_height() - 2;
 
     caca_clear();
-    caca_set_color(EE_WHITE);
+    caca_set_color(CACA_COLOR_WHITE);
     caca_draw_thin_box(1, 1, xo, yo);
 
     caca_putstr((xo - strlen("libcaca demo")) / 2, 3, "libcaca demo");
@@ -221,7 +228,7 @@ static void demo_all(void)
     caca_clear();
 
     /* Draw the sun */
-    caca_set_color(EE_YELLOW);
+    caca_set_color(CACA_COLOR_YELLOW);
     xo = caca_get_width() / 4;
     yo = caca_get_height() / 4 + 5 * sin(0.03*i);
 
@@ -233,9 +240,9 @@ static void demo_all(void)
     }
 
     j = 15 + sin(0.03*i) * 8;
-    caca_set_color(EE_WHITE);
+    caca_set_color(CACA_COLOR_WHITE);
     caca_fill_ellipse(xo, yo, j, j / 2, '#');
-    caca_set_color(EE_YELLOW);
+    caca_set_color(CACA_COLOR_YELLOW);
     caca_draw_ellipse(xo, yo, j, j / 2, '#');
 
     /* Draw the pyramid */
@@ -251,19 +258,19 @@ static void demo_all(void)
     xc = caca_get_width() / 4 - sin(0.02*i) * 5;
     yc = caca_get_height() * 3 / 4 + cos(0.02*i) * 5;
 
-    caca_set_color(EE_GREEN);
+    caca_set_color(CACA_COLOR_GREEN);
     caca_fill_triangle(xo, yo, xb, yb, xa, ya, '%');
-    caca_set_color(EE_YELLOW);
+    caca_set_color(CACA_COLOR_YELLOW);
     caca_draw_thin_triangle(xo, yo, xb, yb, xa, ya);
 
-    caca_set_color(EE_RED);
+    caca_set_color(CACA_COLOR_RED);
     caca_fill_triangle(xa, ya, xb, yb, xc, yc, '#');
-    caca_set_color(EE_YELLOW);
+    caca_set_color(CACA_COLOR_YELLOW);
     caca_draw_thin_triangle(xa, ya, xb, yb, xc, yc);
 
-    caca_set_color(EE_BLUE);
+    caca_set_color(CACA_COLOR_BLUE);
     caca_fill_triangle(xo, yo, xb, yb, xc, yc, '%');
-    caca_set_color(EE_YELLOW);
+    caca_set_color(CACA_COLOR_YELLOW);
     caca_draw_thin_triangle(xo, yo, xb, yb, xc, yc);
 
     /* Draw a background triangle */
@@ -276,7 +283,7 @@ static void demo_all(void)
     xc = caca_get_width() / 3;
     yc = caca_get_height() - 3;
 
-    caca_set_color(EE_CYAN);
+    caca_set_color(CACA_COLOR_CYAN);
     caca_draw_thin_triangle(xa, ya, xb, yb, xc, yc);
 
     xo = caca_get_width() / 2 + cos(0.027*i) * caca_get_width() / 3;
@@ -330,7 +337,7 @@ static void demo_color(void)
     for(i = 0; i < 16; i++)
     {
         sprintf(buf, "'%c': %i (%s)", 'a' + i, i, caca_get_color_name(i));
-        caca_set_color(EE_WHITE);
+        caca_set_color(CACA_COLOR_WHITE);
         caca_putstr(4, i + 3, buf);
         caca_set_color(i);
         caca_putstr(40, i + 3, "XXXXXXXXXX-XX--X----------");
@@ -457,7 +464,6 @@ static void demo_sprites(void)
 
 static void demo_blit(void)
 {
-caca_set_color(EE_LIGHTGRAY);
     caca_blit(6, 4, caca_get_width() - 6, caca_get_height() - 4, pixels, bufx, bufy);
 }
 

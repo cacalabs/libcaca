@@ -21,8 +21,8 @@
  *   02111-1307  USA
  */
 
-#ifndef __EE_H__
-#define __EE_H__
+#ifndef __CACA_H__
+#define __CACA_H__
 
 #ifdef __cplusplus
 extern "C"
@@ -32,24 +32,33 @@ extern "C"
 /*
  * Colors
  */
-enum caca_colors
+enum caca_color
 {
-    EE_BLACK = 0,
-    EE_BLUE = 1,
-    EE_GREEN = 2,
-    EE_CYAN = 3,
-    EE_RED = 4,
-    EE_MAGENTA = 5,
-    EE_BROWN = 6,
-    EE_LIGHTGRAY = 7,
-    EE_DARKGRAY = 8,
-    EE_LIGHTBLUE = 9,
-    EE_LIGHTGREEN = 10,
-    EE_LIGHTCYAN = 11,
-    EE_LIGHTRED = 12,
-    EE_LIGHTMAGENTA = 13,
-    EE_YELLOW = 14,
-    EE_WHITE = 15
+    CACA_COLOR_BLACK = 0,
+    CACA_COLOR_BLUE = 1,
+    CACA_COLOR_GREEN = 2,
+    CACA_COLOR_CYAN = 3,
+    CACA_COLOR_RED = 4,
+    CACA_COLOR_MAGENTA = 5,
+    CACA_COLOR_BROWN = 6,
+    CACA_COLOR_LIGHTGRAY = 7,
+    CACA_COLOR_DARKGRAY = 8,
+    CACA_COLOR_LIGHTBLUE = 9,
+    CACA_COLOR_LIGHTGREEN = 10,
+    CACA_COLOR_LIGHTCYAN = 11,
+    CACA_COLOR_LIGHTRED = 12,
+    CACA_COLOR_LIGHTMAGENTA = 13,
+    CACA_COLOR_YELLOW = 14,
+    CACA_COLOR_WHITE = 15
+};
+
+/*
+ * Dithering modes
+ */
+enum caca_dithering
+{
+    CACA_DITHER_NONE = 0,
+    CACA_DITHER_RANDOM = 1
 };
 
 /*
@@ -62,6 +71,7 @@ struct caca_sprite;
  */
 int caca_init(void);
 void caca_set_delay(unsigned int);
+void caca_set_dithering(enum caca_dithering);
 unsigned int caca_get_rendertime(void);
 unsigned int caca_get_width(void);
 unsigned int caca_get_height(void);
@@ -71,8 +81,8 @@ void caca_end(void);
 
 char caca_get_key(void);
 
-void caca_set_color(int);
-int caca_get_color(void);
+void caca_set_color(enum caca_color);
+enum caca_color caca_get_color(void);
 void caca_putchar(int, int, char);
 void caca_putstr(int, int, const char *);
 void caca_printf(int, int, const char *, ...);
@@ -114,4 +124,4 @@ void caca_blit(int, int, int, int, void *, int, int);
 }
 #endif
 
-#endif /* __EE_H__ */
+#endif /* __CACA_H__ */

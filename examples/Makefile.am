@@ -4,6 +4,8 @@
 
 AM_CPPFLAGS = -I$(top_srcdir)/src
 
+EXTRA_DIST = caca.txt
+
 if USE_SLANG
 LDFLAGS_slang = -lslang
 endif
