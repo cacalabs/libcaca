@@ -68,6 +68,10 @@ char *_caca_screen;
 
 int caca_init(void)
 {
+#if defined(USE_NCURSES)
+    mmask_t newmask;
+#endif
+
     caca_init_terminal();
 
 #if defined(USE_SLANG)
@@ -102,8 +106,6 @@ int caca_init(void)
     SLtt_Term_Cannot_Scroll = 1;
 
 #elif defined(USE_NCURSES)
-    mmask_t newmask;
-
     initscr();
     keypad(stdscr, TRUE);
     nonl();
