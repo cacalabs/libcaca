@@ -8,7 +8,7 @@ libcaca_a_SOURCES = \
 	caca.h \
 	caca_internals.h \
 	graphics.c \
-	io.c \
+	event.c \
 	math.c \
 	line.c \
 	box.c \

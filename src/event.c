@@ -19,7 +19,7 @@
  *  02111-1307  USA
  */
 
-/** \file io.c
+/** \file event.c
  *  \version \$Id$
  *  \author Sam Hocevar <sam@zoy.org>
  *  \brief Event handling

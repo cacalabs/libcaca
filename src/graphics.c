@@ -826,7 +826,7 @@ int _caca_init_graphics(void)
         win32_back = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE,
                                                0, NULL,
                                                CONSOLE_TEXTMODE_BUFFER, NULL);
-        if(!win32_back || win328back == INVALID_HANDLE_VALUE)
+        if(!win32_back || win32_back == INVALID_HANDLE_VALUE)
             return -1;
 
         if(!GetConsoleScreenBufferInfo(win32_hout, &csbi))
