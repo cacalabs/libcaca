@@ -472,7 +472,11 @@ void caca_putstr(int x, int y, char const *s)
             SLsmg_write_string(_caca_empty_line + _caca_width - len);
         else
 #endif
-            SLsmg_write_string((char *)(intptr_t)s);
+        {
+            union { char *ch; const char *constch; } u;
+            u.constch = s;
+            SLsmg_write_string(u.ch);
+        }
         break;
 #endif
 #if defined(USE_NCURSES)
