@@ -324,8 +324,6 @@ void caca_putchar(int x, int y, char c)
         data = conio_screen + 2 * (x + y * _caca_width);
         data[0] = c;
         data[1] = (_caca_bgcolor << 4) | _caca_fgcolor;
-//        gotoxy(x + 1, y + 1);
-//        putch(c);
         break;
 #endif
 #if defined(USE_X11)
@@ -409,8 +407,6 @@ void caca_putstr(int x, int y, char const *s)
             *charbuf++ = *s++;
             *charbuf++ = (_caca_bgcolor << 4) | _caca_fgcolor;
         }
-//        gotoxy(x + 1, y + 1);
-//        cputs(s);
         break;
 #endif
 #if defined(USE_X11)

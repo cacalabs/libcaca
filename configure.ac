@@ -32,25 +32,25 @@ AC_CHECK_FUNCS(vsnprintf getenv putenv strcasecmp)
 CACA_DRIVERS="" 
 
 if test "${enable_conio}" != "no"; then
+  ac_cv_my_have_conio="no"
   AC_CHECK_HEADERS(conio.h,
-   [ac_cv_my_have_conio="yes"
-    AC_MSG_CHECKING(for ScreenUpdate in pc.h)
+   [AC_MSG_CHECKING(for ScreenUpdate in pc.h)
     AC_EGREP_HEADER(ScreenUpdate,pc.h,
-     [AC_MSG_RESULT(yes)
+     [ac_cv_my_have_conio="yes"
+      AC_MSG_RESULT(yes)
       AC_DEFINE(SCREENUPDATE_IN_PC_H, 1,
-                Define if <pc.h> defines ScreenUpdate.)],
-     [AC_MSG_RESULT(no)])
-    AC_DEFINE(USE_CONIO, 1, Define to activate the conio.h backend driver)
-    CACA_DRIVERS="${CACA_DRIVERS} conio"],
-   [ac_cv_my_have_conio="no"])
+                Define if <pc.h> defines ScreenUpdate.)
+      AC_DEFINE(USE_CONIO, 1, Define to activate the conio.h backend driver)
+      CACA_DRIVERS="${CACA_DRIVERS} conio"],
+     [AC_MSG_RESULT(no)])])
   if test "${ac_cv_my_have_conio}" = "no" -a "${enable_conio}" = "yes"; then
     AC_MSG_ERROR([cannot find conio.h])
   fi
 fi
 
 if test "${enable_slang}" != "no"; then
+  ac_cv_my_have_slang="no"
   AC_CHECK_HEADERS(slang.h slang/slang.h,
-   ac_cv_my_have_slang="no"
    [AC_CHECK_LIB(slang, SLkp_init,
      [ac_cv_my_have_slang="yes"
       AC_DEFINE(USE_SLANG, 1, Define to activate the slang backend driver)
@@ -81,14 +81,13 @@ if test "${enable_x11}" != "no"; then
 fi
 
 if test "${enable_ncurses}" != "no"; then
+  ac_cv_my_have_ncurses="no"
   AC_CHECK_HEADERS(ncurses.h,
    [AC_CHECK_LIB(ncurses, initscr,
      [ac_cv_my_have_ncurses="yes"
       AC_DEFINE(USE_NCURSES, 1, Define to activate the ncurses backend driver)
       CACA_LIBS="${CACA_LIBS} -lncurses"
-      CACA_DRIVERS="${CACA_DRIVERS} ncurses"],
-     [ac_cv_my_have_ncurses="no"])],
-   [ac_cv_my_have_ncurses="no"])
+      CACA_DRIVERS="${CACA_DRIVERS} ncurses"])])
   if test "${ac_cv_my_have_ncurses}" = "no" -a "${enable_ncurses}" = "yes"; then
     AC_MSG_ERROR([cannot find ncurses development files])
   fi

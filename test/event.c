@@ -91,11 +91,11 @@ static void print_event(int x, int y, unsigned int event)
         caca_printf(x, y, "CACA_EVENT_NONE");
         break;
     case CACA_EVENT_KEY_PRESS:
-        caca_printf(x, y, "CACA_EVENT_KEY_PRESS 0x%x",
+        caca_printf(x, y, "CACA_EVENT_KEY_PRESS 0x%02x",
                     event & 0x00ffffff);
         break;
     case CACA_EVENT_KEY_RELEASE:
-        caca_printf(x, y, "CACA_EVENT_KEY_RELEASE 0x%x",
+        caca_printf(x, y, "CACA_EVENT_KEY_RELEASE 0x2%x",
                     event & 0x00ffffff);
         break;
     case CACA_EVENT_MOUSE_MOTION:
