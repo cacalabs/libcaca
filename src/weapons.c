@@ -32,6 +32,7 @@ static void draw_beam(int x, int y, int frame);
 static void draw_fragbomb(int x, int y, int frame);
 
 struct ee_sprite *bomb_sprite;
+struct ee_sprite *fragbomb_sprite;
 
 void init_weapons(game *g, weapons *wp)
 {
@@ -43,6 +44,7 @@ void init_weapons(game *g, weapons *wp)
     }
 
     bomb_sprite = ee_load_sprite("data/weapon_bomb");
+    fragbomb_sprite = ee_load_sprite("data/weapon_fragbomb");
 }
 
 void draw_weapons(game *g, weapons *wp)
@@ -347,95 +349,13 @@ static void draw_bomb(int x, int y, int vx, int vy)
 
 static void draw_fragbomb(int x, int y, int frame)
 {
-    ee_color(EE_WHITE);
+    /* Draw the head */
+    ee_set_sprite_frame(fragbomb_sprite, frame & 1);
+    ee_draw_sprite(x, y, fragbomb_sprite);
 
-    ee_color(frame & 1 ? EE_CYAN : EE_WHITE);
-    ee_goto(x-2, y);
-    ee_putstr("(    )");
-    ee_goto(x-1, y+1);
-    ee_putstr("`--'");
-
-    ee_color(frame & 1 ? EE_WHITE : EE_CYAN);
-    ee_goto(x-1, y-1);
-    ee_putstr(",--.");
-    ee_goto(x, y);
-    ee_putstr("',");
-
-    switch(frame % 4)
-    {
-    case 0:
-        ee_color(EE_CYAN);
-        ee_goto(x, y + 2);
-        ee_putchar('O');
-        ee_goto(x + 2, y + 2);
-        ee_putchar('o');
-        ee_goto(x + 1, y + 3);
-        ee_putchar('o');
-        ee_color(EE_GRAY);
-        ee_goto(x - 1, y + 3);
-        ee_putchar(':');
-        ee_goto(x + 2, y + 4);
-        ee_putchar(':');
-        ee_goto(x, y + 4);
-        ee_putchar('.');
-        ee_goto(x + 1, y + 5);
-        ee_putchar('.');
-        break;
-    case 1:
-        ee_color(EE_CYAN);
-        //ee_goto(x, y + 1);
-        //ee_putchar('O');
-        ee_goto(x + 1, y + 2);
-        ee_putchar('O');
-        ee_goto(x, y + 3);
-        ee_putchar('o');
-        ee_color(EE_GRAY);
-        ee_goto(x + 2, y + 3);
-        ee_putchar(':');
-        ee_goto(x + 1, y + 4);
-        ee_putchar(':');
-        ee_goto(x - 1, y + 4);
-        ee_putchar('.');
-        ee_goto(x + 2, y + 5);
-        ee_putchar('.');
-        break;
-    case 2:
-        ee_color(EE_CYAN);
-        //ee_goto(x - 1, y + 1);
-        //ee_putchar('O');
-        ee_goto(x + 2, y + 2);
-        ee_putchar('O');
-        ee_goto(x, y + 2);
-        ee_putchar('o');
-        ee_goto(x + 1, y + 3);
-        ee_putchar('o');
-        ee_color(EE_GRAY);
-        ee_goto(x, y + 4);
-        ee_putchar(':');
-        ee_goto(x + 2, y + 4);
-        ee_putchar('.');
-        ee_goto(x + 1, y + 5);
-        ee_putchar('.');
-        break;
-    case 3:
-        ee_color(EE_CYAN);
-        //ee_goto(x + 2, y + 1);
-        //ee_putchar('O');
-        ee_goto(x + 1, y + 2);
-        ee_putchar('O');
-        ee_goto(x - 1, y + 2);
-        ee_putchar('o');
-        ee_goto(x + 2, y + 3);
-        ee_putchar('o');
-        ee_color(EE_GRAY);
-        ee_goto(x, y + 3);
-        ee_putchar(':');
-        ee_goto(x + 1, y + 4);
-        ee_putchar(':');
-        ee_goto(x, y + 5);
-        ee_putchar('.');
-        break;
-    }
+    /* Draw the tail */
+    ee_set_sprite_frame(fragbomb_sprite, 2 + (frame % 4));
+    ee_draw_sprite(x, y, fragbomb_sprite);
 }
 
 static void draw_beam(int x, int y, int frame)
