@@ -51,6 +51,9 @@
 #       include <X11/XKBlib.h>
 #   endif
 #endif
+#if defined(USE_WIN32)
+#   include <windows.h>
+#endif
 
 #if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
 #   include <inttypes.h>
@@ -61,6 +64,7 @@ typedef unsigned char uint8_t;
 #include <stdio.h> /* BUFSIZ */
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <stdarg.h>
 
 #include "caca.h"
@@ -161,6 +165,53 @@ static Bool x11_detect_autorepeat;
 #endif
 #endif
 
+#if defined(USE_WIN32)
+static uint8_t *win32_char, *win32_attr;
+HANDLE win32_hin, win32_hout;
+static HANDLE win32_front, win32_back;
+static CHAR_INFO *win32_buffer;
+
+static int const win32_fg_palette[] =
+{
+    0,
+    FOREGROUND_BLUE,
+    FOREGROUND_GREEN,
+    FOREGROUND_GREEN | FOREGROUND_BLUE,
+    FOREGROUND_RED,
+    FOREGROUND_RED | FOREGROUND_BLUE,
+    FOREGROUND_RED | FOREGROUND_GREEN,
+    FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE,
+    FOREGROUND_INTENSITY,
+    FOREGROUND_INTENSITY | FOREGROUND_BLUE,
+    FOREGROUND_INTENSITY | FOREGROUND_GREEN,
+    FOREGROUND_INTENSITY | FOREGROUND_GREEN | FOREGROUND_BLUE,
+    FOREGROUND_INTENSITY | FOREGROUND_RED,
+    FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_BLUE,
+    FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN,
+    FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE
+};
+
+static int const win32_bg_palette[] =
+{
+    0,
+    BACKGROUND_BLUE,
+    BACKGROUND_GREEN,
+    BACKGROUND_GREEN | BACKGROUND_BLUE,
+    BACKGROUND_RED,
+    BACKGROUND_RED | BACKGROUND_BLUE,
+    BACKGROUND_RED | BACKGROUND_GREEN,
+    BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE,
+    BACKGROUND_INTENSITY,
+    BACKGROUND_INTENSITY | BACKGROUND_BLUE,
+    BACKGROUND_INTENSITY | BACKGROUND_GREEN,
+    BACKGROUND_INTENSITY | BACKGROUND_GREEN | BACKGROUND_BLUE,
+    BACKGROUND_INTENSITY | BACKGROUND_RED,
+    BACKGROUND_INTENSITY | BACKGROUND_RED | BACKGROUND_BLUE,
+    BACKGROUND_INTENSITY | BACKGROUND_RED | BACKGROUND_GREEN,
+    BACKGROUND_INTENSITY | BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE
+};
+#endif
+
 static char *_caca_empty_line;
 static char *_caca_scratch_line;
 
@@ -244,7 +295,12 @@ void caca_set_color(enum caca_color fgcolor, enum caca_color bgcolor)
 #endif
 #if defined(USE_X11)
     case CACA_DRIVER_X11:
-        /* FIXME */
+        /* Nothing to do */
+        break;
+#endif
+#if defined(USE_WIN32)
+    case CACA_DRIVER_WIN32:
+        /* Nothing to do */
         break;
 #endif
     default:
@@ -327,6 +383,12 @@ void caca_putchar(int x, int y, char c)
         x11_attr[x + y * _caca_width] = (_caca_bgcolor << 4) | _caca_fgcolor;
         break;
 #endif
+#if defined(USE_WIN32)
+    case CACA_DRIVER_WIN32:
+        win32_char[x + y * _caca_width] = c;
+        win32_attr[x + y * _caca_width] = (_caca_bgcolor << 4) | _caca_fgcolor;
+        break;
+#endif
     default:
         break;
     }
@@ -345,10 +407,10 @@ void caca_putchar(int x, int y, char c)
  */
 void caca_putstr(int x, int y, char const *s)
 {
-#if defined(USE_CONIO) | defined(USE_X11)
+#if defined(USE_CONIO) | defined(USE_X11) | defined(USE_WIN32)
     char *charbuf;
 #endif
-#if defined(USE_X11)
+#if defined(USE_X11) | defined(USE_WIN32)
     char *attrbuf;
 #endif
     unsigned int len;
@@ -408,6 +470,17 @@ void caca_putstr(int x, int y, char const *s)
     case CACA_DRIVER_X11:
         charbuf = x11_char + x + y * _caca_width;
         attrbuf = x11_attr + x + y * _caca_width;
+        while(*s)
+        {
+            *charbuf++ = *s++;
+            *attrbuf++ = (_caca_bgcolor << 4) | _caca_fgcolor;
+        }
+        break;
+#endif
+#if defined(USE_WIN32)
+    case CACA_DRIVER_WIN32:
+        charbuf = win32_char + x + y * _caca_width;
+        attrbuf = win32_attr + x + y * _caca_width;
         while(*s)
         {
             *charbuf++ = *s++;
@@ -735,6 +808,64 @@ int _caca_init_graphics(void)
     }
     else
 #endif
+#if defined(USE_WIN32)
+    if(_caca_driver == CACA_DRIVER_WIN32)
+    {
+        CONSOLE_CURSOR_INFO cci;
+        CONSOLE_SCREEN_BUFFER_INFO csbi;
+        COORD size;
+
+        win32_front = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE,
+                                                0, NULL,
+                                                CONSOLE_TEXTMODE_BUFFER, NULL);
+        if(!win32_front)
+            return -1;
+
+        win32_back = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE,
+                                               0, NULL,
+                                               CONSOLE_TEXTMODE_BUFFER, NULL);
+        if(!win32_back)
+            return -1;
+
+        if(!GetConsoleScreenBufferInfo(win32_hout, &csbi))
+            return -1;
+
+        _caca_width = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+        _caca_height = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+
+        size.X = _caca_width;
+        size.Y = _caca_height;
+        SetConsoleScreenBufferSize(win32_front, size);
+        SetConsoleScreenBufferSize(win32_back, size);
+
+        SetConsoleMode(win32_front, 0);
+        SetConsoleMode(win32_back, 0);
+
+        GetConsoleCursorInfo(win32_front, &cci);
+        cci.bVisible = FALSE;
+        SetConsoleCursorInfo(win32_front, &cci);
+        SetConsoleCursorInfo(win32_back, &cci);
+
+        SetConsoleActiveScreenBuffer(win32_front);
+
+        win32_char = malloc(_caca_width * _caca_height * sizeof(int));
+        if(win32_char == NULL)
+            return -1;
+
+        win32_attr = malloc(_caca_width * _caca_height * sizeof(int));
+        if(win32_attr == NULL)
+        {
+            free(win32_char);
+            return -1;
+        }
+
+win32_buffer = malloc(sizeof(CHAR_INFO) * _caca_width * _caca_height);
+
+        memset(win32_char, 0, _caca_width * _caca_height * sizeof(int));
+        memset(win32_attr, 0, _caca_width * _caca_height * sizeof(int));
+    }
+    else
+#endif
     {
         /* Dummy */
     }
@@ -782,6 +913,17 @@ int _caca_end_graphics(void)
         XCloseDisplay(x11_dpy);
         free(x11_char);
         free(x11_attr);
+    }
+    else
+#endif
+#if defined(USE_WIN32)
+    if(_caca_driver == CACA_DRIVER_WIN32)
+    {
+        SetConsoleActiveScreenBuffer(win32_hout);
+        CloseHandle(win32_back);
+        CloseHandle(win32_front);
+        free(win32_char);
+        free(win32_attr);
     }
     else
 #endif
@@ -926,7 +1068,55 @@ void caca_refresh(void)
                   0, 0);
         XFlush(x11_dpy);
     }
+    else
 #endif
+#if defined(USE_WIN32)
+    if(_caca_driver == CACA_DRIVER_WIN32)
+    {
+        COORD size, pos;
+        SMALL_RECT rect;
+        DWORD dummy;
+        unsigned int x, y, len;
+
+        /* Render everything to our back buffer */
+        for(y = 0; y < _caca_height; y++)
+        {
+            pos.X = 0;
+            pos.Y = y;
+            SetConsoleCursorPosition(win32_back, pos);
+
+            for(x = 0; x < _caca_width; x += len)
+            {
+                unsigned char *attr = win32_attr + x + y * _caca_width;
+
+                len = 1;
+                while(x + len < _caca_width && attr[len] == attr[0])
+                    len++;
+
+                SetConsoleTextAttribute(win32_back,
+                                        win32_fg_palette[attr[0] & 0xf]
+                                         | win32_bg_palette[attr[0] >> 4]);
+
+                WriteConsole(win32_back, win32_char + x + y * _caca_width,
+                             len, &dummy, NULL);
+            }
+        }
+
+        /* Blit the back buffer to the front buffer */
+        size.X = _caca_width;
+        size.Y = _caca_height;
+        pos.X = pos.Y = 0;
+        rect.Left = rect.Top = 0;
+        rect.Right = _caca_width - 1;
+        rect.Bottom = _caca_height - 1;
+        ReadConsoleOutput(win32_back, win32_buffer, size, pos, &rect);
+        WriteConsoleOutput(win32_front, win32_buffer, size, pos, &rect);
+    }
+    else
+#endif
+    {
+        /* Dummy */
+    }
 
     /* Wait until _caca_delay + time of last call */
     ticks += _caca_getticks(&timer);

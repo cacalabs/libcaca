@@ -58,8 +58,8 @@ unsigned int _caca_getticks(struct caca_timer *timer)
 #if defined(HAVE_GETTIMEOFDAY)
     struct timeval tv;
 #elif defined(USE_WIN32)
-    static long long int freq = -1LL;
-    long long int usec;
+    static long long int freq = -1;
+    unsigned long long int usec;
 #endif
     unsigned int ticks = 0;
     int new_sec, new_usec;
@@ -69,15 +69,15 @@ unsigned int _caca_getticks(struct caca_timer *timer)
     new_sec = tv.tv_sec;
     new_usec = tv.tv_usec;
 #elif defined(USE_WIN32)
-    if(freq == -1LL)
+    if(freq == -1)
     {
         if(!QueryPerformanceFrequency((LARGE_INTEGER *)&freq))
             freq = 0;
     }
 
     QueryPerformanceCounter((LARGE_INTEGER *)&usec);
-    new_sec = usec / freq;
-    new_usec = usec % freq;
+    new_sec = usec * 1000000 / freq / 1000000;
+    new_usec = (usec * 1000000 / freq) % 1000000;
 #endif
 
     if(timer->last_sec != 0)

@@ -34,6 +34,10 @@
 #   include <stdio.h>
 #endif
 
+#if defined(HAVE_SLEEP)
+#   include <windows.h>
+#endif
+
 #include "caca.h"
 
 /* Local macros */
@@ -256,7 +260,11 @@ int main(int argc, char **argv)
 
         if(!update)
         {
+#if defined(HAVE_USLEEP)
             usleep(10000);
+#elif defined(HAVE_SLEEP)
+            Sleep(10);
+#endif
             continue;
         }
 

@@ -56,14 +56,18 @@
 
 static unsigned int _get_next_event(void);
 static unsigned int _lowlevel_event(void);
+#if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO)
 static void _push_event(unsigned int);
 static unsigned int _pop_event(void);
+#endif
 
 #if !defined(_DOXYGEN_SKIP_ME)
 #define EVENTBUF_LEN 10
 #endif
+#if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO)
 static unsigned int eventbuf[EVENTBUF_LEN];
 static int events = 0;
+#endif
 
 #if !defined(_DOXYGEN_SKIP_ME)
 /* If no new key was pressed after AUTOREPEAT_THRESHOLD usec, assume the
@@ -198,10 +202,14 @@ static unsigned int _get_next_event(void)
 
 static unsigned int _lowlevel_event(void)
 {
-    unsigned int event = _pop_event();
+    unsigned int event;
+
+#if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO)
+    event = _pop_event();
 
     if(event)
         return event;
+#endif
 
 #if defined(USE_X11)
     /* The X11 event check routine */
@@ -540,6 +548,58 @@ static unsigned int _lowlevel_event(void)
 #if defined(USE_WIN32)
     if(_caca_driver == CACA_DRIVER_WIN32)
     {
+        INPUT_RECORD rec;
+        DWORD num;
+
+        GetNumberOfConsoleInputEvents(win32_hin, &num);
+        if(num == 0)
+            return CACA_EVENT_NONE;
+
+        ReadConsoleInput(win32_hin, &rec, 1, &num);
+        if(rec.EventType == KEY_EVENT)
+        {
+            if(rec.Event.KeyEvent.bKeyDown)
+                event = CACA_EVENT_KEY_PRESS;
+            else
+                event = CACA_EVENT_KEY_RELEASE;
+
+            if(rec.Event.KeyEvent.uChar.AsciiChar)
+                return event | rec.Event.KeyEvent.uChar.AsciiChar;
+        }
+        else if(rec.EventType == MOUSE_EVENT)
+        {
+            if(rec.Event.MouseEvent.dwEventFlags == 0)
+            {
+                if(rec.Event.MouseEvent.dwButtonState & 0x01)
+                    return CACA_EVENT_MOUSE_PRESS | 0x000001;
+
+                if(rec.Event.MouseEvent.dwButtonState & 0x02)
+                    return CACA_EVENT_MOUSE_PRESS | 0x000002;
+            }
+            else if(rec.Event.MouseEvent.dwEventFlags == MOUSE_MOVED)
+            {
+                return CACA_EVENT_MOUSE_MOTION
+                        | (rec.Event.MouseEvent.dwMousePosition.X << 12)
+                        | (rec.Event.MouseEvent.dwMousePosition.Y);
+            }
+#if 0
+            else if(rec.Event.MouseEvent.dwEventFlags == DOUBLE_CLICK)
+            {
+                cout << rec.Event.MouseEvent.dwMousePosition.X << "," <<
+                        rec.Event.MouseEvent.dwMousePosition.Y << "  " << flush;
+            }
+            else if(rec.Event.MouseEvent.dwEventFlags == MOUSE_WHEELED)
+            {
+                SetConsoleCursorPosition(hOut,
+                                         WheelWhere);
+                if(rec.Event.MouseEvent.dwButtonState & 0xFF000000)
+                    cout << "Down" << flush;
+                else
+                    cout << "Up  " << flush;
+            }
+#endif
+        }
+
         return CACA_EVENT_NONE;
     }
     else
@@ -551,6 +611,7 @@ static unsigned int _lowlevel_event(void)
     return CACA_EVENT_NONE;
 }
 
+#if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO)
 static void _push_event(unsigned int event)
 {
     if(events == EVENTBUF_LEN)
@@ -574,4 +635,5 @@ static unsigned int _pop_event(void)
 
     return event;
 }
+#endif
 

@@ -70,6 +70,10 @@ enum caca_driver _caca_driver;
 static mmask_t oldmask;
 #endif
 
+#if defined(USE_WIN32)
+static CONSOLE_CURSOR_INFO cci;
+#endif
+
 /** \brief Initialise \e libcaca.
  *
  *  This function initialises internal \e libcaca structures and the backend
@@ -168,8 +172,19 @@ int caca_init(void)
 #if defined(USE_WIN32)
     if(_caca_driver == CACA_DRIVER_WIN32)
     {
-        /* Nothing to do */
-        printf("initialising win32 driver\n");
+        win32_hin = GetStdHandle(STD_INPUT_HANDLE);
+        win32_hout = CreateFile("CONOUT$", GENERIC_READ | GENERIC_WRITE,
+                                FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
+                                OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
+        if(win32_hout == INVALID_HANDLE_VALUE)
+            return -1;
+
+        GetConsoleCursorInfo(win32_hout, &cci);
+        cci.bVisible = FALSE;
+        SetConsoleCursorInfo(win32_hout, &cci);
+
+        SetConsoleMode(win32_hout, ENABLE_MOUSE_INPUT);
     }
     else
 #endif
@@ -391,7 +406,13 @@ void caca_end(void)
 #if defined(USE_WIN32)
     if(_caca_driver == CACA_DRIVER_WIN32)
     {
-        /* Nothing to do */
+        SetConsoleTextAttribute(win32_hout, FOREGROUND_INTENSITY
+                                             | FOREGROUND_RED
+                                             | FOREGROUND_GREEN
+                                             | FOREGROUND_BLUE);
+        cci.bVisible = TRUE;
+        SetConsoleCursorInfo(win32_hout, &cci);
+        CloseHandle(win32_hout);
     }
     else
 #endif

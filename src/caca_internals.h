@@ -86,4 +86,9 @@ extern Window x11_window;
 extern int x11_font_width, x11_font_height;
 #endif
 
+#if defined(USE_WIN32)
+#include <windows.h>
+extern HANDLE win32_hin, win32_hout;
+#endif
+
 #endif /* __CACA_INTERNALS_H__ */
