@@ -50,16 +50,8 @@
 
 static void caca_init_terminal(void);
 
-char *_caca_empty_line;
-char *_caca_scratch_line;
-
 #if defined(USE_NCURSES)
 static mmask_t oldmask;
-int _caca_attr[16*16];
-#endif
-
-#if defined(USE_CONIO)
-char *_caca_screen;
 #endif
 
 int caca_init(void)

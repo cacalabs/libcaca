@@ -24,5 +24,5 @@ if NEED_PIC
 libcaca_pic_a = libcaca_pic.a
 endif
 libcaca_pic_a_SOURCES = $(libcaca_a_SOURCES)
-libcaca_pic_a_CPPFLAGS = -fPIC
+libcaca_pic_a_CPPFLAGS = -fPIC -DPIC
 

@@ -57,12 +57,26 @@
 #include "caca.h"
 #include "caca_internals.h"
 
-#ifdef USE_CONIO
-static struct text_info ti;
-#endif
-
+/*
+ * Global variables
+ */
 unsigned int _caca_width;
 unsigned int _caca_height;
+
+/*
+ * Local variables
+ */
+#if defined(USE_NCURSES)
+static int _caca_attr[16*16];
+#endif
+
+#if defined(USE_CONIO)
+static struct text_info ti;
+static char *_caca_screen;
+#endif
+
+static char *_caca_empty_line;
+static char *_caca_scratch_line;
 
 static unsigned int _caca_delay;
 static unsigned int _caca_rendertime;

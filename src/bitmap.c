@@ -160,13 +160,14 @@ static void mask2shift(unsigned int mask, int *right, int *left)
     *left = 12 - lshift;
 }
 
-struct caca_bitmap *caca_create_bitmap(int bpp, int w, int h, int pitch,
-                                       int rmask, int gmask, int bmask,
-                                       int amask)
+struct caca_bitmap *caca_create_bitmap(unsigned int bpp, unsigned int w,
+                                       unsigned int h, unsigned int pitch,
+                                       unsigned int rmask, unsigned int gmask,
+                                       unsigned int bmask, unsigned int amask)
 {
     struct caca_bitmap *bitmap;
 
-    /* Currently only this format is supported. Will improve later. */
+    /* Minor sanity test */
     if(!w || !h || !pitch || bpp > 32 || bpp < 8)
         return NULL;
 
@@ -331,7 +332,7 @@ static void rgb2hsv_default(int r, int g, int b, int *hue, int *sat, int *val)
 }
 
 void caca_draw_bitmap(int x1, int y1, int x2, int y2,
-                      const struct caca_bitmap *bitmap, char *pixels)
+                      const struct caca_bitmap *bitmap, void *pixels)
 {
 #if !NEW_RENDERER
     static const int white_colors[] =

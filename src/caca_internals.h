@@ -32,19 +32,7 @@
 
 extern int _caca_init_graphics(void);
 
-#if defined(USE_NCURSES)
-extern int _caca_attr[];
-#endif
-
-#if defined(USE_CONIO)
-extern struct text_info _ti;
-extern char *_caca_screen;
-#endif
-
 extern unsigned int _caca_width;
 extern unsigned int _caca_height;
-
-extern char *_caca_empty_line;
-extern char *_caca_scratch_line;
 
 #endif /* __CACA_INTERNALS_H__ */

@@ -212,10 +212,13 @@ void caca_free_sprite(struct caca_sprite *);
  * Bitmap handling
  */
 struct caca_bitmap;
-struct caca_bitmap *caca_create_bitmap(int, int, int, int, int, int, int, int);
+struct caca_bitmap *caca_create_bitmap(unsigned int, unsigned int,
+                                       unsigned int, unsigned int,
+                                       unsigned int, unsigned int,
+                                       unsigned int, unsigned int);
 void caca_set_bitmap_palette(struct caca_bitmap *, unsigned int[],
                              unsigned int[], unsigned int[], unsigned int[]);
-void caca_draw_bitmap(int, int, int, int, const struct caca_bitmap *, char *);
+void caca_draw_bitmap(int, int, int, int, const struct caca_bitmap *, void *);
 void caca_free_bitmap(struct caca_bitmap *);
 
 #ifdef __cplusplus
