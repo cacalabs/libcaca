@@ -89,8 +89,8 @@ int caca_get_event(void)
         {
         case 'A': return CACA_EVENT_KEY_PRESS | CACA_KEY_UP;
         case 'B': return CACA_EVENT_KEY_PRESS | CACA_KEY_DOWN;
-        case 'C': return CACA_EVENT_KEY_PRESS | CACA_KEY_LEFT;
-        case 'D': return CACA_EVENT_KEY_PRESS | CACA_KEY_RIGHT;
+        case 'C': return CACA_EVENT_KEY_PRESS | CACA_KEY_RIGHT;
+        case 'D': return CACA_EVENT_KEY_PRESS | CACA_KEY_LEFT;
         }
 
         key[3] = _read_key();

@@ -1,13 +1,21 @@
 $Id$
 
-   o  Sprite library
-
-   o  Clip graphics 
-
-   o  Fix the thin ellipse rendering
+Low level stuff
 
    o  Write a Linux console output for the drawing library
       See also BUGS as to why it's very slow in console mode
 
+   o  Better keyboard driver in an X terminal, see
+      http://groups.yahoo.com/group/zepp/message/381
+
    o  DONE 12 Nov 2003: Port to conio.h
+
+
+High level stuff
+
+   o  Sprite library
+
+   o  Clip all graphics primitives
+
+   o  Fix the thin ellipse rendering
 
