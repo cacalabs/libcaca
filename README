@@ -1,6 +1,6 @@
 $Id$
 
-Building ttyvaders
+Building libcaca
 
    o  Run configure then make. Useful configure flags are:
 
@@ -11,36 +11,4 @@ Building ttyvaders
    o  Cross-compilation example:
  
      ./configure --enable-conio --host=i386-pc-msdosdjgpp
-
-
-History of textmode games
-
-   o  http://www.textmodegames.com/
-
-
-Other terminal-based games
-
-   o  moon-buggy: extremely simple, extremely addictive
-      http://www.mathematik.uni-kl.de/~wwwstoch/voss/comp/moon-buggy.html
-
-   o  0verkill: http://artax.karlin.mff.cuni.cz/~brain/0verkill/
-
-   o  nInvaders: http://dettus.dyndns.org/ninvaders/
-      real space invaders clone
-
-   o  Stardork: http://www.seekrut.com/rk/stardork.html
-      more strategy than arcade
-
-   o  Nethack: http://www.nethack.org/
-
-   o  Tetrinet: http://www.secret.com.au/games/tetrinet/
-
-   o  MyMan: http://geocities.com/bsittler/
-      pacman clone
-
-   o  Tornado: http://home.kcore.de/~kiza/linux/tornado/
-
-   o  David's Perl games: http://davidsperlgames.sourceforge.net/
-
-   o  ascii-invaders: http://www.ip9.org/munro/invaders/index.html
 

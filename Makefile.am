@@ -1,10 +1,10 @@
 ###############################################################################
-# Automake targets and declarations for ttyvaders
+# Automake targets and declarations for libcaca
 ###############################################################################
 
-SUBDIRS = libcaca test src
-DIST_SUBDIRS = $(SUBDIRS) autotools data debian
+SUBDIRS = libcaca test
+DIST_SUBDIRS = $(SUBDIRS) autotools debian
 
-EXTRA_DIST = BUGS doc/shapes.txt bootstrap
+EXTRA_DIST = BUGS bootstrap
 AUTOMAKE_OPTIONS = foreign dist-bzip2
 

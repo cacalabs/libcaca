@@ -1,13 +1,13 @@
 # $Id$
 
-AC_INIT(ttyvaders,0.0cvs-20031110)
+AC_INIT(libcaca,0.0cvs-20031110)
 
 AC_PREREQ(2.50)
 AC_CONFIG_SRCDIR(src/main.c)
 AC_CONFIG_AUX_DIR(autotools)
 AC_CANONICAL_SYSTEM
 
-AM_INIT_AUTOMAKE(ttyvaders,0.0cvs-20031110)
+AM_INIT_AUTOMAKE(libcaca,0.0cvs-20031110)
 AM_CONFIG_HEADER(config.h)
 
 AM_PROG_CC_C_O
@@ -62,9 +62,7 @@ AC_OUTPUT([
   Makefile
   libcaca/Makefile
   test/Makefile
-  src/Makefile
   autotools/Makefile
-  data/Makefile
   debian/Makefile
 ])
 

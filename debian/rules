@@ -38,7 +38,7 @@ install: build
 	dh_testroot
 	dh_clean -k
 	dh_installdirs
-	DESTDIR=`pwd`/debian/ttyvaders/ $(MAKE) install prefix=/usr
+	DESTDIR=`pwd`/debian/libcaca/ $(MAKE) install prefix=/usr
 
 # Build architecture-independent files here.
 binary-indep: build install

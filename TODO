@@ -1,7 +1,5 @@
 $Id$
 
-TODO for libcaca
-
    o  Sprite library
 
    o  Clip graphics 
@@ -12,36 +10,4 @@ TODO for libcaca
       See also BUGS as to why it's very slow in console mode
 
    o  DONE 12 Nov 2003: Port to conio.h
-
-
-TODO for ttyvaders
-
-   o  Let the ship pick up bonuses
-
-   o  Alien swarms, programmed behaviour
-
-   o  Spiral weapon (vertical sine)
-
-   o  Stick aliens to tunnel
-
-   o  Change tunnel colour
-
-   o  Draw bosses
-
-   o  Promote precision for all coordinates except screen
-
-   o  Animate the ship
-
-   o  The nuke should break the tunnel
-      Or at least a bit
-
-   o  The laser stays alive when the ship explodes
-
-   o  DONE 12 Nov 2003: Write a generic drawing library with automatic clipping
-   o  DONE 23 Dec 2002: Handle life
-   o  DONE 23 Dec 2002: Mega ball
-   o  DONE 23 Dec 2002: Fragmentation bomb (merge with mega-ball?)
-   o  DONE 23 Dec 2002: Fill holes in the tunnel when |step| > 2
-   o  DONE 19 Dec 2002: Tunnel sometimes doesn't get drawn on the left
-   o  DONE 18 Dec 2002: Draw a 3rd alien type
 

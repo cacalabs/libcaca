@@ -1,6 +1,6 @@
 #! /bin/sh
 
-##  bootstrap file for ttyvaders -- Sam Hocevar <sam@zoy.org>
+##  bootstrap file for libcaca -- Sam Hocevar <sam@zoy.org>
 ##  $Id$
 
 set -x
