@@ -10,3 +10,6 @@ AUTOMAKE_OPTIONS = dist-bzip2
 
 bin_SCRIPTS = caca-config
 
+doc_DATA = README BUGS TODO AUTHORS NEWS NOTES
+docdir = $(datadir)/doc/libcaca-dev
+

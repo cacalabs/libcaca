@@ -46,5 +46,6 @@ cacaview
 
    o  File browser
 
-   o  Handle GIF and PNG transparency with checkered background
+   o  DONE 11 Dec 2003: Handle GIF and PNG transparency with checkered
+      background
 

@@ -6,7 +6,7 @@ AC_PREREQ(2.50)
 AC_CONFIG_AUX_DIR(autotools)
 AC_CANONICAL_SYSTEM
 
-AM_INIT_AUTOMAKE(libcaca, 0.3)
+AM_INIT_AUTOMAKE(libcaca, 0.4)
 AM_CONFIG_HEADER(config.h)
 
 AM_PROG_CC_C_O
@@ -101,6 +101,8 @@ AM_CONDITIONAL(USE_IMLIB2, ${USE_IMLIB2})
 # Build documentation?
 AC_PATH_PROG(DOXYGEN, doxygen, no)
 AM_CONDITIONAL(DOXYGEN, test "${DOXYGEN}" != "no")
+
+# Build LaTeX documentation?
 AC_PATH_PROG(LATEX, latex, no)
 AC_MSG_CHECKING(for a4wide.sty)
 if test -f /usr/share/texmf/tex/latex/misc/a4wide.sty; then

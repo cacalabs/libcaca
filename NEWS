@@ -1,5 +1,14 @@
 $Id$
 
+Changes between 0.3 and 0.4:
+----------------------------
+
+  * preliminary X11 graphics driver
+  * support for simultaneously compiled-in drivers
+  * honour the CACA_DRIVER, CACA_WIDTH, CACA_HEIGHT and CACA_FONT environment
+    variables
+  * more documentation
+
 Changes between 0.2 and 0.3:
 ----------------------------
 

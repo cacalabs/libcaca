@@ -749,6 +749,11 @@ void caca_refresh(void)
     {
         unsigned int x, y;
 
+        /* FIXME: This is very, very slow. There are several things that can
+         * be done in order to speed up things:
+         *  - cache characters once rendered
+         *  - pre-render all characters
+         *  - use our own rendering routine (screen depth dependent) */
         for(y = 0; y < _caca_height; y++)
             for(x = 0; x < _caca_width; x++)
             {

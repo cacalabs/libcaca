@@ -8,3 +8,5 @@ Video rendering
 
    o  Slang cannot display 256 colour pairs under Unix.
 
+   o  the X11 driver is very slow.
+
