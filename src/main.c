@@ -127,8 +127,7 @@ static void start_game (game *g)
                     if( g->p->weapon == 0 )
                     {
                         g->p->weapon = 4;
-                        add_weapon( g, g->wp, g->p->x << 4, g->p->y << 4, -24, -16, WEAPON_SEEKER );
-                        add_weapon( g, g->wp, (g->p->x + 5) << 4, g->p->y << 4, 24, -16, WEAPON_SEEKER );
+                        add_weapon( g, g->wp, (g->p->x + 2) << 4, g->p->y << 4, 0, -16, WEAPON_BOMB );
                     }
                 case ' ':
                     if( g->p->weapon == 0 )
@@ -136,6 +135,18 @@ static void start_game (game *g)
                         g->p->weapon = 4;
                         add_weapon( g, g->wp, g->p->x << 4, g->p->y << 4, 0, -16, WEAPON_LASER );
                         add_weapon( g, g->wp, (g->p->x + 5) << 4, g->p->y << 4, 0, -16, WEAPON_LASER );
+                        /* Extra shtuph */
+                        add_weapon( g, g->wp, g->p->x << 4, g->p->y << 4, -24, -16, WEAPON_SEEKER );
+                        add_weapon( g, g->wp, (g->p->x + 5) << 4, g->p->y << 4, 24, -16, WEAPON_SEEKER );
+                        /* More shtuph */
+                        add_weapon( g, g->wp, (g->p->x + 1) << 4, (g->p->y - 1) << 4, 0, -16, WEAPON_LASER );
+                        add_weapon( g, g->wp, (g->p->x + 4) << 4, (g->p->y - 1) << 4, 0, -16, WEAPON_LASER );
+                        /* Even more shtuph */
+                        add_weapon( g, g->wp, (g->p->x + 2) << 4, (g->p->y - 1) << 4, 0, -16, WEAPON_LASER );
+                        add_weapon( g, g->wp, (g->p->x + 3) << 4, (g->p->y - 1) << 4, 0, -16, WEAPON_LASER );
+                        /* Extra shtuph */
+                        add_weapon( g, g->wp, g->p->x << 4, g->p->y << 4, -32, 0, WEAPON_SEEKER );
+                        add_weapon( g, g->wp, (g->p->x + 5) << 4, g->p->y << 4, 32, 0, WEAPON_SEEKER );
                     }
                     break;
             }
@@ -143,48 +154,42 @@ static void start_game (game *g)
 
         usleep(40000);
 
-        if( GET_RAND(0,10) == 0 )
+        if( !poz || skip )
         {
-            int list[3] = { ALIEN_POOLP, ALIEN_BOOL, ALIEN_BRAH };
+            skip = 0;
 
-            add_alien( g, g->al, 0, rand() % g->h / 2, list[GET_RAND(0,3)] );
-        }
-
-        if( poz )
-        {
-            if( skip )
+            /* XXX: to be removed */
+            if( GET_RAND(0,10) == 0 )
             {
-                skip = 0;
+                int list[3] = { ALIEN_POOLP, ALIEN_BOOL, ALIEN_BRAH };
+
+                add_alien( g, g->al, 0, rand() % g->h / 2, list[GET_RAND(0,3)] );
             }
-            else
+
+            /* Update game rules */
+            if( g->t->right[1] - g->t->left[1] == g->t->w )
             {
-                continue;
+                g->t->w = 85 - g->t->w;
             }
+
+            /* Scroll and update positions */
+            collide_player_tunnel( g, g->p, g->t, g->ex );
+            update_player( g, g->p );
+            collide_player_tunnel( g, g->p, g->t, g->ex );
+
+            update_starfield( g, g->sf );
+            update_bonus( g, g->bo );
+            update_aliens( g, g->al );
+
+            collide_weapons_tunnel( g, g->wp, g->t, g->ex );
+            collide_weapons_aliens( g, g->wp, g->al, g->ex );
+            update_weapons( g, g->wp );
+            collide_weapons_tunnel( g, g->wp, g->t, g->ex );
+            collide_weapons_aliens( g, g->wp, g->al, g->ex );
+
+            update_explosions( g, g->ex );
+            /*if(purcompteur%2)*/ update_tunnel( g, g->t );
         }
-
-        /* Update game rules */
-        if( g->t->right[1] - g->t->left[1] == g->t->w )
-        {
-            g->t->w = 85 - g->t->w;
-        }
-
-        /* Scroll and update positions */
-        collide_player_tunnel( g, g->p, g->t, g->ex );
-        update_player( g, g->p );
-        collide_player_tunnel( g, g->p, g->t, g->ex );
-
-        update_starfield( g, g->sf );
-        update_bonus( g, g->bo );
-        update_aliens( g, g->al );
-
-        collide_weapons_tunnel( g, g->wp, g->t, g->ex );
-        collide_weapons_aliens( g, g->wp, g->al, g->ex );
-        update_weapons( g, g->wp );
-        collide_weapons_tunnel( g, g->wp, g->t, g->ex );
-        collide_weapons_aliens( g, g->wp, g->al, g->ex );
-
-        update_explosions( g, g->ex );
-        /*if(purcompteur%2)*/ update_tunnel( g, g->t );
 
         /* Clear screen */
         clear_graphics();
@@ -195,8 +200,8 @@ static void start_game (game *g)
         draw_bonus( g, g->bo );
         draw_aliens( g, g->al );
         draw_player( g, g->p );
-        draw_weapons( g, g->wp );
         draw_explosions( g, g->ex );
+        draw_weapons( g, g->wp );
 
         /* Refresh */
         refresh_graphics();

@@ -4,6 +4,7 @@
 
 #include "common.h"
 
+static void draw_bomb( int x, int y, int vx, int vy );
 static void draw_nuke( int x, int y, int frame );
 static void draw_beam( int x, int y, int frame );
 static void draw_circle( int x, int y, int r, char c );
@@ -44,6 +45,20 @@ void draw_weapons( game *g, weapons *wp )
                 gfx_goto( wp->x[i] >> 4, wp->y[i] >> 4 );
                 gfx_putchar( '@' );
                 break;
+            case WEAPON_BOMB:
+                gfx_color( GRAY );
+                gfx_goto( (wp->x[i] - wp->vx[i]) >> 4, (wp->y[i] - wp->vy[i]) >> 4 );
+                gfx_putchar( '.' );
+                gfx_goto( (wp->x3[i] - wp->vx[i]) >> 4, (wp->y3[i] - wp->vy[i]) >> 4 );
+                gfx_putchar( '.' );
+                gfx_goto( (wp->x2[i] - wp->vx[i]) >> 4, (wp->y2[i] - wp->vy[i]) >> 4 );
+                gfx_putchar( '.' );
+                gfx_goto( wp->x3[i] >> 4, wp->y3[i] >> 4 );
+                gfx_putchar( '.' );
+                gfx_goto( wp->x2[i] >> 4, wp->y2[i] >> 4 );
+                gfx_putchar( '.' );
+                draw_bomb( wp->x[i] >> 4, wp->y[i] >> 4, wp->vx[i], wp->vy[i] );
+                break;
             case WEAPON_BEAM:
                 draw_beam( wp->x[i] >> 4, wp->y[i] >> 4, wp->n[i] );
                 break;
@@ -72,6 +87,7 @@ void update_weapons( game *g, weapons *wp )
                     wp->type[i] = WEAPON_NONE;
                 }
                 break;
+            case WEAPON_BOMB:
             case WEAPON_SEEKER:
                 /* Update tail */
                 wp->x3[i] = wp->x2[i];
@@ -175,6 +191,7 @@ void add_weapon( game *g, weapons *wp, int x, int y, int vx, int vy, int type )
                 case WEAPON_LASER:
                     break;
                 case WEAPON_SEEKER:
+                case WEAPON_BOMB:
                     wp->x2[i] = x;
                     wp->y2[i] = y;
                     wp->x3[i] = x;
@@ -191,6 +208,153 @@ void add_weapon( game *g, weapons *wp, int x, int y, int vx, int vy, int type )
                     break;
             }
             break;
+        }
+    }
+}
+
+static void draw_bomb( int x, int y, int vx, int vy )
+{
+    vy *= 2;
+    gfx_color( CYAN );
+
+    if( vx > vy )
+    {
+        if( vx > -vy ) /* right quarter */
+        {
+            if( vy > vx/4 )
+            {
+                /* -1pi/6 */
+                gfx_goto( x-4, y-1 );
+                gfx_putstr( "/`-." );
+                gfx_goto( x-4, y );
+                gfx_putstr( "`-._\\" );
+                gfx_goto( x, y+1 );
+                gfx_putchar( '`' );
+            }
+            else if( vy < -vx/4 )
+            {
+                /* 1pi/6 */
+                gfx_goto( x-1, y-1 );
+                gfx_putstr( "_," );
+                gfx_goto( x-4, y );
+                gfx_putstr( ",-' /" );
+                gfx_goto( x-4, y+1 );
+                gfx_putstr( "\\,-'" );
+            }
+            else
+            {
+                /* 0pi/6 */
+                gfx_goto( x-4, y-1 );
+                gfx_putstr( "____" );
+                gfx_goto( x-5, y );
+                gfx_putstr( "|____>" );
+            }
+        }
+        else /* top quarter */
+        {
+            if( vx > -vy/4 )
+            {
+                /* 2pi/6 */
+                gfx_goto( x-1, y-1 );
+                gfx_putstr( "_," );
+                gfx_goto( x-2, y );
+                gfx_putstr( "/ |" );
+                gfx_goto( x-3, y+1 );
+                gfx_putstr( "/ /" );
+                gfx_goto( x-3, y+2 );
+                gfx_putstr( "`'" );
+            }
+            else if( vx < vy/4 )
+            {
+                /* 4pi/6 */
+                gfx_goto( x, y-1 );
+                gfx_putstr( "._" );
+                gfx_goto( x, y );
+                gfx_putstr( "| \\" );
+                gfx_goto( x+1, y+1 );
+                gfx_putstr( "\\ \\" );
+                gfx_goto( x+2, y+2 );
+                gfx_putstr( "`'" );
+            }
+            else
+            {
+                /* 3pi/6 */
+                gfx_goto( x-1, y );
+                gfx_putstr( ",^." );
+                gfx_goto( x-1, y+1 );
+                gfx_putstr( "| |" );
+                gfx_goto( x-1, y+2 );
+                gfx_putstr( "|_|" );
+            }
+        }
+    }
+    else
+    {
+        if( vx > -vy ) /* bottom quarter */
+        {
+            if( vx > vy/4 )
+            {
+                /* -2pi/6 */
+                gfx_goto( x-2, y-2 );
+                gfx_putstr( ",." );
+                gfx_goto( x-2, y-1 );
+                gfx_putstr( "\\ \\" );
+                gfx_goto( x-1, y );
+                gfx_putstr( "\\_|" );
+            }
+            else if( vx < -vy/4 )
+            {
+                /* -4pi/6 */
+                gfx_goto( x+1, y-2 );
+                gfx_putstr( ",." );
+                gfx_goto( x, y-1 );
+                gfx_putstr( "/ /" );
+                gfx_goto( x-1, y );
+                gfx_putstr( "|_/" );
+            }
+            else
+            {
+                /* -3pi/6 */
+                gfx_goto( x, y-3 );
+                gfx_putchar( '_' );
+                gfx_goto( x-1, y-2 );
+                gfx_putstr( "| |" );
+                gfx_goto( x-1, y-1 );
+                gfx_putstr( "| |" );
+                gfx_goto( x-1, y );
+                gfx_putstr( "`v'" );
+            }
+        }
+        else /* left quarter */
+        {
+            if( vy > -vx/4 )
+            {
+                /* -5pi/6 */
+                gfx_goto( x+1, y-1 );
+                gfx_putstr( ",-'\\" );
+                gfx_goto( x, y );
+                gfx_putstr( "/_,-'" );
+                gfx_goto( x, y+1 );
+                gfx_putchar( '\'' );
+            }
+            else if( vy < vx/4 )
+            {
+                /* 5pi/6 */
+                gfx_goto( x, y-1 );
+                gfx_putstr( "._" );
+                gfx_goto( x, y );
+                gfx_putstr( "\\ `-." );
+                gfx_goto( x+1, y+1 );
+                gfx_putstr( "`-./" );
+            }
+            else
+            {
+                /* 6pi/6 */
+                gfx_goto( x+1, y-1 );
+                gfx_putstr( "____" );
+                gfx_goto( x, y );
+                gfx_putstr( "<____|" );
+            }
         }
     }
 }

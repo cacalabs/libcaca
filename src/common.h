@@ -1,9 +1,9 @@
 
 #define STARS 50
-#define WEAPONS 50
+#define WEAPONS 100
 #define BONUS 30
 #define ALIENS 30
-#define EXPLOSIONS 20
+#define EXPLOSIONS 100
 
 #ifdef USE_SLANG
 #   include <slang.h>
@@ -52,7 +52,7 @@ typedef struct
 
 typedef struct
 {
-    enum { WEAPON_NONE, WEAPON_LASER, WEAPON_SEEKER, WEAPON_NUKE, WEAPON_BEAM } type[WEAPONS];
+    enum { WEAPON_NONE, WEAPON_LASER, WEAPON_SEEKER, WEAPON_NUKE, WEAPON_BEAM, WEAPON_LIGHTNING, WEAPON_BOMB } type[WEAPONS];
     int x[WEAPONS];
     int y[WEAPONS];
     int x2[WEAPONS];

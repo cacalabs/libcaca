@@ -81,13 +81,13 @@ void add_alien( game *g, aliens *al, int x, int y, int type )
             switch( al->type[i] )
             {
                 case ALIEN_POOLP:
-                    al->life[i] = 2;
+                    al->life[i] = 3;
                     break;
                 case ALIEN_BOOL:
-                    al->life[i] = 2;
+                    al->life[i] = 3;
                     break;
                 case ALIEN_BRAH:
-                    al->life[i] = 2;
+                    al->life[i] = 3;
                     break;
                 case ALIEN_NONE:
                     break;
