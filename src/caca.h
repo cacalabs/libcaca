@@ -151,8 +151,9 @@ enum caca_feature
     CACA_DITHERING_ORDERED4 = 0x33, /**< Ordered 4x4 Bayer dithering. */
     CACA_DITHERING_ORDERED8 = 0x34, /**< Ordered 8x8 Bayer dithering. */
     CACA_DITHERING_RANDOM   = 0x35, /**< Random dithering. */
+    CACA_DITHERING_FSTEIN   = 0x36, /**< Floyd-Steinberg dithering. */
 #define CACA_DITHERING_MIN    0x31 /**< First dithering feature. */
-#define CACA_DITHERING_MAX    0x35 /**< Last dithering feature. */
+#define CACA_DITHERING_MAX    0x36 /**< Last dithering feature. */
 
     CACA_FEATURE_UNKNOWN = 0xffff /**< Unknown feature. */
 };

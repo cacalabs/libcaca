@@ -319,12 +319,13 @@ void caca_set_feature(enum caca_feature feature)
             break;
 
         case CACA_DITHERING:
-            feature = CACA_DITHERING_ORDERED4;
+            feature = CACA_DITHERING_FSTEIN;
         case CACA_DITHERING_NONE:
         case CACA_DITHERING_ORDERED2:
         case CACA_DITHERING_ORDERED4:
         case CACA_DITHERING_ORDERED8:
         case CACA_DITHERING_RANDOM:
+        case CACA_DITHERING_FSTEIN:
             _caca_dithering = feature;
             break;
 
@@ -356,6 +357,7 @@ char const *caca_get_feature_name(enum caca_feature feature)
         case CACA_DITHERING_ORDERED4: return "4x4 ordered dithering";
         case CACA_DITHERING_ORDERED8: return "8x8 ordered dithering";
         case CACA_DITHERING_RANDOM:   return "random dithering";
+        case CACA_DITHERING_FSTEIN:   return "Floyd-Steinberg dithering";
 
         default: return "unknown";
     }
@@ -541,6 +543,8 @@ static void caca_init_features(void)
             caca_set_feature(CACA_DITHERING_ORDERED8);
         else if(!strcasecmp("random", var))
             caca_set_feature(CACA_DITHERING_RANDOM);
+        else if(!strcasecmp("fstein", var))
+            caca_set_feature(CACA_DITHERING_FSTEIN);
     }
 #endif
 }

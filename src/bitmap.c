@@ -103,6 +103,12 @@ static int rgb_palette[] =
     0xfff, 0xfff, 0xfff,
 };
 
+static int rgb_weight[] =
+{
+    //2, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 2
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+};
+
 #if !defined(_DOXYGEN_SKIP_ME)
 #define HSV_XRATIO 6
 #define HSV_YRATIO 3
@@ -541,6 +547,12 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
         _increment_dither = increment_random_dither;
         break;
 
+    case CACA_DITHERING_FSTEIN:
+        _init_dither = init_no_dither;
+        _get_dither = get_no_dither;
+        _increment_dither = increment_no_dither;
+        break;
+
     default:
         /* Something wicked happened! */
         return;
@@ -624,15 +636,24 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
             continue;
         }
 
-        r += remain_r;
-        g += remain_g;
-        b += remain_b;
-        r += remain_r_next;
-        g += remain_g_next;
-        b += remain_b_next;
-        remain_r_next = fs_r[x+1];
-        remain_g_next = fs_g[x+1];
-        remain_b_next = fs_b[x+1];
+        if(_caca_dithering == CACA_DITHERING_FSTEIN)
+        {
+            r += remain_r;
+            g += remain_g;
+            b += remain_b;
+            r += remain_r_next;
+            g += remain_g_next;
+            b += remain_b_next;
+            remain_r_next = fs_r[x+1];
+            remain_g_next = fs_g[x+1];
+            remain_b_next = fs_b[x+1];
+        }
+        else
+        {
+            r += (_get_dither() - 0x80) * 4;
+            g += (_get_dither() - 0x80) * 4;
+            b += (_get_dither() - 0x80) * 4;
+        }
 
         distmin = INT_MAX;
         for(i = 0; i < 16; i++)
@@ -640,6 +661,7 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
             dist = sq(r - rgb_palette[i * 3])
                  + sq(g - rgb_palette[i * 3 + 1])
                  + sq(b - rgb_palette[i * 3 + 2]);
+            dist *= rgb_weight[i];
             if(dist < distmin)
             {
                 outbg = i;
@@ -658,6 +680,7 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
             dist = sq(r - rgb_palette[i * 3])
                  + sq(g - rgb_palette[i * 3 + 1])
                  + sq(b - rgb_palette[i * 3 + 2]);
+            dist *= rgb_weight[i];
             if(dist < distmin)
             {
                 outfg = i;
@@ -686,24 +709,27 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
         }
         outch = density_chars[4 * ch];
 
-        remain_r = r - (fg_r * ch + bg_r * ((2*DCHMAX-1) - ch)) / (2*DCHMAX-1);
-        remain_g = g - (fg_g * ch + bg_g * ((2*DCHMAX-1) - ch)) / (2*DCHMAX-1);
-        remain_b = b - (fg_b * ch + bg_b * ((2*DCHMAX-1) - ch)) / (2*DCHMAX-1);
-        remain_r_next = fs_r[x+1];
-        remain_g_next = fs_g[x+1];
-        remain_b_next = fs_b[x+1];
-        fs_r[x-1] += 3 * remain_r / 16;
-        fs_g[x-1] += 3 * remain_g / 16;
-        fs_b[x-1] += 3 * remain_b / 16;
-        fs_r[x] = 5 * remain_r / 16;
-        fs_g[x] = 5 * remain_g / 16;
-        fs_b[x] = 5 * remain_b / 16;
-        fs_r[x+1] = 1 * remain_r / 16;
-        fs_g[x+1] = 1 * remain_g / 16;
-        fs_b[x+1] = 1 * remain_b / 16;
-        remain_r = 7 * remain_r / 16;
-        remain_g = 7 * remain_g / 16;
-        remain_b = 7 * remain_b / 16;
+        if(_caca_dithering == CACA_DITHERING_FSTEIN)
+        {
+            remain_r = r - (fg_r * ch + bg_r * ((2*DCHMAX-1) - ch)) / (2*DCHMAX-1);
+            remain_g = g - (fg_g * ch + bg_g * ((2*DCHMAX-1) - ch)) / (2*DCHMAX-1);
+            remain_b = b - (fg_b * ch + bg_b * ((2*DCHMAX-1) - ch)) / (2*DCHMAX-1);
+            remain_r_next = fs_r[x+1];
+            remain_g_next = fs_g[x+1];
+            remain_b_next = fs_b[x+1];
+            fs_r[x-1] += 3 * remain_r / 16;
+            fs_g[x-1] += 3 * remain_g / 16;
+            fs_b[x-1] += 3 * remain_b / 16;
+            fs_r[x] = 5 * remain_r / 16;
+            fs_g[x] = 5 * remain_g / 16;
+            fs_b[x] = 5 * remain_b / 16;
+            fs_r[x+1] = 1 * remain_r / 16;
+            fs_g[x+1] = 1 * remain_g / 16;
+            fs_b[x+1] = 1 * remain_b / 16;
+            remain_r = 7 * remain_r / 16;
+            remain_g = 7 * remain_g / 16;
+            remain_b = 7 * remain_b / 16;
+        }
 
         /* Now output the character */
         caca_set_color(outfg, outbg);
