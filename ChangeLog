@@ -1,4 +1,17 @@
 ------------------------------------------------------------------------
+r252 | sam | 2004-01-18 05:45:28 +0100 (Sun, 18 Jan 2004) | 2 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/NEWS
+   M /trunk/THANKS
+   M /trunk/configure.ac
+   M /trunk/debian/changelog
+   M /trunk/libcaca.spec
+   M /trunk/msvc/config.h
+
+  * 0.8 release.
+
+------------------------------------------------------------------------
 r251 | sam | 2004-01-18 05:17:35 +0100 (Sun, 18 Jan 2004) | 5 lines
 Changed paths:
    M /trunk/examples/cacaview.c
