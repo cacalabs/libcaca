@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: graphics.c,v 1.6 2002/12/23 16:21:38 sam Exp $
+ *   $Id$
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@
 
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/time.h>
+#include <time.h>
 
 #include "common.h"
 
@@ -51,6 +53,7 @@ int init_graphics( void )
     SLsig_unblock_signals();
 
     SLsmg_cls();
+    SLtt_set_cursor_visibility( 0 );
     SLsmg_refresh();
 #elif USE_NCURSES
     /* Initialize ncurses library */
@@ -60,6 +63,7 @@ int init_graphics( void )
     cbreak();
     noecho();
     nodelay(stdscr, TRUE);
+    curs_set( 0 );
 #else
     /* Dummy driver */
 #endif
@@ -135,31 +139,61 @@ char get_key( void )
     return 0;
 }
 
-void gfx_delay( void )
+void clear_graphics( game *g )
 {
 #ifdef USE_SLANG
-    usleep(40000);
+    //SLsmg_cls();
+    int y;
+    for( y = 0; y < g->h; y++ )
+    {
+        gfx_goto( 0, y );
+        gfx_putstr( "                                                                                " );
+    }
 #elif USE_NCURSES
-    usleep(40000);
+    //clear();
+    int y;
+    for( y = 0; y < g->h; y++ )
+    {
+        gfx_goto( 0, y );
+        gfx_putstr( "                                                                                " );
+    }
 #else
     /* Use dummy driver */
 #endif
 }
 
-void clear_graphics( void )
+static int64_t local_time(void)
 {
-#ifdef USE_SLANG
-    SLsmg_cls();
-#elif USE_NCURSES
-    clear();
-#else
-    /* Use dummy driver */
-#endif
+    struct timeval tv;
+    int64_t now;
+
+    gettimeofday(&tv, NULL);
+    now = tv.tv_sec;
+    now *= 1000000;
+    now += tv.tv_usec;
+    return now;
 }
+
+#define DELAY 40000
 
 void refresh_graphics( void )
 {
+    static int64_t local_clock = 0;
+    int64_t now;
+
     gfx_goto( 0, 0 );
+
+    if( !local_clock )
+    {
+        /* Initialize local_clock */
+        local_clock = local_time();
+    }
+
+    if( local_time() > local_clock + 10000 )
+    {
+        /* If we are late, we shouldn't display anything */
+    }
+
 #ifdef USE_SLANG
     SLsmg_refresh();
 #elif USE_NCURSES
@@ -167,14 +201,25 @@ void refresh_graphics( void )
 #else
     /* Use dummy driver */
 #endif
+
+    now = local_time();
+
+    if( now < local_clock + DELAY - 10000 )
+    {
+        usleep( local_clock + DELAY - 10000 - now );
+    }
+
+    local_clock += DELAY;
 }
 
 void end_graphics( void )
 {
 #ifdef USE_SLANG
+    SLtt_set_cursor_visibility( 1 );
     SLang_reset_tty();
     SLsmg_reset_smg();
 #elif USE_NCURSES
+    curs_set( 1 );
     endwin();
 #else
     /* Use dummy driver */

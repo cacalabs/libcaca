@@ -26,7 +26,7 @@ ttyvaders_SOURCES = \
 	collide.c \
 	common.h \
 	explosions.c \
-	graphics.c \
+	../libee/ee.c \
 	main.c \
 	math.c \
 	overlay.c \

@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: common.h,v 1.16 2003/02/09 11:17:40 sam Exp $
+ *   $Id$
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -49,7 +49,9 @@
 #   define gfx_putchar(x) SLsmg_write_char(x)
 #   define gfx_putstr(x) SLsmg_write_string(x)
 #elif USE_NCURSES
+#define box box_other
 #   include <curses.h>
+#undef box
 #   define gfx_color(x) attrset(COLOR_PAIR(x))
 #   define gfx_goto(x,y) move(y,x)
 #   define gfx_putchar(x) addch(x)
@@ -199,7 +201,7 @@ void free_box( box *b );
 /*
  * From ceo.c
  */
-void ceo_alert( void );
+void ceo_alert( game *g );
 
 /*
  * From collide.c
@@ -222,8 +224,7 @@ void update_explosions( game *g, explosions *ex );
 int init_graphics( void );
 void init_game( game *g );
 char get_key( void );
-void gfx_delay( void );
-void clear_graphics( void );
+void clear_graphics( game *g );
 void refresh_graphics( void );
 void end_graphics( void );
 
