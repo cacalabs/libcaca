@@ -1,3 +1,15 @@
+libcaca (0.3-1) unstable; urgency=low
+
+  * XXX
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Thu, 11 Dec 2003 22:10:45 +0100
+
+libcaca (0.2-2) unstable; urgency=low
+
+  * First Debian upload (Closes: #222753).
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Thu,  4 Dec 2003 17:57:46 +0100
+
 libcaca (0.2-1) unstable; urgency=low
 
   * New upstream release.

@@ -250,9 +250,46 @@ void caca_end(void)
 
 static void caca_init_features(void)
 {
+    /* FIXME: if strcasecmp isn't available, use strcmp */
+#if defined(HAVE_GETENV) && defined(HAVE_STRCASECMP)
+    char *var;
+#endif
+
     caca_set_feature(CACA_BACKGROUND);
     caca_set_feature(CACA_ANTIALIASING);
     caca_set_feature(CACA_DITHERING);
+
+#if defined(HAVE_GETENV) && defined(HAVE_STRCASECMP)
+    if((var = getenv("CACA_BACKGROUND")))
+    {
+        if(!strcasecmp("black", var))
+            caca_set_feature(CACA_BACKGROUND_BLACK);
+        else if(!strcasecmp("solid", var))
+            caca_set_feature(CACA_BACKGROUND_SOLID);
+    }
+
+    if((var = getenv("CACA_ANTIALIASING")))
+    {
+        if(!strcasecmp("none", var))
+            caca_set_feature(CACA_ANTIALIASING_NONE);
+        else if(!strcasecmp("prefilter", var))
+            caca_set_feature(CACA_ANTIALIASING_PREFILTER);
+    }
+
+    if((var = getenv("CACA_DITHERING")))
+    {
+        if(!strcasecmp("none", var))
+            caca_set_feature(CACA_DITHERING_NONE);
+        else if(!strcasecmp("ordered2", var))
+            caca_set_feature(CACA_DITHERING_ORDERED2);
+        else if(!strcasecmp("ordered4", var))
+            caca_set_feature(CACA_DITHERING_ORDERED4);
+        else if(!strcasecmp("ordered8", var))
+            caca_set_feature(CACA_DITHERING_ORDERED8);
+        else if(!strcasecmp("random", var))
+            caca_set_feature(CACA_DITHERING_RANDOM);
+    }
+#endif
 }
 
 static void caca_init_terminal(void)
