@@ -30,6 +30,8 @@
 
 #include "ee.h"
 
+static int _ee_delay;
+
 int ee_init(void)
 {
 #ifdef USE_SLANG
@@ -93,8 +95,14 @@ int ee_init(void)
     /* Dummy driver */
 
 #endif
+    _ee_delay = 0;
 
     return 0;
+}
+
+void ee_set_delay(int delay)
+{
+    _ee_delay = delay;
 }
 
 int ee_get_width(void)
@@ -153,7 +161,6 @@ static int64_t local_time(void)
     return now;
 }
 
-#define DELAY 40000
 void ee_refresh(void)
 {
     static int64_t local_clock = 0;
@@ -182,12 +189,12 @@ void ee_refresh(void)
 
     now = local_time();
 
-    if(now < local_clock + DELAY - 10000)
+    if(now < local_clock + _ee_delay - 10000)
     {
-        usleep(local_clock + DELAY - 10000 - now);
+        usleep(local_clock + _ee_delay - 10000 - now);
     }
 
-    local_clock += DELAY;
+    local_clock += _ee_delay;
 }
 
 void ee_end(void)

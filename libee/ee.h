@@ -64,6 +64,7 @@
  * Prototypes
  */
 int ee_init(void);
+void ee_set_delay(int);
 int ee_get_width(void);
 int ee_get_height(void);
 void ee_clear(void);

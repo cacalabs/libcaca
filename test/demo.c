@@ -34,6 +34,7 @@ int main(int argc, char **argv)
     /* Go ! */
     while(!quit)
     {
+        int i;
         char key = ee_get_key();
         if(key)
         {
@@ -41,8 +42,14 @@ int main(int argc, char **argv)
         }
 
         ee_clear();
-        ee_goto(12,14);
-        ee_putchar('#');
+        for(i=1000; i--;)
+        {
+            ee_goto(ee_rand(0,ee_get_width()-1),
+                    ee_rand(0,ee_get_height()-1));
+            ee_color(ee_rand(1,10));
+            ee_putchar('#');
+        }
+
         ee_refresh();
     }
 
