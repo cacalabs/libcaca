@@ -201,8 +201,7 @@ void caca_set_bitmap_palette(struct caca_bitmap *bitmap,
         }
     }
 
-    if(has_alpha)
-        bitmap->has_alpha = has_alpha;
+    bitmap->has_alpha = has_alpha;
 }
 
 void caca_free_bitmap(struct caca_bitmap *bitmap)

@@ -24,13 +24,13 @@ AC_ARG_ENABLE(slang,
 AC_ARG_ENABLE(conio,
   [  --enable-conio          DOS conio.h graphics support (default disabled)])
 AC_ARG_ENABLE(x11,
-  [  --enable-x11            X11 support (default disabled)])
+  [  --enable-x11            X11 support (default disabled) (EXPERIMENTAL)])
 
 AC_CHECK_HEADERS(inttypes.h endian.h)
 AC_CHECK_FUNCS(vsnprintf getenv putenv strcasecmp)
 
 if test "${enable_conio}" = "yes"; then
-  AC_CHECK_HEADER(conio.h,:,AC_MSG_ERROR([cannot find conio.h header]))
+  AC_CHECK_HEADERS(conio.h,:,AC_MSG_ERROR([cannot find conio.h header]))
   AC_MSG_CHECKING(for ScreenUpdate in pc.h)
   AC_EGREP_HEADER(ScreenUpdate,pc.h,[
     AC_MSG_RESULT(yes)
@@ -39,7 +39,7 @@ if test "${enable_conio}" = "yes"; then
     AC_MSG_RESULT(no)])
   AC_DEFINE(USE_CONIO, 1, Define if the backend driver is conio.h)
 elif test "${enable_slang}" = "yes"; then
-  AC_CHECK_HEADER(slang.h,:,AC_MSG_ERROR([cannot find slang headers]))
+  AC_CHECK_HEADERS(slang.h,:,AC_MSG_ERROR([cannot find slang headers]))
   AC_CHECK_LIB(slang,SLkp_init,:,AC_MSG_ERROR([cannot find slang library]))
   AC_DEFINE(USE_SLANG, 1, Define if the backend driver is slang)
   CACA_LIBS="${CACA_LIBS} -lslang"
@@ -58,7 +58,7 @@ elif test "${enable_x11}" = "yes"; then
   CPPFLAGS="${CPPFLAGS} ${X_CFLAGS}"
   CACA_LIBS="${CACA_LIBS} ${X_LIBS}"
 elif test "${enable_ncurses}" != "no"; then
-  AC_CHECK_HEADER(ncurses.h,:,AC_MSG_ERROR([cannot find ncurses headers]))
+  AC_CHECK_HEADERS(ncurses.h,:,AC_MSG_ERROR([cannot find ncurses headers]))
   AC_CHECK_LIB(ncurses,initscr,:,AC_MSG_ERROR([cannot find ncurses library]))
   AC_DEFINE(USE_NCURSES, 1, Define if the backend driver is ncurses)
   CACA_LIBS="${CACA_LIBS} -lncurses"
@@ -90,7 +90,7 @@ AC_PATH_PROG(IMLIB2_CONFIG, imlib2-config, no)
 if test "${IMLIB2_CONFIG}" != "no"; then
   CPPFLAGS="${CPPFLAGS} `imlib2-config --cflags` -DX_DISPLAY_MISSING=1"
 fi
-AC_CHECK_HEADER(Imlib2.h, USE_IMLIB2=:, USE_IMLIB2=false)
+AC_CHECK_HEADERS(Imlib2.h, USE_IMLIB2=:, USE_IMLIB2=false)
 CPPFLAGS="${save_CPPFLAGS}"
 AM_CONDITIONAL(USE_IMLIB2, ${USE_IMLIB2})
 
