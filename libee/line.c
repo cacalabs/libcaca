@@ -40,6 +40,16 @@ static uint8_t clip_bits(int, int);
 static void draw_solid_line(struct line*);
 static void draw_thin_line(struct line*);
 
+/**
+ * \brief Draw a line on the screen using the given character.
+ *
+ * \param x1 X coordinate of the first point.
+ * \param y1 Y coordinate of the first point.
+ * \param x2 X coordinate of the second point.
+ * \param y2 Y coordinate of the second point.
+ * \param c Character to draw the line with.
+ * \return nothing
+ */
 void ee_draw_line(int x1, int y1, int x2, int y2, char c)
 {
     struct line s;
@@ -52,6 +62,15 @@ void ee_draw_line(int x1, int y1, int x2, int y2, char c)
     clip_line(&s);
 }
 
+/**
+ * \brief Draw a thin line on the screen, using ASCII art.
+ *
+ * \param x1 X coordinate of the first point.
+ * \param y1 Y coordinate of the first point.
+ * \param x2 X coordinate of the second point.
+ * \param y2 Y coordinate of the second point.
+ * \return nothing
+ */
 void ee_draw_thin_line(int x1, int y1, int x2, int y2)
 {
     struct line s;
@@ -63,6 +82,12 @@ void ee_draw_thin_line(int x1, int y1, int x2, int y2)
     clip_line(&s);
 }
 
+/**
+ * \brief Generic Cohen-Sutherland line clipping function.
+ *
+ * \param s a line structure
+ * \return nothing
+ */
 static void clip_line(struct line* s)
 {
     uint8_t bits1, bits2;
@@ -114,6 +139,13 @@ static void clip_line(struct line* s)
     clip_line(s);
 }
 
+/**
+ * \brief Helper function for clip_line().
+ *
+ * \param x X coordinate of the point.
+ * \param y Y coordinate of the point.
+ * \return b The clipping bits for the given point.
+ */
 static uint8_t clip_bits(int x, int y)
 {
     uint8_t b = 0;
@@ -131,6 +163,13 @@ static uint8_t clip_bits(int x, int y)
     return b;
 }
 
+/**
+ * \brief Solid line drawing function, using Bresenham's mid-point line
+ *        scan-conversion algorithm.
+ *
+ * \param s a line structure
+ * \return nothing
+ */
 static void draw_solid_line(struct line* s)
 {
     int x1, y1, x2, y2;
@@ -193,6 +232,13 @@ static void draw_solid_line(struct line* s)
     }
 }
 
+/**
+ * \brief Thin line drawing function, using Bresenham's mid-point line
+ *        scan-conversion algorithm and ASCII art graphics.
+ *
+ * \param s a line structure
+ * \return nothing
+ */
 static void draw_thin_line(struct line* s)
 {
     char *charmapx, *charmapy;
