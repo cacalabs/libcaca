@@ -66,6 +66,10 @@
  *      variable must be XxY, with X and Y being integer values. This option
  *      currently only works with the X11 driver.
  *
+ *  \li \b CACA_FONT: set the rendered font. The format of this variable is
+ *      implementation dependent, but since it currently only works with the
+ *      X11 driver, an X11 font name such as "fixed" or "5x7" is expected.
+ *
  *  \li \b CACA_BACKGROUND: set the background type.
  *      - \c solid uses solid coloured backgrounds for all characters. This
  *        feature does not work with all terminal emulators. This is the
