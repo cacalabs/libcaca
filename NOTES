@@ -4,35 +4,84 @@ $Id$
       many terminal emulators and tried to summarise which combinations
       worked properly and which ones did not.
 
-   o  In an XTerm terminal, the following shell commands output all possible
-      foreground/background combinations:
+   o  I tested the following terminals:
 
-      for fgpre in "" '\e[0;1m'; do for fg in 0 4 2 6 1 5 3 7; do
+         name             $TERM        $COLORTERM
+        ------------------------------------------
+         Linux console    linux
+         pterm            xterm
+         aterm            xterm        rxvt-xpm
+         wterm            xterm        wterm-xpm
+         Eterm            xterm        Eterm
+         xterm            xterm
+         gnome-terminal   xterm
+         konsole          xterm
+         mlterm           mlterm
+         uxterm           xterm
+
+   o  In most terminals, \e[3xm and \[4xm respectively set the foreground
+      and background colours. x is an colour between 0 and 7 or the value
+      9 for default value.
+
+      \e[0m sets everything to normal, \e[1m sets bold, \e[5m sets blink
+      and \e[7m sets inverse video.
+
+      In ncurses, only 64 colour pairs are created, and A_BOLD (\e[1m) and
+      A_BLINK (\e[5m) are used for foreground/background colour highlighting,
+      hence creating 256 possible colour pairs.
+
+      Different tests of blue on yellow:
+
+      for invert in '' '\e[7m'; do
+        for blink in '' '\e[5m'; do
+          for bold in '' '\e[1m'; do
+            echo -ne "$bold$blink$invert"'\e[34m\e[43m'hop'\e[0m '
+            echo "($bold$blink$invert)"
+          done
+        done
+      done
+
+      Successfully works on:
+       + Linux console
+       + pterm
+       + Eterm
+       + aterm, wterm, rxvt
+
+      Almost works on:
+       + xterm (bright bg works for blue, but not for red or yellow)
+
+      Fails on:
+       + mlterm (no bright colours, neither fg nor bg)
+       + gnome-terminal (no bright bg)
+       + konsole (no bright bg, $blink really blinks)
+
+   o  In an XTerm-compatible terminal, \e[9xm sets bright foreground and
+      \e[10xm bright background colours. Unfortunately all terminals don't
+      support these escape sequences. Here is a testcase:
+
+      for fgpre in 3 9; do for fg in 0 4 2 6 1 5 3 7; do
         for bgpre in 4 10; do
-          echo -ne "$fgpre"'\e[3'$fg'm'
+          echo -ne '\e['$fgpre$fg'm'
           for bg in 0 4 2 6 1 5 3 7; do echo -ne '\e['$bgpre$bg'm# '; done
-          echo -ne '\e[0;0m '
+          echo -ne '\e[0m '
         done
         echo ''
       done; echo ''; done
 
-      Successfully tested
+      Successfully tested on:
+       + gnome-terminal
+       + konsole
+       + xterm
+       + pterm
 
-   o  ncurses:
-
-      * bright combinations work in the following terminals:
-
-        - Linux console (TERM=linux)
-        - pterm (TERM=xterm)
-
-      * bright text on bright background is rendered as bright text on
-        normal background in the following terminals:
-
-        - xterm (TERM=xterm)
-        - gnome-terminal (TERM=xterm)
+      Failed (\e[9x and \e[10x don't work) on:
+       + Eterm
+       + aterm, wterm, rxvt
+       + mlterm
+       + linux
 
    o  S-Lang:
 
    o  MS-DOS: all bright colours, bright backgrounds, and bright combinations
-      work using <conio.h>.
+      work using <conio.h>. No need to kludge anything.
 
