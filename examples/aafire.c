@@ -132,7 +132,7 @@ initialize (void)
 #ifdef LIBCACA
   caca_bitmap = caca_create_bitmap(8, XSIZ, YSIZ - 2, XSIZ, 0, 0, 0, 0);
   caca_set_bitmap_palette(caca_bitmap, r, g, b, a);
-  bitmap = malloc(XSIZ * YSIZ * sizeof(char));
+  bitmap = malloc(4 * caca_get_width() * caca_get_height() * sizeof(char));
 #else
   aa_hidecursor (context);
 #endif
