@@ -219,7 +219,7 @@ void update_weapons(game *g, weapons *wp)
                 break;
 
             case WEAPON_BEAM:
-                wp->x[i] = (g->p->x + 2) << 4;
+                wp->x[i] = g->p->x << 4;
                 wp->y[i] = g->p->y << 4;
                 wp->n[i]--;
                 if(wp->n[i] < 0)
@@ -447,11 +447,15 @@ static void draw_nuke(int x, int y, int frame)
 
     /* Lots of duplicate pixels, but we don't care */
     ee_color(EE_BLUE);
-    ee_draw_circle(x, y, r++, ':');
+    ee_draw_ellipse(x, y, r, r / 2, ':');
+    ee_draw_ellipse(x, y, r + 1, r / 2, ':');
+    ee_draw_ellipse(x, y, r + 2, r / 2, ':');
     ee_color(EE_CYAN);
-    ee_draw_circle(x, y, r++, '%');
+    ee_draw_ellipse(x, y, r + 2, r / 2 + 1, '%');
+    ee_draw_ellipse(x, y, r + 3, r / 2 + 1, '%');
     ee_color(EE_WHITE);
-    ee_draw_circle(x, y, r++, '#');
-    ee_draw_circle(x, y, r++, '#');
+    ee_draw_ellipse(x, y, r + 3, r / 2 + 2, '#');
+    ee_draw_ellipse(x, y, r + 4, r / 2 + 2, '#');
+    ee_draw_ellipse(x, y, r + 4, r / 2 + 3, '#');
 }
 

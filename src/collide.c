@@ -278,18 +278,18 @@ void collide_player_tunnel(game *g, player *p, tunnel *t, explosions *ex)
         return;
     }
 
-    if(p->x <= t->left[p->y])
+    if(p->x - 2 <= t->left[p->y])
     {
         p->x += 3;
         p->vx = 2;
-        add_explosion(g, ex, p->x+1, p->y-1, 0, 0, EXPLOSION_SMALL);
+        add_explosion(g, ex, p->x-1, p->y, 0, 0, EXPLOSION_SMALL);
         p->life -= 180;
     }
-    else if(p->x + 5 >= t->right[p->y])
+    else if(p->x + 3 >= t->right[p->y])
     {
         p->x -= 3;
         p->vx = -2;
-        add_explosion(g, ex, p->x+4, p->y-1, 0, 0, EXPLOSION_SMALL);
+        add_explosion(g, ex, p->x+2, p->y, 0, 0, EXPLOSION_SMALL);
         p->life -= 180;
     }
 }

@@ -8,6 +8,7 @@ EXTRA_DIST = \
 	explosion_small \
 	item_gem \
 	item_heart \
+	ship_green \
 	weapon_bomb \
 	weapon_fragbomb \
 	$(NULL)

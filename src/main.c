@@ -124,10 +124,10 @@ static void start_game (game *g)
                     g->p->vx = -2;
                     break;
                 case 'j':
-                    if(g->p->y < g->h - 2) g->p->y += 1;
+                    if(g->p->y < g->h - 3) g->p->y += 1;
                     break;
                 case 'k':
-                    if(g->p->y > 1) g->p->y -= 1;
+                    if(g->p->y > 2) g->p->y -= 1;
                     break;
                 case 'l':
                     g->p->vx = 2;
@@ -136,43 +136,43 @@ static void start_game (game *g)
                     if(g->p->special >= COST_NUKE)
                     {
                         g->p->special -= COST_NUKE;
-                        add_weapon(g, g->wp, (g->p->x + 2) << 4, g->p->y << 4, 0, 0, WEAPON_NUKE);
+                        add_weapon(g, g->wp, g->p->x << 4, g->p->y << 4, 0, 0, WEAPON_NUKE);
                     }
                     break;
                 case 'f':
                     if(g->p->special >= COST_FRAGBOMB)
                     {
                         g->p->special -= COST_FRAGBOMB;
-                        add_weapon(g, g->wp, (g->p->x + 2) << 4, g->p->y << 4, 0, -16, WEAPON_FRAGBOMB);
+                        add_weapon(g, g->wp, g->p->x << 4, g->p->y << 4, 0, -16, WEAPON_FRAGBOMB);
                     }
                     break;
                 case 'b':
                     if(g->p->special >= COST_BEAM)
                     {
                         g->p->special -= COST_BEAM;
-                        add_weapon(g, g->wp, (g->p->x + 2) << 4, g->p->y << 4, 0, 0, WEAPON_BEAM);
+                        add_weapon(g, g->wp, g->p->x << 4, g->p->y << 4, 0, 0, WEAPON_BEAM);
                     }
                     break;
                 case ' ':
                     if(g->p->weapon == 0)
                     {
                         g->p->weapon = 4;
-                        add_weapon(g, g->wp, g->p->x << 4, g->p->y << 4, 0, -32, WEAPON_LASER);
-                        add_weapon(g, g->wp, (g->p->x + 5) << 4, g->p->y << 4, 0, -32, WEAPON_LASER);
+                        add_weapon(g, g->wp, (g->p->x - 2) << 4, g->p->y << 4, 0, -32, WEAPON_LASER);
+                        add_weapon(g, g->wp, (g->p->x + 3) << 4, g->p->y << 4, 0, -32, WEAPON_LASER);
                         /* Extra schtuph */
-                        add_weapon(g, g->wp, g->p->x << 4, g->p->y << 4, -24, -16, WEAPON_SEEKER);
-                        add_weapon(g, g->wp, (g->p->x + 5) << 4, g->p->y << 4, 24, -16, WEAPON_SEEKER);
+                        add_weapon(g, g->wp, (g->p->x - 2) << 4, g->p->y << 4, -24, -16, WEAPON_SEEKER);
+                        add_weapon(g, g->wp, (g->p->x + 3) << 4, g->p->y << 4, 24, -16, WEAPON_SEEKER);
                         /* More schtuph */
-                        add_weapon(g, g->wp, (g->p->x + 1) << 4, (g->p->y - 1) << 4, 0, -32, WEAPON_LASER);
-                        add_weapon(g, g->wp, (g->p->x + 4) << 4, (g->p->y - 1) << 4, 0, -32, WEAPON_LASER);
-                        /* Even more schtuph */
+                        add_weapon(g, g->wp, (g->p->x - 1) << 4, (g->p->y - 1) << 4, 0, -32, WEAPON_LASER);
                         add_weapon(g, g->wp, (g->p->x + 2) << 4, (g->p->y - 1) << 4, 0, -32, WEAPON_LASER);
-                        add_weapon(g, g->wp, (g->p->x + 3) << 4, (g->p->y - 1) << 4, 0, -32, WEAPON_LASER);
+                        /* Even more schtuph */
+                        add_weapon(g, g->wp, g->p->x << 4, (g->p->y - 1) << 4, 0, -32, WEAPON_LASER);
+                        add_weapon(g, g->wp, (g->p->x + 1) << 4, (g->p->y - 1) << 4, 0, -32, WEAPON_LASER);
                         /* Extra schtuph */
-                        add_weapon(g, g->wp, g->p->x << 4, g->p->y << 4, -32, 0, WEAPON_SEEKER);
-                        add_weapon(g, g->wp, (g->p->x + 5) << 4, g->p->y << 4, 32, 0, WEAPON_SEEKER);
+                        add_weapon(g, g->wp, (g->p->x - 2) << 4, g->p->y << 4, -32, 0, WEAPON_SEEKER);
+                        add_weapon(g, g->wp, (g->p->x + 3) << 4, g->p->y << 4, 32, 0, WEAPON_SEEKER);
                         /* MORE SCHTUPH! */
-                        add_weapon(g, g->wp, (g->p->x + 2) << 4, g->p->y << 4, 0, -16, WEAPON_BOMB);
+                        add_weapon(g, g->wp, g->p->x << 4, g->p->y << 4, 0, -16, WEAPON_BOMB);
                     }
                     break;
                 }

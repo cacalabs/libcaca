@@ -26,19 +26,23 @@
 
 #include "common.h"
 
+struct ee_sprite *ship_sprite;
+
 /* Init tunnel */
 player * create_player(game *g)
 {
     player *p = malloc(sizeof(player));
 
     p->x = g->w / 2;
-    p->y = g->h - 2;
+    p->y = g->h - 3;
     p->vx = 0;
     p->vy = 0;
     p->weapon = 0;
     p->special = MAX_SPECIAL;
     p->life = MAX_LIFE;
     p->dead = 0;
+
+    ship_sprite = ee_load_sprite("data/ship_green");
 
     return p;
 }
@@ -51,25 +55,15 @@ void free_player(player *p)
 void draw_player(game *g, player *p)
 {
     if(p->dead)
-    {
         return;
-    }
 
-    ee_color(EE_GREEN);
-    ee_putstr(p->x + 2, p->y - 2, "/\\");
-    ee_putchar(p->x + 1, p->y - 1, '(');
-    ee_putchar(p->x + 4, p->y - 1, ')');
-    ee_putstr(p->x, p->y, "I<__>I");
-    ee_color(EE_YELLOW);
-    ee_putstr(p->x + 2, p->y - 1, "()");
+    ee_draw_sprite(p->x, p->y, ship_sprite);
 }
 
 void update_player(game *g, player *p)
 {
     if(p->dead)
-    {
         return;
-    }
 
     if(p->life <= 0)
     {
@@ -80,40 +74,26 @@ void update_player(game *g, player *p)
 
     /* Update weapon stats */
     if(p->weapon)
-    {
         p->weapon--;
-    }
 
     if(p->special < MAX_SPECIAL)
-    {
         p->special++;
-    }
 
     /* Update life */
     if(p->life < MAX_LIFE)
-    {
         p->life++;
-    }
 
     /* Update coords */
     p->x += p->vx;
 
     if(p->vx < 0)
-    {
         p->vx++;
-    }
     else if(p->vx > 0)
-    {
         p->vx--;
-    }
 
     if(p->x < 1)
-    {
         p->x = 1;
-    }
     else if(p->x > g->w - 7)
-    {
         p->x = g->w - 7;
-    }
 }
 
