@@ -1,0 +1,38 @@
+Things to do
+
+ * let the ship pick up bonuses
+
+ * handle life
+
+ * alien swarms, programmed behaviour
+
+ * sprite library
+
+ * mega ball
+
+ * spiral weapon (vertical sine)
+
+ * fragmentation bomb (merge with mega-ball?)
+
+ * change tunnel colour
+
+ * fill holes in the tunnel when |step| > 2
+
+ * draw a 3rd alien type
+
+ * draw bosses
+
+ * port to conio.h
+
+ * clip graphics 
+
+ * promote precision for all coordinates except screen
+
+ * tunnel sometimes doesn't get drawn on the left
+
+ * write a generic drawing library with automatic clipping
+
+ * write a linux console output for the drawing library
+
+ * animate the ship
+
