@@ -1,0 +1,38 @@
+$Id$
+
+   o  Colour does not work with all backends and all terminals. I tested
+      many terminal emulators and tried to summarise which combinations
+      worked properly and which ones did not.
+
+   o  In an XTerm terminal, the following shell commands output all possible
+      foreground/background combinations:
+
+      for fgpre in "" '\e[0;1m'; do for fg in 0 4 2 6 1 5 3 7; do
+        for bgpre in 4 10; do
+          echo -ne "$fgpre"'\e[3'$fg'm'
+          for bg in 0 4 2 6 1 5 3 7; do echo -ne '\e['$bgpre$bg'm# '; done
+          echo -ne '\e[0;0m '
+        done
+        echo ''
+      done; echo ''; done
+
+      Successfully tested
+
+   o  ncurses:
+
+      * bright combinations work in the following terminals:
+
+        - Linux console (TERM=linux)
+        - pterm (TERM=xterm)
+
+      * bright text on bright background is rendered as bright text on
+        normal background in the following terminals:
+
+        - xterm (TERM=xterm)
+        - gnome-terminal (TERM=xterm)
+
+   o  S-Lang:
+
+   o  MS-DOS: all bright colours, bright backgrounds, and bright combinations
+      work using <conio.h>.
+

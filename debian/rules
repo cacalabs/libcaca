@@ -60,8 +60,8 @@ binary-arch: build install
 	dh_testdir
 	dh_testroot
 #	dh_installdebconf	
-	dh_installdocs README BUGS TODO AUTHORS NEWS -pcaca-utils
-	dh_installdocs README BUGS TODO AUTHORS NEWS -plibcaca-dev
+	dh_installdocs README BUGS TODO AUTHORS NEWS NOTES -pcaca-utils
+	dh_installdocs README BUGS TODO AUTHORS NEWS NOTES -plibcaca-dev
 #	dh_installexamples
 	dh_installmenu
 #	dh_installemacsen
