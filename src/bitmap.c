@@ -675,8 +675,8 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
             int newg = i * fg_g + ((2*DCHMAX-1) - i) * bg_g;
             int newb = i * fg_b + ((2*DCHMAX-1) - i) * bg_b;
             dist = abs(r * (2*DCHMAX-1) - newr)
-                 * abs(g * (2*DCHMAX-1) - newg)
-                 * abs(b * (2*DCHMAX-1) - newb);
+                 + abs(g * (2*DCHMAX-1) - newg)
+                 + abs(b * (2*DCHMAX-1) - newb);
 
             if(dist < distmin)
             {
