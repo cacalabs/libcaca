@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: weapons.c,v 1.9 2002/12/22 22:36:42 sam Exp $
+ *   $Id: weapons.c,v 1.10 2002/12/22 23:01:35 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -170,28 +170,31 @@ void update_weapons( game *g, weapons *wp )
                 dy = ymin - wp->y[i];
 
                 /* Normalize and update speed */
-                wp->vx[i] = (7 * wp->vx[i]
-                              + (dx * 48) / r00t(dx*dx+dy*dy) ) / 8;
-                wp->vy[i] = (7 * wp->vy[i]
-                              + (dy * 24) / r00t(dx*dx+dy*dy) ) / 8;
+                if( dx | dy )
+                {
+                    int norm = r00t( dx * dx + dy * dy );
 
+                    wp->vx[i] = (7 * wp->vx[i] + (dx * 48) / norm ) / 8;
+                    wp->vy[i] = (7 * wp->vy[i] + (dy * 24) / norm ) / 8;
+                }
                 break;
+
             case WEAPON_FRAGBOMB:
-                /* If n was set to -1, the fragbomb exploded */
+                /* If n was set to -1, the fragbomb just exploded */
                 if( wp->n[i] == -1 )
                 {
-                    add_weapon( g, g->wp, wp->x[i] + 24, wp->y[i], 24, 0, WEAPON_SEEKER );
-                    add_weapon( g, g->wp, wp->x[i] - 24, wp->y[i], -24, 0, WEAPON_SEEKER );
-                    add_weapon( g, g->wp, wp->x[i], wp->y[i] + 24, 0, 24, WEAPON_SEEKER );
-                    add_weapon( g, g->wp, wp->x[i], wp->y[i] - 24, 0, -24, WEAPON_SEEKER );
-                    add_weapon( g, g->wp, wp->x[i] + 24, wp->y[i] + 8, 24, 8, WEAPON_SEEKER );
-                    add_weapon( g, g->wp, wp->x[i] - 24, wp->y[i] + 8, -24, 8, WEAPON_SEEKER );
-                    add_weapon( g, g->wp, wp->x[i] + 24, wp->y[i] - 8, 24, -8, WEAPON_SEEKER );
-                    add_weapon( g, g->wp, wp->x[i] - 24, wp->y[i] - 8, -24, -8, WEAPON_SEEKER );
-                    add_weapon( g, g->wp, wp->x[i] + 16, wp->y[i] + 16, 16, 16, WEAPON_SEEKER );
-                    add_weapon( g, g->wp, wp->x[i] - 16, wp->y[i] + 16, -16, 16, WEAPON_SEEKER );
-                    add_weapon( g, g->wp, wp->x[i] + 16, wp->y[i] - 16, 16, -16, WEAPON_SEEKER );
-                    add_weapon( g, g->wp, wp->x[i] - 16, wp->y[i] - 16, -16, -16, WEAPON_SEEKER );
+                    int coords[] =
+                    {
+                        24,  0,   -24,  0,    0,  24,     0, -24,
+                        24,  8,   -24,  8,   24,  -8,   -24,  -8,
+                        16, 16,   -16, 16,   16, -16,   -16, -16
+                    };
+
+                    for( j = 0; j < 12; j++ )
+                    {
+                        add_weapon( g, g->wp, wp->x[i] + coords[2*j], wp->y[i] + coords[2*j+1], coords[2*j], coords[2*j+1], WEAPON_SEEKER );
+                    }
+
                     wp->type[i] = WEAPON_NONE;
                 }
 
@@ -203,6 +206,7 @@ void update_weapons( game *g, weapons *wp )
                     wp->type[i] = WEAPON_NONE;
                 }
                 break;
+
             case WEAPON_BEAM:
                 wp->x[i] = (g->p->x + 2) << 4;
                 wp->y[i] = g->p->y << 4;

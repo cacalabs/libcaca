@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: math.c,v 1.1 2002/12/22 22:36:42 sam Exp $
+ *   $Id: math.c,v 1.2 2002/12/22 23:01:35 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -26,7 +26,12 @@ int r00t( int a )
 {
     int x = a > 100000 ? 1000 : a > 1000 ? 100 : a > 10 ? 10 : 1;
 
-    /* Newton's method. Three iterations are more than enough. */
+    if( a <= 0 )
+    {
+        return 0;
+    }
+
+    /* Newton's method. Three iterations would be more than enough. */
     x = (x * x + a) / x / 2;
     x = (x * x + a) / x / 2;
     x = (x * x + a) / x / 2;
