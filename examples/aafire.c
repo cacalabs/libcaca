@@ -31,9 +31,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "caca.h"
-
-#define XSIZ (caca_get_width() * 2)
-#define YSIZ (caca_get_height() * 2 - 4)
 #else
 #include <stdio.h>
 #include "aalib.h"
@@ -43,6 +40,7 @@
 #endif
 #define MAXTABLE (256*5)
 #ifdef LIBCACA
+static int XSIZ, YSIZ;
 static struct caca_bitmap *caca_bitmap;
 static char *bitmap;
 #else
@@ -106,6 +104,8 @@ initialize (void)
       exit (1);
     }
   caca_set_delay(0);
+  XSIZ = caca_get_width() * 2;
+  YSIZ = caca_get_height() * 2 - 4;
 #else
   context = aa_autoinit (&aa_defparams);
   if (context == NULL)
@@ -222,6 +222,8 @@ drawfire (void)
   caca_draw_bitmap(0, 0, caca_get_width() - 1, caca_get_height() - 1,
                    caca_bitmap, bitmap);
   caca_refresh();
+  XSIZ = caca_get_width() * 2;
+  YSIZ = caca_get_height() * 2 - 4;
 #else
   aa_renderpalette (context, palette, params, 0, 0, aa_scrwidth (context),
 		    aa_scrheight (context));
