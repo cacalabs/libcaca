@@ -259,11 +259,24 @@ static unsigned int _lowlevel_event(void)
         {
             KeySym keysym;
 
+            /* Expose event */
+            if(xevent.type == Expose)
+            {
+                XCopyArea(x11_dpy, x11_pixmap, x11_window, x11_gc, 0, 0,
+                          _caca_width * x11_font_width,
+                          _caca_height * x11_font_height, 0, 0);
+                continue;
+            }
+
             /* Resize event */
             if(xevent.type == ConfigureNotify)
             {
-                unsigned int w = xevent.xconfigure.width / x11_font_width;
-                unsigned int h = xevent.xconfigure.height / x11_font_height;
+                unsigned int w, h;
+
+                h = (xevent.xconfigure.height + x11_font_height / 3)
+                      / x11_font_height;
+                w = (xevent.xconfigure.width + x11_font_width / 3)
+                      / x11_font_width;
 
                 if(w == _caca_width && h == _caca_height)
                     continue;

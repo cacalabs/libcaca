@@ -163,12 +163,13 @@ static char *conio_screen;
 #if defined(USE_X11) && !defined(_DOXYGEN_SKIP_ME)
 Display *x11_dpy;
 Window x11_window;
+Pixmap x11_pixmap;
+GC x11_gc;
 long int x11_event_mask = KeyPressMask | KeyReleaseMask | ButtonPressMask
-            | ButtonReleaseMask | PointerMotionMask | StructureNotifyMask;
+            | ButtonReleaseMask | PointerMotionMask | StructureNotifyMask
+            | ExposureMask;
 int x11_font_width, x11_font_height;
 unsigned int x11_new_width, x11_new_height;
-static GC x11_gc;
-static Pixmap x11_pixmap;
 static uint8_t *x11_char, *x11_attr;
 static int x11_colors[16];
 static Font x11_font;

@@ -85,6 +85,8 @@ extern enum caca_feature _caca_antialiasing;
 #include <X11/Xlib.h>
 extern Display *x11_dpy;
 extern Window x11_window;
+extern Pixmap x11_pixmap;
+extern GC x11_gc;
 extern long int x11_event_mask;
 extern int x11_font_width, x11_font_height;
 extern unsigned int x11_new_width, x11_new_height;
