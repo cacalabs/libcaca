@@ -22,12 +22,16 @@
 
 #include "config.h"
 
-#ifdef USE_SLANG
+#if defined(USE_SLANG)
 #   include <slang.h>
-#elif USE_NCURSES
+#elif defined(USE_NCURSES)
 #   include <curses.h>
-#elif USE_CONIO
+#elif defined(USE_CONIO)
+#   include <dos.h>
 #   include <conio.h>
+#   if defined(SCREENUPDATE_IN_PC_H)
+#       include <pc.h>
+#   endif
 #else
 #   error "no graphics library detected"
 #endif
@@ -41,13 +45,14 @@
 #include "ee.h"
 
 static int _ee_delay;
-#ifdef USE_CONIO
+#if defined(USE_CONIO)
 static struct text_info ti;
+char *_screen_buffer;
 #endif
 
 int ee_init(void)
 {
-#ifdef USE_SLANG
+#if defined(USE_SLANG)
     static char * colors[] = { "black", "green", "yellow", "white",
         "red", "gray", "lightgray", "blue", "cyan", "magenta", NULL };
     int i;
@@ -81,7 +86,7 @@ int ee_init(void)
         SLtt_set_color(i + 1, NULL, colors[i], "black");
     }
 
-#elif USE_NCURSES
+#elif defined(USE_NCURSES)
     /* Initialize ncurses library */
     initscr();
     keypad(stdscr, TRUE);
@@ -104,12 +109,13 @@ int ee_init(void)
     init_pair(EE_CYAN, COLOR_CYAN, COLOR_BLACK);
     init_pair(EE_MAGENTA, COLOR_MAGENTA, COLOR_BLACK);
 
-#elif USE_CONIO
+#elif defined(USE_CONIO)
     _wscroll = 0;
     _setcursortype(_NOCURSOR);
     clrscr();
     gettextinfo(&ti);
-//window(2, 2, 20, 20);
+    _screen_buffer = malloc(ee_get_width() * ee_get_height() * 2);
+    ScreenRetrieve(_screen_buffer);
 
 #endif
     _ee_delay = 0;
@@ -117,34 +123,34 @@ int ee_init(void)
     return 0;
 }
 
-void ee_set_delay(int delay)
+void ee_set_delay(int usec)
 {
-    _ee_delay = delay;
+    _ee_delay = usec;
 }
 
 int ee_get_width(void)
 {
-#ifdef USE_SLANG
+#if defined(USE_SLANG)
     return SLtt_Screen_Cols;
-#elif USE_NCURSES
+#elif defined(USE_NCURSES)
     return COLS;
-#elif USE_CONIO
+#elif defined(USE_CONIO)
     return ti.screenwidth;
 #endif
 }
 
 int ee_get_height(void)
 {
-#ifdef USE_SLANG
+#if defined(USE_SLANG)
     return SLtt_Screen_Rows;
-#elif USE_NCURSES
+#elif defined(USE_NCURSES)
     return LINES;
 #else
     return ti.screenheight;
 #endif
 }
 
-#ifndef USE_CONIO
+#if !defined(USE_CONIO)
 static int64_t local_time(void)
 {
     struct timeval tv;
@@ -160,7 +166,7 @@ static int64_t local_time(void)
 
 void ee_refresh(void)
 {
-#ifndef USE_CONIO
+#if !defined(USE_CONIO)
     static int64_t local_clock = 0;
     int64_t now;
 
@@ -176,15 +182,15 @@ void ee_refresh(void)
     }
 #endif
 
-#ifdef USE_SLANG
+#if defined(USE_SLANG)
     SLsmg_refresh();
-#elif USE_NCURSES
+#elif defined(USE_NCURSES)
     refresh();
-#elif USE_CONIO
-    /* Do nothing? */
+#elif defined(USE_CONIO)
+    ScreenUpdate(_screen_buffer);
 #endif
 
-#ifndef USE_CONIO
+#if !defined(USE_CONIO)
     now = local_time();
 
     if(now < local_clock + _ee_delay - 10000)
@@ -193,22 +199,27 @@ void ee_refresh(void)
     }
 
     local_clock += _ee_delay;
+#else
+    delay(5);
 #endif
 }
 
 void ee_end(void)
 {
-#ifdef USE_SLANG
+#if defined(USE_SLANG)
     SLtt_set_cursor_visibility(1);
     SLang_reset_tty();
     SLsmg_reset_smg();
-#elif USE_NCURSES
+#elif defined(USE_NCURSES)
     curs_set(1);
     endwin();
-#elif USE_CONIO
+#elif defined(USE_CONIO)
+    ScreenUpdate(_screen_buffer);
     _wscroll = 1;
-    ee_set_color(EE_WHITE);
-    ee_putstr(ee_get_width(), ee_get_height()-1, "\r\n");
+    textcolor((enum COLORS)WHITE);
+    textbackground((enum COLORS)BLACK);
+    gotoxy(ee_get_width(), ee_get_height());
+    cputs("\r\n");
     _setcursortype(_NORMALCURSOR);
 #endif
 }

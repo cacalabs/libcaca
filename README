@@ -6,6 +6,10 @@ Building ttyvaders
 
     --enable-slang: use the SLang library (default)
     --enable-ncurses: use the ncurses library
+    --enable-conio: use MS-DOS conio.h
+
+   Cross-compilation example:
+    ./configure --enable-conio --host=i386-pc-msdosdjgpp
 
 
 History of textmode games

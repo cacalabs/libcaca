@@ -14,6 +14,10 @@ AM_PROG_CC_C_O
 AC_PROG_CPP
 AC_PROG_RANLIB
 
+dnl AC_PROG_EGREP only exists in autoconf 2.54+, so we use AC_EGREP_CPP right
+dnl now otherwise it might be set in an obscure if statement.
+AC_EGREP_CPP(foo,foo)
+
 AC_ARG_ENABLE(slang,
   [  --enable-slang          slang graphics support (default enabled)])
 AC_ARG_ENABLE(ncurses,
@@ -26,6 +30,12 @@ USE_NCURSES=false
 USE_CONIO=false
 if test "${enable_conio}" = "yes"; then
   AC_CHECK_HEADER(conio.h,:,AC_MSG_ERROR([cannot find conio.h header]))
+  AC_MSG_CHECKING(for ScreenUpdate in pc.h)
+  AC_EGREP_HEADER(ScreenUpdate,pc.h,[
+    AC_MSG_RESULT(yes)
+    AC_DEFINE(SCREENUPDATE_IN_PC_H, 1,
+              Define if <pc.h> defines ScreenUpdate.)],[
+    AC_MSG_RESULT(no)])
   AC_DEFINE(USE_CONIO, 1, Define if the backend driver is conio.h)
   USE_CONIO=:
 elif test "${enable_ncurses}" = "yes"; then

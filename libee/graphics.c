@@ -22,11 +22,11 @@
 
 #include "config.h"
 
-#ifdef USE_SLANG
+#if defined(USE_SLANG)
 #   include <slang.h>
-#elif USE_NCURSES
+#elif defined(USE_NCURSES)
 #   include <curses.h>
-#elif USE_CONIO
+#elif defined(USE_CONIO)
 #   include <conio.h>
 #else
 #   error "no graphics library detected"
@@ -38,7 +38,7 @@
 #include "ee.h"
 
 static int ee_color = 0;
-#ifdef USE_CONIO
+#if defined(USE_CONIO)
 static enum COLORS dos_colors[] = {
     0,
     BLACK,
@@ -57,11 +57,11 @@ static enum COLORS dos_colors[] = {
 void ee_set_color(int color)
 {
     ee_color = color;
-#ifdef USE_SLANG
+#if defined(USE_SLANG)
     SLsmg_set_color(color);
-#elif USE_NCURSES
+#elif defined(USE_NCURSES)
     attrset(COLOR_PAIR(color));
-#elif USE_CONIO
+#elif defined(USE_CONIO)
     if(color >= 1 && color <= 10)
         textcolor(dos_colors[color]);
 #endif
@@ -72,31 +72,45 @@ int ee_get_color(void)
     return ee_color;
 }
 
+extern char *_screen_buffer;
+
 void ee_putchar(int x, int y, char c)
 {
-#ifdef USE_SLANG
+#if defined(USE_SLANG)
     SLsmg_gotorc(y,x);
     SLsmg_write_char(c);
-#elif USE_NCURSES
+#elif defined(USE_NCURSES)
     move(y,x);
     addch(c);
-#elif USE_CONIO
-    gotoxy(x+1,y+1);
-    putch(c);
+#elif defined(USE_CONIO)
+    if(x<0 || x>=ee_get_width() || y<0 || y>=ee_get_height())
+        return;
+    _screen_buffer[2 * (x + y * ee_get_width())] = c;
+    _screen_buffer[2 * (x + y * ee_get_width()) + 1] = dos_colors[ee_color];
+//    gotoxy(x+1,y+1);
+//    putch(c);
 #endif
 }
 
 void ee_putstr(int x, int y, char *s)
 {
-#ifdef USE_SLANG
+    if(y<0 || y>=ee_get_height())
+        return;
+#if defined(USE_SLANG)
     SLsmg_gotorc(y,x);
     SLsmg_write_string(s);
-#elif USE_NCURSES
+#elif defined(USE_NCURSES)
     move(y,x);
     addstr(s);
-#elif USE_CONIO
-    gotoxy(x+1,y+1);
-    cputs(s);
+#elif defined(USE_CONIO)
+    char *buf = _screen_buffer + 2 * (x + y * ee_get_width());
+    while(*s)
+    {
+        *buf++ = *s++;
+        *buf++ = dos_colors[ee_color];
+    }
+//    gotoxy(x+1,y+1);
+//    cputs(s);
 #endif
 }
 
