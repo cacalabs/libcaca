@@ -172,8 +172,8 @@ int caca_init(void)
 #if defined(USE_WIN32)
     if(_caca_driver == CACA_DRIVER_WIN32)
     {
-        if(!AllocConsole())
-            return -1;
+        /* This call is allowed to fail in cas we already have a console */
+        AllocConsole();
 
         win32_hin = GetStdHandle(STD_INPUT_HANDLE);
         win32_hout = CreateFile("CONOUT$", GENERIC_READ | GENERIC_WRITE,
