@@ -1,1 +1,1 @@
-EXTRA_DIST = changelog control rules
+EXTRA_DIST = changelog compat control copyright rules
