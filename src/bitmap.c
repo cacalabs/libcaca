@@ -37,6 +37,10 @@ typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
 #endif
 
+#ifdef HAVE_ENDIAN_H
+#   include <endian.h>
+#endif
+
 #include <stdlib.h>
 
 #include "caca.h"
@@ -236,26 +240,34 @@ static void get_rgb_default(struct caca_bitmap *bitmap, uint8_t *pixels,
                             int x, int y, unsigned int *r,
                             unsigned int *g, unsigned int *b)
 {
-    unsigned int bits;
+    uint32_t bits;
 
     pixels += (bitmap->bpp / 8) * x + bitmap->pitch * y;
 
     switch(bitmap->bpp / 8)
     {
         case 4:
-            bits = ((uint32_t)pixels[0] << 24) |
-                   ((uint32_t)pixels[1] << 16) |
-                   ((uint32_t)pixels[2] << 8) |
-                   ((uint32_t)pixels[3]);
+            bits = *(uint32_t *)pixels;
             break;
         case 3:
-            bits = ((uint32_t)pixels[0] << 16) |
-                   ((uint32_t)pixels[1] << 8) |
-                   ((uint32_t)pixels[2]);
+        {
+#ifdef HAVE_ENDIAN_H
+            if(__BYTE_ORDER == __BIG_ENDIAN)
+#else
+            static const uint32_t rmask = 0x12345678;
+            if(*(uint8_t *)&rmask == 0x12)
+#endif
+                bits = ((uint32_t)pixels[0] << 16) |
+                       ((uint32_t)pixels[1] << 8) |
+                       ((uint32_t)pixels[2]);
+            else
+                bits = ((uint32_t)pixels[2] << 16) |
+                       ((uint32_t)pixels[1] << 8) |
+                       ((uint32_t)pixels[0]);
             break;
+        }
         case 2:
-            bits = ((uint16_t)pixels[0] << 8) |
-                   ((uint16_t)pixels[1]);
+            bits = *(uint16_t *)pixels;
             break;
         case 1:
         default:

@@ -170,7 +170,6 @@ unsigned int caca_get_event(void)
         return event;
     }
 
-caca_printf(0,0, "unknown esc sequence %2x %2x %2x %2x %2x\n", '\x1b', keybuf[0], keybuf[1], keybuf[2], keybuf[3]);
     /* Unknown escape sequence: return the ESC key */
     return CACA_EVENT_KEY_PRESS | '\x1b';
 }

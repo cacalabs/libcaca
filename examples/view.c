@@ -61,11 +61,11 @@ int main(int argc, char **argv)
     if(*(char *)&rmask == 0x12)
 #endif
     {
-        rmask = 0x00ff0000; gmask = 0x0000ff00; bmask = 0x000000ff;
+        rmask = 0x0000ff00; gmask = 0x00ff0000; bmask = 0xff000000;
     }
     else
     {
-        rmask = 0x0000ff00; gmask = 0x00ff0000; bmask = 0xff000000;
+        rmask = 0x00ff0000; gmask = 0x0000ff00; bmask = 0x000000ff;
     }
 
     /* Initialise libcaca */
