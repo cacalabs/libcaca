@@ -515,6 +515,7 @@ int _caca_init_graphics(void)
         };
 
         Colormap colormap;
+        XSetWindowAttributes x11_attr;
         const char *font_name = "8x13bold";
         int i;
 
@@ -575,10 +576,19 @@ int _caca_init_graphics(void)
             x11_colors[i] = color.pixel;
         }
 
-        x11_window = XCreateSimpleWindow(x11_dpy, DefaultRootWindow(x11_dpy),
-                                           0, 0, _caca_width * x11_font_width,
-                                           _caca_height * x11_font_height, 0,
-                                           x11_colors[0], x11_colors[0]);
+        x11_attr.backing_store = Always;
+        x11_attr.background_pixel = x11_colors[0];
+        x11_attr.event_mask = ExposureMask | StructureNotifyMask;
+
+        x11_window = XCreateWindow(x11_dpy, DefaultRootWindow(x11_dpy), 0, 0,
+                                   _caca_width * x11_font_width,
+                                   _caca_height * x11_font_height,
+                                   0, 0, InputOutput, 0,
+                                   CWBackingStore | CWBackPixel | CWEventMask,
+                                   &x11_attr);
+
+        XStoreName(x11_dpy, x11_window, "caca for X");
+
         XSelectInput(x11_dpy, x11_window, StructureNotifyMask);
         XMapWindow(x11_dpy, x11_window);
 
