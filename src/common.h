@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: common.h,v 1.8 2002/12/22 22:17:41 sam Exp $
+ *   $Id: common.h,v 1.9 2002/12/22 22:36:42 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -184,4 +184,6 @@ void draw_explosions( game *g, explosions *ex );
 void update_explosions( game *g, explosions *ex );
 
 void ceo_alert( void );
+
+int r00t( int a );
 

@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: weapons.c,v 1.8 2002/12/22 22:17:41 sam Exp $
+ *   $Id: weapons.c,v 1.9 2002/12/22 22:36:42 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
  */
 
 #include <stdlib.h>
-#include <math.h>
 
 #include "common.h"
 
@@ -172,9 +171,9 @@ void update_weapons( game *g, weapons *wp )
 
                 /* Normalize and update speed */
                 wp->vx[i] = (7 * wp->vx[i]
-                              + (dx * 48) / sqrt(dx*dx+dy*dy) ) / 8;
+                              + (dx * 48) / r00t(dx*dx+dy*dy) ) / 8;
                 wp->vy[i] = (7 * wp->vy[i]
-                              + (dy * 24) / sqrt(dx*dx+dy*dy) ) / 8;
+                              + (dy * 24) / r00t(dx*dx+dy*dy) ) / 8;
 
                 break;
             case WEAPON_FRAGBOMB:

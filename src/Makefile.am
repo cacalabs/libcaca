@@ -24,6 +24,7 @@ ttyvaders_SOURCES = \
 	common.h \
 	explosions.c \
 	main.c \
+	math.c \
 	starfield.c \
 	weapons.c \
 	collide.c \
