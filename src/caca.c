@@ -32,7 +32,11 @@
 #include "config.h"
 
 #if defined(USE_SLANG)
-#   include <slang.h>
+#   if defined(HAVE_SLANG_SLANG_H)
+#       include <slang/slang.h>
+#   else
+#       include <slang.h>
+#   endif
 #endif
 #if defined(USE_NCURSES)
 #   include <curses.h>

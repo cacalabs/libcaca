@@ -49,15 +49,14 @@ if test "${enable_conio}" != "no"; then
 fi
 
 if test "${enable_slang}" != "no"; then
-  AC_CHECK_HEADERS(slang.h,
+  AC_CHECK_HEADERS(slang.h slang/slang.h,
+   ac_cv_my_have_slang="no"
    [AC_CHECK_LIB(slang, SLkp_init,
      [ac_cv_my_have_slang="yes"
       AC_DEFINE(USE_SLANG, 1, Define to activate the slang backend driver)
       CPPFLAGS="${CPPFLAGS} -DOPTIMISE_SLANG_PALETTE=1"
       CACA_LIBS="${CACA_LIBS} -lslang"
-      CACA_DRIVERS="${CACA_DRIVERS} slang"],
-     [ac_cv_my_have_slang="no"])],
-   [ac_cv_my_have_slang="no"])
+      CACA_DRIVERS="${CACA_DRIVERS} slang"])])
   if test "${ac_cv_my_have_slang}" = "no" -a "${enable_slang}" = "yes"; then
     AC_MSG_ERROR([cannot find slang development files])
   fi
