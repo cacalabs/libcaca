@@ -49,9 +49,11 @@ or enable anti-aliasing.
 
 cacaball is a tiny graphic program that renders animated ASCII metaballs on
 the screen, cacafire is a port of AALib's aafire and displays burning ASCII
-art flames, and cacademo is a simple application that shows the libcaca
-rendering features such as line and ellipses drawing, triangle filling and
-sprite blitting.
+art flames, cacamoir animates colourful moire circles and cacaplas displays
+an old school plasma effect.
+
+cacademo is a simple application that shows the libcaca rendering features
+such as line and ellipses drawing, triangle filling and sprite blitting.
 
 %prep
 case "${RPM_COMMAND:-all}" in
@@ -95,12 +97,16 @@ rm -rf %{buildroot}
 %{_prefix}/bin/cacaball
 %{_prefix}/bin/cacademo
 %{_prefix}/bin/cacafire
+%{_prefix}/bin/cacamoir
+%{_prefix}/bin/cacaplas
 %{_prefix}/bin/cacaview
 %{_prefix}/share/doc/caca-utils-%{version}/*
 %{_prefix}/share/libcaca/*
 %{_prefix}/share/man/man1/cacaball.1*
 %{_prefix}/share/man/man1/cacademo.1*
 %{_prefix}/share/man/man1/cacafire.1*
+%{_prefix}/share/man/man1/cacamoir.1*
+%{_prefix}/share/man/man1/cacaplas.1*
 %{_prefix}/share/man/man1/cacaview.1*
 
 %changelog

@@ -34,6 +34,8 @@ Description: text mode graphics utilities
  .
  cacaball is a tiny graphic program that renders animated ASCII metaballs on
  the screen, cacafire is a port of AALib's aafire and displays burning ASCII
- art flames, and cacademo is a simple application that shows the libcaca
- rendering features such as line and ellipses drawing, triangle filling and
- sprite blitting.
+ art flames, cacamoir animates colourful moire circles and cacaplas displays
+ an old school plasma effect.
+ .
+ cacademo is a simple application that shows the libcaca rendering features
+ such as line and ellipses drawing, triangle filling and sprite blitting.

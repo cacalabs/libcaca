@@ -6,7 +6,7 @@ pkgdata_DATA = caca.txt
 
 EXTRA_DIST = caca.txt
 
-bin_PROGRAMS = cacademo cacafire cacaball cacaplas cacaview cacacirc
+bin_PROGRAMS = cacademo cacafire cacaball cacaplas cacaview cacamoir
 
 cacademo_SOURCES = demo.c
 cacademo_LDADD = ../src/libcaca.a @CACA_LIBS@ @MATH_LIBS@
@@ -24,9 +24,9 @@ cacaplas_SOURCES = cacaplas.c
 cacaplas_LDADD = ../src/libcaca.a @CACA_LIBS@ @MATH_LIBS@
 cacaplas_CPPFLAGS = -I$(top_srcdir)/src
 
-cacacirc_SOURCES = cacacirc.c
-cacacirc_LDADD = ../src/libcaca.a @CACA_LIBS@ @MATH_LIBS@
-cacacirc_CPPFLAGS = -I$(top_srcdir)/src
+cacamoir_SOURCES = cacamoir.c
+cacamoir_LDADD = ../src/libcaca.a @CACA_LIBS@ @MATH_LIBS@
+cacamoir_CPPFLAGS = -I$(top_srcdir)/src
 
 cacaview_SOURCES = cacaview.c
 cacaview_LDADD = ../src/libcaca.a @CACA_LIBS@

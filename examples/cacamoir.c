@@ -1,5 +1,5 @@
 /*
- *  cacacirc      circle effect for libcaca
+ *  cacamoir      moiré circles effect for libcaca
  *  Copyright (c) 2004 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *

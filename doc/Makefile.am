@@ -45,9 +45,13 @@ if DOXYGEN
 	$(mkinstalldirs) $(DESTDIR)$(mandir)/man3
 	cp man/man3/*.3caca $(DESTDIR)$(mandir)/man3
 	$(mkinstalldirs) $(DESTDIR)$(mandir)/man1
-	rm -f $(DESTDIR)$(mandir)/man1/cacafire.1
-	ln -s cacademo.1 $(DESTDIR)$(mandir)/man1/cacafire.1
 	rm -f $(DESTDIR)$(mandir)/man1/cacaball.1
 	ln -s cacademo.1 $(DESTDIR)$(mandir)/man1/cacaball.1
+	rm -f $(DESTDIR)$(mandir)/man1/cacafire.1
+	ln -s cacademo.1 $(DESTDIR)$(mandir)/man1/cacafire.1
+	rm -f $(DESTDIR)$(mandir)/man1/cacamoir.1
+	ln -s cacademo.1 $(DESTDIR)$(mandir)/man1/cacamoir.1
+	rm -f $(DESTDIR)$(mandir)/man1/cacaplas.1
+	ln -s cacademo.1 $(DESTDIR)$(mandir)/man1/cacaplas.1
 endif
 
