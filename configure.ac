@@ -42,6 +42,7 @@ AC_OUTPUT([
   test/Makefile
   src/Makefile
   autotools/Makefile
+  data/Makefile
   debian/Makefile
 ])
 

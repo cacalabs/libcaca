@@ -35,8 +35,10 @@ static void demo_thin_lines(void);
 static void demo_circles(void);
 static void demo_triangles(void);
 static void demo_outlined_triangles(void);
+static void demo_sprites(void);
 
 int clipping = 0;
+struct ee_sprite *sprite = NULL;
 
 int main(int argc, char **argv)
 {
@@ -48,6 +50,10 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    /* Initialize data */
+    sprite = ee_load_sprite("data/bar_boss");
+
+    /* Main menu */
     display_menu();
 
     /* Go ! */
@@ -91,6 +97,10 @@ int main(int argc, char **argv)
                 ee_clear();
                 demo = demo_outlined_triangles;
                 break;
+            case '7':
+                ee_clear();
+                demo = demo_sprites;
+                break;
             }
         }
 
@@ -99,6 +109,7 @@ int main(int argc, char **argv)
     }
 
     /* Clean up */
+    ee_free_sprite(sprite);
     ee_end();
 
     return 0;
@@ -133,6 +144,8 @@ static void display_menu(void)
     ee_putstr("5: triangles demo");
     ee_goto(4, 11);
     ee_putstr("6: outlined triangles demo");
+    ee_goto(4, 12);
+    ee_putstr("7: sprites demo");
 
     ee_goto(4, yo - 2);
     ee_putstr("q: quit");
@@ -282,6 +295,44 @@ static void demo_outlined_triangles(void)
         ee_draw_thin_line(x2, y2, x3, y3);
         ee_draw_thin_line(x3, y3, x1, y1);
     }
+    ee_refresh();
+}
+
+static void demo_sprites(void)
+{
+    static int i = 0;
+
+    int x1, y1, x2, y2, x3, y3;
+
+    i++;
+
+    x1 = 2;
+    y1 = 2;
+
+    x2 = ee_get_width() - 3;
+    y2 = ee_get_height() / 2;
+
+    x3 = ee_get_width() / 3;
+    y3 = ee_get_height() - 3;
+
+    ee_clear();
+
+    /* Draw a sprite behind the triangle */
+    ee_draw_sprite(ee_get_width() / 2 + cos(0.027*i) * 30,
+                   ee_get_height() / 2 - sin(0.027*i) * 20, sprite);
+
+    /* Draw a background triangle */
+    ee_color(EE_BLUE);
+    ee_fill_triangle(x1, y1, x2, y2, x3, y3, '.');
+    ee_color(EE_CYAN);
+    ee_draw_thin_line(x1, y1, x3, y3);
+    ee_draw_thin_line(x2, y2, x1, y1);
+    ee_draw_thin_line(x3, y3, x2, y2);
+
+    /* Draw foreground sprite */
+    ee_draw_sprite(ee_get_width() / 2 + cos(0.02*i) * 20,
+                   ee_get_height() / 2 + sin(0.02*i) * 10, sprite);
+
     ee_refresh();
 }
 
