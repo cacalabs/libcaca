@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: weapons.c,v 1.10 2002/12/22 23:01:35 sam Exp $
+ *   $Id: weapons.c,v 1.11 2002/12/22 23:39:15 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -138,9 +138,9 @@ void update_weapons( game *g, weapons *wp )
 
                 wp->n[i]--;
 
-                /* Estimate our position in 2 frames */
-                xnew = wp->x[i] + 4 * wp->vx[i];
-                ynew = wp->y[i] + 4 * wp->vy[i];
+                /* Estimate our position next frames */
+                xnew = wp->x[i] + wp->vx[i];
+                ynew = wp->y[i] + wp->vy[i];
 
                 xmin = xnew;
                 ymin = - (g->h << 4);
@@ -169,14 +169,26 @@ void update_weapons( game *g, weapons *wp )
                 dx = xmin - wp->x[i];
                 dy = ymin - wp->y[i];
 
-                /* Normalize and update speed */
+                /* Normalize direction */
                 if( dx | dy )
                 {
-                    int norm = r00t( dx * dx + dy * dy );
-
-                    wp->vx[i] = (7 * wp->vx[i] + (dx * 48) / norm ) / 8;
-                    wp->vy[i] = (7 * wp->vy[i] + (dy * 24) / norm ) / 8;
+                    int norm = r00t( dx * dx + 4 * dy * dy );
+                    dx = dx * 32 / norm;
+                    dy = dy * 32 / norm;
                 }
+
+                /* Find our new speed */
+                dx = (dx + 3 * wp->vx[i]) / 4;
+                dy = (dy + 3 * wp->vy[i]) / 4;
+
+                /* Normalize speed */
+                if( dx | dy )
+                {
+                    int norm = r00t( dx * dx + 4 * dy * dy );
+                    wp->vx[i] = dx * 32 / norm;
+                    wp->vy[i] = dy * 32 / norm;
+                }
+
                 break;
 
             case WEAPON_FRAGBOMB:
@@ -185,14 +197,15 @@ void update_weapons( game *g, weapons *wp )
                 {
                     int coords[] =
                     {
-                        24,  0,   -24,  0,    0,  24,     0, -24,
-                        24,  8,   -24,  8,   24,  -8,   -24,  -8,
-                        16, 16,   -16, 16,   16, -16,   -16, -16
+                        32,  0,   -32,  0,    0,  16,     0, -16,
+                        24, 12,   -24, 12,   24, -12,   -24, -12,
+                        28,  8,   -28,  8,   28,  -8,   -28,  -8,
+                        16, 14,   -16, 14,   16, -14,   -16, -14
                     };
 
-                    for( j = 0; j < 12; j++ )
+                    for( j = 0 ; j < sizeof(coords) / sizeof(int) ; j += 2 )
                     {
-                        add_weapon( g, g->wp, wp->x[i] + coords[2*j], wp->y[i] + coords[2*j+1], coords[2*j], coords[2*j+1], WEAPON_SEEKER );
+                        add_weapon( g, g->wp, wp->x[i] + coords[j], wp->y[i] + coords[j+1], coords[j], coords[j+1], WEAPON_SEEKER );
                     }
 
                     wp->type[i] = WEAPON_NONE;
