@@ -46,7 +46,7 @@
 #include "ee_internals.h"
 
 /* Global array with color names */
-char *ee_color_names[16] =
+const char *ee_color_names[16] =
 {
     "black",
     "blue",
@@ -66,8 +66,10 @@ char *ee_color_names[16] =
     "white",
 };
 
-static int _ee_delay;
+static unsigned int _ee_delay;
+static unsigned int _ee_rendertime;
 char *_ee_empty_line;
+char *_ee_scratch_line;
 
 #if defined(USE_NCURSES)
 int _ee_attr[16];
@@ -185,12 +187,15 @@ int ee_init(void)
     memset(_ee_empty_line, ' ', ee_get_width());
     _ee_empty_line[ee_get_width()] = '\0';
 
+    _ee_scratch_line = malloc(ee_get_width() + 1);
+
     _ee_delay = 0;
+    _ee_rendertime = 0;
 
     return 0;
 }
 
-int ee_get_width(void)
+unsigned int ee_get_width(void)
 {
 #if defined(USE_SLANG)
     return SLtt_Screen_Cols;
@@ -201,7 +206,7 @@ int ee_get_width(void)
 #endif
 }
 
-int ee_get_height(void)
+unsigned int ee_get_height(void)
 {
 #if defined(USE_SLANG)
     return SLtt_Screen_Rows;
@@ -212,9 +217,14 @@ int ee_get_height(void)
 #endif
 }
 
-void ee_set_delay(int usec)
+void ee_set_delay(unsigned int usec)
 {
     _ee_delay = usec;
+}
+
+unsigned int ee_get_rendertime(void)
+{
+    return _ee_rendertime;
 }
 
 static unsigned int _ee_getticks(void)
@@ -239,7 +249,7 @@ static unsigned int _ee_getticks(void)
 
 void ee_refresh(void)
 {
-    static int lastticks = 0;
+    static unsigned int lastticks = 0;
     unsigned int ticks = lastticks + _ee_getticks();
 
 #if defined(USE_SLANG)
@@ -257,6 +267,9 @@ void ee_refresh(void)
     /* Wait until _ee_delay + time of last call */
     for(ticks += _ee_getticks(); ticks < _ee_delay; ticks += _ee_getticks())
         usleep(10000);
+
+    /* Update the sliding mean of the render time */
+    _ee_rendertime = (7 * _ee_rendertime + ticks) / 8;
 
     lastticks = ticks - _ee_delay;
 

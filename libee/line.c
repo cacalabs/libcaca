@@ -68,7 +68,7 @@ void ee_draw_line(int x1, int y1, int x2, int y2, char c)
     clip_line(&s);
 }
 
-void ee_draw_polyline(int x[], int y[], int n, char c)
+void ee_draw_polyline(const int x[], const int y[], int n, char c)
 {
     int i;
     struct line s;
@@ -105,7 +105,7 @@ void ee_draw_thin_line(int x1, int y1, int x2, int y2)
     clip_line(&s);
 }
 
-void ee_draw_thin_polyline(int x[], int y[], int n)
+void ee_draw_thin_polyline(const int x[], const int y[], int n)
 {
     int i;
     struct line s;

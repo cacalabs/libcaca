@@ -79,11 +79,11 @@ void ee_putchar(int x, int y, char c)
 #endif
 }
 
-void ee_putstr(int x, int y, char *s)
+void ee_putstr(int x, int y, const char *s)
 {
     int len;
 
-    if(y < 0 || y >= ee_get_height())
+    if(y < 0 || y >= ee_get_height() || x >= ee_get_width())
         return;
 
     len = strlen(s);
@@ -95,6 +95,13 @@ void ee_putstr(int x, int y, char *s)
             return;
         s += -x;
         x = 0;
+    }
+
+    if(x + len >= ee_get_width())
+    {
+        memcpy(_ee_scratch_line, s, ee_get_width() - x);
+        _ee_scratch_line[ee_get_width() - x] = '\0';
+        s = _ee_scratch_line;
     }
 
 #if defined(USE_SLANG)

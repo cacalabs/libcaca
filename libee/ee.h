@@ -51,7 +51,7 @@ enum ee_colors
     EE_WHITE = 15
 };
 
-extern char *ee_color_names[16];
+extern const char *ee_color_names[16];
 
 /*
  * Types
@@ -62,9 +62,10 @@ struct ee_sprite;
  * Prototypes
  */
 int ee_init(void);
-void ee_set_delay(int);
-int ee_get_width(void);
-int ee_get_height(void);
+void ee_set_delay(unsigned int);
+unsigned int ee_get_rendertime(void);
+unsigned int ee_get_width(void);
+unsigned int ee_get_height(void);
 void ee_refresh(void);
 void ee_end(void);
 
@@ -73,13 +74,13 @@ char ee_get_key(void);
 void ee_set_color(int);
 int ee_get_color(void);
 void ee_putchar(int, int, char);
-void ee_putstr(int, int, char *);
+void ee_putstr(int, int, const char *);
 void ee_clear(void);
 
 void ee_draw_line(int, int, int, int, char);
-void ee_draw_polyline(int[], int[], int, char);
+void ee_draw_polyline(const int[], const int[], int, char);
 void ee_draw_thin_line(int, int, int, int);
-void ee_draw_thin_polyline(int[], int[], int);
+void ee_draw_thin_polyline(const int[], const int[], int);
 
 void ee_draw_circle(int, int, int, char);
 void ee_draw_ellipse(int, int, int, int, char);
