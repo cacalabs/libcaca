@@ -44,6 +44,7 @@ if test "${enable_slang}" = "yes"; then
   AC_CHECK_HEADERS(slang.h,:,AC_MSG_ERROR([cannot find slang headers]))
   AC_CHECK_LIB(slang,SLkp_init,:,AC_MSG_ERROR([cannot find slang library]))
   AC_DEFINE(USE_SLANG, 1, Define to activate the slang backend driver)
+  CPPFLAGS="${CPPFLAGS} -DOPTIMISE_SLANG_PALETTE=1"
   CACA_LIBS="${CACA_LIBS} -lslang"
 fi
 

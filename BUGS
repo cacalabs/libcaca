@@ -6,7 +6,8 @@ Video rendering
       occasionally flicker because it tries to optimize the vertical
       scrolling.
 
-   o  Slang cannot display 256 colour pairs under Unix.
+   o  Slang cannot display 256 colour pairs under Unix. This is partially
+      solved by the OPTIMISE_SLANG_PALETTE code.
 
    o  the X11 driver is very slow.
 

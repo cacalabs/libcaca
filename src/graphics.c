@@ -73,6 +73,10 @@ unsigned int _caca_height = 0;
 static int ncurses_attr[16*16];
 #endif
 
+#if defined(USE_SLANG)
+static int slang_assoc[16*16];
+#endif
+
 #if defined(USE_CONIO)
 static struct text_info conio_ti;
 static char *conio_screen;
@@ -97,8 +101,20 @@ static char *_caca_scratch_line;
 static unsigned int _caca_delay;
 static unsigned int _caca_rendertime;
 
+#if defined(OPTIMISE_SLANG_PALETTE)
+static int _caca_fgisbg = 0;
+#endif
 static enum caca_color _caca_fgcolor = CACA_COLOR_LIGHTGRAY;
 static enum caca_color _caca_bgcolor = CACA_COLOR_BLACK;
+
+/*
+ * Local functions
+ */
+#if defined(USE_SLANG)
+static void slang_init_palette(void);
+#endif
+
+static unsigned int _caca_getticks(void);
 
 /** \brief Set the default colour pair.
  *
@@ -116,11 +132,42 @@ void caca_set_color(enum caca_color fgcolor, enum caca_color bgcolor)
 
     _caca_fgcolor = fgcolor;
     _caca_bgcolor = bgcolor;
+
     switch(_caca_driver)
     {
 #if defined(USE_SLANG)
     case CACA_DRIVER_SLANG:
-        SLsmg_set_color((bgcolor + 16 * fgcolor) /*% 128*/);
+
+#if defined(OPTIMISE_SLANG_PALETTE)
+        /* If foreground == background, discard this colour pair. Functions
+         * such as caca_putchar will print spaces instead of characters */
+        if(fgcolor != bgcolor)
+            _caca_fgisbg = 0;
+        else
+        {
+            _caca_fgisbg = 1;
+            switch(fgcolor)
+            {
+            case CACA_COLOR_BLACK:
+                fgcolor = CACA_COLOR_WHITE;
+                break;
+            case CACA_COLOR_WHITE:
+                fgcolor = CACA_COLOR_BLACK;
+                break;
+            default:
+                if(fgcolor <= CACA_COLOR_LIGHTGRAY)
+                    fgcolor = CACA_COLOR_BLACK;
+                else
+                    fgcolor = CACA_COLOR_WHITE;
+            }
+        }
+#endif
+
+#if defined(OPTIMISE_SLANG_PALETTE)
+        SLsmg_set_color(slang_assoc[fgcolor + 16 * bgcolor]);
+#else
+        SLsmg_set_color(fgcolor + 16 * bgcolor);
+#endif
         break;
 #endif
 #if defined(USE_NCURSES)
@@ -192,7 +239,12 @@ void caca_putchar(int x, int y, char c)
 #if defined(USE_SLANG)
     case CACA_DRIVER_SLANG:
         SLsmg_gotorc(y, x);
-        SLsmg_write_char(c);
+#if defined(OPTIMISE_SLANG_PALETTE)
+        if(_caca_fgisbg)
+            SLsmg_write_char(' ');
+        else
+#endif
+            SLsmg_write_char(c);
         break;
 #endif
 #if defined(USE_NCURSES)
@@ -258,8 +310,9 @@ void caca_putstr(int x, int y, const char *s)
 
     if(x + len >= _caca_width)
     {
-        memcpy(_caca_scratch_line, s, _caca_width - x);
-        _caca_scratch_line[_caca_width - x] = '\0';
+        len = _caca_width - x;
+        memcpy(_caca_scratch_line, s, len);
+        _caca_scratch_line[len] = '\0';
         s = _caca_scratch_line;
     }
 
@@ -268,7 +321,12 @@ void caca_putstr(int x, int y, const char *s)
 #if defined(USE_SLANG)
     case CACA_DRIVER_SLANG:
         SLsmg_gotorc(y, x);
-        SLsmg_write_string((char *)(intptr_t)s);
+#if defined(OPTIMISE_SLANG_PALETTE)
+        if(_caca_fgisbg)
+            SLsmg_write_string(_caca_empty_line + _caca_width - len);
+        else
+#endif
+            SLsmg_write_string((char *)(intptr_t)s);
         break;
 #endif
 #if defined(USE_NCURSES)
@@ -366,37 +424,7 @@ int _caca_init_graphics(void)
 #if defined(USE_SLANG)
     if(_caca_driver == CACA_DRIVER_SLANG)
     {
-        /* See SLang ref., 5.4.4. */
-        static char *slang_colors[16] =
-        {
-            /* Standard colours */
-            "black",
-            "blue",
-            "green",
-            "cyan",
-            "red",
-            "magenta",
-            "brown",
-            "lightgray",
-            /* Bright colours */
-            "gray",
-            "brightblue",
-            "brightgreen",
-            "brightcyan",
-            "brightred",
-            "brightmagenta",
-            "yellow",
-            "white",
-        };
-
-        int fg, bg;
-
-        for(fg = 0; fg < 16; fg++)
-            for(bg = 0; bg < 16; bg++)
-            {
-                int i = bg + 16 * fg;
-                SLtt_set_color(i, NULL, slang_colors[fg], slang_colors[bg]);
-            }
+        slang_init_palette();
 
         /* Disable alt charset support so that we get all 256 colour pairs */
         SLtt_Has_Alt_Charset = 0;
@@ -800,4 +828,202 @@ void caca_refresh(void)
     if(lastticks > (int)_caca_delay)
         lastticks = 0;
 }
+
+#if defined(USE_SLANG)
+
+#if defined(OPTIMISE_SLANG_PALETTE)
+#endif
+
+static void slang_init_palette(void)
+{
+    /* See SLang ref., 5.4.4. */
+    static char *slang_colors[16] =
+    {
+        /* Standard colours */
+        "black",
+        "blue",
+        "green",
+        "cyan",
+        "red",
+        "magenta",
+        "brown",
+        "lightgray",
+        /* Bright colours */
+        "gray",
+        "brightblue",
+        "brightgreen",
+        "brightcyan",
+        "brightred",
+        "brightmagenta",
+        "yellow",
+        "white",
+    };
+
+#if !defined(OPTIMISE_SLANG_PALETTE)
+    int fg, bg;
+
+    for(bg = 0; bg < 16; bg++)
+        for(fg = 0; fg < 16; fg++)
+        {
+            int i = fg + 16 * bg;
+            SLtt_set_color(i, NULL, slang_colors[fg], slang_colors[bg]);
+        }
+#else
+    int i, cur = 0;
+
+    /* 6 colours in hue order */
+    static const enum caca_color hue_list[] =
+    {
+        CACA_COLOR_RED,
+        CACA_COLOR_BROWN,
+        CACA_COLOR_GREEN,
+        CACA_COLOR_CYAN,
+        CACA_COLOR_BLUE,
+        CACA_COLOR_MAGENTA
+    };
+
+#define SETPAIR(_fg, _bg, _n) \
+    do \
+    { \
+        int fg = _fg, bg = _bg, n = _n; \
+        SLtt_set_color(n, NULL, slang_colors[fg], slang_colors[bg]); \
+        slang_assoc[fg + 16 * bg] = n; \
+    } \
+    while(0);
+
+    /*
+     * XXX: See the NOTES file for what follows
+     */
+
+    /* black background colour pairs that are needed for the old renderer */
+    for(i = 1; i < 16; i++)
+        SETPAIR(i, CACA_COLOR_BLACK, cur++);
+
+    /* gray combinations used for grayscale dithering */
+    SETPAIR(CACA_COLOR_BLACK, CACA_COLOR_DARKGRAY, cur++);
+    SETPAIR(CACA_COLOR_DARKGRAY, CACA_COLOR_LIGHTGRAY, cur++);
+    SETPAIR(CACA_COLOR_LIGHTGRAY, CACA_COLOR_DARKGRAY, cur++);
+    SETPAIR(CACA_COLOR_WHITE, CACA_COLOR_LIGHTGRAY, cur++);
+    SETPAIR(CACA_COLOR_LIGHTGRAY, CACA_COLOR_WHITE, cur++);
+
+    /* white/light, light/dark, lightgray/light, darkgray/dark, dark/black
+     * combinations often used for saturation/value dithering (the two
+     * other possible combinations, lightgray/dark and darkgray/light, are
+     * not considered here) */
+    for(i = 1; i < 7; i++)
+    {
+        SETPAIR(CACA_COLOR_WHITE, i + 8, cur++);
+        SETPAIR(i + 8, CACA_COLOR_WHITE, cur++);
+        SETPAIR(i, i + 8, cur++);
+        SETPAIR(i + 8, i, cur++);
+        SETPAIR(CACA_COLOR_LIGHTGRAY, i + 8, cur++);
+        SETPAIR(i + 8, CACA_COLOR_LIGHTGRAY, cur++);
+        SETPAIR(CACA_COLOR_DARKGRAY, i, cur++);
+        SETPAIR(i, CACA_COLOR_DARKGRAY, cur++);
+        SETPAIR(CACA_COLOR_BLACK, i, cur++);
+    }
+
+    /* next colour combinations for hue dithering (magenta/blue, blue/green
+     * and so on) */
+    for(i = 0; i < 6; i++)
+    {
+        SETPAIR(hue_list[i], hue_list[(i + 1) % 6], cur++);
+        SETPAIR(hue_list[(i + 1) % 6], hue_list[i], cur++);
+        SETPAIR(hue_list[i] + 8, hue_list[(i + 1) % 6] + 8, cur++);
+        SETPAIR(hue_list[(i + 1) % 6] + 8, hue_list[i] + 8, cur++);
+    }
+
+    /* next colour combinations for hue/value dithering (blue/lightgreen,
+     * green/lightblue and so on) */
+    for(i = 0; i < 6; i++)
+    {
+        SETPAIR(hue_list[i], hue_list[(i + 1) % 6] + 8, cur++);
+        SETPAIR(hue_list[(i + 1) % 6], hue_list[i] + 8, cur++);
+        SETPAIR(hue_list[i] + 8, hue_list[(i + 1) % 6], cur++);
+        SETPAIR(hue_list[(i + 1) % 6] + 8, hue_list[i], cur++);
+    }
+
+    /* black on light gray, black on white, white on dark gray, dark gray
+     * on white, white on blue, light gray on blue (chosen arbitrarily) */
+    SETPAIR(CACA_COLOR_BLACK, CACA_COLOR_LIGHTGRAY, cur++);
+    SETPAIR(CACA_COLOR_BLACK, CACA_COLOR_WHITE, cur++);
+    SETPAIR(CACA_COLOR_WHITE, CACA_COLOR_DARKGRAY, cur++);
+    SETPAIR(CACA_COLOR_DARKGRAY, CACA_COLOR_WHITE, cur++);
+    SETPAIR(CACA_COLOR_WHITE, CACA_COLOR_BLUE, cur++);
+    SETPAIR(CACA_COLOR_LIGHTGRAY, CACA_COLOR_BLUE, cur++);
+
+    /*
+     * Now the possibly emulated pairs
+     */
+
+    /* light gray on dark colour: emulate with light colour on dark colour
+     * white on dark colour: emulate with light gray on light colour
+     * black on light colour: emulate with dark gray on dark colour
+     * dark gray on light colour: emulate with dark colour on light colour
+     * light colour on dark gray: emulate with dark colour on dark gray
+     * dark colour on light gray: emulate with light colour on light gray
+     * dark colour on white: emulate with light colour on white */
+    for(i = 1; i < 7; i++)
+    {
+        if(i != CACA_COLOR_BLUE)
+        {
+            SETPAIR(CACA_COLOR_LIGHTGRAY, i, 128 +
+                    slang_assoc[i + 8 + 16 * i]);
+            SETPAIR(CACA_COLOR_WHITE, i, 128 +
+                    slang_assoc[CACA_COLOR_LIGHTGRAY + 16 * (i + 8)]);
+        }
+        SETPAIR(CACA_COLOR_BLACK, i + 8,
+                128 + slang_assoc[CACA_COLOR_DARKGRAY + 16 * i]);
+        SETPAIR(CACA_COLOR_DARKGRAY, i + 8,
+                128 + slang_assoc[i + 16 * (i + 8)]);
+        SETPAIR(i + 8, CACA_COLOR_DARKGRAY,
+                128 + slang_assoc[i + 16 * CACA_COLOR_DARKGRAY]);
+        SETPAIR(i, CACA_COLOR_LIGHTGRAY,
+                128 + slang_assoc[i + 8 + 16 * CACA_COLOR_LIGHTGRAY]);
+        SETPAIR(i, CACA_COLOR_WHITE,
+                128 + slang_assoc[i + 8 + 16 * CACA_COLOR_WHITE]);
+    }
+
+    /* 120 degree hue pairs can be emulated as well; for instance blue on
+     * red can be emulated using magenta on red, and blue on green using
+     * cyan on green */
+    for(i = 0; i < 6; i++)
+    {
+        SETPAIR(hue_list[(i + 2) % 6], hue_list[i],
+            128 + slang_assoc[hue_list[(i + 1) % 6] + 16 * hue_list[i]]);
+        SETPAIR(hue_list[(i + 2) % 6] + 8, hue_list[i] + 8,
+            128 + slang_assoc[hue_list[(i + 1) % 6] + 16 * hue_list[i] + 136]);
+        SETPAIR(hue_list[(i + 2) % 6] + 8, hue_list[i],
+            128 + slang_assoc[hue_list[(i + 1) % 6] + 16 * hue_list[i] + 8]);
+        SETPAIR(hue_list[(i + 2) % 6], hue_list[i] + 8,
+            128 + slang_assoc[hue_list[(i + 1) % 6] + 16 * hue_list[i] + 128]);
+
+        SETPAIR(hue_list[(i + 4) % 6], hue_list[i],
+            128 + slang_assoc[hue_list[(i + 5) % 6] + 16 * hue_list[i]]);
+        SETPAIR(hue_list[(i + 4) % 6] + 8, hue_list[i] + 8,
+            128 + slang_assoc[hue_list[(i + 5) % 6] + 16 * hue_list[i] + 136]);
+        SETPAIR(hue_list[(i + 4) % 6] + 8, hue_list[i],
+            128 + slang_assoc[hue_list[(i + 5) % 6] + 16 * hue_list[i] + 8]);
+        SETPAIR(hue_list[(i + 4) % 6], hue_list[i] + 8,
+            128 + slang_assoc[hue_list[(i + 5) % 6] + 16 * hue_list[i] + 128]);
+    }
+
+    /* dark opposite on dark: emulate with dark opposite on black
+     * light opposite on dark: emulate with light opposite on black
+     * dark opposite on light: emulate with black on dark
+     * light opposite on light: emulate with white on light */
+    for(i = 0; i < 6; i++)
+    {
+        SETPAIR(hue_list[i], hue_list[(i + 3) % 6],
+                128 + slang_assoc[hue_list[i] + 16 * CACA_COLOR_BLACK]);
+        SETPAIR(hue_list[i] + 8, hue_list[(i + 3) % 6],
+                128 + slang_assoc[hue_list[i] + 8 + 16 * CACA_COLOR_BLACK]);
+        SETPAIR(hue_list[(i + 3) % 6], hue_list[i] + 8,
+                128 + slang_assoc[CACA_COLOR_BLACK + 16 * hue_list[i]]);
+        SETPAIR(hue_list[(i + 3) % 6] + 8, hue_list[i] + 8,
+                128 + slang_assoc[CACA_COLOR_WHITE + 16 * (hue_list[i] + 8)]);
+    }
+#endif
+}
+#endif /* USE_SLANG */
 
