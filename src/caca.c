@@ -380,9 +380,9 @@ static void caca_init_driver(void)
             _caca_driver = CACA_DRIVER_CONIO;
         else
 #endif
-#if defined(USE_NCURSES)
-        if(!strcasecmp(var, "ncurses"))
-            _caca_driver = CACA_DRIVER_NCURSES;
+#if defined(USE_X11)
+        if(!strcasecmp(var, "x11"))
+            _caca_driver = CACA_DRIVER_X11;
         else
 #endif
 #if defined(USE_SLANG)
@@ -390,9 +390,9 @@ static void caca_init_driver(void)
             _caca_driver = CACA_DRIVER_SLANG;
         else
 #endif
-#if defined(USE_X11)
-        if(!strcasecmp(var, "x11"))
-            _caca_driver = CACA_DRIVER_X11;
+#if defined(USE_NCURSES)
+        if(!strcasecmp(var, "ncurses"))
+            _caca_driver = CACA_DRIVER_NCURSES;
         else
 #endif
         _caca_driver = CACA_DRIVER_NONE;
@@ -405,16 +405,21 @@ static void caca_init_driver(void)
     _caca_driver = CACA_DRIVER_CONIO;
     return;
 #endif
-#if defined(USE_NCURSES)
-    _caca_driver = CACA_DRIVER_NCURSES;
-    return;
+#if defined(USE_X11)
+#if defined(HAVE_GETENV)
+    if(getenv("DISPLAY"))
+#endif
+    {
+        _caca_driver = CACA_DRIVER_X11;
+        return;
+    }
 #endif
 #if defined(USE_SLANG)
     _caca_driver = CACA_DRIVER_SLANG;
     return;
 #endif
-#if defined(USE_X11)
-    _caca_driver = CACA_DRIVER_X11;
+#if defined(USE_NCURSES)
+    _caca_driver = CACA_DRIVER_NCURSES;
     return;
 #endif
     _caca_driver = CACA_DRIVER_NONE;

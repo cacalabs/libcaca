@@ -18,29 +18,34 @@ dnl now otherwise it might be set in an obscure if statement.
 AC_EGREP_CPP(foo,foo)
 
 AC_ARG_ENABLE(slang,
-  [  --enable-slang          slang graphics support (default enabled)])
+  [  --enable-slang          slang graphics support (autodetected)])
 AC_ARG_ENABLE(ncurses,
-  [  --enable-ncurses        ncurses graphics support (default enabled)])
+  [  --enable-ncurses        ncurses graphics support (autodetected)])
 AC_ARG_ENABLE(conio,
   [  --enable-conio          DOS conio.h graphics support (default disabled)])
 AC_ARG_ENABLE(x11,
-  [  --enable-x11            X11 support (default disabled) (default enabled)])
+  [  --enable-x11            X11 support (autodetected)])
 
 AC_CHECK_HEADERS(inttypes.h endian.h)
 AC_CHECK_FUNCS(vsnprintf getenv putenv strcasecmp)
 
 CACA_DRIVERS="" 
 
-if test "${enable_conio}" = "yes"; then
-  AC_CHECK_HEADERS(conio.h,:,AC_MSG_ERROR([cannot find conio.h header]))
-  AC_MSG_CHECKING(for ScreenUpdate in pc.h)
-  AC_EGREP_HEADER(ScreenUpdate,pc.h,
-   [AC_MSG_RESULT(yes)
-    AC_DEFINE(SCREENUPDATE_IN_PC_H, 1,
-              Define if <pc.h> defines ScreenUpdate.)],
-   [AC_MSG_RESULT(no)])
-  CACA_DRIVERS="${CACA_DRIVERS} conio"
-  AC_DEFINE(USE_CONIO, 1, Define to activate the conio.h backend driver)
+if test "${enable_conio}" != "no"; then
+  AC_CHECK_HEADERS(conio.h,
+   [ac_cv_my_have_conio="yes"
+    AC_MSG_CHECKING(for ScreenUpdate in pc.h)
+    AC_EGREP_HEADER(ScreenUpdate,pc.h,
+     [AC_MSG_RESULT(yes)
+      AC_DEFINE(SCREENUPDATE_IN_PC_H, 1,
+                Define if <pc.h> defines ScreenUpdate.)],
+     [AC_MSG_RESULT(no)])
+    AC_DEFINE(USE_CONIO, 1, Define to activate the conio.h backend driver)
+    CACA_DRIVERS="${CACA_DRIVERS} conio"],
+   [ac_cv_my_have_conio="no"])
+  if test "${ac_cv_my_have_conio}" = "no" -a "${enable_conio}" = "yes"; then
+    AC_MSG_ERROR([cannot find conio.h])
+  fi
 fi
 
 if test "${enable_slang}" != "no"; then
