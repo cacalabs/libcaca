@@ -52,7 +52,7 @@ typedef struct
 
 typedef struct
 {
-    enum { WEAPON_NONE, WEAPON_LASER, WEAPON_SEEKER, WEAPON_NUKE } type[WEAPONS];
+    enum { WEAPON_NONE, WEAPON_LASER, WEAPON_SEEKER, WEAPON_NUKE, WEAPON_BEAM } type[WEAPONS];
     int x[WEAPONS];
     int y[WEAPONS];
     int x2[WEAPONS];

@@ -109,11 +109,18 @@ static void start_game (game *g)
                 case 'l':
                     g->p->dir = 3;
                     break;
-                case '\r':
+                case 'n':
                     if( g->p->nuke == 0 )
                     {
                         g->p->nuke = 40;
                         add_weapon( g, g->wp, (g->p->x + 2) << 4, g->p->y << 4, 0, 0, WEAPON_NUKE );
+                    }
+                    break;
+                case '\r':
+                    if( g->p->nuke == 0 )
+                    {
+                        g->p->nuke = 40;
+                        add_weapon( g, g->wp, (g->p->x + 2) << 4, g->p->y << 4, 0, 0, WEAPON_BEAM );
                     }
                     break;
                 case 'b':

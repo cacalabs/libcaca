@@ -5,6 +5,7 @@
 #include "common.h"
 
 static void draw_nuke( int x, int y, int frame );
+static void draw_beam( int x, int y, int frame );
 static void draw_circle( int x, int y, int r, char c );
 
 void init_weapons( game *g, weapons *wp )
@@ -42,6 +43,9 @@ void draw_weapons( game *g, weapons *wp )
                 gfx_color( WHITE );
                 gfx_goto( wp->x[i] >> 4, wp->y[i] >> 4 );
                 gfx_putchar( '@' );
+                break;
+            case WEAPON_BEAM:
+                draw_beam( wp->x[i] >> 4, wp->y[i] >> 4, wp->n[i] );
                 break;
             case WEAPON_NUKE:
                 draw_nuke( wp->x[i] >> 4, wp->y[i] >> 4, wp->n[i] );
@@ -131,6 +135,15 @@ void update_weapons( game *g, weapons *wp )
                               + (dy * 24) / sqrt(dx*dx+dy*dy) ) / 8;
 
                 break;
+            case WEAPON_BEAM:
+                wp->x[i] = (g->p->x + 2) << 4;
+                wp->y[i] = g->p->y << 4;
+                wp->n[i]--;
+                if( wp->n[i] < 0 )
+                {
+                    wp->type[i] = WEAPON_NONE;
+                }
+                break;
             case WEAPON_NUKE:
                 wp->n[i]--;
                 if( wp->n[i] < 0 )
@@ -168,6 +181,9 @@ void add_weapon( game *g, weapons *wp, int x, int y, int vx, int vy, int type )
                     wp->y3[i] = y;
                     wp->n[i] = 10;
                     break;
+                case WEAPON_BEAM:
+                    wp->n[i] = 25;
+                    break;
                 case WEAPON_NUKE:
                     wp->n[i] = 25;
                     break;
@@ -176,6 +192,145 @@ void add_weapon( game *g, weapons *wp, int x, int y, int vx, int vy, int type )
             }
             break;
         }
+    }
+}
+
+static void draw_beam( int x, int y, int frame )
+{
+    int r = (29 - frame) * (29 - frame) / 8;
+    int i;
+
+    switch( frame )
+    {
+        case 24:
+            gfx_color( WHITE );
+            gfx_goto( x, y-3 );
+            gfx_putstr( "__" );
+            gfx_goto( x-1, y-2 );
+            gfx_putchar( '\'' );
+            gfx_goto( x+2, y-2 );
+            gfx_putchar( '`' );
+            break;
+        case 23:
+            gfx_color( CYAN );
+            gfx_goto( x, y-3 );
+            gfx_putstr( "__" );
+            gfx_color( WHITE );
+            gfx_goto( x-2, y-2 );
+            gfx_putstr( "-'" );
+            gfx_goto( x+2, y-2 );
+            gfx_putstr( "`-" );
+            break;
+        case 22:
+            gfx_color( CYAN );
+            gfx_goto( x, y-3 );
+            gfx_putstr( "__" );
+            gfx_goto( x-1, y-2 );
+            gfx_putchar( '\'' );
+            gfx_goto( x+2, y-2 );
+            gfx_putchar( '`' );
+            gfx_color( WHITE );
+            gfx_goto( x-3, y-2 );
+            gfx_putstr( ",-" );
+            gfx_goto( x+3, y-2 );
+            gfx_putstr( "-." );
+            break;
+        case 21:
+            gfx_color( CYAN );
+            gfx_goto( x-1, y-3 );
+            gfx_putstr( "____" );
+            gfx_goto( x-2, y-2 );
+            gfx_putchar( '\'' );
+            gfx_goto( x+3, y-2 );
+            gfx_putchar( '`' );
+            gfx_color( WHITE );
+            gfx_goto( x-4, y-2 );
+            gfx_putstr( ",-" );
+            gfx_goto( x+4, y-2 );
+            gfx_putstr( "-." );
+            break;
+        case 20:
+            gfx_color( WHITE );
+            gfx_goto( x, y-3 );
+            gfx_putstr( "%%" );
+            gfx_goto( x-4, y-2 );
+            gfx_putchar( ',' );
+            gfx_goto( x+5, y-2 );
+            gfx_putchar( '.' );
+            gfx_color( CYAN );
+            gfx_goto( x-1, y-3 );
+            gfx_putchar( ':' );
+            gfx_goto( x+2, y-3 );
+            gfx_putchar( ':' );
+            gfx_goto( x-3, y-2 );
+            gfx_putstr( "-'" );
+            gfx_goto( x+3, y-2 );
+            gfx_putstr( "`-" );
+            break;
+        case 19:
+            gfx_color( WHITE );
+            gfx_goto( x, y-4 );
+            gfx_putstr( "%%" );
+            gfx_goto( x, y-3 );
+            gfx_putstr( "##" );
+            gfx_color( CYAN );
+            gfx_goto( x-1, y-4 );
+            gfx_putchar( ':' );
+            gfx_goto( x+2, y-4 );
+            gfx_putchar( ':' );
+            gfx_goto( x-1, y-3 );
+            gfx_putchar( '%' );
+            gfx_goto( x+2, y-3 );
+            gfx_putchar( '%' );
+            gfx_goto( x-4, y-2 );
+            gfx_putstr( ",-'" );
+            gfx_goto( x+3, y-2 );
+            gfx_putstr( "`-." );
+            gfx_color( BLUE );
+            gfx_goto( x-2, y-3 );
+            gfx_putchar( ':' );
+            gfx_goto( x+3, y-3 );
+            gfx_putchar( ':' );
+            break;
+        case 18:
+        default:
+            r = (18 - frame) * (18 - frame);
+            gfx_color( WHITE );
+            gfx_goto( x-1, y-5-r );
+            gfx_putstr( ":%%:" );
+            gfx_goto( x-1, y-4-r );
+            gfx_putstr( "%##%" );
+            gfx_color( CYAN );
+            gfx_goto( x-2, y-4-r );
+            gfx_putchar( ':' );
+            gfx_goto( x+3, y-4-r );
+            gfx_putchar( ':' );
+            gfx_goto( x-2, y-2 );
+            gfx_putchar( '\'' );
+            gfx_goto( x+3, y-2 );
+            gfx_putchar( '`' );
+            gfx_color( BLUE );
+            gfx_goto( x-3, y-2 );
+            gfx_putchar( ':' );
+            gfx_goto( x+4, y-2 );
+            gfx_putchar( ':' );
+            for( i = 0; i <= r; i++ )
+            {
+                gfx_color( WHITE );
+                gfx_goto( x-1, y-3-i );
+                gfx_putstr( "####" );
+                gfx_color( CYAN );
+                gfx_goto( x-2, y-3-i );
+                gfx_putchar( '%' );
+                gfx_goto( x+3, y-3-i );
+                gfx_putchar( '%' );
+                gfx_color( BLUE );
+                gfx_goto( x-3, y-3-i );
+                gfx_putchar( ':' );
+                gfx_goto( x+4, y-3-i );
+                gfx_putchar( ':' );
+            }
+            break;
     }
 }
 
