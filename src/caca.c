@@ -3,8 +3,6 @@
  *   Copyright (c) 2002, 2003 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id$
- *
  *   This library is free software; you can redistribute it and/or
  *   modify it under the terms of the GNU Lesser General Public
  *   License as published by the Free Software Foundation; either
@@ -19,6 +17,16 @@
  *   License along with this library; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *   02111-1307  USA
+ */
+
+/**  \file caca.c
+ *   \version \$Id$
+ *   \author Sam Hocevar <sam@zoy.org>
+ *   \brief Main \e libcaca functions
+ *
+ *   This file contains the main functions used by \e libcaca applications to
+ *   initialise the library, get the screen properties, set the framerate and
+ *   so on.
  */
 
 #include "config.h"

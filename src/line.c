@@ -3,8 +3,6 @@
  *   Copyright (c) 2002, 2003 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id$
- *
  *   This library is free software; you can redistribute it and/or
  *   modify it under the terms of the GNU Lesser General Public
  *   License as published by the Free Software Foundation; either
@@ -19,6 +17,15 @@
  *   License along with this library; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *   02111-1307  USA
+ */
+
+/**  \file line.c
+ *   \version \$Id$
+ *   \author Sam Hocevar <sam@zoy.org>
+ *   \brief Line drawing functions
+ *
+ *   This file contains line and polyline drawing functions, with both thin
+ *   and thick styles.
  */
 
 #include "config.h"
@@ -55,7 +62,7 @@ static void draw_thin_line(struct line*);
  * \param x2 X coordinate of the second point.
  * \param y2 Y coordinate of the second point.
  * \param c Character to draw the line with.
- * \return nothing
+ * \return void
  */
 void caca_draw_line(int x1, int y1, int x2, int y2, char c)
 {
@@ -93,7 +100,7 @@ void caca_draw_polyline(const int x[], const int y[], int n, char c)
  * \param y1 Y coordinate of the first point.
  * \param x2 X coordinate of the second point.
  * \param y2 Y coordinate of the second point.
- * \return nothing
+ * \return void
  */
 void caca_draw_thin_line(int x1, int y1, int x2, int y2)
 {
@@ -130,7 +137,7 @@ void caca_draw_thin_polyline(const int x[], const int y[], int n)
  * \brief Generic Cohen-Sutherland line clipping function.
  *
  * \param s a line structure
- * \return nothing
+ * \return void
  */
 static void clip_line(struct line* s)
 {
@@ -212,7 +219,7 @@ static uint8_t clip_bits(int x, int y)
  *        scan-conversion algorithm.
  *
  * \param s a line structure
- * \return nothing
+ * \return void
  */
 static void draw_solid_line(struct line* s)
 {
@@ -279,7 +286,7 @@ static void draw_solid_line(struct line* s)
  *        scan-conversion algorithm and ASCII art graphics.
  *
  * \param s a line structure
- * \return nothing
+ * \return void
  */
 static void draw_thin_line(struct line* s)
 {

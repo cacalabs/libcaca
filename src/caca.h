@@ -3,8 +3,6 @@
  *   Copyright (c) 2002, 2003 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id$
- *
  *   This library is free software; you can redistribute it and/or
  *   modify it under the terms of the GNU Lesser General Public
  *   License as published by the Free Software Foundation; either
@@ -21,6 +19,37 @@
  *   02111-1307  USA
  */
 
+/**  \file caca.h
+ *   \version \$Id$
+ *   \author Sam Hocevar <sam@zoy.org>
+ *   \brief The \e libcaca public header.
+ *
+ *   This header contains the public types and functions that applications
+ *   using \e libcaca may use.
+ */
+
+/**  \mainpage libcaca developer documentation
+ *
+ *   \section intro Introduction
+ *
+ *   \e libcaca is a graphics library that outputs text instead of pixels,
+ *   so that it can work on older video cards or text terminals. It is not
+ *   unlike the famous AAlib library. libcaca needs a terminal to work,
+ *   thus it should work on all Unix systems (including Mac OS X) using
+ *   either the slang library or the ncurses library, on DOS using the conio
+ *   library, and on Windows systems using either slang or ncurses (through
+ *   Cygwin emulation) or conio.
+ *
+ *   \e libcaca is free software, released under the GNU Lesser General
+ *   Public License. This ensures that \e libcaca will always remain free
+ *   software.
+ *
+ *   \section api The libcaca API
+ *
+ *   The complete \e libcaca programming interface is available from the
+ *   caca.h file.
+ */
+
 #ifndef __CACA_H__
 #define __CACA_H__
 
@@ -29,8 +58,8 @@ extern "C"
 {
 #endif
 
-/*
- * Colors
+/**
+ * The colour definitions to be used with caca_set_color().
  */
 enum caca_color
 {
@@ -52,8 +81,8 @@ enum caca_color
     CACA_COLOR_WHITE = 15
 };
 
-/*
- * Dithering modes
+/**
+ * The dithering modes to be used with caca_set_dithering().
  */
 enum caca_dithering
 {
@@ -62,8 +91,8 @@ enum caca_dithering
     CACA_DITHER_RANDOM
 };
 
-/*
- * Events
+/**
+ * The event types returned by caca_get_event().
  */
 enum caca_event
 {
@@ -73,8 +102,8 @@ enum caca_event
     CACA_EVENT_MOUSE_CLICK = 0x04000000
 };
 
-/*
- * Keys
+/**
+ * The special key values returned by caca_get_event().
  */
 enum caca_key
 {
@@ -99,12 +128,6 @@ enum caca_key
     CACA_KEY_F14 = 295,
     CACA_KEY_F15 = 296
 };
-
-/*
- * Internal types
- */
-struct caca_sprite;
-struct caca_bitmap;
 
 /*
  * Basic functions
@@ -164,6 +187,7 @@ unsigned int caca_sqrt(unsigned int);
 /*
  * Sprite handling
  */
+struct caca_sprite;
 struct caca_sprite * caca_load_sprite(const char *);
 int caca_get_sprite_frames(struct caca_sprite *);
 int caca_get_sprite_width(struct caca_sprite *, int);
@@ -176,6 +200,7 @@ void caca_free_sprite(struct caca_sprite *);
 /*
  * Bitmap handling
  */
+struct caca_bitmap;
 struct caca_bitmap *caca_create_bitmap(int, int, int, int, int, int, int);
 void caca_draw_bitmap(int, int, int, int, struct caca_bitmap *, char *);
 void caca_free_bitmap(struct caca_bitmap *);
