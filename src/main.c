@@ -37,19 +37,20 @@ int main (int argc, char **argv)
 
     srand(time(NULL));
 
-    if( init_graphics() )
+    if( ee_init() )
     {
         return 1;
     }
 
     /* Initialize our program */
-    init_game(g);
+    g->w = ee_get_width();
+    g->h = ee_get_height();
 
     /* Go ! */
     start_game(g);
 
     /* Clean up */
-    end_graphics();
+    ee_end();
 
     return 0;
 }
@@ -83,7 +84,7 @@ static void start_game (game *g)
     {
         char key;
 
-        while( ( key = get_key() ) )
+        while( ( key = ee_get_key() ) )
         {
             switch( key )
             {
@@ -214,7 +215,7 @@ static void start_game (game *g)
         }
 
         /* Clear screen */
-        clear_graphics( g );
+        ee_clear();
 
         /* Print starfield, tunnel, aliens, player and explosions */
         draw_starfield( g, g->sf );
@@ -234,7 +235,7 @@ static void start_game (game *g)
         }
 
         /* Refresh */
-        refresh_graphics();
+        ee_refresh();
 
         purcompteur++;
     }

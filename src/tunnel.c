@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: tunnel.c,v 1.8 2002/12/23 12:47:36 sam Exp $
+ *   $Id$
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ void draw_tunnel( game *g, tunnel *t )
     int i, j;
     char c;
 
-    gfx_color( GREEN );
+    ee_color( EE_GREEN );
 
     /* Left border */
     for( i = 0; i < g->h ; i++ )
@@ -90,15 +90,15 @@ void draw_tunnel( game *g, tunnel *t )
             c = ( i == 0 || t->left[i] > t->left[i-1] ) ? '\\' : '<';
         }
 
-        gfx_goto( t->left[i] + 1, i );
-        gfx_putchar( c );
+        ee_goto( t->left[i] + 1, i );
+        ee_putchar( c );
 
         if( i + 1 < g->h )
         {
             for( j = 1; j < t->left[i+1] - t->left[i]; j++ )
             {
-                gfx_goto( t->left[i] + j + 1, i );
-                gfx_putchar( '_' );
+                ee_goto( t->left[i] + j + 1, i );
+                ee_putchar( '_' );
             }
         }
     }
@@ -124,24 +124,24 @@ void draw_tunnel( game *g, tunnel *t )
         {
             for( j = 1; j < t->right[i] - t->right[i+1]; j++ )
             {
-                gfx_goto( t->right[i+1] + j - 1, i );
-                gfx_putchar( '_' );
+                ee_goto( t->right[i+1] + j - 1, i );
+                ee_putchar( '_' );
             }
         }
 
-        gfx_goto( t->right[i] - 1, i );
-        gfx_putchar( c );
+        ee_goto( t->right[i] - 1, i );
+        ee_putchar( c );
     }
 
-    gfx_color( RED );
+    ee_color( EE_RED );
 
     /* Left concrete */
     for( i = 0; i < g->h ; i++ )
     {
         for( j = 0 ; j <= t->left[i]; j++ )
         {
-            gfx_goto( j, i );
-            gfx_putchar( '#' );
+            ee_goto( j, i );
+            ee_putchar( '#' );
         }
     }
 
@@ -150,8 +150,8 @@ void draw_tunnel( game *g, tunnel *t )
     {
         for( j = t->right[i] ; j < g->w ; j++ )
         {
-            gfx_goto( j, i );
-            gfx_putchar( '#' );
+            ee_goto( j, i );
+            ee_putchar( '#' );
         }
     }
 }

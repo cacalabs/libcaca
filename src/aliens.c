@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: aliens.c,v 1.8 2002/12/23 13:46:27 sam Exp $
+ *   $Id$
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -133,127 +133,127 @@ static void draw_alien_bar( game *g, int x, int y, int frame )
     switch( frame )
     {
     case 0:
-        gfx_color( MAGENTA );
-        gfx_goto( x, y );
-        gfx_putstr( ",---." );
-        gfx_goto( x, y+1 );
-        gfx_putchar( '\\' );
-        gfx_color( WHITE );
-        gfx_putstr( "o O" );
-        gfx_color( MAGENTA );
-        gfx_putchar( '/' );
-        gfx_goto( x, y+2 );
-        gfx_putstr( "^^^^^" );
+        ee_color( EE_MAGENTA );
+        ee_goto( x, y );
+        ee_putstr( ",---." );
+        ee_goto( x, y+1 );
+        ee_putchar( '\\' );
+        ee_color( EE_WHITE );
+        ee_putstr( "o O" );
+        ee_color( EE_MAGENTA );
+        ee_putchar( '/' );
+        ee_goto( x, y+2 );
+        ee_putstr( "^^^^^" );
         break;
     case 1:
-        gfx_color( MAGENTA );
-        gfx_goto( x, y );
-        gfx_putstr( ",---." );
-        gfx_goto( x, y+1 );
-        gfx_putchar( '\\' );
-        gfx_color( WHITE );
-        gfx_putstr( "O o" );
-        gfx_color( MAGENTA );
-        gfx_putchar( '/' );
-        gfx_goto( x, y+2 );
-        gfx_putstr( "^^^^^" );
+        ee_color( EE_MAGENTA );
+        ee_goto( x, y );
+        ee_putstr( ",---." );
+        ee_goto( x, y+1 );
+        ee_putchar( '\\' );
+        ee_color( EE_WHITE );
+        ee_putstr( "O o" );
+        ee_color( EE_MAGENTA );
+        ee_putchar( '/' );
+        ee_goto( x, y+2 );
+        ee_putstr( "^^^^^" );
         break;
     }
 }
 
 static void draw_alien_baz( game *g, int x, int y, int frame )
 {
-    gfx_color( GREEN );
-    gfx_goto( x, y-1 );
-    gfx_putstr( "__" );
+    ee_color( EE_GREEN );
+    ee_goto( x, y-1 );
+    ee_putstr( "__" );
 
-    gfx_goto( x-1, y );
-    gfx_putchar( '/' );
-    gfx_goto( x+2, y );
-    gfx_putchar( '\\' );
+    ee_goto( x-1, y );
+    ee_putchar( '/' );
+    ee_goto( x+2, y );
+    ee_putchar( '\\' );
 
     switch( frame )
     {
     case 3:
-        gfx_goto( x-2, y+1 );
-        gfx_putstr( "//'`\\\\" );
+        ee_goto( x-2, y+1 );
+        ee_putstr( "//'`\\\\" );
         break;
     case 4:
     case 2:
-        gfx_goto( x-2, y+1 );
-        gfx_putstr( "/(~~)\\" );
+        ee_goto( x-2, y+1 );
+        ee_putstr( "/(~~)\\" );
         break;
     case 5:
     case 1:
-        gfx_goto( x-2, y+1 );
-        gfx_putstr( "((^^))" );
+        ee_goto( x-2, y+1 );
+        ee_putstr( "((^^))" );
         break;
     case 0:
-        gfx_goto( x-1, y+1 );
-        gfx_putstr( "\\\\//" );
+        ee_goto( x-1, y+1 );
+        ee_putstr( "\\\\//" );
         break;
     }
 
-    gfx_color( WHITE );
-    gfx_goto( x, y );
-    gfx_putstr( "oo" );
+    ee_color( EE_WHITE );
+    ee_goto( x, y );
+    ee_putstr( "oo" );
 }
 
 static void draw_alien_foo( game *g, int x, int y, int frame )
 {
-    gfx_color( YELLOW );
+    ee_color( EE_YELLOW );
 
     switch( frame )
     {
     case 0:
-        gfx_goto( x, y );
-        gfx_putchar( '.' );
-        gfx_goto( x+6, y );
-        gfx_putchar( ',' );
-        gfx_goto( x+1, y+1 );
-        gfx_putstr( "\\ X /" );
+        ee_goto( x, y );
+        ee_putchar( '.' );
+        ee_goto( x+6, y );
+        ee_putchar( ',' );
+        ee_goto( x+1, y+1 );
+        ee_putstr( "\\ X /" );
         break;
     case 7:
     case 1:
-        gfx_goto( x-1, y );
-        gfx_putchar( '.' );
-        gfx_goto( x+7, y );
-        gfx_putchar( ',' );
-        gfx_goto( x, y+1 );
-        gfx_putstr( "`- X -'" );
+        ee_goto( x-1, y );
+        ee_putchar( '.' );
+        ee_goto( x+7, y );
+        ee_putchar( ',' );
+        ee_goto( x, y+1 );
+        ee_putstr( "`- X -'" );
         break;
     case 6:
     case 2:
-        gfx_goto( x-1, y+1 );
-        gfx_putstr( "`-- X --'" );
+        ee_goto( x-1, y+1 );
+        ee_putstr( "`-- X --'" );
         break;
     case 5:
     case 3:
-        gfx_goto( x, y+1 );
-        gfx_putstr( ",- X -." );
-        gfx_goto( x-1, y+2 );
-        gfx_putchar( '\'' );
-        gfx_goto( x+7, y+2 );
-        gfx_putchar( '`' );
+        ee_goto( x, y+1 );
+        ee_putstr( ",- X -." );
+        ee_goto( x-1, y+2 );
+        ee_putchar( '\'' );
+        ee_goto( x+7, y+2 );
+        ee_putchar( '`' );
         break;
     case 4:
-        gfx_goto( x+1, y+1 );
-        gfx_putstr( ", X ." );
-        gfx_goto( x, y+2 );
-        gfx_putchar( '/' );
-        gfx_goto( x+6, y+2 );
-        gfx_putchar( '\\' );
+        ee_goto( x+1, y+1 );
+        ee_putstr( ", X ." );
+        ee_goto( x, y+2 );
+        ee_putchar( '/' );
+        ee_goto( x+6, y+2 );
+        ee_putchar( '\\' );
         break;
     }
 
-    gfx_goto( x+2, y+2 );
-    gfx_putstr( "`V'" );
+    ee_goto( x+2, y+2 );
+    ee_putstr( "`V'" );
 
-    gfx_color( WHITE );
-    gfx_goto( x+2, y+1 );
-    gfx_putchar( 'o' );
-    gfx_goto( x+4, y+1 );
-    gfx_putchar( 'o' );
+    ee_color( EE_WHITE );
+    ee_goto( x+2, y+1 );
+    ee_putchar( 'o' );
+    ee_goto( x+4, y+1 );
+    ee_putchar( 'o' );
 }
 
 

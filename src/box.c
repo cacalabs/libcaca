@@ -3,7 +3,7 @@
  *   Copyright (c) 2002-2003 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: box.c,v 1.1 2003/02/09 11:17:40 sam Exp $
+ *   $Id$
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ void draw_box( game *g, box *b )
 {
     int i, j, frame;
 
-    gfx_color( YELLOW );
+    ee_color( EE_YELLOW );
 
     /* Draw the thin horizontal line */
     if( b->frame < 8 )
@@ -50,8 +50,8 @@ void draw_box( game *g, box *b )
              i < b->x + b->w * b->frame / 16 ;
              i++ )
         {
-            gfx_goto( i, b->y );
-            gfx_putchar( 'X' );
+            ee_goto( i, b->y );
+            ee_putchar( 'X' );
         }
 
         return;
@@ -64,23 +64,23 @@ void draw_box( game *g, box *b )
          i < b->x + b->w / 2 ;
          i++ )
     {
-        gfx_goto( i, b->y - b->h * (frame - 8) / 8 );
-        gfx_putchar( 'X' );
-        gfx_goto( i, b->y + b->h * (frame - 8) / 8 );
-        gfx_putchar( 'X' );
+        ee_goto( i, b->y - b->h * (frame - 8) / 8 );
+        ee_putchar( 'X' );
+        ee_goto( i, b->y + b->h * (frame - 8) / 8 );
+        ee_putchar( 'X' );
     }
 
     for( j = b->y - b->h * (frame - 8) / 8 ;
          j < b->y + b->h * (frame - 8) / 8 ;
          j++ )
     {
-        gfx_goto( b->x - b->w / 2, j );
-        gfx_putchar( 'X' );
-        gfx_goto( b->x + b->w / 2 - 1, j );
-        gfx_putchar( 'X' );
+        ee_goto( b->x - b->w / 2, j );
+        ee_putchar( 'X' );
+        ee_goto( b->x + b->w / 2 - 1, j );
+        ee_putchar( 'X' );
     }
 
-    gfx_color( BLACK );
+    ee_color( EE_BLACK );
 
     for( j = b->y - b->h * (frame - 8) / 8 + 1 ;
          j < b->y + b->h * (frame - 8) / 8 ;
@@ -90,8 +90,8 @@ void draw_box( game *g, box *b )
              i < b->x + b->w / 2 - 1 ;
              i++ )
         {
-            gfx_goto( i, j );
-            gfx_putchar( 'X' );
+            ee_goto( i, j );
+            ee_putchar( 'X' );
         }
     }
 
@@ -101,19 +101,19 @@ void draw_box( game *g, box *b )
     }
 
     /* Draw the text inside the frame */
-    gfx_color( YELLOW );
+    ee_color( EE_YELLOW );
 
     /* FIXME: use a font */
-    gfx_goto( b->x - b->w / 2 + 12, b->y - b->h / 2 + 2 );
-    gfx_putstr( "XXXX.  .XXXX  X   X  .XXXX  .XXXX  XXXX." );
-    gfx_goto( b->x - b->w / 2 + 12, b->y - b->h / 2 + 3 );
-    gfx_putstr( "X  `X  X'  X  X   X  X'     X'     X  `X" );
-    gfx_goto( b->x - b->w / 2 + 12, b->y - b->h / 2 + 4 );
-    gfx_putstr( "XXXX'  XXXXX  X   X  `XXX   XXXX   X   X" );
-    gfx_goto( b->x - b->w / 2 + 12, b->y - b->h / 2 + 5 );
-    gfx_putstr( "X'     X' `X  X. ,X     `X  X'     X  ,X" );
-    gfx_goto( b->x - b->w / 2 + 12, b->y - b->h / 2 + 6 );
-    gfx_putstr( "X      X   X  `XXXX  XXXX'  `XXXX  XXXX'" );
+    ee_goto( b->x - b->w / 2 + 12, b->y - b->h / 2 + 2 );
+    ee_putstr( "XXXX.  .XXXX  X   X  .XXXX  .XXXX  XXXX." );
+    ee_goto( b->x - b->w / 2 + 12, b->y - b->h / 2 + 3 );
+    ee_putstr( "X  `X  X'  X  X   X  X'     X'     X  `X" );
+    ee_goto( b->x - b->w / 2 + 12, b->y - b->h / 2 + 4 );
+    ee_putstr( "XXXX'  XXXXX  X   X  `XXX   XXXX   X   X" );
+    ee_goto( b->x - b->w / 2 + 12, b->y - b->h / 2 + 5 );
+    ee_putstr( "X'     X' `X  X. ,X     `X  X'     X  ,X" );
+    ee_goto( b->x - b->w / 2 + 12, b->y - b->h / 2 + 6 );
+    ee_putstr( "X      X   X  `XXXX  XXXX'  `XXXX  XXXX'" );
 }
 
 void free_box( box *b )

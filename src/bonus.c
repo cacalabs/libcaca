@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: bonus.c,v 1.3 2002/12/22 18:44:12 sam Exp $
+ *   $Id$
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -43,30 +43,30 @@ void draw_bonus( game *g, bonus *bo )
         switch( bo->type[i] )
         {
             case BONUS_GREEN:
-                gfx_color( (bo->n[i]/2 % 3) ? GREEN : WHITE );
-                gfx_goto( bo->x[i]+1, bo->y[i]-1 );
-                gfx_putchar( '_' );
-                gfx_goto( bo->x[i], bo->y[i] );
-                gfx_putstr( "/ \\" );
-                gfx_goto( bo->x[i], bo->y[i]+1 );
-                gfx_putstr( "\\_/" );
-                gfx_color( WHITE );
-                gfx_goto( bo->x[i]+1, bo->y[i] );
-                gfx_putchar( 'g' );
+                ee_color( (bo->n[i]/2 % 3) ? EE_GREEN : EE_WHITE );
+                ee_goto( bo->x[i]+1, bo->y[i]-1 );
+                ee_putchar( '_' );
+                ee_goto( bo->x[i], bo->y[i] );
+                ee_putstr( "/ \\" );
+                ee_goto( bo->x[i], bo->y[i]+1 );
+                ee_putstr( "\\_/" );
+                ee_color( EE_WHITE );
+                ee_goto( bo->x[i]+1, bo->y[i] );
+                ee_putchar( 'g' );
                 break;
             case BONUS_LIFE:
-                gfx_color( (bo->n[i] % 3) ? RED : WHITE );
-                gfx_goto( bo->x[i]+1, bo->y[i]-1 );
-                gfx_putchar( '_' );
-                gfx_goto( bo->x[i]+3, bo->y[i]-1 );
-                gfx_putchar( '_' );
-                gfx_goto( bo->x[i], bo->y[i] );
-                gfx_putstr( "( ' )" );
-                gfx_goto( bo->x[i]+1, bo->y[i]+1 );
-                gfx_putstr( "`v'" );
-                gfx_color( WHITE );
-                gfx_goto( bo->x[i]+3, bo->y[i] );
-                gfx_putchar( '^' );
+                ee_color( (bo->n[i] % 3) ? EE_RED : EE_WHITE );
+                ee_goto( bo->x[i]+1, bo->y[i]-1 );
+                ee_putchar( '_' );
+                ee_goto( bo->x[i]+3, bo->y[i]-1 );
+                ee_putchar( '_' );
+                ee_goto( bo->x[i], bo->y[i] );
+                ee_putstr( "( ' )" );
+                ee_goto( bo->x[i]+1, bo->y[i]+1 );
+                ee_putstr( "`v'" );
+                ee_color( EE_WHITE );
+                ee_goto( bo->x[i]+3, bo->y[i] );
+                ee_putchar( '^' );
                 break;
             case BONUS_NONE:
                 break;

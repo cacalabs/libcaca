@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: weapons.c,v 1.13 2002/12/23 16:44:28 sam Exp $
+ *   $Id$
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -49,35 +49,35 @@ void draw_weapons( game *g, weapons *wp )
         switch( wp->type[i] )
         {
             case WEAPON_LASER:
-                gfx_color( WHITE );
-                gfx_goto( wp->x[i] >> 4, wp->y[i] >> 4 );
-                gfx_putchar( '|' );
-                gfx_color( CYAN );
-                gfx_goto( wp->x[i] >> 4, (wp->y[i] >> 4) + 1 );
-                gfx_putchar( '|' );
+                ee_color( EE_WHITE );
+                ee_goto( wp->x[i] >> 4, wp->y[i] >> 4 );
+                ee_putchar( '|' );
+                ee_color( EE_CYAN );
+                ee_goto( wp->x[i] >> 4, (wp->y[i] >> 4) + 1 );
+                ee_putchar( '|' );
                 break;
             case WEAPON_SEEKER:
-                gfx_color( CYAN );
-                gfx_goto( wp->x3[i] >> 4, wp->y3[i] >> 4 );
-                gfx_putchar( '.' );
-                gfx_goto( wp->x2[i] >> 4, wp->y2[i] >> 4 );
-                gfx_putchar( 'o' );
-                gfx_color( WHITE );
-                gfx_goto( wp->x[i] >> 4, wp->y[i] >> 4 );
-                gfx_putchar( '@' );
+                ee_color( EE_CYAN );
+                ee_goto( wp->x3[i] >> 4, wp->y3[i] >> 4 );
+                ee_putchar( '.' );
+                ee_goto( wp->x2[i] >> 4, wp->y2[i] >> 4 );
+                ee_putchar( 'o' );
+                ee_color( EE_WHITE );
+                ee_goto( wp->x[i] >> 4, wp->y[i] >> 4 );
+                ee_putchar( '@' );
                 break;
             case WEAPON_BOMB:
-                gfx_color( GRAY );
-                gfx_goto( (wp->x[i] - wp->vx[i]) >> 4, (wp->y[i] - wp->vy[i]) >> 4 );
-                gfx_putchar( '.' );
-                gfx_goto( (wp->x3[i] - wp->vx[i]) >> 4, (wp->y3[i] - wp->vy[i]) >> 4 );
-                gfx_putchar( '.' );
-                gfx_goto( (wp->x2[i] - wp->vx[i]) >> 4, (wp->y2[i] - wp->vy[i]) >> 4 );
-                gfx_putchar( '.' );
-                gfx_goto( wp->x3[i] >> 4, wp->y3[i] >> 4 );
-                gfx_putchar( '.' );
-                gfx_goto( wp->x2[i] >> 4, wp->y2[i] >> 4 );
-                gfx_putchar( '.' );
+                ee_color( EE_GRAY );
+                ee_goto( (wp->x[i] - wp->vx[i]) >> 4, (wp->y[i] - wp->vy[i]) >> 4 );
+                ee_putchar( '.' );
+                ee_goto( (wp->x3[i] - wp->vx[i]) >> 4, (wp->y3[i] - wp->vy[i]) >> 4 );
+                ee_putchar( '.' );
+                ee_goto( (wp->x2[i] - wp->vx[i]) >> 4, (wp->y2[i] - wp->vy[i]) >> 4 );
+                ee_putchar( '.' );
+                ee_goto( wp->x3[i] >> 4, wp->y3[i] >> 4 );
+                ee_putchar( '.' );
+                ee_goto( wp->x2[i] >> 4, wp->y2[i] >> 4 );
+                ee_putchar( '.' );
                 draw_bomb( wp->x[i] >> 4, wp->y[i] >> 4, wp->vx[i], wp->vy[i] );
                 break;
             case WEAPON_FRAGBOMB:
@@ -289,7 +289,7 @@ void add_weapon( game *g, weapons *wp, int x, int y, int vx, int vy, int type )
 static void draw_bomb( int x, int y, int vx, int vy )
 {
     vy *= 2;
-    gfx_color( CYAN );
+    ee_color( EE_CYAN );
 
     if( vx > vy )
     {
@@ -298,39 +298,39 @@ static void draw_bomb( int x, int y, int vx, int vy )
             if( vy > vx/4 )
             {
                 /* -1pi/6 */
-                gfx_goto( x-4, y-1 );
-                gfx_putstr( "/`-." );
-                gfx_goto( x-4, y );
-                gfx_putstr( "`-._\\" );
-                gfx_color( WHITE );
-                gfx_goto( x-1, y );
-                gfx_putstr( "_\\" );
-                gfx_goto( x, y+1 );
-                gfx_putchar( '`' );
+                ee_goto( x-4, y-1 );
+                ee_putstr( "/`-." );
+                ee_goto( x-4, y );
+                ee_putstr( "`-._\\" );
+                ee_color( EE_WHITE );
+                ee_goto( x-1, y );
+                ee_putstr( "_\\" );
+                ee_goto( x, y+1 );
+                ee_putchar( '`' );
             }
             else if( vy < -vx/4 )
             {
                 /* 1pi/6 */
-                gfx_goto( x-4, y );
-                gfx_putstr( ",-' " );
-                gfx_goto( x-4, y+1 );
-                gfx_putstr( "\\,-'" );
-                gfx_color( WHITE );
-                gfx_goto( x-1, y-1 );
-                gfx_putstr( "_," );
-                gfx_goto( x, y );
-                gfx_putchar( '/' );
+                ee_goto( x-4, y );
+                ee_putstr( ",-' " );
+                ee_goto( x-4, y+1 );
+                ee_putstr( "\\,-'" );
+                ee_color( EE_WHITE );
+                ee_goto( x-1, y-1 );
+                ee_putstr( "_," );
+                ee_goto( x, y );
+                ee_putchar( '/' );
             }
             else
             {
                 /* 0pi/6 */
-                gfx_goto( x-4, y-1 );
-                gfx_putstr( "____" );
-                gfx_goto( x-5, y );
-                gfx_putstr( "|____" );
-                gfx_color( WHITE );
-                gfx_goto( x, y );
-                gfx_putchar( '>' );
+                ee_goto( x-4, y-1 );
+                ee_putstr( "____" );
+                ee_goto( x-5, y );
+                ee_putstr( "|____" );
+                ee_color( EE_WHITE );
+                ee_goto( x, y );
+                ee_putchar( '>' );
             }
         }
         else /* top quarter */
@@ -338,43 +338,43 @@ static void draw_bomb( int x, int y, int vx, int vy )
             if( vx > -vy/4 )
             {
                 /* 2pi/6 */
-                gfx_goto( x-2, y );
-                gfx_putstr( "/ " );
-                gfx_goto( x-3, y+1 );
-                gfx_putstr( "/ /" );
-                gfx_goto( x-3, y+2 );
-                gfx_putstr( "`'" );
-                gfx_color( WHITE );
-                gfx_goto( x-1, y-1 );
-                gfx_putstr( "_," );
-                gfx_goto( x, y );
-                gfx_putchar( '|' );
+                ee_goto( x-2, y );
+                ee_putstr( "/ " );
+                ee_goto( x-3, y+1 );
+                ee_putstr( "/ /" );
+                ee_goto( x-3, y+2 );
+                ee_putstr( "`'" );
+                ee_color( EE_WHITE );
+                ee_goto( x-1, y-1 );
+                ee_putstr( "_," );
+                ee_goto( x, y );
+                ee_putchar( '|' );
             }
             else if( vx < vy/4 )
             {
                 /* 4pi/6 */
-                gfx_goto( x+1, y );
-                gfx_putstr( " \\" );
-                gfx_goto( x+1, y+1 );
-                gfx_putstr( "\\ \\" );
-                gfx_goto( x+2, y+2 );
-                gfx_putstr( "`'" );
-                gfx_color( WHITE );
-                gfx_goto( x, y-1 );
-                gfx_putstr( "._" );
-                gfx_goto( x, y );
-                gfx_putchar( '|' );
+                ee_goto( x+1, y );
+                ee_putstr( " \\" );
+                ee_goto( x+1, y+1 );
+                ee_putstr( "\\ \\" );
+                ee_goto( x+2, y+2 );
+                ee_putstr( "`'" );
+                ee_color( EE_WHITE );
+                ee_goto( x, y-1 );
+                ee_putstr( "._" );
+                ee_goto( x, y );
+                ee_putchar( '|' );
             }
             else
             {
                 /* 3pi/6 */
-                gfx_goto( x-1, y+1 );
-                gfx_putstr( "| |" );
-                gfx_goto( x-1, y+2 );
-                gfx_putstr( "|_|" );
-                gfx_color( WHITE );
-                gfx_goto( x-1, y );
-                gfx_putstr( ",^." );
+                ee_goto( x-1, y+1 );
+                ee_putstr( "| |" );
+                ee_goto( x-1, y+2 );
+                ee_putstr( "|_|" );
+                ee_color( EE_WHITE );
+                ee_goto( x-1, y );
+                ee_putstr( ",^." );
             }
         }
     }
@@ -385,41 +385,41 @@ static void draw_bomb( int x, int y, int vx, int vy )
             if( vx > vy/4 )
             {
                 /* -2pi/6 */
-                gfx_goto( x-2, y-2 );
-                gfx_putstr( ",." );
-                gfx_goto( x-2, y-1 );
-                gfx_putstr( "\\ \\" );
-                gfx_goto( x-1, y );
-                gfx_putchar( '\\' );
-                gfx_color( WHITE );
-                gfx_goto( x, y );
-                gfx_putstr( "_|" );
+                ee_goto( x-2, y-2 );
+                ee_putstr( ",." );
+                ee_goto( x-2, y-1 );
+                ee_putstr( "\\ \\" );
+                ee_goto( x-1, y );
+                ee_putchar( '\\' );
+                ee_color( EE_WHITE );
+                ee_goto( x, y );
+                ee_putstr( "_|" );
             }
             else if( vx < -vy/4 )
             {
                 /* -4pi/6 */
-                gfx_goto( x+1, y-2 );
-                gfx_putstr( ",." );
-                gfx_goto( x, y-1 );
-                gfx_putstr( "/ /" );
-                gfx_goto( x+1, y );
-                gfx_putchar( '/' );
-                gfx_color( WHITE );
-                gfx_goto( x-1, y );
-                gfx_putstr( "|_/" );
+                ee_goto( x+1, y-2 );
+                ee_putstr( ",." );
+                ee_goto( x, y-1 );
+                ee_putstr( "/ /" );
+                ee_goto( x+1, y );
+                ee_putchar( '/' );
+                ee_color( EE_WHITE );
+                ee_goto( x-1, y );
+                ee_putstr( "|_/" );
             }
             else
             {
                 /* -3pi/6 */
-                gfx_goto( x, y-3 );
-                gfx_putchar( '_' );
-                gfx_goto( x-1, y-2 );
-                gfx_putstr( "| |" );
-                gfx_goto( x-1, y-1 );
-                gfx_putstr( "| |" );
-                gfx_color( WHITE );
-                gfx_goto( x-1, y );
-                gfx_putstr( "`v'" );
+                ee_goto( x, y-3 );
+                ee_putchar( '_' );
+                ee_goto( x-1, y-2 );
+                ee_putstr( "| |" );
+                ee_goto( x-1, y-1 );
+                ee_putstr( "| |" );
+                ee_color( EE_WHITE );
+                ee_goto( x-1, y );
+                ee_putstr( "`v'" );
             }
         }
         else /* left quarter */
@@ -427,39 +427,39 @@ static void draw_bomb( int x, int y, int vx, int vy )
             if( vy > -vx/4 )
             {
                 /* -5pi/6 */
-                gfx_goto( x+1, y-1 );
-                gfx_putstr( ",-'\\" );
-                gfx_goto( x+2, y );
-                gfx_putstr( ",-'" );
-                gfx_goto( x, y+1 );
-                gfx_putchar( '\'' );
-                gfx_color( WHITE );
-                gfx_goto( x, y );
-                gfx_putstr( "/_" );
+                ee_goto( x+1, y-1 );
+                ee_putstr( ",-'\\" );
+                ee_goto( x+2, y );
+                ee_putstr( ",-'" );
+                ee_goto( x, y+1 );
+                ee_putchar( '\'' );
+                ee_color( EE_WHITE );
+                ee_goto( x, y );
+                ee_putstr( "/_" );
             }
             else if( vy < vx/4 )
             {
                 /* 5pi/6 */
-                gfx_goto( x+1, y );
-                gfx_putstr( " `-." );
-                gfx_goto( x+1, y+1 );
-                gfx_putstr( "`-./" );
-                gfx_color( WHITE );
-                gfx_goto( x, y-1 );
-                gfx_putstr( "._" );
-                gfx_goto( x, y );
-                gfx_putchar( '\\' );
+                ee_goto( x+1, y );
+                ee_putstr( " `-." );
+                ee_goto( x+1, y+1 );
+                ee_putstr( "`-./" );
+                ee_color( EE_WHITE );
+                ee_goto( x, y-1 );
+                ee_putstr( "._" );
+                ee_goto( x, y );
+                ee_putchar( '\\' );
             }
             else
             {
                 /* 6pi/6 */
-                gfx_goto( x+1, y-1 );
-                gfx_putstr( "____" );
-                gfx_goto( x+1, y );
-                gfx_putstr( "____|" );
-                gfx_color( WHITE );
-                gfx_goto( x, y );
-                gfx_putchar( '<' );
+                ee_goto( x+1, y-1 );
+                ee_putstr( "____" );
+                ee_goto( x+1, y );
+                ee_putstr( "____|" );
+                ee_color( EE_WHITE );
+                ee_goto( x, y );
+                ee_putchar( '<' );
             }
         }
     }
@@ -467,93 +467,93 @@ static void draw_bomb( int x, int y, int vx, int vy )
 
 static void draw_fragbomb( int x, int y, int frame )
 {
-    gfx_color( WHITE );
+    ee_color( EE_WHITE );
 
-    gfx_color( frame & 1 ? CYAN : WHITE );
-    gfx_goto( x-2, y );
-    gfx_putstr( "(    )" );
-    gfx_goto( x-1, y+1 );
-    gfx_putstr( "`--'" );
+    ee_color( frame & 1 ? EE_CYAN : EE_WHITE );
+    ee_goto( x-2, y );
+    ee_putstr( "(    )" );
+    ee_goto( x-1, y+1 );
+    ee_putstr( "`--'" );
 
-    gfx_color( frame & 1 ? WHITE : CYAN );
-    gfx_goto( x-1, y-1 );
-    gfx_putstr( ",--." );
-    gfx_goto( x, y );
-    gfx_putstr( "'," );
+    ee_color( frame & 1 ? EE_WHITE : EE_CYAN );
+    ee_goto( x-1, y-1 );
+    ee_putstr( ",--." );
+    ee_goto( x, y );
+    ee_putstr( "'," );
 
     switch( frame % 4 )
     {
     case 0:
-        gfx_color( CYAN );
-        gfx_goto( x, y + 2 );
-        gfx_putchar( 'O' );
-        gfx_goto( x + 2, y + 2 );
-        gfx_putchar( 'o' );
-        gfx_goto( x + 1, y + 3 );
-        gfx_putchar( 'o' );
-        gfx_color( GRAY );
-        gfx_goto( x - 1, y + 3 );
-        gfx_putchar( ':' );
-        gfx_goto( x + 2, y + 4 );
-        gfx_putchar( ':' );
-        gfx_goto( x, y + 4 );
-        gfx_putchar( '.' );
-        gfx_goto( x + 1, y + 5 );
-        gfx_putchar( '.' );
+        ee_color( EE_CYAN );
+        ee_goto( x, y + 2 );
+        ee_putchar( 'O' );
+        ee_goto( x + 2, y + 2 );
+        ee_putchar( 'o' );
+        ee_goto( x + 1, y + 3 );
+        ee_putchar( 'o' );
+        ee_color( EE_GRAY );
+        ee_goto( x - 1, y + 3 );
+        ee_putchar( ':' );
+        ee_goto( x + 2, y + 4 );
+        ee_putchar( ':' );
+        ee_goto( x, y + 4 );
+        ee_putchar( '.' );
+        ee_goto( x + 1, y + 5 );
+        ee_putchar( '.' );
         break;
     case 1:
-        gfx_color( CYAN );
-        //gfx_goto( x, y + 1 );
-        //gfx_putchar( 'O' );
-        gfx_goto( x + 1, y + 2 );
-        gfx_putchar( 'O' );
-        gfx_goto( x, y + 3 );
-        gfx_putchar( 'o' );
-        gfx_color( GRAY );
-        gfx_goto( x + 2, y + 3 );
-        gfx_putchar( ':' );
-        gfx_goto( x + 1, y + 4 );
-        gfx_putchar( ':' );
-        gfx_goto( x - 1, y + 4 );
-        gfx_putchar( '.' );
-        gfx_goto( x + 2, y + 5 );
-        gfx_putchar( '.' );
+        ee_color( EE_CYAN );
+        //ee_goto( x, y + 1 );
+        //ee_putchar( 'O' );
+        ee_goto( x + 1, y + 2 );
+        ee_putchar( 'O' );
+        ee_goto( x, y + 3 );
+        ee_putchar( 'o' );
+        ee_color( EE_GRAY );
+        ee_goto( x + 2, y + 3 );
+        ee_putchar( ':' );
+        ee_goto( x + 1, y + 4 );
+        ee_putchar( ':' );
+        ee_goto( x - 1, y + 4 );
+        ee_putchar( '.' );
+        ee_goto( x + 2, y + 5 );
+        ee_putchar( '.' );
         break;
     case 2:
-        gfx_color( CYAN );
-        //gfx_goto( x - 1, y + 1 );
-        //gfx_putchar( 'O' );
-        gfx_goto( x + 2, y + 2 );
-        gfx_putchar( 'O' );
-        gfx_goto( x, y + 2 );
-        gfx_putchar( 'o' );
-        gfx_goto( x + 1, y + 3 );
-        gfx_putchar( 'o' );
-        gfx_color( GRAY );
-        gfx_goto( x, y + 4 );
-        gfx_putchar( ':' );
-        gfx_goto( x + 2, y + 4 );
-        gfx_putchar( '.' );
-        gfx_goto( x + 1, y + 5 );
-        gfx_putchar( '.' );
+        ee_color( EE_CYAN );
+        //ee_goto( x - 1, y + 1 );
+        //ee_putchar( 'O' );
+        ee_goto( x + 2, y + 2 );
+        ee_putchar( 'O' );
+        ee_goto( x, y + 2 );
+        ee_putchar( 'o' );
+        ee_goto( x + 1, y + 3 );
+        ee_putchar( 'o' );
+        ee_color( EE_GRAY );
+        ee_goto( x, y + 4 );
+        ee_putchar( ':' );
+        ee_goto( x + 2, y + 4 );
+        ee_putchar( '.' );
+        ee_goto( x + 1, y + 5 );
+        ee_putchar( '.' );
         break;
     case 3:
-        gfx_color( CYAN );
-        //gfx_goto( x + 2, y + 1 );
-        //gfx_putchar( 'O' );
-        gfx_goto( x + 1, y + 2 );
-        gfx_putchar( 'O' );
-        gfx_goto( x - 1, y + 2 );
-        gfx_putchar( 'o' );
-        gfx_goto( x + 2, y + 3 );
-        gfx_putchar( 'o' );
-        gfx_color( GRAY );
-        gfx_goto( x, y + 3 );
-        gfx_putchar( ':' );
-        gfx_goto( x + 1, y + 4 );
-        gfx_putchar( ':' );
-        gfx_goto( x, y + 5 );
-        gfx_putchar( '.' );
+        ee_color( EE_CYAN );
+        //ee_goto( x + 2, y + 1 );
+        //ee_putchar( 'O' );
+        ee_goto( x + 1, y + 2 );
+        ee_putchar( 'O' );
+        ee_goto( x - 1, y + 2 );
+        ee_putchar( 'o' );
+        ee_goto( x + 2, y + 3 );
+        ee_putchar( 'o' );
+        ee_color( EE_GRAY );
+        ee_goto( x, y + 3 );
+        ee_putchar( ':' );
+        ee_goto( x + 1, y + 4 );
+        ee_putchar( ':' );
+        ee_goto( x, y + 5 );
+        ee_putchar( '.' );
         break;
     }
 }
@@ -566,132 +566,132 @@ static void draw_beam( int x, int y, int frame )
     switch( frame )
     {
         case 24:
-            gfx_color( WHITE );
-            gfx_goto( x, y-3 );
-            gfx_putstr( "__" );
-            gfx_goto( x-1, y-2 );
-            gfx_putchar( '\'' );
-            gfx_goto( x+2, y-2 );
-            gfx_putchar( '`' );
+            ee_color( EE_WHITE );
+            ee_goto( x, y-3 );
+            ee_putstr( "__" );
+            ee_goto( x-1, y-2 );
+            ee_putchar( '\'' );
+            ee_goto( x+2, y-2 );
+            ee_putchar( '`' );
             break;
         case 23:
-            gfx_color( CYAN );
-            gfx_goto( x, y-3 );
-            gfx_putstr( "__" );
-            gfx_color( WHITE );
-            gfx_goto( x-2, y-2 );
-            gfx_putstr( "-'" );
-            gfx_goto( x+2, y-2 );
-            gfx_putstr( "`-" );
+            ee_color( EE_CYAN );
+            ee_goto( x, y-3 );
+            ee_putstr( "__" );
+            ee_color( EE_WHITE );
+            ee_goto( x-2, y-2 );
+            ee_putstr( "-'" );
+            ee_goto( x+2, y-2 );
+            ee_putstr( "`-" );
             break;
         case 22:
-            gfx_color( CYAN );
-            gfx_goto( x, y-3 );
-            gfx_putstr( "__" );
-            gfx_goto( x-1, y-2 );
-            gfx_putchar( '\'' );
-            gfx_goto( x+2, y-2 );
-            gfx_putchar( '`' );
-            gfx_color( WHITE );
-            gfx_goto( x-3, y-2 );
-            gfx_putstr( ",-" );
-            gfx_goto( x+3, y-2 );
-            gfx_putstr( "-." );
+            ee_color( EE_CYAN );
+            ee_goto( x, y-3 );
+            ee_putstr( "__" );
+            ee_goto( x-1, y-2 );
+            ee_putchar( '\'' );
+            ee_goto( x+2, y-2 );
+            ee_putchar( '`' );
+            ee_color( EE_WHITE );
+            ee_goto( x-3, y-2 );
+            ee_putstr( ",-" );
+            ee_goto( x+3, y-2 );
+            ee_putstr( "-." );
             break;
         case 21:
-            gfx_color( CYAN );
-            gfx_goto( x-1, y-3 );
-            gfx_putstr( "____" );
-            gfx_goto( x-2, y-2 );
-            gfx_putchar( '\'' );
-            gfx_goto( x+3, y-2 );
-            gfx_putchar( '`' );
-            gfx_color( WHITE );
-            gfx_goto( x-4, y-2 );
-            gfx_putstr( ",-" );
-            gfx_goto( x+4, y-2 );
-            gfx_putstr( "-." );
+            ee_color( EE_CYAN );
+            ee_goto( x-1, y-3 );
+            ee_putstr( "____" );
+            ee_goto( x-2, y-2 );
+            ee_putchar( '\'' );
+            ee_goto( x+3, y-2 );
+            ee_putchar( '`' );
+            ee_color( EE_WHITE );
+            ee_goto( x-4, y-2 );
+            ee_putstr( ",-" );
+            ee_goto( x+4, y-2 );
+            ee_putstr( "-." );
             break;
         case 20:
-            gfx_color( WHITE );
-            gfx_goto( x, y-3 );
-            gfx_putstr( "%%" );
-            gfx_goto( x-4, y-2 );
-            gfx_putchar( ',' );
-            gfx_goto( x+5, y-2 );
-            gfx_putchar( '.' );
-            gfx_color( CYAN );
-            gfx_goto( x-1, y-3 );
-            gfx_putchar( ':' );
-            gfx_goto( x+2, y-3 );
-            gfx_putchar( ':' );
-            gfx_goto( x-3, y-2 );
-            gfx_putstr( "-'" );
-            gfx_goto( x+3, y-2 );
-            gfx_putstr( "`-" );
+            ee_color( EE_WHITE );
+            ee_goto( x, y-3 );
+            ee_putstr( "%%" );
+            ee_goto( x-4, y-2 );
+            ee_putchar( ',' );
+            ee_goto( x+5, y-2 );
+            ee_putchar( '.' );
+            ee_color( EE_CYAN );
+            ee_goto( x-1, y-3 );
+            ee_putchar( ':' );
+            ee_goto( x+2, y-3 );
+            ee_putchar( ':' );
+            ee_goto( x-3, y-2 );
+            ee_putstr( "-'" );
+            ee_goto( x+3, y-2 );
+            ee_putstr( "`-" );
             break;
         case 19:
-            gfx_color( WHITE );
-            gfx_goto( x, y-4 );
-            gfx_putstr( "%%" );
-            gfx_goto( x, y-3 );
-            gfx_putstr( "##" );
-            gfx_color( CYAN );
-            gfx_goto( x-1, y-4 );
-            gfx_putchar( ':' );
-            gfx_goto( x+2, y-4 );
-            gfx_putchar( ':' );
-            gfx_goto( x-1, y-3 );
-            gfx_putchar( '%' );
-            gfx_goto( x+2, y-3 );
-            gfx_putchar( '%' );
-            gfx_goto( x-4, y-2 );
-            gfx_putstr( ",-'" );
-            gfx_goto( x+3, y-2 );
-            gfx_putstr( "`-." );
-            gfx_color( BLUE );
-            gfx_goto( x-2, y-3 );
-            gfx_putchar( ':' );
-            gfx_goto( x+3, y-3 );
-            gfx_putchar( ':' );
+            ee_color( EE_WHITE );
+            ee_goto( x, y-4 );
+            ee_putstr( "%%" );
+            ee_goto( x, y-3 );
+            ee_putstr( "##" );
+            ee_color( EE_CYAN );
+            ee_goto( x-1, y-4 );
+            ee_putchar( ':' );
+            ee_goto( x+2, y-4 );
+            ee_putchar( ':' );
+            ee_goto( x-1, y-3 );
+            ee_putchar( '%' );
+            ee_goto( x+2, y-3 );
+            ee_putchar( '%' );
+            ee_goto( x-4, y-2 );
+            ee_putstr( ",-'" );
+            ee_goto( x+3, y-2 );
+            ee_putstr( "`-." );
+            ee_color( EE_BLUE );
+            ee_goto( x-2, y-3 );
+            ee_putchar( ':' );
+            ee_goto( x+3, y-3 );
+            ee_putchar( ':' );
             break;
         case 18:
         default:
             r = (18 - frame) * (18 - frame);
-            gfx_color( WHITE );
-            gfx_goto( x-1, y-5-r );
-            gfx_putstr( ":%%:" );
-            gfx_goto( x-1, y-4-r );
-            gfx_putstr( "%##%" );
-            gfx_color( CYAN );
-            gfx_goto( x-2, y-4-r );
-            gfx_putchar( ':' );
-            gfx_goto( x+3, y-4-r );
-            gfx_putchar( ':' );
-            gfx_goto( x-2, y-2 );
-            gfx_putchar( '\'' );
-            gfx_goto( x+3, y-2 );
-            gfx_putchar( '`' );
-            gfx_color( BLUE );
-            gfx_goto( x-3, y-2 );
-            gfx_putchar( ':' );
-            gfx_goto( x+4, y-2 );
-            gfx_putchar( ':' );
+            ee_color( EE_WHITE );
+            ee_goto( x-1, y-5-r );
+            ee_putstr( ":%%:" );
+            ee_goto( x-1, y-4-r );
+            ee_putstr( "%##%" );
+            ee_color( EE_CYAN );
+            ee_goto( x-2, y-4-r );
+            ee_putchar( ':' );
+            ee_goto( x+3, y-4-r );
+            ee_putchar( ':' );
+            ee_goto( x-2, y-2 );
+            ee_putchar( '\'' );
+            ee_goto( x+3, y-2 );
+            ee_putchar( '`' );
+            ee_color( EE_BLUE );
+            ee_goto( x-3, y-2 );
+            ee_putchar( ':' );
+            ee_goto( x+4, y-2 );
+            ee_putchar( ':' );
             for( i = 0; i <= r; i++ )
             {
-                gfx_color( WHITE );
-                gfx_goto( x-1, y-3-i );
-                gfx_putstr( (i+frame) % 5 ? "####" : "%%%%" );
-                gfx_color( CYAN );
-                gfx_goto( x-2, y-3-i );
-                gfx_putchar( '%' );
-                gfx_goto( x+3, y-3-i );
-                gfx_putchar( '%' );
-                gfx_color( BLUE );
-                gfx_goto( x-3, y-3-i );
-                gfx_putchar( ':' );
-                gfx_goto( x+4, y-3-i );
-                gfx_putchar( ':' );
+                ee_color( EE_WHITE );
+                ee_goto( x-1, y-3-i );
+                ee_putstr( (i+frame) % 5 ? "####" : "%%%%" );
+                ee_color( EE_CYAN );
+                ee_goto( x-2, y-3-i );
+                ee_putchar( '%' );
+                ee_goto( x+3, y-3-i );
+                ee_putchar( '%' );
+                ee_color( EE_BLUE );
+                ee_goto( x-3, y-3-i );
+                ee_putchar( ':' );
+                ee_goto( x+4, y-3-i );
+                ee_putchar( ':' );
             }
             break;
     }
@@ -702,11 +702,11 @@ static void draw_nuke( int x, int y, int frame )
     int r = (29 - frame) * (29 - frame) / 8;
 
     /* Lots of duplicate pixels, but we don't care */
-    gfx_color( BLUE );
+    ee_color( EE_BLUE );
     draw_circle( x, y, r++, ':' );
-    gfx_color( CYAN );
+    ee_color( EE_CYAN );
     draw_circle( x, y, r++, '%' );
-    gfx_color( WHITE );
+    ee_color( EE_WHITE );
     draw_circle( x, y, r++, '#' );
     draw_circle( x, y, r++, '#' );
 }
@@ -718,15 +718,15 @@ static void draw_circle( int x, int y, int r, char c )
     /* Optimized Bresenham. Kick ass. */
     for( test = 0, dx = 0, dy = r ; dx <= dy ; dx++ )
     {
-        gfx_putcharTO( x + dx, y + dy / 2, c );
-        gfx_putcharTO( x - dx, y + dy / 2, c );
-        gfx_putcharTO( x + dx, y - dy / 2, c );
-        gfx_putcharTO( x - dx, y - dy / 2, c );
+        ee_putcharTO( x + dx, y + dy / 2, c );
+        ee_putcharTO( x - dx, y + dy / 2, c );
+        ee_putcharTO( x + dx, y - dy / 2, c );
+        ee_putcharTO( x - dx, y - dy / 2, c );
 
-        gfx_putcharTO( x + dy, y + dx / 2, c );
-        gfx_putcharTO( x - dy, y + dx / 2, c );
-        gfx_putcharTO( x + dy, y - dx / 2, c );
-        gfx_putcharTO( x - dy, y - dx / 2, c );
+        ee_putcharTO( x + dy, y + dx / 2, c );
+        ee_putcharTO( x - dy, y + dx / 2, c );
+        ee_putcharTO( x + dy, y - dx / 2, c );
+        ee_putcharTO( x - dy, y - dx / 2, c );
 
         test += test > 0 ? dx - dy-- : dx;
     }

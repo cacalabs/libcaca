@@ -42,28 +42,7 @@
 /*
  * Graphics primitives
  */
-#ifdef USE_SLANG
-#   include <slang.h>
-#   define gfx_color(x) SLsmg_set_color(x)
-#   define gfx_goto(x,y) SLsmg_gotorc(y,x)
-#   define gfx_putchar(x) SLsmg_write_char(x)
-#   define gfx_putstr(x) SLsmg_write_string(x)
-#elif USE_NCURSES
-#define box box_other
-#   include <curses.h>
-#undef box
-#   define gfx_color(x) attrset(COLOR_PAIR(x))
-#   define gfx_goto(x,y) move(y,x)
-#   define gfx_putchar(x) addch(x)
-#   define gfx_putstr(x) addstr(x)
-#else
-#   define gfx_color(x) (void)(x)
-#   define gfx_goto(x,y) do{ (void)(x); (void)(y); } while(0)
-#   define gfx_putchar(x) (void)(x)
-#   define gfx_putstr(x) (void)(x)
-#endif
-
-#define gfx_putcharTO(x,y,c) do{ gfx_goto(x,y); gfx_putchar(c); }while(0)
+#include "ee.h"
 
 /*
  * Useful macros
@@ -164,17 +143,6 @@ typedef struct
 
 } game;
 
-#define BLACK 1
-#define GREEN 2
-#define YELLOW 3
-#define WHITE 4
-#define RED 5
-#define GRAY 6
-#define LIGHTGRAY 7
-#define BLUE 8
-#define CYAN 9
-#define MAGENTA 10
-
 /*
  * From aliens.c
  */
@@ -217,16 +185,6 @@ void init_explosions( game *g, explosions *ex );
 void add_explosion( game *g, explosions *ex, int x, int y, int vx, int vy, int type );
 void draw_explosions( game *g, explosions *ex );
 void update_explosions( game *g, explosions *ex );
-
-/*
- * From graphics.c
- */
-int init_graphics( void );
-void init_game( game *g );
-char get_key( void );
-void clear_graphics( game *g );
-void refresh_graphics( void );
-void end_graphics( void );
 
 /*
  * From math.c

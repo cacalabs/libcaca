@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: starfield.c,v 1.5 2002/12/23 09:28:37 sam Exp $
+ *   $Id$
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -51,9 +51,9 @@ void draw_starfield( game *g, starfield *s )
     {
         if( s[i].x >= 0 )
         {
-            gfx_color( s[i].c );
-            gfx_goto( s[i].x, s[i].y );
-            gfx_putchar( s[i].ch );
+            ee_color( s[i].c );
+            ee_goto( s[i].x, s[i].y );
+            ee_putchar( s[i].ch );
         }
     }
 }

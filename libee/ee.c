@@ -1,6 +1,6 @@
 /*
- *   ttyvaders     Textmode shoot'em up
- *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
+ *   libee         ASCII-Art library
+ *   Copyright (c) 2002, 2003 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
  *   $Id$
@@ -27,34 +27,44 @@
 #include <sys/time.h>
 #include <time.h>
 
-#include "common.h"
+#include "ee.h"
 
-int init_graphics( void )
+int ee_init(void)
 {
 #ifdef USE_SLANG
+    static char * colors[] = { "black", "green", "yellow", "white",
+        "red", "gray", "lightgray", "blue", "cyan", "magenta", NULL };
+    int i;
+
     /* Initialize slang library */
     SLsig_block_signals();
     SLtt_get_terminfo();
 
-    if( SLkp_init() == -1 )
+    if(SLkp_init() == -1)
     {
         SLsig_unblock_signals();
-        return 1;
+        return -1;
     }
 
-    SLang_init_tty (-1, 0, 1);
+    SLang_init_tty(-1, 0, 1);
 
-    if( SLsmg_init_smg() == -1 )
+    if(SLsmg_init_smg() == -1)
     {
         SLsig_unblock_signals();
-        return 1;
+        return -1;
     }
 
     SLsig_unblock_signals();
 
     SLsmg_cls();
-    SLtt_set_cursor_visibility( 0 );
+    SLtt_set_cursor_visibility(0);
     SLsmg_refresh();
+
+    for(i = 0; colors[i]; i++)
+    {
+        SLtt_set_color(i + 1, NULL, colors[i], "black");
+    }
+
 #elif USE_NCURSES
     /* Initialize ncurses library */
     initscr();
@@ -63,99 +73,68 @@ int init_graphics( void )
     cbreak();
     noecho();
     nodelay(stdscr, TRUE);
-    curs_set( 0 );
-#else
-    /* Dummy driver */
-#endif
+    curs_set(0);
 
-    return 0;
-}
-
-void init_game( game *g )
-{
-#ifdef USE_SLANG
-    static char * const colors[] =
-    {
-        "black", "green", "yellow", "white",
-        "red", "gray", "lightgray", "blue", "cyan", "magenta", NULL
-    };
-
-    int i;
-
-    for( i = 0; colors[i] ; i++ )
-    {
-        SLtt_set_color( i+1, NULL, colors[i], "black" );
-    }
-
-    g->w = SLtt_Screen_Cols;
-    g->h = SLtt_Screen_Rows;
-#elif USE_NCURSES
     start_color();
 
-    init_pair( BLACK, COLOR_BLACK, COLOR_BLACK );
-    init_pair( GREEN, COLOR_GREEN, COLOR_BLACK );
-    init_pair( YELLOW, COLOR_YELLOW, COLOR_BLACK );
-    init_pair( WHITE, COLOR_WHITE, COLOR_BLACK );
-    init_pair( RED, COLOR_RED, COLOR_BLACK );
-    init_pair( GRAY, COLOR_WHITE, COLOR_BLACK ); // XXX
-    init_pair( LIGHTGRAY, COLOR_WHITE, COLOR_BLACK ); // XXX
-    init_pair( BLUE, COLOR_BLUE, COLOR_BLACK );
-    init_pair( CYAN, COLOR_CYAN, COLOR_BLACK );
-    init_pair( MAGENTA, COLOR_MAGENTA, COLOR_BLACK );
+    init_pair(EE_BLACK, COLOR_BLACK, COLOR_BLACK);
+    init_pair(EE_GREEN, COLOR_GREEN, COLOR_BLACK);
+    init_pair(EE_YELLOW, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(EE_WHITE, COLOR_WHITE, COLOR_BLACK);
+    init_pair(EE_RED, COLOR_RED, COLOR_BLACK);
+    init_pair(EE_GRAY, COLOR_WHITE, COLOR_BLACK); // XXX
+    init_pair(EE_LIGHTGRAY, COLOR_WHITE, COLOR_BLACK); // XXX
+    init_pair(EE_BLUE, COLOR_BLUE, COLOR_BLACK);
+    init_pair(EE_CYAN, COLOR_CYAN, COLOR_BLACK);
+    init_pair(EE_MAGENTA, COLOR_MAGENTA, COLOR_BLACK);
 
-    g->w = COLS;
-    g->h = LINES;
 #else
-    /* Use dummy driver */
-    g->w = 80;
-    g->h = 25;
-#endif
-}
+    /* Dummy driver */
 
-char get_key( void )
-{
-#ifdef USE_SLANG
-    if( SLang_input_pending (0) )
-    {
-        return SLang_getkey();
-    }
-#elif USE_NCURSES
-    char key;
-
-    if( ( key = getch() ) != ERR )
-    {
-        return key;
-    }
-#else
-    /* Use dummy driver */
-    char key = GET_RAND(0,256);
-
-    if( key != 'q' && key != 'p' && key != '\t' )
-    {
-        return key;
-    }
 #endif
 
     return 0;
 }
 
-void clear_graphics( game *g )
+int ee_get_width(void)
+{
+#ifdef USE_SLANG
+    return SLtt_Screen_Cols;
+#elif USE_NCURSES
+    return COLS;
+#else
+    return 80;
+#endif
+}
+
+int ee_get_height(void)
+{
+#ifdef USE_SLANG
+    return SLtt_Screen_Rows;
+#elif USE_NCURSES
+    return LINES;
+#else
+    return 25;
+#endif
+}
+
+void ee_clear(void)
 {
 #ifdef USE_SLANG
     //SLsmg_cls();
     int y;
-    for( y = 0; y < g->h; y++ )
+    for(y = 0; y < ee_get_height(); y++)
     {
-        gfx_goto( 0, y );
-        gfx_putstr( "                                                                                " );
+        ee_goto(0, y);
+        ee_putstr("                                                                                ");
     }
 #elif USE_NCURSES
     //clear();
     int y;
-    for( y = 0; y < g->h; y++ )
+    for(y = 0; y < ee_get_height(); y++)
     {
-        gfx_goto( 0, y );
-        gfx_putstr( "                                                                                " );
+        ee_goto(0, y);
+        ee_putstr("                                                                                ");
     }
 #else
     /* Use dummy driver */
@@ -175,21 +154,20 @@ static int64_t local_time(void)
 }
 
 #define DELAY 40000
-
-void refresh_graphics( void )
+void ee_refresh(void)
 {
     static int64_t local_clock = 0;
     int64_t now;
 
-    gfx_goto( 0, 0 );
+    ee_goto(0, 0);
 
-    if( !local_clock )
+    if(!local_clock)
     {
         /* Initialize local_clock */
         local_clock = local_time();
     }
 
-    if( local_time() > local_clock + 10000 )
+    if(local_time() > local_clock + 10000)
     {
         /* If we are late, we shouldn't display anything */
     }
@@ -204,25 +182,47 @@ void refresh_graphics( void )
 
     now = local_time();
 
-    if( now < local_clock + DELAY - 10000 )
+    if(now < local_clock + DELAY - 10000)
     {
-        usleep( local_clock + DELAY - 10000 - now );
+        usleep(local_clock + DELAY - 10000 - now);
     }
 
     local_clock += DELAY;
 }
 
-void end_graphics( void )
+void ee_end(void)
 {
 #ifdef USE_SLANG
-    SLtt_set_cursor_visibility( 1 );
+    SLtt_set_cursor_visibility(1);
     SLang_reset_tty();
     SLsmg_reset_smg();
 #elif USE_NCURSES
-    curs_set( 1 );
+    curs_set(1);
     endwin();
 #else
     /* Use dummy driver */
 #endif
+}
+
+char ee_get_key(void)
+{
+#ifdef USE_SLANG
+    if(SLang_input_pending(0))
+    {
+        return SLang_getkey();
+    }
+#elif USE_NCURSES
+    char key = getch();
+
+    if(key != ERR)
+    {
+        return key;
+    }
+#else
+    return 0;
+
+#endif
+
+    return 0;
 }
 

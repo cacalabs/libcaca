@@ -33,16 +33,16 @@ void ceo_alert( game *g )
 
     while( !end )
     {
-        clear_graphics( g );
+        ee_clear();
 
-        if( get_key() == '\t' )
+        if( ee_get_key() == '\t' )
         {
             end = 1;
         }
 
         fprintf( stderr, "foo\n" );
 
-        refresh_graphics();
+        ee_refresh();
 
         usleep( 40000 );
     }

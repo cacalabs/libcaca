@@ -35,6 +35,6 @@ ttyvaders_SOURCES = \
 	weapons.c \
 	$(NULL)
 
-ttyvaders_CPPFLAGS = $(CPPFLAGS_slang) $(CPPFLAGS_ncurses)
+ttyvaders_CPPFLAGS = -I../libee $(CPPFLAGS_slang) $(CPPFLAGS_ncurses)
 ttyvaders_LDADD = ../libee/libee.a $(LDFLAGS_slang) $(LDFLAGS_ncurses)
 

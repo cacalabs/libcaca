@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: player.c,v 1.8 2002/12/23 16:21:38 sam Exp $
+ *   $Id$
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -53,18 +53,18 @@ void draw_player( game *g, player *p )
         return;
     }
 
-    gfx_goto( p->x + 2, p->y - 2 );
-    gfx_color( GREEN );
-    gfx_putstr( "/\\" );
-    gfx_goto( p->x + 1, p->y - 1 );
-    gfx_putchar( '(' );
-    gfx_color( YELLOW );
-    gfx_putstr( "()" );
-    gfx_color( GREEN );
-    gfx_putchar( ')' );
-    gfx_goto( p->x, p->y );
-    gfx_color( GREEN );
-    gfx_putstr( "I<__>I" );
+    ee_goto( p->x + 2, p->y - 2 );
+    ee_color( EE_GREEN );
+    ee_putstr( "/\\" );
+    ee_goto( p->x + 1, p->y - 1 );
+    ee_putchar( '(' );
+    ee_color( EE_YELLOW );
+    ee_putstr( "()" );
+    ee_color( EE_GREEN );
+    ee_putchar( ')' );
+    ee_goto( p->x, p->y );
+    ee_color( EE_GREEN );
+    ee_putstr( "I<__>I" );
 }
 
 void update_player( game *g, player *p )
