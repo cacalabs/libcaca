@@ -871,11 +871,8 @@ void caca_refresh(void)
     {
         unsigned int x, y, len;
 
-        /* FIXME: This is very, very slow. There are several things that can
-         * be done in order to speed up things:
-         *  - cache characters once rendered
-         *  - pre-render all characters
-         *  - use our own rendering routine (screen depth dependent) */
+        /* First draw the background colours. Splitting the process in two
+         * loops like this is actually slightly faster. */
         for(y = 0; y < _caca_height; y++)
         {
             for(x = 0; x < _caca_width; x += len)
@@ -883,13 +880,33 @@ void caca_refresh(void)
                 unsigned char *attr = x11_attr + x + y * _caca_width;
 
                 len = 1;
-                while(x + len < _caca_width && attr[len] == attr[0])
+                while(x + len < _caca_width
+                       && (attr[len] >> 4) == (attr[0] >> 4))
                     len++;
 
                 XSetForeground(x11_dpy, x11_gc, x11_colors[attr[0] >> 4]);
                 XFillRectangle(x11_dpy, x11_pixmap, x11_gc,
                                x * x11_font_width, y * x11_font_height,
                                len * x11_font_width, x11_font_height);
+            }
+        }
+
+        /* Then print the foreground characters */
+        for(y = 0; y < _caca_height; y++)
+        {
+            for(x = 0; x < _caca_width; x += len)
+            {
+                unsigned char *attr = x11_attr + x + y * _caca_width;
+
+                len = 1;
+
+                /* Skip spaces */
+                if(x11_char[x + y * _caca_width] == ' ')
+                    continue;
+
+                while(x + len < _caca_width
+                       && (attr[len] & 0xf) == (attr[0] & 0xf))
+                    len++;
 
                 XSetForeground(x11_dpy, x11_gc, x11_colors[attr[0] & 0xf]);
                 XDrawString(x11_dpy, x11_pixmap, x11_gc, x * x11_font_width,
