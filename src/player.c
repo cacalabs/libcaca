@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: player.c,v 1.7 2002/12/23 15:06:13 sam Exp $
+ *   $Id: player.c,v 1.8 2002/12/23 16:21:38 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -36,6 +36,7 @@ player * create_player( game *g )
     p->weapon = 0;
     p->special = MAX_SPECIAL;
     p->life = MAX_LIFE;
+    p->dead = 0;
 
     return p;
 }

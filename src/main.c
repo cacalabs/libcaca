@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: main.c,v 1.15 2002/12/23 15:06:13 sam Exp $
+ *   $Id: main.c,v 1.16 2002/12/23 16:21:38 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -24,7 +24,8 @@
 #include <stdlib.h>
 
 #include <string.h>
-#include <unistd.h>
+
+#include <time.h>
 
 #include "common.h"
 
@@ -34,7 +35,7 @@ int main (int argc, char **argv)
 {
     game *g = malloc(sizeof(game));
 
-    //srand(time(NULL));
+    srand(time(NULL));
 
     if( init_graphics() )
     {
@@ -164,7 +165,7 @@ static void start_game (game *g)
             }
         }
 
-        usleep(40000);
+        gfx_delay();
 
         if( !poz || skip )
         {
@@ -200,7 +201,7 @@ static void start_game (game *g)
             collide_weapons_aliens( g, g->wp, g->al, g->ex );
 
             update_explosions( g, g->ex );
-            /*if(purcompteur%2)*/ update_tunnel( g, g->t );
+            update_tunnel( g, g->t );
         }
 
         /* Clear screen */

@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: graphics.c,v 1.5 2002/12/23 10:06:27 sam Exp $
+ *   $Id: graphics.c,v 1.6 2002/12/23 16:21:38 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -20,7 +20,10 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include "config.h"
+
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "common.h"
 
@@ -121,9 +124,26 @@ char get_key( void )
     }
 #else
     /* Use dummy driver */
+    char key = GET_RAND(0,256);
+
+    if( key != 'q' && key != 'p' && key != '\t' )
+    {
+        return key;
+    }
 #endif
 
     return 0;
+}
+
+void gfx_delay( void )
+{
+#ifdef USE_SLANG
+    usleep(40000);
+#elif USE_NCURSES
+    usleep(40000);
+#else
+    /* Use dummy driver */
+#endif
 }
 
 void clear_graphics( void )

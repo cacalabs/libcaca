@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: overlay.c,v 1.1 2002/12/23 15:06:13 sam Exp $
+ *   $Id: overlay.c,v 1.2 2002/12/23 16:21:38 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ void draw_overlay( game *g )
 
     /* Draw life jauge */
     gfx_color( GRAY );
-    gfx_goto( 2, 1 );
+    gfx_goto( 4, 1 );
     gfx_putstr( dots30 );
 
     if( g->p->life > MAX_LIFE * 7 / 10 )
@@ -47,18 +47,18 @@ void draw_overlay( game *g )
         gfx_color( RED );
     }
 
-    gfx_goto( 2, 1 );
+    gfx_goto( 4, 1 );
     gfx_putstr( dashes30 + ( MAX_LIFE - g->p->life ) * 30 / MAX_LIFE );
 
     gfx_color( WHITE );
     gfx_goto( 1, 1 );
+    gfx_putstr( "L |" );
+    gfx_goto( 34, 1 );
     gfx_putstr( "|" );
-    gfx_goto( 32, 1 );
-    gfx_putstr( "| L" );
 
     /* Draw weapon jauge */
     gfx_color( GRAY );
-    gfx_goto( 38, 1 );
+    gfx_goto( 42, 1 );
     gfx_putstr( dots30 + 10 );
 
     if( g->p->special > MAX_SPECIAL * 9 / 10 )
@@ -74,13 +74,13 @@ void draw_overlay( game *g )
         gfx_color( BLUE );
     }
 
-    gfx_goto( 38, 1 );
+    gfx_goto( 42, 1 );
     gfx_putstr( dashes30 + 10 + ( MAX_SPECIAL - g->p->special ) * 20 / MAX_SPECIAL );
 
     gfx_color( WHITE );
-    gfx_goto( 37, 1 );
+    gfx_goto( 39, 1 );
+    gfx_putstr( "S |" );
+    gfx_goto( 62, 1 );
     gfx_putstr( "|" );
-    gfx_goto( 58, 1 );
-    gfx_putstr( "| S" );
 }
 

@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: collide.c,v 1.9 2002/12/23 13:46:27 sam Exp $
+ *   $Id: collide.c,v 1.10 2002/12/23 16:21:38 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -41,6 +41,11 @@ void collide_weapons_tunnel( game *g, weapons *wp, tunnel *t, explosions *ex )
         case WEAPON_SEEKER:
         case WEAPON_BOMB:
         case WEAPON_FRAGBOMB:
+            if( y < 0 || y >= g->h )
+            {
+                break;
+            }
+
             if( x <= t->left[y]
                  || x >= t->right[y] )
             {
@@ -50,19 +55,19 @@ void collide_weapons_tunnel( game *g, weapons *wp, tunnel *t, explosions *ex )
 
                 if( x <= t->left[y] )
                 {
-                    t->right[y-2] -= damage - 1;
-                    t->left[y-1] -= damage;
+                    if( y-2 >= 0 ) t->right[y-2] -= damage - 1;
+                    if( y-1 >= 0 ) t->left[y-1] -= damage;
                     t->left[y] -= damage + 1;
-                    t->left[y+1] -= damage;
-                    t->right[y+2] -= damage - 1;
+                    if( y+1 < g->h ) t->left[y+1] -= damage;
+                    if( y+2 < g->h ) t->right[y+2] -= damage - 1;
                 }
                 else
                 {
-                    t->right[y-2] += damage - 1;
-                    t->right[y-1] += damage;
+                    if( y-2 >= 0 ) t->right[y-2] += damage - 1;
+                    if( y-1 >= 0 ) t->right[y-1] += damage;
                     t->right[y] += damage + 1;
-                    t->right[y+1] += damage;
-                    t->right[y+2] += damage - 1;
+                    if( y+1 < g->h ) t->right[y+1] += damage;
+                    if( y+2 < g->h ) t->right[y+2] += damage - 1;
                 }
 
                 if( wp->type[i] == WEAPON_FRAGBOMB )
@@ -80,6 +85,11 @@ void collide_weapons_tunnel( game *g, weapons *wp, tunnel *t, explosions *ex )
                  j < GET_MAX( 0, wp->vy[i] >> 4 ) ;
                  j++ )
             {
+                if( y+j >= g->h || y+j < 0 )
+                {
+                    continue;
+                }
+
                 if( x <= t->left[y+j] || x >= t->right[y+j] )
                 {
                     add_explosion( g, ex, x, y+j, 0, 1, EXPLOSION_SMALL );
@@ -87,15 +97,27 @@ void collide_weapons_tunnel( game *g, weapons *wp, tunnel *t, explosions *ex )
 
                     if( x <= t->left[y+j] )
                     {
-                        t->left[y+j-1]--;
+                        if( y+j-1 >= 0 )
+                        {
+                            t->left[y+j-1]--;
+                        }
                         t->left[y+j] -= 2;
-                        t->left[y+j+1]--;
+                        if( y+j+1 < g->h )
+                        {
+                            t->left[y+j+1]--;
+                        }
                     }
                     else
                     {
-                        t->right[y+j-1]++;
+                        if( y+j-1 >= 0 )
+                        {
+                            t->right[y+j-1]++;
+                        }
                         t->right[y+j] += 2;
-                        t->right[y+j+1]++;
+                        if( y+j+1 < g->h )
+                        {
+                            t->right[y+j+1]++;
+                        }
                     }
                     break;
                 }
@@ -268,15 +290,17 @@ void collide_player_tunnel( game *g, player *p, tunnel *t, explosions *ex )
 
     if( p->x <= t->left[p->y] )
     {
-        p->x += 2;
-        add_explosion( g, ex, p->x+1, p->y-2, 0, 0, EXPLOSION_SMALL );
-        p->life -= 50;
+        p->x += 3;
+        p->vx = 2;
+        add_explosion( g, ex, p->x+1, p->y-1, 0, 0, EXPLOSION_SMALL );
+        p->life -= 80;
     }
     else if( p->x + 5 >= t->right[p->y] )
     {
-        p->x -= 2;
-        add_explosion( g, ex, p->x+4, p->y-2, 0, 0, EXPLOSION_SMALL );
-        p->life -= 50;
+        p->x -= 3;
+        p->vx = -2;
+        add_explosion( g, ex, p->x+4, p->y-1, 0, 0, EXPLOSION_SMALL );
+        p->life -= 80;
     }
 }
 

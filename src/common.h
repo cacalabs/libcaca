@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: common.h,v 1.14 2002/12/23 15:06:13 sam Exp $
+ *   $Id: common.h,v 1.15 2002/12/23 16:21:38 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -55,10 +55,10 @@
 #   define gfx_putchar(x) addch(x)
 #   define gfx_putstr(x) addstr(x)
 #else
-#   define gfx_color(x) do{}while(0)
-#   define gfx_goto(x,y) do{}while(0)
-#   define gfx_putchar(x) do{}while(0)
-#   define gfx_putstr(x) do{}while(0)
+#   define gfx_color(x) (void)(x)
+#   define gfx_goto(x,y) do{ (void)(x); (void)(y); } while(0)
+#   define gfx_putchar(x) (void)(x)
+#   define gfx_putstr(x) (void)(x)
 #endif
 
 #define gfx_putcharTO(x,y,c) do{ gfx_goto(x,y); gfx_putchar(c); }while(0)
@@ -207,6 +207,7 @@ void update_explosions( game *g, explosions *ex );
 int init_graphics( void );
 void init_game( game *g );
 char get_key( void );
+void gfx_delay( void );
 void clear_graphics( void );
 void refresh_graphics( void );
 void end_graphics( void );
