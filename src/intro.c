@@ -61,9 +61,9 @@ void intro(void)
         y[4] = y[0];
 
         ee_set_color(EE_BLACK);
-        ee_fill_triangle(x[0], y[0], x[1], y[1], x[2], y[2], '#');
-        ee_fill_triangle(x[0], y[0], x[3], y[3], x[2], y[2], '#');
-        ee_draw_line(x[0], y[0], x[2], y[2], '#');
+        ee_fill_triangle(x[0], y[0], x[1], y[1], x[2], y[2], ' ');
+        ee_fill_triangle(x[0], y[0], x[3], y[3], x[2], y[2], ' ');
+        ee_draw_line(x[0], y[0], x[2], y[2], ' ');
         ee_set_color(EE_GREEN);
         ee_draw_thin_polyline(x, y, 4);
 
