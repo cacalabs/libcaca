@@ -632,6 +632,9 @@ int _caca_init_graphics(void)
             return -1;
         }
 
+        memset(x11_char, 0, _caca_width * _caca_height * sizeof(int));
+        memset(x11_attr, 0, _caca_width * _caca_height * sizeof(int));
+
         x11_dpy = XOpenDisplay(NULL);
         if(x11_dpy == NULL)
         {

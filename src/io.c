@@ -78,15 +78,18 @@ static int events = 0;
  *
  *  This function polls the event queue for mouse or keyboard events matching
  *  the event mask and returns the first matching event. Non-matching events
- *  are discarded. It is non-blocking and returns zero if no more events are
- *  pending in the queue. See also caca_wait_event() for a blocking version
- *  of this function.
+ *  are discarded. \c event_mask must have a non-zero value. This function is
+ *  non-blocking and returns zero if no more events are pending in the queue.
+ *  See also caca_wait_event() for a blocking version of this function.
  *
  * \param event_mask Bitmask of requested events.
  * \return The next matching event in the queue, or 0 if no event is pending.
  */
 unsigned int caca_get_event(unsigned int event_mask)
 {
+    if(!event_mask)
+        return CACA_EVENT_NONE;
+
     for( ; ; )
     {
         unsigned int event = _get_next_event();
@@ -100,14 +103,17 @@ unsigned int caca_get_event(unsigned int event_mask)
  *
  *  This function returns the first mouse or keyboard event in the queue
  *  that matches the event mask. If no event is pending, it blocks until a
- *  matching event is received. See also caca_get_event() for a non-blocking
- *  version of this function.
+ *  matching event is received. \c event_mask must have a non-zero value.
+ *  See also caca_get_event() for a non-blocking version of this function.
  *
  *  \param event_mask Bitmask of requested events.
  *  \return The next event in the queue.
  */
 unsigned int caca_wait_event(unsigned int event_mask)
 {
+    if(!event_mask)
+        return CACA_EVENT_NONE;
+
     for( ; ; )
     {
         unsigned int event = _get_next_event();
@@ -279,11 +285,11 @@ static unsigned int _lowlevel_event(void)
             case XK_Right: return event | CACA_KEY_RIGHT;
             case XK_Up:    return event | CACA_KEY_UP;
             case XK_Down:  return event | CACA_KEY_DOWN;
-            default:       return 0;
+            default:       return CACA_EVENT_NONE;
             }
         }
 
-        return 0;
+        return CACA_EVENT_NONE;
     }
     else
 #endif
@@ -292,7 +298,7 @@ static unsigned int _lowlevel_event(void)
     {
         int intkey = getch();
         if(intkey == ERR)
-            return 0;
+            return CACA_EVENT_NONE;
 
         if(intkey < 0x100)
         {
@@ -421,28 +427,37 @@ static unsigned int _lowlevel_event(void)
             return CACA_EVENT_MOUSE_MOTION | (mevent.x << 12) | mevent.y;
         }
 
+        event = CACA_EVENT_KEY_PRESS;
+
         switch(intkey)
         {
-            case KEY_UP: event = CACA_KEY_UP; break;
-            case KEY_DOWN: event = CACA_KEY_DOWN; break;
-            case KEY_LEFT: event = CACA_KEY_LEFT; break;
-            case KEY_RIGHT: event = CACA_KEY_RIGHT; break;
+            case KEY_UP: return event | CACA_KEY_UP;
+            case KEY_DOWN: return event | CACA_KEY_DOWN;
+            case KEY_LEFT: return event | CACA_KEY_LEFT;
+            case KEY_RIGHT: return event | CACA_KEY_RIGHT;
 
-            case KEY_F(1): event = CACA_KEY_F1; break;
-            case KEY_F(2): event = CACA_KEY_F2; break;
-            case KEY_F(3): event = CACA_KEY_F3; break;
-            case KEY_F(4): event = CACA_KEY_F4; break;
-            case KEY_F(5): event = CACA_KEY_F5; break;
-            case KEY_F(6): event = CACA_KEY_F6; break;
-            case KEY_F(7): event = CACA_KEY_F7; break;
-            case KEY_F(8): event = CACA_KEY_F8; break;
-            case KEY_F(9): event = CACA_KEY_F9; break;
-            case KEY_F(10): event = CACA_KEY_F10; break;
-            case KEY_F(11): event = CACA_KEY_F11; break;
-            case KEY_F(12): event = CACA_KEY_F12; break;
+            case KEY_IC: return event | CACA_KEY_INSERT;
+            case KEY_DC: return event | CACA_KEY_DELETE;
+            case KEY_HOME: return event | CACA_KEY_HOME;
+            case KEY_END: return event | CACA_KEY_END;
+            case KEY_PPAGE: return event | CACA_KEY_PAGEUP;
+            case KEY_NPAGE: return event | CACA_KEY_PAGEDOWN;
+
+            case KEY_F(1): return event | CACA_KEY_F1;
+            case KEY_F(2): return event | CACA_KEY_F2;
+            case KEY_F(3): return event | CACA_KEY_F3;
+            case KEY_F(4): return event | CACA_KEY_F4;
+            case KEY_F(5): return event | CACA_KEY_F5;
+            case KEY_F(6): return event | CACA_KEY_F6;
+            case KEY_F(7): return event | CACA_KEY_F7;
+            case KEY_F(8): return event | CACA_KEY_F8;
+            case KEY_F(9): return event | CACA_KEY_F9;
+            case KEY_F(10): return event | CACA_KEY_F10;
+            case KEY_F(11): return event | CACA_KEY_F11;
+            case KEY_F(12): return event | CACA_KEY_F12;
         }
 
-        return CACA_EVENT_KEY_PRESS | event;
+        return CACA_EVENT_NONE;
     }
     else
 #endif
@@ -452,10 +467,20 @@ static unsigned int _lowlevel_event(void)
         int intkey;
 
         if(!SLang_input_pending(0))
-            return 0;
+            return CACA_EVENT_NONE;
 
-        intkey = SLkp_getkey();
+        /* We first use SLang_getkey() to see whether Esc was pressed
+         * alone, then (if it wasn't) we unget the key and use SLkp_getkey()
+         * instead, so that escape sequences are interpreted. */
+        intkey = SLang_getkey();
 
+        if(intkey != 0x1b /* Esc */ || SLang_input_pending(0))
+        {
+            SLang_ungetkey(intkey);
+            intkey = SLkp_getkey();
+        }
+
+        /* If the key was ASCII, return it immediately */
         if(intkey < 0x100)
         {
             return CACA_EVENT_KEY_PRESS | intkey;
@@ -471,28 +496,37 @@ static unsigned int _lowlevel_event(void)
             return CACA_EVENT_MOUSE_MOTION | (x << 12) | (y << 0);
         }
 
+        event = CACA_EVENT_KEY_PRESS;
+
         switch(intkey)
         {
-            case SL_KEY_UP: event = CACA_KEY_UP; break;
-            case SL_KEY_DOWN: event = CACA_KEY_DOWN; break;
-            case SL_KEY_LEFT: event = CACA_KEY_LEFT; break;
-            case SL_KEY_RIGHT: event = CACA_KEY_RIGHT; break;
+            case SL_KEY_UP: return event | CACA_KEY_UP;
+            case SL_KEY_DOWN: return event | CACA_KEY_DOWN;
+            case SL_KEY_LEFT: return event | CACA_KEY_LEFT;
+            case SL_KEY_RIGHT: return event | CACA_KEY_RIGHT;
 
-            case SL_KEY_F(1): event = CACA_KEY_F1; break;
-            case SL_KEY_F(2): event = CACA_KEY_F2; break;
-            case SL_KEY_F(3): event = CACA_KEY_F3; break;
-            case SL_KEY_F(4): event = CACA_KEY_F4; break;
-            case SL_KEY_F(5): event = CACA_KEY_F5; break;
-            case SL_KEY_F(6): event = CACA_KEY_F6; break;
-            case SL_KEY_F(7): event = CACA_KEY_F7; break;
-            case SL_KEY_F(8): event = CACA_KEY_F8; break;
-            case SL_KEY_F(9): event = CACA_KEY_F9; break;
-            case SL_KEY_F(10): event = CACA_KEY_F10; break;
-            case SL_KEY_F(11): event = CACA_KEY_F11; break;
-            case SL_KEY_F(12): event = CACA_KEY_F12; break;
+            case SL_KEY_IC: return event | CACA_KEY_INSERT;
+            case SL_KEY_DELETE: return event | CACA_KEY_DELETE;
+            case SL_KEY_HOME: return event | CACA_KEY_HOME;
+            case SL_KEY_END: return event | CACA_KEY_END;
+            case SL_KEY_PPAGE: return event | CACA_KEY_PAGEUP;
+            case SL_KEY_NPAGE: return event | CACA_KEY_PAGEDOWN;
+
+            case SL_KEY_F(1): return event | CACA_KEY_F1;
+            case SL_KEY_F(2): return event | CACA_KEY_F2;
+            case SL_KEY_F(3): return event | CACA_KEY_F3;
+            case SL_KEY_F(4): return event | CACA_KEY_F4;
+            case SL_KEY_F(5): return event | CACA_KEY_F5;
+            case SL_KEY_F(6): return event | CACA_KEY_F6;
+            case SL_KEY_F(7): return event | CACA_KEY_F7;
+            case SL_KEY_F(8): return event | CACA_KEY_F8;
+            case SL_KEY_F(9): return event | CACA_KEY_F9;
+            case SL_KEY_F(10): return event | CACA_KEY_F10;
+            case SL_KEY_F(11): return event | CACA_KEY_F11;
+            case SL_KEY_F(12): return event | CACA_KEY_F12;
         }
 
-        return CACA_EVENT_KEY_PRESS | event;
+        return CACA_EVENT_NONE;
     }
     else
 #endif
@@ -500,7 +534,7 @@ static unsigned int _lowlevel_event(void)
     if(_caca_driver == CACA_DRIVER_CONIO)
     {
         if(!_conio_kbhit())
-            return 0;
+            return CACA_EVENT_NONE;
 
         event = getch();
         _push_event(CACA_EVENT_KEY_RELEASE | event);
@@ -512,7 +546,7 @@ static unsigned int _lowlevel_event(void)
         /* Dummy */
     }
 
-    return 0;
+    return CACA_EVENT_NONE;
 }
 
 static void _push_event(unsigned int event)
@@ -529,7 +563,7 @@ static unsigned int _pop_event(void)
     unsigned int event;
 
     if(events == 0)
-        return 0;
+        return CACA_EVENT_NONE;
 
     event = eventbuf[0];
     for(i = 1; i < events; i++)

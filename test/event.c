@@ -38,18 +38,22 @@ int main(int argc, char **argv)
     if(caca_init())
         return 1;
 
+    h = caca_get_height() - 1;
+
     caca_set_color(CACA_COLOR_WHITE, CACA_COLOR_BLUE);
     caca_draw_line(0, 0, caca_get_width() - 1, 0, ' ');
 
-    caca_refresh();
+    caca_draw_line(0, h, caca_get_width() - 1, h, ' ');
+    caca_putstr(0, h, "type \"quit\" to exit");
 
-    h = caca_get_height();
+    caca_refresh();
 
     events = malloc(h * sizeof(int));
     memset(events, 0, h * sizeof(int));
 
-    for(quit = 0; !quit; )
+    for(quit = 0; quit < 4; )
     {
+        static char const * quit_string[] = { "", "q", "qu", "qui", "quit" };
         unsigned int event = caca_wait_event(CACA_EVENT_ANY);
 
         if(!event)
@@ -57,9 +61,18 @@ int main(int argc, char **argv)
 
         do
         {
-            /* q quits */
-            if(event == (CACA_EVENT_KEY_PRESS | 'q'))
-                quit = 1;
+            /* "quit" quits */
+            if(event & CACA_EVENT_KEY_PRESS)
+            {
+                int key = event & ~CACA_EVENT_KEY_PRESS;
+                if((key == 'q' && quit == 0) || (key == 'u' && quit == 1)
+                    || (key == 'i' && quit == 2) || (key == 't' && quit == 3))
+                    quit++;
+                else if(key == 'q')
+                    quit = 1;
+                else
+                    quit = 0;
+            }
 
             memmove(events + 1, events, (h - 1) * sizeof(int));
             events[0] = event;
@@ -74,6 +87,9 @@ int main(int argc, char **argv)
         caca_set_color(CACA_COLOR_WHITE, CACA_COLOR_BLUE);
         caca_draw_line(0, 0, caca_get_width() - 1, 0, ' ');
         print_event(0, 0, events[0]);
+
+        caca_draw_line(0, h, caca_get_width() - 1, h, ' ');
+        caca_printf(0, h, "type \"quit\" to exit: %s", quit_string[quit]);
 
         /* Print previous events */
         caca_set_color(CACA_COLOR_WHITE, CACA_COLOR_BLACK);

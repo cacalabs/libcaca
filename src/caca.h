@@ -191,10 +191,28 @@ enum caca_event
  */
 enum caca_key
 {
+    CACA_KEY_UNKNOWN = 0, /**< Unknown key. */
+
+    /* The following keys have ASCII equivalents */
+    CACA_KEY_BACKSPACE = 8, /**< The backspace key. */
+    CACA_KEY_TAB = 9, /**< The tabulation key. */
+    CACA_KEY_RETURN = 13, /**< The return key. */
+    CACA_KEY_PAUSE = 19, /**< The pause key. */
+    CACA_KEY_ESCAPE = 27, /**< The escape key. */
+    CACA_KEY_DELETE = 127, /**< The delete key. */
+
+    /* The following keys do not have ASCII equivalents but have been
+     * chosen to match the SDL equivalents */
     CACA_KEY_UP = 273, /**< The up arrow key. */
     CACA_KEY_DOWN = 274, /**< The down arrow key. */
     CACA_KEY_LEFT = 275, /**< The left arrow key. */
     CACA_KEY_RIGHT = 276, /**< The right arrow key. */
+
+    CACA_KEY_INSERT = 277, /**< The insert key. */
+    CACA_KEY_HOME = 278, /**< The home key. */
+    CACA_KEY_END = 279, /**< The end key. */
+    CACA_KEY_PAGEUP = 280, /**< The page up key. */
+    CACA_KEY_PAGEDOWN = 281, /**< The page down key. */
 
     CACA_KEY_F1 = 282, /**< The F1 key. */
     CACA_KEY_F2 = 283, /**< The F2 key. */
