@@ -25,9 +25,9 @@ void draw_starfield( game *g, starfield *s )
     {
         if( s->x[i] >= 0 )
         {
-            GFX_COLOR( s->c[i] );
-            GFX_GOTO( s->x[i], s->y[i] );
-            GFX_WRITE( s->ch[i] );
+            gfx_color( s->c[i] );
+            gfx_goto( s->x[i], s->y[i] );
+            gfx_putchar( s->ch[i] );
         }
     }
 }

@@ -1,0 +1,15 @@
+Source: ttyvaders
+Section: games
+Priority: optional
+Maintainer: Samuel Hocevar <sam@zoy.org>
+Build-Depends: debhelper (>=2.2.0), slang1-dev
+Standards-Version: 3.5.6
+
+Package: ttyvaders
+Section: games
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: A vertical shoot 'em up with text-mode graphics.
+ TTYvaders is a vertical shoot 'em up for the console or the terminal.
+ .
+ It rules.

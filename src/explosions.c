@@ -4,7 +4,7 @@
 #include "common.h"
 
 static void draw_small_explosion( int x, int y, int frame );
-static void draw_big_explosion( int x, int y, int frame );
+static void draw_medium_explosion( int x, int y, int frame );
 
 void init_explosions( game *g, explosions *ex )
 {
@@ -12,12 +12,7 @@ void init_explosions( game *g, explosions *ex )
 
     for( i = 0; i < EXPLOSIONS; i++ )
     {
-        ex->n[i] = 0;
-        ex->x[i] = -1;
-        ex->y[i] = -1;
-        ex->vx[i] = -1;
-        ex->vy[i] = -1;
-        ex->type[i] = 0;
+        ex->type[i] = EXPLOSION_NONE;
     }
 }
 
@@ -27,19 +22,22 @@ void add_explosion( game *g, explosions *ex, int x, int y, int vx, int vy, int t
 
     for( i = 0; i < EXPLOSIONS; i++ )
     {
-        if( ex->n[i] <= 0 )
+        if( ex->type[i] == EXPLOSION_NONE )
         {
+            ex->type[i] = type;
             ex->x[i] = x;
             ex->y[i] = y;
             ex->vx[i] = vx;
             ex->vy[i] = vy;
             switch( type )
             {
-                case 1: ex->n[i] = 13; break;
-                case 2: ex->n[i] = 30; break;
-                case 0: default: ex->n[i] = 7; break;
+                case EXPLOSION_MEDIUM:
+                    ex->n[i] = 11;
+                    break;
+                case EXPLOSION_SMALL:
+                    ex->n[i] = 7;
+                    break;
             }
-            ex->type[i] = type;
             break;
         }
     }
@@ -51,47 +49,42 @@ void draw_explosions( game *g, explosions *ex )
 
     for( i = 0; i < EXPLOSIONS; i++ )
     {
-        if( ex->n[i] <= 0 )
-        {
-            continue;
-        }
-
 #if 0
-        GFX_COLOR( GREEN );
-        GFX_GOTO( ex->x[i] + 3, ex->y[i] );
+        gfx_color( GREEN );
+        gfx_goto( ex->x[i] + 3, ex->y[i] );
         switch( GET_RAND(0,3) )
         {
         case 0:
-            GFX_WRITE( 'p' );
-            GFX_WRITE( 'i' );
-            GFX_WRITE( 'f' );
+            gfx_putchar( 'p' );
+            gfx_putchar( 'i' );
+            gfx_putchar( 'f' );
             break;
         case 1:
-            GFX_WRITE( 'p' );
-            GFX_WRITE( 'a' );
-            GFX_WRITE( 'f' );
+            gfx_putchar( 'p' );
+            gfx_putchar( 'a' );
+            gfx_putchar( 'f' );
             break;
         case 2:
-            GFX_WRITE( 'p' );
-            GFX_WRITE( 'o' );
-            GFX_WRITE( 'u' );
-            GFX_WRITE( 'f' );
+            gfx_putchar( 'p' );
+            gfx_putchar( 'o' );
+            gfx_putchar( 'u' );
+            gfx_putchar( 'f' );
             break;
         }
-        GFX_WRITE( '!' );
+        gfx_putchar( '!' );
 #endif
 
         switch( ex->type[i] )
         {
-            case 1:
-                draw_big_explosion( ex->x[i], ex->y[i], ex->n[i] );
+            case EXPLOSION_MEDIUM:
+                draw_medium_explosion( ex->x[i], ex->y[i], ex->n[i] );
                 break;
-            case 0:
-            default:
+            case EXPLOSION_SMALL:
                 draw_small_explosion( ex->x[i], ex->y[i], ex->n[i] );
                 break;
+            case EXPLOSION_NONE:
+                break;
         }
-
     }
 }
 
@@ -101,11 +94,20 @@ void update_explosions( game *g, explosions *ex )
 
     for( i = 0; i < EXPLOSIONS; i++ )
     {
-        if( ex->n[i] > 0 )
+        switch( ex->type[i] )
         {
-            ex->x[i] += ex->vx[i];
-            ex->y[i] += ex->vy[i];
-            ex->n[i]--;
+            case EXPLOSION_MEDIUM:
+            case EXPLOSION_SMALL:
+                ex->x[i] += ex->vx[i];
+                ex->y[i] += ex->vy[i];
+                ex->n[i]--;
+                if( ex->n[i] < 0 )
+                {
+                    ex->type[i] = EXPLOSION_NONE;
+                }
+                break;
+            case EXPLOSION_NONE:
+                break;
         }
     }
 }
@@ -114,191 +116,117 @@ static void draw_small_explosion( int x, int y, int frame )
 {
     switch( frame )
     {
-    default:
     case 6:
-        GFX_COLOR( YELLOW );
-        GFX_GOTO( x, y );
-        GFX_WRITE( '+' );
+        gfx_color( YELLOW );
+        gfx_goto( x, y );
+        gfx_putchar( '+' );
         break;
     case 5:
-        GFX_COLOR( YELLOW );
-        GFX_GOTO( x, y );
-        GFX_WRITE( 'o' );
+        gfx_color( YELLOW );
+        gfx_goto( x, y );
+        gfx_putchar( 'o' );
         break;
     case 4:
-        GFX_COLOR( YELLOW );
-        GFX_GOTO( x, y-1 );
-        GFX_WRITE( '_' );
-        GFX_GOTO( x-1, y );
-        GFX_WRITE( ')' );
-        GFX_WRITE( '_' );
-        GFX_WRITE( '(' );
+        gfx_color( YELLOW );
+        gfx_goto( x, y-1 );
+        gfx_putchar( '_' );
+        gfx_goto( x-1, y );
+        gfx_putstr( ")_(" );
         break;
     case 3:
-        GFX_COLOR( YELLOW );
-        GFX_GOTO( x-1, y-1 );
-        GFX_WRITE( '.' );
-        GFX_WRITE( '_' );
-        GFX_WRITE( ',' );
-        GFX_GOTO( x-1, y );
-        GFX_WRITE( ')' );
-        GFX_WRITE( '_' );
-        GFX_WRITE( '(' );
-        GFX_GOTO( x-1, y+1 );
-        GFX_WRITE( '\'' );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( '`' );
+        gfx_color( YELLOW );
+        gfx_goto( x-1, y-1 );
+        gfx_putstr( "._," );
+        gfx_goto( x-1, y );
+        gfx_putstr( ")_(" );
+        gfx_goto( x-1, y+1 );
+        gfx_putstr( "\' `" );
         break;
     case 2:
-        GFX_COLOR( YELLOW );
-        GFX_GOTO( x-1, y-1 );
-        GFX_WRITE( '.' );
-        GFX_WRITE( 'v' );
-        GFX_WRITE( ',' );
-        GFX_GOTO( x-1, y );
-        GFX_WRITE( '>' );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( '<' );
-        GFX_GOTO( x-1, y+1 );
-        GFX_WRITE( '\'' );
-        GFX_WRITE( '^' );
-        GFX_WRITE( '`' );
+        gfx_color( YELLOW );
+        gfx_goto( x-1, y-1 );
+        gfx_putstr( ".v," );
+        gfx_goto( x-1, y );
+        gfx_putstr( "> <" );
+        gfx_goto( x-1, y+1 );
+        gfx_putstr( "\'^`" );
         break;
     case 1:
-        GFX_COLOR( WHITE );
-        GFX_GOTO( x-1, y-1 );
-        GFX_WRITE( '.' );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( ',' );
-        GFX_GOTO( x-1, y );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( ' ' );
-        GFX_GOTO( x-1, y+1 );
-        GFX_WRITE( '\'' );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( '`' );
+        gfx_color( WHITE );
+        gfx_goto( x-1, y-1 );
+        gfx_putstr( ". ," );
+        gfx_goto( x-1, y );
+        gfx_putstr( "   " );
+        gfx_goto( x-1, y+1 );
+        gfx_putstr( "\' `" );
         break;
     }
 }
 
-static void draw_big_explosion( int x, int y, int frame )
+static void draw_medium_explosion( int x, int y, int frame )
 {
-    GFX_COLOR( YELLOW );
+    gfx_color( YELLOW );
 
     switch( frame )
     {
-    default:
-    case 12:
-        GFX_GOTO( x, y );
-        GFX_WRITE( '+' );
-        break;
-    case 11:
-        GFX_GOTO( x, y );
-        GFX_WRITE( 'o' );
-        break;
     case 10:
-        GFX_GOTO( x, y-1 );
-        GFX_WRITE( '_' );
-        GFX_GOTO( x-1, y );
-        GFX_WRITE( ')' );
-        GFX_WRITE( '_' );
-        GFX_WRITE( '(' );
+        gfx_goto( x, y );
+        gfx_putchar( '+' );
         break;
     case 9:
-        GFX_GOTO( x-1, y-1 );
-        GFX_WRITE( '.' );
-        GFX_WRITE( '_' );
-        GFX_WRITE( ',' );
-        GFX_GOTO( x-1, y );
-        GFX_WRITE( ')' );
-        GFX_WRITE( '_' );
-        GFX_WRITE( '(' );
-        GFX_GOTO( x-1, y+1 );
-        GFX_WRITE( '\'' );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( '`' );
+        gfx_goto( x, y );
+        gfx_putchar( 'o' );
         break;
     case 8:
-        GFX_GOTO( x-1, y-1 );
-        GFX_WRITE( '.' );
-        GFX_WRITE( 'v' );
-        GFX_WRITE( ',' );
-        GFX_GOTO( x-1, y );
-        GFX_WRITE( '>' );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( '<' );
-        GFX_GOTO( x-1, y+1 );
-        GFX_WRITE( '\'' );
-        GFX_WRITE( '^' );
-        GFX_WRITE( '`' );
+        gfx_goto( x, y-1 );
+        gfx_putchar( '_' );
+        gfx_goto( x-1, y );
+        gfx_putstr( ")_(" );
+        break;
+    case 7:
+        gfx_goto( x-1, y-1 );
+        gfx_putstr( "._," );
+        gfx_goto( x-1, y );
+        gfx_putstr( ")_(" );
+        gfx_goto( x-1, y+1 );
+        gfx_putstr( "\' `" );
         break;
     case 6:
-        GFX_COLOR( RED );
-    case 7:
+        gfx_goto( x-1, y-1 );
+        gfx_putstr( ".v," );
+        gfx_goto( x-1, y );
+        gfx_putstr( "> <" );
+        gfx_goto( x-1, y+1 );
+        gfx_putstr( "\'^`" );
+        break;
     case 5:
-        GFX_GOTO( x-2, y-1 );
-        GFX_WRITE( '_' );
-        GFX_WRITE( '\\' );
-        GFX_WRITE( '~' );
-        GFX_WRITE( '/' );
-        GFX_WRITE( '_' );
-        GFX_GOTO( x-2, y );
-        GFX_WRITE( '>' );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( '<' );
-        GFX_GOTO( x-2, y+1 );
-        GFX_WRITE( '~' );
-        GFX_WRITE( '/' );
-        GFX_WRITE( '_' );
-        GFX_WRITE( '\\' );
-        GFX_WRITE( '~' );
+        gfx_color( RED );
+    case 4:
+        gfx_goto( x-2, y-1 );
+        gfx_putstr( "_\\~/_" );
+        gfx_goto( x-2, y );
+        gfx_putstr( ">   <" );
+        gfx_goto( x-2, y+1 );
+        gfx_putstr( "~/_\\~" );
         break;
     case 3:
-        GFX_COLOR( RED );
-    case 4:
+        gfx_color( RED );
     case 2:
-        GFX_GOTO( x-2, y-1 );
-        GFX_WRITE( '_' );
-        GFX_WRITE( '\\' );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( '/' );
-        GFX_WRITE( '_' );
-        GFX_GOTO( x-2, y );
-        GFX_WRITE( '_' );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( '_' );
-        GFX_GOTO( x-2, y+1 );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( '/' );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( '\\' );
-        GFX_WRITE( ' ' );
+        gfx_goto( x-2, y-1 );
+        gfx_putstr( "_\\ /_" );
+        gfx_goto( x-2, y );
+        gfx_putstr( "_   _" );
+        gfx_goto( x-2, y+1 );
+        gfx_putstr( " / \\ " );
         break;
     case 1:
-        GFX_COLOR( WHITE );
-        GFX_GOTO( x-2, y-1 );
-        GFX_WRITE( '.' );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( '\'' );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( ',' );
-        GFX_GOTO( x-2, y );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( ' ' );
-        GFX_GOTO( x-2, y+1 );
-        GFX_WRITE( '\'' );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( '.' );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( '`' );
+        gfx_color( WHITE );
+        gfx_goto( x-2, y-1 );
+        gfx_putstr( ". \' ," );
+        gfx_goto( x-2, y );
+        gfx_putstr( "     " );
+        gfx_goto( x-2, y+1 );
+        gfx_putstr( "\' . `" );
         break;
     }
 }

@@ -1,12 +1,12 @@
 dnl Autoconf settings for ttyvaders
 
-AC_INIT(ttyvaders,0.0-cvs)
+AC_INIT(ttyvaders,0.0cvs)
 
 AC_PREREQ(2.50)
 AC_CONFIG_SRCDIR(src/main.c)
 AC_CANONICAL_SYSTEM
 
-AM_INIT_AUTOMAKE(ttyvaders,0.0-cvs)
+AM_INIT_AUTOMAKE(ttyvaders,0.0cvs)
 AM_CONFIG_HEADER(config.h)
 
 AM_PROG_CC_C_O

@@ -1,31 +1,27 @@
 
 #define STARS 50
 #define WEAPONS 50
-#define ROCKS 10
-#define ALIENS 10
+#define BONUS 30
+#define ALIENS 30
 #define EXPLOSIONS 20
 
 #ifdef USE_SLANG
 #   include <slang.h>
-#   define GFX_COLOR(x) SLsmg_set_color(x)
-#   define GFX_GOTO(x,y) SLsmg_gotorc(y,x)
-#   define GFX_WRITE(x) SLsmg_write_char(x)
+#   define gfx_color(x) SLsmg_set_color(x)
+#   define gfx_goto(x,y) SLsmg_gotorc(y,x)
+#   define gfx_putchar(x) SLsmg_write_char(x)
+#   define gfx_putstr(x) SLsmg_write_string(x)
 #else
 #   include <curses.h>
-#   define GFX_COLOR(x) attrset(COLOR_PAIR(x))
-#   define GFX_GOTO(x,y) move(y,x)
-#   define GFX_WRITE(x) addch(x)
+#   define gfx_color(x) attrset(COLOR_PAIR(x))
+#   define gfx_goto(x,y) move(y,x)
+#   define gfx_putchar(x) addch(x)
+#   define gfx_putstr(x) addstr(x)
 #endif
 
-#define GFX_WRITETO(x,y,c) do{ GFX_GOTO(x,y); GFX_WRITE(c); }while(0)
+#define gfx_putcharTO(x,y,c) do{ gfx_goto(x,y); gfx_putchar(c); }while(0)
 
 #define GET_RAND(p,q) ((p)+(int)((1.0*((q)-(p)))*rand()/(RAND_MAX+1.0)))
-
-typedef struct
-{
-    int w, h;
-
-} game;
 
 typedef struct
 {
@@ -45,24 +41,38 @@ typedef struct
 
 typedef struct
 {
+    enum { EXPLOSION_NONE, EXPLOSION_SMALL, EXPLOSION_MEDIUM } type[EXPLOSIONS];
     int x[EXPLOSIONS];
     int y[EXPLOSIONS];
     int vx[EXPLOSIONS];
     int vy[EXPLOSIONS];
-    int type[EXPLOSIONS];
     int n[EXPLOSIONS];
 
 } explosions;
 
 typedef struct
 {
+    enum { WEAPON_NONE, WEAPON_LASER, WEAPON_SEEKER, WEAPON_NUKE } type[WEAPONS];
     int x[WEAPONS];
     int y[WEAPONS];
-    int v[WEAPONS];
+    int x2[WEAPONS];
+    int y2[WEAPONS];
+    int x3[WEAPONS];
+    int y3[WEAPONS];
+    int vx[WEAPONS];
+    int vy[WEAPONS];
     int n[WEAPONS];
-    int type[WEAPONS];
 
 } weapons;
+
+typedef struct
+{
+    enum { BONUS_NONE, BONUS_LIFE, BONUS_GREEN } type[BONUS];
+    int x[BONUS];
+    int y[BONUS];
+    int n[BONUS];
+
+} bonus;
 
 typedef struct
 {
@@ -74,12 +84,27 @@ typedef struct
 
 typedef struct
 {
+    enum { ALIEN_NONE, ALIEN_POOLP, ALIEN_BOOL, ALIEN_BRAH } type[ALIENS];
     int x[ALIENS];
     int y[ALIENS];
     int life[ALIENS];
     int img[ALIENS];
 
 } aliens;
+
+typedef struct
+{
+    int w, h;
+
+    starfield *sf;
+    weapons *wp;
+    explosions *ex;
+    tunnel *t;
+    player *p;
+    aliens *al;
+    bonus *bo;
+
+} game;
 
 #define BLACK 1
 #define GREEN 2
@@ -99,7 +124,7 @@ void collide_player_tunnel( game *g, player *p, tunnel *t, explosions *ex );
 void init_aliens( game *g, aliens *al );
 void draw_aliens( game *g, aliens *al );
 void update_aliens( game *g, aliens *al );
-void add_alien( game *g, aliens *al, int x, int y );
+void add_alien( game *g, aliens *al, int x, int y, int type );
 
 int init_graphics( void );
 void init_game( game *g );
@@ -116,7 +141,12 @@ void update_player( game *g, player *p );
 void init_weapons( game *g, weapons *wp );
 void draw_weapons( game *g, weapons *wp );
 void update_weapons( game *g, weapons *wp );
-void add_weapon( game *g, weapons *wp, int x, int y, int type );
+void add_weapon( game *g, weapons *wp, int x, int y, int vx, int vy, int type );
+
+void init_bonus( game *g, bonus *bo );
+void draw_bonus( game *g, bonus *bo );
+void update_bonus( game *g, bonus *bo );
+void add_bonus( game *g, bonus *bo, int x, int y, int type );
 
 void init_starfield( game *g, starfield *s );
 void draw_starfield( game *g, starfield *s );

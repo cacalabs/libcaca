@@ -9,7 +9,7 @@ player * create_player( game *g )
     player *p = malloc(sizeof(player));
 
     p->x = g->w / 2;
-    p->y = g->h - 3;
+    p->y = g->h - 2;
     p->dir = 0;
     p->weapon = 0;
     p->nuke = 0;
@@ -24,25 +24,18 @@ void free_player( player *p )
 
 void draw_player( game *g, player *p )
 {
-    GFX_GOTO( p->x + 2, p->y - 2 );
-    GFX_COLOR( GREEN );
-    GFX_WRITE( '/' );
-    GFX_WRITE( '\\' );
-    GFX_GOTO( p->x + 1, p->y - 1 );
-    GFX_WRITE( '(' );
-    GFX_COLOR( YELLOW );
-    GFX_WRITE( '(' );
-    GFX_WRITE( ')' );
-    GFX_COLOR( GREEN );
-    GFX_WRITE( ')' );
-    GFX_GOTO( p->x, p->y );
-    GFX_COLOR( GREEN );
-    GFX_WRITE( 'I' );
-    GFX_WRITE( '<' );
-    GFX_WRITE( '_' );
-    GFX_WRITE( '_' );
-    GFX_WRITE( '>' );
-    GFX_WRITE( 'I' );
+    gfx_goto( p->x + 2, p->y - 2 );
+    gfx_color( GREEN );
+    gfx_putstr( "/\\" );
+    gfx_goto( p->x + 1, p->y - 1 );
+    gfx_putchar( '(' );
+    gfx_color( YELLOW );
+    gfx_putstr( "()" );
+    gfx_color( GREEN );
+    gfx_putchar( ')' );
+    gfx_goto( p->x, p->y );
+    gfx_color( GREEN );
+    gfx_putstr( "I<__>I" );
 }
 
 void update_player( game *g, player *p )

@@ -3,7 +3,9 @@
 
 #include "common.h"
 
-static void draw_alien( game *g, int x, int y, int type );
+static void draw_alien_poolp( game *g, int x, int y, int frame );
+static void draw_alien_bool( game *g, int x, int y, int frame );
+static void draw_alien_brah( game *g, int x, int y, int frame );
 
 void init_aliens( game *g, aliens *al )
 {
@@ -11,10 +13,7 @@ void init_aliens( game *g, aliens *al )
 
     for( i = 0; i < ALIENS; i++ )
     {
-        al->x[i] = -1;
-        al->y[i] = -1;
-        al->img[i] = 0;
-        al->life[i] = 0;
+        al->type[i] = ALIEN_NONE;
     }
 }
 
@@ -24,9 +23,19 @@ void draw_aliens( game *g, aliens *al )
 
     for( i = 0; i < ALIENS; i++ )
     {
-        if( al->y[i] >= 0 )
+        switch( al->type[i] )
         {
-            draw_alien( g, al->x[i], al->y[i], al->img[i] % 2 );
+            case ALIEN_BRAH:
+                draw_alien_brah( g, al->x[i], al->y[i], al->img[i] % 8 );
+                break;
+            case ALIEN_POOLP:
+                draw_alien_poolp( g, al->x[i], al->y[i], al->img[i] % 2 );
+                break;
+            case ALIEN_BOOL:
+                draw_alien_bool( g, al->x[i], al->y[i], al->img[i] % 5 );
+                break;
+            case ALIEN_NONE:
+                break;
         }
     }
 }
@@ -37,140 +46,183 @@ void update_aliens( game *g, aliens *al )
 
     for( i = 0; i < ALIENS; i++ )
     {
-        if( al->y[i] < 0 )
+        switch( al->type[i] )
         {
-            //al->x[i] = g->w;
-        }
-        else
-        {
-            al->x[i] = ((al->x[i] + 5) % (g->w + 3)) - 3;
-            al->y[i] = al->y[i] + (rand() % 8) / 7 - (rand() % 8) / 7;
-            al->img[i] = al->img[i] + rand() % 4;
+            case ALIEN_POOLP:
+            case ALIEN_BOOL:
+            case ALIEN_BRAH:
+                al->x[i] = ((al->x[i] + 5) % (g->w + 3)) - 3;
+                al->y[i] = al->y[i] + (rand() % 8) / 7 - (rand() % 8) / 7;
+                al->img[i] = al->img[i] + 1;
 
-            /* Check collisions */
-            if( al->y[i] < 0 ) al->y[i] = 0;
-            if( al->y[i] > g->w - 1 ) al->y[i] = g->w - 1;
+                /* Check bounds */
+                if( al->y[i] < 0 ) al->y[i] = 0;
+                if( al->y[i] > g->w - 1 ) al->y[i] = g->w - 1;
+                break;
+            case ALIEN_NONE:
+                break;
         }
     }
 }
 
-void add_alien( game *g, aliens *al, int x, int y )
+void add_alien( game *g, aliens *al, int x, int y, int type )
 {
     int i;
 
     for( i = 0; i < ALIENS; i++ )
     {
-        if( al->y[i] < 0 )
+        if( al->type[i] == ALIEN_NONE )
         {
+            al->type[i] = type;
             al->x[i] = x;
             al->y[i] = y;
             al->img[i] = 0;
-            al->life[i] = 2;
+
+            switch( al->type[i] )
+            {
+                case ALIEN_POOLP:
+                    al->life[i] = 2;
+                    break;
+                case ALIEN_BOOL:
+                    al->life[i] = 2;
+                    break;
+                case ALIEN_BRAH:
+                    al->life[i] = 2;
+                    break;
+                case ALIEN_NONE:
+                    break;
+            }
+
             break;
         }
     }
 }
 
-static void draw_alien( game *g, int x, int y, int type )
+static void draw_alien_poolp( game *g, int x, int y, int frame )
 {
-    switch( type )
+    switch( frame )
     {
     case 0:
-        GFX_COLOR( MAGENTA );
-        GFX_GOTO( x, y );
-        GFX_WRITE( ',' );
-        GFX_WRITE( '-' );
-        GFX_WRITE( '-' );
-        GFX_WRITE( '-' );
-        GFX_WRITE( '.' );
-        GFX_GOTO( x, y+1 );
-        GFX_WRITE( '\\' );
-        GFX_COLOR( WHITE );
-        GFX_WRITE( 'o' );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( 'O' );
-        GFX_COLOR( MAGENTA );
-        GFX_WRITE( '/' );
-        GFX_GOTO( x, y+2 );
-        GFX_WRITE( '^' );
-        GFX_WRITE( '^' );
-        GFX_WRITE( '^' );
-        GFX_WRITE( '^' );
-        GFX_WRITE( '^' );
+        gfx_color( MAGENTA );
+        gfx_goto( x, y );
+        gfx_putstr( ",---." );
+        gfx_goto( x, y+1 );
+        gfx_putchar( '\\' );
+        gfx_color( WHITE );
+        gfx_putstr( "o O" );
+        gfx_color( MAGENTA );
+        gfx_putchar( '/' );
+        gfx_goto( x, y+2 );
+        gfx_putstr( "^^^^^" );
         break;
     case 1:
-        GFX_COLOR( MAGENTA );
-        GFX_GOTO( x, y );
-        GFX_WRITE( ',' );
-        GFX_WRITE( '-' );
-        GFX_WRITE( '-' );
-        GFX_WRITE( '-' );
-        GFX_WRITE( '.' );
-        GFX_GOTO( x, y+1 );
-        GFX_WRITE( '\\' );
-        GFX_COLOR( WHITE );
-        GFX_WRITE( 'O' );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( 'o' );
-        GFX_COLOR( MAGENTA );
-        GFX_WRITE( '/' );
-        GFX_GOTO( x, y+2 );
-        GFX_WRITE( '^' );
-        GFX_WRITE( '^' );
-        GFX_WRITE( '^' );
-        GFX_WRITE( '^' );
-        GFX_WRITE( '^' );
+        gfx_color( MAGENTA );
+        gfx_goto( x, y );
+        gfx_putstr( ",---." );
+        gfx_goto( x, y+1 );
+        gfx_putchar( '\\' );
+        gfx_color( WHITE );
+        gfx_putstr( "O o" );
+        gfx_color( MAGENTA );
+        gfx_putchar( '/' );
+        gfx_goto( x, y+2 );
+        gfx_putstr( "^^^^^" );
         break;
     }
 }
 
-#if 0
-void draw_rock( int x, int y, int type )
+static void draw_alien_bool( game *g, int x, int y, int frame )
 {
-    switch( type )
+    gfx_color( GREEN );
+    gfx_goto( x+1, y );
+    gfx_putstr( ",---." );
+
+    gfx_goto( x, y+1 );
+    gfx_putchar( '(' );
+
+    gfx_color( WHITE );
+    switch( frame )
     {
-    case 0:
-        GFX_COLOR( RED );
-        GFX_GOTO( x, y );
-        GFX_WRITE( '/' );
-        GFX_WRITE( '\\' );
-        GFX_WRITE( '_' );
-        GFX_WRITE( '/' );
-        GFX_WRITE( '\\' );
-        GFX_GOTO( x, y+1 );
-        GFX_WRITE( '>' );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( '/' );
-        GFX_GOTO( x, y+2 );
-        GFX_WRITE( '\\' );
-        GFX_WRITE( '/' );
-        GFX_WRITE( '\\' );
-        GFX_WRITE( '_' );
-        GFX_WRITE( '>' );
+    case 4:
+        gfx_putstr( "##( )" );
+        break;
+    case 3:
+        gfx_putstr( ")##( " );
+        break;
+    case 2:
+        gfx_putstr( " )##(" );
         break;
     case 1:
-        GFX_COLOR( RED );
-        GFX_GOTO( x, y );
-        GFX_WRITE( '_' );
-        GFX_WRITE( '/' );
-        GFX_WRITE( '\\' );
-        GFX_WRITE( '/' );
-        GFX_WRITE( '>' );
-        GFX_GOTO( x, y+1 );
-        GFX_WRITE( '\\' );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( ' ' );
-        GFX_WRITE( '\\' );
-        GFX_GOTO( x, y+2 );
-        GFX_WRITE( '<' );
-        GFX_WRITE( '_' );
-        GFX_WRITE( '/' );
-        GFX_WRITE( '\\' );
-        GFX_WRITE( '/' );
+        gfx_putstr( "( )##" );
+        break;
+    case 0:
+        gfx_putstr( "#( )#" );
         break;
     }
+
+    gfx_color( GREEN );
+    gfx_goto( x+6, y+1 );
+    gfx_putchar( ')' );
+
+    gfx_goto( x+1, y+2 );
+    gfx_putstr( "`---'" );
 }
-#endif
+
+static void draw_alien_brah( game *g, int x, int y, int frame )
+{
+    gfx_color( YELLOW );
+
+    switch( frame )
+    {
+    case 0:
+        gfx_goto( x, y );
+        gfx_putchar( '.' );
+        gfx_goto( x+6, y );
+        gfx_putchar( ',' );
+        gfx_goto( x+1, y+1 );
+        gfx_putstr( "\\ X /" );
+        break;
+    case 7:
+    case 1:
+        gfx_goto( x-1, y );
+        gfx_putchar( '.' );
+        gfx_goto( x+7, y );
+        gfx_putchar( ',' );
+        gfx_goto( x, y+1 );
+        gfx_putstr( "`- X -'" );
+        break;
+    case 6:
+    case 2:
+        gfx_goto( x-1, y+1 );
+        gfx_putstr( "`-- X --'" );
+        break;
+    case 5:
+    case 3:
+        gfx_goto( x, y+1 );
+        gfx_putstr( ",- X -." );
+        gfx_goto( x-1, y+2 );
+        gfx_putchar( '\'' );
+        gfx_goto( x+7, y+2 );
+        gfx_putchar( '`' );
+        break;
+    case 4:
+        gfx_goto( x+1, y+1 );
+        gfx_putstr( ", X ." );
+        gfx_goto( x, y+2 );
+        gfx_putchar( '/' );
+        gfx_goto( x+6, y+2 );
+        gfx_putchar( '\\' );
+        break;
+    }
+
+    gfx_goto( x+2, y+2 );
+    gfx_putstr( "`V'" );
+
+    gfx_color( WHITE );
+    gfx_goto( x+2, y+1 );
+    gfx_putchar( 'o' );
+    gfx_goto( x+4, y+1 );
+    gfx_putchar( 'o' );
+}
+
+

@@ -108,7 +108,7 @@ void clear_graphics( void )
 
 void refresh_graphics( void )
 {
-    GFX_GOTO( 0, 0 );
+    gfx_goto( 0, 0 );
 #ifdef USE_SLANG
     SLsmg_refresh();
 #else

@@ -134,9 +134,11 @@ static void draw_wall( game *g, int *wall )
 {
     int i;
 
+    gfx_color( RED );
+
     for( i = 0; i < g->h ; i++ )
     {
-        char c;
+        char *str;
 
         if( wall[i] < 0 || wall[i] >= g->w )
         {
@@ -145,27 +147,22 @@ static void draw_wall( game *g, int *wall )
 
         if( wall[i] > wall[i+1] )
         {
-            c = wall[i] > wall[i-1] ? '>' : '/';
+            str = wall[i] > wall[i-1] ? ">##>" : "/##/";
         }
         else
         {
-            c = wall[i] > wall[i-1] ? '\\' : '<';
+            str = wall[i] > wall[i-1] ? "\\##\\" : "<##<";
         }
 
-        GFX_COLOR( RED );
         if( wall[i] == wall[i+1] + 2 )
         {
-            GFX_GOTO( wall[i] - 1, i );
-            GFX_WRITE( '_' );
+            gfx_goto( wall[i] - 1, i );
+            gfx_putchar( '_' );
         }
-        else
-        {
-            GFX_GOTO( wall[i], i );
-        }
-        GFX_WRITE( c );
-        GFX_WRITE( '#' );
-        GFX_WRITE( c );
-        if( wall[i] == wall[i+1] - 2 ) GFX_WRITE( '_' );
+
+        gfx_goto( wall[i], i );
+        gfx_putstr( str );
+        if( wall[i] == wall[i+1] - 2 ) gfx_putchar( '_' );
     }
 }
 

@@ -2,10 +2,10 @@
 # Automake targets and declarations for ttyvaders
 ###############################################################################
 
-AM_CPPFLAGS = -g -O6 -fno-strength-reduce -fomit-frame-pointer
+AM_CFLAGS = -g -O6 -fno-strength-reduce -fomit-frame-pointer
 
 # Code qui fait des warnings == code de porc == deux baffes dans ta gueule
-AM_CPPFLAGS += -Wall -Wpointer-arith -Wcast-align -Wcast-qual -Wstrict-prototypes -Wshadow -Waggregate-return -Wmissing-prototypes -Wnested-externs
+AM_CFLAGS += -Wall -Wpointer-arith -Wcast-align -Wcast-qual -Wstrict-prototypes -Wshadow -Waggregate-return -Wmissing-prototypes -Wnested-externs
 
 if USE_NCURSES
 CPPFLAGS_gfx = -DUSE_NCURSES
@@ -19,6 +19,7 @@ bin_PROGRAMS = ttyvaders
 
 ttyvaders_SOURCES = \
 	aliens.c \
+	bonus.c \
 	common.h \
 	explosions.c \
 	main.c \
