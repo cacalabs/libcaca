@@ -82,6 +82,10 @@ void ee_draw_thin_line(int x1, int y1, int x2, int y2)
     clip_line(&s);
 }
 
+/*
+ * XXX: The following functions are local.
+ */
+
 /**
  * \brief Generic Cohen-Sutherland line clipping function.
  *

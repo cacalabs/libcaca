@@ -9,7 +9,7 @@ libee_a_SOURCES = \
 	io.c \
 	math.c \
 	line.c \
-	circle.c \
+	conic.c \
 	triangle.c \
 	sprite.c \
 	$(NULL)
