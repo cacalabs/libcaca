@@ -86,21 +86,21 @@ unsigned int caca_get_event(void)
 
             if(xevent.type == MotionNotify)
             {
-                unsigned int x = xevent.xmotion.x / x11_font_width;
-                unsigned int y = xevent.xmotion.y / x11_font_height;
+                unsigned int newx = xevent.xmotion.x / x11_font_width;
+                unsigned int newy = xevent.xmotion.y / x11_font_height;
 
-                if(x11_x == x && x11_y == y)
+                if(x11_x == newx && x11_y == newy)
                     continue;
 
-                if(x >= _caca_width)
-                    x = _caca_width - 1;
-                if(y >= _caca_height)
-                    y = _caca_height - 1;
+                if(newx >= _caca_width)
+                    newx = _caca_width - 1;
+                if(newy >= _caca_height)
+                    newy = _caca_height - 1;
 
-                x11_x = x & 0xfff;
-                x11_y = y & 0xfff;
+                x11_x = newx & 0xfff;
+                x11_y = newy & 0xfff;
 
-                return CACA_EVENT_MOUSE_MOTION | (x << 12) | (y << 0);
+                return CACA_EVENT_MOUSE_MOTION | (newx << 12) | (newy << 0);
             }
 
             if(xevent.type == ButtonPress)
@@ -170,12 +170,9 @@ unsigned int caca_get_event(void)
             MEVENT mevent;
             _pop_key();
             getmouse(&mevent);
-
-            event |= (1) << 16;
-            event |= (mevent.x) << 8;
-            event |= (mevent.y) << 0;
-
-            return CACA_EVENT_MOUSE_PRESS | event;
+            _push_key(CACA_EVENT_MOUSE_PRESS | 1);
+            return CACA_EVENT_MOUSE_MOTION
+                    | (mevent.x << 12) | (mevent.y << 0);
         }
 
         switch(keybuf[0])
@@ -243,11 +240,9 @@ unsigned int caca_get_event(void)
         /* ^[[Mxxx */
         _pop_key();
         _pop_key();
-        event |= (_pop_key() - ' ') << 16;
-        event |= (_pop_key() - '!') << 8;
-        event |= (_pop_key() - '!') << 0;
-
-        return CACA_EVENT_MOUSE_PRESS | event;
+        _push_key(CACA_EVENT_MOUSE_PRESS | (_pop_key() - ' '));
+        return CACA_EVENT_MOUSE_MOTION
+                | ((_pop_key() - '!') << 12) | ((_pop_key() - '!') << 0);
     }
     else if(keybuf[0] == '[' && keybuf[1] == '1' && keybuf[3] == '~' &&
             keybuf[2] >= '5' && keybuf[2] != '6' && keybuf[2] <= '9')
