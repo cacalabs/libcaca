@@ -60,6 +60,7 @@ char *_caca_empty_line;
 char *_caca_scratch_line;
 
 #if defined(USE_NCURSES)
+static mmask_t oldmask;
 int _caca_attr[16];
 #endif
 
@@ -124,6 +125,7 @@ int caca_init(void)
 
 #elif defined(USE_NCURSES)
     int i;
+    mmask_t newmask;
 
     initscr();
     keypad(stdscr, TRUE);
@@ -132,6 +134,9 @@ int caca_init(void)
     noecho();
     nodelay(stdscr, TRUE);
     curs_set(0);
+
+    newmask = ALL_MOUSE_EVENTS;
+    mousemask(newmask, &oldmask);
 
     start_color();
 
@@ -306,6 +311,7 @@ void caca_end(void)
     SLang_reset_tty();
     SLsmg_reset_smg();
 #elif defined(USE_NCURSES)
+    mousemask(oldmask, NULL);
     curs_set(1);
     endwin();
 #elif defined(USE_CONIO)

@@ -145,7 +145,7 @@ void caca_end(void);
 /*
  * Events
  */
-int caca_get_event(void);
+unsigned int caca_get_event(void);
 
 /*
  * Character graphics

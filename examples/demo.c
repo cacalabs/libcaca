@@ -122,7 +122,7 @@ fprintf(stderr, "w %i, h %i, stride %i\n", bufx, bufy, bufpitch);
         else if(event & CACA_EVENT_KEY_PRESS)
         {
         handle_key:
-            switch(event & 0xff)
+            switch(event & 0xffff)
             {
             case 'q':
             case 'Q':

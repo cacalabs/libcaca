@@ -42,137 +42,166 @@
 #include "caca.h"
 #include "caca_internals.h"
 
-static void _push_key(unsigned char);
-static unsigned char _pop_key(void);
-static unsigned char _read_key(void);
+static void _push_key(unsigned int);
+static unsigned int _pop_key(void);
+static unsigned int _read_key(void);
 
-static unsigned char back[5] = {0, 0, 0, 0, 0};
+#define KEY_BUFLEN 10
+static unsigned int keybuf[KEY_BUFLEN + 1]; /* zero-terminated */
+static int keys = 0;
 
-int caca_get_event(void)
+unsigned int caca_get_event(void)
 {
-    unsigned char key[6];
+    unsigned int event = 0;
 
-    /* If there were legacy keys, pop them */
-    key[0] = _pop_key();
-    if(key[0])
-        return CACA_EVENT_KEY_PRESS | key[0];
+    /* Read all available key events */
+    while(keys < KEY_BUFLEN)
+    {
+        unsigned int key = _read_key();
+        if(!key)
+            break;
+        _push_key(key);
+    }
 
-    key[0] = _read_key();
-    if(!key[0])
+    if(!keys)
         return 0;
 
-    if(key[0] != 0x1b)
-        return CACA_EVENT_KEY_PRESS | key[0];
+#if defined(USE_NCURSES)
+    if(keybuf[0] == KEY_MOUSE)
+    {
+        MEVENT mevent;
+        _pop_key();
+        getmouse(&mevent);
+
+        event |= (1) << 16;
+        event |= (mevent.x) << 8;
+        event |= (mevent.y) << 0;
+
+        return CACA_EVENT_MOUSE_CLICK | event;
+    }
+
+    switch(keybuf[0])
+    {
+        case KEY_UP: event = CACA_EVENT_KEY_PRESS | CACA_KEY_UP; break;
+        case KEY_DOWN: event = CACA_EVENT_KEY_PRESS | CACA_KEY_DOWN; break;
+        case KEY_LEFT: event = CACA_EVENT_KEY_PRESS | CACA_KEY_LEFT; break;
+        case KEY_RIGHT: event = CACA_EVENT_KEY_PRESS | CACA_KEY_RIGHT; break;
+
+        case KEY_F(1): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F1; break;
+        case KEY_F(2): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F2; break;
+        case KEY_F(3): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F3; break;
+        case KEY_F(4): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F4; break;
+        case KEY_F(5): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F5; break;
+        case KEY_F(6): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F6; break;
+        case KEY_F(7): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F7; break;
+        case KEY_F(8): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F8; break;
+        case KEY_F(9): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F9; break;
+        case KEY_F(10): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F10; break;
+        case KEY_F(11): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F11; break;
+        case KEY_F(12): event = CACA_EVENT_KEY_PRESS | CACA_KEY_F12; break;
+    }
+
+    if(event)
+    {
+        _pop_key();
+        return event;
+    }
+#endif
+
+    if(keybuf[0] != '\x1b')
+        return CACA_EVENT_KEY_PRESS | _pop_key();
 
     /*
-     * Handle escape sequences
+     * Handle known escape sequences
      */
 
-    key[1] = _read_key();
-    if(!key[1])
-        return CACA_EVENT_KEY_PRESS | key[0];
+    _pop_key();
 
-    key[2] = _read_key();
-    if(!key[2])
-    {
-        _push_key(key[1]);
-        return CACA_EVENT_KEY_PRESS | key[0];
-    }
-
-    if(key[1] == 'O')
+    if(keybuf[0] == 'O' && keybuf[1] >= 'P' && keybuf[1] <= 'S')
     {
         /* ^[OP ^[OQ ^[OR ^[OS */
-        switch(key[2])
-        {
-        case 'P': return CACA_EVENT_KEY_PRESS | CACA_KEY_F1;
-        case 'Q': return CACA_EVENT_KEY_PRESS | CACA_KEY_F2;
-        case 'R': return CACA_EVENT_KEY_PRESS | CACA_KEY_F3;
-        case 'S': return CACA_EVENT_KEY_PRESS | CACA_KEY_F4;
-        }
+        static unsigned int keylist[] =
+            { CACA_KEY_F1, CACA_KEY_F2, CACA_KEY_F3, CACA_KEY_F4 };
+        _pop_key();
+        return CACA_EVENT_KEY_PRESS | keylist[_pop_key() - 'P'];
     }
-    else if(key[1] == '[')
+    else if(keybuf[0] == '[' && keybuf[1] >= 'A' && keybuf[1] <= 'D')
     {
         /* ^[[A ^[[B ^[[C ^[[D */
-        switch(key[2])
-        {
-        case 'A': return CACA_EVENT_KEY_PRESS | CACA_KEY_UP;
-        case 'B': return CACA_EVENT_KEY_PRESS | CACA_KEY_DOWN;
-        case 'C': return CACA_EVENT_KEY_PRESS | CACA_KEY_RIGHT;
-        case 'D': return CACA_EVENT_KEY_PRESS | CACA_KEY_LEFT;
-        }
-
-        key[3] = _read_key();
-        key[4] = _read_key();
-
+        static unsigned int keylist[] =
+            { CACA_KEY_UP, CACA_KEY_DOWN, CACA_KEY_RIGHT, CACA_KEY_LEFT };
+        _pop_key();
+        return CACA_EVENT_KEY_PRESS | keylist[_pop_key() - 'A'];
+    }
+    else if(keybuf[0] == '[' && keybuf[1] == 'M' &&
+            keybuf[2] && keybuf[3] && keybuf[3])
+    {
         /* ^[[Mxxx */
-        if(key[2] == 'M')
-        {
-            int event = CACA_EVENT_MOUSE_CLICK;
+        _pop_key();
+        _pop_key();
+        event |= (_pop_key() - ' ') << 16;
+        event |= (_pop_key() - '!') << 8;
+        event |= (_pop_key() - '!') << 0;
 
-            key[5] = _read_key();
-
-            event |= (int)(key[3] - ' ') << 16;
-            event |= (int)(key[4] - '!') << 8;
-            event |= (int)(key[5] - '!') << 0;
-
-            return event;
-        }
-
+        return CACA_EVENT_MOUSE_CLICK | event;
+    }
+    else if(keybuf[0] == '[' && keybuf[1] == '1' && keybuf[3] == '~' &&
+            keybuf[2] >= '5' && keybuf[2] != '6' && keybuf[2] <= '9')
+    {
         /* ^[[15~ ^[[17~ ^[[18~ ^[[19~ */
-        if(key[2] == '1' && key[4] == '~')
-            switch(key[3])
-            {
-            case '5': return CACA_EVENT_KEY_PRESS | CACA_KEY_F5;
-            case '7': return CACA_EVENT_KEY_PRESS | CACA_KEY_F6;
-            case '8': return CACA_EVENT_KEY_PRESS | CACA_KEY_F7;
-            case '9': return CACA_EVENT_KEY_PRESS | CACA_KEY_F8;
-            }
-
+        static unsigned int keylist[] =
+            { CACA_KEY_F5, 0, CACA_KEY_F6, CACA_KEY_F7, CACA_KEY_F8 };
+        _pop_key();
+        _pop_key();
+        event = CACA_EVENT_KEY_PRESS | keylist[_pop_key() - '5'];
+        _pop_key();
+        return event;
+    }
+    else if(keybuf[0] == '[' && keybuf[1] == '2' && keybuf[3] == '~' &&
+            keybuf[2] >= '0' && keybuf[2] != '2' && keybuf[2] <= '4')
+    {
         /* ^[[20~ ^[[21~ ^[[23~ ^[[24~ */
-        if(key[2] == '2' && key[4] == '~')
-            switch(key[3])
-            {
-            case '0': return CACA_EVENT_KEY_PRESS | CACA_KEY_F9;
-            case '1': return CACA_EVENT_KEY_PRESS | CACA_KEY_F10;
-            case '3': return CACA_EVENT_KEY_PRESS | CACA_KEY_F11;
-            case '4': return CACA_EVENT_KEY_PRESS | CACA_KEY_F12;
-            }
-
-        _push_key(key[4]);
-        _push_key(key[3]);
+        static unsigned int keylist[] =
+            { CACA_KEY_F9, CACA_KEY_F10, 0, CACA_KEY_F11, CACA_KEY_F12 };
+        _pop_key();
+        _pop_key();
+        event = CACA_EVENT_KEY_PRESS | keylist[_pop_key() - '0'];
+        _pop_key();
+        return event;
     }
 
-    /* Unknown escape sequence: return each key one after the other */
-    _push_key(key[2]);
-    _push_key(key[1]);
-    return CACA_EVENT_KEY_PRESS | key[0];
+caca_printf(0,0, "unknown esc sequence %2x %2x %2x %2x %2x\n", '\x1b', keybuf[0], keybuf[1], keybuf[2], keybuf[3]);
+    /* Unknown escape sequence: return the ESC key */
+    return CACA_EVENT_KEY_PRESS | '\x1b';
 }
 
-static void _push_key(unsigned char key)
+static void _push_key(unsigned int key)
 {
-    back[4] = back[3];
-    back[3] = back[2];
-    back[2] = back[1];
-    back[1] = back[0];
-    back[0] = key;
+    if(keys == KEY_BUFLEN)
+        return;
+    keybuf[keys] = key;
+    keys++;
+    keybuf[keys] = 0;
 }
 
-static unsigned char _pop_key(void)
+static unsigned int _pop_key(void)
 {
-    unsigned char key = back[0];
-    back[0] = back[1];
-    back[1] = back[2];
-    back[2] = back[3];
-    back[3] = back[4];
+    int i;
+    unsigned int key = keybuf[0];
+    keys--;
+    for(i = 0; i < keys; i++)
+        keybuf[i] = keybuf[i + 1];
+    keybuf[keys] = 0;
+
     return key;
 }
 
-static unsigned char _read_key(void)
+static unsigned int _read_key(void)
 {
 #if defined(USE_SLANG)
     return SLang_input_pending(0) ? SLang_getkey() : 0;
 #elif defined(USE_NCURSES)
-    unsigned char key = getch();
+    int key = getch();
     return (key == ERR) ? 0 : key;
 #elif defined(USE_CONIO)
     return _conio_kbhit() ? getch() : 0;
