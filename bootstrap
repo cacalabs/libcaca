@@ -37,6 +37,7 @@ fi
 
 # Remove old cruft
 rm -f aclocal.m4 configure config.guess config.log config.sub config.cache config.h.in config.h compile ltmain.sh libtool ltconfig missing mkinstalldirs depcomp install-sh INSTALL
+rm -Rf autom4te.cache
 (cd autotools && rm -f config.guess config.sub missing mkinstalldirs compile ltmain.sh depcomp install-sh)
 
 aclocal${amvers}
