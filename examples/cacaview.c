@@ -267,15 +267,20 @@ int main(int argc, char **argv)
         }
         else if(!pixels)
         {
+#if defined(HAVE_IMLIB2_H)
+#   define ERROR_STRING " Error loading `%s'. "
+#else
+#   define ERROR_STRING " Error loading `%s'. Only BMP is supported. "
+#endif
             char *buffer;
-            int len = strlen(" Error loading `%s'. ") + strlen(list[current]);
+            int len = strlen(ERROR_STRING) + strlen(list[current]);
 
             if(len < ww + 1)
                 len = ww + 1;
 
             buffer = malloc(len);
 
-            sprintf(buffer, " Error loading `%s'. ", list[current]);
+            sprintf(buffer, ERROR_STRING, list[current]);
             buffer[ww] = '\0';
             caca_set_color(CACA_COLOR_WHITE, CACA_COLOR_BLUE);
             caca_putstr((ww - strlen(buffer)) / 2, wh / 2, buffer);
