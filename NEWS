@@ -1,5 +1,12 @@
 $Id$
 
+Changes between 0.7 and 0.8:
+----------------------------
+
+  * autorepeat emulation in the ncurses and slang drivers
+  * support for more keycodes in the ncurses and slang drivers
+  * cacaplas, a plasma animation example
+
 Changes between 0.6 and 0.7:
 ----------------------------
 
