@@ -100,7 +100,7 @@ initialize (void)
       printf ("Failed to initialize libcaca\n");
       exit (1);
     }
-  caca_set_delay(0);
+  caca_set_delay(10000);
   XSIZ = caca_get_width() * 2;
   YSIZ = caca_get_height() * 2 - 4;
 #else

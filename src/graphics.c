@@ -64,7 +64,9 @@ typedef unsigned char uint8_t;
 #include <stdio.h> /* BUFSIZ */
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
+#if defined(HAVE_UNISTD_H)
+#   include <unistd.h>
+#endif
 #include <stdarg.h>
 
 #include "caca.h"
@@ -818,17 +820,20 @@ int _caca_init_graphics(void)
         win32_front = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE,
                                                 0, NULL,
                                                 CONSOLE_TEXTMODE_BUFFER, NULL);
-        if(!win32_front)
+        if(!win32_front || win32_front == INVALID_HANDLE_VALUE)
             return -1;
 
         win32_back = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE,
                                                0, NULL,
                                                CONSOLE_TEXTMODE_BUFFER, NULL);
-        if(!win32_back)
+        if(!win32_back || win328back == INVALID_HANDLE_VALUE)
             return -1;
 
         if(!GetConsoleScreenBufferInfo(win32_hout, &csbi))
             return -1;
+
+        /* Sample code to get the biggest possible window */
+        //size = GetLargestConsoleWindowSize(win32_hout);
 
         _caca_width = csbi.srWindow.Right - csbi.srWindow.Left + 1;
         _caca_height = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
@@ -842,6 +847,7 @@ int _caca_init_graphics(void)
         SetConsoleMode(win32_back, 0);
 
         GetConsoleCursorInfo(win32_front, &cci);
+        cci.dwSize = 0;
         cci.bVisible = FALSE;
         SetConsoleCursorInfo(win32_front, &cci);
         SetConsoleCursorInfo(win32_back, &cci);
@@ -859,7 +865,13 @@ int _caca_init_graphics(void)
             return -1;
         }
 
-win32_buffer = malloc(sizeof(CHAR_INFO) * _caca_width * _caca_height);
+        win32_buffer = malloc(_caca_width * _caca_height * sizeof(CHAR_INFO));
+        if(win32_buffer == NULL)
+        {
+            free(win32_attr);
+            free(win32_char);
+            return -1;
+        }
 
         memset(win32_char, 0, _caca_width * _caca_height * sizeof(int));
         memset(win32_attr, 0, _caca_width * _caca_height * sizeof(int));

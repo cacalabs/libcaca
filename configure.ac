@@ -13,6 +13,9 @@ AM_PROG_CC_C_O
 AC_PROG_CPP
 AC_PROG_RANLIB
 
+AC_C_CONST
+AC_C_INLINE
+
 dnl AC_PROG_EGREP only exists in autoconf 2.54+, so we use AC_EGREP_CPP right
 dnl now otherwise it might be set in an obscure if statement.
 AC_EGREP_CPP(foo, foo)
@@ -28,8 +31,8 @@ AC_ARG_ENABLE(conio,
 AC_ARG_ENABLE(x11,
   [  --enable-x11            X11 support (autodetected)])
 
-AC_CHECK_HEADERS(inttypes.h endian.h)
-AC_CHECK_FUNCS(vsnprintf getenv putenv strcasecmp usleep gettimeofday)
+AC_CHECK_HEADERS(sys/time.h inttypes.h endian.h unistd.h)
+AC_CHECK_FUNCS(vsnprintf _vsnprintf getenv putenv strcasecmp usleep gettimeofday)
 AC_MSG_CHECKING(for Sleep)
 AC_TRY_COMPILE([#include <windows.h>],[Sleep(42);],
  [AC_MSG_RESULT(yes)
@@ -191,6 +194,7 @@ AC_CONFIG_FILES([
   doc/doxygen.cfg
   autotools/Makefile
   debian/Makefile
+  msvc/Makefile
 ])
 AC_CONFIG_FILES([caca-config], [chmod 0755 caca-config])
 AC_OUTPUT

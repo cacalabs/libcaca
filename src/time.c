@@ -30,14 +30,18 @@
 #include "config.h"
 
 #include <stdlib.h>
-#include <sys/time.h>
+#if defined(HAVE_SYS_TIME_H)
+#   include <sys/time.h>
+#endif
 #include <time.h>
 
 #if defined(USE_WIN32)
 #   include <windows.h>
 #endif
 
-#include <unistd.h>
+#if defined(HAVE_UNISTD_H)
+#   include <unistd.h>
+#endif
 
 #include "caca.h"
 #include "caca_internals.h"
@@ -58,8 +62,8 @@ unsigned int _caca_getticks(struct caca_timer *timer)
 #if defined(HAVE_GETTIMEOFDAY)
     struct timeval tv;
 #elif defined(USE_WIN32)
-    static long long int freq = -1;
-    unsigned long long int usec;
+    static __int64 freq = -1;
+    unsigned __int64 usec;
 #endif
     unsigned int ticks = 0;
     int new_sec, new_usec;
@@ -76,8 +80,8 @@ unsigned int _caca_getticks(struct caca_timer *timer)
     }
 
     QueryPerformanceCounter((LARGE_INTEGER *)&usec);
-    new_sec = usec * 1000000 / freq / 1000000;
-    new_usec = (usec * 1000000 / freq) % 1000000;
+    new_sec = (int)(usec * 1000000 / freq / 1000000);
+    new_usec = (int)((usec * 1000000 / freq) % 1000000);
 #endif
 
     if(timer->last_sec != 0)

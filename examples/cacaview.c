@@ -26,7 +26,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
 
 #if defined(HAVE_IMLIB2_H)
 #   include <Imlib2.h>

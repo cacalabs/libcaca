@@ -138,7 +138,7 @@ int caca_init(void)
         initscr();
         keypad(stdscr, TRUE);
         nonl();
-        cbreak();
+        raw();
         noecho();
         nodelay(stdscr, TRUE);
         curs_set(0);
@@ -172,6 +172,9 @@ int caca_init(void)
 #if defined(USE_WIN32)
     if(_caca_driver == CACA_DRIVER_WIN32)
     {
+        if(!AllocConsole())
+            return -1;
+
         win32_hin = GetStdHandle(STD_INPUT_HANDLE);
         win32_hout = CreateFile("CONOUT$", GENERIC_READ | GENERIC_WRITE,
                                 FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
@@ -380,6 +383,7 @@ void caca_end(void)
     {
         mousemask(oldmask, NULL);
         curs_set(1);
+        noraw();
         endwin();
     }
     else
