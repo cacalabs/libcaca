@@ -81,6 +81,9 @@ static char *_caca_screen;
 Display *_caca_dpy;
 Window _caca_window;
 GC _caca_gc;
+XImage _caca_image;
+static int *_caca_screen;
+int _caca_colors[16];
 #endif
 
 static char *_caca_empty_line;
@@ -168,7 +171,8 @@ void caca_putchar(int x, int y, char c)
 //    gotoxy(x + 1, y + 1);
 //    putch(c);
 #elif defined(USE_X11)
-    /* FIXME */
+    _caca_screen[x + y * _caca_width] =
+        ((int)c << 8) | ((int)_caca_bgcolor << 4) | (int)_caca_fgcolor;
 #endif
 }
 
@@ -182,6 +186,11 @@ void caca_putchar(int x, int y, char c)
  */
 void caca_putstr(int x, int y, const char *s)
 {
+#if defined(USE_CONIO)
+    char *buf;
+#elif defined(USE_X11)
+    int *buf;
+#endif
     unsigned int len;
 
     if(y < 0 || y >= (int)_caca_height || x >= (int)_caca_width)
@@ -212,7 +221,7 @@ void caca_putstr(int x, int y, const char *s)
     move(y, x);
     addstr(s);
 #elif defined(USE_CONIO)
-    char *buf = _caca_screen + 2 * (x + y * _caca_width);
+    buf = _caca_screen + 2 * (x + y * _caca_width);
     while(*s)
     {
         *buf++ = *s++;
@@ -221,7 +230,9 @@ void caca_putstr(int x, int y, const char *s)
 //    gotoxy(x + 1, y + 1);
 //    cputs(s);
 #elif defined(USE_X11)
-    /* FIXME */
+    buf = _caca_screen + x + y * _caca_width;
+    while(*s)
+        *buf++ = ((int)*s++ << 8) | ((int)_caca_bgcolor << 4) | (int)_caca_fgcolor;
 #endif
 }
 
@@ -385,7 +396,7 @@ int _caca_init_graphics(void)
 
 #elif defined(USE_CONIO)
     gettextinfo(&ti);
-    _caca_screen = malloc(2 * ti.screenwidth * ti.screenheight);
+    _caca_screen = malloc(2 * ti.screenwidth * ti.screenheight * sizeof(char));
     if(_caca_screen == NULL)
         return -1;
 #   if defined(SCREENUPDATE_IN_PC_H)
@@ -397,24 +408,65 @@ int _caca_init_graphics(void)
     _caca_height = ti.screenheight;
 
 #elif defined(USE_X11)
-    int black_color;
-    int white_color;
+    static int x11_colors[] =
+    {
+        /* Standard curses colours */
+        0, 0, 0,
+        0, 0, 32768,
+        0, 32768, 0,
+        0, 32768, 32768,
+        32768, 0, 0,
+        32768, 0, 32768,
+        32768, 32768, 0,
+        32768, 32768, 32768,
+        /* Extra values for xterm-16color */
+        16384, 16384, 16384,
+        16384, 16384, 65535,
+        16384, 65535, 16384,
+        16384, 65535, 65535,
+        65535, 16384, 16384,
+        65535, 16384, 65535,
+        65535, 65535, 16384,
+        65535, 65535, 65535,
+    };
+
+    int i;
+    Colormap colormap;
+
+    /* FIXME */
+    _caca_width = 80;
+    _caca_height = 30;
+
+    _caca_screen = malloc(_caca_width * _caca_height * sizeof(int));
+    if(_caca_screen == NULL)
+        return -1;
 
     _caca_dpy = XOpenDisplay(NULL);
     if(_caca_dpy == NULL)
+    {
+        free(_caca_screen);
         return -1;
+    }
 
-    black_color = BlackPixel(_caca_dpy, DefaultScreen(_caca_dpy));
-    white_color = WhitePixel(_caca_dpy, DefaultScreen(_caca_dpy));
+    colormap = DefaultColormap(_caca_dpy, DefaultScreen(_caca_dpy));
+    for(i = 0; i < 16; i++)
+    {
+        XColor color;
+        color.red = x11_colors[i * 3];
+        color.green = x11_colors[i * 3 + 1];
+        color.blue = x11_colors[i * 3 + 2];
+        XAllocColor(_caca_dpy, colormap, &color);
+        _caca_colors[i] = color.pixel;
+    }
 
     _caca_window = XCreateSimpleWindow(_caca_dpy, DefaultRootWindow(_caca_dpy),
                                        0, 0, 400, 300, 0,
-                                       black_color, black_color);
+                                       _caca_colors[0], _caca_colors[0]);
     XSelectInput(_caca_dpy, _caca_window, StructureNotifyMask);
     XMapWindow(_caca_dpy, _caca_window);
 
     _caca_gc = XCreateGC(_caca_dpy, _caca_window, 0, NULL);
-    XSetForeground(_caca_dpy, _caca_gc, white_color);
+    XSetForeground(_caca_dpy, _caca_gc, _caca_colors[15]);
 
     for(;;)
     {
@@ -426,12 +478,9 @@ int _caca_init_graphics(void)
 
     XSelectInput(_caca_dpy, _caca_window, KeyPressMask);
 
-    /* FIXME */
-    _caca_width = 80;
-    _caca_height = 24;
-
     XSync(_caca_dpy, False);
 
+    //_caca_image = 
 #endif
     _caca_empty_line = malloc(_caca_width + 1);
     memset(_caca_empty_line, ' ', _caca_width);
@@ -459,6 +508,7 @@ int _caca_end_graphics(void)
     XUnmapWindow(_caca_dpy, _caca_window);
     XDestroyWindow(_caca_dpy, _caca_window);
     XCloseDisplay(_caca_dpy);
+    free(_caca_screen);
 #endif
     free(_caca_empty_line);
 
@@ -528,7 +578,20 @@ void caca_refresh(void)
     /* FIXME */
 #   endif
 #elif defined(USE_X11)
-    /* FIXME */
+    int x, y;
+
+    for(y = 0; y < _caca_height; y++)
+        for(x = 0; x < _caca_width; x++)
+        {
+            int item = _caca_screen[x + y * _caca_width];
+            char data = item >> 8;
+            XSetForeground(_caca_dpy, _caca_gc, _caca_colors[(item >> 4) & 0xf]);
+            XFillRectangle(_caca_dpy, _caca_window, _caca_gc,
+                           x * 6, y * 12, 6, 12);
+            XSetForeground(_caca_dpy, _caca_gc, _caca_colors[item & 0xf]);
+            XDrawString(_caca_dpy, _caca_window, _caca_gc,
+                        x * 6, y * 12 + 10, &data, 1);
+        }
     XFlush(_caca_dpy);
 #endif
 
