@@ -107,6 +107,8 @@ int ee_get_sprite_dy(struct ee_sprite *, int);
 void ee_draw_sprite(int, int, struct ee_sprite *, int);
 void ee_free_sprite(struct ee_sprite *);
 
+void ee_blit(int, int, int, int, void *, int, int);
+
 #ifdef __cplusplus
 }
 #endif

@@ -15,5 +15,6 @@ libee_a_SOURCES = \
 	conic.c \
 	triangle.c \
 	sprite.c \
+	blit.c \
 	$(NULL)
 

@@ -26,6 +26,9 @@
 #include <string.h>
 #include <stdio.h>
 
+#include <gdk/gdk.h>
+#include <gdk/gdkpixbuf.h>
+
 #include "ee.h"
 
 static void display_menu(void);
@@ -39,10 +42,15 @@ static void demo_boxes(void);
 static void demo_ellipses(void);
 static void demo_triangles(void);
 static void demo_sprites(void);
+static void demo_blit(void);
 
 int bounds = 0;
 int outline = 0;
 struct ee_sprite *sprite = NULL;
+
+GdkPixbuf *pixbuf;
+char *pixels;
+int bufx, bufy, bufpitch;
 
 int main(int argc, char **argv)
 {
@@ -58,6 +66,19 @@ int main(int argc, char **argv)
 
     /* Initialize data */
     sprite = ee_load_sprite("data/barboss.txt");
+
+gdk_init (&argc, &argv);
+    //pixbuf = gdk_pixbuf_new_from_file("/home/sam/pix/gally4.jpeg", NULL);
+    //pixbuf = gdk_pixbuf_new_from_file("/home/sam/pix/badge1.jpeg", NULL);
+    //pixbuf = gdk_pixbuf_new_from_file("/home/sam/pix/union.png", NULL);
+    pixbuf = gdk_pixbuf_new_from_file("/home/sam/pix/pikachu.jpeg", NULL);
+if(!pixbuf) return -2;
+    pixels = gdk_pixbuf_get_pixels(pixbuf);
+    bufx = gdk_pixbuf_get_width(pixbuf);
+    bufy = gdk_pixbuf_get_height(pixbuf);
+    bufpitch = gdk_pixbuf_get_rowstride(pixbuf);
+fprintf(stderr, "bits: %i\n", gdk_pixbuf_get_bits_per_sample(pixbuf));
+fprintf(stderr, "w %i, h %i, stride %i\n", bufx, bufy, bufpitch);
 
     /* Main menu */
     display_menu();
@@ -120,6 +141,10 @@ int main(int argc, char **argv)
             case 'S':
                 demo = demo_sprites;
                 break;
+            case 'i':
+            case 'I':
+                demo = demo_blit;
+                break;
             }
 
             if(demo)
@@ -173,11 +198,12 @@ static void display_menu(void)
     ee_putstr(4, 12, "'5': ellipses");
     ee_putstr(4, 13, "'s': sprites");
     ee_putstr(4, 14, "'c': color");
+    ee_putstr(4, 15, "'i': image blit");
 
-    ee_putstr(4, 16, "settings:");
-    ee_printf(4, 17, "'o': outline: %s",
+    ee_putstr(4, 17, "settings:");
+    ee_printf(4, 18, "'o': outline: %s",
               outline == 0 ? "none" : outline == 1 ? "solid" : "thin");
-    ee_printf(4, 18, "'b': drawing boundaries: %s",
+    ee_printf(4, 19, "'b': drawing boundaries: %s",
               bounds == 0 ? "screen" : "infinite");
 
     ee_putstr(4, yo - 2, "'q': quit");
@@ -426,5 +452,11 @@ static void demo_sprites(void)
 {
     ee_draw_sprite(ee_rand(0, ee_get_width() - 1),
                    ee_rand(0, ee_get_height() - 1), sprite, 0);
+}
+
+static void demo_blit(void)
+{
+ee_set_color(EE_LIGHTGRAY);
+    ee_blit(6, 4, ee_get_width() - 6, ee_get_height() - 4, pixels, bufx, bufy);
 }
 
