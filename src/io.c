@@ -102,8 +102,8 @@ int caca_get_event(void)
 
             key[5] = _read_key();
 
-            event |= (int)(key[3] - ' ') << 8;
-            event |= (int)(key[4] - ' ') << 4;
+            event |= (int)(key[3] - ' ') << 16;
+            event |= (int)(key[4] - ' ') << 8;
             event |= (int)(key[5] - ' ') << 0;
 
             return event;

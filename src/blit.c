@@ -101,8 +101,8 @@ void caca_blit(int x1, int y1, int x2, int y2, void *pixels, int w, int h)
         int tmp = y2; y2 = y1; y1 = tmp;
     }
 
-    pitch = (3 * w + 3) / 4 * 4;
-    //pitch = 4 * w;
+    //pitch = (3 * w + 3) / 4 * 4;
+    pitch = 4 * w;
 
     for(y = y1 > 0 ? y1 : 0; y <= y2 && y <= (int)caca_get_height(); y++)
     {
@@ -114,12 +114,12 @@ void caca_blit(int x1, int y1, int x2, int y2, void *pixels, int w, int h)
         {
             int fromx = w * (x - x1) / (x2 - x1 + 1);
             int fromy = h * (y - y1) / (y2 - y1 + 1);
-            int r = ((unsigned char *)pixels)[3 * fromx + pitch * fromy];
-            int g = ((unsigned char *)pixels)[3 * fromx + 1 + pitch * fromy];
-            int b = ((unsigned char *)pixels)[3 * fromx + 2 + pitch * fromy];
-            //int b = ((unsigned char *)pixels)[4 * fromx + pitch * fromy];
-            //int g = ((unsigned char *)pixels)[4 * fromx + 1 + pitch * fromy];
-            //int r = ((unsigned char *)pixels)[4 * fromx + 2 + pitch * fromy];
+            //int r = ((unsigned char *)pixels)[3 * fromx + pitch * fromy];
+            //int g = ((unsigned char *)pixels)[3 * fromx + 1 + pitch * fromy];
+            //int b = ((unsigned char *)pixels)[3 * fromx + 2 + pitch * fromy];
+            int b = ((unsigned char *)pixels)[4 * fromx + pitch * fromy];
+            int g = ((unsigned char *)pixels)[4 * fromx + 1 + pitch * fromy];
+            int r = ((unsigned char *)pixels)[4 * fromx + 2 + pitch * fromy];
             int hue, sat, val;
 
             int min = r, max = r, delta;
