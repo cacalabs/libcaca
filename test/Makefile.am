@@ -1,6 +1,10 @@
 # $Id$
 
-noinst_PROGRAMS = dithering event hsv optipal spritedit
+noinst_PROGRAMS = colors dithering event hsv optipal spritedit
+
+colors_SOURCES = colors.c
+colors_LDADD = ../src/libcaca.a @CACA_LIBS@
+colors_CPPFLAGS = -I$(top_srcdir)/src
 
 dithering_SOURCES = dithering.c
 dithering_LDADD = ../src/libcaca.a @CACA_LIBS@
