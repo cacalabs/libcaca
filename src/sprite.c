@@ -219,7 +219,8 @@ int caca_get_sprite_dy(struct caca_sprite *sprite, int f)
 
 void caca_draw_sprite(int x, int y, struct caca_sprite *sprite, int f)
 {
-    int i, j, oldcol;
+    int i, j;
+    enum caca_color oldfg, oldbg;
     struct caca_frame *frame;
 
     if(sprite == NULL)
@@ -230,7 +231,8 @@ void caca_draw_sprite(int x, int y, struct caca_sprite *sprite, int f)
 
     frame = &sprite->frames[f];
 
-    oldcol = caca_get_color();
+    oldfg = caca_get_fg_color();
+    oldbg = caca_get_bg_color();
 
     for(j = 0; j < frame->h; j++)
     {
@@ -239,14 +241,14 @@ void caca_draw_sprite(int x, int y, struct caca_sprite *sprite, int f)
             int col = frame->color[frame->w * j + i];
             if(col >= 0)
             {
-                caca_set_color(col);
+                caca_set_color(col, CACA_COLOR_BLACK);
                 caca_putchar(x + i - frame->dx, y + j - frame->dy,
                            frame->chars[frame->w * j + i]);
             }
         }
     }
 
-    caca_set_color(oldcol);
+    caca_set_color(oldfg, oldbg);
 }
 
 void caca_free_sprite(struct caca_sprite *sprite)

@@ -150,8 +150,9 @@ unsigned int caca_get_event(void);
 /*
  * Character graphics
  */
-void caca_set_color(enum caca_color);
-enum caca_color caca_get_color(void);
+void caca_set_color(enum caca_color, enum caca_color);
+enum caca_color caca_get_fg_color(void);
+enum caca_color caca_get_bg_color(void);
 void caca_putchar(int, int, char);
 void caca_putstr(int, int, const char *);
 void caca_printf(int, int, const char *, ...);
@@ -202,6 +203,7 @@ void caca_free_sprite(struct caca_sprite *);
  */
 struct caca_bitmap;
 struct caca_bitmap *caca_create_bitmap(int, int, int, int, int, int, int);
+void caca_set_bitmap_palette(struct caca_bitmap *, int[], int[], int[]);
 void caca_draw_bitmap(int, int, int, int, struct caca_bitmap *, char *);
 void caca_free_bitmap(struct caca_bitmap *);
 

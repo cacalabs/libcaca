@@ -39,6 +39,7 @@
 #   error "no graphics library detected"
 #endif
 
+#include <stdio.h> /* BUFSIZ */
 #include <string.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -46,30 +47,41 @@
 #include "caca.h"
 #include "caca_internals.h"
 
-static enum caca_color _caca_color = CACA_COLOR_WHITE;
+static enum caca_color _caca_fgcolor = CACA_COLOR_LIGHTGRAY;
+static enum caca_color _caca_bgcolor = CACA_COLOR_BLACK;
 
-void caca_set_color(enum caca_color color)
+void caca_set_color(enum caca_color fgcolor, enum caca_color bgcolor)
 {
-    if(color < 0 || color > 15)
+    if(fgcolor < 0 || fgcolor > 15 || bgcolor < 0 || bgcolor > 15)
         return;
 
-    _caca_color = color;
+    _caca_fgcolor = fgcolor;
+    _caca_bgcolor = bgcolor;
 #if defined(USE_SLANG)
-    SLsmg_set_color(color + 1);
+    SLsmg_set_color(fgcolor + 16 * bgcolor);
 #elif defined(USE_NCURSES)
-    attrset(_caca_attr[color]);
+    attrset(_caca_attr[fgcolor + 16 * bgcolor]);
 #elif defined(USE_CONIO)
-    textcolor(color);
+    textbackground(bgcolor);
+    textcolor(fgcolor);
 #endif
 }
 
-enum caca_color caca_get_color(void)
+enum caca_color caca_get_fg_color(void)
 {
-    return _caca_color;
+    return _caca_fgcolor;
+}
+
+enum caca_color caca_get_bg_color(void)
+{
+    return _caca_bgcolor;
 }
 
 void caca_putchar(int x, int y, char c)
 {
+#if defined(USE_CONIO)
+    char *data;
+#endif
     if(x < 0 || x >= (int)caca_get_width() ||
        y < 0 || y >= (int)caca_get_height())
         return;
@@ -81,8 +93,9 @@ void caca_putchar(int x, int y, char c)
     move(y, x);
     addch(c);
 #elif defined(USE_CONIO)
-    _caca_screen[2 * (x + y * caca_get_width())] = c;
-    _caca_screen[2 * (x + y * caca_get_width()) + 1] = _caca_color;
+    data = _caca_screen + 2 * (x + y * caca_get_width());
+    data[0] = c;
+    data[1] = (_caca_bgcolor << 4) | _caca_fgcolor;
 //    gotoxy(x + 1, y + 1);
 //    putch(c);
 #endif
@@ -124,7 +137,7 @@ void caca_putstr(int x, int y, const char *s)
     while(*s)
     {
         *buf++ = *s++;
-        *buf++ = _caca_color;
+        *buf++ = (_caca_bgcolor << 4) | _caca_fgcolor;
     }
 //    gotoxy(x + 1, y + 1);
 //    cputs(s);
@@ -144,7 +157,11 @@ void caca_printf(int x, int y, const char *format, ...)
         buf = malloc(caca_get_width() - x + 1);
 
     va_start(args, format);
+#if defined(HAVE_VSNPRINTF)
     vsnprintf(buf, caca_get_width() - x + 1, format, args);
+#else
+    vsprintf(buf, format, args);
+#endif
     buf[caca_get_width() - x] = '\0';
     va_end(args);
 
@@ -156,10 +173,16 @@ void caca_printf(int x, int y, const char *format, ...)
 
 void caca_clear(void)
 {
-    /* We could use SLsmg_cls() etc., but drawing empty lines is much faster */
+    enum caca_color oldfg = caca_get_fg_color();
+    enum caca_color oldbg = caca_get_bg_color();
     int y = caca_get_height();
 
+    caca_set_color(CACA_COLOR_LIGHTGRAY, CACA_COLOR_BLACK);
+
+    /* We could use SLsmg_cls() etc., but drawing empty lines is much faster */
     while(y--)
         caca_putstr(0, y, _caca_empty_line);
+
+    caca_set_color(oldfg, oldbg);
 }
 

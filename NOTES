@@ -4,6 +4,25 @@ $Id$
       many terminal emulators and tried to summarise which combinations
       worked properly and which ones did not.
 
+      From termcap(5):
+
+       set_a_background              setab        AB        Set background
+                                                            color to #1, using
+                                                            ANSI escape
+       set_a_foreground              setaf        AF        Set foreground
+                                                            color to #1, using
+                                                            ANSI escape
+      From the xterm terminfo:
+
+        setab=\E[4%p1%dm, setaf=\E[3%p1%dm
+
+      From the xterm-16color terminfo:
+
+        setab=\E[%?%p1%{8}%<%t%p1%{40}%+%e%p1%{92}%+%;%dm,
+        setaf=\E[%?%p1%{8}%<%t%p1%{30}%+%e%p1%{82}%+%;%dm,
+
+      (http://www.sct.gu.edu.au/~anthony/info/X/Xterm_xf86.terminfo)
+
    o  I tested the following terminals:
 
          name             $TERM        $COLORTERM
@@ -20,8 +39,8 @@ $Id$
          uxterm           xterm
 
    o  In most terminals, \e[3xm and \[4xm respectively set the foreground
-      and background colours. x is an colour between 0 and 7 or the value
-      9 for default value.
+      and background colours. x is a colour between 0 and 7 or the value
+      9 for default colour (may be transparent).
 
       \e[0m sets everything to normal, \e[1m sets bold, \e[5m sets blink
       and \e[7m sets inverse video.
@@ -35,7 +54,7 @@ $Id$
       for invert in '' '\e[7m'; do
         for blink in '' '\e[5m'; do
           for bold in '' '\e[1m'; do
-            echo -ne "$bold$blink$invert"'\e[34m\e[43m'hop'\e[0m '
+            echo -ne "$bold$blink$invert"'\e[33m\e[44m'hop'\e[0m '
             echo "($bold$blink$invert)"
           done
         done
@@ -48,7 +67,8 @@ $Id$
        + aterm, wterm, rxvt
 
       Almost works on:
-       + xterm (bright bg works for blue, but not for red or yellow)
+       + xterm (bright bg only works when fg is bright and then inverted,
+         but then fg is not bright)
 
       Fails on:
        + mlterm (no bright colours, neither fg nor bg)
@@ -74,11 +94,23 @@ $Id$
        + xterm
        + pterm
 
-      Failed (\e[9x and \e[10x don't work) on:
+      Failed (\e[9x and \e[10x don't do anything) on:
        + Eterm
        + aterm, wterm, rxvt
        + mlterm
-       + linux
+       + Linux console
+
+   o  How to draw bright colours on any terminal?
+
+      '\e[93;104m' -> bright yellow on bright blue
+       doesn't work on mlterm, gnome-terminal, konsole
+
+      '\e[5;1;33;44m' -> bright yellow on bright blue
+       doesn't work on mlterm, aterm/wterm/rxvt, Eterm, console
+
+      '\e[5;1;33;44;93;104m' -> bright yellow on bright blue
+       works on gnome-terminal, xterm, pterm, aterm/wterm/rxvt, console
+       doesn't work on konsole
 
    o  S-Lang:
 

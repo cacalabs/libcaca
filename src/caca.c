@@ -61,7 +61,7 @@ char *_caca_scratch_line;
 
 #if defined(USE_NCURSES)
 static mmask_t oldmask;
-int _caca_attr[16];
+int _caca_attr[16*16];
 #endif
 
 #if defined(USE_CONIO)
@@ -72,6 +72,7 @@ char *_caca_screen;
 int caca_init(void)
 {
 #if defined(USE_SLANG)
+    /* See SLang ref., 5.4.4. */
     static char *slang_colors[16] =
     {
         "black",
@@ -92,7 +93,7 @@ int caca_init(void)
         "white",
     };
 
-    int i;
+    int fg, bg;
 
     /* Initialize slang library */
     SLsig_block_signals();
@@ -120,11 +121,36 @@ int caca_init(void)
     SLtt_set_mouse_mode(1, 0);
     SLsmg_refresh();
 
-    for(i = 0; i < 16; i++)
-        SLtt_set_color(i + 1, NULL, slang_colors[i], "black");
+    for(bg = 0; bg < 16; bg++)
+        for(fg = 0; fg < 16; fg++)
+        {
+            int i = fg + 16 * bg;
+            SLtt_set_color(i, NULL, slang_colors[fg], slang_colors[bg]);
+        }
 
 #elif defined(USE_NCURSES)
-    int i;
+    static int curses_colors[] =
+    {
+        COLOR_BLACK,
+        COLOR_BLUE,
+        COLOR_GREEN,
+        COLOR_CYAN,
+        COLOR_RED,
+        COLOR_MAGENTA,
+        COLOR_YELLOW,
+        COLOR_WHITE,
+        /* Extra values for xterm-16color */
+        COLOR_BLACK + 8,
+        COLOR_BLUE + 8,
+        COLOR_GREEN + 8,
+        COLOR_CYAN + 8,
+        COLOR_RED + 8,
+        COLOR_MAGENTA + 8,
+        COLOR_YELLOW + 8,
+        COLOR_WHITE + 8
+    };
+
+    int fg, bg, max;
     mmask_t newmask;
 
     initscr();
@@ -135,33 +161,35 @@ int caca_init(void)
     nodelay(stdscr, TRUE);
     curs_set(0);
 
+    /* Activate mouse */
     newmask = ALL_MOUSE_EVENTS;
     mousemask(newmask, &oldmask);
 
+    /* Activate colour */
     start_color();
 
-    init_pair(1 + CACA_COLOR_BLACK,        COLOR_BLACK,   COLOR_BLACK);
-    init_pair(1 + CACA_COLOR_BLUE,         COLOR_BLUE,    COLOR_BLACK);
-    init_pair(1 + CACA_COLOR_GREEN,        COLOR_GREEN,   COLOR_BLACK);
-    init_pair(1 + CACA_COLOR_CYAN,         COLOR_CYAN,    COLOR_BLACK);
-    init_pair(1 + CACA_COLOR_RED,          COLOR_RED,     COLOR_BLACK);
-    init_pair(1 + CACA_COLOR_MAGENTA,      COLOR_MAGENTA, COLOR_BLACK);
-    init_pair(1 + CACA_COLOR_BROWN,        COLOR_YELLOW,  COLOR_BLACK);
-    init_pair(1 + CACA_COLOR_LIGHTGRAY,    COLOR_WHITE,   COLOR_BLACK);
-    init_pair(1 + CACA_COLOR_DARKGRAY,     COLOR_BLACK,   COLOR_BLACK);
-    init_pair(1 + CACA_COLOR_LIGHTBLUE,    COLOR_BLUE,    COLOR_BLACK);
-    init_pair(1 + CACA_COLOR_LIGHTGREEN,   COLOR_GREEN,   COLOR_BLACK);
-    init_pair(1 + CACA_COLOR_LIGHTCYAN,    COLOR_CYAN,    COLOR_BLACK);
-    init_pair(1 + CACA_COLOR_LIGHTRED,     COLOR_RED,     COLOR_BLACK);
-    init_pair(1 + CACA_COLOR_LIGHTMAGENTA, COLOR_MAGENTA, COLOR_BLACK);
-    init_pair(1 + CACA_COLOR_YELLOW,       COLOR_YELLOW,  COLOR_BLACK);
-    init_pair(1 + CACA_COLOR_WHITE,        COLOR_WHITE,   COLOR_BLACK);
+    max = COLORS >= 16 ? 16 : 8;
 
-    for(i = 0; i < 8; i++)
-    {
-        _caca_attr[i] = COLOR_PAIR(1 + i);
-        _caca_attr[i + 8] = A_BOLD | COLOR_PAIR(1 + i);
-    }
+    for(bg = 0; bg < max; bg++)
+        for(fg = 0; fg < max; fg++)
+        {
+            /* Use ((max + 7 - fg) % max) instead of fg so that colour 0
+             * is light gray on black, since some terminals don't like
+             * this colour pair to be redefined. */
+            int col = ((max + 7 - fg) % max) + max * bg;
+            init_pair(col, curses_colors[fg], curses_colors[bg]);
+            _caca_attr[fg + 16 * bg] = COLOR_PAIR(col);
+
+            if(max == 8)
+            {
+                /* Bright fg on simple bg */
+                _caca_attr[fg + 8 + 16 * bg] = A_BOLD | COLOR_PAIR(col);
+                /* Simple fg on bright bg */
+                _caca_attr[fg + 16 * (bg + 8)] = A_BLINK | COLOR_PAIR(col);
+                /* Bright fg on bright bg */
+                _caca_attr[fg + 8 + 16 * (bg + 8)] = A_BLINK | A_BOLD | COLOR_PAIR(col);
+            }
+        }
 
 #elif defined(USE_CONIO)
     gettextinfo(&ti);
