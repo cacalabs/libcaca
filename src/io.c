@@ -138,13 +138,13 @@ static unsigned int _get_next_event(void)
                 unsigned int newx = xevent.xmotion.x / x11_font_width;
                 unsigned int newy = xevent.xmotion.y / x11_font_height;
 
-                if(x11_x == newx && x11_y == newy)
-                    continue;
-
                 if(newx >= _caca_width)
                     newx = _caca_width - 1;
                 if(newy >= _caca_height)
                     newy = _caca_height - 1;
+
+                if(x11_x == newx && x11_y == newy)
+                    continue;
 
                 x11_x = newx & 0xfff;
                 x11_y = newy & 0xfff;

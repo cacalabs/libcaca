@@ -3,6 +3,7 @@ $Id$
 Changes between 0.6 and 0.7:
 ----------------------------
 
+  * many bugfixes in the event handling
   * cacaball, a metaball animation example
 
 Changes between 0.5 and 0.6:

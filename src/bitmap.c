@@ -170,15 +170,21 @@ static void mask2shift(unsigned int mask, int *right, int *left)
 /**
  * \brief Create an internal bitmap object.
  *
- * \param bpp The bitmap depth in bits per pixel.
- * \param w The bitmap width in pixels.
- * \param h The bitmap height in pixels.
- * \param pitch The bitmap pitch in bytes.
- * \param rmask The bitmask for red values.
- * \param gmask The bitmask for green values.
- * \param bmask The bitmask for blue values.
- * \param amask The bitmask for alpha values.
- * \return A bitmap object or NULL upon error.
+ * Create a bitmap structure from its coordinates (depth, width, height and
+ * pitch) and pixel mask values. If the depth is 8 bits per pixel, the mask
+ * values are ignored and the colour palette should be set using the
+ * caca_set_bitmap_palette() function. For depths greater than 8 bits per
+ * pixel, a zero alpha mask causes the alpha values to be ignored.
+ *
+ * \param bpp Bitmap depth in bits per pixel.
+ * \param w Bitmap width in pixels.
+ * \param h Bitmap height in pixels.
+ * \param pitch Bitmap pitch in bytes.
+ * \param rmask Bitmask for red values.
+ * \param gmask Bitmask for green values.
+ * \param bmask Bitmask for blue values.
+ * \param amask Bitmask for alpha values.
+ * \return Bitmap object, or NULL upon error.
  */
 struct caca_bitmap *caca_create_bitmap(unsigned int bpp, unsigned int w,
                                        unsigned int h, unsigned int pitch,
@@ -237,11 +243,14 @@ struct caca_bitmap *caca_create_bitmap(unsigned int bpp, unsigned int w,
 /**
  * \brief Set the palette of an 8bpp bitmap object.
  *
- * \param bitmap The bitmap object.
- * \param red An array of 256 red values.
- * \param green An array of 256 green values.
- * \param blue An array of 256 blue values.
- * \param alpha An array of 256 alpha values.
+ * Set the palette of an 8 bits per pixel bitmap. Values should be between
+ * 0 and 4095 (0xfff).
+ *
+ * \param bitmap Bitmap object.
+ * \param red Array of 256 red values.
+ * \param green Array of 256 green values.
+ * \param blue Array of 256 blue values.
+ * \param alpha Array of 256 alpha values.
  */
 void caca_set_bitmap_palette(struct caca_bitmap *bitmap,
                              unsigned int red[], unsigned int green[],
@@ -276,8 +285,9 @@ void caca_set_bitmap_palette(struct caca_bitmap *bitmap,
 /**
  * \brief Free the memory associated with a bitmap.
  *
- * \param bitmap The bitmap object to be freed.
- * \return void
+ * Free the memory allocated by caca_create_bitmap().
+ *
+ * \param bitmap Bitmap object.
  */
 void caca_free_bitmap(struct caca_bitmap *bitmap)
 {
@@ -377,13 +387,15 @@ static inline void rgb2hsv_default(int r, int g, int b,
 /**
  * \brief Draw a bitmap on the screen.
  *
+ * Draw a bitmap at the given coordinates. The bitmap can be of any size and
+ * will be stretched to the text area.
+ *
  * \param x1 X coordinate of the upper-left corner of the drawing area.
  * \param y1 Y coordinate of the upper-left corner of the drawing area.
  * \param x2 X coordinate of the lower-right corner of the drawing area.
  * \param y2 Y coordinate of the lower-right corner of the drawing area.
- * \param bitmap The bitmap object to be drawn.
- * \param pixels A pointer to the bitmap's pixels.
- * \return void
+ * \param bitmap Bitmap object to be drawn.
+ * \param pixels Bitmap's pixels.
  */
 void caca_draw_bitmap(int x1, int y1, int x2, int y2,
                       struct caca_bitmap const *bitmap, void *pixels)
