@@ -162,3 +162,5 @@ void add_explosion( game *g, explosions *ex, int x, int y, int vx, int vy, int t
 void draw_explosions( game *g, explosions *ex );
 void update_explosions( game *g, explosions *ex );
 
+void ceo_alert( void );
+
