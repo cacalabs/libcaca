@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: player.c,v 1.4 2002/12/22 18:44:12 sam Exp $
+ *   $Id: player.c,v 1.5 2002/12/23 13:13:04 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -31,7 +31,8 @@ player * create_player( game *g )
 
     p->x = g->w / 2;
     p->y = g->h - 2;
-    p->dir = 0;
+    p->vx = 0;
+    p->vy = 0;
     p->weapon = 0;
     p->nuke = 0;
 
@@ -71,18 +72,24 @@ void update_player( game *g, player *p )
         p->nuke--;
     }
 
-    if( p->dir < 0 )
-    {
-        if( p->dir == -3 && p->x > -2 ) p->x -= 1;
-        else if( p->x > -1 ) p->x -= 1;
+    p->x += p->vx;
 
-        p->dir++;
-    }
-    else if( p->dir > 0 )
+    if( p->vx < 0 )
     {
-        if( p->dir == 3 && p->x < g->w - 8 ) p->x += 1;
-        else if( p->x < g->w - 7 ) p->x += 1;
-        p->dir--;
+        p->vx++;
+    }
+    else if( p->vx > 0 )
+    {
+        p->vx--;
+    }
+
+    if( p->x < 1 )
+    {
+        p->x = 1;
+    }
+    else if( p->x > g->w - 7 )
+    {
+        p->x = g->w - 7;
     }
 }
 

@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: main.c,v 1.12 2002/12/23 12:47:36 sam Exp $
+ *   $Id: main.c,v 1.13 2002/12/23 13:13:04 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -98,7 +98,7 @@ static void start_game (game *g)
                     skip = 1;
                     break;
                 case 'h':
-                    g->p->dir = -3;
+                    g->p->vx = -2;
                     break;
                 case 'j':
                     if( g->p->y < g->h - 2 ) g->p->y += 1;
@@ -107,7 +107,7 @@ static void start_game (game *g)
                     if( g->p->y > 1 ) g->p->y -= 1;
                     break;
                 case 'l':
-                    g->p->dir = 3;
+                    g->p->vx = 2;
                     break;
                 case 'n':
                     if( g->p->nuke == 0 )

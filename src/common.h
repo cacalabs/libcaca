@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: common.h,v 1.11 2002/12/23 10:06:27 sam Exp $
+ *   $Id: common.h,v 1.12 2002/12/23 13:13:04 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -102,7 +102,7 @@ typedef struct
 typedef struct
 {
     int x, y;
-    int dir;
+    int vx, vy;
     int weapon, nuke;
 
 } player;
