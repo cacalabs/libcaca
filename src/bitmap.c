@@ -568,7 +568,6 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
     for(y = y1 > 0 ? y1 : 0; y <= y2 && y <= (int)_caca_height; y++)
     {
         int remain_r = 0, remain_g = 0, remain_b = 0;
-        int remain_r_next = 0, remain_g_next = 0, remain_b_next = 0;
 
         for(x = x1 > 0 ? x1 : 0, _init_dither(y);
             x <= x2 && x <= (int)_caca_width;
@@ -578,6 +577,7 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
         int ch = 0, distmin;
         int r, g, b, a, fg_r = 0, fg_g = 0, fg_b = 0, bg_r, bg_g, bg_b;
         int fromx, fromy, tox, toy, myx, myy, dots, dist;
+        int error[3];
 
         enum caca_color outfg = 0, outbg = 0;
         char outch;
@@ -641,12 +641,6 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
             r += remain_r;
             g += remain_g;
             b += remain_b;
-            r += remain_r_next;
-            g += remain_g_next;
-            b += remain_b_next;
-            remain_r_next = fs_r[x+1];
-            remain_g_next = fs_g[x+1];
-            remain_b_next = fs_b[x+1];
         }
         else
         {
@@ -710,14 +704,17 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
                 }
             }
             outch = density_chars[4 * ch];
+
+            if(_caca_dithering == CACA_DITHERING_FSTEIN)
+            {
+                error[0] = r - (fg_r * ch + bg_r * ((2*DCHMAX-1) - ch)) / (2*DCHMAX-1);
+                error[1] = g - (fg_g * ch + bg_g * ((2*DCHMAX-1) - ch)) / (2*DCHMAX-1);
+                error[2] = b - (fg_b * ch + bg_b * ((2*DCHMAX-1) - ch)) / (2*DCHMAX-1);
+            }
         }
         else
         {
-            int lum = r;
-            if(g > lum)
-                lum = g;
-            if(b > lum)
-                lum = b;
+            int lum = r; if(g > lum) lum = g; if(b > lum) lum = b;
             outfg = outbg;
             outbg = CACA_COLOR_BLACK;
 
@@ -727,28 +724,29 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
             else if(ch > (int)(DCHMAX - 1))
                 ch = DCHMAX - 1;
             outch = density_chars[4 * ch];
+
+            if(_caca_dithering == CACA_DITHERING_FSTEIN)
+            {
+                error[0] = r - bg_r * ch / (DCHMAX-1);
+                error[1] = g - bg_g * ch / (DCHMAX-1);
+                error[2] = b - bg_b * ch / (DCHMAX-1);
+            }
         }
 
         if(_caca_dithering == CACA_DITHERING_FSTEIN)
         {
-            remain_r = r - (fg_r * ch + bg_r * ((2*DCHMAX-1) - ch)) / (2*DCHMAX-1);
-            remain_g = g - (fg_g * ch + bg_g * ((2*DCHMAX-1) - ch)) / (2*DCHMAX-1);
-            remain_b = b - (fg_b * ch + bg_b * ((2*DCHMAX-1) - ch)) / (2*DCHMAX-1);
-            remain_r_next = fs_r[x+1];
-            remain_g_next = fs_g[x+1];
-            remain_b_next = fs_b[x+1];
-            fs_r[x-1] += 3 * remain_r / 16;
-            fs_g[x-1] += 3 * remain_g / 16;
-            fs_b[x-1] += 3 * remain_b / 16;
-            fs_r[x] = 5 * remain_r / 16;
-            fs_g[x] = 5 * remain_g / 16;
-            fs_b[x] = 5 * remain_b / 16;
-            fs_r[x+1] = 1 * remain_r / 16;
-            fs_g[x+1] = 1 * remain_g / 16;
-            fs_b[x+1] = 1 * remain_b / 16;
-            remain_r = 7 * remain_r / 16;
-            remain_g = 7 * remain_g / 16;
-            remain_b = 7 * remain_b / 16;
+            remain_r = fs_r[x+1] + 7 * error[0] / 16;
+            remain_g = fs_g[x+1] + 7 * error[1] / 16;
+            remain_b = fs_b[x+1] + 7 * error[2] / 16;
+            fs_r[x-1] += 3 * error[0] / 16;
+            fs_g[x-1] += 3 * error[1] / 16;
+            fs_b[x-1] += 3 * error[2] / 16;
+            fs_r[x] = 5 * error[0] / 16;
+            fs_g[x] = 5 * error[1] / 16;
+            fs_b[x] = 5 * error[2] / 16;
+            fs_r[x+1] = 1 * error[0] / 16;
+            fs_g[x+1] = 1 * error[1] / 16;
+            fs_b[x+1] = 1 * error[2] / 16;
         }
 
         /* Now output the character */
