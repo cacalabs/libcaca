@@ -10,6 +10,8 @@
 #define HAVE_MEMORY_H 1
 /* #undef HAVE_NCURSES_H */
 #define HAVE_PUTENV 1
+/* #undef HAVE_SIGNAL */
+/* #undef HAVE_SIGNAL_H */
 /* #undef HAVE_SLANG_H */
 /* #undef HAVE_SLANG_SLANG_H */
 #define HAVE_SLEEP 1
@@ -18,14 +20,15 @@
 /* #undef HAVE_STRCASECMP */
 #define HAVE_STRINGS_H 1
 #define HAVE_STRING_H 1
+/* #undef HAVE_SYS_IOCTL_H */
 #define HAVE_SYS_STAT_H 1
+/* #undef HAVE_SYS_TIME_H */
 #define HAVE_SYS_TYPES_H 1
 /* #undef HAVE_UNISTD_H */
 /* #undef HAVE_USLEEP */
 /* #undef HAVE_VSNPRINTF */
 #define HAVE_WINDOWS_H 1
 /* #undef HAVE_X11_XKBLIB_H */
-#define HAVE__VSNPRINTF 1
 /* #undef NO_MINUS_C_MINUS_O */
 #define PACKAGE "libcaca"
 #define PACKAGE_BUGREPORT ""
@@ -33,6 +36,7 @@
 #define PACKAGE_STRING ""
 #define PACKAGE_TARNAME ""
 #define PACKAGE_VERSION ""
+/* #undef RETSIGTYPE */
 /* #undef SCREENUPDATE_IN_PC_H */
 #define STDC_HEADERS 1
 /* #undef USE_CONIO */

@@ -69,6 +69,13 @@ typedef unsigned char uint8_t;
 #endif
 #include <stdarg.h>
 
+#if defined(HAVE_SIGNAL_H)
+#   include <signal.h>
+#endif
+#if defined(HAVE_SYS_IOCTL_H)
+#   include <sys/ioctl.h>
+#endif
+
 #include "caca.h"
 #include "caca_internals.h"
 
@@ -237,6 +244,10 @@ static void caca_handle_resize(void);
 
 #if defined(USE_SLANG)
 static void slang_init_palette(void);
+#endif
+
+#if defined(HAVE_SIGNAL) && (defined(USE_NCURSES) || defined(USE_SLANG))
+static RETSIGTYPE sigwinch_handler(int);
 #endif
 
 #if defined(USE_X11)
@@ -563,6 +574,10 @@ void caca_clear(void)
 #if !defined(_DOXYGEN_SKIP_ME)
 int _caca_init_graphics(void)
 {
+#if defined(HAVE_SIGNAL) && (defined(USE_NCURSES) || defined(USE_SLANG))
+    signal(SIGWINCH, sigwinch_handler);
+#endif
+
 #if defined(USE_SLANG)
     if(_caca_driver == CACA_DRIVER_SLANG)
     {
@@ -1202,23 +1217,29 @@ static void caca_handle_resize(void)
     _caca_width = _caca_new_width;
     _caca_height = _caca_new_height;
 
-    free(_caca_empty_line);
-    _caca_empty_line = malloc(_caca_width + 1);
-    memset(_caca_empty_line, ' ', _caca_width);
-    _caca_empty_line[_caca_width] = '\0';
+    if(_caca_width != old_width)
+    {
+        free(_caca_empty_line);
+        _caca_empty_line = malloc(_caca_width + 1);
+        memset(_caca_empty_line, ' ', _caca_width);
+        _caca_empty_line[_caca_width] = '\0';
 
-    free(_caca_scratch_line);
-    _caca_scratch_line = malloc(_caca_width + 1);
+        free(_caca_scratch_line);
+        _caca_scratch_line = malloc(_caca_width + 1);
+    }
 
 #if defined(USE_SLANG)
     if(_caca_driver == CACA_DRIVER_SLANG)
     {
+        SLsmg_reinit_smg();
     }
     else
 #endif
 #if defined(USE_NCURSES)
     if(_caca_driver == CACA_DRIVER_NCURSES)
     {
+        resize_term(_caca_height, _caca_width);
+        wrefresh(curscr);
     }
     else
 #endif
@@ -1308,6 +1329,39 @@ static int x11_error_handler(Display *dpy, XErrorEvent *event)
 {
     /* Ignore the error */
     return 0;
+}
+#endif
+
+#if defined(HAVE_SIGNAL) && (defined(USE_NCURSES) || defined(USE_SLANG))
+static RETSIGTYPE sigwinch_handler(int sig)
+{
+    struct winsize size;
+
+#if defined(USE_SLANG)
+    if(_caca_driver == CACA_DRIVER_SLANG)
+    {
+        SLtt_get_screen_size();
+        _caca_new_width = SLtt_Screen_Cols;
+        _caca_new_height = SLtt_Screen_Rows;
+    }
+    else
+#endif
+#if defined(USE_NCURSES)
+    if(_caca_driver == CACA_DRIVER_NCURSES)
+    {
+        if(ioctl(fileno(stdout), TIOCGWINSZ, &size) == 0)
+        {
+            _caca_new_width = size.ws_col;
+            _caca_new_height = size.ws_row;
+        }
+    }
+    else
+#endif
+    {
+        /* Dummy */
+    }
+
+    signal(SIGWINCH, sigwinch_handler);;
 }
 #endif
 
