@@ -123,7 +123,7 @@ static void mask2shift(unsigned int mask, int *right, int *left)
 /**
  * \brief Create an internal bitmap object.
  *
- * \param bitmap The bitmap depth in bits per pixel.
+ * \param bpp The bitmap depth in bits per pixel.
  * \param w The bitmap width in pixels.
  * \param h The bitmap height in pixels.
  * \param pitch The bitmap pitch in bytes.

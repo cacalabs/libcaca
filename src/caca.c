@@ -173,11 +173,13 @@ unsigned int caca_get_height(void)
     return _caca_height;
 }
 
-/**
- * \brief Translate a colour value into its name.
+/** \brief Translate a colour index into the colour's name.
  *
- * \param color The colour value.
- * \return A static string containing the colour's name.
+ *  This function translates a caca_color enum into a human-readable
+ *  description string of the associated colour.
+ *
+ *  \param color The colour value.
+ *  \return A static string containing the colour's name.
  */
 const char *caca_get_color_name(enum caca_color color)
 {
@@ -268,11 +270,13 @@ void caca_set_feature(enum caca_feature feature)
     }
 }
 
-/**
- * \brief Translate a feature value into its name.
+/** \brief Translate a feature value into the feature's name.
  *
- * \param feature The feature value.
- * \return A static string containing the feature's name.
+ *  This function translates a caca_feature enum into a human-readable
+ *  description string of the associated feature.
+ *
+ *  \param feature The feature value.
+ *  \return A static string containing the feature's name.
  */
 const char *caca_get_feature_name(enum caca_feature feature)
 {
