@@ -34,7 +34,11 @@
 #define XSIZ 256
 #define YSIZ 256
 
-#define METASIZE 128
+#define METASIZE 100
+#define METABALLS 24
+
+/* Colour index where to crop balls */
+#define CROPBALL 180
 
 static void create_ball(void);
 static void draw_ball(unsigned int, unsigned int);
@@ -44,32 +48,35 @@ static unsigned char metaball[METASIZE * METASIZE];
 
 int main(int argc, char **argv)
 {
-    struct caca_bitmap *caca_bitmap;
-    float i = 0, j = 0, k = 0;
-    int p;
-    unsigned int x[5], y[5];
     int r[256], g[256], b[256], a[256];
+    float d[METABALLS], di[METABALLS], dj[METABALLS], dk[METABALLS];
+    unsigned int x[METABALLS], y[METABALLS];
+    struct caca_bitmap *caca_bitmap;
+    float i = 10.0, j = 17.0, k = 11.0;
+    int p;
 
     if(caca_init())
         return 1;
 
-    caca_set_delay(0);
+    caca_set_delay(10000);
 
     /* Make the palette eatable by libcaca */
     for(p = 0; p < 256; p++)
     {
-        r[p] = p < 0xc0 ? 0 : (p - 0xc0) * 0x40;
-        g[p] = p < 0x40 ? 0 : p < 0xc0 ? (p - 0x40) * 0x20 : 0xfff;
+        r[p] = p < 0x40 ? 0 : p < 0xc0 ? (p - 0x40) * 0x20 : 0xfff;
+        g[p] = p < 0xc0 ? 0 : (p - 0xc0) * 0x40;
         b[p] = p < 0x40 ? p * 0x40 : 0xfff;
         a[p] = 0x0;
     }
 
     /* Crop the palette */
-    for(p = 0; p < 150; p++)
+    for(p = 0; p < CROPBALL; p++)
         r[p] = g[p] = b[p] = a[p] = 0x0;
 
-    /* Create the bitmap */
-    caca_bitmap = caca_create_bitmap(8, XSIZ, YSIZ, XSIZ, 0, 0, 0, 0);
+    /* Create a libcaca bitmap smaller than our pixel buffer, so that we
+     * display only the interesting part of it */
+    caca_bitmap = caca_create_bitmap(8, XSIZ - METASIZE, YSIZ - METASIZE,
+                                     XSIZ, 0, 0, 0, 0);
 
     /* Set the palette */
     caca_set_bitmap_palette(caca_bitmap, r, g, b, a);
@@ -77,35 +84,42 @@ int main(int argc, char **argv)
     /* Generate ball sprite */
     create_ball();
 
+    for(p = 0; p < METABALLS; p++)
+    {
+        d[p] = caca_rand(0, 100);
+        di[p] = (float)caca_rand(500, 4000) / 6000.0;
+        dj[p] = (float)caca_rand(500, 4000) / 6000.0;
+        dk[p] = (float)caca_rand(500, 4000) / 6000.0;
+    }
+
     /* Go ! */
     while(!caca_get_event(CACA_EVENT_KEY_PRESS))
     {
         /* Silly paths for our balls */
-        x[0] = (1 + sin(i + k)) * (XSIZ-METASIZE) / 2;
-        y[0] = (1 + cos(1 + j)) * (YSIZ-METASIZE) / 2;
-        x[1] = (1 + cos(2 + j * 2 + k)) * (XSIZ-METASIZE) / 2;
-        y[1] = (1 + cos(3 + i / 2 + j)) * (YSIZ-METASIZE) / 2;
-        x[2] = (1 + cos(4 + k * 2)) * (XSIZ-METASIZE) / 2;
-        y[2] = (1 + cos(i + j / 2)) * (YSIZ-METASIZE) / 2;
-        x[3] = (1 + sin(6 + j * 2)) * (XSIZ-METASIZE) / 2;
-        y[3] = (1 + cos(7 + i / 2)) * (YSIZ-METASIZE) / 2;
-        x[4] = (1 + cos(i - k / 2)) * (XSIZ-METASIZE) / 2;
-        y[4] = (1 + sin(i + k / 2)) * (YSIZ-METASIZE) / 2;
+        for(p = 0; p < METABALLS; p++)
+        {
+            float u = di[p] * i + dj[p] * j + dk[p] * sin(di[p] * k);
+            float v = d[p] + di[p] * j + dj[p] * k + dk[p] * sin(dk[p] * i);
+            u = sin(i + u * 2.1) * (1.0 + sin(u));
+            v = sin(j + v * 1.9) * (1.0 + sin(v));
+            x[p] = (XSIZ - METASIZE) / 2 + u * (XSIZ - METASIZE) / 4;
+            y[p] = (YSIZ - METASIZE) / 2 + v * (YSIZ - METASIZE) / 4;
+        }
 
         i += 0.011;
-        j += 0.021;
-        k += 0.029;
+        j += 0.017;
+        k += 0.019;
 
         memset(pixels, 0, XSIZ * YSIZ);
 
         /* Here is all the trick. Maybe if you're that
          * clever you'll understand. */
-        for(p = 0; p < 5; p++)
+        for(p = 0; p < METABALLS; p++)
             draw_ball(x[p], y[p]);
 
         /* Draw our virtual buffer to screen, letting libcaca resize it */
-        caca_draw_bitmap(-10, -10, caca_get_width() + 9, caca_get_height() + 9,
-                         caca_bitmap, pixels);
+        caca_draw_bitmap(0, 0, caca_get_width() - 1, caca_get_height() - 1,
+                         caca_bitmap, pixels + (METASIZE / 2) * (1 + XSIZ));
         caca_refresh();
     }
 
