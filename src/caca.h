@@ -63,6 +63,33 @@ enum caca_dithering
 };
 
 /*
+ * Keys
+ */
+enum caca_key
+{
+    CACA_KEY_UP = 273,
+    CACA_KEY_DOWN = 274,
+    CACA_KEY_LEFT = 275,
+    CACA_KEY_RIGHT = 276,
+
+    CACA_KEY_F1 = 282,
+    CACA_KEY_F2 = 283,
+    CACA_KEY_F3 = 284,
+    CACA_KEY_F4 = 285,
+    CACA_KEY_F5 = 286,
+    CACA_KEY_F6 = 287,
+    CACA_KEY_F7 = 288,
+    CACA_KEY_F8 = 289,
+    CACA_KEY_F9 = 290,
+    CACA_KEY_F10 = 291,
+    CACA_KEY_F11 = 292,
+    CACA_KEY_F12 = 293,
+    CACA_KEY_F13 = 294,
+    CACA_KEY_F14 = 295,
+    CACA_KEY_F15 = 296
+};
+
+/*
  * Types
  */
 struct caca_sprite;
@@ -80,7 +107,7 @@ const char *caca_get_color_name(unsigned int);
 void caca_refresh(void);
 void caca_end(void);
 
-char caca_get_key(void);
+int caca_get_key(void);
 
 void caca_set_color(enum caca_color);
 enum caca_color caca_get_color(void);

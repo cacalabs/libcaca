@@ -18,3 +18,5 @@ libcaca_a_SOURCES = \
 	blit.c \
 	$(NULL)
 
+include_HEADERS = caca.h
+

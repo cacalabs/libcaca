@@ -85,6 +85,7 @@ void caca_set_dithering(enum caca_dithering dither)
 
 void caca_blit(int x1, int y1, int x2, int y2, void *pixels, int w, int h)
 {
+    static int white_colors[] = {CACA_COLOR_DARKGRAY, CACA_COLOR_LIGHTGRAY, CACA_COLOR_WHITE};
     static int light_colors[] = {CACA_COLOR_LIGHTMAGENTA, CACA_COLOR_LIGHTRED, CACA_COLOR_YELLOW, CACA_COLOR_LIGHTGREEN, CACA_COLOR_LIGHTCYAN, CACA_COLOR_LIGHTBLUE, CACA_COLOR_LIGHTMAGENTA};
     static int dark_colors[] = {CACA_COLOR_MAGENTA, CACA_COLOR_RED, CACA_COLOR_BROWN, CACA_COLOR_GREEN, CACA_COLOR_CYAN, CACA_COLOR_BLUE, CACA_COLOR_MAGENTA};
     static char foo[] = { ' ', '.', ':', ';', '=', '%', '$', 'W', '#', '8', '@' };
@@ -100,7 +101,8 @@ void caca_blit(int x1, int y1, int x2, int y2, void *pixels, int w, int h)
         int tmp = y2; y2 = y1; y1 = tmp;
     }
 
-    pitch = (3 * w + 3) / 4 * 4;
+    //pitch = (3 * w + 3) / 4 * 4;
+    pitch = 4 * w;
 
     for(y = y1 > 0 ? y1 : 0; y <= y2 && y <= (int)caca_get_height(); y++)
     {
@@ -112,9 +114,12 @@ void caca_blit(int x1, int y1, int x2, int y2, void *pixels, int w, int h)
         {
             int fromx = w * (x - x1) / (x2 - x1 + 1);
             int fromy = h * (y - y1) / (y2 - y1 + 1);
-            int r = ((unsigned char *)pixels)[3 * fromx + pitch * fromy];
-            int g = ((unsigned char *)pixels)[3 * fromx + 1 + pitch * fromy];
-            int b = ((unsigned char *)pixels)[3 * fromx + 2 + pitch * fromy];
+            //int r = ((unsigned char *)pixels)[3 * fromx + pitch * fromy];
+            //int g = ((unsigned char *)pixels)[3 * fromx + 1 + pitch * fromy];
+            //int b = ((unsigned char *)pixels)[3 * fromx + 2 + pitch * fromy];
+            int b = ((unsigned char *)pixels)[4 * fromx + pitch * fromy];
+            int g = ((unsigned char *)pixels)[4 * fromx + 1 + pitch * fromy];
+            int r = ((unsigned char *)pixels)[4 * fromx + 2 + pitch * fromy];
             int hue, sat, val;
 
             int min = r, max = r, delta;
@@ -146,7 +151,7 @@ void caca_blit(int x1, int y1, int x2, int y2, void *pixels, int w, int h)
             }
             else
             {
-                caca_set_color(CACA_COLOR_LIGHTGRAY);
+                caca_set_color(white_colors[max * 3 / 256]);
             }
 
             caca_putchar(x, y, foo[(r + g + b + 2 * _get_dither()) / 3 / 25]);

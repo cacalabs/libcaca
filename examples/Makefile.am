@@ -13,7 +13,7 @@ if USE_NCURSES
 LDFLAGS_ncurses = -lncurses
 endif
 
-bin_PROGRAMS = demo spritedit
+noinst_PROGRAMS = demo spritedit
 
 demo_SOURCES = demo.c
 demo_LDADD = ../src/libcaca.a $(LDFLAGS_slang) $(LDFLAGS_ncurses) -lm
