@@ -6,13 +6,13 @@ if DOXYGEN
 htmldoc_DATA = html/doxygen.css html/doxygen.png
 htmldocdir = $(datadir)/doc/libcaca-dev/html
 if LATEX
-psdoc_DATA = latex/refman.ps
+psdoc_DATA = latex/libcaca.ps
 psdocdir = $(datadir)/doc/libcaca-dev/ps
 endif
 endif
 
 html/doxygen.css html/doxygen.png: stamp-doxygen
-latex/refman.ps: stamp-latex
+latex/libcaca.ps: stamp-latex
 
 stamp-doxygen:
 if DOXYGEN
@@ -23,7 +23,9 @@ endif
 stamp-latex: stamp-doxygen
 if DOXYGEN
 if LATEX
+	rm -f latex/libcaca.ps
 	cd latex && $(MAKE) $(AM_CFLAGS) ps
+	mv latex/refman.ps latex/libcaca.ps
 	touch stamp-latex
 endif
 endif
