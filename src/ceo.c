@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: ceo.c,v 1.4 2002/12/22 22:17:41 sam Exp $
+ *   $Id: ceo.c,v 1.5 2002/12/23 10:06:27 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 
 #include "config.h"
 
+#include <stdio.h>
 #include <unistd.h>
 
 #include "common.h"

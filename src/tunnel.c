@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: tunnel.c,v 1.5 2002/12/23 09:28:37 sam Exp $
+ *   $Id: tunnel.c,v 1.6 2002/12/23 10:06:27 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -39,8 +39,6 @@ tunnel * create_tunnel( game *g, int w, int h )
 
     if( t->w >= g->w )
     {
-        t->left[0] = -10;
-        t->right[0] = g->w + 10;
         for( i = 0; i < g->h; i++ )
         {
             t->left[i] = -10;
@@ -81,7 +79,7 @@ void update_tunnel( game *g, tunnel *t )
     int i,j,k;
 
     /* Slide tunnel one block vertically */
-    for( i = t->h; i--; )
+    for( i = t->h - 1; i--; )
     {
         t->left[i+1] = t->left[i];
         t->right[i+1] = t->right[i];

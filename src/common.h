@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: common.h,v 1.10 2002/12/23 09:28:37 sam Exp $
+ *   $Id: common.h,v 1.11 2002/12/23 10:06:27 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -32,12 +32,17 @@
 #   define gfx_goto(x,y) SLsmg_gotorc(y,x)
 #   define gfx_putchar(x) SLsmg_write_char(x)
 #   define gfx_putstr(x) SLsmg_write_string(x)
-#else
+#elif USE_NCURSES
 #   include <curses.h>
 #   define gfx_color(x) attrset(COLOR_PAIR(x))
 #   define gfx_goto(x,y) move(y,x)
 #   define gfx_putchar(x) addch(x)
 #   define gfx_putstr(x) addstr(x)
+#else
+#   define gfx_color(x) do{}while(0)
+#   define gfx_goto(x,y) do{}while(0)
+#   define gfx_putchar(x) do{}while(0)
+#   define gfx_putstr(x) do{}while(0)
 #endif
 
 #define gfx_putcharTO(x,y,c) do{ gfx_goto(x,y); gfx_putchar(c); }while(0)

@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: main.c,v 1.9 2002/12/23 09:28:37 sam Exp $
+ *   $Id: main.c,v 1.10 2002/12/23 10:06:27 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -69,6 +69,7 @@ static void start_game (game *g)
     g->p = create_player( g );
     g->al = malloc(sizeof(aliens));
 
+    init_bonus( g, g->bo );
     init_weapons( g, g->wp );
     init_explosions( g, g->ex );
     init_aliens( g, g->al );
@@ -128,7 +129,7 @@ static void start_game (game *g)
                         add_weapon( g, g->wp, (g->p->x + 2) << 4, g->p->y << 4, 0, 0, WEAPON_BEAM );
                     }
                     break;
-                case 'd':
+                case 'f':
                     if( g->p->nuke == 0 )
                     {
                         g->p->nuke = 40;
@@ -222,10 +223,7 @@ static void start_game (game *g)
     }
 
     free_starfield( g, g->sf );
-
-#if 0
-    free_player( p );
     free_tunnel( g->t );
-#endif
+//    free_player( g->p );
 }
 

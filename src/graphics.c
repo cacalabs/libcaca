@@ -3,7 +3,7 @@
  *   Copyright (c) 2002 Sam Hocevar <sam@zoy.org>
  *                 All Rights Reserved
  *
- *   $Id: graphics.c,v 1.4 2002/12/22 18:44:12 sam Exp $
+ *   $Id: graphics.c,v 1.5 2002/12/23 10:06:27 sam Exp $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ int init_graphics( void )
 
     SLsmg_cls();
     SLsmg_refresh();
-#else
+#elif USE_NCURSES
     /* Initialize ncurses library */
     initscr();
     keypad(stdscr, TRUE);
@@ -57,6 +57,8 @@ int init_graphics( void )
     cbreak();
     noecho();
     nodelay(stdscr, TRUE);
+#else
+    /* Dummy driver */
 #endif
 
     return 0;
@@ -80,7 +82,7 @@ void init_game( game *g )
 
     g->w = SLtt_Screen_Cols;
     g->h = SLtt_Screen_Rows;
-#else
+#elif USE_NCURSES
     start_color();
 
     init_pair( BLACK, COLOR_BLACK, COLOR_BLACK );
@@ -96,6 +98,10 @@ void init_game( game *g )
 
     g->w = COLS;
     g->h = LINES;
+#else
+    /* Use dummy driver */
+    g->w = 80;
+    g->h = 25;
 #endif
 }
 
@@ -106,13 +112,15 @@ char get_key( void )
     {
         return SLang_getkey();
     }
-#else
+#elif USE_NCURSES
     char key;
 
     if( ( key = getch() ) != ERR )
     {
         return key;
     }
+#else
+    /* Use dummy driver */
 #endif
 
     return 0;
@@ -122,8 +130,10 @@ void clear_graphics( void )
 {
 #ifdef USE_SLANG
     SLsmg_cls();
-#else
+#elif USE_NCURSES
     clear();
+#else
+    /* Use dummy driver */
 #endif
 }
 
@@ -132,8 +142,10 @@ void refresh_graphics( void )
     gfx_goto( 0, 0 );
 #ifdef USE_SLANG
     SLsmg_refresh();
-#else
+#elif USE_NCURSES
     refresh();
+#else
+    /* Use dummy driver */
 #endif
 }
 
@@ -142,9 +154,10 @@ void end_graphics( void )
 #ifdef USE_SLANG
     SLang_reset_tty();
     SLsmg_reset_smg();
-#else
+#elif USE_NCURSES
     endwin();
+#else
+    /* Use dummy driver */
 #endif
 }
-
 

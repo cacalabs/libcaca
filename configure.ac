@@ -13,18 +13,26 @@ AM_CONFIG_HEADER(config.h)
 AM_PROG_CC_C_O
 AC_PROG_CPP
 
+AC_ARG_ENABLE(slang,
+  [  --enable-slang          slang graphics support (default enabled)])
 AC_ARG_ENABLE(ncurses,
-  [  --enable-ncurses        ncurses interface support (default is slang)])
+  [  --enable-ncurses        ncurses graphics support (default disabled)])
 
 if test "${enable_ncurses}" = "yes"
 then
   AC_CHECK_HEADER(ncurses.h,:,AC_MSG_ERROR([cannot find ncurses headers]))
   AC_CHECK_LIB(ncurses,initscr,:,AC_MSG_ERROR([cannot find ncurses library]))
 else
-  AC_CHECK_HEADER(slang.h,:,AC_MSG_ERROR([cannot find slang headers]))
-  AC_CHECK_LIB(slang,SLkp_init,:,AC_MSG_ERROR([cannot find slang library]))
+  if test "${enable_slang}" != "no"
+  then
+    AC_CHECK_HEADER(slang.h,:,AC_MSG_ERROR([cannot find slang headers]))
+    AC_CHECK_LIB(slang,SLkp_init,:,AC_MSG_ERROR([cannot find slang library]))
+  else
+    :
+  fi
 fi
 
+AM_CONDITIONAL(USE_SLANG, test "${enable_slang}" != "no")
 AM_CONDITIONAL(USE_NCURSES, test "${enable_ncurses}" = "yes")
 
 AC_OUTPUT([
