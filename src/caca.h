@@ -278,6 +278,7 @@ char const *caca_get_color_name(enum caca_color);
 void caca_putchar(int, int, char);
 void caca_putstr(int, int, char const *);
 void caca_printf(int, int, char const *, ...);
+void caca_get_screen(char *);
 void caca_clear(void);
 /*  @} */
 

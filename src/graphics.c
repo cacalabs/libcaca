@@ -96,6 +96,10 @@ int _caca_resize_event = 0;
 /*
  * Local variables
  */
+#if !defined(_DOXYGEN_SKIP_ME)
+static uint8_t *cache_char, *cache_attr;
+#endif
+
 #if defined(USE_NCURSES)
 static int ncurses_attr[16*16];
 #endif
@@ -174,7 +178,6 @@ long int x11_event_mask = KeyPressMask | KeyReleaseMask | ButtonPressMask
             | ExposureMask;
 int x11_font_width, x11_font_height;
 unsigned int x11_new_width, x11_new_height;
-static uint8_t *x11_char, *x11_attr;
 static int x11_colors[16];
 static Font x11_font;
 static XFontStruct *x11_font_struct;
@@ -185,7 +188,6 @@ static Bool x11_detect_autorepeat;
 #endif
 
 #if defined(USE_WIN32)
-static uint8_t *win32_char, *win32_attr;
 HANDLE win32_hin, win32_hout;
 static HANDLE win32_front, win32_back;
 static CHAR_INFO *win32_buffer;
@@ -376,6 +378,9 @@ void caca_putchar(int x, int y, char c)
        y < 0 || y >= (int)_caca_height)
         return;
 
+    cache_char[x + y * _caca_width] = c;
+    cache_attr[x + y * _caca_width] = (_caca_bgcolor << 4) | _caca_fgcolor;
+
     switch(_caca_driver)
     {
 #if defined(USE_SLANG)
@@ -404,14 +409,10 @@ void caca_putchar(int x, int y, char c)
 #endif
 #if defined(USE_X11)
     case CACA_DRIVER_X11:
-        x11_char[x + y * _caca_width] = c;
-        x11_attr[x + y * _caca_width] = (_caca_bgcolor << 4) | _caca_fgcolor;
         break;
 #endif
 #if defined(USE_WIN32)
     case CACA_DRIVER_WIN32:
-        win32_char[x + y * _caca_width] = c;
-        win32_attr[x + y * _caca_width] = (_caca_bgcolor << 4) | _caca_fgcolor;
         break;
 #endif
     default:
@@ -438,6 +439,7 @@ void caca_putstr(int x, int y, char const *s)
 #if defined(USE_X11) | defined(USE_WIN32)
     char *attrbuf;
 #endif
+    char const *t;
     unsigned int len;
 
     if(y < 0 || y >= (int)_caca_height || x >= (int)_caca_width)
@@ -460,6 +462,15 @@ void caca_putstr(int x, int y, char const *s)
         memcpy(_caca_scratch_line, s, len);
         _caca_scratch_line[len] = '\0';
         s = _caca_scratch_line;
+    }
+
+    charbuf = cache_char + x + y * _caca_width;
+    attrbuf = cache_attr + x + y * _caca_width;
+    t = s;
+    while(*t)
+    {
+        *charbuf++ = *t++;
+        *attrbuf++ = (_caca_bgcolor << 4) | _caca_fgcolor;
     }
 
     switch(_caca_driver)
@@ -497,24 +508,10 @@ void caca_putstr(int x, int y, char const *s)
 #endif
 #if defined(USE_X11)
     case CACA_DRIVER_X11:
-        charbuf = x11_char + x + y * _caca_width;
-        attrbuf = x11_attr + x + y * _caca_width;
-        while(*s)
-        {
-            *charbuf++ = *s++;
-            *attrbuf++ = (_caca_bgcolor << 4) | _caca_fgcolor;
-        }
         break;
 #endif
 #if defined(USE_WIN32)
     case CACA_DRIVER_WIN32:
-        charbuf = win32_char + x + y * _caca_width;
-        attrbuf = win32_attr + x + y * _caca_width;
-        while(*s)
-        {
-            *charbuf++ = *s++;
-            *attrbuf++ = (_caca_bgcolor << 4) | _caca_fgcolor;
-        }
         break;
 #endif
     default:
@@ -560,6 +557,24 @@ void caca_printf(int x, int y, char const *format, ...)
 
     if(buf != tmp)
         free(buf);
+}
+
+/** \brief Get the screen.
+ *
+ *  This function fills a byte array with the character values.
+ */
+void caca_get_screen(char *buffer)
+{
+    unsigned int x, y;
+
+    for(y = 0; y < _caca_height; y++)
+    {
+        for(x = 0; x < _caca_width; x++)
+        {
+            *buffer++ = cache_attr[x + y * _caca_width];
+            *buffer++ = cache_char[x + y * _caca_width];
+        }
+    }
 }
 
 /** \brief Clear the screen.
@@ -726,27 +741,9 @@ int _caca_init_graphics(void)
         if(!_caca_height)
             _caca_height = 32;
 
-        x11_char = malloc(_caca_width * _caca_height * sizeof(int));
-        if(x11_char == NULL)
-            return -1;
-
-        x11_attr = malloc(_caca_width * _caca_height * sizeof(int));
-        if(x11_attr == NULL)
-        {
-            free(x11_char);
-            return -1;
-        }
-
-        memset(x11_char, 0, _caca_width * _caca_height * sizeof(int));
-        memset(x11_attr, 0, _caca_width * _caca_height * sizeof(int));
-
         x11_dpy = XOpenDisplay(NULL);
         if(x11_dpy == NULL)
-        {
-            free(x11_char);
-            free(x11_attr);
             return -1;
-        }
 
         if(getenv("CACA_FONT") && *(getenv("CACA_FONT")))
             font_name = getenv("CACA_FONT");
@@ -758,8 +755,6 @@ int _caca_init_graphics(void)
         if(!x11_font)
         {
             XCloseDisplay(x11_dpy);
-            free(x11_char);
-            free(x11_attr);
             return -1;
         }
 
@@ -768,8 +763,6 @@ int _caca_init_graphics(void)
         {
             XUnloadFont(x11_dpy, x11_font);
             XCloseDisplay(x11_dpy);
-            free(x11_char);
-            free(x11_attr);
             return -1;
         }
 
@@ -885,33 +878,29 @@ int _caca_init_graphics(void)
 
         SetConsoleActiveScreenBuffer(win32_front);
 
-        win32_char = malloc(_caca_width * _caca_height * sizeof(int));
-        if(win32_char == NULL)
-            return -1;
-
-        win32_attr = malloc(_caca_width * _caca_height * sizeof(int));
-        if(win32_attr == NULL)
-        {
-            free(win32_char);
-            return -1;
-        }
-
         win32_buffer = malloc(_caca_width * _caca_height * sizeof(CHAR_INFO));
         if(win32_buffer == NULL)
-        {
-            free(win32_attr);
-            free(win32_char);
             return -1;
-        }
-
-        memset(win32_char, 0, _caca_width * _caca_height * sizeof(int));
-        memset(win32_attr, 0, _caca_width * _caca_height * sizeof(int));
     }
     else
 #endif
     {
         /* Dummy */
     }
+
+    cache_char = malloc(_caca_width * _caca_height * sizeof(uint8_t));
+    if(cache_char == NULL)
+        return -1;
+
+    cache_attr = malloc(_caca_width * _caca_height * sizeof(uint8_t));
+    if(cache_attr == NULL)
+    {
+        free(cache_char);
+        return -1;
+    }
+
+    memset(cache_char, 0, _caca_width * _caca_height * sizeof(uint8_t));
+    memset(cache_attr, 0, _caca_width * _caca_height * sizeof(uint8_t));
 
     _caca_empty_line = malloc(_caca_width + 1);
     memset(_caca_empty_line, ' ', _caca_width);
@@ -927,6 +916,9 @@ int _caca_init_graphics(void)
 
 int _caca_end_graphics(void)
 {
+    free(cache_char);
+    free(cache_attr);
+
 #if defined(USE_SLANG)
     /* Nothing to do */
 #endif
@@ -954,8 +946,6 @@ int _caca_end_graphics(void)
         XUnmapWindow(x11_dpy, x11_window);
         XDestroyWindow(x11_dpy, x11_window);
         XCloseDisplay(x11_dpy);
-        free(x11_char);
-        free(x11_attr);
     }
     else
 #endif
@@ -965,8 +955,6 @@ int _caca_end_graphics(void)
         SetConsoleActiveScreenBuffer(win32_hout);
         CloseHandle(win32_back);
         CloseHandle(win32_front);
-        free(win32_char);
-        free(win32_attr);
     }
     else
 #endif
@@ -1166,7 +1154,7 @@ void caca_refresh(void)
         {
             for(x = 0; x < _caca_width; x += len)
             {
-                unsigned char *attr = x11_attr + x + y * _caca_width;
+                uint8_t *attr = cache_attr + x + y * _caca_width;
 
                 len = 1;
                 while(x + len < _caca_width
@@ -1185,12 +1173,12 @@ void caca_refresh(void)
         {
             for(x = 0; x < _caca_width; x += len)
             {
-                unsigned char *attr = x11_attr + x + y * _caca_width;
+                uint8_t *attr = cache_attr + x + y * _caca_width;
 
                 len = 1;
 
                 /* Skip spaces */
-                if(x11_char[x + y * _caca_width] == ' ')
+                if(cache_char[x + y * _caca_width] == ' ')
                     continue;
 
                 while(x + len < _caca_width
@@ -1200,7 +1188,7 @@ void caca_refresh(void)
                 XSetForeground(x11_dpy, x11_gc, x11_colors[attr[0] & 0xf]);
                 XDrawString(x11_dpy, x11_pixmap, x11_gc, x * x11_font_width,
                             (y + 1) * x11_font_height - x11_font_offset,
-                            x11_char + x + y * _caca_width, len);
+                            cache_char + x + y * _caca_width, len);
             }
         }
 
@@ -1221,9 +1209,9 @@ void caca_refresh(void)
         /* Render everything to our back buffer */
         for(i = 0; i < _caca_width * _caca_height; i++)
         {
-            win32_buffer[i].Char.AsciiChar = win32_char[i];
-            win32_buffer[i].Attributes = win32_fg_palette[win32_attr[i] & 0xf]
-                                       | win32_bg_palette[win32_attr[i] >> 4];
+            win32_buffer[i].Char.AsciiChar = cache_char[i];
+            win32_buffer[i].Attributes = win32_fg_palette[cache_attr[i] & 0xf]
+                                       | win32_bg_palette[cache_attr[i] >> 4];
         }
 
         /* Blit the back buffer to the front buffer */
@@ -1319,9 +1307,6 @@ static void caca_handle_resize(void)
         _caca_width = x11_new_width;
         _caca_height = x11_new_height;
 
-        free(x11_char);
-        free(x11_attr);
-
         new_pixmap = XCreatePixmap(x11_dpy, x11_window,
                                    _caca_width * x11_font_width,
                                    _caca_height * x11_font_height,
@@ -1332,11 +1317,6 @@ static void caca_handle_resize(void)
                   0, 0);
         XFreePixmap(x11_dpy, x11_pixmap);
         x11_pixmap = new_pixmap;
-
-        x11_char = malloc(_caca_width * _caca_height * sizeof(int));
-        memset(x11_char, 0, _caca_width * _caca_height * sizeof(int));
-        x11_attr = malloc(_caca_width * _caca_height * sizeof(int));
-        memset(x11_attr, 0, _caca_width * _caca_height * sizeof(int));
     }
     else
 #endif
@@ -1348,6 +1328,17 @@ static void caca_handle_resize(void)
 #endif
     {
         /* Dummy */
+    }
+
+    if(_caca_width != old_width || _caca_height != old_height)
+    {
+        free(cache_char);
+        free(cache_attr);
+
+        cache_char = malloc(_caca_width * _caca_height * sizeof(uint8_t));
+        memset(cache_char, 0, _caca_width * _caca_height * sizeof(uint8_t));
+        cache_attr = malloc(_caca_width * _caca_height * sizeof(uint8_t));
+        memset(cache_attr, 0, _caca_width * _caca_height * sizeof(uint8_t));
     }
 
     if(_caca_width != old_width)
