@@ -75,6 +75,7 @@ int caca_get_event(void)
 
     if(key[1] == 'O')
     {
+        /* ^[OP ^[OQ ^[OR ^[OS */
         switch(key[2])
         {
         case 'P': return CACA_EVENT_KEY_PRESS | CACA_KEY_F1;
@@ -85,6 +86,7 @@ int caca_get_event(void)
     }
     else if(key[1] == '[')
     {
+        /* ^[[A ^[[B ^[[C ^[[D */
         switch(key[2])
         {
         case 'A': return CACA_EVENT_KEY_PRESS | CACA_KEY_UP;
@@ -96,6 +98,7 @@ int caca_get_event(void)
         key[3] = _read_key();
         key[4] = _read_key();
 
+        /* ^[[Mxxx */
         if(key[2] == 'M')
         {
             int event = CACA_EVENT_MOUSE_CLICK;
@@ -103,12 +106,13 @@ int caca_get_event(void)
             key[5] = _read_key();
 
             event |= (int)(key[3] - ' ') << 16;
-            event |= (int)(key[4] - ' ') << 8;
-            event |= (int)(key[5] - ' ') << 0;
+            event |= (int)(key[4] - '!') << 8;
+            event |= (int)(key[5] - '!') << 0;
 
             return event;
         }
 
+        /* ^[[15~ ^[[17~ ^[[18~ ^[[19~ */
         if(key[2] == '1' && key[4] == '~')
             switch(key[3])
             {
@@ -118,6 +122,7 @@ int caca_get_event(void)
             case '9': return CACA_EVENT_KEY_PRESS | CACA_KEY_F8;
             }
 
+        /* ^[[20~ ^[[21~ ^[[23~ ^[[24~ */
         if(key[2] == '2' && key[4] == '~')
             switch(key[3])
             {
