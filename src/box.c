@@ -28,7 +28,7 @@
 
 box * create_box(game *g, int x, int y, int w, int h)
 {
-    box *b = malloc(sizeof( box ));
+    box *b = malloc(sizeof(box));
 
     b->x = x;
     b->y = y;

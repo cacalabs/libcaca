@@ -161,18 +161,18 @@ static void clip_line(struct line* s)
         s->y1 = s->y2 - (s->x2 - 0) * (s->y2 - s->y1) / (s->x2 - s->x1);
         s->x1 = 0;
     }
-    else if( bits1 & (1<<1) )
+    else if(bits1 & (1<<1))
     {
         int xmax = ee_get_width() - 1;
         s->y1 = s->y2 - (s->x2 - xmax) * (s->y2 - s->y1) / (s->x2 - s->x1);
         s->x1 = xmax;
     }
-    else if( bits1 & (1<<2) )
+    else if(bits1 & (1<<2))
     {
         s->x1 = s->x2 - (s->y2 - 0) * (s->x2 - s->x1) / (s->y2 - s->y1);
         s->y1 = 0;
     }
-    else if( bits1 & (1<<3) )
+    else if(bits1 & (1<<3))
     {
         int ymax = ee_get_height() - 1;
         s->x1 = s->x2 - (s->y2 - ymax) * (s->x2 - s->x1) / (s->y2 - s->y1);

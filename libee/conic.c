@@ -56,7 +56,7 @@ void ee_fill_ellipse(int xo, int yo, int a, int b, char c)
     int y = b;
     int d1 = b*b - (a*a*b) + (a*a/4);
 
-    while( a*a*y - a*a/2 > b*b*(x+1))
+    while(a*a*y - a*a/2 > b*b*(x+1))
     {
         if(d1 < 0)
         {
@@ -103,7 +103,7 @@ void ee_draw_ellipse(int xo, int yo, int a, int b, char c)
 
     ellipsepoints(xo, yo, x, y, c);
 
-    while( a*a*y - a*a/2 > b*b*(x+1))
+    while(a*a*y - a*a/2 > b*b*(x+1))
     {
         if(d1 < 0)
         {
@@ -146,7 +146,7 @@ void ee_draw_thin_ellipse(int xo, int yo, int a, int b)
 
     ellipsepoints(xo, yo, x, y, '-');
 
-    while( a*a*y - a*a/2 > b*b*(x+1))
+    while(a*a*y - a*a/2 > b*b*(x+1))
     {
         if(d1 < 0)
         {
