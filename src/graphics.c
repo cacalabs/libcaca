@@ -47,6 +47,9 @@
 #endif
 #if defined(USE_X11)
 #   include <X11/Xlib.h>
+#   if defined(HAVE_X11_XKBLIB_H)
+#       include <X11/XKBlib.h>
+#   endif
 #endif
 
 #if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
