@@ -62,10 +62,10 @@ int main (int argc, char **argv)
         red[i] = green[i] = blue[i] = alpha[i] = 0;
 
     for(i = 0; i < 3; i++)
-        r[i] = (double)(caca_rand(1, 1000)) / 30000 * M_PI;
+        r[i] = (double)(caca_rand(1, 1000)) / 60000 * M_PI;
 
     for(i = 0; i < 6; i++)
-        R[i] = (double)(caca_rand(1, 1000)) / 5000;
+        R[i] = (double)(caca_rand(1, 1000)) / 10000;
 
     for(y = 0 ; y < TABLEY ; y++)
         for(x = 0 ; x < TABLEX ; x++)
