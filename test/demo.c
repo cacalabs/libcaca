@@ -34,6 +34,7 @@ static void demo_lines(void);
 static void demo_thin_lines(void);
 static void demo_circles(void);
 static void demo_triangles(void);
+static void demo_outlined_triangles(void);
 
 int clipping = 0;
 
@@ -86,6 +87,10 @@ int main(int argc, char **argv)
                 ee_clear();
                 demo = demo_triangles;
                 break;
+            case '6':
+                ee_clear();
+                demo = demo_outlined_triangles;
+                break;
             }
         }
 
@@ -126,6 +131,8 @@ static void display_menu(void)
     ee_putstr("4: circles demo");
     ee_goto(4, 10);
     ee_putstr("5: triangles demo");
+    ee_goto(4, 11);
+    ee_putstr("6: outlined triangles demo");
 
     ee_goto(4, yo - 2);
     ee_putstr("q: quit");
@@ -240,6 +247,40 @@ static void demo_triangles(void)
         ee_fill_triangle(ee_rand(0, w - 1), ee_rand(0, h - 1),
                          ee_rand(0, w - 1), ee_rand(0, h - 1),
                          ee_rand(0, w - 1), ee_rand(0, h - 1), '#');
+    }
+    ee_refresh();
+}
+
+static void demo_outlined_triangles(void)
+{
+    int w = ee_get_width();
+    int h = ee_get_height();
+
+    /* Draw lines */
+    ee_color(ee_rand(1, 10));
+    if(clipping)
+    {
+        ee_fill_triangle(ee_rand(- w, 2 * w), ee_rand(- h, 2 * h),
+                         ee_rand(- w, 2 * w), ee_rand(- h, 2 * h),
+                         ee_rand(- w, 2 * w), ee_rand(- h, 2 * h), '#');
+    }
+    else
+    {
+        int x1, y1, x2, y2, x3, y3;
+
+        x1 = ee_rand(0, w - 1);
+        y1 = ee_rand(0, h - 1);
+        x2 = ee_rand(0, w - 1);
+        y2 = ee_rand(0, h - 1);
+        x3 = ee_rand(0, w - 1);
+        y3 = ee_rand(0, h - 1);
+
+        ee_fill_triangle(x1, y1, x2, y2, x3, y3, '#');
+
+        ee_color(ee_rand(1, 10));
+        ee_draw_thin_line(x1, y1, x2, y2);
+        ee_draw_thin_line(x2, y2, x3, y3);
+        ee_draw_thin_line(x3, y3, x1, y1);
     }
     ee_refresh();
 }
