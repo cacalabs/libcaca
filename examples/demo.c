@@ -27,8 +27,10 @@
 #include <string.h>
 #include <stdio.h>
 
+#if 0
 #include <gdk/gdk.h>
 #include <gdk/gdkpixbuf.h>
+#endif
 
 #include "caca.h"
 
@@ -43,16 +45,20 @@ static void demo_boxes(void);
 static void demo_ellipses(void);
 static void demo_triangles(void);
 static void demo_sprites(void);
+#if 0
 static void demo_blit(void);
+#endif
 
 int bounds = 0;
 int outline = 0;
 int dithering = 0;
 struct caca_sprite *sprite = NULL;
 
+#if 0
 GdkPixbuf *pixbuf;
 char *pixels;
 int bufx, bufy, bufpitch;
+#endif
 
 int main(int argc, char **argv)
 {
@@ -73,6 +79,7 @@ int main(int argc, char **argv)
     if(!sprite)
         sprite = caca_load_sprite("examples/caca.txt");
 
+#if 0
 gdk_init (&argc, &argv);
     //pixbuf = gdk_pixbuf_new_from_file("/home/sam/pix/gally4.jpeg", NULL);
     //pixbuf = gdk_pixbuf_new_from_file("/home/sam/pix/badge1.jpeg", NULL);
@@ -95,6 +102,7 @@ if(!pixbuf) return -2;
     bufpitch = gdk_pixbuf_get_rowstride(pixbuf);
 fprintf(stderr, "bits: %i\n", gdk_pixbuf_get_bits_per_sample(pixbuf));
 fprintf(stderr, "w %i, h %i, stride %i\n", bufx, bufy, bufpitch);
+#endif
 
     /* Main menu */
     display_menu();
@@ -165,10 +173,12 @@ fprintf(stderr, "w %i, h %i, stride %i\n", bufx, bufy, bufpitch);
             case 'S':
                 demo = demo_sprites;
                 break;
+#if 0
             case 'i':
             case 'I':
                 demo = demo_blit;
                 break;
+#endif
             }
 
             if(demo)
@@ -232,7 +242,9 @@ static void display_menu(void)
     caca_putstr(4, 12, "'5': ellipses");
     caca_putstr(4, 13, "'s': sprites");
     caca_putstr(4, 14, "'c': color");
+#if 0
     caca_putstr(4, 15, "'i': image blit");
+#endif
 
     caca_putstr(4, 17, "settings:");
     caca_printf(4, 18, "'o': outline: %s",
@@ -490,11 +502,11 @@ static void demo_sprites(void)
                    caca_rand(0, caca_get_height() - 1), sprite, 0);
 }
 
+#if 0
 static void demo_blit(void)
 {
-#if 0
     caca_blit(6, 4, caca_get_width() - 6, caca_get_height() - 4,
               pixels, bufx, bufy);
-#endif
 }
+#endif
 
