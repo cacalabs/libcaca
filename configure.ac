@@ -29,7 +29,7 @@ AC_ARG_ENABLE(x11,
   [  --enable-x11            X11 support (autodetected)])
 
 AC_CHECK_HEADERS(inttypes.h endian.h)
-AC_CHECK_FUNCS(vsnprintf getenv putenv strcasecmp usleep Sleep)
+AC_CHECK_FUNCS(vsnprintf getenv putenv strcasecmp usleep Sleep gettimeofday)
 AC_CHECK_LIB(m, sin, MATH_LIBS="${MATH_LIBS} -lm")
 
 CACA_DRIVERS="" 

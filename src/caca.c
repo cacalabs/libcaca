@@ -48,6 +48,9 @@
 #if defined(USE_X11)
 #   include <X11/Xlib.h>
 #endif
+#if defined(USE_WIN32)
+#   include <windows.h>
+#endif
 
 #include <stdlib.h>
 #include <string.h>
@@ -156,7 +159,19 @@ int caca_init(void)
     else
 #endif
 #if defined(USE_X11)
-    /* Nothing to do */
+    if(_caca_driver == CACA_DRIVER_X11)
+    {
+        /* Nothing to do */
+    }
+    else
+#endif
+#if defined(USE_WIN32)
+    if(_caca_driver == CACA_DRIVER_WIN32)
+    {
+        /* Nothing to do */
+        printf("initialising win32 driver\n");
+    }
+    else
 #endif
     {
         /* Dummy */
@@ -373,6 +388,13 @@ void caca_end(void)
     }
     else
 #endif
+#if defined(USE_WIN32)
+    if(_caca_driver == CACA_DRIVER_WIN32)
+    {
+        /* Nothing to do */
+    }
+    else
+#endif
     {
         /* Dummy */
     }
@@ -390,6 +412,11 @@ static void caca_init_driver(void)
     /* If the environment variable was set, use it */
     if(var && *var)
     {
+#if defined(USE_WIN32)
+        if(!strcasecmp(var, "win32"))
+            _caca_driver = CACA_DRIVER_WIN32;
+        else
+#endif
 #if defined(USE_CONIO)
         if(!strcasecmp(var, "conio"))
             _caca_driver = CACA_DRIVER_CONIO;
@@ -416,6 +443,10 @@ static void caca_init_driver(void)
     }
 #endif
 
+#if defined(USE_WIN32)
+    _caca_driver = CACA_DRIVER_WIN32;
+    return;
+#endif
 #if defined(USE_CONIO)
     _caca_driver = CACA_DRIVER_CONIO;
     return;
@@ -487,8 +518,10 @@ static void caca_init_features(void)
 
 static void caca_init_terminal(void)
 {
-#if defined(HAVE_GETENV) && defined(HAVE_PUTENV)
+#if defined(HAVE_GETENV) && defined(HAVE_PUTENV) && \
+     (defined(USE_SLANG) || defined(USE_NCURSES))
     char *term, *colorterm, *other;
+#endif
 
 #if defined(USE_SLANG)
     if(_caca_driver != CACA_DRIVER_SLANG)
@@ -498,6 +531,8 @@ static void caca_init_terminal(void)
 #endif
     return;
 
+#if defined(HAVE_GETENV) && defined(HAVE_PUTENV) && \
+     (defined(USE_SLANG) || defined(USE_NCURSES))
     term = getenv("TERM");
     colorterm = getenv("COLORTERM");
 

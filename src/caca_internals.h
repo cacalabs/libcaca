@@ -45,6 +45,9 @@ enum caca_driver
 #if defined(USE_X11)
     CACA_DRIVER_X11 = 4,
 #endif
+#if defined(USE_WIN32)
+    CACA_DRIVER_WIN32 = 5,
+#endif
     CACA_DRIVER_NONE = 0
 };
 
@@ -64,6 +67,7 @@ extern int _caca_init_bitmap(void);
 extern int _caca_end_bitmap(void);
 
 /* Timer functions */
+extern void _caca_sleep(unsigned int);
 extern unsigned int _caca_getticks(struct caca_timer *);
 
 /* Cached screen size */

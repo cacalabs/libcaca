@@ -47,8 +47,9 @@
 #   include <X11/Xutil.h>
 #   include <X11/keysym.h>
 #endif
-
-#include <unistd.h>
+#if defined(USE_WIN32)
+#   include <windows.h>
+#endif
 
 #include "caca.h"
 #include "caca_internals.h"
@@ -121,13 +122,7 @@ unsigned int caca_wait_event(unsigned int event_mask)
         if(event & event_mask)
             return event;
 
-#if defined(HAVE_USLEEP)
-        usleep(10000);
-#elif defined(HAVE_SLEEP)
-        Sleep(10);
-#else
-        SLEEP
-#endif
+        _caca_sleep(10000);
     }
 }
 
@@ -539,6 +534,13 @@ static unsigned int _lowlevel_event(void)
         event = getch();
         _push_event(CACA_EVENT_KEY_RELEASE | event);
         return CACA_EVENT_KEY_PRESS | event;
+    }
+    else
+#endif
+#if defined(USE_WIN32)
+    if(_caca_driver == CACA_DRIVER_WIN32)
+    {
+        return CACA_EVENT_NONE;
     }
     else
 #endif

@@ -61,7 +61,6 @@ typedef unsigned char uint8_t;
 #include <stdio.h> /* BUFSIZ */
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <stdarg.h>
 
 #include "caca.h"
@@ -935,13 +934,7 @@ void caca_refresh(void)
         ticks + IDLE_USEC < (int)_caca_delay;
         ticks += _caca_getticks(&timer))
     {
-#if defined(HAVE_USLEEP)
-        usleep(IDLE_USEC);
-#elif defined(HAVE_SLEEP)
-        Sleep(IDLE_USEC / 1000);
-#else
-        SLEEP
-#endif
+        _caca_sleep(IDLE_USEC);
     }
 
     /* Update the sliding mean of the render time */
