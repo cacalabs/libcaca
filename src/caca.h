@@ -352,6 +352,15 @@ void caca_draw_bitmap(int, int, int, int, struct caca_bitmap const *, void *);
 void caca_free_bitmap(struct caca_bitmap *);
 /*  @} */
 
+/** \defgroup exporter Exporters to various formats
+ *
+ *  These functions exports current image to various text formats
+ *
+ *  @{ */
+char* caca_get_html(void);
+char* caca_get_irc(void);
+/*  @} */
+
 #ifdef __cplusplus
 }
 #endif
