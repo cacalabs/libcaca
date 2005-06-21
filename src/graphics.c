@@ -967,6 +967,10 @@ int _caca_init_graphics(void)
 	  int i;
 	  char *empty;
 
+	  if(getenv("CACA_GEOMETRY") && *(getenv("CACA_GEOMETRY")))
+            sscanf(getenv("CACA_GEOMETRY"),
+                   "%ux%u", &_caca_width, &_caca_height);
+	  
         if(!_caca_width)
             _caca_width = 80;
         if(!_caca_height)

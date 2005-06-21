@@ -39,7 +39,8 @@
  *  Mac OS X) using either the slang library or the ncurses library, on DOS
  *  using the conio library, and on Windows systems using either slang or
  *  ncurses (through Cygwin emulation) or conio. There is also a native X11
- *  driver that does not require a text terminal.
+ *  driver, and an OpenGL driver (through freeglut) that does not require a 
+ *  text terminal.
  *
  *  \e libcaca is free software, released under the GNU Lesser General
  *  Public License. This ensures that \e libcaca will always remain free
@@ -61,10 +62,11 @@
  *      - \c ncurses uses the ncurses library.
  *      - \c slang uses the S-Lang library.
  *      - \c x11 uses the native X11 driver.
+ *      - \c gl uses freeglut and opengl libraries.
  *
  *  \li \b CACA_GEOMETRY: set the video display size. The format of this
  *      variable must be XxY, with X and Y being integer values. This option
- *      currently only works with the X11 driver.
+ *      currently only works with the X11 and the GL driver.
  *
  *  \li \b CACA_FONT: set the rendered font. The format of this variable is
  *      implementation dependent, but since it currently only works with the
