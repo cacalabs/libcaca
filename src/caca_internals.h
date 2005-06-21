@@ -48,6 +48,9 @@ enum caca_driver
 #if defined(USE_WIN32)
     CACA_DRIVER_WIN32 = 5,
 #endif
+#if defined(USE_GL)
+    CACA_DRIVER_GL = 6,
+#endif
     CACA_DRIVER_NONE = 0
 };
 
@@ -96,5 +99,11 @@ extern unsigned int x11_new_width, x11_new_height;
 #include <windows.h>
 extern HANDLE win32_hin, win32_hout;
 #endif
+
+#if defined(USE_GL)
+#include <GL/glut.h>
+extern unsigned int gl_width, gl_height;
+#endif
+
 
 #endif /* __CACA_INTERNALS_H__ */

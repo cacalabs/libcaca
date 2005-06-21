@@ -55,7 +55,9 @@
 #if defined(USE_WIN32)
 #   include <windows.h>
 #endif
-
+#if defined(USE_GL)
+#   include <GL/gl.h>
+#endif
 #include <stdlib.h>
 #include <string.h>
 
@@ -192,6 +194,13 @@ int caca_init(void)
         SetConsoleCursorInfo(win32_hout, &cci);
 
         SetConsoleMode(win32_hout, ENABLE_MOUSE_INPUT);
+    }
+    else
+#endif
+#if defined(USE_GL)
+    if(_caca_driver == CACA_DRIVER_GL)
+    {
+        /* Nothing to do */
     }
     else
 #endif
@@ -426,6 +435,13 @@ void caca_end(void)
     }
     else
 #endif
+#if defined(USE_GL)
+    if(_caca_driver == CACA_DRIVER_GL)
+    {
+        /* Nothing to do */
+    }
+    else
+#endif
     {
         /* Dummy */
     }
@@ -456,6 +472,11 @@ static void caca_init_driver(void)
 #if defined(USE_X11)
         if(!strcasecmp(var, "x11"))
             _caca_driver = CACA_DRIVER_X11;
+        else
+#endif
+#if defined(USE_GL)
+        if(!strcasecmp(var, "gl"))
+            _caca_driver = CACA_DRIVER_GL;
         else
 #endif
 #if defined(USE_SLANG)
@@ -490,6 +511,10 @@ static void caca_init_driver(void)
         _caca_driver = CACA_DRIVER_X11;
         return;
     }
+#endif
+#if defined(USE_GL)
+    _caca_driver = CACA_DRIVER_GL;
+    return;
 #endif
 #if defined(USE_SLANG)
     _caca_driver = CACA_DRIVER_SLANG;

@@ -58,7 +58,10 @@
 #if defined(USE_WIN32)
 #   include <windows.h>
 #endif
-
+#if defined(USE_GL)
+#   include <GL/gl.h>
+#   include <GL/glut.h>
+#endif
 #if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
 #   include <inttypes.h>
 #else
@@ -232,6 +235,38 @@ static int const win32_bg_palette[] =
     BACKGROUND_INTENSITY | BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE
 };
 #endif
+#if defined(USE_GL)
+
+static unsigned int const gl_bg_palette[] =
+{
+    0,
+    0x0000007F,
+    0x00007F00,
+    0x00007F7F,
+    0x007F0000,
+    0x007F007F,
+    0x007F7F00,
+    0x007F7F7F,
+    // + intensity
+    0x00000000,
+    0x000000FF,
+    0x0000FF00,
+    0x0000FFFF,
+    0x00FF0000,
+    0x00FF00FF,
+    0x00FFFF00,
+    0x00FFFFFF,
+
+};
+
+int gl_window;
+unsigned int gl_width, gl_height;
+float gl_font_width, gl_font_height;
+float gl_incx, gl_incy;
+int id[94];
+unsigned char gl_resized=0, gl_bit=0;
+#endif 
+
 
 static char *_caca_empty_line;
 static char *_caca_scratch_line;
@@ -261,6 +296,39 @@ static RETSIGTYPE sigwinch_handler(int);
 #if defined(USE_X11)
 static int x11_error_handler(Display *, XErrorEvent *);
 #endif
+
+#if defined(USE_GL)
+unsigned char gl_key = 0;
+int gl_special_key=0;
+int gl_new_width;
+int gl_new_height;
+
+
+static void gl_handle_keyboard(unsigned char key, int x, int y)
+{
+  gl_key = key;
+}
+static void gl_handle_special_key(int key, int x, int y)
+{
+  gl_special_key = key;
+}
+static void gl_handle_reshape (int w, int h)
+{
+  if(gl_bit) /* Do not handle reshaping at the first time*/
+    {
+
+      gl_new_width = w;
+      gl_new_height = h;
+      
+      gl_resized = 1;
+    }
+  else
+    gl_bit=1;
+  
+}
+#endif
+
+
 
 /** \brief Set the default colour pair.
  *
@@ -327,6 +395,11 @@ void caca_set_color(enum caca_color fgcolor, enum caca_color bgcolor)
 #endif
 #if defined(USE_WIN32)
     case CACA_DRIVER_WIN32:
+        /* Nothing to do */
+        break;
+#endif
+#if defined(USE_GL)
+    case CACA_DRIVER_GL:
         /* Nothing to do */
         break;
 #endif
@@ -413,6 +486,10 @@ void caca_putchar(int x, int y, char c)
 #endif
 #if defined(USE_WIN32)
     case CACA_DRIVER_WIN32:
+        break;
+#endif
+#if defined(USE_GL)
+    case CACA_DRIVER_GL:
         break;
 #endif
     default:
@@ -508,6 +585,10 @@ void caca_putstr(int x, int y, char const *s)
 #endif
 #if defined(USE_WIN32)
     case CACA_DRIVER_WIN32:
+        break;
+#endif
+#if defined(USE_GL)
+    case CACA_DRIVER_GL:
         break;
 #endif
     default:
@@ -880,6 +961,89 @@ int _caca_init_graphics(void)
     }
     else
 #endif
+#if defined(USE_GL)
+      if(_caca_driver == CACA_DRIVER_GL)
+	{
+	  int i;
+	  char *empty;
+
+        if(!_caca_width)
+            _caca_width = 80;
+        if(!_caca_height)
+            _caca_height = 32;
+
+	  gl_font_width = 9;
+	  gl_font_height = 15;
+
+	  gl_width =  _caca_width*gl_font_width;
+	  gl_height = _caca_height*gl_font_height; 
+
+	  glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE); 
+	  glutInitWindowSize(gl_width, gl_height); 
+	  gl_window = glutCreateWindow("caca for GL");
+
+	  gluOrtho2D(0,gl_width, gl_height, 0);
+
+	  glDisable(GL_CULL_FACE);
+	  glDisable(GL_DEPTH_TEST);  
+
+	  glutKeyboardFunc(gl_handle_keyboard);
+	  glutSpecialFunc(gl_handle_special_key);
+	  glutReshapeFunc(gl_handle_reshape);
+
+	  glLoadIdentity();
+
+	  glMatrixMode(GL_PROJECTION);
+	  glPushMatrix();
+	  glLoadIdentity();
+	  gluOrtho2D(0, gl_width, gl_height, 0);
+
+	  glMatrixMode(GL_MODELVIEW);
+
+
+	  glClear(GL_COLOR_BUFFER_BIT);
+
+
+
+	  empty = malloc(16*16*4);
+	  if(empty == NULL)
+            return -1;
+
+	  memset(empty, 255, 16*16*4);
+	  glEnable(GL_TEXTURE_2D);
+	 
+	  for(i=0;i<94;i++)
+	    {
+	      glGenTextures(1,&id[i]); 
+	      glBindTexture(GL_TEXTURE_2D, id[i]);
+	      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8,
+			   16,16,
+			   0, GL_RGB, GL_UNSIGNED_BYTE, empty);
+	    }
+	  for(i=0;i<94;i++)
+	    {
+	     
+	      glDisable(GL_TEXTURE_2D);
+	      glClear(GL_COLOR_BUFFER_BIT);
+
+	      glColor3f(1,1,1);
+	      glRasterPos2f(0,15);
+	      glutBitmapCharacter(GLUT_BITMAP_9_BY_15,i+32); 
+	      
+
+	      glEnable(GL_TEXTURE_2D);
+	      glBindTexture(GL_TEXTURE_2D,id[i]);			
+	      glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 0, gl_height-16, 16,16, 0);
+	      
+	      glutMainLoopEvent();
+	      glutPostRedisplay();
+	    }
+	}
+    else
+#endif
+
     {
         /* Dummy */
     }
@@ -954,6 +1118,13 @@ int _caca_end_graphics(void)
     }
     else
 #endif
+#if defined(USE_GL)
+      if(_caca_driver == CACA_DRIVER_GL)
+	{
+	  glutDestroyWindow(gl_window);
+	}
+      else
+#endif
     {
         /* Dummy */
     }
@@ -988,6 +1159,13 @@ int caca_set_window_title(char const *title)
     }
     else
 #endif
+#if defined(USE_GL)
+      if(_caca_driver == CACA_DRIVER_GL)
+	{
+	  glutSetWindowTitle(title);
+	}
+      else
+#endif
     {
         /* Not supported */
         return -1;
@@ -1021,6 +1199,13 @@ unsigned int caca_get_window_width(void)
     }
     else
 #endif
+#if defined(USE_GL)
+      if(_caca_driver == CACA_DRIVER_GL)
+	{
+	  return gl_width;
+	}
+      else
+#endif
     {
         /* Dummy */
     }
@@ -1053,6 +1238,13 @@ unsigned int caca_get_window_height(void)
         /* FIXME */
     }
     else
+#endif
+#if defined(USE_GL)
+      if(_caca_driver == CACA_DRIVER_GL)
+	{
+	  return gl_height;
+	}
+      else
 #endif
     {
         /* Dummy */
@@ -1221,6 +1413,98 @@ void caca_refresh(void)
     }
     else
 #endif
+#if defined(USE_GL)
+      if(_caca_driver == CACA_DRIVER_GL)
+	{
+	  unsigned int x, y, offsetx, offsety;
+	  
+
+	  glClear(GL_COLOR_BUFFER_BIT);
+	  
+	  offsety=0;
+      	  for(y=0;y<gl_height;y+=gl_font_height)
+	    {
+	      offsetx = 0;
+	    for(x=0;x<gl_width;x+=gl_font_width)
+	      {
+		uint8_t *attr = cache_attr + offsetx + offsety * _caca_width;
+		int offset;
+		float  br, bg, bb;
+		offset = attr[0]>>4;
+
+		br = ((gl_bg_palette[offset]&0x00FF0000)>>16)/255.0f;
+		bg = ((gl_bg_palette[offset]&0x0000FF00)>>8)/255.0f;
+		bb = ((gl_bg_palette[offset]&0x000000FF))/255.0f;
+	
+		glDisable(GL_TEXTURE_2D);
+		glColor3f(br, bg, bb);
+		glBegin(GL_QUADS);
+		glVertex2f(x,y);
+		glVertex2f(x+gl_font_width,y);
+		glVertex2f(x+gl_font_width,y+gl_font_height);
+		glVertex2f(x,y+gl_font_height);
+		glEnd();
+	
+
+  		offsetx++;
+	      }	  
+
+	    offsety++;
+	    }
+
+
+
+	  /* 2nd pass, avoids changing render state too much */
+	  glEnable(GL_BLEND);
+	  glEnable(GL_TEXTURE_2D);
+	  glBlendFunc(GL_ONE, GL_ONE);
+		
+	  offsety=0;
+      	  for(y=0;y<gl_height;y+=gl_font_height)
+	    {
+	      offsetx = 0;
+	      for(x=0;x<gl_width;x+=gl_font_width)
+		{
+		  uint8_t *attr = cache_attr + offsetx + offsety * _caca_width;
+		  unsigned char *chr = cache_char + offsetx + offsety * _caca_width;
+		  float fr, fg, fb;
+	
+		
+		  fr = ((gl_bg_palette[attr[0] & 0xf]&0x00FF0000)>>16)/255.0f;
+		  fg = ((gl_bg_palette[attr[0] & 0xf]&0x0000FF00)>>8)/255.0f;
+		  fb = ((gl_bg_palette[attr[0] & 0xf]&0x000000FF))/255.0f;
+
+		  if(chr[0] != ' ')
+		    {
+		      glBindTexture(GL_TEXTURE_2D, id[chr[0]-32]);
+		    
+		      glColor3f(fr, fg, fb);
+		      glBegin(GL_QUADS);
+		      glTexCoord2f(0,1);
+		      glVertex2f(x,y);
+		      glTexCoord2f(0.5,1);
+		      glVertex2f(x+gl_font_width,y);
+		      glTexCoord2f(0.5,0);
+		      glVertex2f(x+gl_font_width,y+gl_font_height);
+		      glTexCoord2f(0,0);
+		      glVertex2f(x,y+gl_font_height);
+		      glEnd();    
+		    }
+		  offsetx++;
+		}
+	      offsety++;
+	    }
+	  glDisable(GL_BLEND);
+	  glDisable(GL_TEXTURE_2D);
+
+
+
+	  glutMainLoopEvent();
+	  glutSwapBuffers();
+	  glutPostRedisplay();
+	}
+else
+#endif
     {
         /* Dummy */
     }
@@ -1319,6 +1603,26 @@ static void caca_handle_resize(void)
 #if defined(USE_WIN32)
     if(_caca_driver == CACA_DRIVER_WIN32)
     {
+    }
+    else
+#endif
+#if defined(USE_GL)
+    if(_caca_driver == CACA_DRIVER_GL)
+    {
+      gl_width = gl_new_width;
+      gl_height = gl_new_height;
+         
+      _caca_width = gl_width/gl_font_width;
+      _caca_height = (gl_height/gl_font_height)+1;
+      
+      glMatrixMode(GL_PROJECTION);
+      glPushMatrix();
+      glLoadIdentity();
+      
+      glViewport(0,0,gl_width, gl_height);
+      gluOrtho2D(0, gl_width, gl_height, 0);      
+      glMatrixMode(GL_MODELVIEW);
+
     }
     else
 #endif

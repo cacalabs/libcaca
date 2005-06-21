@@ -35,6 +35,8 @@ AC_ARG_ENABLE(conio,
   [  --enable-conio          DOS conio.h graphics support (autodetected)])
 AC_ARG_ENABLE(x11,
   [  --enable-x11            X11 support (autodetected)])
+AC_ARG_ENABLE(gl,
+  [  --enable-gl             OpenGL support (autodetected)])
 
 dnl example programs features
 AC_ARG_ENABLE(imlib2,
@@ -123,6 +125,19 @@ if test "${enable_x11}" != "no"; then
   fi
 fi
 
+if test "${enable_gl}" != "no"; then
+  ac_cv_my_have_gl="no"
+  AC_CHECK_HEADERS(GL/gl.h GL/glut.h,
+   [AC_CHECK_LIB(glut, glutMainLoopEvent,
+     [ac_cv_my_have_gl="yes"
+      AC_DEFINE(USE_GL, 1, Define to activate the OpenGL backend driver)
+      CACA_LIBS="${CACA_LIBS} -lGL -lglut"
+      CACA_DRIVERS="${CACA_DRIVERS} gl"])])
+  if test "${ac_cv_my_have_gl}" = "no" -a "${enable_gl}" = "yes"; then
+    AC_MSG_ERROR([cannot find OpenGL+FreeGLUT development files])
+  fi
+fi
+
 if test "${enable_ncurses}" != "no"; then
   ac_cv_my_have_ncurses="no"
   AC_CHECK_HEADERS(curses.h ncurses.h,
@@ -155,7 +170,9 @@ AC_SUBST(CACA_LIBS)
 # Optimizations
 CFLAGS="${CFLAGS} -g -O2 -fno-strength-reduce -fomit-frame-pointer"
 # Code qui fait des warnings == code de porc == deux baffes dans ta gueule
-CFLAGS="${CFLAGS} -Wall -Wpointer-arith -Wcast-align -Wcast-qual -Wstrict-prototypes -Wshadow -Waggregate-return -Wmissing-prototypes -Wnested-externs -Wsign-compare"
+# [Jylam] Removed -Wshadow in order to avoid ncurses/gl conflict
+# (Comme quoi on est pas les seuls porcs)
+CFLAGS="${CFLAGS} -Wall -Wpointer-arith -Wcast-align -Wcast-qual -Wstrict-prototypes -Waggregate-return -Wmissing-prototypes -Wnested-externs -Wsign-compare"
 
 # Build the PIC library?
 case "${target_os}" in

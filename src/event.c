@@ -54,7 +54,18 @@
 #if defined(USE_WIN32)
 #   include <windows.h>
 #endif
+#if defined(USE_GL)
+#include <GL/gl.h>
+#include <GL/glut.h>
+extern int gl_special_key;
+extern unsigned char gl_key;
+extern unsigned char gl_resized;
+extern float gl_font_width;
+extern float gl_font_height;
+extern int gl_new_width;
+extern int gl_new_height;
 
+#endif
 #include "caca.h"
 #include "caca_internals.h"
 
@@ -718,6 +729,59 @@ static unsigned int _lowlevel_event(void)
         return CACA_EVENT_NONE;
     }
     else
+#endif
+#if defined(USE_GL)
+      if(_caca_driver == CACA_DRIVER_GL)
+	{
+	  glutMainLoopEvent();
+
+	  if(gl_resized)
+	    {
+	      if(!_caca_resize)
+		{
+
+
+		  _caca_resize = 1;
+		  gl_resized=0;
+		  return CACA_EVENT_RESIZE;
+		}
+	    }
+
+	  if(gl_key!=0)
+	    {
+	      event |= CACA_EVENT_KEY_PRESS;
+	      event |= gl_key;
+	      gl_key = 0;
+	    }
+
+	  if(gl_special_key != 0)
+	    {
+	      event |= CACA_EVENT_KEY_PRESS;
+     
+	      switch(gl_special_key)
+		{
+		case GLUT_KEY_F1 : gl_special_key = 0; return event | CACA_KEY_F1;
+		case GLUT_KEY_F2 : gl_special_key = 0; return event | CACA_KEY_F2;
+		case GLUT_KEY_F3 : gl_special_key = 0; return event | CACA_KEY_F3;
+		case GLUT_KEY_F4 : gl_special_key = 0; return event | CACA_KEY_F4;
+		case GLUT_KEY_F5 : gl_special_key = 0; return event | CACA_KEY_F5;
+		case GLUT_KEY_F6 : gl_special_key = 0; return event | CACA_KEY_F6;
+		case GLUT_KEY_F7 : gl_special_key = 0; return event | CACA_KEY_F7;
+		case GLUT_KEY_F8 : gl_special_key = 0; return event | CACA_KEY_F8;
+		case GLUT_KEY_F9 : gl_special_key = 0; return event | CACA_KEY_F9;
+		case GLUT_KEY_F10  : gl_special_key = 0; return event | CACA_KEY_F10;
+		case GLUT_KEY_F11  : gl_special_key = 0; return event | CACA_KEY_F11;
+		case GLUT_KEY_F12  : gl_special_key = 0; return event | CACA_KEY_F12;
+		case GLUT_KEY_LEFT : gl_special_key = 0; return event | CACA_KEY_LEFT;
+		case GLUT_KEY_RIGHT: gl_special_key = 0; return event | CACA_KEY_RIGHT;
+		case GLUT_KEY_UP   : gl_special_key = 0; return event | CACA_KEY_UP;
+		case GLUT_KEY_DOWN : gl_special_key = 0; return event | CACA_KEY_DOWN;
+		default:       return CACA_EVENT_NONE;
+		}
+	    }
+	  return event;
+	}
+      else
 #endif
     {
         /* Dummy */
