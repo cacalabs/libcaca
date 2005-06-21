@@ -2,13 +2,13 @@ Source: libcaca
 Section: libs
 Priority: optional
 Maintainer: Sam Hocevar (Debian packages) <sam+deb@zoy.org>
-Build-Depends: debhelper (>= 4.0), libncurses5-dev, slang1-dev, libx11-dev, libimlib2-dev, doxygen, tetex-bin, tetex-extra
+Build-Depends: debhelper (>= 4.0), libncurses5-dev, libslang2-dev, libx11-dev, libimlib2-dev, doxygen, tetex-bin, tetex-extra
 Standards-Version: 3.6.1.0
 
 Package: libcaca-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, libncurses5-dev, slang1-dev, libx11-dev
+Depends: ${shlibs:Depends}, libncurses5-dev, libslang2-dev, libx11-dev
 Description: development files for libcaca
  libcaca is the Colour AsCii Art library. It provides high level functions
  for colour text drawing, simple primitives for line, polygon and ellipse
