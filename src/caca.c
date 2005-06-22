@@ -204,6 +204,13 @@ int caca_init(void)
     }
     else
 #endif
+#if defined(USE_NULL)
+    if(_caca_driver == CACA_DRIVER_NULL)
+    {
+        /* Nothing to do */
+    }
+    else
+#endif
     {
         /* Dummy */
     }
@@ -442,6 +449,13 @@ void caca_end(void)
     }
     else
 #endif
+#if defined(USE_NULL)
+    if(_caca_driver == CACA_DRIVER_NULL)
+    {
+        /* Nothing to do */
+    }
+    else
+#endif
     {
         /* Dummy */
     }
@@ -489,6 +503,14 @@ static void caca_init_driver(void)
             _caca_driver = CACA_DRIVER_NCURSES;
         else
 #endif
+#if defined(USE_NULL)
+        if(!strcasecmp(var, "null"))
+	  {
+            _caca_driver = CACA_DRIVER_NULL;
+	  }
+        else
+#endif
+
             _caca_driver = CACA_DRIVER_NONE;
 
         return;
@@ -524,6 +546,11 @@ static void caca_init_driver(void)
     _caca_driver = CACA_DRIVER_NCURSES;
     return;
 #endif
+#if defined(USE_NULL)
+    _caca_driver = CACA_DRIVER_NULL;
+    return;
+#endif
+
     _caca_driver = CACA_DRIVER_NONE;
     return;
 }

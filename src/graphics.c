@@ -403,6 +403,11 @@ void caca_set_color(enum caca_color fgcolor, enum caca_color bgcolor)
         /* Nothing to do */
         break;
 #endif
+#if defined(USE_NULL)
+    case CACA_DRIVER_NULL:
+        /* Nothing to do */
+        break;
+#endif
     default:
         break;
     }
@@ -490,6 +495,10 @@ void caca_putchar(int x, int y, char c)
 #endif
 #if defined(USE_GL)
     case CACA_DRIVER_GL:
+        break;
+#endif
+#if defined(USE_NULL)
+    case CACA_DRIVER_NULL:
         break;
 #endif
     default:
@@ -589,6 +598,10 @@ void caca_putstr(int x, int y, char const *s)
 #endif
 #if defined(USE_GL)
     case CACA_DRIVER_GL:
+        break;
+#endif
+#if defined(USE_NULL)
+    case CACA_DRIVER_NULL:
         break;
 #endif
     default:
@@ -1047,7 +1060,19 @@ int _caca_init_graphics(void)
 	}
     else
 #endif
-
+#if defined(USE_NULL)
+      if(_caca_driver == CACA_DRIVER_NULL)
+	{
+	  if(getenv("CACA_GEOMETRY") && *(getenv("CACA_GEOMETRY")))
+            sscanf(getenv("CACA_GEOMETRY"),
+                   "%ux%u", &_caca_width, &_caca_height);  
+	  if(!_caca_width)
+            _caca_width = 80;
+	  if(!_caca_height)
+            _caca_height = 32;
+	}
+      else
+#endif
     {
         /* Dummy */
     }
@@ -1126,6 +1151,15 @@ int _caca_end_graphics(void)
       if(_caca_driver == CACA_DRIVER_GL)
 	{
 	  glutDestroyWindow(gl_window);
+	}
+      else
+#endif
+#if defined(USE_NULL)
+      if(_caca_driver == CACA_DRIVER_NULL)
+	{
+	  /* I'm bored to write 'nothing to do'.
+	   * So I don't.
+	   */
 	}
       else
 #endif
@@ -1509,6 +1543,12 @@ void caca_refresh(void)
 	}
 else
 #endif
+#if defined(USE_NULL)
+      if(_caca_driver == CACA_DRIVER_NULL)
+	{
+	  /* Do I told you about my cat ? */
+	}
+#endif
     {
         /* Dummy */
     }
@@ -1629,6 +1669,15 @@ static void caca_handle_resize(void)
 
     }
     else
+#endif
+#if defined(USE_NULL)
+    if(_caca_driver == CACA_DRIVER_NULL)
+    {
+      /* \_o< pOaK */
+      /* By the way, we should never reach this,
+       * as events are not handled
+       */
+    }
 #endif
     {
         /* Dummy */
@@ -1835,6 +1884,87 @@ char* caca_get_html(void)
 
   /* Footer */
   sprintf(buffer, "%s</table>\n</body>\n</html>\n",buffer);
+
+  /* Crop to really used size */
+  buffer = realloc(buffer, (strlen(buffer)+1) * sizeof(char));
+
+  return buffer;
+}
+
+/** \brief Generate HTML3 representation of current image.
+ *
+ *  This function generates and returns the HTML3 representation of 
+ *  the current image. It is way bigger than caca_get_html(), but
+ *  permits viewing in old browsers (or limited ones such as links)
+ *
+ */
+char* caca_get_html3(void)
+{
+  char *buffer;
+  unsigned int x,y;
+
+  /* 13000 -> css palette
+     40 -> max size used for a pixel (plus 10, never know)*/
+
+  buffer = malloc((13000 + ((_caca_width*_caca_height)*40))*sizeof(char));
+  
+
+  /* Table */
+  sprintf(buffer, "<table cols='%d' cellpadding='0' cellspacing='0'>\n", caca_get_height());
+
+  for(y=0;y<_caca_height;y++)
+    {
+      sprintf(buffer, 
+	      "%s<tr>",buffer);
+
+      for(x=0;x<_caca_width;x++)
+	{
+	  int len;
+	  int i;
+	  uint8_t *attr = cache_attr + x + y * _caca_width;
+
+	  /* Use colspan option to factorize cells with same attributes 
+	     (see below) */
+	  len=1;
+	  while(x + len < _caca_width
+		&& (attr[len]>>4) == (attr[0]>>4) &&
+		(attr[len]&0x0f) == (attr[0]&0x0f))
+	    len++;
+	  
+	  if(len==1)
+	    {
+	      sprintf(buffer, 
+		      "%s<td bgcolor=#%06X ><font color='#%06X'>%c</font></td>", buffer,
+		      html_palette[cache_attr[x+y*caca_get_width()]>>4], 
+		      html_palette[cache_attr[x+y*caca_get_width()]&0x0f],
+		      cache_char[x+y*caca_get_width()]);
+	    }
+	  else
+	    {
+	      sprintf(buffer, 
+		      "%s<td bgcolor=#%06X colspan=%d><font color='#%06X'>",buffer,
+		      html_palette[cache_attr[x+y*caca_get_width()]>> 4], 
+		      len+1,
+		      html_palette[cache_attr[x+y*caca_get_width()]&0x0f]);
+	      
+	      for(i=0;i<len;i++)
+		{
+		  if(cache_char[x+y*caca_get_width()]!=' ')
+		    sprintf(buffer, "%s%c", buffer, cache_char[x+y*caca_get_width()]);
+		  else
+		    sprintf(buffer, "%s&nbsp;", buffer);
+		  x++;
+		}
+	      sprintf(buffer, "%s</font></td>", buffer);
+	      
+	    }
+
+	}
+      sprintf(buffer, "%s</tr>\n",buffer);
+    }
+
+  /* Footer */
+  sprintf(buffer, "%s</table>\n",buffer);
 
   /* Crop to really used size */
   buffer = realloc(buffer, (strlen(buffer)+1) * sizeof(char));

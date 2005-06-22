@@ -37,6 +37,8 @@ AC_ARG_ENABLE(x11,
   [  --enable-x11            X11 support (autodetected)])
 AC_ARG_ENABLE(gl,
   [  --enable-gl             OpenGL support (autodetected)])
+AC_ARG_ENABLE(null,
+  [  --enable-null           Null driver support (autodetected)])
 
 dnl example programs features
 AC_ARG_ENABLE(imlib2,
@@ -136,6 +138,12 @@ if test "${enable_gl}" != "no"; then
   if test "${ac_cv_my_have_gl}" = "no" -a "${enable_gl}" = "yes"; then
     AC_MSG_ERROR([cannot find OpenGL+FreeGLUT development files])
   fi
+fi
+
+if test "${enable_null}" != "no"; then
+  ac_cv_my_have_null="yes"
+  AC_DEFINE(USE_NULL, 1, Define to activate the Null backend driver)
+  CACA_DRIVERS="${CACA_DRIVERS} null"
 fi
 
 if test "${enable_ncurses}" != "no"; then

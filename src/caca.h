@@ -63,6 +63,7 @@
  *      - \c slang uses the S-Lang library.
  *      - \c x11 uses the native X11 driver.
  *      - \c gl uses freeglut and opengl libraries.
+ *      - \c null uses nothing at all, and will display nothing as well.
  *
  *  \li \b CACA_GEOMETRY: set the video display size. The format of this
  *      variable must be XxY, with X and Y being integer values. This option
@@ -360,6 +361,7 @@ void caca_free_bitmap(struct caca_bitmap *);
  *
  *  @{ */
 char* caca_get_html(void);
+char* caca_get_html3(void);
 char* caca_get_irc(void);
 /*  @} */
 

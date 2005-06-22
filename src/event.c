@@ -194,6 +194,13 @@ static unsigned int _get_next_event(void)
     static unsigned int last_key = 0;
     unsigned int ticks;
 #endif
+#if defined(USE_NULL)
+    {
+      if(_caca_driver == CACA_DRIVER_NULL)
+	return CACA_EVENT_NONE;
+    }
+#endif
+
     unsigned int event = _lowlevel_event();
 
 #if defined(USE_SLANG)

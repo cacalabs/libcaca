@@ -51,6 +51,9 @@ enum caca_driver
 #if defined(USE_GL)
     CACA_DRIVER_GL = 6,
 #endif
+#if defined(USE_NULL)
+    CACA_DRIVER_NULL = 7,
+#endif
     CACA_DRIVER_NONE = 0
 };
 
