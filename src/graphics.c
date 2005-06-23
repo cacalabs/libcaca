@@ -976,101 +976,101 @@ int _caca_init_graphics(void)
 #endif
 #if defined(USE_GL)
       if(_caca_driver == CACA_DRIVER_GL)
-	{
-	  int i;
-	  char *empty;
+        {
+          int i;
+          char *empty;
 
-	  if(getenv("CACA_GEOMETRY") && *(getenv("CACA_GEOMETRY")))
+          if(getenv("CACA_GEOMETRY") && *(getenv("CACA_GEOMETRY")))
             sscanf(getenv("CACA_GEOMETRY"),
                    "%ux%u", &_caca_width, &_caca_height);
-	  
+          
         if(!_caca_width)
             _caca_width = 80;
         if(!_caca_height)
             _caca_height = 32;
 
-	  gl_font_width = 9;
-	  gl_font_height = 15;
+          gl_font_width = 9;
+          gl_font_height = 15;
 
-	  gl_width =  _caca_width*gl_font_width;
-	  gl_height = _caca_height*gl_font_height; 
+          gl_width =  _caca_width*gl_font_width;
+          gl_height = _caca_height*gl_font_height; 
 
-	  glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE); 
-	  glutInitWindowSize(gl_width, gl_height); 
-	  gl_window = glutCreateWindow("caca for GL");
+          glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE); 
+          glutInitWindowSize(gl_width, gl_height); 
+          gl_window = glutCreateWindow("caca for GL");
 
-	  gluOrtho2D(0,gl_width, gl_height, 0);
+          gluOrtho2D(0,gl_width, gl_height, 0);
 
-	  glDisable(GL_CULL_FACE);
-	  glDisable(GL_DEPTH_TEST);  
+          glDisable(GL_CULL_FACE);
+          glDisable(GL_DEPTH_TEST);  
 
-	  glutKeyboardFunc(gl_handle_keyboard);
-	  glutSpecialFunc(gl_handle_special_key);
-	  glutReshapeFunc(gl_handle_reshape);
+          glutKeyboardFunc(gl_handle_keyboard);
+          glutSpecialFunc(gl_handle_special_key);
+          glutReshapeFunc(gl_handle_reshape);
 
-	  glLoadIdentity();
+          glLoadIdentity();
 
-	  glMatrixMode(GL_PROJECTION);
-	  glPushMatrix();
-	  glLoadIdentity();
-	  gluOrtho2D(0, gl_width, gl_height, 0);
+          glMatrixMode(GL_PROJECTION);
+          glPushMatrix();
+          glLoadIdentity();
+          gluOrtho2D(0, gl_width, gl_height, 0);
 
-	  glMatrixMode(GL_MODELVIEW);
-
-
-	  glClear(GL_COLOR_BUFFER_BIT);
+          glMatrixMode(GL_MODELVIEW);
 
 
+          glClear(GL_COLOR_BUFFER_BIT);
 
-	  empty = malloc(16*16*4);
-	  if(empty == NULL)
+
+
+          empty = malloc(16*16*4);
+          if(empty == NULL)
             return -1;
 
-	  memset(empty, 255, 16*16*4);
-	  glEnable(GL_TEXTURE_2D);
-	 
-	  for(i=0;i<94;i++)
-	    {
-	      glGenTextures(1,&id[i]); 
-	      glBindTexture(GL_TEXTURE_2D, id[i]);
-	      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8,
-			   16,16,
-			   0, GL_RGB, GL_UNSIGNED_BYTE, empty);
-	    }
-	  for(i=0;i<94;i++)
-	    {
-	     
-	      glDisable(GL_TEXTURE_2D);
-	      glClear(GL_COLOR_BUFFER_BIT);
+          memset(empty, 255, 16*16*4);
+          glEnable(GL_TEXTURE_2D);
+         
+          for(i=0;i<94;i++)
+            {
+              glGenTextures(1,&id[i]); 
+              glBindTexture(GL_TEXTURE_2D, id[i]);
+              glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+              glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+              glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8,
+                           16,16,
+                           0, GL_RGB, GL_UNSIGNED_BYTE, empty);
+            }
+          for(i=0;i<94;i++)
+            {
+             
+              glDisable(GL_TEXTURE_2D);
+              glClear(GL_COLOR_BUFFER_BIT);
 
-	      glColor3f(1,1,1);
-	      glRasterPos2f(0,15);
-	      glutBitmapCharacter(GLUT_BITMAP_9_BY_15,i+32); 
-	      
+              glColor3f(1,1,1);
+              glRasterPos2f(0,15);
+              glutBitmapCharacter(GLUT_BITMAP_9_BY_15,i+32); 
+              
 
-	      glEnable(GL_TEXTURE_2D);
-	      glBindTexture(GL_TEXTURE_2D,id[i]);			
-	      glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 0, gl_height-16, 16,16, 0);
-	      
-	      glutMainLoopEvent();
-	      glutPostRedisplay();
-	    }
-	}
+              glEnable(GL_TEXTURE_2D);
+              glBindTexture(GL_TEXTURE_2D,id[i]);                        
+              glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 0, gl_height-16, 16,16, 0);
+              
+              glutMainLoopEvent();
+              glutPostRedisplay();
+            }
+        }
     else
 #endif
 #if defined(USE_NULL)
       if(_caca_driver == CACA_DRIVER_NULL)
-	{
-	  if(getenv("CACA_GEOMETRY") && *(getenv("CACA_GEOMETRY")))
+        {
+          if(getenv("CACA_GEOMETRY") && *(getenv("CACA_GEOMETRY")))
             sscanf(getenv("CACA_GEOMETRY"),
                    "%ux%u", &_caca_width, &_caca_height);  
-	  if(!_caca_width)
+          if(!_caca_width)
             _caca_width = 80;
-	  if(!_caca_height)
+          if(!_caca_height)
             _caca_height = 32;
-	}
+        }
       else
 #endif
     {
@@ -1149,18 +1149,18 @@ int _caca_end_graphics(void)
 #endif
 #if defined(USE_GL)
       if(_caca_driver == CACA_DRIVER_GL)
-	{
-	  glutDestroyWindow(gl_window);
-	}
+        {
+          glutDestroyWindow(gl_window);
+        }
       else
 #endif
 #if defined(USE_NULL)
       if(_caca_driver == CACA_DRIVER_NULL)
-	{
-	  /* I'm bored to write 'nothing to do'.
-	   * So I don't.
-	   */
-	}
+        {
+          /* I'm bored to write 'nothing to do'.
+           * So I don't.
+           */
+        }
       else
 #endif
     {
@@ -1199,9 +1199,9 @@ int caca_set_window_title(char const *title)
 #endif
 #if defined(USE_GL)
       if(_caca_driver == CACA_DRIVER_GL)
-	{
-	  glutSetWindowTitle(title);
-	}
+        {
+          glutSetWindowTitle(title);
+        }
       else
 #endif
     {
@@ -1239,9 +1239,9 @@ unsigned int caca_get_window_width(void)
 #endif
 #if defined(USE_GL)
       if(_caca_driver == CACA_DRIVER_GL)
-	{
-	  return gl_width;
-	}
+        {
+          return gl_width;
+        }
       else
 #endif
     {
@@ -1279,9 +1279,9 @@ unsigned int caca_get_window_height(void)
 #endif
 #if defined(USE_GL)
       if(_caca_driver == CACA_DRIVER_GL)
-	{
-	  return gl_height;
-	}
+        {
+          return gl_height;
+        }
       else
 #endif
     {
@@ -1453,101 +1453,101 @@ void caca_refresh(void)
 #endif
 #if defined(USE_GL)
       if(_caca_driver == CACA_DRIVER_GL)
-	{
-	  unsigned int x, y, offsetx, offsety;
-	  
+        {
+          unsigned int x, y, offsetx, offsety;
+          
 
-	  glClear(GL_COLOR_BUFFER_BIT);
-	  
-	  offsety=0;
-      	  for(y=0;y<gl_height;y+=gl_font_height)
-	    {
-	      offsetx = 0;
-	    for(x=0;x<gl_width;x+=gl_font_width)
-	      {
-		uint8_t *attr = cache_attr + offsetx + offsety * _caca_width;
-		int offset;
-		float  br, bg, bb;
-		offset = attr[0]>>4;
+          glClear(GL_COLOR_BUFFER_BIT);
+          
+          offsety=0;
+                for(y=0;y<gl_height;y+=gl_font_height)
+            {
+              offsetx = 0;
+            for(x=0;x<gl_width;x+=gl_font_width)
+              {
+                uint8_t *attr = cache_attr + offsetx + offsety * _caca_width;
+                int offset;
+                float  br, bg, bb;
+                offset = attr[0]>>4;
 
-		br = ((gl_bg_palette[offset]&0x00FF0000)>>16)/255.0f;
-		bg = ((gl_bg_palette[offset]&0x0000FF00)>>8)/255.0f;
-		bb = ((gl_bg_palette[offset]&0x000000FF))/255.0f;
-	
-		glDisable(GL_TEXTURE_2D);
-		glColor3f(br, bg, bb);
-		glBegin(GL_QUADS);
-		glVertex2f(x,y);
-		glVertex2f(x+gl_font_width,y);
-		glVertex2f(x+gl_font_width,y+gl_font_height);
-		glVertex2f(x,y+gl_font_height);
-		glEnd();
-	
+                br = ((gl_bg_palette[offset]&0x00FF0000)>>16)/255.0f;
+                bg = ((gl_bg_palette[offset]&0x0000FF00)>>8)/255.0f;
+                bb = ((gl_bg_palette[offset]&0x000000FF))/255.0f;
+        
+                glDisable(GL_TEXTURE_2D);
+                glColor3f(br, bg, bb);
+                glBegin(GL_QUADS);
+                glVertex2f(x,y);
+                glVertex2f(x+gl_font_width,y);
+                glVertex2f(x+gl_font_width,y+gl_font_height);
+                glVertex2f(x,y+gl_font_height);
+                glEnd();
+        
 
-  		offsetx++;
-	      }	  
+                  offsetx++;
+              }          
 
-	    offsety++;
-	    }
-
-
-
-	  /* 2nd pass, avoids changing render state too much */
-	  glEnable(GL_BLEND);
-	  glEnable(GL_TEXTURE_2D);
-	  glBlendFunc(GL_ONE, GL_ONE);
-		
-	  offsety=0;
-      	  for(y=0;y<gl_height;y+=gl_font_height)
-	    {
-	      offsetx = 0;
-	      for(x=0;x<gl_width;x+=gl_font_width)
-		{
-		  uint8_t *attr = cache_attr + offsetx + offsety * _caca_width;
-		  unsigned char *chr = cache_char + offsetx + offsety * _caca_width;
-		  float fr, fg, fb;
-	
-		
-		  fr = ((gl_bg_palette[attr[0] & 0xf]&0x00FF0000)>>16)/255.0f;
-		  fg = ((gl_bg_palette[attr[0] & 0xf]&0x0000FF00)>>8)/255.0f;
-		  fb = ((gl_bg_palette[attr[0] & 0xf]&0x000000FF))/255.0f;
-
-		  if(chr[0] != ' ')
-		    {
-		      glBindTexture(GL_TEXTURE_2D, id[chr[0]-32]);
-		    
-		      glColor3f(fr, fg, fb);
-		      glBegin(GL_QUADS);
-		      glTexCoord2f(0,1);
-		      glVertex2f(x,y);
-		      glTexCoord2f(0.5,1);
-		      glVertex2f(x+gl_font_width,y);
-		      glTexCoord2f(0.5,0);
-		      glVertex2f(x+gl_font_width,y+gl_font_height);
-		      glTexCoord2f(0,0);
-		      glVertex2f(x,y+gl_font_height);
-		      glEnd();    
-		    }
-		  offsetx++;
-		}
-	      offsety++;
-	    }
-	  glDisable(GL_BLEND);
-	  glDisable(GL_TEXTURE_2D);
+            offsety++;
+            }
 
 
 
-	  glutMainLoopEvent();
-	  glutSwapBuffers();
-	  glutPostRedisplay();
-	}
+          /* 2nd pass, avoids changing render state too much */
+          glEnable(GL_BLEND);
+          glEnable(GL_TEXTURE_2D);
+          glBlendFunc(GL_ONE, GL_ONE);
+                
+          offsety=0;
+                for(y=0;y<gl_height;y+=gl_font_height)
+            {
+              offsetx = 0;
+              for(x=0;x<gl_width;x+=gl_font_width)
+                {
+                  uint8_t *attr = cache_attr + offsetx + offsety * _caca_width;
+                  unsigned char *chr = cache_char + offsetx + offsety * _caca_width;
+                  float fr, fg, fb;
+        
+                
+                  fr = ((gl_bg_palette[attr[0] & 0xf]&0x00FF0000)>>16)/255.0f;
+                  fg = ((gl_bg_palette[attr[0] & 0xf]&0x0000FF00)>>8)/255.0f;
+                  fb = ((gl_bg_palette[attr[0] & 0xf]&0x000000FF))/255.0f;
+
+                  if(chr[0] != ' ')
+                    {
+                      glBindTexture(GL_TEXTURE_2D, id[chr[0]-32]);
+                    
+                      glColor3f(fr, fg, fb);
+                      glBegin(GL_QUADS);
+                      glTexCoord2f(0,1);
+                      glVertex2f(x,y);
+                      glTexCoord2f(0.5,1);
+                      glVertex2f(x+gl_font_width,y);
+                      glTexCoord2f(0.5,0);
+                      glVertex2f(x+gl_font_width,y+gl_font_height);
+                      glTexCoord2f(0,0);
+                      glVertex2f(x,y+gl_font_height);
+                      glEnd();    
+                    }
+                  offsetx++;
+                }
+              offsety++;
+            }
+          glDisable(GL_BLEND);
+          glDisable(GL_TEXTURE_2D);
+
+
+
+          glutMainLoopEvent();
+          glutSwapBuffers();
+          glutPostRedisplay();
+        }
 else
 #endif
 #if defined(USE_NULL)
       if(_caca_driver == CACA_DRIVER_NULL)
-	{
-	  /* Do I told you about my cat ? */
-	}
+        {
+          /* Do I told you about my cat ? */
+        }
 #endif
     {
         /* Dummy */
@@ -1775,21 +1775,21 @@ static RETSIGTYPE sigwinch_handler(int sig)
 static int const html_palette[] =
 {
     0,
-    0x00007F,
-    0x007F00,
-    0x007F7F,
-    0x7F0000,
-    0x7F007F,
-    0x7F7F00,
-    0x7F7F7F,
+    0x007,
+    0x070,
+    0x077,
+    0x700,
+    0x707,
+    0x770,
+    0x777,
     0,
-    0x0000FF,
-    0x00FF00,
-    0x00FFFF,
-    0xFF0000,
-    0xFF00FF,
-    0xFFFF00,
-    0xFFFFFF,
+    0x00F,
+    0x0F0,
+    0x0FF,
+    0xF00,
+    0xF0F,
+    0xFF0,
+    0xFFF,
 
 };
 
@@ -1819,12 +1819,12 @@ char* caca_get_html(void)
   for(f=0;f<0x0f+1;f++)
     {
       for(b=0;b<0x0f+1;b++)
-	{
-	  sprintf(buffer, 
-		  "%s.b%x%x { color:#%06x; background-color:#%06x;}\n",buffer,
-		  b, f, html_palette[f], html_palette[b]);
+        {
+          sprintf(buffer, 
+                  "%s.b%x%x { color:#%03x; background-color:#%03x;}\n",buffer,
+                  b, f, html_palette[f], html_palette[b]);
 
-	}
+        }
     }
   sprintf(buffer, "%s</style>\n</head>\n<body>\n",buffer);
 
@@ -1834,51 +1834,51 @@ char* caca_get_html(void)
   for(y=0;y<_caca_height;y++)
     {
       sprintf(buffer, 
-	      "%s<tr>",buffer);
+              "%s<tr>",buffer);
 
       for(x=0;x<_caca_width;x++)
-	{
-	  int len;
-	  int i;
-	  uint8_t *attr = cache_attr + x + y * _caca_width;
+        {
+          int len;
+          int i;
+          uint8_t *attr = cache_attr + x + y * _caca_width;
 
-	  /* Use colspan option to factorize cells with same attributes 
-	     (see below) */
-	  len=1;
-	  while(x + len < _caca_width
-		&& (attr[len]>>4) == (attr[0]>>4) &&
-		(attr[len]&0x0f) == (attr[0]&0x0f))
-	    len++;
-	  
-	  if(len==1)
-	    {
-	      sprintf(buffer, 
-		      "%s<td class=b%x%x>%c</td>",buffer, 
-		      cache_attr[x+y*caca_get_width()]>>4, 
-		      cache_attr[x+y*caca_get_width()]&0x0f,
-		      cache_char[x+y*caca_get_width()]);
-	    }
-	  else
-	    {
-	      sprintf(buffer, 
-		      "%s<td class=b%x%x colspan=%d>",buffer,
-		      cache_attr[x+y*caca_get_width()]>> 4, 
-		      cache_attr[x+y*caca_get_width()]&0x0f,
-		      len+1);
-	      
-	      for(i=0;i<len;i++)
-		{
-		  if(cache_char[x+y*caca_get_width()]!=' ')
-		    sprintf(buffer, "%s%c", buffer,cache_char[x+y*caca_get_width()]);
-		  else
-		    sprintf(buffer, "%s&nbsp;",buffer);
-		  x++;
-		}
-	      sprintf(buffer, "%s</td>",buffer);
-	      
-	    }
+          /* Use colspan option to factorize cells with same attributes 
+             (see below) */
+          len=1;
+          while(x + len < _caca_width
+                && (attr[len]>>4) == (attr[0]>>4) &&
+                (attr[len]&0x0f) == (attr[0]&0x0f))
+            len++;
+          
+          if(len==1)
+            {
+              sprintf(buffer, 
+                      "%s<td class=b%x%x>%c</td>",buffer, 
+                      cache_attr[x+y*caca_get_width()]>>4, 
+                      cache_attr[x+y*caca_get_width()]&0x0f,
+                      cache_char[x+y*caca_get_width()]);
+            }
+          else
+            {
+              sprintf(buffer, 
+                      "%s<td class=b%x%x colspan=%d>",buffer,
+                      cache_attr[x+y*caca_get_width()]>> 4, 
+                      cache_attr[x+y*caca_get_width()]&0x0f,
+                      len+1);
+              
+              for(i=0;i<len;i++)
+                {
+                  if(cache_char[x+y*caca_get_width()]!=' ')
+                    sprintf(buffer, "%s%c", buffer,cache_char[x+y*caca_get_width()]);
+                  else
+                    sprintf(buffer, "%s&nbsp;",buffer);
+                  x++;
+                }
+              sprintf(buffer, "%s</td>",buffer);
+              
+            }
 
-	}
+        }
       sprintf(buffer, "%s</tr>\n",buffer);
     }
 
@@ -1900,99 +1900,60 @@ char* caca_get_html(void)
  */
 char* caca_get_html3(void)
 {
-  char *buffer;
-  unsigned int x,y;
+  char *buffer, *cur;
+  unsigned int x, y, len;
 
   /* 13000 -> css palette
-     40 -> max size used for a pixel (plus 10, never know)*/
-
-  buffer = malloc((13000 + ((_caca_width*_caca_height)*40))*sizeof(char));
-  
+   * 40 -> max size used for a pixel (plus 10, never know)*/
+  /* FIXME: Check this value */
+  buffer = malloc((13000 + ((_caca_width*_caca_height) * 40)) * sizeof(char));
+  cur = buffer;
 
   /* Table */
-  sprintf(buffer, "<table cols='%d' cellpadding='0' cellspacing='0'>\n", caca_get_height());
+  cur += sprintf(cur, "<div cellpadding='0' cellspacing='0' style='%s'>\n",
+                      "font-family: monospace, fixed; font-weight: bold;");
 
-  for(y=0;y<_caca_height;y++)
-    {
-      sprintf(buffer, 
-	      "%s<tr>",buffer);
+  for(y = 0; y < _caca_height; y++)
+  {
+      for(x = 0; x < _caca_width; x += len)
+      {
+          uint8_t *cur_attr = cache_attr + y * _caca_width;
+          uint8_t *cur_char = cache_char + y * _caca_width;
 
-      for(x=0;x<_caca_width;x++)
-	{
-	  int len;
-	  int i;
-	  uint8_t *attr = cache_attr + x + y * _caca_width;
+          cur += sprintf(cur, 
+                  "<span style=\"color: #%03X; background-color: #%03X\">",
+                  html_palette[cur_attr[x] & 0x0f],
+                  html_palette[cur_attr[x] >> 4]); 
 
-	  /* Use colspan option to factorize cells with same attributes 
-	     (see below) */
-	  len=1;
-	  while(x + len < _caca_width
-		&& (attr[len]>>4) == (attr[0]>>4) &&
-		(attr[len]&0x0f) == (attr[0]&0x0f))
-	    len++;
-	  
-	  if(len==1)
-	    {
-	      sprintf(buffer, 
-		      "%s<td bgcolor=#%06X ><font color='#%06X'>%c</font></td>", buffer,
-		      html_palette[cache_attr[x+y*caca_get_width()]>>4], 
-		      html_palette[cache_attr[x+y*caca_get_width()]&0x0f],
-		      cache_char[x+y*caca_get_width()]);
-	    }
-	  else
-	    {
-	      sprintf(buffer, 
-		      "%s<td bgcolor=#%06X colspan=%d><font color='#%06X'>",buffer,
-		      html_palette[cache_attr[x+y*caca_get_width()]>> 4], 
-		      len+1,
-		      html_palette[cache_attr[x+y*caca_get_width()]&0x0f]);
-	      
-	      for(i=0;i<len;i++)
-		{
-		  if(cache_char[x+y*caca_get_width()]!=' ')
-		    sprintf(buffer, "%s%c", buffer, cache_char[x+y*caca_get_width()]);
-		  else
-		    sprintf(buffer, "%s&nbsp;", buffer);
-		  x++;
-		}
-	      sprintf(buffer, "%s</font></td>", buffer);
-	      
-	    }
-
-	}
-      sprintf(buffer, "%s</tr>\n",buffer);
-    }
+          for(len = 0; 
+              x + len < _caca_width && cur_attr[x + len] == cur_attr[x];
+              len++)
+          {
+              if(cur_char[x + len] == ' ')
+                  cur += sprintf(cur, "&nbsp;");
+              else
+                  cur += sprintf(cur, "%c", cur_char[x + len]);
+          }
+          cur += sprintf(cur, "</span>");
+      }
+      cur += sprintf(cur, "<br />\n");
+  }
 
   /* Footer */
-  sprintf(buffer, "%s</table>\n",buffer);
+  cur += sprintf(cur, "</div>\n");
 
   /* Crop to really used size */
-  buffer = realloc(buffer, (strlen(buffer)+1) * sizeof(char));
+  buffer = realloc(buffer, (strlen(buffer) + 1) * sizeof(char));
 
   return buffer;
 }
 
-
 static int const irc_palette[] =
 {
-  /* Dark */
-  1,
-  2,
-  3,
-  10,
-  5,
-  6,
-  7,
-  14,
-  /* Light */
-  1,
-  12,
-  9,
-  11,
-  4,
-  13,
-  8,
-  16,
+    /* Dark */
+    1, 2, 3, 10, 5, 6, 7, 14,
+    /* Light */
+    1, 12, 9, 11, 4, 13, 8, 16,
 };
 
 
@@ -2010,45 +1971,45 @@ char* caca_get_irc(void)
   unsigned int x, y;
   /* 15 bytes assumed for max length per pixel */
   buffer = malloc(((_caca_width*_caca_height*15)+1)*sizeof(char));
-  sprintf(buffer,"%%O");
+  sprintf(buffer, "%%O");
 
-  for(y=0;y<_caca_height;y++)
-    {
-      for(x=0;x<_caca_width;x++)
-	{
-	  if(cache_char[x+y*caca_get_width()] == ' ')
-	    {
-	      sprintf(buffer, 
-		      "%s%%C%d,%d%c", buffer,
-		      irc_palette[cache_attr[x+y*caca_get_width()]>>4],
-		      irc_palette[cache_attr[x+y*caca_get_width()]>>4], 
-		      '#');
-	    }
-	  else if(cache_char[x+y*caca_get_width()] == '%')
-	    {
-	     sprintf(buffer,
-		    "%s%%C%d,%d%%%%",  buffer,
-		    irc_palette[cache_attr[x+y*caca_get_width()]&0x0f],
-		    irc_palette[cache_attr[x+y*caca_get_width()]>> 4]);
-	    }
-	  else if(cache_char[x+y*caca_get_width()]>='0' && cache_char[x+y*caca_get_width()]<='9')
-	    {
-	      sprintf(buffer, 
-		      "%s%%C%d,%d%%B%%B%c", buffer,
-		      irc_palette[cache_attr[x+y*caca_get_width()]&0x0f],
-		      irc_palette[cache_attr[x+y*caca_get_width()]>> 4],
-		      cache_char[x+y*caca_get_width()]);
-	    }
+  for(y = 0; y < _caca_height; y++)
+  {
+      for(x = 0; x < _caca_width; x++)
+        {
+          if(cache_char[x+y*caca_get_width()] == ' ')
+            {
+              sprintf(buffer, 
+                      "%s%%C%d,%d%c", buffer,
+                      irc_palette[cache_attr[x+y*caca_get_width()]>>4],
+                      irc_palette[cache_attr[x+y*caca_get_width()]>>4], 
+                      '#');
+            }
+          else if(cache_char[x+y*caca_get_width()] == '%')
+            {
+             sprintf(buffer,
+                    "%s%%C%d,%d%%%%",  buffer,
+                    irc_palette[cache_attr[x+y*caca_get_width()]&0x0f],
+                    irc_palette[cache_attr[x+y*caca_get_width()]>> 4]);
+            }
+          else if(cache_char[x+y*caca_get_width()]>='0' && cache_char[x+y*caca_get_width()]<='9')
+            {
+              sprintf(buffer, 
+                      "%s%%C%d,%d%%B%%B%c", buffer,
+                      irc_palette[cache_attr[x+y*caca_get_width()]&0x0f],
+                      irc_palette[cache_attr[x+y*caca_get_width()]>> 4],
+                      cache_char[x+y*caca_get_width()]);
+            }
       else
-	{
-	  sprintf(buffer, 
-		  "%s%%C%d,%d%c", buffer,
-		  irc_palette[cache_attr[x+y*caca_get_width()]&0x0f],
-		  irc_palette[cache_attr[x+y*caca_get_width()]>> 4],
-		  cache_char[x+y*caca_get_width()]);
-	    }
+        {
+          sprintf(buffer, 
+                  "%s%%C%d,%d%c", buffer,
+                  irc_palette[cache_attr[x+y*caca_get_width()]&0x0f],
+                  irc_palette[cache_attr[x+y*caca_get_width()]>> 4],
+                  cache_char[x+y*caca_get_width()]);
+            }
 
-	}
+        }
       sprintf(buffer, "%s\n", buffer);
     }
  
