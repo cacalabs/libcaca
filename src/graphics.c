@@ -1863,56 +1863,82 @@ char* caca_get_html(void)
  *  This function generates and returns the HTML3 representation of 
  *  the current image. It is way bigger than caca_get_html(), but
  *  permits viewing in old browsers (or limited ones such as links)
- *
+ *  Won't work under gecko (mozilla rendering engine) unless you set 
+ *  a correct header.
  */
 char* caca_get_html3(void)
 {
-    char *buffer, *cur;
-    unsigned int x, y, len;
+  char *buffer, *cur;
+  unsigned int x,y;
 
-    /* 13000 -> css palette
-     * 40 -> max size used for a pixel (plus 10, never know)*/
-    /* FIXME: Check this value */
-    buffer = malloc((13000 + ((_caca_width*_caca_height) * 40)) * sizeof(char));
-    cur = buffer;
+  /* 13000 -> css palette
+     40 -> max size used for a pixel (plus 10, never know)*/
 
-    cur += sprintf(cur, "<div cellpadding='0' cellspacing='0' style='%s'>\n",
-                        "font-family: monospace, fixed; font-weight: bold;");
+  buffer = malloc((13000 + ((_caca_width*_caca_height)*40))*sizeof(char));
+  cur = buffer;
 
-    for(y = 0; y < _caca_height; y++)
+  /* Table */
+  cur += sprintf(cur, "<table cols='%d' cellpadding='0' cellspacing='0'>\n", caca_get_height());
+
+  for(y=0;y<_caca_height;y++)
     {
-        for(x = 0; x < _caca_width; x += len)
-        {
-            uint8_t *cur_attr = cache_attr + y * _caca_width;
-            uint8_t *cur_char = cache_char + y * _caca_width;
+      cur += sprintf(cur, "<tr>");
+      
+      for(x=0;x<_caca_width;x++)
+	{
+	  int len;
+	  int i;
+	  uint8_t *attr = cache_attr + x + y * _caca_width;
 
-            cur += sprintf(cur, 
-                    "<span style=\"color: #%03X; background-color: #%03X\">",
-                    html_palette[cur_attr[x] & 0x0f],
-                    html_palette[cur_attr[x] >> 4]); 
+	  /* Use colspan option to factorize cells with same attributes 
+	     (see below) */
+	  len=1;
+	  while(x + len < _caca_width
+		&& (attr[len]>>4) == (attr[0]>>4) &&
+		(attr[len]&0x0f) == (attr[0]&0x0f))
+	    len++;
+	  
+	  if(len==1)
+	    {
+	      cur += sprintf(cur, 
+		      "<td bgcolor=#%03X ><font color=#%03X>%c</font></td>",
+		      html_palette[cache_attr[x+y*caca_get_width()]>>4], 
+		      html_palette[cache_attr[x+y*caca_get_width()]&0x0f],
+		      cache_char[x+y*caca_get_width()]);
+	    }
+	  else
+	    {
+	      cur += sprintf(cur, 
+		      "<td bgcolor=#%03X colspan=%d><font color=#%03X>",
+		      html_palette[cache_attr[x+y*caca_get_width()]>> 4], 
+		      len+1,
+		      html_palette[cache_attr[x+y*caca_get_width()]&0x0f]);
+	      
+	      for(i=0;i<len;i++)
+		{
+		  if(cache_char[x+y*caca_get_width()]!=' ')
+		    cur += sprintf(cur, "%c", cache_char[x+y*caca_get_width()]);
+		  else
+		    cur += sprintf(cur, "&nbsp;");
+		  x++;
+		}
+	      cur += sprintf(cur, "</font></td>");
+	      
+	    }
 
-            for(len = 0; 
-                x + len < _caca_width && cur_attr[x + len] == cur_attr[x];
-                len++)
-            {
-                if(cur_char[x + len] == ' ')
-                    cur += sprintf(cur, "&nbsp;");
-                else
-                    cur += sprintf(cur, "%c", cur_char[x + len]);
-            }
-            cur += sprintf(cur, "</span>");
-        }
-        /* New line */
-        cur += sprintf(cur, "<br />\n");
+	}
+      cur += sprintf(cur, "</tr>\n");
     }
 
-    cur += sprintf(cur, "</div>\n");
+  /* Footer */
+  cur += sprintf(cur, "</table>\n");
 
-    /* Crop to really used size */
-    buffer = realloc(buffer, (strlen(buffer) + 1) * sizeof(char));
+  /* Crop to really used size */
+  buffer = realloc(buffer, (strlen(buffer)+1) * sizeof(char));
 
-    return buffer;
+  return buffer;
 }
+
 
 static int const irc_palette[] =
 {
@@ -1937,6 +1963,7 @@ char* caca_get_irc(void)
   unsigned int x, y;
   /* 15 bytes assumed for max length per pixel */
   buffer = malloc(((_caca_width*_caca_height*15)+1)*sizeof(char));
+
   sprintf(buffer, "%%O");
 
   for(y = 0; y < _caca_height; y++)
@@ -1945,18 +1972,18 @@ char* caca_get_irc(void)
         {
           if(cache_char[x+y*caca_get_width()] == ' ')
             {
-              sprintf(buffer, 
-                      "%s%%C%d,%d%c", buffer,
-                      irc_palette[cache_attr[x+y*caca_get_width()]>>4],
-                      irc_palette[cache_attr[x+y*caca_get_width()]>>4], 
-                      '#');
+             sprintf(buffer,
+		     "%s%%C%d,%d%c", buffer,
+		     irc_palette[cache_attr[x+y*caca_get_width()]>>4],
+		     irc_palette[cache_attr[x+y*caca_get_width()]>>4], 
+		     '#');
             }
           else if(cache_char[x+y*caca_get_width()] == '%')
             {
-             sprintf(buffer,
-                    "%s%%C%d,%d%%%%",  buffer,
-                    irc_palette[cache_attr[x+y*caca_get_width()]&0x0f],
-                    irc_palette[cache_attr[x+y*caca_get_width()]>> 4]);
+	      sprintf(buffer,
+		      "%s%%C%d,%d%%%%",  buffer,
+		      irc_palette[cache_attr[x+y*caca_get_width()]&0x0f],
+		      irc_palette[cache_attr[x+y*caca_get_width()]>> 4]);
             }
           else if(cache_char[x+y*caca_get_width()]>='0' && cache_char[x+y*caca_get_width()]<='9')
             {
@@ -1966,21 +1993,21 @@ char* caca_get_irc(void)
                       irc_palette[cache_attr[x+y*caca_get_width()]>> 4],
                       cache_char[x+y*caca_get_width()]);
             }
-      else
-        {
-          sprintf(buffer, 
-                  "%s%%C%d,%d%c", buffer,
-                  irc_palette[cache_attr[x+y*caca_get_width()]&0x0f],
-                  irc_palette[cache_attr[x+y*caca_get_width()]>> 4],
-                  cache_char[x+y*caca_get_width()]);
+	  else
+	    {
+	      sprintf(buffer, 
+		      "%s%%C%d,%d%c", buffer,
+		      irc_palette[cache_attr[x+y*caca_get_width()]&0x0f],
+		      irc_palette[cache_attr[x+y*caca_get_width()]>> 4],
+		      cache_char[x+y*caca_get_width()]);
             }
-
+	  
         }
       sprintf(buffer, "%s\n", buffer);
-    }
- 
+  }
+  
   /* Crop to really used size */
   buffer = realloc(buffer, (strlen(buffer)+1) * sizeof(char));
-
+  
   return buffer;
 }
