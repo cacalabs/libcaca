@@ -265,7 +265,7 @@ float gl_font_width, gl_font_height;
 float gl_incx, gl_incy;
 int id[94];
 unsigned char gl_resized=0, gl_bit=0;
-#endif 
+#endif
 
 
 static char *_caca_empty_line;
@@ -319,12 +319,12 @@ static void gl_handle_reshape (int w, int h)
 
       gl_new_width = w;
       gl_new_height = h;
-      
+
       gl_resized = 1;
     }
   else
     gl_bit=1;
-  
+
 }
 #endif
 
@@ -983,7 +983,7 @@ int _caca_init_graphics(void)
           if(getenv("CACA_GEOMETRY") && *(getenv("CACA_GEOMETRY")))
             sscanf(getenv("CACA_GEOMETRY"),
                    "%ux%u", &_caca_width, &_caca_height);
-          
+
         if(!_caca_width)
             _caca_width = 80;
         if(!_caca_height)
@@ -993,16 +993,16 @@ int _caca_init_graphics(void)
           gl_font_height = 15;
 
           gl_width =  _caca_width*gl_font_width;
-          gl_height = _caca_height*gl_font_height; 
+          gl_height = _caca_height*gl_font_height;
 
-          glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE); 
-          glutInitWindowSize(gl_width, gl_height); 
+          glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
+          glutInitWindowSize(gl_width, gl_height);
           gl_window = glutCreateWindow("caca for GL");
 
           gluOrtho2D(0,gl_width, gl_height, 0);
 
           glDisable(GL_CULL_FACE);
-          glDisable(GL_DEPTH_TEST);  
+          glDisable(GL_DEPTH_TEST);
 
           glutKeyboardFunc(gl_handle_keyboard);
           glutSpecialFunc(gl_handle_special_key);
@@ -1028,10 +1028,10 @@ int _caca_init_graphics(void)
 
           memset(empty, 255, 16*16*4);
           glEnable(GL_TEXTURE_2D);
-         
+
           for(i=0;i<94;i++)
             {
-              glGenTextures(1,&id[i]); 
+              glGenTextures(1,&id[i]);
               glBindTexture(GL_TEXTURE_2D, id[i]);
               glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
               glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -1041,19 +1041,19 @@ int _caca_init_graphics(void)
             }
           for(i=0;i<94;i++)
             {
-             
+
               glDisable(GL_TEXTURE_2D);
               glClear(GL_COLOR_BUFFER_BIT);
 
               glColor3f(1,1,1);
               glRasterPos2f(0,15);
-              glutBitmapCharacter(GLUT_BITMAP_9_BY_15,i+32); 
-              
+              glutBitmapCharacter(GLUT_BITMAP_9_BY_15,i+32);
+
 
               glEnable(GL_TEXTURE_2D);
-              glBindTexture(GL_TEXTURE_2D,id[i]);                        
+              glBindTexture(GL_TEXTURE_2D,id[i]);
               glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 0, gl_height-16, 16,16, 0);
-              
+
               glutMainLoopEvent();
               glutPostRedisplay();
             }
@@ -1065,7 +1065,7 @@ int _caca_init_graphics(void)
         {
           if(getenv("CACA_GEOMETRY") && *(getenv("CACA_GEOMETRY")))
             sscanf(getenv("CACA_GEOMETRY"),
-                   "%ux%u", &_caca_width, &_caca_height);  
+                   "%ux%u", &_caca_width, &_caca_height);
           if(!_caca_width)
             _caca_width = 80;
           if(!_caca_height)
@@ -1455,10 +1455,10 @@ void caca_refresh(void)
       if(_caca_driver == CACA_DRIVER_GL)
         {
           unsigned int x, y, offsetx, offsety;
-          
+
 
           glClear(GL_COLOR_BUFFER_BIT);
-          
+
           offsety=0;
                 for(y=0;y<gl_height;y+=gl_font_height)
             {
@@ -1473,7 +1473,7 @@ void caca_refresh(void)
                 br = ((gl_bg_palette[offset]&0x00FF0000)>>16)/255.0f;
                 bg = ((gl_bg_palette[offset]&0x0000FF00)>>8)/255.0f;
                 bb = ((gl_bg_palette[offset]&0x000000FF))/255.0f;
-        
+
                 glDisable(GL_TEXTURE_2D);
                 glColor3f(br, bg, bb);
                 glBegin(GL_QUADS);
@@ -1482,10 +1482,10 @@ void caca_refresh(void)
                 glVertex2f(x+gl_font_width,y+gl_font_height);
                 glVertex2f(x,y+gl_font_height);
                 glEnd();
-        
+
 
                   offsetx++;
-              }          
+              }
 
             offsety++;
             }
@@ -1496,7 +1496,7 @@ void caca_refresh(void)
           glEnable(GL_BLEND);
           glEnable(GL_TEXTURE_2D);
           glBlendFunc(GL_ONE, GL_ONE);
-                
+
           offsety=0;
                 for(y=0;y<gl_height;y+=gl_font_height)
             {
@@ -1506,8 +1506,8 @@ void caca_refresh(void)
                   uint8_t *attr = cache_attr + offsetx + offsety * _caca_width;
                   unsigned char *chr = cache_char + offsetx + offsety * _caca_width;
                   float fr, fg, fb;
-        
-                
+
+
                   fr = ((gl_bg_palette[attr[0] & 0xf]&0x00FF0000)>>16)/255.0f;
                   fg = ((gl_bg_palette[attr[0] & 0xf]&0x0000FF00)>>8)/255.0f;
                   fb = ((gl_bg_palette[attr[0] & 0xf]&0x000000FF))/255.0f;
@@ -1515,7 +1515,7 @@ void caca_refresh(void)
                   if(chr[0] != ' ')
                     {
                       glBindTexture(GL_TEXTURE_2D, id[chr[0]-32]);
-                    
+
                       glColor3f(fr, fg, fb);
                       glBegin(GL_QUADS);
                       glTexCoord2f(0,1);
@@ -1526,7 +1526,7 @@ void caca_refresh(void)
                       glVertex2f(x+gl_font_width,y+gl_font_height);
                       glTexCoord2f(0,0);
                       glVertex2f(x,y+gl_font_height);
-                      glEnd();    
+                      glEnd();
                     }
                   offsetx++;
                 }
@@ -1655,16 +1655,16 @@ static void caca_handle_resize(void)
     {
       gl_width = gl_new_width;
       gl_height = gl_new_height;
-         
+
       _caca_width = gl_width/gl_font_width;
       _caca_height = (gl_height/gl_font_height)+1;
-      
+
       glMatrixMode(GL_PROJECTION);
       glPushMatrix();
       glLoadIdentity();
-      
+
       glViewport(0,0,gl_width, gl_height);
-      gluOrtho2D(0, gl_width, gl_height, 0);      
+      gluOrtho2D(0, gl_width, gl_height, 0);
       glMatrixMode(GL_MODELVIEW);
 
     }
@@ -1770,37 +1770,20 @@ static RETSIGTYPE sigwinch_handler(int sig)
 
 /* Exporters */
 
-
 /* HTML */
-static int const html_palette[] =
-{
-    0,
-    0x007,
-    0x070,
-    0x077,
-    0x700,
-    0x707,
-    0x770,
-    0x777,
-    0,
-    0x00F,
-    0x0F0,
-    0x0FF,
-    0xF00,
-    0xF0F,
-    0xFF0,
-    0xFFF,
-
-};
 
 /** \brief Generate HTML representation of current image.
  *
- *  This function generates and returns the HTML representation of 
+ *  This function generates and returns the HTML representation of
  *  the current image.
- *
  */
 char* caca_get_html(void)
 {
+    static int const palette[] =
+    {
+        0x000, 0x008, 0x080, 0x088, 0x800, 0x808, 0x880, 0x888,
+        0x444, 0x44f, 0x4f4, 0x4ff, 0xf44, 0xf4f, 0xff4, 0xfff,
+    };
     char *buffer, *cur;
     unsigned int x, y, len;
 
@@ -1819,7 +1802,7 @@ char* caca_get_html(void)
     for(x = 0; x < 0x100; x++)
     {
         cur += sprintf(cur, ".b%02x { color:#%03x; background-color:#%03x; }\n",
-                       x, html_palette[x & 0xf ], html_palette[x >> 4]);
+                       x, palette[x & 0xf ], palette[x >> 4]);
     }
     cur += sprintf(cur, "</style>\n</head>\n<body>\n");
 
@@ -1828,21 +1811,21 @@ char* caca_get_html(void)
 
     for(y = 0; y < _caca_height; y++)
     {
+        uint8_t *lineattr = cache_attr + y * _caca_width;
+        uint8_t *linechar = cache_char + y * _caca_width;
+
         for(x = 0; x < _caca_width; x += len)
         {
-            uint8_t *cur_attr = cache_attr + y * _caca_width;
-            uint8_t *cur_char = cache_char + y * _caca_width;
+            cur += sprintf(cur, "<span class='b%02x'>", lineattr[x]);
 
-            cur += sprintf(cur, "<span class='b%02x'>", cur_attr[x]);
-
-            for(len = 0; 
-                x + len < _caca_width && cur_attr[x + len] == cur_attr[x];
+            for(len = 0;
+                x + len < _caca_width && lineattr[x + len] == lineattr[x];
                 len++)
             {
-                if(cur_char[x + len] == ' ')
+                if(linechar[x + len] == ' ')
                     cur += sprintf(cur, "&nbsp;");
                 else
-                    cur += sprintf(cur, "%c", cur_char[x + len]);
+                    cur += sprintf(cur, "%c", linechar[x + len]);
             }
             cur += sprintf(cur, "</span>");
         }
@@ -1860,154 +1843,158 @@ char* caca_get_html(void)
 
 /** \brief Generate HTML3 representation of current image.
  *
- *  This function generates and returns the HTML3 representation of 
+ *  This function generates and returns the HTML3 representation of
  *  the current image. It is way bigger than caca_get_html(), but
  *  permits viewing in old browsers (or limited ones such as links)
- *  Won't work under gecko (mozilla rendering engine) unless you set 
+ *  Won't work under gecko (mozilla rendering engine) unless you set
  *  a correct header.
  */
 char* caca_get_html3(void)
 {
-  char *buffer, *cur;
-  unsigned int x,y;
-
-  /* 13000 -> css palette
-     40 -> max size used for a pixel (plus 10, never know)*/
-
-  buffer = malloc((13000 + ((_caca_width*_caca_height)*40))*sizeof(char));
-  cur = buffer;
-
-  /* Table */
-  cur += sprintf(cur, "<table cols='%d' cellpadding='0' cellspacing='0'>\n", caca_get_height());
-
-  for(y=0;y<_caca_height;y++)
+    static int const palette[] =
     {
-      cur += sprintf(cur, "<tr>");
-      
-      for(x=0;x<_caca_width;x++)
-	{
-	  int len;
-	  int i;
-	  uint8_t *attr = cache_attr + x + y * _caca_width;
+        0x000000, 0x000088, 0x008800, 0x008888,
+        0x880000, 0x880088, 0x888800, 0x888888,
+        0x444444, 0x4444ff, 0x44ff44, 0x44ffff,
+        0xff4444, 0xff44ff, 0xffff44, 0xffffff,
+    };
+    char *buffer, *cur;
+    unsigned int x, y, len;
 
-	  /* Use colspan option to factorize cells with same attributes 
-	     (see below) */
-	  len=1;
-	  while(x + len < _caca_width
-		&& (attr[len]>>4) == (attr[0]>>4) &&
-		(attr[len]&0x0f) == (attr[0]&0x0f))
-	    len++;
-	  
-	  if(len==1)
-	    {
-	      cur += sprintf(cur, 
-		      "<td bgcolor=#%03X ><font color=#%03X>%c</font></td>",
-		      html_palette[cache_attr[x+y*caca_get_width()]>>4], 
-		      html_palette[cache_attr[x+y*caca_get_width()]&0x0f],
-		      cache_char[x+y*caca_get_width()]);
-	    }
-	  else
-	    {
-	      cur += sprintf(cur, 
-		      "<td bgcolor=#%03X colspan=%d><font color=#%03X>",
-		      html_palette[cache_attr[x+y*caca_get_width()]>> 4], 
-		      len+1,
-		      html_palette[cache_attr[x+y*caca_get_width()]&0x0f]);
-	      
-	      for(i=0;i<len;i++)
-		{
-		  if(cache_char[x+y*caca_get_width()]!=' ')
-		    cur += sprintf(cur, "%c", cache_char[x+y*caca_get_width()]);
-		  else
-		    cur += sprintf(cur, "&nbsp;");
-		  x++;
-		}
-	      cur += sprintf(cur, "</font></td>");
-	      
-	    }
+    /* 13000 -> css palette
+     * 40 -> max size used for a pixel (plus 10, never know) */
+    buffer = malloc((13000 + ((_caca_width*_caca_height)*40))*sizeof(char));
+    cur = buffer;
 
-	}
-      cur += sprintf(cur, "</tr>\n");
+    /* Table */
+    cur += sprintf(cur, "<table cols='%d' cellpadding='0' cellspacing='0'>\n",
+                        _caca_height);
+
+    for(y = 0; y < _caca_height; y++)
+    {
+        uint8_t *lineattr = cache_attr + y * _caca_width;
+        uint8_t *linechar = cache_char + y * _caca_width;
+
+        cur += sprintf(cur, "<tr>");
+
+        for(x = 0; x < _caca_width; x += len)
+        {
+            int i;
+
+            /* Use colspan option to factorize cells with same attributes
+             * (see below) */
+            len = 1;
+            while(x + len < _caca_width && lineattr[x + len] == lineattr[x])
+                len++;
+
+            cur += sprintf(cur, "<td bgcolor=#%06x", palette[lineattr[x] >> 4]);
+
+            if(len > 1)
+                cur += sprintf(cur, " colspan=%d", len);
+
+            cur += sprintf(cur, "><font color=#%06x>",
+                                palette[lineattr[x] & 0x0f]);
+
+            for(i = 0; i < len; i++)
+            {
+                if(linechar[x + i] == ' ')
+                    cur += sprintf(cur, "&nbsp;");
+                else
+                    cur += sprintf(cur, "%c", linechar[x + i]);
+            }
+
+            cur += sprintf(cur, "</font></td>");
+        }
+        cur += sprintf(cur, "</tr>\n");
     }
 
-  /* Footer */
-  cur += sprintf(cur, "</table>\n");
+    /* Footer */
+    cur += sprintf(cur, "</table>\n");
 
-  /* Crop to really used size */
-  buffer = realloc(buffer, (strlen(buffer)+1) * sizeof(char));
+    /* Crop to really used size */
+    buffer = realloc(buffer, (strlen(buffer) + 1) * sizeof(char));
 
-  return buffer;
+    return buffer;
 }
-
-
-static int const irc_palette[] =
-{
-    /* Dark */
-    1, 2, 3, 10, 5, 6, 7, 14,
-    /* Light */
-    1, 12, 9, 11, 4, 13, 8, 16,
-};
-
 
 /** \brief Generate IRC representation of current image.
  *
- *  This function generates and returns an IRC representation of 
+ *  This function generates and returns an IRC representation of
  *  the current image.
- *  This is XChat-like format, %Cf,b  with f the foreground color,
- *  and b the background color.
- *
  */
 char* caca_get_irc(void)
 {
-  char *buffer;
-  unsigned int x, y;
-  /* 15 bytes assumed for max length per pixel */
-  buffer = malloc(((_caca_width*_caca_height*15)+1)*sizeof(char));
+    static int const palette[] =
+    {
+        1, 2, 3, 10, 5, 6, 7, 15, /* Dark */
+        14, 12, 9, 11, 4, 13, 8, 0, /* Light */
+    };
 
-  sprintf(buffer, "%%O");
+    char *buffer, *cur;
+    unsigned int x, y;
 
-  for(y = 0; y < _caca_height; y++)
-  {
-      for(x = 0; x < _caca_width; x++)
+    /* 11 bytes assumed for max length per pixel. Worst case scenario:
+     * ^Cxx,yy   6 bytes
+     * ^B^B      2 bytes
+     * c         1 byte
+     * \r\n      2 bytes
+     * In real life, the average bytes per pixel value will be around 5.
+     */
+    buffer = malloc((2 + (_caca_width * _caca_height * 11)) * sizeof(char));
+    cur = buffer;
+
+    *cur++ = '\x0f';
+
+    for(y = 0; y < _caca_height; y++)
+    {
+        uint8_t *lineattr = cache_attr + y * _caca_width;
+        uint8_t *linechar = cache_char + y * _caca_width;
+
+        uint8_t prevfg = -1;
+        uint8_t prevbg = -1;
+
+        for(x = 0; x < _caca_width; x++)
         {
-          if(cache_char[x+y*caca_get_width()] == ' ')
+            uint8_t fg = palette[lineattr[x] & 0x0f];
+            uint8_t bg = palette[lineattr[x] >> 4];
+            uint8_t c = linechar[x];
+
+            if(bg == prevbg)
             {
-             sprintf(buffer,
-		     "%s%%C%d,%d%c", buffer,
-		     irc_palette[cache_attr[x+y*caca_get_width()]>>4],
-		     irc_palette[cache_attr[x+y*caca_get_width()]>>4], 
-		     '#');
+                if(fg == prevfg)
+                    ; /* Same fg/bg, do nothing */
+                else if(c == ' ')
+                    fg = prevfg; /* Hackety hack */
+                else
+                {
+                    cur += sprintf(cur, "\x03%d", fg);
+                    if(c >= '0' && c <= '9')
+                        cur += sprintf(cur, "\x02\x02");
+                }
             }
-          else if(cache_char[x+y*caca_get_width()] == '%')
+            else
             {
-	      sprintf(buffer,
-		      "%s%%C%d,%d%%%%",  buffer,
-		      irc_palette[cache_attr[x+y*caca_get_width()]&0x0f],
-		      irc_palette[cache_attr[x+y*caca_get_width()]>> 4]);
+                if(fg == prevfg)
+                    cur += sprintf(cur, "\x03,%d", bg);
+                else
+                    cur += sprintf(cur, "\x03%d,%d", fg, bg);
+
+                if(c >= '0' && c <= '9')
+                    cur += sprintf(cur, "\x02\x02");
             }
-          else if(cache_char[x+y*caca_get_width()]>='0' && cache_char[x+y*caca_get_width()]<='9')
-            {
-              sprintf(buffer, 
-                      "%s%%C%d,%d%%B%%B%c", buffer,
-                      irc_palette[cache_attr[x+y*caca_get_width()]&0x0f],
-                      irc_palette[cache_attr[x+y*caca_get_width()]>> 4],
-                      cache_char[x+y*caca_get_width()]);
-            }
-	  else
-	    {
-	      sprintf(buffer, 
-		      "%s%%C%d,%d%c", buffer,
-		      irc_palette[cache_attr[x+y*caca_get_width()]&0x0f],
-		      irc_palette[cache_attr[x+y*caca_get_width()]>> 4],
-		      cache_char[x+y*caca_get_width()]);
-            }
-	  
+            *cur++ = c;
+            prevfg = fg;
+            prevbg = bg;
         }
-      sprintf(buffer, "%s\n", buffer);
-  }
-  
-  /* Crop to really used size */
-  buffer = realloc(buffer, (strlen(buffer)+1) * sizeof(char));
-  
-  return buffer;
+        *cur++ = '\r';
+        *cur++ = '\n';
+    }
+
+    *cur++ = '\x0f';
+
+    /* Crop to really used size */
+    buffer = realloc(buffer, (strlen(buffer) + 1) * sizeof(char));
+
+    return buffer;
 }
+
