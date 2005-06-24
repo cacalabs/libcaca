@@ -1,3 +1,33 @@
+libcaca (0.9-999.exp) experimental; urgency=low
+
+  * UNRELEASED.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Fri, 24 Jun 2005 13:53:50 +0200
+
+libcaca (0.9-5) unstable; urgency=low
+
+  * debian/control:
+    + Build-depend on libslang2-dev instead of slang1-dev (Closes: #315234).
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Thu, 23 Jun 2005 22:46:20 +0200
+
+libcaca (0.9-4) unstable; urgency=low
+
+  * debian/control:
+    + Build-depend on libxt-dev because autoconf's AC_PATH_X needs it to find
+      the X headers (Closes: #266070).
+    + Set policy to 3.6.1.1.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Tue, 17 Aug 2004 13:29:58 +0200
+
+libcaca (0.9-3) unstable; urgency=low
+
+  * doc/Makefile.am:
+    + Work around doxygen's new behaviour of storing .3caca manpages in the
+      man3caca directory instead of man3 (Closes: #250602).
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Thu, 27 May 2004 18:08:43 -0300
+
 libcaca (0.9-2) unstable; urgency=low
 
   * debian/control:
