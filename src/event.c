@@ -64,7 +64,9 @@ extern float gl_font_width;
 extern float gl_font_height;
 extern int gl_new_width;
 extern int gl_new_height;
-
+extern unsigned char gl_mouse_changed, gl_mouse_clicked;
+extern unsigned int gl_mouse_x, gl_mouse_y;
+extern unsigned int gl_mouse_button, gl_mouse_state;
 #endif
 #include "caca.h"
 #include "caca_internals.h"
@@ -746,14 +748,23 @@ static unsigned int _lowlevel_event(void)
 	    {
 	      if(!_caca_resize)
 		{
-
-
 		  _caca_resize = 1;
 		  gl_resized=0;
 		  return CACA_EVENT_RESIZE;
 		}
 	    }
-
+	  if(gl_mouse_changed)
+	    {
+	      if(gl_mouse_clicked)
+		{
+		  event|= CACA_EVENT_MOUSE_PRESS | gl_mouse_button;
+		  gl_mouse_clicked=0;
+		}
+	      mouse_x = gl_mouse_x;
+	      mouse_y = gl_mouse_y;
+	      event |= CACA_EVENT_MOUSE_MOTION | (mouse_x << 12) | mouse_y;
+	      gl_mouse_changed = 0;
+	    }
 	  if(gl_key!=0)
 	    {
 	      event |= CACA_EVENT_KEY_PRESS;

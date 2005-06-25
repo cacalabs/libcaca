@@ -265,6 +265,9 @@ float gl_font_width, gl_font_height;
 float gl_incx, gl_incy;
 int id[94];
 unsigned char gl_resized=0, gl_bit=0;
+unsigned char gl_mouse_changed=0, gl_mouse_clicked=0;
+unsigned int gl_mouse_x, gl_mouse_y;
+unsigned int gl_mouse_button=0, gl_mouse_state=0;
 #endif
 
 
@@ -324,8 +327,23 @@ static void gl_handle_reshape (int w, int h)
     }
   else
     gl_bit=1;
-
 }
+static void gl_handle_mouse(int button, int state, int x, int y) 
+{
+  gl_mouse_clicked = 1;
+  gl_mouse_button = button;
+  gl_mouse_state = state;
+  gl_mouse_x = x/gl_font_width;
+  gl_mouse_y = y/gl_font_height;
+  gl_mouse_changed = 1;
+}
+static void gl_handle_mouse_motion(int x, int y) 
+{
+  gl_mouse_x = x/gl_font_width;
+  gl_mouse_y = y/gl_font_height;
+  gl_mouse_changed = 1;
+}
+
 #endif
 
 
@@ -1007,6 +1025,11 @@ int _caca_init_graphics(void)
           glutKeyboardFunc(gl_handle_keyboard);
           glutSpecialFunc(gl_handle_special_key);
           glutReshapeFunc(gl_handle_reshape);
+
+	  glutMouseFunc(gl_handle_mouse);
+	  glutMotionFunc(gl_handle_mouse_motion);
+	  glutPassiveMotionFunc(gl_handle_mouse_motion);
+
 
           glLoadIdentity();
 
