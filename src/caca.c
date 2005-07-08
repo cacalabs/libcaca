@@ -505,9 +505,7 @@ static void caca_init_driver(void)
 #endif
 #if defined(USE_NULL)
         if(!strcasecmp(var, "null"))
-	  {
             _caca_driver = CACA_DRIVER_NULL;
-	  }
         else
 #endif
 

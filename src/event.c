@@ -195,15 +195,14 @@ static unsigned int _get_next_event(void)
     static unsigned int autorepeat_ticks = 0;
     static unsigned int last_key = 0;
     unsigned int ticks;
+    unsigned int event;
 #endif
 #if defined(USE_NULL)
-    {
-      if(_caca_driver == CACA_DRIVER_NULL)
-	return CACA_EVENT_NONE;
-    }
+    if(_caca_driver == CACA_DRIVER_NULL)
+        return CACA_EVENT_NONE;
 #endif
 
-    unsigned int event = _lowlevel_event();
+    event = _lowlevel_event();
 
 #if defined(USE_SLANG)
     if(_caca_driver != CACA_DRIVER_SLANG)
@@ -740,66 +739,65 @@ static unsigned int _lowlevel_event(void)
     else
 #endif
 #if defined(USE_GL)
-      if(_caca_driver == CACA_DRIVER_GL)
-	{
-	  glutMainLoopEvent();
+    if(_caca_driver == CACA_DRIVER_GL)
+    {
+        glutMainLoopEvent();
 
-	  if(gl_resized)
-	    {
-	      if(!_caca_resize)
-		{
-		  _caca_resize = 1;
-		  gl_resized=0;
-		  return CACA_EVENT_RESIZE;
-		}
-	    }
-	  if(gl_mouse_changed)
-	    {
-	      if(gl_mouse_clicked)
-		{
-		  event|= CACA_EVENT_MOUSE_PRESS | gl_mouse_button;
-		  gl_mouse_clicked=0;
-		}
-	      mouse_x = gl_mouse_x;
-	      mouse_y = gl_mouse_y;
-	      event |= CACA_EVENT_MOUSE_MOTION | (mouse_x << 12) | mouse_y;
-	      gl_mouse_changed = 0;
-	    }
-	  if(gl_key!=0)
-	    {
-	      event |= CACA_EVENT_KEY_PRESS;
-	      event |= gl_key;
-	      gl_key = 0;
-	    }
+        if(gl_resized && !_caca_resize)
+        {
+            _caca_resize = 1;
+            gl_resized = 0;
+            return CACA_EVENT_RESIZE;
+        }
 
-	  if(gl_special_key != 0)
-	    {
-	      event |= CACA_EVENT_KEY_PRESS;
+        if(gl_mouse_changed)
+        {
+            if(gl_mouse_clicked)
+            {
+                event|= CACA_EVENT_MOUSE_PRESS | gl_mouse_button;
+                gl_mouse_clicked=0;
+            }
+            mouse_x = gl_mouse_x;
+            mouse_y = gl_mouse_y;
+            event |= CACA_EVENT_MOUSE_MOTION | (mouse_x << 12) | mouse_y;
+            gl_mouse_changed = 0;
+        }
+
+        if(gl_key != 0)
+        {
+            event |= CACA_EVENT_KEY_PRESS;
+            event |= gl_key;
+            gl_key = 0;
+        }
+
+        if(gl_special_key != 0)
+        {
+            event |= CACA_EVENT_KEY_PRESS;
      
-	      switch(gl_special_key)
-		{
-		case GLUT_KEY_F1 : gl_special_key = 0; return event | CACA_KEY_F1;
-		case GLUT_KEY_F2 : gl_special_key = 0; return event | CACA_KEY_F2;
-		case GLUT_KEY_F3 : gl_special_key = 0; return event | CACA_KEY_F3;
-		case GLUT_KEY_F4 : gl_special_key = 0; return event | CACA_KEY_F4;
-		case GLUT_KEY_F5 : gl_special_key = 0; return event | CACA_KEY_F5;
-		case GLUT_KEY_F6 : gl_special_key = 0; return event | CACA_KEY_F6;
-		case GLUT_KEY_F7 : gl_special_key = 0; return event | CACA_KEY_F7;
-		case GLUT_KEY_F8 : gl_special_key = 0; return event | CACA_KEY_F8;
-		case GLUT_KEY_F9 : gl_special_key = 0; return event | CACA_KEY_F9;
-		case GLUT_KEY_F10  : gl_special_key = 0; return event | CACA_KEY_F10;
-		case GLUT_KEY_F11  : gl_special_key = 0; return event | CACA_KEY_F11;
-		case GLUT_KEY_F12  : gl_special_key = 0; return event | CACA_KEY_F12;
-		case GLUT_KEY_LEFT : gl_special_key = 0; return event | CACA_KEY_LEFT;
-		case GLUT_KEY_RIGHT: gl_special_key = 0; return event | CACA_KEY_RIGHT;
-		case GLUT_KEY_UP   : gl_special_key = 0; return event | CACA_KEY_UP;
-		case GLUT_KEY_DOWN : gl_special_key = 0; return event | CACA_KEY_DOWN;
-		default:       return CACA_EVENT_NONE;
-		}
-	    }
-	  return event;
-	}
-      else
+            switch(gl_special_key)
+            {
+                case GLUT_KEY_F1 : gl_special_key = 0; return event | CACA_KEY_F1;
+                case GLUT_KEY_F2 : gl_special_key = 0; return event | CACA_KEY_F2;
+                case GLUT_KEY_F3 : gl_special_key = 0; return event | CACA_KEY_F3;
+                case GLUT_KEY_F4 : gl_special_key = 0; return event | CACA_KEY_F4;
+                case GLUT_KEY_F5 : gl_special_key = 0; return event | CACA_KEY_F5;
+                case GLUT_KEY_F6 : gl_special_key = 0; return event | CACA_KEY_F6;
+                case GLUT_KEY_F7 : gl_special_key = 0; return event | CACA_KEY_F7;
+                case GLUT_KEY_F8 : gl_special_key = 0; return event | CACA_KEY_F8;
+                case GLUT_KEY_F9 : gl_special_key = 0; return event | CACA_KEY_F9;
+                case GLUT_KEY_F10: gl_special_key = 0; return event | CACA_KEY_F10;
+                case GLUT_KEY_F11: gl_special_key = 0; return event | CACA_KEY_F11;
+                case GLUT_KEY_F12: gl_special_key = 0; return event | CACA_KEY_F12;
+                case GLUT_KEY_LEFT : gl_special_key = 0; return event | CACA_KEY_LEFT;
+                case GLUT_KEY_RIGHT: gl_special_key = 0; return event | CACA_KEY_RIGHT;
+                case GLUT_KEY_UP   : gl_special_key = 0; return event | CACA_KEY_UP;
+                case GLUT_KEY_DOWN : gl_special_key = 0; return event | CACA_KEY_DOWN;
+                default: return CACA_EVENT_NONE;
+            }
+        }
+        return event;
+    }
+    else
 #endif
     {
         /* Dummy */
