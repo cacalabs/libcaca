@@ -2021,3 +2021,69 @@ char* caca_get_irc(void)
     return buffer;
 }
 
+/** \brief Generate ANSI representation of current image.
+ *
+ *  This function generates and returns an ANSI representation of
+ *  the current image.
+ *  \param trailing if 0, raw ANSI will be generated. Otherwise, you'll be able to cut/paste the result to a function like printf
+ *  \return buffer containing generated ANSI codes as a big string
+ */
+char* caca_get_ANSI(int trailing)
+{
+   static int const palette[] =
+    {
+      30, 34, 32, 36, 31, 35, 33, 37, /* Both lines (light and dark) are the same, */
+      30, 34, 32, 36, 31, 35, 33, 37, /* light colors handling is done later */
+    };
+  
+    char *buffer, *cur;
+    unsigned int x, y;
+  
+    /* 20 bytes assumed for max length per pixel.
+       Add height*9 to that (zeroes color at the end and jump to next line)
+     */
+    buffer = malloc(((_caca_height*9) + (_caca_width * _caca_height * 20)) * sizeof(char));
+    cur = buffer;
+
+    // *cur++ = '';
+
+    for(y = 0; y < _caca_height; y++)
+    {
+        uint8_t *lineattr = cache_attr + y * _caca_width;
+        uint8_t *linechar = cache_char + y * _caca_width;
+
+        uint8_t prevfg = -1;
+        uint8_t prevbg = -1;
+
+        for(x = 0; x < _caca_width; x++)
+        {
+            uint8_t fg = palette[lineattr[x] & 0x0f];
+            uint8_t bg = (palette[lineattr[x] >> 4])+10;
+            uint8_t c = linechar[x];
+
+	    if(!trailing)
+	      cur += sprintf(cur, "\033[");
+	    else
+	      cur += sprintf(cur, "\\033[");
+ 
+	    if(fg>7)
+	      cur += sprintf(cur, "1;%d;%dm",fg,bg);
+	    else
+	      cur += sprintf(cur, "0;%d;%dm",fg,bg);
+            *cur++ = c;
+	    if((c=='%') && trailing)
+	      *cur++=c;
+            prevfg = fg;
+            prevbg = bg;
+        }
+	if(!trailing)
+	  cur += sprintf(cur, "\033[0m\n\r");
+	else
+	  cur += sprintf(cur, "\\033[0m\\n\n");
+    }
+    /* Crop to really used size */
+    buffer = realloc(buffer, (strlen(buffer) + 1) * sizeof(char));
+
+    return buffer;
+
+}
