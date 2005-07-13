@@ -45,7 +45,6 @@ typedef unsigned int uint32_t;
 #include <stdlib.h>
 #include <limits.h>
 #include <string.h>
-#include <math.h>
 
 #include "caca.h"
 #include "caca_internals.h"
@@ -338,7 +337,7 @@ void caca_set_bitmap_gamma(struct caca_bitmap *bitmap, float gammaval)
     bitmap->gammaval = gammaval;
 
     for(i = 0; i < 4096; i++)
-        bitmap->gammatab[i] = 4096.0 * powf((float)i / 4096.0, 1.0 / gammaval);
+        bitmap->gammatab[i] = 4096.0 * caca_powf((float)i / 4096.0, 1.0 / gammaval);
 }
 
 /**

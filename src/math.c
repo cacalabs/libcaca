@@ -78,3 +78,26 @@ unsigned int caca_sqrt(unsigned int a)
     return 2 * caca_sqrt(a / 4);
 }
 
+
+/**
+ * \brief powf substitute (x^y)
+ * \param x The value to be raised
+ * \param y The power to raise x of.
+ * \return \p x raised to the power of \p y
+ */
+
+float caca_powf(float x, float y)
+{
+    int i=((int)y);
+    float r=x;
+
+    if(((int)y)==1 || ((int)x)==1)
+        return x;
+
+    i--;
+    while(i--)
+    {
+        r*=x;
+    }
+    return r;
+}

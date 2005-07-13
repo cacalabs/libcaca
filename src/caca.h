@@ -317,6 +317,7 @@ void caca_fill_triangle(int, int, int, int, int, int, char);
  *  @{ */
 int caca_rand(int, int);
 unsigned int caca_sqrt(unsigned int);
+float caca_powf(float x, float y);
 /*  @} */
 
 /** \defgroup sprite Sprite handling
