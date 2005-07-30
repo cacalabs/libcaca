@@ -195,8 +195,8 @@ static unsigned int _get_next_event(void)
     static unsigned int autorepeat_ticks = 0;
     static unsigned int last_key = 0;
     unsigned int ticks;
-    unsigned int event;
 #endif
+    unsigned int event;
 #if defined(USE_NULL)
     if(_caca_driver == CACA_DRIVER_NULL)
         return CACA_EVENT_NONE;
