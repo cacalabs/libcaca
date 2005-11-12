@@ -237,7 +237,7 @@ static int const win32_bg_palette[] =
 #endif
 #if defined(USE_GL)
 
-static unsigned int const gl_bg_palette[] =
+static unsigned int const gl_bgpal[] =
 {
     0,
     0x0000007F,
@@ -302,51 +302,50 @@ static int x11_error_handler(Display *, XErrorEvent *);
 
 #if defined(USE_GL)
 unsigned char gl_key = 0;
-int gl_special_key=0;
+int gl_special_key = 0;
 int gl_new_width;
 int gl_new_height;
-
 
 static void gl_handle_keyboard(unsigned char key, int x, int y)
 {
   gl_key = key;
 }
+
 static void gl_handle_special_key(int key, int x, int y)
 {
-  gl_special_key = key;
+    gl_special_key = key;
 }
-static void gl_handle_reshape (int w, int h)
+
+static void gl_handle_reshape(int w, int h)
 {
-  if(gl_bit) /* Do not handle reshaping at the first time*/
+    if(gl_bit) /* Do not handle reshaping at the first time*/
     {
+        gl_new_width = w;
+        gl_new_height = h;
 
-      gl_new_width = w;
-      gl_new_height = h;
-
-      gl_resized = 1;
+        gl_resized = 1;
     }
-  else
-    gl_bit=1;
+    else
+        gl_bit = 1;
 }
+
 static void gl_handle_mouse(int button, int state, int x, int y) 
 {
-  gl_mouse_clicked = 1;
-  gl_mouse_button = button;
-  gl_mouse_state = state;
-  gl_mouse_x = x/gl_font_width;
-  gl_mouse_y = y/gl_font_height;
-  gl_mouse_changed = 1;
+    gl_mouse_clicked = 1;
+    gl_mouse_button = button;
+    gl_mouse_state = state;
+    gl_mouse_x = x / gl_font_width;
+    gl_mouse_y = y / gl_font_height;
+    gl_mouse_changed = 1;
 }
+
 static void gl_handle_mouse_motion(int x, int y) 
 {
-  gl_mouse_x = x/gl_font_width;
-  gl_mouse_y = y/gl_font_height;
-  gl_mouse_changed = 1;
+    gl_mouse_x = x / gl_font_width;
+    gl_mouse_y = y / gl_font_height;
+    gl_mouse_changed = 1;
 }
-
 #endif
-
-
 
 /** \brief Set the default colour pair.
  *
@@ -796,7 +795,7 @@ int _caca_init_graphics(void)
     {
         gettextinfo(&conio_ti);
         conio_screen = malloc(2 * conio_ti.screenwidth
-                                 * conio_ti.screenheight * sizeof(char));
+                                * conio_ti.screenheight * sizeof(char));
         if(conio_screen == NULL)
             return -1;
 #   if defined(SCREENUPDATE_IN_PC_H)
@@ -993,12 +992,12 @@ int _caca_init_graphics(void)
     else
 #endif
 #if defined(USE_GL)
-      if(_caca_driver == CACA_DRIVER_GL)
-        {
-          int i;
-          char *empty;
+    if(_caca_driver == CACA_DRIVER_GL)
+    {
+        int i;
+        char *empty;
 
-          if(getenv("CACA_GEOMETRY") && *(getenv("CACA_GEOMETRY")))
+        if(getenv("CACA_GEOMETRY") && *(getenv("CACA_GEOMETRY")))
             sscanf(getenv("CACA_GEOMETRY"),
                    "%ux%u", &_caca_width, &_caca_height);
 
@@ -1007,94 +1006,89 @@ int _caca_init_graphics(void)
         if(!_caca_height)
             _caca_height = 32;
 
-          gl_font_width = 9;
-          gl_font_height = 15;
+        gl_font_width = 9;
+        gl_font_height = 15;
 
-          gl_width =  _caca_width*gl_font_width;
-          gl_height = _caca_height*gl_font_height;
+        gl_width = _caca_width * gl_font_width;
+        gl_height = _caca_height * gl_font_height;
 
-          glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
-          glutInitWindowSize(gl_width, gl_height);
-          gl_window = glutCreateWindow("caca for GL");
+        glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
+        glutInitWindowSize(gl_width, gl_height);
+        gl_window = glutCreateWindow("caca for GL");
 
-          gluOrtho2D(0,gl_width, gl_height, 0);
+        gluOrtho2D(0, gl_width, gl_height, 0);
 
-          glDisable(GL_CULL_FACE);
-          glDisable(GL_DEPTH_TEST);
+        glDisable(GL_CULL_FACE);
+        glDisable(GL_DEPTH_TEST);
 
-          glutKeyboardFunc(gl_handle_keyboard);
-          glutSpecialFunc(gl_handle_special_key);
-          glutReshapeFunc(gl_handle_reshape);
+        glutKeyboardFunc(gl_handle_keyboard);
+        glutSpecialFunc(gl_handle_special_key);
+        glutReshapeFunc(gl_handle_reshape);
 
-	  glutMouseFunc(gl_handle_mouse);
-	  glutMotionFunc(gl_handle_mouse_motion);
-	  glutPassiveMotionFunc(gl_handle_mouse_motion);
+        glutMouseFunc(gl_handle_mouse);
+        glutMotionFunc(gl_handle_mouse_motion);
+        glutPassiveMotionFunc(gl_handle_mouse_motion);
 
+        glLoadIdentity();
 
-          glLoadIdentity();
+        glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
+        glLoadIdentity();
+        gluOrtho2D(0, gl_width, gl_height, 0);
 
-          glMatrixMode(GL_PROJECTION);
-          glPushMatrix();
-          glLoadIdentity();
-          gluOrtho2D(0, gl_width, gl_height, 0);
+        glMatrixMode(GL_MODELVIEW);
 
-          glMatrixMode(GL_MODELVIEW);
+        glClear(GL_COLOR_BUFFER_BIT);
 
-
-          glClear(GL_COLOR_BUFFER_BIT);
-
-
-
-          empty = malloc(16*16*4);
-          if(empty == NULL)
+        empty = malloc(16 * 16 * 4);
+        if(empty == NULL)
             return -1;
 
-          memset(empty, 255, 16*16*4);
-          glEnable(GL_TEXTURE_2D);
+        memset(empty, 0xff, 16 * 16 * 4);
+        glEnable(GL_TEXTURE_2D);
 
-          for(i=0;i<94;i++)
-            {
-              glGenTextures(1,&id[i]);
-              glBindTexture(GL_TEXTURE_2D, id[i]);
-              glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-              glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-              glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8,
-                           16,16,
-                           0, GL_RGB, GL_UNSIGNED_BYTE, empty);
-            }
-          for(i=0;i<94;i++)
-            {
-
-              glDisable(GL_TEXTURE_2D);
-              glClear(GL_COLOR_BUFFER_BIT);
-
-              glColor3f(1,1,1);
-              glRasterPos2f(0,15);
-              glutBitmapCharacter(GLUT_BITMAP_9_BY_15,i+32);
-
-
-              glEnable(GL_TEXTURE_2D);
-              glBindTexture(GL_TEXTURE_2D,id[i]);
-              glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 0, gl_height-16, 16,16, 0);
-
-              glutMainLoopEvent();
-              glutPostRedisplay();
-            }
+        for(i = 0; i < 94; i++)
+        {
+            glGenTextures(1, &id[i]);
+            glBindTexture(GL_TEXTURE_2D, id[i]);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8,
+                         16, 16, 0, GL_RGB, GL_UNSIGNED_BYTE, empty);
         }
+
+        for(i = 0; i < 94; i++)
+        {
+            glDisable(GL_TEXTURE_2D);
+            glClear(GL_COLOR_BUFFER_BIT);
+
+            glColor3f(1, 1, 1);
+            glRasterPos2f(0, 15);
+            glutBitmapCharacter(GLUT_BITMAP_9_BY_15, i + 32);
+
+            glEnable(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, id[i]);
+            glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+                             0, gl_height - 16, 16, 16, 0);
+
+            glutMainLoopEvent();
+            glutPostRedisplay();
+        }
+    }
     else
 #endif
 #if defined(USE_NULL)
-      if(_caca_driver == CACA_DRIVER_NULL)
-        {
-          if(getenv("CACA_GEOMETRY") && *(getenv("CACA_GEOMETRY")))
+    if(_caca_driver == CACA_DRIVER_NULL)
+    {
+        if(getenv("CACA_GEOMETRY") && *(getenv("CACA_GEOMETRY")))
             sscanf(getenv("CACA_GEOMETRY"),
                    "%ux%u", &_caca_width, &_caca_height);
-          if(!_caca_width)
+        if(!_caca_width)
             _caca_width = 80;
-          if(!_caca_height)
+        if(!_caca_height)
             _caca_height = 32;
-        }
-      else
+    }
+    else
 #endif
     {
         /* Dummy */
@@ -1171,20 +1165,18 @@ int _caca_end_graphics(void)
     else
 #endif
 #if defined(USE_GL)
-      if(_caca_driver == CACA_DRIVER_GL)
-        {
-          glutDestroyWindow(gl_window);
-        }
-      else
+    if(_caca_driver == CACA_DRIVER_GL)
+    {
+        glutDestroyWindow(gl_window);
+    }
+    else
 #endif
 #if defined(USE_NULL)
-      if(_caca_driver == CACA_DRIVER_NULL)
-        {
-          /* I'm bored to write 'nothing to do'.
-           * So I don't.
-           */
-        }
-      else
+    if(_caca_driver == CACA_DRIVER_NULL)
+    {
+        /* Nothing to do here. */
+    }
+    else
 #endif
     {
         /* Dummy */
@@ -1221,11 +1213,11 @@ int caca_set_window_title(char const *title)
     else
 #endif
 #if defined(USE_GL)
-      if(_caca_driver == CACA_DRIVER_GL)
-        {
-          glutSetWindowTitle(title);
-        }
-      else
+    if(_caca_driver == CACA_DRIVER_GL)
+    {
+        glutSetWindowTitle(title);
+    }
+    else
 #endif
     {
         /* Not supported */
@@ -1261,11 +1253,11 @@ unsigned int caca_get_window_width(void)
     else
 #endif
 #if defined(USE_GL)
-      if(_caca_driver == CACA_DRIVER_GL)
-        {
-          return gl_width;
-        }
-      else
+    if(_caca_driver == CACA_DRIVER_GL)
+    {
+        return gl_width;
+    }
+    else
 #endif
     {
         /* Dummy */
@@ -1301,11 +1293,11 @@ unsigned int caca_get_window_height(void)
     else
 #endif
 #if defined(USE_GL)
-      if(_caca_driver == CACA_DRIVER_GL)
-        {
-          return gl_height;
-        }
-      else
+    if(_caca_driver == CACA_DRIVER_GL)
+    {
+        return gl_height;
+    }
+    else
 #endif
     {
         /* Dummy */
@@ -1475,102 +1467,96 @@ void caca_refresh(void)
     else
 #endif
 #if defined(USE_GL)
-      if(_caca_driver == CACA_DRIVER_GL)
+    if(_caca_driver == CACA_DRIVER_GL)
+    {
+        unsigned int x, y, offsetx, offsety;
+
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        offsety=0;
+        for(y = 0; y < gl_height; y += gl_font_height)
         {
-          unsigned int x, y, offsetx, offsety;
-
-
-          glClear(GL_COLOR_BUFFER_BIT);
-
-          offsety=0;
-                for(y=0;y<gl_height;y+=gl_font_height)
+            offsetx = 0;
+            for(x = 0; x < gl_width; x += gl_font_width)
             {
-              offsetx = 0;
-            for(x=0;x<gl_width;x+=gl_font_width)
-              {
                 uint8_t *attr = cache_attr + offsetx + offsety * _caca_width;
                 int offset;
                 float  br, bg, bb;
-                offset = attr[0]>>4;
+                offset = attr[0] >> 4;
 
-                br = ((gl_bg_palette[offset]&0x00FF0000)>>16)/255.0f;
-                bg = ((gl_bg_palette[offset]&0x0000FF00)>>8)/255.0f;
-                bb = ((gl_bg_palette[offset]&0x000000FF))/255.0f;
+                br = ((gl_bgpal[offset] & 0x00FF0000) >> 16) / 255.0f;
+                bg = ((gl_bgpal[offset] & 0x0000FF00) >> 8) / 255.0f;
+                bb = ((gl_bgpal[offset] & 0x000000FF)) / 255.0f;
 
                 glDisable(GL_TEXTURE_2D);
                 glColor3f(br, bg, bb);
                 glBegin(GL_QUADS);
-                glVertex2f(x,y);
-                glVertex2f(x+gl_font_width,y);
-                glVertex2f(x+gl_font_width,y+gl_font_height);
-                glVertex2f(x,y+gl_font_height);
+                glVertex2f(x, y);
+                glVertex2f(x + gl_font_width, y);
+                glVertex2f(x + gl_font_width, y + gl_font_height);
+                glVertex2f(x, y + gl_font_height);
                 glEnd();
 
-
-                  offsetx++;
-              }
+                offsetx++;
+            }
 
             offsety++;
-            }
-
-
-
-          /* 2nd pass, avoids changing render state too much */
-          glEnable(GL_BLEND);
-          glEnable(GL_TEXTURE_2D);
-          glBlendFunc(GL_ONE, GL_ONE);
-
-          offsety=0;
-                for(y=0;y<gl_height;y+=gl_font_height)
-            {
-              offsetx = 0;
-              for(x=0;x<gl_width;x+=gl_font_width)
-                {
-                  uint8_t *attr = cache_attr + offsetx + offsety * _caca_width;
-                  unsigned char *chr = cache_char + offsetx + offsety * _caca_width;
-                  float fr, fg, fb;
-
-
-                  fr = ((gl_bg_palette[attr[0] & 0xf]&0x00FF0000)>>16)/255.0f;
-                  fg = ((gl_bg_palette[attr[0] & 0xf]&0x0000FF00)>>8)/255.0f;
-                  fb = ((gl_bg_palette[attr[0] & 0xf]&0x000000FF))/255.0f;
-
-                  if(chr[0] != ' ')
-                    {
-                      glBindTexture(GL_TEXTURE_2D, id[chr[0]-32]);
-
-                      glColor3f(fr, fg, fb);
-                      glBegin(GL_QUADS);
-                      glTexCoord2f(0,1);
-                      glVertex2f(x,y);
-                      glTexCoord2f(0.5,1);
-                      glVertex2f(x+gl_font_width,y);
-                      glTexCoord2f(0.5,0);
-                      glVertex2f(x+gl_font_width,y+gl_font_height);
-                      glTexCoord2f(0,0);
-                      glVertex2f(x,y+gl_font_height);
-                      glEnd();
-                    }
-                  offsetx++;
-                }
-              offsety++;
-            }
-          glDisable(GL_BLEND);
-          glDisable(GL_TEXTURE_2D);
-
-
-
-          glutMainLoopEvent();
-          glutSwapBuffers();
-          glutPostRedisplay();
         }
-else
+
+        /* 2nd pass, avoids changing render state too much */
+        glEnable(GL_BLEND);
+        glEnable(GL_TEXTURE_2D);
+        glBlendFunc(GL_ONE, GL_ONE);
+
+        offsety = 0;
+        for(y = 0; y < gl_height; y += gl_font_height)
+        {
+            offsetx = 0;
+            for(x = 0; x < gl_width; x += gl_font_width)
+            {
+                uint8_t *attr = cache_attr + offsetx + offsety * _caca_width;
+                unsigned char *chr = cache_char + offsetx + offsety * _caca_width;
+                float fr, fg, fb;
+
+                fr = ((gl_bgpal[attr[0] & 0xf] & 0x00FF0000) >> 16) / 255.0f;
+                fg = ((gl_bgpal[attr[0] & 0xf] & 0x0000FF00) >> 8) / 255.0f;
+                fb = ((gl_bgpal[attr[0] & 0xf] & 0x000000FF)) / 255.0f;
+
+                if(chr[0] != ' ')
+                {
+                    glBindTexture(GL_TEXTURE_2D, id[chr[0]-32]);
+
+                    glColor3f(fr, fg, fb);
+                    glBegin(GL_QUADS);
+                    glTexCoord2f(0, 1);
+                    glVertex2f(x, y);
+                    glTexCoord2f(0.5, 1);
+                    glVertex2f(x + gl_font_width, y);
+                    glTexCoord2f(0.5, 0);
+                    glVertex2f(x + gl_font_width, y + gl_font_height);
+                    glTexCoord2f(0, 0);
+                    glVertex2f(x, y + gl_font_height);
+                    glEnd();
+                }
+                offsetx++;
+            }
+            offsety++;
+        }
+        glDisable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+
+        glutMainLoopEvent();
+        glutSwapBuffers();
+        glutPostRedisplay();
+    }
+    else
 #endif
 #if defined(USE_NULL)
-      if(_caca_driver == CACA_DRIVER_NULL)
-        {
-          /* Do I told you about my cat ? */
-        }
+    if(_caca_driver == CACA_DRIVER_NULL)
+    {
+        /* Nothing to do here. */
+    }
+    else
 #endif
     {
         /* Dummy */
@@ -1696,11 +1682,11 @@ static void caca_handle_resize(void)
 #if defined(USE_NULL)
     if(_caca_driver == CACA_DRIVER_NULL)
     {
-      /* \_o< pOaK */
-      /* By the way, we should never reach this,
-       * as events are not handled
-       */
+        /* \_o< pOaK
+         * By the way, we should never reach this,
+         * as events are not handled */
     }
+    else
 #endif
     {
         /* Dummy */
@@ -2025,23 +2011,23 @@ char* caca_get_irc(void)
  *
  *  This function generates and returns an ANSI representation of
  *  the current image.
- *  \param trailing if 0, raw ANSI will be generated. Otherwise, you'll be able to cut/paste the result to a function like printf
+ *  \param trailing if 0, raw ANSI will be generated. Otherwise, you'll be
+ *                  able to cut/paste the result to a function like printf
  *  \return buffer containing generated ANSI codes as a big string
  */
-char* caca_get_ANSI(int trailing)
+char * caca_get_ansi(int trailing)
 {
-   static int const palette[] =
+    static int const palette[] =
     {
-      30, 34, 32, 36, 31, 35, 33, 37, /* Both lines (light and dark) are the same, */
-      30, 34, 32, 36, 31, 35, 33, 37, /* light colors handling is done later */
+        30, 34, 32, 36, 31, 35, 33, 37, /* Both lines (light and dark) are the same, */
+        30, 34, 32, 36, 31, 35, 33, 37, /* light colors handling is done later */
     };
   
     char *buffer, *cur;
     unsigned int x, y;
   
     /* 20 bytes assumed for max length per pixel.
-       Add height*9 to that (zeroes color at the end and jump to next line)
-     */
+     * Add height*9 to that (zeroes color at the end and jump to next line) */
     buffer = malloc(((_caca_height*9) + (_caca_width * _caca_height * 20)) * sizeof(char));
     cur = buffer;
 
@@ -2061,29 +2047,30 @@ char* caca_get_ANSI(int trailing)
             uint8_t bg = (palette[lineattr[x] >> 4])+10;
             uint8_t c = linechar[x];
 
-	    if(!trailing)
-	      cur += sprintf(cur, "\033[");
-	    else
-	      cur += sprintf(cur, "\\033[");
+            if(!trailing)
+                cur += sprintf(cur, "\033[");
+            else
+                cur += sprintf(cur, "\\033[");
  
-	    if(fg>7)
-	      cur += sprintf(cur, "1;%d;%dm",fg,bg);
-	    else
-	      cur += sprintf(cur, "0;%d;%dm",fg,bg);
+            if(fg > 7)
+                cur += sprintf(cur, "1;%d;%dm",fg,bg);
+            else
+                cur += sprintf(cur, "0;%d;%dm",fg,bg);
             *cur++ = c;
-	    if((c=='%') && trailing)
-	      *cur++=c;
+            if((c == '%') && trailing)
+                *cur++ = c;
             prevfg = fg;
             prevbg = bg;
         }
-	if(!trailing)
-	  cur += sprintf(cur, "\033[0m\n\r");
-	else
-	  cur += sprintf(cur, "\\033[0m\\n\n");
+        if(!trailing)
+            cur += sprintf(cur, "\033[0m\n\r");
+        else
+            cur += sprintf(cur, "\\033[0m\\n\n");
     }
+
     /* Crop to really used size */
     buffer = realloc(buffer, (strlen(buffer) + 1) * sizeof(char));
 
     return buffer;
-
 }
+

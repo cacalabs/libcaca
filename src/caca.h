@@ -364,7 +364,7 @@ void caca_free_bitmap(struct caca_bitmap *);
 char* caca_get_html(void);
 char* caca_get_html3(void);
 char* caca_get_irc(void);
-char* caca_get_ANSI(int trailing);
+char* caca_get_ansi(int trailing);
 /*  @} */
 
 #ifdef __cplusplus
