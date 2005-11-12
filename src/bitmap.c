@@ -170,7 +170,7 @@ struct caca_bitmap
     int rleft, gleft, bleft, aleft;
     void (*get_hsv)(struct caca_bitmap *, char *, int, int);
     int red[256], green[256], blue[256], alpha[256];
-    float gammaval;
+    float gamma;
     int gammatab[4097];
 };
 #endif
@@ -325,19 +325,19 @@ void caca_set_bitmap_palette(struct caca_bitmap *bitmap,
  * Set the gamma of bitmap.
  *
  * \param bitmap Bitmap object.
- * \param red Gamma value.
+ * \param gamma Gamma value.
  */
-void caca_set_bitmap_gamma(struct caca_bitmap *bitmap, float gammaval)
+void caca_set_bitmap_gamma(struct caca_bitmap *bitmap, float gamma)
 {
     int i;
 
-    if(gammaval <= 0.0)
+    if(gamma <= 0.0)
         return;
 
-    bitmap->gammaval = gammaval;
+    bitmap->gamma = gamma;
 
     for(i = 0; i < 4096; i++)
-        bitmap->gammatab[i] = 4096.0 * caca_powf((float)i / 4096.0, 1.0 / gammaval);
+        bitmap->gammatab[i] = 4096.0 * caca_powf((float)i / 4096.0, 1.0 / gamma);
 }
 
 /**
