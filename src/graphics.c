@@ -264,12 +264,16 @@ unsigned int gl_width, gl_height;
 float gl_font_width, gl_font_height;
 float gl_incx, gl_incy;
 int id[94];
-unsigned char gl_resized=0, gl_bit=0;
-unsigned char gl_mouse_changed=0, gl_mouse_clicked=0;
+unsigned char gl_resized = 0, gl_bit = 0;
+unsigned char gl_mouse_changed = 0, gl_mouse_clicked = 0;
 unsigned int gl_mouse_x, gl_mouse_y;
-unsigned int gl_mouse_button=0, gl_mouse_state=0;
-#endif
+unsigned int gl_mouse_button = 0, gl_mouse_state = 0;
 
+unsigned char gl_key = 0;
+int gl_special_key = 0;
+int gl_new_width;
+int gl_new_height;
+#endif
 
 static char *_caca_empty_line;
 static char *_caca_scratch_line;
@@ -301,50 +305,11 @@ static int x11_error_handler(Display *, XErrorEvent *);
 #endif
 
 #if defined(USE_GL)
-unsigned char gl_key = 0;
-int gl_special_key = 0;
-int gl_new_width;
-int gl_new_height;
-
-static void gl_handle_keyboard(unsigned char key, int x, int y)
-{
-  gl_key = key;
-}
-
-static void gl_handle_special_key(int key, int x, int y)
-{
-    gl_special_key = key;
-}
-
-static void gl_handle_reshape(int w, int h)
-{
-    if(gl_bit) /* Do not handle reshaping at the first time*/
-    {
-        gl_new_width = w;
-        gl_new_height = h;
-
-        gl_resized = 1;
-    }
-    else
-        gl_bit = 1;
-}
-
-static void gl_handle_mouse(int button, int state, int x, int y) 
-{
-    gl_mouse_clicked = 1;
-    gl_mouse_button = button;
-    gl_mouse_state = state;
-    gl_mouse_x = x / gl_font_width;
-    gl_mouse_y = y / gl_font_height;
-    gl_mouse_changed = 1;
-}
-
-static void gl_handle_mouse_motion(int x, int y) 
-{
-    gl_mouse_x = x / gl_font_width;
-    gl_mouse_y = y / gl_font_height;
-    gl_mouse_changed = 1;
-}
+static void gl_handle_keyboard(unsigned char, int, int);
+static void gl_handle_special_key(int, int, int);
+static void gl_handle_reshape(int, int);
+static void gl_handle_mouse(int, int, int, int);
+static void gl_handle_mouse_motion(int, int);
 #endif
 
 /** \brief Set the default colour pair.
@@ -1480,7 +1445,7 @@ void caca_refresh(void)
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        offsety=0;
+        offsety = 0;
         for(y = 0; y < gl_height; y += gl_font_height)
         {
             offsetx = 0;
@@ -1488,7 +1453,7 @@ void caca_refresh(void)
             {
                 uint8_t *attr = cache_attr + offsetx + offsety * _caca_width;
                 int offset;
-                float  br, bg, bb;
+                float br, bg, bb;
                 offset = attr[0] >> 4;
 
                 br = ((gl_bgpal[offset] & 0x00FF0000) >> 16) / 255.0f;
@@ -1498,10 +1463,10 @@ void caca_refresh(void)
                 glDisable(GL_TEXTURE_2D);
                 glColor3f(br, bg, bb);
                 glBegin(GL_QUADS);
-                glVertex2f(x, y);
-                glVertex2f(x + gl_font_width, y);
-                glVertex2f(x + gl_font_width, y + gl_font_height);
-                glVertex2f(x, y + gl_font_height);
+                    glVertex2f(x, y);
+                    glVertex2f(x + gl_font_width, y);
+                    glVertex2f(x + gl_font_width, y + gl_font_height);
+                    glVertex2f(x, y + gl_font_height);
                 glEnd();
 
                 offsetx++;
@@ -1535,14 +1500,14 @@ void caca_refresh(void)
 
                     glColor3f(fr, fg, fb);
                     glBegin(GL_QUADS);
-                    glTexCoord2f(0, 1);
-                    glVertex2f(x, y);
-                    glTexCoord2f(0.5, 1);
-                    glVertex2f(x + gl_font_width, y);
-                    glTexCoord2f(0.5, 0);
-                    glVertex2f(x + gl_font_width, y + gl_font_height);
-                    glTexCoord2f(0, 0);
-                    glVertex2f(x, y + gl_font_height);
+                        glTexCoord2f(0, 1);
+                        glVertex2f(x, y);
+                        glTexCoord2f(0.5, 1);
+                        glVertex2f(x + gl_font_width, y);
+                        glTexCoord2f(0.5, 0);
+                        glVertex2f(x + gl_font_width, y + gl_font_height);
+                        glTexCoord2f(0, 0);
+                        glVertex2f(x, y + gl_font_height);
                     glEnd();
                 }
                 offsetx++;
@@ -1595,7 +1560,7 @@ void caca_refresh(void)
 }
 
 /*
- * XXX: following functions are loca
+ * XXX: following functions are local
  */
 static void caca_handle_resize(void)
 {
@@ -1636,6 +1601,7 @@ static void caca_handle_resize(void)
 #if defined(USE_CONIO)
     if(_caca_driver == CACA_DRIVER_CONIO)
     {
+        /* Nothing to do here. */
     }
     else
 #endif
@@ -1663,6 +1629,7 @@ static void caca_handle_resize(void)
 #if defined(USE_WIN32)
     if(_caca_driver == CACA_DRIVER_WIN32)
     {
+        /* Nothing to do here. */
     }
     else
 #endif
@@ -1781,6 +1748,48 @@ static RETSIGTYPE sigwinch_handler(int sig)
     _caca_resize_event = 1;
 
     signal(SIGWINCH, sigwinch_handler);;
+}
+#endif
+
+#if defined(USE_GL)
+static void gl_handle_keyboard(unsigned char key, int x, int y)
+{
+    gl_key = key;
+}
+
+static void gl_handle_special_key(int key, int x, int y)
+{
+    gl_special_key = key;
+}
+
+static void gl_handle_reshape(int w, int h)
+{
+    if(gl_bit) /* Do not handle reshaping at the first time*/
+    {
+        gl_new_width = w;
+        gl_new_height = h;
+
+        gl_resized = 1;
+    }
+    else
+        gl_bit = 1;
+}
+
+static void gl_handle_mouse(int button, int state, int x, int y)
+{
+    gl_mouse_clicked = 1;
+    gl_mouse_button = button;
+    gl_mouse_state = state;
+    gl_mouse_x = x / gl_font_width;
+    gl_mouse_y = y / gl_font_height;
+    gl_mouse_changed = 1;
+}
+
+static void gl_handle_mouse_motion(int x, int y)
+{
+    gl_mouse_x = x / gl_font_width;
+    gl_mouse_y = y / gl_font_height;
+    gl_mouse_changed = 1;
 }
 #endif
 
@@ -2029,10 +2038,10 @@ char * caca_get_ansi(int trailing)
         30, 34, 32, 36, 31, 35, 33, 37, /* Both lines (light and dark) are the same, */
         30, 34, 32, 36, 31, 35, 33, 37, /* light colors handling is done later */
     };
-  
+
     char *buffer, *cur;
     unsigned int x, y;
-  
+
     /* 20 bytes assumed for max length per pixel.
      * Add height*9 to that (zeroes color at the end and jump to next line) */
     buffer = malloc(((_caca_height*9) + (_caca_width * _caca_height * 20)) * sizeof(char));
@@ -2058,7 +2067,7 @@ char * caca_get_ansi(int trailing)
                 cur += sprintf(cur, "\033[");
             else
                 cur += sprintf(cur, "\\033[");
- 
+
             if(fg > 7)
                 cur += sprintf(cur, "1;%d;%dm",fg,bg);
             else
