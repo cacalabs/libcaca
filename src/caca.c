@@ -533,8 +533,13 @@ static void caca_init_driver(void)
     }
 #endif
 #if defined(USE_GL)
-    _caca_driver = CACA_DRIVER_GL;
-    return;
+#if defined(HAVE_GETENV) && defined(GLUT_XLIB_IMPLEMENTATION)
+    if(getenv("DISPLAY") && *(getenv("DISPLAY")))
+#endif
+    {
+        _caca_driver = CACA_DRIVER_GL;
+        return;
+    }
 #endif
 #if defined(USE_SLANG)
     _caca_driver = CACA_DRIVER_SLANG;
