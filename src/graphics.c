@@ -994,6 +994,8 @@ int _caca_init_graphics(void)
 #if defined(USE_GL)
     if(_caca_driver == CACA_DRIVER_GL)
     {
+        int argc;
+        char *argv[2];
         int i;
         char *empty;
 
@@ -1011,6 +1013,11 @@ int _caca_init_graphics(void)
 
         gl_width = _caca_width * gl_font_width;
         gl_height = _caca_height * gl_font_height;
+
+        argc = 1;
+        argv[0] = "";
+        argv[1] = NULL;
+        glutInit(&argc, argv);
 
         glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
         glutInitWindowSize(gl_width, gl_height);
