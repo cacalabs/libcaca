@@ -471,37 +471,6 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
     int *floyd_steinberg, *fs_r, *fs_g, *fs_b;
     int fs_length;
 
-    /* Only used when background is black */
-    static int const white_colors[] =
-    {
-        CACA_COLOR_BLACK,
-        CACA_COLOR_DARKGRAY,
-        CACA_COLOR_LIGHTGRAY,
-        CACA_COLOR_WHITE
-    };
-
-    static int const light_colors[] =
-    {
-        CACA_COLOR_LIGHTMAGENTA,
-        CACA_COLOR_LIGHTRED,
-        CACA_COLOR_YELLOW,
-        CACA_COLOR_LIGHTGREEN,
-        CACA_COLOR_LIGHTCYAN,
-        CACA_COLOR_LIGHTBLUE,
-        CACA_COLOR_LIGHTMAGENTA
-    };
-
-    static int const dark_colors[] =
-    {
-        CACA_COLOR_MAGENTA,
-        CACA_COLOR_RED,
-        CACA_COLOR_BROWN,
-        CACA_COLOR_GREEN,
-        CACA_COLOR_CYAN,
-        CACA_COLOR_BLUE,
-        CACA_COLOR_MAGENTA
-    };
-
     /* FIXME: choose better characters! */
 #if !defined(_DOXYGEN_SKIP_ME)
 #   define DCHMAX ((sizeof(density_chars)/sizeof(char const)/4)-1)

@@ -57,6 +57,7 @@
 #if defined(USE_GL)
 #include <GL/gl.h>
 #include <GL/glut.h>
+#include <GL/freeglut_ext.h>
 extern int gl_special_key;
 extern unsigned char gl_key;
 extern unsigned char gl_resized;

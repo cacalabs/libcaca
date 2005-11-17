@@ -61,6 +61,7 @@
 #if defined(USE_GL)
 #   include <GL/gl.h>
 #   include <GL/glut.h>
+#   include <GL/freeglut_ext.h>
 #endif
 #if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
 #   include <inttypes.h>
@@ -1904,7 +1905,7 @@ char* caca_get_html3(void)
 
         for(x = 0; x < _caca_width; x += len)
         {
-            int i;
+            unsigned int i;
 
             /* Use colspan option to factorize cells with same attributes
              * (see below) */
