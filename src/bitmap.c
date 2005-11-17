@@ -571,7 +571,8 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
     {
         unsigned int i;
         int ch = 0, distmin;
-        int r, g, b, a, fg_r = 0, fg_g = 0, fg_b = 0, bg_r, bg_g, bg_b;
+        unsigned int r, g, b, a;
+        int fg_r = 0, fg_g = 0, fg_b = 0, bg_r, bg_g, bg_b;
         int fromx, fromy, tox, toy, myx, myy, dots, dist;
         int error[3];
 
@@ -710,7 +711,7 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
         }
         else
         {
-            int lum = r; if(g > lum) lum = g; if(b > lum) lum = b;
+            unsigned int lum = r; if(g > lum) lum = g; if(b > lum) lum = b;
             outfg = outbg;
             outbg = CACA_COLOR_BLACK;
 

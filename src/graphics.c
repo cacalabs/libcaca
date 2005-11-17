@@ -502,8 +502,8 @@ void caca_putchar(int x, int y, char c)
  */
 void caca_putstr(int x, int y, char const *s)
 {
-    char *charbuf;
-    char *attrbuf;
+    unsigned char *charbuf;
+    unsigned char *attrbuf;
     char const *t;
     unsigned int len;
 
@@ -1022,7 +1022,7 @@ int _caca_init_graphics(void)
 
         for(i = 0; i < 94; i++)
         {
-            glGenTextures(1, &id[i]);
+            glGenTextures(1, (GLuint*)&id[i]);
             glBindTexture(GL_TEXTURE_2D, id[i]);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -1402,7 +1402,7 @@ void caca_refresh(void)
                 XSetForeground(x11_dpy, x11_gc, x11_colors[attr[0] & 0xf]);
                 XDrawString(x11_dpy, x11_pixmap, x11_gc, x * x11_font_width,
                             (y + 1) * x11_font_height - x11_font_offset,
-                            cache_char + x + y * _caca_width, len);
+                            (char*)(cache_char + x + y * _caca_width), len);
             }
         }
 
