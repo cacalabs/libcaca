@@ -92,7 +92,7 @@ initialize (void)
 {
   int i;
 #ifdef LIBCACA
-  int r[256], g[256], b[256], a[256];
+  unsigned int r[256], g[256], b[256], a[256];
 #endif
 
 #ifdef LIBCACA
@@ -177,7 +177,9 @@ firemain (void)
 #endif
   i = 0;
 #define END (bitmap + XSIZ * YSIZ)
-  for (p = bitmap; p <= (unsigned char *) (END); p += 1)
+  for (p = (unsigned char*)bitmap; 
+       (char*)p <= (( char *) (END)); 
+       p += 1)
     {
       *p = table[(*(p + XSIZ - 1) + *(p + XSIZ + 1) + *(p + XSIZ)) +
 		 (*(p + 2 * XSIZ - 1) + *(p + 2 * XSIZ + 1))];
@@ -205,7 +207,7 @@ drawfire (void)
     loop = rand () % 3, sloop++;;
   i1 = 1;
   i2 = 4 * XSIZ + 1;
-  for (p = (char *) bitmap + XSIZ * (YSIZ + 0);
+  for (p = (unsigned char *) bitmap + XSIZ * (YSIZ + 0);
        p < ((unsigned char *) bitmap + XSIZ * (YSIZ + 1));
        p++, i1 += 4, i2 -= 4)
     {

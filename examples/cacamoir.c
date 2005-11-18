@@ -44,7 +44,7 @@ static void draw_line(int, int, char);
 
 int main (int argc, char **argv)
 {
-    int red[256], green[256], blue[256], alpha[256];
+    unsigned int red[256], green[256], blue[256], alpha[256];
     struct caca_bitmap *bitmap;
     int i, x, y, frame = 0, pause = 0;
 
@@ -118,7 +118,7 @@ end:
 
 static void put_disc(int x, int y)
 {
-    char *src = disc + (DISCSIZ / 2 - x) + (DISCSIZ / 2 - y) * DISCSIZ;
+    char *src = ((char*)disc) + (DISCSIZ / 2 - x) + (DISCSIZ / 2 - y) * DISCSIZ;
     int i, j;
 
     for(j = 0; j < YSIZ; j++)

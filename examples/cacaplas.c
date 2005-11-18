@@ -47,7 +47,7 @@ static void do_plasma(unsigned char *,
 
 int main (int argc, char **argv)
 {
-    int red[256], green[256], blue[256], alpha[256];
+    unsigned int red[256], green[256], blue[256], alpha[256];
     double r[3], R[6];
     struct caca_bitmap *bitmap;
     int i, x, y, frame = 0, pause = 0;

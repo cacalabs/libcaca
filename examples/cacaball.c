@@ -52,7 +52,7 @@ static unsigned char metaball[METASIZE * METASIZE];
 
 int main(int argc, char **argv)
 {
-    int r[256], g[256], b[256], a[256];
+    unsigned int r[256], g[256], b[256], a[256];
     float d[METABALLS], di[METABALLS], dj[METABALLS], dk[METABALLS];
     unsigned int x[METABALLS], y[METABALLS];
     struct caca_bitmap *caca_bitmap;
