@@ -59,6 +59,7 @@ int main(int argc, char **argv)
     float i = 10.0, j = 17.0, k = 11.0;
     int p, frame = 0, pause = 0;
 
+    caca_set_size(40,40);
     if(caca_init())
         return 1;
 

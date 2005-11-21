@@ -672,6 +672,8 @@ void caca_clear(void)
 #if !defined(_DOXYGEN_SKIP_ME)
 int _caca_init_graphics(void)
 {
+
+
 #if defined(HAVE_SIGNAL) && (defined(USE_NCURSES) || defined(USE_SLANG))
     signal(SIGWINCH, sigwinch_handler);
 #endif
@@ -805,6 +807,7 @@ int _caca_init_graphics(void)
         char const *font_name = "8x13bold";
         int i;
 
+	if(!_caca_width && !_caca_height)
         if(getenv("CACA_GEOMETRY") && *(getenv("CACA_GEOMETRY")))
             sscanf(getenv("CACA_GEOMETRY"),
                    "%ux%u", &_caca_width, &_caca_height);
@@ -931,10 +934,11 @@ int _caca_init_graphics(void)
 
         /* Sample code to get the biggest possible window */
         //size = GetLargestConsoleWindowSize(win32_hout);
-
-        _caca_width = csbi.srWindow.Right - csbi.srWindow.Left + 1;
-        _caca_height = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
-
+	if(!_caca_width && !_caca_height)
+	  {
+	    _caca_width = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+	    _caca_height = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+	  }
         size.X = _caca_width;
         size.Y = _caca_height;
         SetConsoleScreenBufferSize(win32_front, size);
@@ -964,8 +968,9 @@ int _caca_init_graphics(void)
         char *argv[2];
         int i;
         char *empty;
-
-        if(getenv("CACA_GEOMETRY") && *(getenv("CACA_GEOMETRY")))
+	
+	if(!_caca_width && !_caca_height)
+	  if(getenv("CACA_GEOMETRY") && *(getenv("CACA_GEOMETRY")))
             sscanf(getenv("CACA_GEOMETRY"),
                    "%ux%u", &_caca_width, &_caca_height);
 
@@ -1053,13 +1058,14 @@ int _caca_init_graphics(void)
 #if defined(USE_NULL)
     if(_caca_driver == CACA_DRIVER_NULL)
     {
+      if(!_caca_width && !_caca_height)
         if(getenv("CACA_GEOMETRY") && *(getenv("CACA_GEOMETRY")))
-            sscanf(getenv("CACA_GEOMETRY"),
-                   "%ux%u", &_caca_width, &_caca_height);
-        if(!_caca_width)
-            _caca_width = 80;
-        if(!_caca_height)
-            _caca_height = 32;
+	  sscanf(getenv("CACA_GEOMETRY"),
+		 "%ux%u", &_caca_width, &_caca_height);
+      if(!_caca_width)
+	_caca_width = 80;
+      if(!_caca_height)
+	_caca_height = 32;
     }
     else
 #endif
@@ -1279,6 +1285,44 @@ unsigned int caca_get_window_height(void)
     /* Fallback to a 6x10 font */
     return _caca_height * 10;
 }
+
+
+/** \brief Set the size of the display on devices that permit it
+ *
+ *  This function sets the display width and height, on devices
+ *  that permit it. We're talking here about the size in 
+ *  CHARACTERS fo the window, NOT in pixels.
+ *  \param width The width of the window, in CHARACTERS.
+ *  \param heigth The height of the window, in CHARACTERS.
+ */
+void caca_set_size(unsigned int width, unsigned int height)
+{
+  _caca_width = width;
+  _caca_height = height;
+}
+
+
+
+/** \brief Set the width of the window, in characters, if device permits it.
+ *
+ *  This function sets the width of displayable image, in characters.
+ *  \param width The width of the window, in CHARACTERS.
+ */
+void caca_set_width(unsigned int width)
+{
+   _caca_width = width;
+}
+/** \brief Set the height of the window, in characters, if device permits it.
+ *
+ *  This function sets the height of displayable image, in characters.
+ *  \param width The width of the window, in CHARACTERS.
+ */
+void caca_set_height(unsigned int height)
+{
+   _caca_height = height;
+}
+
+
 
 /** \brief Set the refresh delay.
  *
