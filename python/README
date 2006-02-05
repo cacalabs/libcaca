@@ -1,0 +1,16 @@
+Pypycaca - libcaca bindings for Python
+(c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
+
+
+No warranty blaaah blaaah
+
+
+These Python bindings will work with either Python 2.3 or 2.4, not tested previous versions.
+
+Don't forget to change Makefile options in case you are not using Python 2.4.
+
+No documentation yet, functions are all the same, with same arguments (using arrays or lists instead of C pointers, of course).
+
+It hasn't been tested on anything else than IA32 yet.
+
+I eat beef tonight, that was cool. Thanks.
