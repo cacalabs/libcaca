@@ -769,6 +769,7 @@ static unsigned int _lowlevel_event(void)
             event |= CACA_EVENT_KEY_PRESS;
             event |= gl_key;
             gl_key = 0;
+	    return event;
         }
 
         if(gl_special_key != 0)
@@ -796,7 +797,7 @@ static unsigned int _lowlevel_event(void)
                 default: return CACA_EVENT_NONE;
             }
         }
-        return event;
+        return CACA_EVENT_NONE;
     }
     else
 #endif
