@@ -1,0 +1,26 @@
+12 6 6 3
+       ,
+   ` ,_   ,
+`  _(  )_
+ _(  `   )_
+( `-.   '  )
+ `-.____,-'
+       h
+   h gg   h
+h  gggggg
+ gggggggggg
+gggggggggggg
+ gggggggggg
+12 6 6 3
+   .    ,
+ `   ,_
+   _(  )_ '
+ _(  `   )_
+( `-.   '  )
+ `-.____,-'
+   h    h
+ h   gg
+   gggggg h
+ gggggggggg
+gggggggggggg
+ gggggggggg
