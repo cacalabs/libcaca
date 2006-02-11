@@ -274,6 +274,10 @@ unsigned char gl_key = 0;
 int gl_special_key = 0;
 int gl_new_width;
 int gl_new_height;
+
+float gl_sw = 9.0f/16.0f;
+float gl_sh = 15.0f/16.0f;
+
 #endif
 
 static char *_caca_empty_line;
@@ -1545,11 +1549,11 @@ void caca_refresh(void)
 
                     glColor3f(fr, fg, fb);
                     glBegin(GL_QUADS);
-                        glTexCoord2f(0, 1);
+                        glTexCoord2f(0, gl_sh);
                         glVertex2f(x, y);
-                        glTexCoord2f(0.5, 1);
+                        glTexCoord2f(gl_sw, gl_sh);
                         glVertex2f(x + gl_font_width, y);
-                        glTexCoord2f(0.5, 0);
+                        glTexCoord2f(gl_sw, 0);
                         glVertex2f(x + gl_font_width, y + gl_font_height);
                         glTexCoord2f(0, 0);
                         glVertex2f(x, y + gl_font_height);
