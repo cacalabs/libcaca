@@ -1,28 +1,44 @@
 #! /bin/sh
 
-##  bootstrap file for libcaca -- Sam Hocevar <sam@zoy.org>
-##  $Id$
+# bootstrap: the ultimate bootstrap/autogen.sh script for autotools projects
+# Copyright (c) 2002, 2003, 2004, 2005, 2006 Sam Hocevar <sam@zoy.org>
+#
+#    This program is free software; you can redistribute it and/or
+#    modify it under the terms of the Do What The Fuck You Want To
+#    Public License, Version 2, as published by Sam Hocevar. See
+#    http://sam.zoy.org/wtfpl/COPYING for more details.
+#
+# The latest version of this script can be found at the following place:
+#   http://sam.zoy.org/autotools/
 
-set -x
+# Die if an error occurs
 set -e
 
-# Get a sane environment, just in case
-LANG=C
-export LANG
-CYGWIN=binmode
-export CYGWIN
+# Guess whether we are using configure.ac or configure.in
+if test -f configure.ac; then
+  conffile="configure.ac"
+elif test -f configure.in; then
+  conffile="configure.in"
+else
+  echo "$0: could not find configure.ac or configure.in"
+  exit 1
+fi
+
+# Check for needed features
+auxdir="`sed -ne 's/^[ \t]*A._CONFIG_AUX_DIR *( *\([^ )]*\).*/\1/p' $conffile`"
+libtool="`grep -q '^[ \t]*A._PROG_LIBTOOL' $conffile && echo yes || echo no`"
+header="`grep -q '^[ \t]*A._CONFIG_HEADER' $conffile && echo yes || echo no`"
 
 # Check for automake
 amvers="no"
-if automake-1.8 --version >/dev/null 2>&1; then
-  amvers="-1.8"
-elif automake-1.7 --version >/dev/null 2>&1; then
-  amvers="-1.7"
-elif automake-1.6 --version >/dev/null 2>&1; then
-  amvers="-1.6"
-elif automake-1.5 --version >/dev/null 2>&1; then
-  amvers="-1.5"
-elif automake --version > /dev/null 2>&1; then
+for v in "-1.9" "19" "-1.8" "18" "-1.7" "17" "-1.6" "16" "-1.5" "15"; do
+  if automake${v} --version >/dev/null 2>&1; then
+    amvers="${v}"
+    break
+  fi
+done
+
+if test "${amvers}" = "no" && automake --version > /dev/null 2>&1; then
   amvers="`automake --version | sed -e '1s/[^0-9]*//' -e q`"
   if expr "$amvers" "<" "1.5" > /dev/null 2>&1; then
     amvers="no"
@@ -32,37 +48,74 @@ elif automake --version > /dev/null 2>&1; then
 fi
 
 if test "$amvers" = "no"; then
-  set +x
   echo "$0: you need automake version 1.5 or later"
   exit 1
 fi
 
-libtoolize="no"
-if glibtoolize --version >/dev/null 2>&1; then
-  libtoolize="glibtoolize"
-elif libtoolize --version >/dev/null 2>&1; then
-  libtoolize="libtoolize"
-fi
+# Check for autoconf
+acvers="no"
+for v in "" "259" "253"; do
+  if autoconf${v} --version >/dev/null 2>&1; then
+    acvers="${v}"
+    break
+  fi
+done
 
-if test "$libtoolize" = "no"; then
-  set +x
-  echo "$0: you need libtool"
+if test "$acvers" = "no"; then
+  echo "$0: you need autoconf"
   exit 1
 fi
 
-# Remove old cruft
-rm -f aclocal.m4 configure config.guess config.log config.sub config.cache config.h.in config.h compile ltmain.sh libtool ltconfig missing mkinstalldirs depcomp install-sh INSTALL
-rm -Rf autom4te.cache
-(cd autotools && rm -f config.guess config.sub missing mkinstalldirs compile ltmain.sh depcomp install-sh)
+# Check for libtool
+if test "$libtool" = "yes"; then
+  libtoolize="no"
+  if glibtoolize --version >/dev/null 2>&1; then
+    libtoolize="glibtoolize"
+  else
+    for v in "16" "15" "" "14"; do
+      if libtoolize${v} --version >/dev/null 2>&1; then
+        libtoolize="libtoolize${v}"
+        break
+      fi
+    done
+  fi
 
-${libtoolize} --copy --force
-if test -f "ltmain.sh"; then
-  echo "$0: working around a minor libtool issue"
-  mv ltmain.sh autotools/
+  if test "$libtoolize" = "no"; then
+    echo "$0: you need libtool"
+    exit 1
+  fi
 fi
 
-aclocal${amvers}
-autoconf
-autoheader
-automake${amvers} --add-missing --copy
+# Remove old cruft
+for x in aclocal.m4 configure config.guess config.log config.sub config.cache config.h.in config.h compile libtool.m4 ltoptions.m4 ltsugar.m4 ltversion.m4 ltmain.sh libtool ltconfig missing mkinstalldirs depcomp install-sh; do rm -f $x autotools/$x; if test -n "$auxdir"; then rm -f "$auxdir/$x"; fi; done
+rm -Rf autom4te.cache
+if test -n "$auxdir" -a ! -d "$auxdir"; then mkdir "$auxdir"; fi
+
+# Explain what we are doing from now
+set -x
+
+# Bootstrap package
+if test "$libtool" = "yes"; then
+  ${libtoolize} --copy --force
+  if test -n "$auxdir" -a -f "ltmain.sh"; then
+    echo "$0: working around a minor libtool issue"
+    mv ltmain.sh "$auxdir/"
+  fi
+fi
+
+if test -n "$auxdir"; then
+  aclocal${amvers} -I autotools
+else
+  aclocal${amvers}
+fi
+autoconf${acvers}
+if test "$header" = "yes"; then
+  autoheader${acvers}
+fi
+#add --include-deps if you want to bootstrap with any other compiler than gcc
+#automake${amvers} --add-missing --copy --include-deps
+automake${amvers} --foreign --add-missing --copy
+
+# Remove cruft that we no longer want
+rm -Rf autom4te.cache
 
