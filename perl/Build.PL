@@ -2,7 +2,7 @@ use Module::Build;
 
 my $builder = Module::Build->new (
   module_name    => 'Term::Caca',
-  license        => 'lgpl',
+  license        => 'wtfpl',
 
   requires       => {
   },

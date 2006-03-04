@@ -4,7 +4,7 @@ version: 0.9_1
 author: ~
 abstract: |-
   perl interface for libcaca (Colour AsCii Art library)
-license: lgpl
+license: wtfpl
 build_requires:
   Test::More: 0
 provides:

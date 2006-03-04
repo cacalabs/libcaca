@@ -4,19 +4,9 @@
  *                All Rights Reserved
  *
  *  This library is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU Lesser General Public
- *  License as published by the Free Software Foundation; either
- *  version 2 of the License, or (at your option) any later version.
- *
- *  This library is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  Lesser General Public License for more details.
- *
- *  You should have received a copy of the GNU Lesser General Public
- *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
- *  02111-1307  USA
+ *  modify it under the terms of the Do What The Fuck You Want To
+ *  Public License, Version 2, as published by Sam Hocevar. See
+ *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
 /** \file caca.h
@@ -42,9 +32,11 @@
  *  driver, and an OpenGL driver (through freeglut) that does not require a 
  *  text terminal.
  *
- *  \e libcaca is free software, released under the GNU Lesser General
- *  Public License. This ensures that \e libcaca will always remain free
- *  software.
+ *  \e libcaca is free software, released under the Do What The Fuck You
+ *  Want To Public License. This ensures that no one, not even the \e libcaca
+ *  developers, will ever have anything to say about what you do with the
+ *  software. It used to be licensed under the GNU Lesser General Public
+ *  License, but that was not free enough.
  *
  *  \section api The libcaca API
  *
