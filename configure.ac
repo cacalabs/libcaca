@@ -13,7 +13,6 @@ AM_PROG_CC_C_O
 AC_PROG_CPP
 
 AC_LIBTOOL_WIN32_DLL
-AC_DISABLE_SHARED
 AM_PROG_LIBTOOL
 
 AC_C_CONST
@@ -174,6 +173,7 @@ fi
 
 AC_SUBST(MATH_LIBS)
 AC_SUBST(CACA_LIBS)
+AC_SUBST(CUCUL_LIBS)
 
 # Optimizations
 CFLAGS="${CFLAGS} -g -O2 -fno-strength-reduce -fomit-frame-pointer"

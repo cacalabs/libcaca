@@ -16,6 +16,7 @@
 #include <math.h>
 #include <string.h>
 
+#include "cucul.h"
 #include "caca.h"
 
 /* Virtual buffer size */
@@ -34,14 +35,19 @@ static void draw_line(int, int, char);
 
 int main (int argc, char **argv)
 {
+    cucul_t *qq; caca_t *kk;
     unsigned int red[256], green[256], blue[256], alpha[256];
-    struct caca_bitmap *bitmap;
+    struct cucul_bitmap *bitmap;
     int i, x, y, frame = 0, pause = 0;
 
-    if(caca_init() < 0)
+    qq = cucul_init();
+    if(!qq)
+        return 1;
+    kk = caca_attach(qq);
+    if(!kk)
         return 1;
 
-    caca_set_delay(20000);
+    caca_set_delay(kk, 20000);
 
     /* Fill various tables */
     for(i = 0 ; i < 256; i++)
@@ -54,13 +60,13 @@ int main (int argc, char **argv)
     for(i = DISCSIZ * 2; i > 0; i -= DISCTHICKNESS)
         draw_disc(i, (i / DISCTHICKNESS) % 2);
 
-    /* Create a libcaca bitmap */
-    bitmap = caca_create_bitmap(8, XSIZ, YSIZ, XSIZ, 0, 0, 0, 0);
+    /* Create a libcucul bitmap */
+    bitmap = cucul_create_bitmap(qq, 8, XSIZ, YSIZ, XSIZ, 0, 0, 0, 0);
 
     /* Main loop */
     for(;;)
     {
-        switch(caca_get_event(CACA_EVENT_KEY_PRESS))
+        switch(caca_get_event(kk, CACA_EVENT_KEY_PRESS))
         {
             case CACA_EVENT_KEY_PRESS | CACA_KEY_ESCAPE: goto end;
             case CACA_EVENT_KEY_PRESS | ' ': pause = !pause;
@@ -80,7 +86,7 @@ int main (int argc, char **argv)
         green[1] = 0.5 * (1 + cos(0.06 * frame + 5.0)) * 0xfff;
         blue[1] = 0.5 * (1 + cos(0.05 * frame + 5.0)) * 0xfff;
 
-        caca_set_bitmap_palette(bitmap, red, green, blue, alpha);
+        cucul_set_bitmap_palette(qq, bitmap, red, green, blue, alpha);
 
         /* Draw circles */
         x = cos(0.07 * frame + 5.0) * 128.0 + (XSIZ / 2);
@@ -94,14 +100,16 @@ int main (int argc, char **argv)
         frame++;
 
 paused:
-        caca_draw_bitmap(0, 0, caca_get_width() - 1, caca_get_height() - 1,
-                         bitmap, screen);
-        caca_refresh();
+        cucul_draw_bitmap(qq, 0, 0,
+                          cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
+                          bitmap, screen);
+        caca_refresh(kk);
     }
 
 end:
-    caca_free_bitmap(bitmap);
-    caca_end();
+    cucul_free_bitmap(qq, bitmap);
+    caca_detach(kk);
+    cucul_end(qq);
 
     return 0;
 }

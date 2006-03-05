@@ -36,17 +36,10 @@ typedef unsigned int uint32_t;
 #include <limits.h>
 #include <string.h>
 
+#include "cucul.h"
+#include "cucul_internals.h"
 #include "caca.h"
 #include "caca_internals.h"
-
-/*
- * Global variables
- */
-#if !defined(_DOXYGEN_SKIP_ME)
-enum caca_feature _caca_background;
-enum caca_feature _caca_dithering;
-enum caca_feature _caca_antialiasing;
-#endif
 
 /*
  * Local variables
@@ -57,7 +50,7 @@ enum caca_feature _caca_antialiasing;
 #   define LOOKUP_HUE 16
 #endif
 static unsigned char hsv_distances[LOOKUP_VAL][LOOKUP_SAT][LOOKUP_HUE];
-static enum caca_color lookup_colors[8];
+static enum cucul_color lookup_colors[8];
 
 static int const hsv_palette[] =
 {
@@ -123,7 +116,7 @@ static int rgb_weight[] =
  */
 static void mask2shift(unsigned int, int *, int *);
 
-static void get_rgba_default(struct caca_bitmap const *, uint8_t *, int, int,
+static void get_rgba_default(struct cucul_bitmap const *, uint8_t *, int, int,
                              unsigned int *, unsigned int *, unsigned int *,
                              unsigned int *);
 static inline void rgb2hsv_default(int, int, int, int *, int *, int *);
@@ -151,14 +144,14 @@ static unsigned int get_random_dither(void);
 static void increment_random_dither(void);
 
 #if !defined(_DOXYGEN_SKIP_ME)
-struct caca_bitmap
+struct cucul_bitmap
 {
     int bpp, has_palette, has_alpha;
     int w, h, pitch;
     int rmask, gmask, bmask, amask;
     int rright, gright, bright, aright;
     int rleft, gleft, bleft, aleft;
-    void (*get_hsv)(struct caca_bitmap *, char *, int, int);
+    void (*get_hsv)(struct cucul_bitmap *, char *, int, int);
     int red[256], green[256], blue[256], alpha[256];
     float gamma;
     int gammatab[4097];
@@ -196,7 +189,7 @@ static void mask2shift(unsigned int mask, int *right, int *left)
  * Create a bitmap structure from its coordinates (depth, width, height and
  * pitch) and pixel mask values. If the depth is 8 bits per pixel, the mask
  * values are ignored and the colour palette should be set using the
- * caca_set_bitmap_palette() function. For depths greater than 8 bits per
+ * cucul_set_bitmap_palette() function. For depths greater than 8 bits per
  * pixel, a zero alpha mask causes the alpha values to be ignored.
  *
  * \param bpp Bitmap depth in bits per pixel.
@@ -209,19 +202,20 @@ static void mask2shift(unsigned int mask, int *right, int *left)
  * \param amask Bitmask for alpha values.
  * \return Bitmap object, or NULL upon error.
  */
-struct caca_bitmap *caca_create_bitmap(unsigned int bpp, unsigned int w,
+struct cucul_bitmap *cucul_create_bitmap(cucul_t *qq,
+                                       unsigned int bpp, unsigned int w,
                                        unsigned int h, unsigned int pitch,
                                        unsigned int rmask, unsigned int gmask,
                                        unsigned int bmask, unsigned int amask)
 {
-    struct caca_bitmap *bitmap;
+    struct cucul_bitmap *bitmap;
     int i;
 
     /* Minor sanity test */
     if(!w || !h || !pitch || bpp > 32 || bpp < 8)
         return NULL;
 
-    bitmap = malloc(sizeof(struct caca_bitmap));
+    bitmap = malloc(sizeof(struct cucul_bitmap));
     if(!bitmap)
         return NULL;
 
@@ -279,9 +273,9 @@ struct caca_bitmap *caca_create_bitmap(unsigned int bpp, unsigned int w,
  * \param blue Array of 256 blue values.
  * \param alpha Array of 256 alpha values.
  */
-void caca_set_bitmap_palette(struct caca_bitmap *bitmap,
-                             unsigned int red[], unsigned int green[],
-                             unsigned int blue[], unsigned int alpha[])
+void cucul_set_bitmap_palette(cucul_t *qq, struct cucul_bitmap *bitmap,
+                              unsigned int red[], unsigned int green[],
+                              unsigned int blue[], unsigned int alpha[])
 {
     int i, has_alpha = 0;
 
@@ -317,7 +311,7 @@ void caca_set_bitmap_palette(struct caca_bitmap *bitmap,
  * \param bitmap Bitmap object.
  * \param gamma Gamma value.
  */
-void caca_set_bitmap_gamma(struct caca_bitmap *bitmap, float gamma)
+void cucul_set_bitmap_gamma(cucul_t *qq, struct cucul_bitmap *bitmap, float gamma)
 {
     int i;
 
@@ -327,17 +321,17 @@ void caca_set_bitmap_gamma(struct caca_bitmap *bitmap, float gamma)
     bitmap->gamma = gamma;
 
     for(i = 0; i < 4096; i++)
-        bitmap->gammatab[i] = 4096.0 * caca_powf((float)i / 4096.0, 1.0 / gamma);
+        bitmap->gammatab[i] = 4096.0 * cucul_powf((float)i / 4096.0, 1.0 / gamma);
 }
 
 /**
  * \brief Free the memory associated with a bitmap.
  *
- * Free the memory allocated by caca_create_bitmap().
+ * Free the memory allocated by cucul_create_bitmap().
  *
  * \param bitmap Bitmap object.
  */
-void caca_free_bitmap(struct caca_bitmap *bitmap)
+void cucul_free_bitmap(cucul_t *qq, struct cucul_bitmap *bitmap)
 {
     if(!bitmap)
         return;
@@ -345,7 +339,7 @@ void caca_free_bitmap(struct caca_bitmap *bitmap)
     free(bitmap);
 }
 
-static void get_rgba_default(struct caca_bitmap const *bitmap, uint8_t *pixels,
+static void get_rgba_default(struct cucul_bitmap const *bitmap, uint8_t *pixels,
                              int x, int y, unsigned int *r, unsigned int *g,
                              unsigned int *b, unsigned int *a)
 {
@@ -450,8 +444,8 @@ static inline int sq(int x)
  * \param bitmap Bitmap object to be drawn.
  * \param pixels Bitmap's pixels.
  */
-void caca_draw_bitmap(int x1, int y1, int x2, int y2,
-                      struct caca_bitmap const *bitmap, void *pixels)
+void cucul_draw_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
+                       struct cucul_bitmap const *bitmap, void *pixels)
 {
     /* Current dithering method */
     void (*_init_dither) (int);
@@ -501,39 +495,39 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
     deltax = x2 - x1 + 1;
     deltay = y2 - y1 + 1;
 
-    switch(_caca_dithering)
+    switch(qq->dithering)
     {
-    case CACA_DITHERING_NONE:
+    case CUCUL_DITHERING_NONE:
         _init_dither = init_no_dither;
         _get_dither = get_no_dither;
         _increment_dither = increment_no_dither;
         break;
 
-    case CACA_DITHERING_ORDERED2:
+    case CUCUL_DITHERING_ORDERED2:
         _init_dither = init_ordered2_dither;
         _get_dither = get_ordered2_dither;
         _increment_dither = increment_ordered2_dither;
         break;
 
-    case CACA_DITHERING_ORDERED4:
+    case CUCUL_DITHERING_ORDERED4:
         _init_dither = init_ordered4_dither;
         _get_dither = get_ordered4_dither;
         _increment_dither = increment_ordered4_dither;
         break;
 
-    case CACA_DITHERING_ORDERED8:
+    case CUCUL_DITHERING_ORDERED8:
         _init_dither = init_ordered8_dither;
         _get_dither = get_ordered8_dither;
         _increment_dither = increment_ordered8_dither;
         break;
 
-    case CACA_DITHERING_RANDOM:
+    case CUCUL_DITHERING_RANDOM:
         _init_dither = init_random_dither;
         _get_dither = get_random_dither;
         _increment_dither = increment_random_dither;
         break;
 
-    case CACA_DITHERING_FSTEIN:
+    case CUCUL_DITHERING_FSTEIN:
         _init_dither = init_no_dither;
         _get_dither = get_no_dither;
         _increment_dither = increment_no_dither;
@@ -544,19 +538,19 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
         return;
     }
 
-    fs_length = ((int)_caca_width <= x2 ? (int)_caca_width : x2) + 1;
+    fs_length = ((int)qq->width <= x2 ? (int)qq->width : x2) + 1;
     floyd_steinberg = malloc(3 * (fs_length + 2) * sizeof(int));
     memset(floyd_steinberg, 0, 3 * (fs_length + 2) * sizeof(int));
     fs_r = floyd_steinberg + 1;
     fs_g = fs_r + fs_length + 2;
     fs_b = fs_g + fs_length + 2;
 
-    for(y = y1 > 0 ? y1 : 0; y <= y2 && y <= (int)_caca_height; y++)
+    for(y = y1 > 0 ? y1 : 0; y <= y2 && y <= (int)qq->height; y++)
     {
         int remain_r = 0, remain_g = 0, remain_b = 0;
 
         for(x = x1 > 0 ? x1 : 0, _init_dither(y);
-            x <= x2 && x <= (int)_caca_width;
+            x <= x2 && x <= (int)qq->width;
             x++)
     {
         unsigned int i;
@@ -566,13 +560,13 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
         int fromx, fromy, tox, toy, myx, myy, dots, dist;
         int error[3];
 
-        enum caca_color outfg = 0, outbg = 0;
+        enum cucul_color outfg = 0, outbg = 0;
         char outch;
 
         r = g = b = a = 0;
 
         /* First get RGB */
-        if(_caca_antialiasing == CACA_ANTIALIASING_PREFILTER)
+        if(qq->antialiasing == CUCUL_ANTIALIASING_PREFILTER)
         {
             fromx = (x - x1) * w / deltax;
             fromy = (y - y1) * h / deltay;
@@ -623,7 +617,7 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
             continue;
         }
 
-        if(_caca_dithering == CACA_DITHERING_FSTEIN)
+        if(qq->dithering == CUCUL_DITHERING_FSTEIN)
         {
             r += remain_r;
             g += remain_g;
@@ -653,7 +647,7 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
         bg_g = rgb_palette[outbg * 3 + 1];
         bg_b = rgb_palette[outbg * 3 + 2];
 
-        if(_caca_background == CACA_BACKGROUND_SOLID)
+        if(qq->background == CUCUL_BACKGROUND_SOLID)
         {
             distmin = INT_MAX;
             for(i = 0; i < 16; i++)
@@ -692,7 +686,7 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
             }
             outch = density_chars[4 * ch];
 
-            if(_caca_dithering == CACA_DITHERING_FSTEIN)
+            if(qq->dithering == CUCUL_DITHERING_FSTEIN)
             {
                 error[0] = r - (fg_r * ch + bg_r * ((2*DCHMAX-1) - ch)) / (2*DCHMAX-1);
                 error[1] = g - (fg_g * ch + bg_g * ((2*DCHMAX-1) - ch)) / (2*DCHMAX-1);
@@ -703,7 +697,7 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
         {
             unsigned int lum = r; if(g > lum) lum = g; if(b > lum) lum = b;
             outfg = outbg;
-            outbg = CACA_COLOR_BLACK;
+            outbg = CUCUL_COLOR_BLACK;
 
             ch = lum * DCHMAX / 0x1000;
             if(ch < 0)
@@ -712,7 +706,7 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
                 ch = DCHMAX - 1;
             outch = density_chars[4 * ch];
 
-            if(_caca_dithering == CACA_DITHERING_FSTEIN)
+            if(qq->dithering == CUCUL_DITHERING_FSTEIN)
             {
                 error[0] = r - bg_r * ch / (DCHMAX-1);
                 error[1] = g - bg_g * ch / (DCHMAX-1);
@@ -720,7 +714,7 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
             }
         }
 
-        if(_caca_dithering == CACA_DITHERING_FSTEIN)
+        if(qq->dithering == CUCUL_DITHERING_FSTEIN)
         {
             remain_r = fs_r[x+1] + 7 * error[0] / 16;
             remain_g = fs_g[x+1] + 7 * error[1] / 16;
@@ -737,8 +731,8 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
         }
 
         /* Now output the character */
-        caca_set_color(outfg, outbg);
-        caca_putchar(x, y, outch);
+        cucul_set_color(qq, outfg, outbg);
+        cucul_putchar(qq, x, y, outch);
 
         _increment_dither();
     }
@@ -749,21 +743,21 @@ void caca_draw_bitmap(int x1, int y1, int x2, int y2,
 }
 
 #if !defined(_DOXYGEN_SKIP_ME)
-int _caca_init_bitmap(void)
+int _cucul_init_bitmap(void)
 {
     unsigned int v, s, h;
 
     /* These ones are constant */
-    lookup_colors[0] = CACA_COLOR_BLACK;
-    lookup_colors[1] = CACA_COLOR_DARKGRAY;
-    lookup_colors[2] = CACA_COLOR_LIGHTGRAY;
-    lookup_colors[3] = CACA_COLOR_WHITE;
+    lookup_colors[0] = CUCUL_COLOR_BLACK;
+    lookup_colors[1] = CUCUL_COLOR_DARKGRAY;
+    lookup_colors[2] = CUCUL_COLOR_LIGHTGRAY;
+    lookup_colors[3] = CUCUL_COLOR_WHITE;
 
     /* These ones will be overwritten */
-    lookup_colors[4] = CACA_COLOR_MAGENTA;
-    lookup_colors[5] = CACA_COLOR_LIGHTMAGENTA;
-    lookup_colors[6] = CACA_COLOR_RED;
-    lookup_colors[7] = CACA_COLOR_LIGHTRED;
+    lookup_colors[4] = CUCUL_COLOR_MAGENTA;
+    lookup_colors[5] = CUCUL_COLOR_LIGHTMAGENTA;
+    lookup_colors[6] = CUCUL_COLOR_RED;
+    lookup_colors[7] = CUCUL_COLOR_LIGHTRED;
 
     for(v = 0; v < LOOKUP_VAL; v++)
         for(s = 0; s < LOOKUP_SAT; s++)
@@ -807,7 +801,7 @@ int _caca_init_bitmap(void)
     return 0;
 }
 
-int _caca_end_bitmap(void)
+int _cucul_end_bitmap(void)
 {
     return 0;
 }
@@ -941,7 +935,7 @@ static void init_random_dither(int line)
 
 static unsigned int get_random_dither(void)
 {
-    return caca_rand(0x00, 0xff);
+    return cucul_rand(0x00, 0xff);
 }
 
 static void increment_random_dither(void)

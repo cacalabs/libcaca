@@ -28,10 +28,10 @@ typedef unsigned char uint8_t;
 
 #include <stdlib.h>
 
-#include "caca.h"
-#include "caca_internals.h"
+#include "cucul.h"
+#include "cucul_internals.h"
 
-static void ellipsepoints(int, int, int, int, char);
+static void ellipsepoints(cucul_t *, int, int, int, int, char);
 
 /**
  * \brief Draw a circle on the screen using the given character.
@@ -42,15 +42,15 @@ static void ellipsepoints(int, int, int, int, char);
  * \param c Character to draw the circle outline with.
  * \return void
  */
-void caca_draw_circle(int x, int y, int r, char c)
+void cucul_draw_circle(cucul_t *qq, int x, int y, int r, char c)
 {
     int test, dx, dy;
 
     /* Optimized Bresenham. Kick ass. */
     for(test = 0, dx = 0, dy = r ; dx <= dy ; dx++)
     {
-        ellipsepoints(x, y, dx, dy, c);
-        ellipsepoints(x, y, dy, dx, c);
+        ellipsepoints(qq, x, y, dx, dy, c);
+        ellipsepoints(qq, x, y, dy, dx, c);
 
         test += test > 0 ? dx - dy-- : dx;
     }
@@ -66,7 +66,7 @@ void caca_draw_circle(int x, int y, int r, char c)
  * \param c Character to fill the ellipse with.
  * \return void
  */
-void caca_fill_ellipse(int xo, int yo, int a, int b, char c)
+void cucul_fill_ellipse(cucul_t *qq, int xo, int yo, int a, int b, char c)
 {
     int d2;
     int x = 0;
@@ -82,15 +82,15 @@ void caca_fill_ellipse(int xo, int yo, int a, int b, char c)
         else
         {
             d1 += b*b*(2*x*1) + a*a*(-2*y+2);
-            caca_draw_line(xo - x, yo - y, xo + x, yo - y, c);
-            caca_draw_line(xo - x, yo + y, xo + x, yo + y, c);
+            cucul_draw_line(qq, xo - x, yo - y, xo + x, yo - y, c);
+            cucul_draw_line(qq, xo - x, yo + y, xo + x, yo + y, c);
             y--;
         }
         x++;
     }
 
-    caca_draw_line(xo - x, yo - y, xo + x, yo - y, c);
-    caca_draw_line(xo - x, yo + y, xo + x, yo + y, c);
+    cucul_draw_line(qq, xo - x, yo - y, xo + x, yo - y, c);
+    cucul_draw_line(qq, xo - x, yo + y, xo + x, yo + y, c);
 
     d2 = b*b*(x+0.5)*(x+0.5) + a*a*(y-1)*(y-1) - a*a*b*b;
     while(y > 0)
@@ -106,8 +106,8 @@ void caca_fill_ellipse(int xo, int yo, int a, int b, char c)
         }
 
         y--;
-        caca_draw_line(xo - x, yo - y, xo + x, yo - y, c);
-        caca_draw_line(xo - x, yo + y, xo + x, yo + y, c);
+        cucul_draw_line(qq, xo - x, yo - y, xo + x, yo - y, c);
+        cucul_draw_line(qq, xo - x, yo + y, xo + x, yo + y, c);
     }
 }
 
@@ -121,14 +121,14 @@ void caca_fill_ellipse(int xo, int yo, int a, int b, char c)
  * \param c Character to draw the ellipse outline with.
  * \return void
  */
-void caca_draw_ellipse(int xo, int yo, int a, int b, char c)
+void cucul_draw_ellipse(cucul_t *qq, int xo, int yo, int a, int b, char c)
 {
     int d2;
     int x = 0;
     int y = b;
     int d1 = b*b - (a*a*b) + (a*a/4);
 
-    ellipsepoints(xo, yo, x, y, c);
+    ellipsepoints(qq, xo, yo, x, y, c);
 
     while(a*a*y - a*a/2 > b*b*(x+1))
     {
@@ -142,7 +142,7 @@ void caca_draw_ellipse(int xo, int yo, int a, int b, char c)
             y--;
         }
         x++;
-        ellipsepoints(xo, yo, x, y, c);
+        ellipsepoints(qq, xo, yo, x, y, c);
     }
 
     d2 = b*b*(x+0.5)*(x+0.5) + a*a*(y-1)*(y-1) - a*a*b*b;
@@ -159,7 +159,7 @@ void caca_draw_ellipse(int xo, int yo, int a, int b, char c)
         }
 
         y--;
-        ellipsepoints(xo, yo, x, y, c);
+        ellipsepoints(qq, xo, yo, x, y, c);
     }
 }
 
@@ -172,7 +172,7 @@ void caca_draw_ellipse(int xo, int yo, int a, int b, char c)
  * \param b Ellipse Y radius.
  * \return void
  */
-void caca_draw_thin_ellipse(int xo, int yo, int a, int b)
+void cucul_draw_thin_ellipse(cucul_t *qq, int xo, int yo, int a, int b)
 {
     /* FIXME: this is not correct */
     int d2;
@@ -180,7 +180,7 @@ void caca_draw_thin_ellipse(int xo, int yo, int a, int b)
     int y = b;
     int d1 = b*b - (a*a*b) + (a*a/4);
 
-    ellipsepoints(xo, yo, x, y, '-');
+    ellipsepoints(qq, xo, yo, x, y, '-');
 
     while(a*a*y - a*a/2 > b*b*(x+1))
     {
@@ -194,7 +194,7 @@ void caca_draw_thin_ellipse(int xo, int yo, int a, int b)
             y--;
         }
         x++;
-        ellipsepoints(xo, yo, x, y, '-');
+        ellipsepoints(qq, xo, yo, x, y, '-');
     }
 
     d2 = b*b*(x+0.5)*(x+0.5) + a*a*(y-1)*(y-1) - a*a*b*b;
@@ -211,33 +211,33 @@ void caca_draw_thin_ellipse(int xo, int yo, int a, int b)
         }
 
         y--;
-        ellipsepoints(xo, yo, x, y, '|');
+        ellipsepoints(qq, xo, yo, x, y, '|');
     }
 }
 
-static void ellipsepoints(int xo, int yo, int x, int y, char c)
+static void ellipsepoints(cucul_t *qq, int xo, int yo, int x, int y, char c)
 {
     uint8_t b = 0;
 
-    if(xo + x >= 0 && xo + x < (int)_caca_width)
+    if(xo + x >= 0 && xo + x < (int)qq->width)
         b |= 0x1;
-    if(xo - x >= 0 && xo - x < (int)_caca_width)
+    if(xo - x >= 0 && xo - x < (int)qq->width)
         b |= 0x2;
-    if(yo + y >= 0 && yo + y < (int)_caca_height)
+    if(yo + y >= 0 && yo + y < (int)qq->height)
         b |= 0x4;
-    if(yo - y >= 0 && yo - y < (int)_caca_height)
+    if(yo - y >= 0 && yo - y < (int)qq->height)
         b |= 0x8;
 
     if((b & (0x1|0x4)) == (0x1|0x4))
-        caca_putchar(xo + x, yo + y, c);
+        cucul_putchar(qq, xo + x, yo + y, c);
 
     if((b & (0x2|0x4)) == (0x2|0x4))
-        caca_putchar(xo - x, yo + y, c);
+        cucul_putchar(qq, xo - x, yo + y, c);
 
     if((b & (0x1|0x8)) == (0x1|0x8))
-        caca_putchar(xo + x, yo - y, c);
+        cucul_putchar(qq, xo + x, yo - y, c);
 
     if((b & (0x2|0x8)) == (0x2|0x8))
-        caca_putchar(xo - x, yo - y, c);
+        cucul_putchar(qq, xo - x, yo - y, c);
 }
 

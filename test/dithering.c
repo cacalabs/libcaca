@@ -13,30 +13,34 @@
 
 #include "config.h"
 
+#include "cucul.h"
 #include "caca.h"
 
 #define XRATIO 100*100
 #define YRATIO 70*70
 #define FUZZY 5000000
 
-enum caca_color points[] =
+enum cucul_color points[] =
 {
-    CACA_COLOR_BLACK,
-    CACA_COLOR_DARKGRAY,
-    CACA_COLOR_LIGHTGRAY,
-    CACA_COLOR_WHITE,
-    CACA_COLOR_RED,
-    CACA_COLOR_LIGHTRED
+    CUCUL_COLOR_BLACK,
+    CUCUL_COLOR_DARKGRAY,
+    CUCUL_COLOR_LIGHTGRAY,
+    CUCUL_COLOR_WHITE,
+    CUCUL_COLOR_RED,
+    CUCUL_COLOR_LIGHTRED
 };
 
 char density[] = " -,+:;o&%w$W@#";
 
 int main(void)
 {
+    cucul_t *qq;
+    caca_t *kk;
     int neara, dista, nearb, distb, dist;
     int x, y;
 
-    caca_init();
+    qq = cucul_init();
+    kk = caca_attach(qq);
 
     for(x = 0; x < 100; x++)
         for(y = 0; y < 100; y++)
@@ -49,7 +53,7 @@ int main(void)
 
         /* distance to 40% */
         dist = XRATIO * (x - 40) * (x - 40) + YRATIO * y * y;
-        if(caca_rand(-FUZZY, FUZZY) + dist < dista)
+        if(cucul_rand(-FUZZY, FUZZY) + dist < dista)
         {
             nearb = neara; distb = dista; neara = 1; dista = dist;
         }
@@ -60,22 +64,22 @@ int main(void)
 
         /* check dist to 70% */
         dist = XRATIO * (x - 70) * (x - 70) + YRATIO * y * y;
-        if(caca_rand(-FUZZY, FUZZY) + dist < dista)
+        if(cucul_rand(-FUZZY, FUZZY) + dist < dista)
         {
             nearb = neara; distb = dista; neara = 2; dista = dist;
         }
-        else if(caca_rand(-FUZZY, FUZZY) + dist < distb)
+        else if(cucul_rand(-FUZZY, FUZZY) + dist < distb)
         {
             nearb = 2; distb = dist;
         }
 
         /* check dist to white */
         dist = XRATIO * (x - 100) * (x - 100) + YRATIO * y * y;
-        if(caca_rand(-FUZZY, FUZZY) + dist < dista)
+        if(cucul_rand(-FUZZY, FUZZY) + dist < dista)
         {
             nearb = neara; distb = dista; neara = 3; dista = dist;
         }
-        else if(caca_rand(-FUZZY, FUZZY) + dist < distb)
+        else if(cucul_rand(-FUZZY, FUZZY) + dist < distb)
         {
             nearb = 3; distb = dist;
         }
@@ -84,11 +88,11 @@ int main(void)
         /* check dist to dark */
         dist = XRATIO * (x - 40) * (x - 40) + YRATIO * (y - 100) * (y - 100);
         dist = dist * 12 / 16;
-        if(caca_rand(-FUZZY, FUZZY) + dist < dista)
+        if(cucul_rand(-FUZZY, FUZZY) + dist < dista)
         {
             nearb = neara; distb = dista; neara = 4; dista = dist;
         }
-        else if(caca_rand(-FUZZY, FUZZY) + dist < distb)
+        else if(cucul_rand(-FUZZY, FUZZY) + dist < distb)
         {
             nearb = 4; distb = dist;
         }
@@ -96,11 +100,11 @@ int main(void)
         /* check dist to light */
         dist = XRATIO * (x - 100) * (x - 100) + YRATIO * (y - 100) * (y - 100);
         dist = dist * 8 / 16;
-        if(caca_rand(-FUZZY, FUZZY) + dist < dista)
+        if(cucul_rand(-FUZZY, FUZZY) + dist < dista)
         {
             nearb = neara; distb = dista; neara = 5; dista = dist;
         }
-        else if(caca_rand(-FUZZY, FUZZY) + dist < distb)
+        else if(cucul_rand(-FUZZY, FUZZY) + dist < distb)
         {
             nearb = 5; distb = dist;
         }
@@ -111,16 +115,19 @@ int main(void)
             ch = density[distb * 2 * 13 / (dista + distb)];
         else
             ch = density[dista * 2 * 13 / (dista + distb)];
-        caca_set_color(points[nearb], points[neara]);
+        cucul_set_color(qq, points[nearb], points[neara]);
 
-        caca_putchar(x * caca_get_width() / 100, (100 - y) * caca_get_height() / 100, ch);
+        cucul_putchar(qq, x * cucul_get_width(qq) / 100,
+                          (100 - y) * cucul_get_height(qq) / 100, ch);
     }
 
-    caca_refresh();
+    caca_refresh(kk);
 
-    while(!caca_get_event(CACA_EVENT_KEY_PRESS));
+    while(!caca_get_event(kk, CACA_EVENT_KEY_PRESS));
 
-    caca_end();
+    caca_detach(kk);
+    cucul_end(qq);
+
     return 0;
 }
 

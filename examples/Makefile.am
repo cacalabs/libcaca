@@ -4,11 +4,7 @@ pkgdata_DATA = caca.txt
 
 EXTRA_DIST = caca.txt
 
-bin_PROGRAMS = cacademo cacafire cacaball cacaplas cacaview cacamoir
-
-cacademo_SOURCES = demo.c
-cacademo_LDADD = ../src/libcaca.la @CACA_LIBS@ @MATH_LIBS@
-cacademo_CPPFLAGS = -I$(top_srcdir)/src -DDATADIR=\"$(pkgdatadir)\"
+bin_PROGRAMS = cacafire cacaball cacaplas cacaview cacamoir
 
 cacafire_SOURCES = aafire.c
 cacafire_LDADD = ../src/libcaca.la @CACA_LIBS@

@@ -15,12 +15,16 @@
 
 #include <stdio.h>
 
+#include "cucul.h"
 #include "caca.h"
 
 int main(int argc, char **argv)
 {
+    cucul_t *qq;
+    caca_t *kk;
+
     int quit = 0;
-    struct caca_sprite *sprite;
+    struct cucul_sprite *sprite;
     int frame = 0;
 
     if(argc < 2)
@@ -29,14 +33,19 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    if(caca_init())
+    qq = cucul_init();
+    if(!qq)
+        return 1;
+    kk = caca_attach(qq);
+    if(!kk)
         return 1;
 
-    sprite = caca_load_sprite(argv[1]);
+    sprite = cucul_load_sprite(qq, argv[1]);
 
     if(!sprite)
     {
-        caca_end();
+        caca_detach(kk);
+        cucul_end(qq);
         fprintf(stderr, "%s: could not open `%s'.\n", argv[0], argv[1]);
         return 1;
     }
@@ -48,7 +57,7 @@ int main(int argc, char **argv)
         char buf[BUFSIZ];
         int event;
 
-        while((event = caca_get_event(CACA_EVENT_KEY_PRESS)))
+        while((event = caca_get_event(kk, CACA_EVENT_KEY_PRESS)))
         {
             switch(event & 0x00ffffff)
             {
@@ -62,48 +71,49 @@ int main(int argc, char **argv)
                     frame--;
                 break;
             case '+':
-                if(frame < caca_get_sprite_frames(sprite) - 1)
+                if(frame < cucul_get_sprite_frames(qq, sprite) - 1)
                     frame++;
                 break;
             }
         }
 
-        caca_clear();
+        cucul_clear(qq);
 
-        caca_set_color(CACA_COLOR_LIGHTGRAY, CACA_COLOR_BLACK);
-        caca_draw_thin_box(0, 0, caca_get_width() - 1, caca_get_height() - 1);
+        cucul_set_color(qq, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
+        cucul_draw_thin_box(qq, 0, 0, cucul_get_width(qq) - 1, cucul_get_height(qq) - 1);
 
-        caca_putstr(3, 0, "[ Sprite editor for libcaca ]");
+        cucul_putstr(qq, 3, 0, "[ Sprite editor for libcaca ]");
 
         sprintf(buf, "sprite `%s'", argv[1]);
-        caca_putstr(3, 2, buf);
-        sprintf(buf, "frame %i/%i", frame, caca_get_sprite_frames(sprite) - 1);
-        caca_putstr(3, 3, buf);
+        cucul_putstr(qq, 3, 2, buf);
+        sprintf(buf, "frame %i/%i", frame, cucul_get_sprite_frames(qq, sprite) - 1);
+        cucul_putstr(qq, 3, 3, buf);
 
         /* Crosshair */
-        caca_draw_thin_line(57, 2, 57, 18);
-        caca_draw_thin_line(37, 10, 77, 10);
-        caca_putchar(57, 10, '+');
+        cucul_draw_thin_line(qq, 57, 2, 57, 18);
+        cucul_draw_thin_line(qq, 37, 10, 77, 10);
+        cucul_putchar(qq, 57, 10, '+');
 
         /* Boxed sprite */
-        xa = -1 - caca_get_sprite_dx(sprite, frame);
-        ya = -1 - caca_get_sprite_dy(sprite, frame);
-        xb = xa + 1 + caca_get_sprite_width(sprite, frame);
-        yb = ya + 1 + caca_get_sprite_height(sprite, frame);
-        caca_set_color(CACA_COLOR_BLACK, CACA_COLOR_BLACK);
-        caca_fill_box(57 + xa, 10 + ya, 57 + xb, 10 + yb, ' ');
-        caca_set_color(CACA_COLOR_LIGHTGRAY, CACA_COLOR_BLACK);
-        caca_draw_thin_box(57 + xa, 10 + ya, 57 + xb, 10 + yb);
-        caca_draw_sprite(57, 10, sprite, frame);
+        xa = -1 - cucul_get_sprite_dx(qq, sprite, frame);
+        ya = -1 - cucul_get_sprite_dy(qq, sprite, frame);
+        xb = xa + 1 + cucul_get_sprite_width(qq, sprite, frame);
+        yb = ya + 1 + cucul_get_sprite_height(qq, sprite, frame);
+        cucul_set_color(qq, CUCUL_COLOR_BLACK, CUCUL_COLOR_BLACK);
+        cucul_fill_box(qq, 57 + xa, 10 + ya, 57 + xb, 10 + yb, ' ');
+        cucul_set_color(qq, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
+        cucul_draw_thin_box(qq, 57 + xa, 10 + ya, 57 + xb, 10 + yb);
+        cucul_draw_sprite(qq, 57, 10, sprite, frame);
 
         /* Free sprite */
-        caca_draw_sprite(20, 10, sprite, frame);
+        cucul_draw_sprite(qq, 20, 10, sprite, frame);
 
-        caca_refresh();
+        caca_refresh(kk);
     }
 
     /* Clean up */
-    caca_end();
+    caca_detach(kk);
+    cucul_end(qq);
 
     return 0;
 }

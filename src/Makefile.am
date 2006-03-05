@@ -1,14 +1,14 @@
 # $Id$
 
-include_HEADERS = caca.h
+include_HEADERS = cucul.h caca.h
 
-lib_LTLIBRARIES = libcaca.la
-libcaca_la_SOURCES = \
-	caca.c \
-	caca.h \
-	caca_internals.h \
-	graphics.c \
-	event.c \
+lib_LTLIBRARIES = libcucul.la libcaca.la
+
+libcucul_la_SOURCES = \
+	cucul.c \
+	cucul.h \
+	cucul_internals.h \
+	char.c \
 	math.c \
 	line.c \
 	box.c \
@@ -16,15 +16,19 @@ libcaca_la_SOURCES = \
 	triangle.c \
 	sprite.c \
 	bitmap.c \
+	export.c \
 	time.c \
 	$(NULL)
-libcaca_la_LDFLAGS = -no-undefined
-libcaca_la_LIBADD = @CACA_LIBS@
+libcucul_la_LDFLAGS = -no-undefined
+libcucul_la_LIBADD = @CUCUL_LIBS@
 
-if NEED_PIC
-libcaca_pic_a = libcaca_pic.a
-endif
-lib_LIBRARIES = $(libcaca_pic_a)
-libcaca_pic_a_SOURCES = $(libcaca_la_SOURCES)
-libcaca_pic_a_CPPFLAGS = -fPIC -DPIC
+libcaca_la_SOURCES = \
+	caca.c \
+	caca.h \
+	caca_internals.h \
+	graphics.c \
+	event.c \
+	$(NULL)
+libcaca_la_LDFLAGS = -no-undefined
+libcaca_la_LIBADD = libcucul.la @CACA_LIBS@
 

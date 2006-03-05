@@ -62,8 +62,7 @@ WARN_LOGFILE           =
 # configuration options related to the input files
 #---------------------------------------------------------------------------
 INPUT                  = @top_srcdir@/src
-FILE_PATTERNS          = *.c \
-                         caca.h
+FILE_PATTERNS          = *.c cucul.h caca.h
 RECURSIVE              = YES
 EXCLUDE                = ../src/config.h
 EXCLUDE_SYMLINKS       = NO

@@ -20,6 +20,10 @@
 #ifndef __CACA_INTERNALS_H__
 #define __CACA_INTERNALS_H__
 
+#if defined(USE_X11)
+#include <X11/Xlib.h>
+#endif
+
 /* Graphics driver */
 enum caca_driver
 {
@@ -41,9 +45,6 @@ enum caca_driver
 #if defined(USE_GL)
     CACA_DRIVER_GL = 6,
 #endif
-#if defined(USE_NULL)
-    CACA_DRIVER_NULL = 7,
-#endif
     CACA_DRIVER_NONE = 0
 };
 
@@ -54,13 +55,43 @@ struct caca_timer
     int last_sec, last_usec;
 };
 
-extern enum caca_driver _caca_driver;
+/* Internal caca context */
+struct caca_context
+{
+    cucul_t *qq;
+
+    enum caca_driver driver;
+    unsigned int width, height;
+
+    int resize;
+    int resize_event;
+
+    unsigned int delay, rendertime;
+
+#if defined(USE_X11) && !defined(_DOXYGEN_SKIP_ME)
+    struct x11
+    {
+        Display *dpy;
+        Window window;
+        Pixmap pixmap;
+        GC gc;
+        long int event_mask;
+        int font_width, font_height;
+        unsigned int new_width, new_height;
+        int colors[16];
+        Font font;
+        XFontStruct *font_struct;
+        int font_offset;
+#if defined(HAVE_X11_XKBLIB_H)
+        Bool detect_autorepeat;
+#endif
+    } x11;
+#endif
+};
 
 /* Initialisation functions */
-extern int _caca_init_graphics(void);
-extern int _caca_end_graphics(void);
-extern int _caca_init_bitmap(void);
-extern int _caca_end_bitmap(void);
+extern int _caca_init_graphics(caca_t *kk);
+extern int _caca_end_graphics(caca_t *kk);
 
 /* Timer functions */
 extern void _caca_sleep(unsigned int);
@@ -71,22 +102,6 @@ extern unsigned int _caca_width;
 extern unsigned int _caca_height;
 extern int _caca_resize;
 extern int _caca_resize_event;
-
-/* Internal libcaca features */
-extern enum caca_feature _caca_background;
-extern enum caca_feature _caca_dithering;
-extern enum caca_feature _caca_antialiasing;
-
-#if defined(USE_X11)
-#include <X11/Xlib.h>
-extern Display *x11_dpy;
-extern Window x11_window;
-extern Pixmap x11_pixmap;
-extern GC x11_gc;
-extern long int x11_event_mask;
-extern int x11_font_width, x11_font_height;
-extern unsigned int x11_new_width, x11_new_height;
-#endif
 
 #if defined(USE_WIN32)
 #include <windows.h>

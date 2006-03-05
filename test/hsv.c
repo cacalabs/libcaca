@@ -21,16 +21,21 @@ typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
 #endif
 
+#include "cucul.h"
 #include "caca.h"
 
 uint32_t buffer[256*256];
 
 int main(void)
 {
-    struct caca_bitmap *bitmap;
+    cucul_t *qq;
+    caca_t *kk;
+
+    struct cucul_bitmap *bitmap;
     int x, y;
 
-    caca_init();
+    qq = cucul_init();
+    kk = caca_attach(qq);
 
     for(y = 0; y < 256; y++)
         for(x = 0; x < 256; x++)
@@ -38,17 +43,19 @@ int main(void)
         buffer[y * 256 + x] = ((y * x / 256) << 16) | ((y * x / 256) << 8) | (x<< 0);
     }
 
-    bitmap = caca_create_bitmap(32, 256, 256, 4 * 256,
-                                0x00ff0000, 0x0000ff00, 0x000000ff, 0x0);
-    caca_draw_bitmap(0, 0, caca_get_width() - 1, caca_get_height() - 1,
-                     bitmap, buffer);
-    caca_free_bitmap(bitmap);
+    bitmap = cucul_create_bitmap(qq, 32, 256, 256, 4 * 256,
+                                 0x00ff0000, 0x0000ff00, 0x000000ff, 0x0);
+    cucul_draw_bitmap(qq, 0, 0,
+                      cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
+                      bitmap, buffer);
+    cucul_free_bitmap(qq, bitmap);
 
-    caca_refresh();
+    caca_refresh(kk);
 
-    while(!caca_get_event(CACA_EVENT_KEY_PRESS));
+    while(!caca_get_event(kk, CACA_EVENT_KEY_PRESS));
 
-    caca_end();
+    caca_detach(kk);
+    cucul_end(qq);
 
     return 0;
 }

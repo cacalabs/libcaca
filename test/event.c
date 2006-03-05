@@ -17,7 +17,11 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "cucul.h"
 #include "caca.h"
+
+static cucul_t *qq;
+static caca_t *kk;
 
 static void print_event(int, int, unsigned int);
 
@@ -26,18 +30,22 @@ int main(int argc, char **argv)
     int *events;
     int i, h, quit;
 
-    if(caca_init())
+    qq = cucul_init();
+    if(!qq)
+        return 1;
+    kk = caca_attach(qq);
+    if(!kk)
         return 1;
 
-    h = caca_get_height() - 1;
+    h = cucul_get_height(qq) - 1;
 
-    caca_set_color(CACA_COLOR_WHITE, CACA_COLOR_BLUE);
-    caca_draw_line(0, 0, caca_get_width() - 1, 0, ' ');
+    cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
+    cucul_draw_line(qq, 0, 0, cucul_get_width(qq) - 1, 0, ' ');
 
-    caca_draw_line(0, h, caca_get_width() - 1, h, ' ');
-    caca_putstr(0, h, "type \"quit\" to exit");
+    cucul_draw_line(qq, 0, h, cucul_get_width(qq) - 1, h, ' ');
+    cucul_putstr(qq, 0, h, "type \"quit\" to exit");
 
-    caca_refresh();
+    caca_refresh(kk);
 
     events = malloc(h * sizeof(int));
     memset(events, 0, h * sizeof(int));
@@ -45,7 +53,7 @@ int main(int argc, char **argv)
     for(quit = 0; quit < 4; )
     {
         static char const * quit_string[] = { "", "q", "qu", "qui", "quit" };
-        unsigned int event = caca_wait_event(CACA_EVENT_ANY);
+        unsigned int event = caca_wait_event(kk, CACA_EVENT_ANY);
 
         if(!event)
             continue;
@@ -68,30 +76,31 @@ int main(int argc, char **argv)
             memmove(events + 1, events, (h - 1) * sizeof(int));
             events[0] = event;
 
-            event = caca_get_event(CACA_EVENT_ANY);
+            event = caca_get_event(kk, CACA_EVENT_ANY);
         }
         while(event);
 
-        caca_clear();
+        cucul_clear(qq);
 
         /* Print current event */
-        caca_set_color(CACA_COLOR_WHITE, CACA_COLOR_BLUE);
-        caca_draw_line(0, 0, caca_get_width() - 1, 0, ' ');
+        cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
+        cucul_draw_line(qq, 0, 0, cucul_get_width(qq) - 1, 0, ' ');
         print_event(0, 0, events[0]);
 
-        caca_draw_line(0, h, caca_get_width() - 1, h, ' ');
-        caca_printf(0, h, "type \"quit\" to exit: %s", quit_string[quit]);
+        cucul_draw_line(qq, 0, h, cucul_get_width(qq) - 1, h, ' ');
+        cucul_printf(qq, 0, h, "type \"quit\" to exit: %s", quit_string[quit]);
 
         /* Print previous events */
-        caca_set_color(CACA_COLOR_WHITE, CACA_COLOR_BLACK);
+        cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLACK);
         for(i = 1; i < h && events[i]; i++)
             print_event(0, i, events[i]);
 
-        caca_refresh();
+        caca_refresh(kk);
     }
 
     /* Clean up */
-    caca_end();
+    caca_detach(kk);
+    cucul_end(qq);
 
     return 0;
 }
@@ -103,35 +112,35 @@ static void print_event(int x, int y, unsigned int event)
     switch(event & 0xff000000)
     {
     case CACA_EVENT_NONE:
-        caca_printf(x, y, "CACA_EVENT_NONE");
+        cucul_printf(qq, x, y, "CACA_EVENT_NONE");
         break;
     case CACA_EVENT_KEY_PRESS:
         character = event & 0x00ffffff;
-        caca_printf(x, y, "CACA_EVENT_KEY_PRESS 0x%02x (%c)", character,
-                    (character > 0x20 && character < 0x80) ? character : '?');
+        cucul_printf(qq, x, y, "CACA_EVENT_KEY_PRESS 0x%02x (%c)", character,
+                     (character > 0x20 && character < 0x80) ? character : '?');
         break;
     case CACA_EVENT_KEY_RELEASE:
         character = event & 0x00ffffff;
-        caca_printf(x, y, "CACA_EVENT_KEY_RELEASE 0x%02x (%c)", character,
-                    (character > 0x20 && character < 0x80) ? character : '?');
+        cucul_printf(qq, x, y, "CACA_EVENT_KEY_RELEASE 0x%02x (%c)", character,
+                     (character > 0x20 && character < 0x80) ? character : '?');
         break;
     case CACA_EVENT_MOUSE_MOTION:
-        caca_printf(x, y, "CACA_EVENT_MOUSE_MOTION %u %u",
-                    (event & 0x00fff000) >> 12, event & 0x00000fff);
+        cucul_printf(qq, x, y, "CACA_EVENT_MOUSE_MOTION %u %u",
+                     (event & 0x00fff000) >> 12, event & 0x00000fff);
         break;
     case CACA_EVENT_MOUSE_PRESS:
-        caca_printf(x, y, "CACA_EVENT_MOUSE_PRESS %u",
-                    event & 0x00ffffff);
+        cucul_printf(qq, x, y, "CACA_EVENT_MOUSE_PRESS %u",
+                     event & 0x00ffffff);
         break;
     case CACA_EVENT_MOUSE_RELEASE:
-        caca_printf(x, y, "CACA_EVENT_MOUSE_RELEASE %u",
-                    event & 0x00ffffff);
+        cucul_printf(qq, x, y, "CACA_EVENT_MOUSE_RELEASE %u",
+                     event & 0x00ffffff);
         break;
     case CACA_EVENT_RESIZE:
-        caca_printf(x, y, "CACA_EVENT_RESIZE");
+        cucul_printf(qq, x, y, "CACA_EVENT_RESIZE");
         break;
     default:
-        caca_printf(x, y, "CACA_EVENT_UNKNOWN");
+        cucul_printf(qq, x, y, "CACA_EVENT_UNKNOWN");
     }
 }
 

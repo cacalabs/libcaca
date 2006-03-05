@@ -20,6 +20,7 @@
 #   define M_PI 3.14159265358979323846
 #endif
 
+#include "cucul.h"
 #include "caca.h"
 
 /* Virtual buffer size */
@@ -37,25 +38,30 @@ static void do_plasma(unsigned char *,
 
 int main (int argc, char **argv)
 {
+    cucul_t *qq; caca_t *kk;
     unsigned int red[256], green[256], blue[256], alpha[256];
     double r[3], R[6];
-    struct caca_bitmap *bitmap;
+    struct cucul_bitmap *bitmap;
     int i, x, y, frame = 0, pause = 0;
 
-    if(caca_init() < 0)
+    qq = cucul_init();
+    if(!qq)
+        return 1;
+    kk = caca_attach(qq);
+    if(!kk)
         return 1;
 
-    caca_set_delay(20000);
+    caca_set_delay(kk, 20000);
 
     /* Fill various tables */
     for(i = 0 ; i < 256; i++)
         red[i] = green[i] = blue[i] = alpha[i] = 0;
 
     for(i = 0; i < 3; i++)
-        r[i] = (double)(caca_rand(1, 1000)) / 60000 * M_PI;
+        r[i] = (double)(cucul_rand(1, 1000)) / 60000 * M_PI;
 
     for(i = 0; i < 6; i++)
-        R[i] = (double)(caca_rand(1, 1000)) / 10000;
+        R[i] = (double)(cucul_rand(1, 1000)) / 10000;
 
     for(y = 0 ; y < TABLEY ; y++)
         for(x = 0 ; x < TABLEX ; x++)
@@ -67,13 +73,13 @@ int main (int argc, char **argv)
         table[x + y * TABLEX] = (1.0 + sin(12.0 * sqrt(tmp))) * 256 / 6;
     }
 
-    /* Create a libcaca bitmap */
-    bitmap = caca_create_bitmap(8, XSIZ, YSIZ, XSIZ, 0, 0, 0, 0);
+    /* Create a libcucul bitmap */
+    bitmap = cucul_create_bitmap(qq, 8, XSIZ, YSIZ, XSIZ, 0, 0, 0, 0);
 
     /* Main loop */
     for(;;) 
     {
-        switch(caca_get_event(CACA_EVENT_KEY_PRESS))
+        switch(caca_get_event(kk, CACA_EVENT_KEY_PRESS))
         {
             case CACA_EVENT_KEY_PRESS | CACA_KEY_ESCAPE: goto end;
             case CACA_EVENT_KEY_PRESS | ' ': pause = !pause;
@@ -92,7 +98,7 @@ int main (int argc, char **argv)
         }
 
         /* Set the palette */
-        caca_set_bitmap_palette(bitmap, red, green, blue, alpha);
+        cucul_set_bitmap_palette(qq, bitmap, red, green, blue, alpha);
 
         do_plasma(screen,
                   (1.0 + sin(((double)frame) * R[0])) / 2,
@@ -104,14 +110,16 @@ int main (int argc, char **argv)
         frame++;
 
 paused:
-        caca_draw_bitmap(0, 0, caca_get_width() - 1, caca_get_height() - 1,
-                         bitmap, screen);
-        caca_refresh();
+        cucul_draw_bitmap(qq, 0, 0,
+                          cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
+                          bitmap, screen);
+        caca_refresh(kk);
     }
 
 end:
-    caca_free_bitmap(bitmap);
-    caca_end();
+    cucul_free_bitmap(qq, bitmap);
+    caca_detach(kk);
+    cucul_end(qq);
 
     return 0;
 }

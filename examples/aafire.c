@@ -37,8 +37,10 @@
 #endif
 #define MAXTABLE (256*5)
 #ifdef LIBCACA
+static cucul_t *qq;
+static caca_t *kk;
 static int XSIZ, YSIZ;
-static struct caca_bitmap *caca_bitmap;
+static struct cucul_bitmap *cucul_bitmap;
 static char *bitmap;
 static int pause = 0;
 #else
@@ -96,14 +98,21 @@ initialize (void)
 #endif
 
 #ifdef LIBCACA
-  if (caca_init())
+  qq = cucul_init();
+  if (!qq)
+    {
+      printf ("Failed to initialize libcucul\n");
+      exit (1);
+    }
+  kk = caca_attach(qq);
+  if (!kk)
     {
       printf ("Failed to initialize libcaca\n");
       exit (1);
     }
-  caca_set_delay(10000);
-  XSIZ = caca_get_width() * 2;
-  YSIZ = caca_get_height() * 2 - 4;
+  caca_set_delay(kk, 10000);
+  XSIZ = cucul_get_width(qq) * 2;
+  YSIZ = cucul_get_height(qq) * 2 - 4;
 #else
   context = aa_autoinit (&aa_defparams);
   if (context == NULL)
@@ -129,10 +138,10 @@ initialize (void)
 #endif
 
 #ifdef LIBCACA
-  caca_bitmap = caca_create_bitmap(8, XSIZ, YSIZ - 2, XSIZ, 0, 0, 0, 0);
-  caca_set_bitmap_palette(caca_bitmap, r, g, b, a);
-  bitmap = malloc(4 * caca_get_width() * caca_get_height() * sizeof(char));
-  memset(bitmap, 0, 4 * caca_get_width() * caca_get_height());
+  cucul_bitmap = cucul_create_bitmap(qq, 8, XSIZ, YSIZ - 2, XSIZ, 0, 0, 0, 0);
+  cucul_set_bitmap_palette(qq, cucul_bitmap, r, g, b, a);
+  bitmap = malloc(4 * cucul_get_width(qq) * cucul_get_height(qq) * sizeof(char));
+  memset(bitmap, 0, 4 * cucul_get_width(qq) * cucul_get_height(qq));
 #else
   aa_hidecursor (context);
 #endif
@@ -141,7 +150,8 @@ static void
 uninitialize (void)
 {
 #ifdef LIBCACA
-  caca_end();
+  caca_detach(kk);
+  cucul_end(qq);
 #else
   aa_close (context);
 #endif
@@ -223,9 +233,10 @@ drawfire (void)
   firemain ();
 #ifdef LIBCACA
 paused:
-  caca_draw_bitmap(0, 0, caca_get_width() - 1, caca_get_height() - 1,
-                   caca_bitmap, bitmap);
-  caca_refresh();
+  cucul_draw_bitmap(qq, 0, 0,
+                    cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
+                    cucul_bitmap, bitmap);
+  caca_refresh(kk);
   /*XSIZ = caca_get_width() * 2;
   YSIZ = caca_get_height() * 2 - 4;*/
 #else
@@ -248,7 +259,7 @@ game (void)
 #endif
     {
 #ifdef LIBCACA
-      switch (caca_get_event(CACA_EVENT_KEY_PRESS))
+      switch (caca_get_event(kk, CACA_EVENT_KEY_PRESS))
         {
           case CACA_EVENT_KEY_PRESS | CACA_KEY_ESCAPE: return;
           case CACA_EVENT_KEY_PRESS | ' ': pause = !pause;

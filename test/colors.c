@@ -15,31 +15,42 @@
 
 #include <stdio.h>
 
+#include "cucul.h"
 #include "caca.h"
 
 int main(int argc, char **argv)
 {
+    cucul_t *qq;
+    caca_t *kk;
     int i, j;
 
-    if(caca_init())
+    qq = cucul_init();
+    if(!qq)
         return 1;
 
-    caca_clear();
+    kk = caca_attach(qq);
+    if(!kk)
+        return 1;
+
+    cucul_clear(qq);
     for(i = 0; i < 16; i++)
     {
-        caca_set_color(CACA_COLOR_LIGHTGRAY, CACA_COLOR_BLACK);
-        caca_printf(4, i + (i >= 8 ? 4 : 3), "'%c': %i (%s)",
-                    'a' + i, i, caca_get_color_name(i));
+        cucul_set_color(qq, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
+        cucul_printf(qq, 4, i + (i >= 8 ? 4 : 3), "'%c': %i (%s)",
+                     'a' + i, i, cucul_get_color_name(i));
         for(j = 0; j < 16; j++)
         {
-            caca_set_color(i, j);
-            caca_putstr((j >= 8 ? 41 : 40) + j * 2, i + (i >= 8 ? 4 : 3), "# ");
+            cucul_set_color(qq, i, j);
+            cucul_putstr(qq, (j >= 8 ? 41 : 40) + j * 2, i + (i >= 8 ? 4 : 3),
+                         "# ");
         }
     }
 
-    caca_refresh();
-    caca_wait_event(CACA_EVENT_KEY_PRESS);
-    caca_end();
+    caca_refresh(kk);
+    caca_wait_event(kk, CACA_EVENT_KEY_PRESS);
+
+    caca_detach(kk);
+    cucul_end(qq);
 
     return 0;
 }

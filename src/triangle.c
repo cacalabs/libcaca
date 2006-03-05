@@ -19,10 +19,16 @@
 
 #include "config.h"
 
+#if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
+#   include <inttypes.h>
+#else
+typedef unsigned char uint8_t;
+#endif
+
 #include <stdlib.h>
 
-#include "caca.h"
-#include "caca_internals.h"
+#include "cucul.h"
+#include "cucul_internals.h"
 
 /**
  * \brief Draw a triangle on the screen using the given character.
@@ -36,11 +42,11 @@
  * \param c Character to draw the triangle outline with.
  * \return void
  */
-void caca_draw_triangle(int x1, int y1, int x2, int y2, int x3, int y3, char c)
+void cucul_draw_triangle(cucul_t *qq, int x1, int y1, int x2, int y2, int x3, int y3, char c)
 {
-    caca_draw_line(x1, y1, x2, y2, c);
-    caca_draw_line(x2, y2, x3, y3, c);
-    caca_draw_line(x3, y3, x1, y1, c);
+    cucul_draw_line(qq, x1, y1, x2, y2, c);
+    cucul_draw_line(qq, x2, y2, x3, y3, c);
+    cucul_draw_line(qq, x3, y3, x1, y1, c);
 }
 
 /**
@@ -54,11 +60,11 @@ void caca_draw_triangle(int x1, int y1, int x2, int y2, int x3, int y3, char c)
  * \param y3 Y coordinate of the third point.
  * \return void
  */
-void caca_draw_thin_triangle(int x1, int y1, int x2, int y2, int x3, int y3)
+void cucul_draw_thin_triangle(cucul_t *qq, int x1, int y1, int x2, int y2, int x3, int y3)
 {
-    caca_draw_thin_line(x1, y1, x2, y2);
-    caca_draw_thin_line(x2, y2, x3, y3);
-    caca_draw_thin_line(x3, y3, x1, y1);
+    cucul_draw_thin_line(qq, x1, y1, x2, y2);
+    cucul_draw_thin_line(qq, x2, y2, x3, y3);
+    cucul_draw_thin_line(qq, x3, y3, x1, y1);
 }
 
 /**
@@ -73,20 +79,20 @@ void caca_draw_thin_triangle(int x1, int y1, int x2, int y2, int x3, int y3)
  * \param c Character to fill the triangle with.
  * \return void
  */
-void caca_fill_triangle(int x1, int y1, int x2, int y2, int x3, int y3, char c)
+void cucul_fill_triangle(cucul_t *qq, int x1, int y1, int x2, int y2, int x3, int y3, char c)
 {
     int x, y, xa, xb, xmax, ymax;
 
     /* Bubble-sort y1 <= y2 <= y3 */
     if(y1 > y2)
     {
-        caca_fill_triangle(x2, y2, x1, y1, x3, y3, c);
+        cucul_fill_triangle(qq, x2, y2, x1, y1, x3, y3, c);
         return;
     }
 
     if(y2 > y3)
     {
-        caca_fill_triangle(x1, y1, x3, y3, x2, y2, c);
+        cucul_fill_triangle(qq, x1, y1, x3, y3, x2, y2, c);
         return;
     }
 
@@ -95,8 +101,8 @@ void caca_fill_triangle(int x1, int y1, int x2, int y2, int x3, int y3, char c)
     x2 *= 4;
     x3 *= 4;
 
-    xmax = _caca_width - 1;
-    ymax = _caca_height - 1;
+    xmax = qq->width - 1;
+    ymax = qq->height - 1;
 
     /* Rasterize our triangle */
     for(y = y1 < 0 ? 0 : y1; y <= y3 && y <= ymax; y++)
@@ -128,7 +134,7 @@ void caca_fill_triangle(int x1, int y1, int x2, int y2, int x3, int y3, char c)
         if(xb > xmax) xb = xmax;
 
         for(x = xa; x <= xb; x++)
-            caca_putchar(x, y, c);
+            cucul_putchar(qq, x, y, c);
     }
 }
 

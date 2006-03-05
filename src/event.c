@@ -19,6 +19,12 @@
 
 #include "config.h"
 
+#if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
+#   include <inttypes.h>
+#else
+typedef unsigned char uint8_t;
+#endif
+
 #if defined(USE_SLANG)
 #   if defined(HAVE_SLANG_SLANG_H)
 #       include <slang/slang.h>
@@ -59,11 +65,13 @@ extern unsigned char gl_mouse_changed, gl_mouse_clicked;
 extern unsigned int gl_mouse_x, gl_mouse_y;
 extern unsigned int gl_mouse_button, gl_mouse_state;
 #endif
+#include "cucul.h"
+#include "cucul_internals.h"
 #include "caca.h"
 #include "caca_internals.h"
 
-static unsigned int _get_next_event(void);
-static unsigned int _lowlevel_event(void);
+static unsigned int _get_next_event(caca_t *kk);
+static unsigned int _lowlevel_event(caca_t *kk);
 #if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO)
 static void _push_event(unsigned int);
 static unsigned int _pop_event(void);
@@ -100,14 +108,14 @@ static unsigned int mouse_x = 0, mouse_y = 0;
  * \param event_mask Bitmask of requested events.
  * \return The next matching event in the queue, or 0 if no event is pending.
  */
-unsigned int caca_get_event(unsigned int event_mask)
+unsigned int caca_get_event(caca_t *kk, unsigned int event_mask)
 {
     if(!event_mask)
         return CACA_EVENT_NONE;
 
     for( ; ; )
     {
-        unsigned int event = _get_next_event();
+        unsigned int event = _get_next_event(kk);
 
         if(!event || event & event_mask)
             return event;
@@ -124,14 +132,14 @@ unsigned int caca_get_event(unsigned int event_mask)
  *  \param event_mask Bitmask of requested events.
  *  \return The next event in the queue.
  */
-unsigned int caca_wait_event(unsigned int event_mask)
+unsigned int caca_wait_event(caca_t *kk, unsigned int event_mask)
 {
     if(!event_mask)
         return CACA_EVENT_NONE;
 
     for( ; ; )
     {
-        unsigned int event = _get_next_event();
+        unsigned int event = _get_next_event(kk);
 
         if(event & event_mask)
             return event;
@@ -149,10 +157,10 @@ unsigned int caca_wait_event(unsigned int event_mask)
  *
  *  \return The X mouse coordinate.
  */
-unsigned int caca_get_mouse_x(void)
+unsigned int caca_get_mouse_x(caca_t *kk)
 {
-    if(mouse_x >= _caca_width)
-        mouse_x = _caca_width - 1;
+    if(mouse_x >= kk->qq->width)
+        mouse_x = kk->qq->width - 1;
 
     return mouse_x;
 }
@@ -166,10 +174,10 @@ unsigned int caca_get_mouse_x(void)
  *
  *  \return The Y mouse coordinate.
  */
-unsigned int caca_get_mouse_y(void)
+unsigned int caca_get_mouse_y(caca_t *kk)
 {
-    if(mouse_y >= _caca_height)
-        mouse_y = _caca_height - 1;
+    if(mouse_y >= kk->qq->height)
+        mouse_y = kk->qq->height - 1;
 
     return mouse_y;
 }
@@ -178,7 +186,7 @@ unsigned int caca_get_mouse_y(void)
  * XXX: The following functions are local.
  */
 
-static unsigned int _get_next_event(void)
+static unsigned int _get_next_event(caca_t *kk)
 {
 #if defined(USE_SLANG) || defined(USE_NCURSES)
     static struct caca_timer key_timer = CACA_TIMER_INITIALIZER;
@@ -188,18 +196,14 @@ static unsigned int _get_next_event(void)
     unsigned int ticks;
 #endif
     unsigned int event;
-#if defined(USE_NULL)
-    if(_caca_driver == CACA_DRIVER_NULL)
-        return CACA_EVENT_NONE;
-#endif
 
-    event = _lowlevel_event();
+    event = _lowlevel_event(kk);
 
 #if defined(USE_SLANG)
-    if(_caca_driver != CACA_DRIVER_SLANG)
+    if(kk->driver != CACA_DRIVER_SLANG)
 #endif
 #if defined(USE_NCURSES)
-    if(_caca_driver != CACA_DRIVER_NCURSES)
+    if(kk->driver != CACA_DRIVER_NCURSES)
 #endif
     return event;
 
@@ -224,7 +228,7 @@ static unsigned int _get_next_event(void)
     if(event == (CACA_EVENT_KEY_PRESS | last_key))
     {
         last_key_ticks = 0;
-        return _get_next_event();
+        return _get_next_event(kk);
     }
 
     /* We are in autorepeat mode, but key has expired or a new key was
@@ -250,7 +254,7 @@ static unsigned int _get_next_event(void)
 #endif
 }
 
-static unsigned int _lowlevel_event(void)
+static unsigned int _lowlevel_event(caca_t *kk)
 {
     unsigned int event;
 
@@ -263,12 +267,12 @@ static unsigned int _lowlevel_event(void)
 
 #if defined(USE_X11)
     /* The X11 event check routine */
-    if(_caca_driver == CACA_DRIVER_X11)
+    if(kk->driver == CACA_DRIVER_X11)
     {
         XEvent xevent;
         char key;
 
-        while(XCheckWindowEvent(x11_dpy, x11_window, x11_event_mask, &xevent)
+        while(XCheckWindowEvent(kk->x11.dpy, kk->x11.window, kk->x11.event_mask, &xevent)
                == True)
         {
             KeySym keysym;
@@ -276,9 +280,9 @@ static unsigned int _lowlevel_event(void)
             /* Expose event */
             if(xevent.type == Expose)
             {
-                XCopyArea(x11_dpy, x11_pixmap, x11_window, x11_gc, 0, 0,
-                          _caca_width * x11_font_width,
-                          _caca_height * x11_font_height, 0, 0);
+                XCopyArea(kk->x11.dpy, kk->x11.pixmap, kk->x11.window, kk->x11.gc, 0, 0,
+                          kk->qq->width * kk->x11.font_width,
+                          kk->qq->height * kk->x11.font_height, 0, 0);
                 continue;
             }
 
@@ -287,21 +291,21 @@ static unsigned int _lowlevel_event(void)
             {
                 unsigned int w, h;
 
-                w = (xevent.xconfigure.width + x11_font_width / 3)
-                      / x11_font_width;
-                h = (xevent.xconfigure.height + x11_font_height / 3)
-                      / x11_font_height;
+                w = (xevent.xconfigure.width + kk->x11.font_width / 3)
+                      / kk->x11.font_width;
+                h = (xevent.xconfigure.height + kk->x11.font_height / 3)
+                      / kk->x11.font_height;
 
-                if(!w || !h || (w == _caca_width && h == _caca_height))
+                if(!w || !h || (w == kk->qq->width && h == kk->qq->height))
                     continue;
 
-                x11_new_width = w;
-                x11_new_height = h;
+                kk->x11.new_width = w;
+                kk->x11.new_height = h;
 
-                if(_caca_resize)
+                if(kk->resize)
                     continue;
 
-                _caca_resize = 1;
+                kk->resize = 1;
 
                 return CACA_EVENT_RESIZE;
             }
@@ -309,13 +313,13 @@ static unsigned int _lowlevel_event(void)
             /* Check for mouse motion events */
             if(xevent.type == MotionNotify)
             {
-                unsigned int newx = xevent.xmotion.x / x11_font_width;
-                unsigned int newy = xevent.xmotion.y / x11_font_height;
+                unsigned int newx = xevent.xmotion.x / kk->x11.font_width;
+                unsigned int newy = xevent.xmotion.y / kk->x11.font_height;
 
-                if(newx >= _caca_width)
-                    newx = _caca_width - 1;
-                if(newy >= _caca_height)
-                    newy = _caca_height - 1;
+                if(newx >= kk->qq->width)
+                    newx = kk->qq->width - 1;
+                if(newy >= kk->qq->height)
+                    newy = kk->qq->height - 1;
 
                 if(mouse_x == newx && mouse_y == newy)
                     continue;
@@ -346,7 +350,7 @@ static unsigned int _lowlevel_event(void)
             if(XLookupString(&xevent.xkey, &key, 1, NULL, NULL))
                 return event | key;
 
-            keysym = XKeycodeToKeysym(x11_dpy, xevent.xkey.keycode, 0);
+            keysym = XKeycodeToKeysym(kk->x11.dpy, xevent.xkey.keycode, 0);
             switch(keysym)
             {
             case XK_F1:    return event | CACA_KEY_F1;
@@ -377,14 +381,14 @@ static unsigned int _lowlevel_event(void)
     else
 #endif
 #if defined(USE_NCURSES)
-    if(_caca_driver == CACA_DRIVER_NCURSES)
+    if(kk->driver == CACA_DRIVER_NCURSES)
     {
         int intkey;
 
-        if(_caca_resize_event)
+        if(kk->resize_event)
         {
-            _caca_resize_event = 0;
-            _caca_resize = 1;
+            kk->resize_event = 0;
+            kk->resize = 1;
             return CACA_EVENT_RESIZE;
         }
 
@@ -561,14 +565,14 @@ static unsigned int _lowlevel_event(void)
     else
 #endif
 #if defined(USE_SLANG)
-    if(_caca_driver == CACA_DRIVER_SLANG)
+    if(kk->driver == CACA_DRIVER_SLANG)
     {
         int intkey;
 
-        if(_caca_resize_event)
+        if(kk->resize_event)
         {
-            _caca_resize_event = 0;
-            _caca_resize = 1;
+            kk->resize_event = 0;
+            kk->resize = 1;
             return CACA_EVENT_RESIZE;
         }
 
@@ -644,7 +648,7 @@ static unsigned int _lowlevel_event(void)
     else
 #endif
 #if defined(USE_CONIO)
-    if(_caca_driver == CACA_DRIVER_CONIO)
+    if(kk->driver == CACA_DRIVER_CONIO)
     {
         if(!_conio_kbhit())
             return CACA_EVENT_NONE;
@@ -656,7 +660,7 @@ static unsigned int _lowlevel_event(void)
     else
 #endif
 #if defined(USE_WIN32)
-    if(_caca_driver == CACA_DRIVER_WIN32)
+    if(kk->driver == CACA_DRIVER_WIN32)
     {
         INPUT_RECORD rec;
         DWORD num;
@@ -730,13 +734,13 @@ static unsigned int _lowlevel_event(void)
     else
 #endif
 #if defined(USE_GL)
-    if(_caca_driver == CACA_DRIVER_GL)
+    if(kk->driver == CACA_DRIVER_GL)
     {
         glutMainLoopEvent();
 
-        if(gl_resized && !_caca_resize)
+        if(gl_resized && !kk->resize)
         {
-            _caca_resize = 1;
+            kk->resize = 1;
             gl_resized = 0;
             return CACA_EVENT_RESIZE;
         }

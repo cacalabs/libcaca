@@ -19,10 +19,16 @@
 
 #include "config.h"
 
+#if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
+#   include <inttypes.h>
+#else
+typedef unsigned char uint8_t;
+#endif
+
 #include <stdlib.h>
 
-#include "caca.h"
-#include "caca_internals.h"
+#include "cucul.h"
+#include "cucul_internals.h"
 
 /**
  * \brief Draw a box on the screen using the given character.
@@ -34,12 +40,12 @@
  * \param c Character to draw the box outline with.
  * \return void
  */
-void caca_draw_box(int x1, int y1, int x2, int y2, char c)
+void cucul_draw_box(cucul_t *qq, int x1, int y1, int x2, int y2, char c)
 {
-    caca_draw_line(x1, y1, x1, y2, c);
-    caca_draw_line(x1, y2, x2, y2, c);
-    caca_draw_line(x2, y2, x2, y1, c);
-    caca_draw_line(x2, y1, x1, y1, c);
+    cucul_draw_line(qq, x1, y1, x1, y2, c);
+    cucul_draw_line(qq, x1, y2, x2, y2, c);
+    cucul_draw_line(qq, x2, y2, x2, y1, c);
+    cucul_draw_line(qq, x2, y1, x1, y1, c);
 }
 
 /**
@@ -51,7 +57,7 @@ void caca_draw_box(int x1, int y1, int x2, int y2, char c)
  * \param y2 Y coordinate of the lower-right corner of the box.
  * \return void
  */
-void caca_draw_thin_box(int x1, int y1, int x2, int y2)
+void cucul_draw_thin_box(cucul_t *qq, int x1, int y1, int x2, int y2)
 {
     int x, y, xmax, ymax;
 
@@ -67,8 +73,8 @@ void caca_draw_thin_box(int x1, int y1, int x2, int y2)
         y1 = y2; y2 = tmp;
     }
 
-    xmax = _caca_width - 1;
-    ymax = _caca_height - 1;
+    xmax = qq->width - 1;
+    ymax = qq->height - 1;
 
     if(x2 < 0 || y2 < 0 || x1 > xmax || y1 > ymax)
         return;
@@ -76,32 +82,32 @@ void caca_draw_thin_box(int x1, int y1, int x2, int y2)
     /* Draw edges */
     if(y1 >= 0)
         for(x = x1 < 0 ? 1 : x1 + 1; x < x2 && x < xmax; x++)
-            caca_putchar(x, y1, '-');
+            cucul_putchar(qq, x, y1, '-');
 
     if(y2 <= ymax)
         for(x = x1 < 0 ? 1 : x1 + 1; x < x2 && x < xmax; x++)
-            caca_putchar(x, y2, '-');
+            cucul_putchar(qq, x, y2, '-');
 
     if(x1 >= 0)
         for(y = y1 < 0 ? 1 : y1 + 1; y < y2 && y < ymax; y++)
-            caca_putchar(x1, y, '|');
+            cucul_putchar(qq, x1, y, '|');
 
     if(x2 <= xmax)
         for(y = y1 < 0 ? 1 : y1 + 1; y < y2 && y < ymax; y++)
-            caca_putchar(x2, y, '|');
+            cucul_putchar(qq, x2, y, '|');
 
     /* Draw corners */
     if(x1 >= 0 && y1 >= 0)
-        caca_putchar(x1, y1, ',');
+        cucul_putchar(qq, x1, y1, ',');
 
     if(x1 >= 0 && y2 <= ymax)
-        caca_putchar(x1, y2, '`');
+        cucul_putchar(qq, x1, y2, '`');
 
     if(x2 <= xmax && y1 >= 0)
-        caca_putchar(x2, y1, '.');
+        cucul_putchar(qq, x2, y1, '.');
 
     if(x2 <= xmax && y2 <= ymax)
-        caca_putchar(x2, y2, '\'');
+        cucul_putchar(qq, x2, y2, '\'');
 }
 
 /**
@@ -114,7 +120,7 @@ void caca_draw_thin_box(int x1, int y1, int x2, int y2)
  * \param c Character to fill the box with.
  * \return void
  */
-void caca_fill_box(int x1, int y1, int x2, int y2, char c)
+void cucul_fill_box(cucul_t *qq, int x1, int y1, int x2, int y2, char c)
 {
     int x, y, xmax, ymax;
 
@@ -130,8 +136,8 @@ void caca_fill_box(int x1, int y1, int x2, int y2, char c)
         y1 = y2; y2 = tmp;
     }
 
-    xmax = _caca_width - 1;
-    ymax = _caca_height - 1;
+    xmax = qq->width - 1;
+    ymax = qq->height - 1;
 
     if(x2 < 0 || y2 < 0 || x1 > xmax || y1 > ymax)
         return;
@@ -143,6 +149,6 @@ void caca_fill_box(int x1, int y1, int x2, int y2, char c)
 
     for(y = y1; y <= y2; y++)
         for(x = x1; x <= x2; x++)
-            caca_putchar(x, y, c);
+            cucul_putchar(qq, x, y, c);
 }
 

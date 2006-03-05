@@ -19,15 +19,21 @@
 
 #include "config.h"
 
+#if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
+#   include <inttypes.h>
+#else
+typedef unsigned char uint8_t;
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "caca.h"
-#include "caca_internals.h"
+#include "cucul.h"
+#include "cucul_internals.h"
 
 #if !defined(_DOXYGEN_SKIP_ME)
-struct caca_frame
+struct cucul_frame
 {
     int w, h;
     int dx, dy;
@@ -35,10 +41,10 @@ struct caca_frame
     int *color;
 };
 
-struct caca_sprite
+struct cucul_sprite
 {
     int nf;
-    struct caca_frame *frames;
+    struct cucul_frame *frames;
 };
 #endif
 
@@ -48,17 +54,17 @@ struct caca_sprite
  * \param file The filename.
  * \return The sprite, or NULL if an error occured.
  */
-struct caca_sprite *caca_load_sprite(char const *file)
+struct cucul_sprite *cucul_load_sprite(cucul_t *qq, char const *file)
 {
     char buf[BUFSIZ];
-    struct caca_sprite *sprite;
+    struct cucul_sprite *sprite;
     FILE *fd;
 
     fd = fopen(file, "r");
     if(fd == NULL)
         return NULL;
 
-    sprite = malloc(sizeof(struct caca_sprite));
+    sprite = malloc(sizeof(struct cucul_sprite));
     if(sprite == NULL)
         goto sprite_alloc_failed;
 
@@ -69,7 +75,7 @@ struct caca_sprite *caca_load_sprite(char const *file)
     {
         int x, y;
         int w = 0, h = 0, dx = 0, dy = 0;
-        struct caca_frame *frame;
+        struct cucul_frame *frame;
 
         /* Get width and height */
         if(!fgets(buf, BUFSIZ, fd))
@@ -82,7 +88,7 @@ struct caca_sprite *caca_load_sprite(char const *file)
         if(sprite->nf)
         {
             void *tmp = realloc(sprite->frames,
-                                (sprite->nf + 1) * sizeof(struct caca_frame));
+                                (sprite->nf + 1) * sizeof(struct cucul_frame));
             if(tmp == NULL)
                 goto frame_failed;
             sprite->frames = tmp;
@@ -90,7 +96,7 @@ struct caca_sprite *caca_load_sprite(char const *file)
         }
         else
         {
-            sprite->frames = malloc((sprite->nf + 1) * sizeof(struct caca_frame));
+            sprite->frames = malloc((sprite->nf + 1) * sizeof(struct cucul_frame));
             if(sprite->frames == NULL)
                 goto sprite_failed;
             sprite->nf++;
@@ -169,7 +175,7 @@ sprite_alloc_failed:
  * \param sprite The sprite.
  * \return The number of frames.
  */
-int caca_get_sprite_frames(struct caca_sprite const *sprite)
+int cucul_get_sprite_frames(cucul_t *qq, struct cucul_sprite const *sprite)
 {
     if(sprite == NULL)
         return 0;
@@ -184,7 +190,7 @@ int caca_get_sprite_frames(struct caca_sprite const *sprite)
  * \param f The frame index.
  * \return The width of the given frame of the sprite.
  */
-int caca_get_sprite_width(struct caca_sprite const *sprite, int f)
+int cucul_get_sprite_width(cucul_t *qq, struct cucul_sprite const *sprite, int f)
 {
     if(sprite == NULL)
         return 0;
@@ -202,7 +208,7 @@ int caca_get_sprite_width(struct caca_sprite const *sprite, int f)
  * \param f The frame index.
  * \return The height of the given frame of the sprite.
  */
-int caca_get_sprite_height(struct caca_sprite const *sprite, int f)
+int cucul_get_sprite_height(cucul_t *qq, struct cucul_sprite const *sprite, int f)
 {
     if(sprite == NULL)
         return 0;
@@ -220,7 +226,7 @@ int caca_get_sprite_height(struct caca_sprite const *sprite, int f)
  * \param f The frame index.
  * \return The X coordinate of the given frame's handle.
  */
-int caca_get_sprite_dx(struct caca_sprite const *sprite, int f)
+int cucul_get_sprite_dx(cucul_t *qq, struct cucul_sprite const *sprite, int f)
 {
     if(sprite == NULL)
         return 0;
@@ -238,7 +244,7 @@ int caca_get_sprite_dx(struct caca_sprite const *sprite, int f)
  * \param f The frame index.
  * \return The Y coordinate of the given frame's handle.
  */
-int caca_get_sprite_dy(struct caca_sprite const *sprite, int f)
+int cucul_get_sprite_dy(cucul_t *qq, struct cucul_sprite const *sprite, int f)
 {
     if(sprite == NULL)
         return 0;
@@ -259,11 +265,11 @@ int caca_get_sprite_dy(struct caca_sprite const *sprite, int f)
  * \param f The frame index.
  * \return void
  */
-void caca_draw_sprite(int x, int y, struct caca_sprite const *sprite, int f)
+void cucul_draw_sprite(cucul_t *qq, int x, int y, struct cucul_sprite const *sprite, int f)
 {
     int i, j;
-    enum caca_color oldfg, oldbg;
-    struct caca_frame *frame;
+    enum cucul_color oldfg, oldbg;
+    struct cucul_frame *frame;
 
     if(sprite == NULL)
         return;
@@ -273,8 +279,8 @@ void caca_draw_sprite(int x, int y, struct caca_sprite const *sprite, int f)
 
     frame = &sprite->frames[f];
 
-    oldfg = caca_get_fg_color();
-    oldbg = caca_get_bg_color();
+    oldfg = cucul_get_fg_color(qq);
+    oldbg = cucul_get_bg_color(qq);
 
     for(j = 0; j < frame->h; j++)
     {
@@ -283,14 +289,14 @@ void caca_draw_sprite(int x, int y, struct caca_sprite const *sprite, int f)
             int col = frame->color[frame->w * j + i];
             if(col >= 0)
             {
-                caca_set_color(col, CACA_COLOR_BLACK);
-                caca_putchar(x + i - frame->dx, y + j - frame->dy,
-                           frame->chars[frame->w * j + i]);
+                cucul_set_color(qq, col, CUCUL_COLOR_BLACK);
+                cucul_putchar(qq, x + i - frame->dx, y + j - frame->dy,
+                              frame->chars[frame->w * j + i]);
             }
         }
     }
 
-    caca_set_color(oldfg, oldbg);
+    cucul_set_color(qq, oldfg, oldbg);
 }
 
 /**
@@ -299,7 +305,7 @@ void caca_draw_sprite(int x, int y, struct caca_sprite const *sprite, int f)
  * \param sprite The sprite to be freed.
  * \return void
  */
-void caca_free_sprite(struct caca_sprite *sprite)
+void cucul_free_sprite(cucul_t *qq, struct cucul_sprite *sprite)
 {
     int i;
 
@@ -308,7 +314,7 @@ void caca_free_sprite(struct caca_sprite *sprite)
 
     for(i = sprite->nf; i--;)
     {
-        struct caca_frame *frame = &sprite->frames[i];
+        struct cucul_frame *frame = &sprite->frames[i];
         free(frame->chars);
         free(frame->color);
     }

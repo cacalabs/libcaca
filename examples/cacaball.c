@@ -22,6 +22,7 @@
 #   define M_PI 3.14159265358979323846
 #endif
 
+#include "cucul.h"
 #include "caca.h"
 
 /* Virtual buffer size */
@@ -42,43 +43,48 @@ static unsigned char metaball[METASIZE * METASIZE];
 
 int main(int argc, char **argv)
 {
+    cucul_t *qq; caca_t *kk;
     unsigned int r[256], g[256], b[256], a[256];
     float d[METABALLS], di[METABALLS], dj[METABALLS], dk[METABALLS];
     unsigned int x[METABALLS], y[METABALLS];
-    struct caca_bitmap *caca_bitmap;
+    struct cucul_bitmap *cucul_bitmap;
     float i = 10.0, j = 17.0, k = 11.0;
     int p, frame = 0, pause = 0;
 
-    if(caca_init())
+    qq = cucul_init();
+    if(!qq)
+        return 1;
+    kk = caca_attach(qq);
+    if(!kk)
         return 1;
 
-    caca_set_delay(20000);
+    caca_set_delay(kk, 20000);
 
     /* Make the palette eatable by libcaca */
     for(p = 0; p < 256; p++)
         r[p] = g[p] = b[p] = a[p] = 0x0;
     r[255] = g[255] = b[255] = 0xfff;
 
-    /* Create a libcaca bitmap smaller than our pixel buffer, so that we
+    /* Create a libcucul bitmap smaller than our pixel buffer, so that we
      * display only the interesting part of it */
-    caca_bitmap = caca_create_bitmap(8, XSIZ - METASIZE, YSIZ - METASIZE,
-                                     XSIZ, 0, 0, 0, 0);
+    cucul_bitmap = cucul_create_bitmap(qq, 8, XSIZ - METASIZE, YSIZ - METASIZE,
+                                       XSIZ, 0, 0, 0, 0);
 
     /* Generate ball sprite */
     create_ball();
 
     for(p = 0; p < METABALLS; p++)
     {
-        d[p] = caca_rand(0, 100);
-        di[p] = (float)caca_rand(500, 4000) / 6000.0;
-        dj[p] = (float)caca_rand(500, 4000) / 6000.0;
-        dk[p] = (float)caca_rand(500, 4000) / 6000.0;
+        d[p] = cucul_rand(0, 100);
+        di[p] = (float)cucul_rand(500, 4000) / 6000.0;
+        dj[p] = (float)cucul_rand(500, 4000) / 6000.0;
+        dk[p] = (float)cucul_rand(500, 4000) / 6000.0;
     }
 
     /* Go ! */
     for(;;)
     {
-        switch(caca_get_event(CACA_EVENT_KEY_PRESS))
+        switch(caca_get_event(kk, CACA_EVENT_KEY_PRESS))
         {
             case CACA_EVENT_KEY_PRESS | CACA_KEY_ESCAPE: goto end;
             case CACA_EVENT_KEY_PRESS | ' ': pause = !pause;
@@ -109,7 +115,7 @@ int main(int argc, char **argv)
         }
 
         /* Set the palette */
-        caca_set_bitmap_palette(caca_bitmap, r, g, b, a);
+        cucul_set_bitmap_palette(qq, cucul_bitmap, r, g, b, a);
 
         /* Silly paths for our balls */
         for(p = 0; p < METABALLS; p++)
@@ -134,16 +140,18 @@ int main(int argc, char **argv)
             draw_ball(x[p], y[p]);
 
 paused:
-        /* Draw our virtual buffer to screen, letting libcaca resize it */
-        caca_draw_bitmap(0, 0, caca_get_width() - 1, caca_get_height() - 1,
-                         caca_bitmap, pixels + (METASIZE / 2) * (1 + XSIZ));
-        caca_refresh();
+        /* Draw our virtual buffer to screen, letting libcucul resize it */
+        cucul_draw_bitmap(qq, 0, 0,
+                          cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
+                          cucul_bitmap, pixels + (METASIZE / 2) * (1 + XSIZ));
+        caca_refresh(kk);
     }
 
     /* End, bye folks */
 end:
-    caca_free_bitmap(caca_bitmap);
-    caca_end();
+    cucul_free_bitmap(qq, cucul_bitmap);
+    caca_detach(kk);
+    cucul_end(qq);
 
     return 0;
 }

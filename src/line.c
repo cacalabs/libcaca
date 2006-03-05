@@ -28,8 +28,8 @@ typedef unsigned char uint8_t;
 
 #include <stdlib.h>
 
-#include "caca.h"
-#include "caca_internals.h"
+#include "cucul.h"
+#include "cucul_internals.h"
 
 #if !defined(_DOXYGEN_SKIP_ME)
 struct line
@@ -37,14 +37,14 @@ struct line
     int x1, y1;
     int x2, y2;
     char c;
-    void (*draw) (struct line*);
+    void (*draw) (cucul_t *, struct line*);
 };
 #endif
 
-static void clip_line(struct line*);
-static uint8_t clip_bits(int, int);
-static void draw_solid_line(struct line*);
-static void draw_thin_line(struct line*);
+static void clip_line(cucul_t*, struct line*);
+static uint8_t clip_bits(cucul_t*, int, int);
+static void draw_solid_line(cucul_t*, struct line*);
+static void draw_thin_line(cucul_t*, struct line*);
 
 /**
  * \brief Draw a line on the screen using the given character.
@@ -56,7 +56,7 @@ static void draw_thin_line(struct line*);
  * \param c Character to draw the line with.
  * \return void
  */
-void caca_draw_line(int x1, int y1, int x2, int y2, char c)
+void cucul_draw_line(cucul_t *qq, int x1, int y1, int x2, int y2, char c)
 {
     struct line s;
     s.x1 = x1;
@@ -65,7 +65,7 @@ void caca_draw_line(int x1, int y1, int x2, int y2, char c)
     s.y2 = y2;
     s.c = c;
     s.draw = draw_solid_line;
-    clip_line(&s);
+    clip_line(qq, &s);
 }
 
 /**
@@ -80,7 +80,7 @@ void caca_draw_line(int x1, int y1, int x2, int y2, char c)
  * \param c Character to draw the lines with.
  * \return void
  */
-void caca_draw_polyline(int const x[], int const y[], int n, char c)
+void cucul_draw_polyline(cucul_t *qq, int const x[], int const y[], int n, char c)
 {
     int i;
     struct line s;
@@ -93,7 +93,7 @@ void caca_draw_polyline(int const x[], int const y[], int n, char c)
         s.y1 = y[i];
         s.x2 = x[i+1];
         s.y2 = y[i+1];
-        clip_line(&s);
+        clip_line(qq, &s);
     }
 }
 
@@ -106,7 +106,7 @@ void caca_draw_polyline(int const x[], int const y[], int n, char c)
  * \param y2 Y coordinate of the second point.
  * \return void
  */
-void caca_draw_thin_line(int x1, int y1, int x2, int y2)
+void cucul_draw_thin_line(cucul_t *qq, int x1, int y1, int x2, int y2)
 {
     struct line s;
     s.x1 = x1;
@@ -114,7 +114,7 @@ void caca_draw_thin_line(int x1, int y1, int x2, int y2)
     s.x2 = x2;
     s.y2 = y2;
     s.draw = draw_thin_line;
-    clip_line(&s);
+    clip_line(qq, &s);
 }
 
 /**
@@ -128,7 +128,7 @@ void caca_draw_thin_line(int x1, int y1, int x2, int y2)
  * \param n Number of lines to draw.
  * \return void
  */
-void caca_draw_thin_polyline(int const x[], int const y[], int n)
+void cucul_draw_thin_polyline(cucul_t *qq, int const x[], int const y[], int n)
 {
     int i;
     struct line s;
@@ -140,7 +140,7 @@ void caca_draw_thin_polyline(int const x[], int const y[], int n)
         s.y1 = y[i];
         s.x2 = x[i+1];
         s.y2 = y[i+1];
-        clip_line(&s);
+        clip_line(qq, &s);
     }
 }
 
@@ -154,12 +154,12 @@ void caca_draw_thin_polyline(int const x[], int const y[], int n)
  * \param s a line structure
  * \return void
  */
-static void clip_line(struct line* s)
+static void clip_line(cucul_t *qq, struct line* s)
 {
     uint8_t bits1, bits2;
 
-    bits1 = clip_bits(s->x1, s->y1);
-    bits2 = clip_bits(s->x2, s->y2);
+    bits1 = clip_bits(qq, s->x1, s->y1);
+    bits2 = clip_bits(qq, s->x2, s->y2);
 
     if(bits1 & bits2)
         return;
@@ -167,13 +167,13 @@ static void clip_line(struct line* s)
     if(bits1 == 0)
     {
         if(bits2 == 0)
-            s->draw(s);
+            s->draw(qq, s);
         else
         {
             int tmp;
             tmp = s->x1; s->x1 = s->x2; s->x2 = tmp;
             tmp = s->y1; s->y1 = s->y2; s->y2 = tmp;
-            clip_line(s);
+            clip_line(qq, s);
         }
 
         return;
@@ -186,7 +186,7 @@ static void clip_line(struct line* s)
     }
     else if(bits1 & (1<<1))
     {
-        int xmax = _caca_width - 1;
+        int xmax = qq->width - 1;
         s->y1 = s->y2 - (s->x2 - xmax) * (s->y2 - s->y1) / (s->x2 - s->x1);
         s->x1 = xmax;
     }
@@ -197,12 +197,12 @@ static void clip_line(struct line* s)
     }
     else if(bits1 & (1<<3))
     {
-        int ymax = _caca_height - 1;
+        int ymax = qq->height - 1;
         s->x1 = s->x2 - (s->y2 - ymax) * (s->x2 - s->x1) / (s->y2 - s->y1);
         s->y1 = ymax;
     }
 
-    clip_line(s);
+    clip_line(qq, s);
 }
 
 /**
@@ -212,18 +212,18 @@ static void clip_line(struct line* s)
  * \param y Y coordinate of the point.
  * \return The clipping bits for the given point.
  */
-static uint8_t clip_bits(int x, int y)
+static uint8_t clip_bits(cucul_t *qq, int x, int y)
 {
     uint8_t b = 0;
 
     if(x < 0)
         b |= (1<<0);
-    else if(x >= (int)_caca_width)
+    else if(x >= (int)qq->width)
         b |= (1<<1);
 
     if(y < 0)
         b |= (1<<2);
-    else if(y >= (int)_caca_height)
+    else if(y >= (int)qq->height)
         b |= (1<<3);
 
     return b;
@@ -236,7 +236,7 @@ static uint8_t clip_bits(int x, int y)
  * \param s a line structure
  * \return void
  */
-static void draw_solid_line(struct line* s)
+static void draw_solid_line(cucul_t *qq, struct line* s)
 {
     int x1, y1, x2, y2;
     int dx, dy;
@@ -258,7 +258,7 @@ static void draw_solid_line(struct line* s)
 
         for(; dx>=0; dx--)
         {
-            caca_putchar(x1, y1, s->c);
+            cucul_putchar(qq, x1, y1, s->c);
             if(delta > 0)
             {
                 x1 += xinc;
@@ -280,7 +280,7 @@ static void draw_solid_line(struct line* s)
 
         for(; dy >= 0; dy--)
         {
-            caca_putchar(x1, y1, s->c);
+            cucul_putchar(qq, x1, y1, s->c);
             if(delta > 0)
             {
                 x1 += xinc;
@@ -303,7 +303,7 @@ static void draw_solid_line(struct line* s)
  * \param s a line structure
  * \return void
  */
-static void draw_thin_line(struct line* s)
+static void draw_thin_line(cucul_t *qq, struct line* s)
 {
     char *charmapx, *charmapy;
     int x1, y1, x2, y2;
@@ -352,7 +352,7 @@ static void draw_thin_line(struct line* s)
         {
             if(delta > 0)
             {
-                caca_putchar(x1, y1, charmapy[1]);
+                cucul_putchar(qq, x1, y1, charmapy[1]);
                 x1++;
                 y1 += yinc;
                 delta += dpru;
@@ -361,9 +361,9 @@ static void draw_thin_line(struct line* s)
             else
             {
                 if(prev)
-                    caca_putchar(x1, y1, charmapy[0]);
+                    cucul_putchar(qq, x1, y1, charmapy[0]);
                 else
-                    caca_putchar(x1, y1, '-');
+                    cucul_putchar(qq, x1, y1, '-');
                 x1++;
                 delta += dpr;
                 prev = 0;
@@ -380,15 +380,15 @@ static void draw_thin_line(struct line* s)
         {
             if(delta > 0)
             {
-                caca_putchar(x1, y1, charmapx[0]);
-                caca_putchar(x1 + 1, y1, charmapx[1]);
+                cucul_putchar(qq, x1, y1, charmapx[0]);
+                cucul_putchar(qq, x1 + 1, y1, charmapx[1]);
                 x1++;
                 y1 += yinc;
                 delta += dpru;
             }
             else
             {
-                caca_putchar(x1, y1, '|');
+                cucul_putchar(qq, x1, y1, '|');
                 y1 += yinc;
                 delta += dpr;
             }

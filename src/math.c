@@ -19,10 +19,16 @@
 
 #include "config.h"
 
+#if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
+#   include <inttypes.h>
+#else
+typedef unsigned char uint8_t;
+#endif
+
 #include <stdlib.h>
 
-#include "caca.h"
-#include "caca_internals.h"
+#include "cucul.h"
+#include "cucul_internals.h"
 
 /**
  * \brief Generate a random integer within a range.
@@ -31,7 +37,7 @@
  * \param max The upper bound of the integer range.
  * \return A random integer comprised between \p min and \p max, inclusive.
  */
-int caca_rand(int min, int max)
+int cucul_rand(int min, int max)
 {
     return min + (int)((1.0*(max-min+1)) * rand() / (RAND_MAX+1.0));
 }
@@ -43,7 +49,7 @@ int caca_rand(int min, int max)
  * \param a A positive integer.
  * \return The approximate square root of \p a.
  */
-unsigned int caca_sqrt(unsigned int a)
+unsigned int cucul_sqrt(unsigned int a)
 {
     if(a == 0)
         return 0;
@@ -65,7 +71,7 @@ unsigned int caca_sqrt(unsigned int a)
         return x;
     }
 
-    return 2 * caca_sqrt(a / 4);
+    return 2 * cucul_sqrt(a / 4);
 }
 
 
@@ -76,7 +82,7 @@ unsigned int caca_sqrt(unsigned int a)
  * \return \p x raised to the power of \p y
  */
 
-float caca_powf(float x, float y)
+float cucul_powf(float x, float y)
 {
     int i=((int)y);
     float r=x;
