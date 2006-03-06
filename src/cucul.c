@@ -23,6 +23,7 @@
 #if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
 #   include <inttypes.h>
 #else
+typedef unsigned int uint32_t;
 typedef unsigned char uint8_t;
 #endif
 
@@ -46,6 +47,7 @@ static void cucul_read_environment(cucul_t *qq);
 cucul_t * cucul_init(void)
 {
     cucul_t *qq = malloc(sizeof(cucul_t));
+    int i;
 
     cucul_read_environment(qq);
 
@@ -57,10 +59,11 @@ cucul_t * cucul_init(void)
     qq->width = 80;
     qq->height = 32;
 
-    qq->chars = malloc(qq->width * qq->height * sizeof(uint8_t));
+    qq->chars = malloc(qq->width * qq->height * sizeof(uint32_t));
     qq->attr = malloc(qq->width * qq->height * sizeof(uint8_t));
 
-    memset(qq->chars, ' ', qq->width * qq->height * sizeof(uint8_t));
+    for(i = qq->width * qq->height; i--; )
+        qq->chars[i] = (uint32_t)' ';
     memset(qq->attr, 0, qq->width * qq->height * sizeof(uint8_t));
 
     qq->empty_line = malloc(qq->width + 1);
@@ -100,7 +103,7 @@ void cucul_set_size(cucul_t *qq, unsigned int width, unsigned int height)
     /* Step 1: if new area is bigger, resize the memory area now. */
     if(new_size > old_size)
     {
-        qq->chars = realloc(qq->chars, new_size * sizeof(uint8_t));
+        qq->chars = realloc(qq->chars, new_size * sizeof(uint32_t));
         qq->attr = realloc(qq->attr, new_size * sizeof(uint8_t));
     }
 
@@ -124,8 +127,8 @@ void cucul_set_size(cucul_t *qq, unsigned int width, unsigned int height)
             }
 
             /* Zero the end of the line */
-            memset(qq->chars + y * width + old_width, ' ',
-                   width - old_width);
+            for(x = width - old_width; x--; )
+                qq->chars[y * width + old_width + x] = (uint32_t)' ';
             memset(qq->attr + y * width + old_width, 0,
                    width - old_width);
         }
@@ -150,14 +153,16 @@ void cucul_set_size(cucul_t *qq, unsigned int width, unsigned int height)
     if(height > old_height)
     {
         /* Zero the bottom of the screen */
-        memset(qq->chars + old_height * width, ' ',
+        for(x = (height - old_height) * width; x--; )
+            qq->chars[old_height * width + x] = (uint32_t)' ';
+        memset(qq->attr + old_height * width, 0,
                (height - old_height) * width);
     }
 
     /* Step 4: if new area is smaller, resize memory area now. */
     if(new_size <= old_size)
     {
-        qq->chars = realloc(qq->chars, new_size * sizeof(uint8_t));
+        qq->chars = realloc(qq->chars, new_size * sizeof(uint32_t));
         qq->attr = realloc(qq->attr, new_size * sizeof(uint8_t));
     }
 

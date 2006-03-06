@@ -56,6 +56,7 @@
 #if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
 #   include <inttypes.h>
 #else
+typedef unsigned int uint32_t;
 typedef unsigned char uint8_t;
 #endif
 
@@ -879,7 +880,7 @@ void caca_display(caca_t *kk)
     {
         int x, y;
         uint8_t *attr = kk->qq->attr;
-        uint8_t *chars = kk->qq->chars;
+        uint32_t *chars = kk->qq->chars;
         for(y = 0; y < (int)kk->qq->height; y++)
         {
             SLsmg_gotorc(y, 0);
@@ -893,7 +894,7 @@ void caca_display(caca_t *kk)
                 if(fgcolor != bgcolor)
                 {
                     SLsmg_set_color(slang_assoc[*attr++]);
-                    SLsmg_write_char(*chars++);
+                    SLsmg_write_char(*chars++ & 0x7f);
                 }
                 else
                 {
@@ -911,7 +912,7 @@ void caca_display(caca_t *kk)
                 }
 #else
                 SLsmg_set_color(*attr++);
-                SLsmg_write_char(*chars++);
+                SLsmg_write_char(*chars++ & 0x7f);
 #endif
             }
         }
@@ -924,14 +925,14 @@ void caca_display(caca_t *kk)
     {
         int x, y;
         uint8_t *attr = kk->qq->attr;
-        uint8_t *chars = kk->qq->chars;
+        uint32_t *chars = kk->qq->chars;
         for(y = 0; y < (int)kk->qq->height; y++)
         {
             move(y, 0);
             for(x = kk->qq->width; x--; )
             {
                 attrset(kk->ncurses.attr[*attr++]);
-                addch(*chars++);
+                addch(*chars++ & 0x7f);
             }
         }
         refresh();
@@ -944,10 +945,10 @@ void caca_display(caca_t *kk)
         int n;
         char *screen = kk->conio.screen;
         uint8_t *attr = kk->qq->attr;
-        uint8_t *chars = kk->qq->chars;
+        uint32_t *chars = kk->qq->chars;
         for(n = kk->qq->height * kk->qq->width; n--; )
         {
-            *screen++ = *chars++;
+            *screen++ = *chars++ & 0x7f;
             *screen++ = *attr++;
         }
 #   if defined(SCREENUPDATE_IN_PC_H)
@@ -989,22 +990,30 @@ void caca_display(caca_t *kk)
         {
             for(x = 0; x < kk->qq->width; x += len)
             {
+                char buffer[BUFSIZ]; /* FIXME: use a smaller buffer */
+                uint32_t *chars = kk->qq->chars + x + y * kk->qq->width;
                 uint8_t *attr = kk->qq->attr + x + y * kk->qq->width;
 
                 len = 1;
 
                 /* Skip spaces */
-                if(kk->qq->chars[x + y * kk->qq->width] == ' ')
+                if(chars[0] == ' ')
                     continue;
+
+                buffer[0] = chars[0] & 0x7f;
 
                 while(x + len < kk->qq->width
                        && (attr[len] & 0xf) == (attr[0] & 0xf))
+                {
+                    buffer[len] = chars[len] & 0x7f;
                     len++;
+                }
 
                 XSetForeground(kk->x11.dpy, kk->x11.gc, kk->x11.colors[attr[0] & 0xf]);
-                XDrawString(kk->x11.dpy, kk->x11.pixmap, kk->x11.gc, x * kk->x11.font_width,
+                XDrawString(kk->x11.dpy, kk->x11.pixmap, kk->x11.gc,
+                            x * kk->x11.font_width,
                             (y + 1) * kk->x11.font_height - kk->x11.font_offset,
-                            (char*)(kk->qq->chars + x + y * kk->qq->width), len);
+                            buffer, len);
             }
         }
 
@@ -1025,7 +1034,7 @@ void caca_display(caca_t *kk)
         /* Render everything to our back buffer */
         for(i = 0; i < kk->qq->width * kk->qq->height; i++)
         {
-            kk->win32.buffer[i].Char.AsciiChar = kk->qq->chars[i];
+            kk->win32.buffer[i].Char.AsciiChar = kk->qq->chars[i] & 0x7f;
             kk->win32.buffer[i].Attributes =
                     win32_fg_palette[kk->qq->attr[i] & 0xf]
                      | win32_bg_palette[kk->qq->attr[i] >> 4];
@@ -1080,13 +1089,16 @@ void caca_display(caca_t *kk)
         for(y = 0; y < kk->gl.height; y += kk->gl.font_height)
         {
             uint8_t *attr = kk->qq->attr + line * kk->qq->width;
-            unsigned char *chars = kk->qq->chars + line * kk->qq->width;
+            uint32_t *chars = kk->qq->chars + line * kk->qq->width;
 
             for(x = 0; x < kk->gl.width; x += kk->gl.font_width)
             {
-                if(chars[0] != ' ')
+                if(*chars != (uint32_t)' ')
                 {
-                    glBindTexture(GL_TEXTURE_2D, kk->gl.id[chars[0]-32]);
+                    char ch = *chars & 0x7f;
+
+                    /* FIXME: check ch bounds */
+                    glBindTexture(GL_TEXTURE_2D, kk->gl.id[ch - 32]);
                     glColor4bv(gl_bgpal[attr[0] & 0xf]);
                     glBegin(GL_QUADS);
                         glTexCoord2f(0, kk->gl.sh);

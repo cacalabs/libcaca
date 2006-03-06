@@ -22,6 +22,7 @@
 #if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
 #   include <inttypes.h>
 #else
+typedef unsigned int uint32_t;
 typedef unsigned char uint8_t;
 #endif
 
@@ -101,7 +102,7 @@ void cucul_putchar(cucul_t *qq, int x, int y, char c)
        y < 0 || y >= (int)qq->height)
         return;
 
-    qq->chars[x + y * qq->width] = c;
+    qq->chars[x + y * qq->width] = c & 0x7f; /* FIXME: ASCII-only */
     qq->attr[x + y * qq->width] = (qq->bgcolor << 4) | qq->fgcolor;
 }
 
@@ -118,8 +119,8 @@ void cucul_putchar(cucul_t *qq, int x, int y, char c)
  */
 void cucul_putstr(cucul_t *qq, int x, int y, char const *s)
 {
-    unsigned char *charbuf;
-    unsigned char *attrbuf;
+    uint32_t *chars;
+    uint8_t *attr;
     char const *t;
     unsigned int len;
 
@@ -145,13 +146,13 @@ void cucul_putstr(cucul_t *qq, int x, int y, char const *s)
         s = qq->scratch_line;
     }
 
-    charbuf = qq->chars + x + y * qq->width;
-    attrbuf = qq->attr + x + y * qq->width;
+    chars = qq->chars + x + y * qq->width;
+    attr = qq->attr + x + y * qq->width;
     t = s;
     while(*t)
     {
-        *charbuf++ = *t++;
-        *attrbuf++ = (qq->bgcolor << 4) | qq->fgcolor;
+        *chars++ = *t++ & 0x7f; /* FIXME: ASCII-only */
+        *attr++ = (qq->bgcolor << 4) | qq->fgcolor;
     }
 }
 
@@ -208,7 +209,7 @@ void cucul_get_screen(cucul_t *qq, char *buffer)
         for(x = 0; x < qq->width; x++)
         {
             *buffer++ = qq->attr[x + y * qq->width];
-            *buffer++ = qq->chars[x + y * qq->width];
+            *buffer++ = qq->chars[x + y * qq->width] & 0x7f; /* FIXME: ASCII */
         }
     }
 }

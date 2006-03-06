@@ -24,6 +24,7 @@
 #if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
 #   include <inttypes.h>
 #else
+typedef unsigned int uint32_t;
 typedef unsigned char uint8_t;
 #endif
 

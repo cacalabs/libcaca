@@ -25,7 +25,8 @@ struct cucul_context
     /* Context size */
     unsigned int width, height;
 
-    uint8_t *chars, *attr;
+    uint32_t *chars;
+    uint8_t *attr;
     uint8_t *empty_line, *scratch_line;
 
     enum cucul_color fgcolor;

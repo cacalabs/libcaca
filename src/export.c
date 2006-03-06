@@ -22,6 +22,7 @@
 #if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
 #   include <inttypes.h>
 #else
+typedef unsigned int uint32_t;
 typedef unsigned char uint8_t;
 #endif
 
@@ -74,7 +75,7 @@ char* cucul_get_html(cucul_t *qq)
     for(y = 0; y < qq->height; y++)
     {
         uint8_t *lineattr = qq->attr + y * qq->width;
-        uint8_t *linechar = qq->chars + y * qq->width;
+        uint32_t *linechar = qq->chars + y * qq->width;
 
         for(x = 0; x < qq->width; x += len)
         {
@@ -84,10 +85,10 @@ char* cucul_get_html(cucul_t *qq)
                 x + len < qq->width && lineattr[x + len] == lineattr[x];
                 len++)
             {
-                if(linechar[x + len] == ' ')
+                if(linechar[x + len] == (uint32_t)' ')
                     cur += sprintf(cur, "&nbsp;");
                 else
-                    cur += sprintf(cur, "%c", linechar[x + len]);
+                    cur += sprintf(cur, "%c", linechar[x + len] & 0x7f);
             }
             cur += sprintf(cur, "</span>");
         }
@@ -135,7 +136,7 @@ char* cucul_get_html3(cucul_t *qq)
     for(y = 0; y < qq->height; y++)
     {
         uint8_t *lineattr = qq->attr + y * qq->width;
-        uint8_t *linechar = qq->chars + y * qq->width;
+        uint32_t *linechar = qq->chars + y * qq->width;
 
         cur += sprintf(cur, "<tr>");
 
@@ -159,10 +160,10 @@ char* cucul_get_html3(cucul_t *qq)
 
             for(i = 0; i < len; i++)
             {
-                if(linechar[x + i] == ' ')
+                if(linechar[x + i] == (uint32_t)' ')
                     cur += sprintf(cur, "&nbsp;");
                 else
-                    cur += sprintf(cur, "%c", linechar[x + i]);
+                    cur += sprintf(cur, "%c", linechar[x + i] & 0x7f);
             }
 
             cur += sprintf(cur, "</font></td>");
@@ -210,7 +211,7 @@ char* cucul_get_irc(cucul_t *qq)
     for(y = 0; y < qq->height; y++)
     {
         uint8_t *lineattr = qq->attr + y * qq->width;
-        uint8_t *linechar = qq->chars + y * qq->width;
+        uint32_t *linechar = qq->chars + y * qq->width;
 
         uint8_t prevfg = -1;
         uint8_t prevbg = -1;
@@ -219,18 +220,18 @@ char* cucul_get_irc(cucul_t *qq)
         {
             uint8_t fg = palette[lineattr[x] & 0x0f];
             uint8_t bg = palette[lineattr[x] >> 4];
-            uint8_t c = linechar[x];
+            uint32_t c = linechar[x];
 
             if(bg == prevbg)
             {
                 if(fg == prevfg)
                     ; /* Same fg/bg, do nothing */
-                else if(c == ' ')
+                else if(c == (uint32_t)' ')
                     fg = prevfg; /* Hackety hack */
                 else
                 {
                     cur += sprintf(cur, "\x03%d", fg);
-                    if(c >= '0' && c <= '9')
+                    if(c >= (uint32_t)'0' && c <= (uint32_t)'9')
                         cur += sprintf(cur, "\x02\x02");
                 }
             }
@@ -241,10 +242,10 @@ char* cucul_get_irc(cucul_t *qq)
                 else
                     cur += sprintf(cur, "\x03%d,%d", fg, bg);
 
-                if(c >= '0' && c <= '9')
+                if(c >= (uint32_t)'0' && c <= (uint32_t)'9')
                     cur += sprintf(cur, "\x02\x02");
             }
-            *cur++ = c;
+            *cur++ = c & 0x7f;
             prevfg = fg;
             prevbg = bg;
         }
@@ -289,7 +290,7 @@ char * cucul_get_ansi(cucul_t *qq, int trailing)
     for(y = 0; y < qq->height; y++)
     {
         uint8_t *lineattr = qq->attr + y * qq->width;
-        uint8_t *linechar = qq->chars + y * qq->width;
+        uint32_t *linechar = qq->chars + y * qq->width;
 
         uint8_t prevfg = -1;
         uint8_t prevbg = -1;
@@ -298,7 +299,7 @@ char * cucul_get_ansi(cucul_t *qq, int trailing)
         {
             uint8_t fg = palette[lineattr[x] & 0x0f];
             uint8_t bg = (palette[lineattr[x] >> 4])+10;
-            uint8_t c = linechar[x];
+            uint32_t c = linechar[x];
 
             if(!trailing)
                 cur += sprintf(cur, "\033[");
@@ -309,9 +310,9 @@ char * cucul_get_ansi(cucul_t *qq, int trailing)
                 cur += sprintf(cur, "1;%d;%dm",fg,bg);
             else
                 cur += sprintf(cur, "0;%d;%dm",fg,bg);
-            *cur++ = c;
+            *cur++ = c & 0x7f;
             if((c == '%') && trailing)
-                *cur++ = c;
+                *cur++ = c & 0x7f;
             prevfg = fg;
             prevbg = bg;
         }
