@@ -1,6 +1,6 @@
 /*
  *  libcaca       ASCII-Art library
- *  Copyright (c) 2002, 2003 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
  *  This library is free software; you can redistribute it and/or
@@ -49,7 +49,6 @@ enum caca_driver
 };
 
 /* Timer structure */
-#define CACA_TIMER_INITIALIZER { 0, 0 }
 struct caca_timer
 {
     int last_sec, last_usec;
@@ -67,6 +66,18 @@ struct caca_context
     int resize_event;
 
     unsigned int delay, rendertime;
+    struct caca_timer timer;
+    int lastticks;
+
+    struct events
+    {
+#if defined(USE_SLANG) || defined(USE_NCURSES)
+        struct caca_timer key_timer;
+        unsigned int last_key_ticks;
+        unsigned int autorepeat_ticks;
+        unsigned int last_key;
+#endif
+    } events;
 
 #if defined(USE_X11) && !defined(_DOXYGEN_SKIP_ME)
     struct x11
@@ -83,9 +94,51 @@ struct caca_context
         XFontStruct *font_struct;
         int font_offset;
 #if defined(HAVE_X11_XKBLIB_H)
-        Bool detect_autorepeat;
+        Bool autorepeat;
 #endif
     } x11;
+#endif
+#if defined(USE_NCURSES)
+    struct ncurses
+    {
+        int attr[16*16];
+    } ncurses;
+#endif
+#if defined(USE_CONIO)
+    struct conio
+    {
+        struct text_info ti;
+        char *screen;
+    } conio;
+#endif
+#if defined(USE_WIN32)
+    struct win32
+    {
+        HANDLE hin, hout;
+        HANDLE front, back;
+        CHAR_INFO *buffer;
+    } win32;
+#endif
+#if defined(USE_GL)
+    struct gl
+    {
+        int window;
+        unsigned int width, height;
+        float font_width, font_height;
+        float incx, incy;
+        int id[94];
+        unsigned char resized, bit;
+        unsigned char mouse_changed, mouse_clicked;
+        unsigned int mouse_x, mouse_y;
+        unsigned int mouse_button, mouse_state;
+
+        unsigned char key;
+        int special_key;
+        int new_width;
+        int new_height;
+
+        float sw, sh;
+    } gl;
 #endif
 };
 

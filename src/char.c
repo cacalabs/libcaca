@@ -1,6 +1,6 @@
 /*
- *  libcaca       ASCII-Art library
- *  Copyright (c) 2002, 2003 Sam Hocevar <sam@zoy.org>
+ *  libcucul      Unicode canvas library
+ *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
  *  This library is free software; you can redistribute it and/or
@@ -59,68 +59,6 @@ void cucul_set_color(cucul_t *qq, enum cucul_color fgcolor, enum cucul_color bgc
 
     qq->fgcolor = fgcolor;
     qq->bgcolor = bgcolor;
-
-#if 0
-    switch(kk->driver)
-    {
-#if defined(USE_SLANG)
-    case CACA_DRIVER_SLANG:
-
-#if defined(OPTIMISE_SLANG_PALETTE)
-        /* If foreground == background, discard this colour pair. Functions
-         * such as cucul_putchar will print spaces instead of characters */
-        if(fgcolor != bgcolor)
-            qq->fgisbg = 0;
-        else
-        {
-            qq->fgisbg = 1;
-            if(fgcolor == CUCUL_COLOR_BLACK)
-                fgcolor = CUCUL_COLOR_WHITE;
-            else if(fgcolor == CUCUL_COLOR_WHITE
-                     || fgcolor <= CUCUL_COLOR_LIGHTGRAY)
-                fgcolor = CUCUL_COLOR_BLACK;
-            else
-                fgcolor = CUCUL_COLOR_WHITE;
-        }
-#endif
-
-#if defined(OPTIMISE_SLANG_PALETTE)
-        SLsmg_set_color(slang_assoc[fgcolor + 16 * bgcolor]);
-#else
-        SLsmg_set_color(fgcolor + 16 * bgcolor);
-#endif
-        break;
-#endif
-#if defined(USE_NCURSES)
-    case CACA_DRIVER_NCURSES:
-        attrset(ncurses_attr[fgcolor + 16 * bgcolor]);
-        break;
-#endif
-#if defined(USE_CONIO)
-    case CACA_DRIVER_CONIO:
-        textbackground(bgcolor);
-        textcolor(fgcolor);
-        break;
-#endif
-#if defined(USE_X11)
-    case CACA_DRIVER_X11:
-        /* Nothing to do */
-        break;
-#endif
-#if defined(USE_WIN32)
-    case CACA_DRIVER_WIN32:
-        /* Nothing to do */
-        break;
-#endif
-#if defined(USE_GL)
-    case CACA_DRIVER_GL:
-        /* Nothing to do */
-        break;
-#endif
-    default:
-        break;
-    }
-#endif
 }
 
 /** \brief Get the current foreground colour.
@@ -159,59 +97,12 @@ enum cucul_color cucul_get_bg_color(cucul_t *qq)
  */
 void cucul_putchar(cucul_t *qq, int x, int y, char c)
 {
-#if defined(USE_CONIO)
-    char *data;
-#endif
     if(x < 0 || x >= (int)qq->width ||
        y < 0 || y >= (int)qq->height)
         return;
 
     qq->chars[x + y * qq->width] = c;
     qq->attr[x + y * qq->width] = (qq->bgcolor << 4) | qq->fgcolor;
-
-#if 0
-    switch(kk->driver)
-    {
-#if defined(USE_SLANG)
-    case CACA_DRIVER_SLANG:
-        SLsmg_gotorc(y, x);
-#if defined(OPTIMISE_SLANG_PALETTE)
-        if(qq->fgisbg)
-            SLsmg_write_char(' ');
-        else
-#endif
-            SLsmg_write_char(c);
-        break;
-#endif
-#if defined(USE_NCURSES)
-    case CACA_DRIVER_NCURSES:
-        move(y, x);
-        addch(c);
-        break;
-#endif
-#if defined(USE_CONIO)
-    case CACA_DRIVER_CONIO:
-        data = conio_screen + 2 * (x + y * qq->width);
-        data[0] = c;
-        data[1] = (qq->bgcolor << 4) | qq->fgcolor;
-        break;
-#endif
-#if defined(USE_X11)
-    case CACA_DRIVER_X11:
-        break;
-#endif
-#if defined(USE_WIN32)
-    case CACA_DRIVER_WIN32:
-        break;
-#endif
-#if defined(USE_GL)
-    case CACA_DRIVER_GL:
-        break;
-#endif
-    default:
-        break;
-    }
-#endif
 }
 
 /** \brief Print a string.
@@ -262,57 +153,6 @@ void cucul_putstr(cucul_t *qq, int x, int y, char const *s)
         *charbuf++ = *t++;
         *attrbuf++ = (qq->bgcolor << 4) | qq->fgcolor;
     }
-
-#if 0
-    switch(kk->driver)
-    {
-#if defined(USE_SLANG)
-    case CACA_DRIVER_SLANG:
-        SLsmg_gotorc(y, x);
-#if defined(OPTIMISE_SLANG_PALETTE)
-        if(qq->fgisbg)
-            SLsmg_write_string(qq->empty_line + qq->width - len);
-        else
-#endif
-        {
-            union { char *ch; const char *constch; } u;
-            u.constch = s;
-            SLsmg_write_string(u.ch);
-        }
-        break;
-#endif
-#if defined(USE_NCURSES)
-    case CACA_DRIVER_NCURSES:
-        move(y, x);
-        addstr(s);
-        break;
-#endif
-#if defined(USE_CONIO)
-    case CACA_DRIVER_CONIO:
-        charbuf = conio_screen + 2 * (x + y * qq->width);
-        while(*s)
-        {
-            *charbuf++ = *s++;
-            *charbuf++ = (qq->bgcolor << 4) | qq->fgcolor;
-        }
-        break;
-#endif
-#if defined(USE_X11)
-    case CACA_DRIVER_X11:
-        break;
-#endif
-#if defined(USE_WIN32)
-    case CACA_DRIVER_WIN32:
-        break;
-#endif
-#if defined(USE_GL)
-    case CACA_DRIVER_GL:
-        break;
-#endif
-    default:
-        break;
-    }
-#endif
 }
 
 /** \brief Format a string.

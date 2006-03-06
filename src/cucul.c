@@ -32,7 +32,7 @@ typedef unsigned char uint8_t;
 #include "cucul.h"
 #include "cucul_internals.h"
 
-static void cucul_init_features(cucul_t *qq);
+static void cucul_read_environment(cucul_t *qq);
 
 /** \brief Initialise \e libcucul.
  *
@@ -47,24 +47,20 @@ cucul_t * cucul_init(void)
 {
     cucul_t *qq = malloc(sizeof(cucul_t));
 
-    cucul_init_features(qq);
+    cucul_read_environment(qq);
 
     qq->fgcolor = CUCUL_COLOR_LIGHTGRAY;
     qq->bgcolor = CUCUL_COLOR_BLACK;
-#if defined(OPTIMISE_SLANG_PALETTE)
-    qq->fgisbg = 0;
-#endif
 
-    /* Initialise to a default size. If a graphic driver attaches to
-     * us before cucul_set_size is called, we'll adapt. */
+    /* Initialise to a default size. When a graphic driver attaches to
+     * us, we'll adapt to its size. */
     qq->width = 80;
     qq->height = 32;
-    qq->size_set = 0;
 
     qq->chars = malloc(qq->width * qq->height * sizeof(uint8_t));
     qq->attr = malloc(qq->width * qq->height * sizeof(uint8_t));
 
-    memset(qq->chars, 0, qq->width * qq->height * sizeof(uint8_t));
+    memset(qq->chars, ' ', qq->width * qq->height * sizeof(uint8_t));
     memset(qq->attr, 0, qq->width * qq->height * sizeof(uint8_t));
 
     qq->empty_line = malloc(qq->width + 1);
@@ -91,9 +87,89 @@ cucul_t * cucul_init(void)
  */
 void cucul_set_size(cucul_t *qq, unsigned int width, unsigned int height)
 {
+    unsigned int x, y, old_width, old_height, new_size, old_size;
+
+    old_width = qq->width;
+    old_height = qq->height;
+    old_size = old_width * old_height;
+
     qq->width = width;
     qq->height = height;
-    qq->size_set = 1;
+    new_size = width * height;
+
+    /* Step 1: if new area is bigger, resize the memory area now. */
+    if(new_size > old_size)
+    {
+        qq->chars = realloc(qq->chars, new_size * sizeof(uint8_t));
+        qq->attr = realloc(qq->attr, new_size * sizeof(uint8_t));
+    }
+
+    /* Step 2: move line data if necessary. */
+    if(width == old_width)
+    {
+        /* Width did not change, which means we do not need to move data. */
+        ;
+    }
+    else if(width > old_width)
+    {
+        /* New width is bigger than old width, which means we need to
+         * copy lines starting from the bottom of the screen otherwise
+         * we will overwrite information. */
+        for(y = height < old_height ? height : old_height; y--; )
+        {
+            for(x = old_width; x--; )
+            {
+                qq->chars[y * width + x] = qq->chars[y * old_width + x];
+                qq->attr[y * width + x] = qq->attr[y * old_width + x];
+            }
+
+            /* Zero the end of the line */
+            memset(qq->chars + y * width + old_width, ' ',
+                   width - old_width);
+            memset(qq->attr + y * width + old_width, 0,
+                   width - old_width);
+        }
+    }
+    else
+    {
+        /* New width is smaller. Copy as many lines as possible. Ignore
+         * the first line, it is already in place. */
+        unsigned int lines = height < old_height ? height : old_height;
+
+        for(y = 1; y < lines; y++)
+        {
+            for(x = 0; x < width; x++)
+            {
+                qq->chars[y * width + x] = qq->chars[y * old_width + x];
+                qq->attr[y * width + x] = qq->attr[y * old_width + x];
+            }
+        }
+    }
+
+    /* Step 3: fill the bottom of the new screen if necessary. */
+    if(height > old_height)
+    {
+        /* Zero the bottom of the screen */
+        memset(qq->chars + old_height * width, ' ',
+               (height - old_height) * width);
+    }
+
+    /* Step 4: if new area is smaller, resize memory area now. */
+    if(new_size <= old_size)
+    {
+        qq->chars = realloc(qq->chars, new_size * sizeof(uint8_t));
+        qq->attr = realloc(qq->attr, new_size * sizeof(uint8_t));
+    }
+
+    /* Recompute the scratch line and the empty line */
+    if(width != old_width)
+    {
+        qq->empty_line = realloc(qq->empty_line, width + 1);
+        memset(qq->empty_line, ' ', width);
+        qq->empty_line[width] = '\0';
+
+        qq->scratch_line = realloc(qq->scratch_line, width + 1);
+    }
 }
 
 /** \brief Get the screen width.
@@ -120,7 +196,7 @@ unsigned int cucul_get_height(cucul_t *qq)
 
 /** \brief Translate a colour index into the colour's name.
  *
- *  This function translates a caca_color enum into a human-readable
+ *  This function translates a cucul_color enum into a human-readable
  *  description string of the associated colour.
  *
  *  \param color The colour value.
@@ -156,7 +232,7 @@ char const *cucul_get_color_name(enum cucul_color color)
 
 /** \brief Get the current value of a feature.
  *
- *  This function retrieves the value of an internal \e libcaca feature. A
+ *  This function retrieves the value of an internal \e libcucul feature. A
  *  generic feature value is expected, such as CUCUL_ANTIALIASING.
  *
  *  \param feature The requested feature.
@@ -181,7 +257,7 @@ enum cucul_feature cucul_get_feature(cucul_t *qq, enum cucul_feature feature)
 
 /** \brief Set a feature.
  *
- *  This function sets an internal \e libcaca feature such as the antialiasing
+ *  This function sets an internal \e libcucul feature such as the antialiasing
  *  or dithering modes. If a specific feature such as CUCUL_DITHERING_RANDOM,
  *  cucul_set_feature() will set it immediately. If a generic feature is given
  *  instead, such as CUCUL_DITHERING, the default value will be used instead.
@@ -274,7 +350,7 @@ void cucul_end(cucul_t *qq)
  * XXX: The following functions are local.
  */
 
-static void cucul_init_features(cucul_t * qq)
+static void cucul_read_environment(cucul_t * qq)
 {
     /* FIXME: if strcasecmp isn't available, use strcmp */
 #if defined(HAVE_GETENV) && defined(HAVE_STRCASECMP)

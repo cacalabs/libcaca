@@ -108,7 +108,7 @@ int main(int argc, char **argv)
         /* Free sprite */
         cucul_draw_sprite(qq, 20, 10, sprite, frame);
 
-        caca_refresh(kk);
+        caca_display(kk);
     }
 
     /* Clean up */

@@ -45,7 +45,7 @@ int main(int argc, char **argv)
     cucul_draw_line(qq, 0, h, cucul_get_width(qq) - 1, h, ' ');
     cucul_putstr(qq, 0, h, "type \"quit\" to exit");
 
-    caca_refresh(kk);
+    caca_display(kk);
 
     events = malloc(h * sizeof(int));
     memset(events, 0, h * sizeof(int));
@@ -95,7 +95,7 @@ int main(int argc, char **argv)
         for(i = 1; i < h && events[i]; i++)
             print_event(0, i, events[i]);
 
-        caca_refresh(kk);
+        caca_display(kk);
     }
 
     /* Clean up */

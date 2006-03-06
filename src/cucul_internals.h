@@ -24,16 +24,12 @@ struct cucul_context
 {
     /* Context size */
     unsigned int width, height;
-    int size_set;
 
     uint8_t *chars, *attr;
     uint8_t *empty_line, *scratch_line;
 
     enum cucul_color fgcolor;
     enum cucul_color bgcolor;
-#if defined(OPTIMISE_SLANG_PALETTE)
-    int fgisbg;
-#endif
 
     /* Internal libcucul features */
     enum cucul_feature background, antialiasing, dithering;

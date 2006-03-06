@@ -121,7 +121,7 @@ int main(void)
                           (100 - y) * cucul_get_height(qq) / 100, ch);
     }
 
-    caca_refresh(kk);
+    caca_display(kk);
 
     while(!caca_get_event(kk, CACA_EVENT_KEY_PRESS));
 

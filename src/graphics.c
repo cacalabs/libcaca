@@ -1,6 +1,6 @@
 /*
  *  libcaca       ASCII-Art library
- *  Copyright (c) 2002, 2003 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
  *  This library is free software; you can redistribute it and/or
@@ -142,16 +142,7 @@ static int const slang_assoc[16*16] =
 };
 #endif
 
-#if defined(USE_CONIO)
-static struct text_info conio_ti;
-static char *conio_screen;
-#endif
-
 #if defined(USE_WIN32)
-HANDLE win32_hin, win32_hout;
-static HANDLE win32_front, win32_back;
-static CHAR_INFO *win32_buffer;
-
 static int const win32_fg_palette[] =
 {
     0,
@@ -192,52 +183,30 @@ static int const win32_bg_palette[] =
     BACKGROUND_INTENSITY | BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE
 };
 #endif
+
 #if defined(USE_GL)
-
-static unsigned int const gl_bgpal[] =
+static float const gl_bgpal[][3] =
 {
-    0,
-    0x0000007F,
-    0x00007F00,
-    0x00007F7F,
-    0x007F0000,
-    0x007F007F,
-    0x007F7F00,
-    0x007F7F7F,
+    { 0.0f, 0.0f, 0.0f },
+    { 0.0f, 0.0f, 0.5f },
+    { 0.0f, 0.5f, 0.0f },
+    { 0.0f, 0.5f, 0.5f },
+    { 0.5f, 0.0f, 0.0f },
+    { 0.5f, 0.0f, 0.5f },
+    { 0.5f, 0.5f, 0.0f },
+    { 0.5f, 0.5f, 0.5f },
     // + intensity
-    0x00000000,
-    0x000000FF,
-    0x0000FF00,
-    0x0000FFFF,
-    0x00FF0000,
-    0x00FF00FF,
-    0x00FFFF00,
-    0x00FFFFFF,
-
+    { 0.0f, 0.0f, 0.0f },
+    { 0.0f, 0.0f, 1.0f },
+    { 0.0f, 1.0f, 0.0f },
+    { 0.0f, 1.0f, 1.0f },
+    { 1.0f, 0.0f, 0.0f },
+    { 1.0f, 0.0f, 1.0f },
+    { 1.0f, 1.0f, 0.0f },
+    { 1.0f, 1.0f, 1.0f },
 };
 
-int gl_window;
-unsigned int gl_width, gl_height;
-float gl_font_width, gl_font_height;
-float gl_incx, gl_incy;
-int id[94];
-unsigned char gl_resized = 0, gl_bit = 0;
-unsigned char gl_mouse_changed = 0, gl_mouse_clicked = 0;
-unsigned int gl_mouse_x, gl_mouse_y;
-unsigned int gl_mouse_button = 0, gl_mouse_state = 0;
-
-unsigned char gl_key = 0;
-int gl_special_key = 0;
-int gl_new_width;
-int gl_new_height;
-
-float gl_sw = 9.0f/16.0f;
-float gl_sh = 15.0f/16.0f;
-
-#endif
-
-#if defined(USE_NCURSES)
-static int ncurses_attr[16*16];
+static caca_t *gl_kk; /* FIXME: we ought to get rid of this */
 #endif
 
 /*
@@ -250,8 +219,8 @@ static void slang_init_palette(void);
 #endif
 
 #if defined(HAVE_SIGNAL) && (defined(USE_NCURSES) || defined(USE_SLANG))
-static caca_t *sigwinch_kk;
 static RETSIGTYPE sigwinch_handler(int);
+static caca_t *sigwinch_kk; /* FIXME: we ought to get rid of this */
 #endif
 
 #if defined(USE_X11)
@@ -283,8 +252,7 @@ int _caca_init_graphics(caca_t *kk)
          * 256 colour pairs */
         SLtt_Has_Alt_Charset = 0;
 
-        if(!kk->qq->size_set)
-            cucul_set_size(kk->qq, SLtt_Screen_Cols, SLtt_Screen_Rows);
+        cucul_set_size(kk->qq, SLtt_Screen_Cols, SLtt_Screen_Rows);
     }
     else
 #endif
@@ -334,48 +302,47 @@ int _caca_init_graphics(caca_t *kk)
                  * colour pair to be redefined. */
                 int col = ((max + 7 - fg) % max) + max * bg;
                 init_pair(col, curses_colors[fg], curses_colors[bg]);
-                ncurses_attr[fg + 16 * bg] = COLOR_PAIR(col);
+                kk->ncurses.attr[fg + 16 * bg] = COLOR_PAIR(col);
 
                 if(max == 8)
                 {
                     /* Bright fg on simple bg */
-                    ncurses_attr[fg + 8 + 16 * bg] = A_BOLD | COLOR_PAIR(col);
+                    kk->ncurses.attr[fg + 8 + 16 * bg] = A_BOLD | COLOR_PAIR(col);
                     /* Simple fg on bright bg */
-                    ncurses_attr[fg + 16 * (bg + 8)] = A_BLINK
+                    kk->ncurses.attr[fg + 16 * (bg + 8)] = A_BLINK
                                                         | COLOR_PAIR(col);
                     /* Bright fg on bright bg */
-                    ncurses_attr[fg + 8 + 16 * (bg + 8)] = A_BLINK | A_BOLD
+                    kk->ncurses.attr[fg + 8 + 16 * (bg + 8)] = A_BLINK | A_BOLD
                                                             | COLOR_PAIR(col);
                 }
             }
 
-        if(!kk->qq->size_set)
-            cucul_set_size(kk->qq, COLS, LINES);
+        cucul_set_size(kk->qq, COLS, LINES);
     }
     else
 #endif
 #if defined(USE_CONIO)
     if(kk->driver == CACA_DRIVER_CONIO)
     {
-        gettextinfo(&conio_ti);
-        conio_screen = malloc(2 * conio_ti.screenwidth
-                                * conio_ti.screenheight * sizeof(char));
-        if(conio_screen == NULL)
+        gettextinfo(&kk->conio.ti);
+        kk->conio.screen = malloc(2 * kk->conio.ti.screenwidth
+                                * kk->conio.ti.screenheight * sizeof(char));
+        if(kk->conio.screen == NULL)
             return -1;
 #   if defined(SCREENUPDATE_IN_PC_H)
-        ScreenRetrieve(conio_screen);
+        ScreenRetrieve(kk->conio.screen);
 #   else
         /* FIXME */
 #   endif
-        if(!kk->qq->size_set)
-            cucul_set_size(kk->qq, conio_ti.screenwidth, conio_ti.screenheight);
+        cucul_set_size(kk->qq, kk->conio.ti.screenwidth,
+                               kk->conio.ti.screenheight);
     }
     else
 #endif
 #if defined(USE_X11)
     if(kk->driver == CACA_DRIVER_X11)
     {
-        static int x11_palette[] =
+        static int const x11_palette[] =
         {
             /* Standard curses colours */
             0x0,    0x0,    0x0,
@@ -400,43 +367,53 @@ int _caca_init_graphics(caca_t *kk)
         Colormap colormap;
         XSetWindowAttributes x11_winattr;
         int (*old_error_handler)(Display *, XErrorEvent *);
-        char const *font_name = "8x13bold";
+        char const *fonts[] = { NULL, "8x13bold", "fixed" }, **parser;
+        char const *geometry;
+        unsigned int width = 0, height = 0;
         int i;
 
-        if(!kk->qq->size_set)
-        {
-            unsigned int width = 0, height = 0;
+        geometry = getenv("CACA_GEOMETRY");
+        if(geometry && *(geometry))
+            sscanf(geometry, "%ux%u", &width, &height);
 
-            if(getenv("CACA_GEOMETRY") && *(getenv("CACA_GEOMETRY")))
-                sscanf(getenv("CACA_GEOMETRY"), "%ux%u", &width, &height);
-
-            if(width && height)
-                cucul_set_size(kk->qq, width, height);
-        }
+        if(width && height)
+            cucul_set_size(kk->qq, width, height);
 
         kk->x11.dpy = XOpenDisplay(NULL);
         if(kk->x11.dpy == NULL)
             return -1;
 
-        if(getenv("CACA_FONT") && *(getenv("CACA_FONT")))
-            font_name = getenv("CACA_FONT");
+        fonts[0] = getenv("CACA_FONT");
+        if(fonts[0] && *fonts[0])
+            parser = fonts;
+        else
+            parser = fonts + 1;
 
         /* Ignore font errors */
         old_error_handler = XSetErrorHandler(x11_error_handler);
 
-        kk->x11.font = XLoadFont(kk->x11.dpy, font_name);
-        if(!kk->x11.font)
+        /* Parse our font list */
+        for( ; ; parser++)
         {
-            XCloseDisplay(kk->x11.dpy);
-            return -1;
-        }
+            if(!*parser)
+            {
+                XSetErrorHandler(old_error_handler);
+                XCloseDisplay(kk->x11.dpy);
+                return -1;
+            }
 
-        kk->x11.font_struct = XQueryFont(kk->x11.dpy, kk->x11.font);
-        if(!kk->x11.font_struct)
-        {
-            XUnloadFont(kk->x11.dpy, kk->x11.font);
-            XCloseDisplay(kk->x11.dpy);
-            return -1;
+            kk->x11.font = XLoadFont(kk->x11.dpy, *parser);
+            if(!kk->x11.font)
+                continue;
+
+            kk->x11.font_struct = XQueryFont(kk->x11.dpy, kk->x11.font);
+            if(!kk->x11.font_struct)
+            {
+                XUnloadFont(kk->x11.dpy, kk->x11.font);
+                continue;
+            }
+
+            break;
         }
 
         /* Reset the default X11 error handler */
@@ -462,12 +439,13 @@ int _caca_init_graphics(caca_t *kk)
         x11_winattr.background_pixel = kk->x11.colors[0];
         x11_winattr.event_mask = ExposureMask | StructureNotifyMask;
 
-        kk->x11.window = XCreateWindow(kk->x11.dpy, DefaultRootWindow(kk->x11.dpy), 0, 0,
-                                   kk->qq->width * kk->x11.font_width,
-                                   kk->qq->height * kk->x11.font_height,
-                                   0, 0, InputOutput, 0,
-                                   CWBackingStore | CWBackPixel | CWEventMask,
-                                   &x11_winattr);
+        kk->x11.window =
+            XCreateWindow(kk->x11.dpy, DefaultRootWindow(kk->x11.dpy), 0, 0,
+                          kk->qq->width * kk->x11.font_width,
+                          kk->qq->height * kk->x11.font_height,
+                          0, 0, InputOutput, 0,
+                          CWBackingStore | CWBackPixel | CWEventMask,
+                          &x11_winattr);
 
         XStoreName(kk->x11.dpy, kk->x11.window, "caca for X");
 
@@ -486,10 +464,10 @@ int _caca_init_graphics(caca_t *kk)
                 break;
         }
 
-        /* Disable autorepeat */
 #if defined(HAVE_X11_XKBLIB_H)
-        XkbSetDetectableAutoRepeat(kk->x11.dpy, True, &kk->x11.detect_autorepeat);
-        if(!kk->x11.detect_autorepeat)
+        /* Disable autorepeat */
+        XkbSetDetectableAutoRepeat(kk->x11.dpy, True, &kk->x11.autorepeat);
+        if(!kk->x11.autorepeat)
             XAutoRepeatOff(kk->x11.dpy);
 #endif
 
@@ -498,9 +476,9 @@ int _caca_init_graphics(caca_t *kk)
         XSync(kk->x11.dpy, False);
 
         kk->x11.pixmap = XCreatePixmap(kk->x11.dpy, kk->x11.window,
-                                   kk->qq->width * kk->x11.font_width,
-                                   kk->qq->height * kk->x11.font_height,
-                                   DefaultDepth(kk->x11.dpy,
+                                       kk->qq->width * kk->x11.font_width,
+                                       kk->qq->height * kk->x11.font_height,
+                                       DefaultDepth(kk->x11.dpy,
                                                 DefaultScreen(kk->x11.dpy)));
 
         kk->x11.new_width = kk->x11.new_height = 0;
@@ -514,47 +492,44 @@ int _caca_init_graphics(caca_t *kk)
         CONSOLE_SCREEN_BUFFER_INFO csbi;
         COORD size;
 
-        win32_front = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE,
-                                                0, NULL,
-                                                CONSOLE_TEXTMODE_BUFFER, NULL);
-        if(!win32_front || win32_front == INVALID_HANDLE_VALUE)
+        kk->win32.front =
+            CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE,
+                                      0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
+        if(!kk->win32.front || kk->win32.front == INVALID_HANDLE_VALUE)
             return -1;
 
-        win32_back = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE,
-                                               0, NULL,
-                                               CONSOLE_TEXTMODE_BUFFER, NULL);
-        if(!win32_back || win32_back == INVALID_HANDLE_VALUE)
+        kk->win32.back =
+            CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE,
+                                      0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
+        if(!kk->win32.back || kk->win32.back == INVALID_HANDLE_VALUE)
             return -1;
 
-        if(!GetConsoleScreenBufferInfo(win32_hout, &csbi))
+        if(!GetConsoleScreenBufferInfo(kk->win32.hout, &csbi))
             return -1;
 
         /* Sample code to get the biggest possible window */
-        //size = GetLargestConsoleWindowSize(win32_hout);
-        if(!kk->qq->size_set)
-        {
-       	    cucul_set_size(kk->qq,
-                           csbi.srWindow.Right - csbi.srWindow.Left + 1,
-                           csbi.srWindow.Bottom - csbi.srWindow.Top + 1);
-        }
+        //size = GetLargestConsoleWindowSize(kk->win32.hout);
+        cucul_set_size(kk->qq, csbi.srWindow.Right - csbi.srWindow.Left + 1,
+                               csbi.srWindow.Bottom - csbi.srWindow.Top + 1);
         size.X = kk->qq->width;
         size.Y = kk->qq->height;
-        SetConsoleScreenBufferSize(win32_front, size);
-        SetConsoleScreenBufferSize(win32_back, size);
+        SetConsoleScreenBufferSize(kk->win32.front, size);
+        SetConsoleScreenBufferSize(kk->win32.back, size);
 
-        SetConsoleMode(win32_front, 0);
-        SetConsoleMode(win32_back, 0);
+        SetConsoleMode(kk->win32.front, 0);
+        SetConsoleMode(kk->win32.back, 0);
 
-        GetConsoleCursorInfo(win32_front, &cci);
+        GetConsoleCursorInfo(kk->win32.front, &cci);
         cci.dwSize = 0;
         cci.bVisible = FALSE;
-        SetConsoleCursorInfo(win32_front, &cci);
-        SetConsoleCursorInfo(win32_back, &cci);
+        SetConsoleCursorInfo(kk->win32.front, &cci);
+        SetConsoleCursorInfo(kk->win32.back, &cci);
 
-        SetConsoleActiveScreenBuffer(win32_front);
+        SetConsoleActiveScreenBuffer(kk->win32.front);
 
-        win32_buffer = malloc(kk->qq->width * kk->qq->height * sizeof(CHAR_INFO));
-        if(win32_buffer == NULL)
+        kk->win32.buffer = malloc(kk->qq->width * kk->qq->height
+                                   * sizeof(CHAR_INFO));
+        if(kk->win32.buffer == NULL)
             return -1;
     }
     else
@@ -562,38 +537,47 @@ int _caca_init_graphics(caca_t *kk)
 #if defined(USE_GL)
     if(kk->driver == CACA_DRIVER_GL)
     {
-        int argc;
-        char *argv[2];
+        char *empty_texture;
+        char const *geometry;
+        char *argv[2] = { "", NULL };
+        unsigned int width = 0, height = 0;
+        int argc = 1;
         int i;
-        char *empty;
-	
-        if(!kk->qq->size_set)
-        {
-            unsigned int width = 0, height = 0;
 
-            if(getenv("CACA_GEOMETRY") && *(getenv("CACA_GEOMETRY")))
-                sscanf(getenv("CACA_GEOMETRY"), "%ux%u", &width, &height);
+        gl_kk = kk;
 
-            if(width && height)
-                cucul_set_size(kk->qq, width, height);
-        }
+        geometry = getenv("CACA_GEOMETRY");
+        if(geometry && *(geometry))
+            sscanf(geometry, "%ux%u", &width, &height);
 
-        gl_font_width = 9;
-        gl_font_height = 15;
+        if(width && height)
+            cucul_set_size(kk->qq, width, height);
 
-        gl_width = kk->qq->width * gl_font_width;
-        gl_height = kk->qq->height * gl_font_height;
+        kk->gl.font_width = 9;
+        kk->gl.font_height = 15;
 
-        argc = 1;
-        argv[0] = "";
-        argv[1] = NULL;
+        kk->gl.width = kk->qq->width * kk->gl.font_width;
+        kk->gl.height = kk->qq->height * kk->gl.font_height;
+
+        kk->gl.resized = 0;
+        kk->gl.bit = 0;
+
+        kk->gl.mouse_changed = kk->gl.mouse_clicked = 0;
+        kk->gl.mouse_button = kk->gl.mouse_state = 0;
+
+        kk->gl.key = 0;
+        kk->gl.special_key = 0;
+
+        kk->gl.sw = 9.0f / 16.0f;
+        kk->gl.sh = 15.0f / 16.0f;
+
         glutInit(&argc, argv);
 
         glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
-        glutInitWindowSize(gl_width, gl_height);
-        gl_window = glutCreateWindow("caca for GL");
+        glutInitWindowSize(kk->gl.width, kk->gl.height);
+        kk->gl.window = glutCreateWindow("caca for GL");
 
-        gluOrtho2D(0, gl_width, gl_height, 0);
+        gluOrtho2D(0, kk->gl.width, kk->gl.height, 0);
 
         glDisable(GL_CULL_FACE);
         glDisable(GL_DEPTH_TEST);
@@ -611,27 +595,27 @@ int _caca_init_graphics(caca_t *kk)
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
         glLoadIdentity();
-        gluOrtho2D(0, gl_width, gl_height, 0);
+        gluOrtho2D(0, kk->gl.width, kk->gl.height, 0);
 
         glMatrixMode(GL_MODELVIEW);
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        empty = malloc(16 * 16 * 4);
-        if(empty == NULL)
+        empty_texture = malloc(16 * 16 * 4);
+        if(empty_texture == NULL)
             return -1;
 
-        memset(empty, 0xff, 16 * 16 * 4);
+        memset(empty_texture, 0xff, 16 * 16 * 4);
         glEnable(GL_TEXTURE_2D);
 
         for(i = 0; i < 94; i++)
         {
-            glGenTextures(1, (GLuint*)&id[i]);
-            glBindTexture(GL_TEXTURE_2D, id[i]);
+            glGenTextures(1, (GLuint*)&kk->gl.id[i]);
+            glBindTexture(GL_TEXTURE_2D, kk->gl.id[i]);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8,
-                         16, 16, 0, GL_RGB, GL_UNSIGNED_BYTE, empty);
+                         16, 16, 0, GL_RGB, GL_UNSIGNED_BYTE, empty_texture);
         }
 
         for(i = 0; i < 94; i++)
@@ -644,9 +628,9 @@ int _caca_init_graphics(caca_t *kk)
             glutBitmapCharacter(GLUT_BITMAP_9_BY_15, i + 32);
 
             glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, id[i]);
+            glBindTexture(GL_TEXTURE_2D, kk->gl.id[i]);
             glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
-                             0, gl_height - 16, 16, 16, 0);
+                             0, kk->gl.height - 16, 16, 16, 0);
 
             glutMainLoopEvent();
             glutPostRedisplay();
@@ -675,7 +659,7 @@ int _caca_end_graphics(caca_t *kk)
 #if defined(USE_CONIO)
     if(kk->driver == CACA_DRIVER_CONIO)
     {
-        free(conio_screen);
+        free(kk->conio.screen);
     }
     else
 #endif
@@ -684,7 +668,7 @@ int _caca_end_graphics(caca_t *kk)
     {
         XSync(kk->x11.dpy, False);
 #if defined(HAVE_X11_XKBLIB_H)
-        if(!kk->x11.detect_autorepeat)
+        if(!kk->x11.autorepeat)
             XAutoRepeatOn(kk->x11.dpy);
 #endif
         XFreePixmap(kk->x11.dpy, kk->x11.pixmap);
@@ -699,16 +683,16 @@ int _caca_end_graphics(caca_t *kk)
 #if defined(USE_WIN32)
     if(kk->driver == CACA_DRIVER_WIN32)
     {
-        SetConsoleActiveScreenBuffer(win32_hout);
-        CloseHandle(win32_back);
-        CloseHandle(win32_front);
+        SetConsoleActiveScreenBuffer(kk->win32.hout);
+        CloseHandle(kk->win32.back);
+        CloseHandle(kk->win32.front);
     }
     else
 #endif
 #if defined(USE_GL)
     if(kk->driver == CACA_DRIVER_GL)
     {
-        glutDestroyWindow(gl_window);
+        glutDestroyWindow(kk->gl.window);
     }
     else
 #endif
@@ -787,7 +771,7 @@ unsigned int caca_get_window_width(caca_t *kk)
 #if defined(USE_GL)
     if(kk->driver == CACA_DRIVER_GL)
     {
-        return gl_width;
+        return kk->gl.width;
     }
     else
 #endif
@@ -827,7 +811,7 @@ unsigned int caca_get_window_height(caca_t *kk)
 #if defined(USE_GL)
     if(kk->driver == CACA_DRIVER_GL)
     {
-        return gl_height;
+        return kk->gl.height;
     }
     else
 #endif
@@ -850,8 +834,8 @@ unsigned int caca_get_window_height(caca_t *kk)
  */
 void caca_set_size(caca_t *kk, unsigned int width, unsigned int height)
 {
-  kk->qq->width = width;
-  kk->qq->height = height;
+    kk->qq->width = width;
+    kk->qq->height = height;
 }
 
 
@@ -863,7 +847,7 @@ void caca_set_size(caca_t *kk, unsigned int width, unsigned int height)
  */
 void caca_set_width(caca_t *kk, unsigned int width)
 {
-   kk->qq->width = width;
+    kk->qq->width = width;
 }
 /** \brief Set the height of the window, in characters, if device permits it.
  *
@@ -872,7 +856,7 @@ void caca_set_width(caca_t *kk, unsigned int width)
  */
 void caca_set_height(caca_t *kk, unsigned int height)
 {
-   kk->qq->height = height;
+    kk->qq->height = height;
 }
 
 
@@ -880,8 +864,8 @@ void caca_set_height(caca_t *kk, unsigned int height)
 /** \brief Set the refresh delay.
  *
  *  This function sets the refresh delay in microseconds. The refresh delay
- *  is used by caca_refresh() to achieve constant framerate. See the
- *  caca_refresh() documentation for more details.
+ *  is used by caca_display() to achieve constant framerate. See the
+ *  caca_display() documentation for more details.
  *
  *  If the argument is zero, constant framerate is disabled. This is the
  *  default behaviour.
@@ -896,7 +880,7 @@ void caca_set_delay(caca_t *kk, unsigned int usec)
 /** \brief Get the average rendering time.
  *
  *  This function returns the average rendering time, which is the average
- *  measured time between two caca_refresh() calls, in microseconds. If
+ *  measured time between two caca_display() calls, in microseconds. If
  *  constant framerate was activated by calling caca_set_delay(), the average
  *  rendering time will not be considerably shorter than the requested delay
  *  even if the real rendering time was shorter.
@@ -911,27 +895,63 @@ unsigned int caca_get_rendertime(caca_t *kk)
 /** \brief Flush pending changes and redraw the screen.
  *
  *  This function flushes all graphical operations and prints them to the
- *  screen. Nothing will show on the screen until caca_refresh() is
+ *  screen. Nothing will show on the screen until caca_display() is
  *  called.
  *
- *  If caca_set_delay() was called with a non-zero value, caca_refresh()
+ *  If caca_set_delay() was called with a non-zero value, caca_display()
  *  will use that value to achieve constant framerate: if two consecutive
- *  calls to caca_refresh() are within a time range shorter than the value
+ *  calls to caca_display() are within a time range shorter than the value
  *  set with caca_set_delay(), the second call will wait a bit before
  *  performing the screen refresh.
  */
-void caca_refresh(caca_t *kk)
+void caca_display(caca_t *kk)
 {
 #if !defined(_DOXYGEN_SKIP_ME)
 #define IDLE_USEC 10000
 #endif
-    static struct caca_timer timer = CACA_TIMER_INITIALIZER;
-    static int lastticks = 0;
-    int ticks = lastticks + _caca_getticks(&timer);
+    int ticks = kk->lastticks + _caca_getticks(&kk->timer);
 
 #if defined(USE_SLANG)
     if(kk->driver == CACA_DRIVER_SLANG)
     {
+        int x, y;
+        uint8_t *attr = kk->qq->attr;
+        uint8_t *chars = kk->qq->chars;
+        for(y = 0; y < kk->qq->height; y++)
+        {
+            SLsmg_gotorc(y, 0);
+            for(x = kk->qq->width; x--; )
+            {
+#if defined(OPTIMISE_SLANG_PALETTE)
+                /* If foreground == background, just don't use this colour
+                 * pair, and print a space instead of the real character. */
+                uint8_t fgcolor = *attr & 0xf;
+                uint8_t bgcolor = *attr >> 4;
+                if(fgcolor != bgcolor)
+                {
+                    SLsmg_set_color(slang_assoc[*attr++]);
+                    SLsmg_write_char(*chars++);
+                }
+                else
+                {
+                    if(fgcolor == CUCUL_COLOR_BLACK)
+                        fgcolor = CUCUL_COLOR_WHITE;
+                    else if(fgcolor == CUCUL_COLOR_WHITE
+                             || fgcolor <= CUCUL_COLOR_LIGHTGRAY)
+                        fgcolor = CUCUL_COLOR_BLACK;
+                    else
+                        fgcolor = CUCUL_COLOR_WHITE;
+                    SLsmg_set_color(slang_assoc[fgcolor + 16 * bgcolor]);
+                    SLsmg_write_char(' ');
+                    chars++;
+                    attr++;
+                }
+#else
+                SLsmg_set_color(*attr++);
+                SLsmg_write_char(*chars++);
+#endif
+            }
+        }
         SLsmg_refresh();
     }
     else
@@ -939,6 +959,18 @@ void caca_refresh(caca_t *kk)
 #if defined(USE_NCURSES)
     if(kk->driver == CACA_DRIVER_NCURSES)
     {
+        int x, y;
+        uint8_t *attr = kk->qq->attr;
+        uint8_t *chars = kk->qq->chars;
+        for(y = 0; y < kk->qq->height; y++)
+        {
+            move(y, 0);
+            for(x = kk->qq->width; x--; )
+            {
+                attrset(kk->ncurses.attr[*attr++]);
+                addch(*chars++);
+            }
+        }
         refresh();
     }
     else
@@ -946,8 +978,17 @@ void caca_refresh(caca_t *kk)
 #if defined(USE_CONIO)
     if(kk->driver == CACA_DRIVER_CONIO)
     {
+        int n;
+        char *screen = kk->conio.screen;
+        uint8_t *attr = kk->qq->attr;
+        uint8_t *chars = kk->qq->chars;
+        for(n = kk->qq->height * kk->qq->width; n--; )
+        {
+            *screen++ = *chars++;
+            *screen++ = *attr++;
+        }
 #   if defined(SCREENUPDATE_IN_PC_H)
-        ScreenUpdate(conio_screen);
+        ScreenUpdate(kk->conio.screen);
 #   else
         /* FIXME */
 #   endif
@@ -972,7 +1013,8 @@ void caca_refresh(caca_t *kk)
                        && (attr[len] >> 4) == (attr[0] >> 4))
                     len++;
 
-                XSetForeground(kk->x11.dpy, kk->x11.gc, kk->x11.colors[attr[0] >> 4]);
+                XSetForeground(kk->x11.dpy, kk->x11.gc,
+                               kk->x11.colors[attr[0] >> 4]);
                 XFillRectangle(kk->x11.dpy, kk->x11.pixmap, kk->x11.gc,
                                x * kk->x11.font_width, y * kk->x11.font_height,
                                len * kk->x11.font_width, kk->x11.font_height);
@@ -1020,9 +1062,10 @@ void caca_refresh(caca_t *kk)
         /* Render everything to our back buffer */
         for(i = 0; i < kk->qq->width * kk->qq->height; i++)
         {
-            win32_buffer[i].Char.AsciiChar = kk->qq->chars[i];
-            win32_buffer[i].Attributes = win32_fg_palette[kk->qq->attr[i] & 0xf]
-                                       | win32_bg_palette[kk->qq->attr[i] >> 4];
+            kk->win32.buffer[i].Char.AsciiChar = kk->qq->chars[i];
+            kk->win32.buffer[i].Attributes =
+                    win32_fg_palette[kk->qq->attr[i] & 0xf]
+                     | win32_bg_palette[kk->qq->attr[i] >> 4];
         }
 
         /* Blit the back buffer to the front buffer */
@@ -1032,7 +1075,7 @@ void caca_refresh(caca_t *kk)
         rect.Left = rect.Top = 0;
         rect.Right = kk->qq->width - 1;
         rect.Bottom = kk->qq->height - 1;
-        WriteConsoleOutput(win32_front, win32_buffer, size, pos, &rect);
+        WriteConsoleOutput(kk->win32.front, kk->win32.buffer, size, pos, &rect);
     }
     else
 #endif
@@ -1044,27 +1087,27 @@ void caca_refresh(caca_t *kk)
         glClear(GL_COLOR_BUFFER_BIT);
 
         offsety = 0;
-        for(y = 0; y < gl_height; y += gl_font_height)
+        for(y = 0; y < kk->gl.height; y += kk->gl.font_height)
         {
             offsetx = 0;
-            for(x = 0; x < gl_width; x += gl_font_width)
+            for(x = 0; x < kk->gl.width; x += kk->gl.font_width)
             {
                 uint8_t *attr = kk->qq->attr + offsetx + offsety * kk->qq->width;
                 int offset;
                 float br, bg, bb;
                 offset = attr[0] >> 4;
 
-                br = ((gl_bgpal[offset] & 0x00FF0000) >> 16) / 255.0f;
-                bg = ((gl_bgpal[offset] & 0x0000FF00) >> 8) / 255.0f;
-                bb = ((gl_bgpal[offset] & 0x000000FF)) / 255.0f;
+                br = gl_bgpal[offset][0];
+                bg = gl_bgpal[offset][1];
+                bb = gl_bgpal[offset][2];
 
                 glDisable(GL_TEXTURE_2D);
                 glColor3f(br, bg, bb);
                 glBegin(GL_QUADS);
                     glVertex2f(x, y);
-                    glVertex2f(x + gl_font_width, y);
-                    glVertex2f(x + gl_font_width, y + gl_font_height);
-                    glVertex2f(x, y + gl_font_height);
+                    glVertex2f(x + kk->gl.font_width, y);
+                    glVertex2f(x + kk->gl.font_width, y + kk->gl.font_height);
+                    glVertex2f(x, y + kk->gl.font_height);
                 glEnd();
 
                 offsetx++;
@@ -1079,33 +1122,33 @@ void caca_refresh(caca_t *kk)
         glBlendFunc(GL_ONE, GL_ONE);
 
         offsety = 0;
-        for(y = 0; y < gl_height; y += gl_font_height)
+        for(y = 0; y < kk->gl.height; y += kk->gl.font_height)
         {
             offsetx = 0;
-            for(x = 0; x < gl_width; x += gl_font_width)
+            for(x = 0; x < kk->gl.width; x += kk->gl.font_width)
             {
                 uint8_t *attr = kk->qq->attr + offsetx + offsety * kk->qq->width;
                 unsigned char *chr = kk->qq->chars + offsetx + offsety * kk->qq->width;
                 float fr, fg, fb;
 
-                fr = ((gl_bgpal[attr[0] & 0xf] & 0x00FF0000) >> 16) / 255.0f;
-                fg = ((gl_bgpal[attr[0] & 0xf] & 0x0000FF00) >> 8) / 255.0f;
-                fb = ((gl_bgpal[attr[0] & 0xf] & 0x000000FF)) / 255.0f;
+                fr = gl_bgpal[attr[0] & 0xf][0];
+                fg = gl_bgpal[attr[0] & 0xf][1];
+                fb = gl_bgpal[attr[0] & 0xf][2];
 
                 if(chr[0] != ' ')
                 {
-                    glBindTexture(GL_TEXTURE_2D, id[chr[0]-32]);
+                    glBindTexture(GL_TEXTURE_2D, kk->gl.id[chr[0]-32]);
 
                     glColor3f(fr, fg, fb);
                     glBegin(GL_QUADS);
-                        glTexCoord2f(0, gl_sh);
+                        glTexCoord2f(0, kk->gl.sh);
                         glVertex2f(x, y);
-                        glTexCoord2f(gl_sw, gl_sh);
-                        glVertex2f(x + gl_font_width, y);
-                        glTexCoord2f(gl_sw, 0);
-                        glVertex2f(x + gl_font_width, y + gl_font_height);
+                        glTexCoord2f(kk->gl.sw, kk->gl.sh);
+                        glVertex2f(x + kk->gl.font_width, y);
+                        glTexCoord2f(kk->gl.sw, 0);
+                        glVertex2f(x + kk->gl.font_width, y + kk->gl.font_height);
                         glTexCoord2f(0, 0);
-                        glVertex2f(x, y + gl_font_height);
+                        glVertex2f(x, y + kk->gl.font_height);
                     glEnd();
                 }
                 offsetx++;
@@ -1125,6 +1168,7 @@ void caca_refresh(caca_t *kk)
         /* Dummy */
     }
 
+    /* FIXME handle this somewhere else */
     if(kk->resize)
     {
         kk->resize = 0;
@@ -1132,10 +1176,10 @@ void caca_refresh(caca_t *kk)
     }
 
     /* Wait until kk->delay + time of last call */
-    ticks += _caca_getticks(&timer);
-    for(ticks += _caca_getticks(&timer);
+    ticks += _caca_getticks(&kk->timer);
+    for(ticks += _caca_getticks(&kk->timer);
         ticks + IDLE_USEC < (int)kk->delay;
-        ticks += _caca_getticks(&timer))
+        ticks += _caca_getticks(&kk->timer))
     {
         _caca_sleep(IDLE_USEC);
     }
@@ -1143,11 +1187,11 @@ void caca_refresh(caca_t *kk)
     /* Update the sliding mean of the render time */
     kk->rendertime = (7 * kk->rendertime + ticks) / 8;
 
-    lastticks = ticks - kk->delay;
+    kk->lastticks = ticks - kk->delay;
 
     /* If we drifted too much, it's bad, bad, bad. */
-    if(lastticks > (int)kk->delay)
-        lastticks = 0;
+    if(kk->lastticks > (int)kk->delay)
+        kk->lastticks = 0;
 }
 
 /*
@@ -1156,17 +1200,19 @@ void caca_refresh(caca_t *kk)
 
 static void caca_handle_resize(caca_t *kk)
 {
-    unsigned int old_width = kk->qq->width;
-    unsigned int old_height = kk->qq->height;
+    unsigned int new_width, new_height;
+
+    new_width = kk->qq->width;
+    new_height = kk->qq->height;
 
 #if defined(USE_SLANG)
     if(kk->driver == CACA_DRIVER_SLANG)
     {
         SLtt_get_screen_size();
-        kk->qq->width = SLtt_Screen_Cols;
-        kk->qq->height = SLtt_Screen_Rows;
+        new_width = SLtt_Screen_Cols;
+        new_height = SLtt_Screen_Rows;
 
-        if(kk->qq->width != old_width || kk->qq->height != old_height)
+        if(new_width != kk->qq->width || new_height != kk->qq->height)
             SLsmg_reinit_smg();
     }
     else
@@ -1178,12 +1224,12 @@ static void caca_handle_resize(caca_t *kk)
 
         if(ioctl(fileno(stdout), TIOCGWINSZ, &size) == 0)
         {
-            kk->qq->width = size.ws_col;
-            kk->qq->height = size.ws_row;
+            new_width = size.ws_col;
+            new_height = size.ws_row;
 #if defined(HAVE_RESIZE_TERM)
-            resize_term(kk->qq->height, kk->qq->width);
+            resize_term(new_height, new_width);
 #else
-            resizeterm(kk->qq->height, kk->qq->width);
+            resizeterm(new_height, new_width);
 #endif
             wrefresh(curscr);
         }
@@ -1202,8 +1248,8 @@ static void caca_handle_resize(caca_t *kk)
     {
         Pixmap new_pixmap;
 
-        kk->qq->width = kk->x11.new_width;
-        kk->qq->height = kk->x11.new_height;
+        new_width = kk->x11.new_width;
+        new_height = kk->x11.new_height;
 
         new_pixmap = XCreatePixmap(kk->x11.dpy, kk->x11.window,
                                    kk->qq->width * kk->x11.font_width,
@@ -1211,8 +1257,8 @@ static void caca_handle_resize(caca_t *kk)
                                    DefaultDepth(kk->x11.dpy,
                                                 DefaultScreen(kk->x11.dpy)));
         XCopyArea(kk->x11.dpy, kk->x11.pixmap, new_pixmap, kk->x11.gc, 0, 0,
-                  old_width * kk->x11.font_width, old_height * kk->x11.font_height,
-                  0, 0);
+                  kk->qq->width * kk->x11.font_width,
+                  kk->qq->height * kk->x11.font_height, 0, 0);
         XFreePixmap(kk->x11.dpy, kk->x11.pixmap);
         kk->x11.pixmap = new_pixmap;
     }
@@ -1228,20 +1274,19 @@ static void caca_handle_resize(caca_t *kk)
 #if defined(USE_GL)
     if(kk->driver == CACA_DRIVER_GL)
     {
-      gl_width = gl_new_width;
-      gl_height = gl_new_height;
+        kk->gl.width = kk->gl.new_width;
+        kk->gl.height = kk->gl.new_height;
 
-      kk->qq->width = gl_width/gl_font_width;
-      kk->qq->height = (gl_height/gl_font_height)+1;
+        new_width = kk->gl.width / kk->gl.font_width;
+        new_height = (kk->gl.height / kk->gl.font_height) + 1;
 
-      glMatrixMode(GL_PROJECTION);
-      glPushMatrix();
-      glLoadIdentity();
+        glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
+        glLoadIdentity();
 
-      glViewport(0,0,gl_width, gl_height);
-      gluOrtho2D(0, gl_width, gl_height, 0);
-      glMatrixMode(GL_MODELVIEW);
-
+        glViewport(0, 0, kk->gl.width, kk->gl.height);
+        gluOrtho2D(0, kk->gl.width, kk->gl.height, 0);
+        glMatrixMode(GL_MODELVIEW);
     }
     else
 #endif
@@ -1249,27 +1294,9 @@ static void caca_handle_resize(caca_t *kk)
         /* Dummy */
     }
 
-    if(kk->qq->width != old_width || kk->qq->height != old_height)
-    {
-        free(kk->qq->chars);
-        free(kk->qq->attr);
-
-        kk->qq->chars = malloc(kk->qq->width * kk->qq->height * sizeof(uint8_t));
-        memset(kk->qq->chars, 0, kk->qq->width * kk->qq->height * sizeof(uint8_t));
-        kk->qq->attr = malloc(kk->qq->width * kk->qq->height * sizeof(uint8_t));
-        memset(kk->qq->attr, 0, kk->qq->width * kk->qq->height * sizeof(uint8_t));
-    }
-
-    if(kk->qq->width != old_width)
-    {
-        free(kk->qq->empty_line);
-        kk->qq->empty_line = malloc(kk->qq->width + 1);
-        memset(kk->qq->empty_line, ' ', kk->qq->width);
-        kk->qq->empty_line[kk->qq->width] = '\0';
-
-        free(kk->qq->scratch_line);
-        kk->qq->scratch_line = malloc(kk->qq->width + 1);
-    }
+    /* Tell libcucul we changed size */
+    if(new_width != kk->qq->width || new_height != kk->qq->height)
+        cucul_set_size(kk->qq, new_width, new_height);
 }
 
 #if defined(USE_SLANG)
@@ -1337,42 +1364,52 @@ static RETSIGTYPE sigwinch_handler(int sig)
 #if defined(USE_GL)
 static void gl_handle_keyboard(unsigned char key, int x, int y)
 {
-    gl_key = key;
+    caca_t *kk = gl_kk;
+
+    kk->gl.key = key;
 }
 
 static void gl_handle_special_key(int key, int x, int y)
 {
-    gl_special_key = key;
+    caca_t *kk = gl_kk;
+
+    kk->gl.special_key = key;
 }
 
 static void gl_handle_reshape(int w, int h)
 {
-    if(gl_bit) /* Do not handle reshaping at the first time*/
-    {
-        gl_new_width = w;
-        gl_new_height = h;
+    caca_t *kk = gl_kk;
 
-        gl_resized = 1;
+    if(kk->gl.bit) /* Do not handle reshaping at the first time */
+    {
+        kk->gl.new_width = w;
+        kk->gl.new_height = h;
+
+        kk->gl.resized = 1;
     }
     else
-        gl_bit = 1;
+        kk->gl.bit = 1;
 }
 
 static void gl_handle_mouse(int button, int state, int x, int y)
 {
-    gl_mouse_clicked = 1;
-    gl_mouse_button = button;
-    gl_mouse_state = state;
-    gl_mouse_x = x / gl_font_width;
-    gl_mouse_y = y / gl_font_height;
-    gl_mouse_changed = 1;
+    caca_t *kk = gl_kk;
+
+    kk->gl.mouse_clicked = 1;
+    kk->gl.mouse_button = button;
+    kk->gl.mouse_state = state;
+    kk->gl.mouse_x = x / kk->gl.font_width;
+    kk->gl.mouse_y = y / kk->gl.font_height;
+    kk->gl.mouse_changed = 1;
 }
 
 static void gl_handle_mouse_motion(int x, int y)
 {
-    gl_mouse_x = x / gl_font_width;
-    gl_mouse_y = y / gl_font_height;
-    gl_mouse_changed = 1;
+    caca_t *kk = gl_kk;
+
+    kk->gl.mouse_x = x / kk->gl.font_width;
+    kk->gl.mouse_y = y / kk->gl.font_height;
+    kk->gl.mouse_changed = 1;
 }
 #endif
 

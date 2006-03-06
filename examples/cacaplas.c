@@ -113,7 +113,7 @@ paused:
         cucul_draw_bitmap(qq, 0, 0,
                           cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
                           bitmap, screen);
-        caca_refresh(kk);
+        caca_display(kk);
     }
 
 end:

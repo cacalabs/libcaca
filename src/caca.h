@@ -177,7 +177,7 @@ typedef struct caca_context caca_t;
 caca_t * caca_attach(cucul_t *qq);
 void caca_detach(caca_t *kk);
 void caca_set_delay(caca_t *kk, unsigned int);
-void caca_refresh(caca_t *kk);
+void caca_display(caca_t *kk);
 unsigned int caca_get_rendertime(caca_t *kk);
 unsigned int caca_get_window_width(caca_t *kk);
 unsigned int caca_get_window_height(caca_t *kk);

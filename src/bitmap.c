@@ -1,6 +1,6 @@
 /*
- *  libcaca       ASCII-Art library
- *  Copyright (c) 2002, 2003 Sam Hocevar <sam@zoy.org>
+ *  libcucul      Unicode canvas library
+ *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
  *  This library is free software; you can redistribute it and/or
@@ -832,12 +832,12 @@ static void increment_no_dither(void)
 /*
  * Ordered 2 dithering
  */
-static unsigned int *ordered2_table;
+static unsigned int const *ordered2_table;
 static unsigned int ordered2_index;
 
 static void init_ordered2_dither(int line)
 {
-    static unsigned int dither2x2[] =
+    static unsigned int const dither2x2[] =
     {
         0x00, 0x80,
         0xc0, 0x40,
@@ -864,12 +864,12 @@ static void increment_ordered2_dither(void)
                           -1, -6, -5,  2,
                           -2, -7, -8,  3,
                            4, -3, -4, -7};*/
-static unsigned int *ordered4_table;
+static unsigned int const *ordered4_table;
 static unsigned int ordered4_index;
 
 static void init_ordered4_dither(int line)
 {
-    static unsigned int dither4x4[] =
+    static unsigned int const dither4x4[] =
     {
         0x00, 0x80, 0x20, 0xa0,
         0xc0, 0x40, 0xe0, 0x60,
@@ -894,12 +894,12 @@ static void increment_ordered4_dither(void)
 /*
  * Ordered 8 dithering
  */
-static unsigned int *ordered8_table;
+static unsigned int const *ordered8_table;
 static unsigned int ordered8_index;
 
 static void init_ordered8_dither(int line)
 {
-    static unsigned int dither8x8[] =
+    static unsigned int const dither8x8[] =
     {
         0x00, 0x80, 0x20, 0xa0, 0x08, 0x88, 0x28, 0xa8,
         0xc0, 0x40, 0xe0, 0x60, 0xc8, 0x48, 0xe8, 0x68,

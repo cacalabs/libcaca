@@ -270,7 +270,7 @@ int main(int argc, char **argv)
             }
             else if(event == CACA_EVENT_RESIZE)
             {
-                caca_refresh(kk);
+                caca_display(kk);
                 ww = cucul_get_width(qq);
                 wh = cucul_get_height(qq);
                 update = 1;
@@ -300,7 +300,7 @@ int main(int argc, char **argv)
             buffer[ww] = '\0';
             cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
             cucul_putstr(qq, (ww - strlen(buffer)) / 2, wh / 2, buffer);
-            caca_refresh(kk);
+            caca_display(kk);
             ww = cucul_get_width(qq);
             wh = cucul_get_height(qq);
 
@@ -394,7 +394,7 @@ int main(int argc, char **argv)
             print_help(ww - 25, 2);
         }
 
-        caca_refresh(kk);
+        caca_display(kk);
         update = 0;
     }
 

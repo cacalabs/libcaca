@@ -63,7 +63,7 @@ int main(int argc, char **argv)
 
     /* Main menu */
     display_menu();
-    caca_refresh(kk);
+    caca_display(kk);
 
     /* Go ! */
     while(!quit)
@@ -155,7 +155,7 @@ int main(int argc, char **argv)
                 cucul_set_color(qq, CUCUL_COLOR_RED, CUCUL_COLOR_BLACK);
                 cucul_putstr(qq, xmouse, ymouse, "|\\");
             }
-            caca_refresh(kk);
+            caca_display(kk);
             mouse = menu = 0;
         }
 
@@ -168,7 +168,7 @@ int main(int argc, char **argv)
             cucul_printf(qq, 4, 1, "[%i.%i fps]----",
                          1000000 / caca_get_rendertime(kk),
                          (10000000 / caca_get_rendertime(kk)) % 10);
-            caca_refresh(kk);
+            caca_display(kk);
         }
     }
 

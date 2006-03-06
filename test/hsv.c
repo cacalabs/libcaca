@@ -50,7 +50,7 @@ int main(void)
                       bitmap, buffer);
     cucul_free_bitmap(qq, bitmap);
 
-    caca_refresh(kk);
+    caca_display(kk);
 
     while(!caca_get_event(kk, CACA_EVENT_KEY_PRESS));
 

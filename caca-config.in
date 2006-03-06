@@ -63,13 +63,9 @@ do
     --ldflags)
       echo_ldflags=yes
       ;;
-@NEED_PIC_TRUE@    --libs)
-@NEED_PIC_FALSE@    --libs | --plugin-libs)
+    --libs | --plugin-libs)
       echo_libs=yes
       ;;
-@NEED_PIC_TRUE@    --plugin-libs)
-@NEED_PIC_TRUE@      echo_plugin_libs=yes
-@NEED_PIC_TRUE@      ;;
     *)
       usage 1 1>&2
       ;;
@@ -109,11 +105,6 @@ fi
 
 if test "$echo_libs" = "yes"
 then
-  echo -L@libdir@ -lcaca @CACA_LIBS@
+  echo -L@libdir@ -lcucul -lcaca @CUCUL_LIBS@ @CACA_LIBS@
 fi
-
-@NEED_PIC_TRUE@if test "$echo_plugin_libs" = "yes"
-@NEED_PIC_TRUE@then
-@NEED_PIC_TRUE@  echo -L@libdir@ -lcaca_pic @CACA_LIBS@
-@NEED_PIC_TRUE@fi
 

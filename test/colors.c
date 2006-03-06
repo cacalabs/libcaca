@@ -46,7 +46,7 @@ int main(int argc, char **argv)
         }
     }
 
-    caca_refresh(kk);
+    caca_display(kk);
     caca_wait_event(kk, CACA_EVENT_KEY_PRESS);
 
     caca_detach(kk);

@@ -17,7 +17,6 @@ libcucul_la_SOURCES = \
 	sprite.c \
 	bitmap.c \
 	export.c \
-	time.c \
 	$(NULL)
 libcucul_la_LDFLAGS = -no-undefined
 libcucul_la_LIBADD = @CUCUL_LIBS@
@@ -28,6 +27,7 @@ libcaca_la_SOURCES = \
 	caca_internals.h \
 	graphics.c \
 	event.c \
+	time.c \
 	$(NULL)
 libcaca_la_LDFLAGS = -no-undefined
 libcaca_la_LIBADD = libcucul.la @CACA_LIBS@

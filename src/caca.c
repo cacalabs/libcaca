@@ -1,6 +1,6 @@
 /*
  *  libcaca       ASCII-Art library
- *  Copyright (c) 2002, 2003 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
  *  This library is free software; you can redistribute it and/or
@@ -166,22 +166,22 @@ caca_t * caca_attach(cucul_t * qq)
 #if defined(USE_WIN32)
     if(kk->driver == CACA_DRIVER_WIN32)
     {
-        /* This call is allowed to fail in cas we already have a console */
+        /* This call is allowed to fail in case we already have a console */
         AllocConsole();
 
-        win32_hin = GetStdHandle(STD_INPUT_HANDLE);
-        win32_hout = CreateFile("CONOUT$", GENERIC_READ | GENERIC_WRITE,
-                                FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
-                                OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+        kk->win32.hin = GetStdHandle(STD_INPUT_HANDLE);
+        kk->win32.hout = CreateFile("CONOUT$", GENERIC_READ | GENERIC_WRITE,
+                                    FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
+                                    OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 
-        if(win32_hout == INVALID_HANDLE_VALUE)
+        if(kk->win32.hout == INVALID_HANDLE_VALUE)
             return NULL;
 
-        GetConsoleCursorInfo(win32_hout, &cci);
+        GetConsoleCursorInfo(kk->win32.hout, &cci);
         cci.bVisible = FALSE;
-        SetConsoleCursorInfo(win32_hout, &cci);
+        SetConsoleCursorInfo(kk->win32.hout, &cci);
 
-        SetConsoleMode(win32_hout, ENABLE_MOUSE_INPUT);
+        SetConsoleMode(kk->win32.hout, ENABLE_MOUSE_INPUT);
     }
     else
 #endif
@@ -196,8 +196,19 @@ caca_t * caca_attach(cucul_t * qq)
         /* Dummy */
     }
 
+    /* Initialise events stuff */
+    kk->events.key_timer.last_sec = 0;
+    kk->events.key_timer.last_usec = 0;
+    kk->events.last_key_ticks = 0;
+    kk->events.autorepeat_ticks = 0;
+    kk->events.last_key = 0;
+
     qq->refcount++;
     kk->qq = qq;
+
+    kk->timer.last_sec = 0;
+    kk->timer.last_usec = 0;
+    kk->lastticks = 0;
 
     kk->resize = 0;
     kk->resize_event = 0;
@@ -254,13 +265,13 @@ void caca_detach(caca_t *kk)
 #if defined(USE_WIN32)
     if(kk->driver == CACA_DRIVER_WIN32)
     {
-        SetConsoleTextAttribute(win32_hout, FOREGROUND_INTENSITY
-                                             | FOREGROUND_RED
-                                             | FOREGROUND_GREEN
-                                             | FOREGROUND_BLUE);
+        SetConsoleTextAttribute(kk->win32.hout, FOREGROUND_INTENSITY
+                                                 | FOREGROUND_RED
+                                                 | FOREGROUND_GREEN
+                                                 | FOREGROUND_BLUE);
         cci.bVisible = TRUE;
-        SetConsoleCursorInfo(win32_hout, &cci);
-        CloseHandle(win32_hout);
+        SetConsoleCursorInfo(kk->win32.hout, &cci);
+        CloseHandle(kk->win32.hout);
     }
     else
 #endif

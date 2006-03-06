@@ -1,6 +1,6 @@
 /*
  *  libcaca       ASCII-Art library
- *  Copyright (c) 2002, 2003 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
  *  This library is free software; you can redistribute it and/or
@@ -54,17 +54,8 @@ typedef unsigned char uint8_t;
 #include <GL/gl.h>
 #include <GL/glut.h>
 #include <GL/freeglut_ext.h>
-extern int gl_special_key;
-extern unsigned char gl_key;
-extern unsigned char gl_resized;
-extern float gl_font_width;
-extern float gl_font_height;
-extern int gl_new_width;
-extern int gl_new_height;
-extern unsigned char gl_mouse_changed, gl_mouse_clicked;
-extern unsigned int gl_mouse_x, gl_mouse_y;
-extern unsigned int gl_mouse_button, gl_mouse_state;
 #endif
+
 #include "cucul.h"
 #include "cucul_internals.h"
 #include "caca.h"
@@ -189,10 +180,6 @@ unsigned int caca_get_mouse_y(caca_t *kk)
 static unsigned int _get_next_event(caca_t *kk)
 {
 #if defined(USE_SLANG) || defined(USE_NCURSES)
-    static struct caca_timer key_timer = CACA_TIMER_INITIALIZER;
-    static unsigned int last_key_ticks = 0;
-    static unsigned int autorepeat_ticks = 0;
-    static unsigned int last_key = 0;
     unsigned int ticks;
 #endif
     unsigned int event;
@@ -209,45 +196,47 @@ static unsigned int _get_next_event(caca_t *kk)
 
 #if defined(USE_SLANG) || defined(USE_NCURSES)
     /* Simulate long keypresses using autorepeat features */
-    ticks = _caca_getticks(&key_timer);
-    last_key_ticks += ticks;
-    autorepeat_ticks += ticks;
+    ticks = _caca_getticks(&kk->events.key_timer);
+    kk->events.last_key_ticks += ticks;
+    kk->events.autorepeat_ticks += ticks;
 
     /* Handle autorepeat */
-    if(last_key && autorepeat_ticks > AUTOREPEAT_TRIGGER
-                && autorepeat_ticks > AUTOREPEAT_THRESHOLD
-                && autorepeat_ticks > AUTOREPEAT_RATE)
+    if(kk->events.last_key
+           && kk->events.autorepeat_ticks > AUTOREPEAT_TRIGGER
+           && kk->events.autorepeat_ticks > AUTOREPEAT_THRESHOLD
+           && kk->events.autorepeat_ticks > AUTOREPEAT_RATE)
     {
         _push_event(event);
-        autorepeat_ticks -= AUTOREPEAT_RATE;
-        return CACA_EVENT_KEY_PRESS | last_key;
+        kk->events.autorepeat_ticks -= AUTOREPEAT_RATE;
+        return CACA_EVENT_KEY_PRESS | kk->events.last_key;
     }
 
     /* We are in autorepeat mode and the same key was just pressed, ignore
      * this event and return the next one by calling ourselves. */
-    if(event == (CACA_EVENT_KEY_PRESS | last_key))
+    if(event == (CACA_EVENT_KEY_PRESS | kk->events.last_key))
     {
-        last_key_ticks = 0;
+        kk->events.last_key_ticks = 0;
         return _get_next_event(kk);
     }
 
     /* We are in autorepeat mode, but key has expired or a new key was
      * pressed - store our event and return a key release event first */
-    if(last_key && (last_key_ticks > AUTOREPEAT_THRESHOLD
-                     || (event & CACA_EVENT_KEY_PRESS)))
+    if(kk->events.last_key
+          && (kk->events.last_key_ticks > AUTOREPEAT_THRESHOLD
+               || (event & CACA_EVENT_KEY_PRESS)))
     {
         _push_event(event);
-        event = CACA_EVENT_KEY_RELEASE | last_key;
-        last_key = 0;
+        event = CACA_EVENT_KEY_RELEASE | kk->events.last_key;
+        kk->events.last_key = 0;
         return event;
     }
 
     /* A new key was pressed, enter autorepeat mode */
     if(event & CACA_EVENT_KEY_PRESS)
     {
-        last_key_ticks = 0;
-        autorepeat_ticks = 0;
-        last_key = event & 0x00ffffff;
+        kk->events.last_key_ticks = 0;
+        kk->events.autorepeat_ticks = 0;
+        kk->events.last_key = event & 0x00ffffff;
     }
 
     return event;
@@ -280,7 +269,8 @@ static unsigned int _lowlevel_event(caca_t *kk)
             /* Expose event */
             if(xevent.type == Expose)
             {
-                XCopyArea(kk->x11.dpy, kk->x11.pixmap, kk->x11.window, kk->x11.gc, 0, 0,
+                XCopyArea(kk->x11.dpy, kk->x11.pixmap,
+                          kk->x11.window, kk->x11.gc, 0, 0,
                           kk->qq->width * kk->x11.font_width,
                           kk->qq->height * kk->x11.font_height, 0, 0);
                 continue;
@@ -302,6 +292,7 @@ static unsigned int _lowlevel_event(caca_t *kk)
                 kk->x11.new_width = w;
                 kk->x11.new_height = h;
 
+                /* If we are already resizing, ignore the new signal */
                 if(kk->resize)
                     continue;
 
@@ -738,56 +729,56 @@ static unsigned int _lowlevel_event(caca_t *kk)
     {
         glutMainLoopEvent();
 
-        if(gl_resized && !kk->resize)
+        if(kk->gl.resized && !kk->resize)
         {
             kk->resize = 1;
-            gl_resized = 0;
+            kk->gl.resized = 0;
             return CACA_EVENT_RESIZE;
         }
 
-        if(gl_mouse_changed)
+        if(kk->gl.mouse_changed)
         {
-            if(gl_mouse_clicked)
+            if(kk->gl.mouse_clicked)
             {
-                event|= CACA_EVENT_MOUSE_PRESS | gl_mouse_button;
-                gl_mouse_clicked=0;
+                event|= CACA_EVENT_MOUSE_PRESS | kk->gl.mouse_button;
+                kk->gl.mouse_clicked=0;
             }
-            mouse_x = gl_mouse_x;
-            mouse_y = gl_mouse_y;
+            mouse_x = kk->gl.mouse_x;
+            mouse_y = kk->gl.mouse_y;
             event |= CACA_EVENT_MOUSE_MOTION | (mouse_x << 12) | mouse_y;
-            gl_mouse_changed = 0;
+            kk->gl.mouse_changed = 0;
         }
 
-        if(gl_key != 0)
+        if(kk->gl.key != 0)
         {
             event |= CACA_EVENT_KEY_PRESS;
-            event |= gl_key;
-            gl_key = 0;
+            event |= kk->gl.key;
+            kk->gl.key = 0;
 	    return event;
         }
 
-        if(gl_special_key != 0)
+        if(kk->gl.special_key != 0)
         {
             event |= CACA_EVENT_KEY_PRESS;
      
-            switch(gl_special_key)
+            switch(kk->gl.special_key)
             {
-                case GLUT_KEY_F1 : gl_special_key = 0; return event | CACA_KEY_F1;
-                case GLUT_KEY_F2 : gl_special_key = 0; return event | CACA_KEY_F2;
-                case GLUT_KEY_F3 : gl_special_key = 0; return event | CACA_KEY_F3;
-                case GLUT_KEY_F4 : gl_special_key = 0; return event | CACA_KEY_F4;
-                case GLUT_KEY_F5 : gl_special_key = 0; return event | CACA_KEY_F5;
-                case GLUT_KEY_F6 : gl_special_key = 0; return event | CACA_KEY_F6;
-                case GLUT_KEY_F7 : gl_special_key = 0; return event | CACA_KEY_F7;
-                case GLUT_KEY_F8 : gl_special_key = 0; return event | CACA_KEY_F8;
-                case GLUT_KEY_F9 : gl_special_key = 0; return event | CACA_KEY_F9;
-                case GLUT_KEY_F10: gl_special_key = 0; return event | CACA_KEY_F10;
-                case GLUT_KEY_F11: gl_special_key = 0; return event | CACA_KEY_F11;
-                case GLUT_KEY_F12: gl_special_key = 0; return event | CACA_KEY_F12;
-                case GLUT_KEY_LEFT : gl_special_key = 0; return event | CACA_KEY_LEFT;
-                case GLUT_KEY_RIGHT: gl_special_key = 0; return event | CACA_KEY_RIGHT;
-                case GLUT_KEY_UP   : gl_special_key = 0; return event | CACA_KEY_UP;
-                case GLUT_KEY_DOWN : gl_special_key = 0; return event | CACA_KEY_DOWN;
+                case GLUT_KEY_F1 : kk->gl.special_key = 0; return event | CACA_KEY_F1;
+                case GLUT_KEY_F2 : kk->gl.special_key = 0; return event | CACA_KEY_F2;
+                case GLUT_KEY_F3 : kk->gl.special_key = 0; return event | CACA_KEY_F3;
+                case GLUT_KEY_F4 : kk->gl.special_key = 0; return event | CACA_KEY_F4;
+                case GLUT_KEY_F5 : kk->gl.special_key = 0; return event | CACA_KEY_F5;
+                case GLUT_KEY_F6 : kk->gl.special_key = 0; return event | CACA_KEY_F6;
+                case GLUT_KEY_F7 : kk->gl.special_key = 0; return event | CACA_KEY_F7;
+                case GLUT_KEY_F8 : kk->gl.special_key = 0; return event | CACA_KEY_F8;
+                case GLUT_KEY_F9 : kk->gl.special_key = 0; return event | CACA_KEY_F9;
+                case GLUT_KEY_F10: kk->gl.special_key = 0; return event | CACA_KEY_F10;
+                case GLUT_KEY_F11: kk->gl.special_key = 0; return event | CACA_KEY_F11;
+                case GLUT_KEY_F12: kk->gl.special_key = 0; return event | CACA_KEY_F12;
+                case GLUT_KEY_LEFT : kk->gl.special_key = 0; return event | CACA_KEY_LEFT;
+                case GLUT_KEY_RIGHT: kk->gl.special_key = 0; return event | CACA_KEY_RIGHT;
+                case GLUT_KEY_UP   : kk->gl.special_key = 0; return event | CACA_KEY_UP;
+                case GLUT_KEY_DOWN : kk->gl.special_key = 0; return event | CACA_KEY_DOWN;
                 default: return CACA_EVENT_NONE;
             }
         }

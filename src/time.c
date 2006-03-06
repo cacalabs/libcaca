@@ -1,6 +1,6 @@
 /*
  *  libcaca       ASCII-Art library
- *  Copyright (c) 2002, 2003, 2004 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
  *  This library is free software; you can redistribute it and/or
@@ -52,7 +52,7 @@ unsigned int _caca_getticks(struct caca_timer *timer)
 #if defined(HAVE_GETTIMEOFDAY)
     struct timeval tv;
 #elif defined(USE_WIN32)
-    static __int64 freq = -1;
+    static __int64 freq = -1; /* FIXME: can this move to caca_context? */
     unsigned __int64 usec;
 #endif
     unsigned int ticks = 0;

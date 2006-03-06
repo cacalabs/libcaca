@@ -236,7 +236,7 @@ paused:
   cucul_draw_bitmap(qq, 0, 0,
                     cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
                     cucul_bitmap, bitmap);
-  caca_refresh(kk);
+  caca_display(kk);
   /*XSIZ = caca_get_width() * 2;
   YSIZ = caca_get_height() * 2 - 4;*/
 #else
