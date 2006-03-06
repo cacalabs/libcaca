@@ -115,7 +115,7 @@ unsigned int cucul_get_width(cucul_t *qq)
  */
 unsigned int cucul_get_height(cucul_t *qq)
 {
-    return qq->width;
+    return qq->height;
 }
 
 /** \brief Translate a colour index into the colour's name.
