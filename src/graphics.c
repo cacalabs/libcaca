@@ -185,6 +185,7 @@ static int const win32_bg_palette[] =
 #endif
 
 #if defined(USE_GL)
+/* Ok, I just suck. */
 static GLbyte const gl_bgpal[][4] =
 {
     { 0x00, 0x00, 0x00, 0x7f },
