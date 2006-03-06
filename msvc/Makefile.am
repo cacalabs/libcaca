@@ -7,7 +7,6 @@ EXTRA_DIST = \
 	config.h \
 	libcaca.vcproj \
 	cacaball.vcproj \
-	cacademo.vcproj \
 	cacafire.vcproj \
 	cacamoir.vcproj \
 	cacaplas.vcproj \

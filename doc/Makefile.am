@@ -2,7 +2,7 @@
 
 EXTRA_DIST = doxygen.cfg.in footer.html header.html $(man_MANS)
 
-man_MANS = caca-config.1 cacademo.1 cacaview.1
+man_MANS = caca-config.1 cacafire.1 cacaview.1
 
 if BUILD_DOCUMENTATION
 htmldoc_DATA = html/doxygen.css
@@ -48,12 +48,10 @@ if BUILD_DOCUMENTATION
 	cp `find man -name '*.3caca'` $(DESTDIR)$(mandir)/man3
 	$(mkinstalldirs) $(DESTDIR)$(mandir)/man1
 	rm -f $(DESTDIR)$(mandir)/man1/cacaball.1
-	ln -s cacademo.1 $(DESTDIR)$(mandir)/man1/cacaball.1
-	rm -f $(DESTDIR)$(mandir)/man1/cacafire.1
-	ln -s cacademo.1 $(DESTDIR)$(mandir)/man1/cacafire.1
+	ln -s cacafire.1 $(DESTDIR)$(mandir)/man1/cacaball.1
 	rm -f $(DESTDIR)$(mandir)/man1/cacamoir.1
-	ln -s cacademo.1 $(DESTDIR)$(mandir)/man1/cacamoir.1
+	ln -s cacafire.1 $(DESTDIR)$(mandir)/man1/cacamoir.1
 	rm -f $(DESTDIR)$(mandir)/man1/cacaplas.1
-	ln -s cacademo.1 $(DESTDIR)$(mandir)/man1/cacaplas.1
+	ln -s cacafire.1 $(DESTDIR)$(mandir)/man1/cacaplas.1
 endif
 

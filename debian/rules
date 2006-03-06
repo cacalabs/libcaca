@@ -40,11 +40,16 @@ install: build
 	dh_clean -k
 	dh_installdirs -plibcaca-dev
 	dh_installdirs usr/bin usr/share/doc/caca-utils usr/share/man/man1 -pcaca-utils
+	dh_installdirs usr/lib -plibcucul0
+	dh_installdirs usr/lib -plibcaca0
 
 	$(MAKE) install DESTDIR=`pwd`/debian/libcaca-dev/
 
+	mv debian/libcaca-dev/usr/lib/libcucul*.so.* debian/libcucul0/usr/lib
+
+	mv debian/libcaca-dev/usr/lib/libcaca*.so.* debian/libcaca0/usr/lib
+
 	mv debian/libcaca-dev/usr/bin/cacaball debian/caca-utils/usr/bin
-	mv debian/libcaca-dev/usr/bin/cacademo debian/caca-utils/usr/bin
 	mv debian/libcaca-dev/usr/bin/cacaview debian/caca-utils/usr/bin
 	mv debian/libcaca-dev/usr/bin/cacafire debian/caca-utils/usr/bin
 	mv debian/libcaca-dev/usr/bin/cacamoir debian/caca-utils/usr/bin
@@ -52,8 +57,6 @@ install: build
 
 	mv debian/libcaca-dev/usr/share/libcaca debian/caca-utils/usr/share
 	mv debian/libcaca-dev/usr/share/man/man1/cacaball.1 \
-	   debian/caca-utils/usr/share/man/man1/
-	mv debian/libcaca-dev/usr/share/man/man1/cacademo.1 \
 	   debian/caca-utils/usr/share/man/man1/
 	mv debian/libcaca-dev/usr/share/man/man1/cacafire.1 \
 	   debian/caca-utils/usr/share/man/man1/
@@ -97,7 +100,7 @@ binary-arch: build install
 	dh_strip
 	dh_compress
 	dh_fixperms
-#	dh_makeshlibs
+	dh_makeshlibs
 	dh_installdeb
 #	dh_perl
 	dh_shlibdeps

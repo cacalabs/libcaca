@@ -1,8 +1,8 @@
-libcaca (0.9-999.exp) experimental; urgency=low
+libcaca (0.10-1) UNRELEASED; urgency=low
 
-  * UNRELEASED.
+  * New upstream release.
 
- -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Fri, 24 Jun 2005 13:53:50 +0200
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Mon,  6 Mar 2006 00:55:30 +0100
 
 libcaca (0.9-5) unstable; urgency=low
 
