@@ -824,44 +824,6 @@ unsigned int caca_get_window_height(caca_t *kk)
     return kk->qq->height * 10;
 }
 
-
-/** \brief Set the size of the display on devices that permit it
- *
- *  This function sets the display width and height, on devices
- *  that permit it. We're talking here about the size in 
- *  CHARACTERS fo the window, NOT in pixels.
- *  \param width The width of the window, in CHARACTERS.
- *  \param heigth The height of the window, in CHARACTERS.
- */
-void caca_set_size(caca_t *kk, unsigned int width, unsigned int height)
-{
-    kk->qq->width = width;
-    kk->qq->height = height;
-}
-
-
-
-/** \brief Set the width of the window, in characters, if device permits it.
- *
- *  This function sets the width of displayable image, in characters.
- *  \param width The width of the window, in CHARACTERS.
- */
-void caca_set_width(caca_t *kk, unsigned int width)
-{
-    kk->qq->width = width;
-}
-/** \brief Set the height of the window, in characters, if device permits it.
- *
- *  This function sets the height of displayable image, in characters.
- *  \param width The width of the window, in CHARACTERS.
- */
-void caca_set_height(caca_t *kk, unsigned int height)
-{
-    kk->qq->height = height;
-}
-
-
-
 /** \brief Set the refresh delay.
  *
  *  This function sets the refresh delay in microseconds. The refresh delay

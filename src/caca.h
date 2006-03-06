@@ -181,9 +181,6 @@ void caca_display(caca_t *kk);
 unsigned int caca_get_rendertime(caca_t *kk);
 unsigned int caca_get_window_width(caca_t *kk);
 unsigned int caca_get_window_height(caca_t *kk);
-void caca_set_size(caca_t *kk, unsigned int width, unsigned int height);
-void caca_set_width(caca_t *kk, unsigned int width);
-void caca_set_height(caca_t *kk, unsigned int height);
 int caca_set_window_title(caca_t *kk, char const *);
 /*  @} */
 
