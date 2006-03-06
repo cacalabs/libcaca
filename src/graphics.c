@@ -185,26 +185,26 @@ static int const win32_bg_palette[] =
 #endif
 
 #if defined(USE_GL)
-static unsigned int const gl_bgpal[] =
-  {
-    0,
-    0x0000007F,
-    0x00007F00,
-    0x00007F7F,
-    0x007F0000,
-    0x007F007F,
-    0x007F7F00,
-    0x007F7F7F,
+static GLbyte const gl_bgpal[][3] =
+{
+    { 0x00, 0x00, 0x00 },
+    { 0x00, 0x00, 0x3f },
+    { 0x00, 0x3f, 0x00 },
+    { 0x00, 0x3f, 0x3f },
+    { 0x3f, 0x00, 0x00 },
+    { 0x3f, 0x00, 0x3f },
+    { 0x3f, 0x3f, 0x00 },
+    { 0x3f, 0x3f, 0x3f },
     // + intensity
-    0x00000000,
-    0x000000FF,
-    0x0000FF00,
-    0x0000FFFF,
-    0x00FF0000,
-    0x00FF00FF,
-    0x00FFFF00,
-    0x00FFFFFF,
-  };
+    { 0x00, 0x00, 0x00 },
+    { 0x00, 0x00, 0x7f },
+    { 0x00, 0x7f, 0x00 },
+    { 0x00, 0x7f, 0x7f },
+    { 0x7f, 0x00, 0x00 },
+    { 0x7f, 0x00, 0x7f },
+    { 0x7f, 0x7f, 0x00 },
+    { 0x7f, 0x7f, 0x7f }
+};
 
 static caca_t *gl_kk; /* FIXME: we ought to get rid of this */
 #endif
@@ -1098,7 +1098,7 @@ void caca_display(caca_t *kk)
                 offset = attr[0] >> 4;
 
                 glDisable(GL_TEXTURE_2D);
-                glColor3uiv(&gl_bgpal[offset]);
+                glColor3bv(gl_bgpal[offset]);
                 glBegin(GL_QUADS);
                     glVertex2f(x, y);
                     glVertex2f(x + kk->gl.font_width, y);
@@ -1129,7 +1129,7 @@ void caca_display(caca_t *kk)
                 if(chr[0] != ' ')
                 {
                     glBindTexture(GL_TEXTURE_2D, kk->gl.id[chr[0]-32]);
-		    glColor3uiv(&gl_bgpal[attr[0] & 0xf]);
+                    glColor3bv(gl_bgpal[attr[0] & 0xf]);
                     glBegin(GL_QUADS);
                         glTexCoord2f(0, kk->gl.sh);
                         glVertex2f(x, y);
