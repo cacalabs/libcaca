@@ -20,8 +20,21 @@
 #ifndef __CACA_INTERNALS_H__
 #define __CACA_INTERNALS_H__
 
+#if defined(USE_GL)
+#   include <GL/glut.h>
+#endif
+#if defined(USE_NCURSES)
+#   if defined(HAVE_NCURSES_H)
+#       include <ncurses.h>
+#   else
+#       include <curses.h>
+#   endif
+#endif
+#if defined(USE_WIN32)
+#   include <windows.h>
+#endif
 #if defined(USE_X11)
-#include <X11/Xlib.h>
+#   include <X11/Xlib.h>
 #endif
 
 /* Graphics driver */
@@ -48,6 +61,26 @@ enum caca_driver
     CACA_DRIVER_NONE = 0
 };
 
+/* Available drivers */
+#if defined(USE_CONIO)
+void conio_init_driver(caca_t *);
+#endif
+#if defined(USE_GL)
+void gl_init_driver(caca_t *);
+#endif
+#if defined(USE_NCURSES)
+void ncurses_init_driver(caca_t *);
+#endif
+#if defined(USE_SLANG)
+void slang_init_driver(caca_t *);
+#endif
+#if defined(USE_WIN32)
+void win32_init_driver(caca_t *);
+#endif
+#if defined(USE_X11)
+void x11_init_driver(caca_t *);
+#endif
+
 /* Timer structure */
 struct caca_timer
 {
@@ -59,7 +92,19 @@ struct caca_context
 {
     cucul_t *qq;
 
-    enum caca_driver driver;
+    struct driver
+    {
+        enum caca_driver driver;
+
+        int (* init_graphics) (caca_t *);
+        int (* end_graphics) (caca_t *);
+        int (* set_window_title) (caca_t *, char const *);
+        unsigned int (* get_window_width) (caca_t *);
+        unsigned int (* get_window_height) (caca_t *);
+        void (* display) (caca_t *);
+        void (* handle_resize) (caca_t *);
+    } driver;
+
     unsigned int width, height;
 
     int resize;
@@ -102,6 +147,7 @@ struct caca_context
     struct ncurses
     {
         int attr[16*16];
+        mmask_t oldmask;
     } ncurses;
 #endif
 #if defined(USE_CONIO)
@@ -155,16 +201,5 @@ extern unsigned int _caca_width;
 extern unsigned int _caca_height;
 extern int _caca_resize;
 extern int _caca_resize_event;
-
-#if defined(USE_WIN32)
-#include <windows.h>
-extern HANDLE win32_hin, win32_hout;
-#endif
-
-#if defined(USE_GL)
-#include <GL/glut.h>
-extern unsigned int gl_width, gl_height;
-#endif
-
 
 #endif /* __CACA_INTERNALS_H__ */

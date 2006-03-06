@@ -187,10 +187,10 @@ static unsigned int _get_next_event(caca_t *kk)
     event = _lowlevel_event(kk);
 
 #if defined(USE_SLANG)
-    if(kk->driver != CACA_DRIVER_SLANG)
+    if(kk->driver.driver != CACA_DRIVER_SLANG)
 #endif
 #if defined(USE_NCURSES)
-    if(kk->driver != CACA_DRIVER_NCURSES)
+    if(kk->driver.driver != CACA_DRIVER_NCURSES)
 #endif
     return event;
 
@@ -256,7 +256,7 @@ static unsigned int _lowlevel_event(caca_t *kk)
 
 #if defined(USE_X11)
     /* The X11 event check routine */
-    if(kk->driver == CACA_DRIVER_X11)
+    if(kk->driver.driver == CACA_DRIVER_X11)
     {
         XEvent xevent;
         char key;
@@ -372,7 +372,7 @@ static unsigned int _lowlevel_event(caca_t *kk)
     else
 #endif
 #if defined(USE_NCURSES)
-    if(kk->driver == CACA_DRIVER_NCURSES)
+    if(kk->driver.driver == CACA_DRIVER_NCURSES)
     {
         int intkey;
 
@@ -556,7 +556,7 @@ static unsigned int _lowlevel_event(caca_t *kk)
     else
 #endif
 #if defined(USE_SLANG)
-    if(kk->driver == CACA_DRIVER_SLANG)
+    if(kk->driver.driver == CACA_DRIVER_SLANG)
     {
         int intkey;
 
@@ -639,7 +639,7 @@ static unsigned int _lowlevel_event(caca_t *kk)
     else
 #endif
 #if defined(USE_CONIO)
-    if(kk->driver == CACA_DRIVER_CONIO)
+    if(kk->driver.driver == CACA_DRIVER_CONIO)
     {
         if(!_conio_kbhit())
             return CACA_EVENT_NONE;
@@ -651,7 +651,7 @@ static unsigned int _lowlevel_event(caca_t *kk)
     else
 #endif
 #if defined(USE_WIN32)
-    if(kk->driver == CACA_DRIVER_WIN32)
+    if(kk->driver.driver == CACA_DRIVER_WIN32)
     {
         INPUT_RECORD rec;
         DWORD num;
@@ -725,7 +725,7 @@ static unsigned int _lowlevel_event(caca_t *kk)
     else
 #endif
 #if defined(USE_GL)
-    if(kk->driver == CACA_DRIVER_GL)
+    if(kk->driver.driver == CACA_DRIVER_GL)
     {
         glutMainLoopEvent();
 
