@@ -239,7 +239,7 @@ AC_CONFIG_FILES([
   Makefile
   cucul/Makefile
   caca/Makefile
-  examples/Makefile
+  src/Makefile
   test/Makefile
   doc/Makefile
   doc/doxygen.cfg
