@@ -1,6 +1,6 @@
 # $Id$
 
-AC_INIT(src/caca.c)
+AC_INIT(caca/caca.c)
 
 AC_PREREQ(2.50)
 AC_CONFIG_AUX_DIR(autotools)
@@ -237,7 +237,8 @@ AM_CONDITIONAL(USE_LATEX, test "${LATEX}" != "no")
 
 AC_CONFIG_FILES([
   Makefile
-  src/Makefile
+  cucul/Makefile
+  caca/Makefile
   examples/Makefile
   test/Makefile
   doc/Makefile

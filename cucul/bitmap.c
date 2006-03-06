@@ -38,8 +38,6 @@ typedef unsigned int uint32_t;
 
 #include "cucul.h"
 #include "cucul_internals.h"
-#include "caca.h"
-#include "caca_internals.h"
 
 /*
  * Local variables
