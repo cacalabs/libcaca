@@ -1082,23 +1082,19 @@ void caca_display(caca_t *kk)
 #if defined(USE_GL)
     if(kk->driver == CACA_DRIVER_GL)
     {
-        unsigned int x, y, offsetx, offsety;
+        unsigned int x, y, line;
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        offsety = 0;
+        line = 0;
         for(y = 0; y < kk->gl.height; y += kk->gl.font_height)
         {
-            offsetx = 0;
+            uint8_t *attr = kk->qq->attr + line * kk->qq->width;
+
             for(x = 0; x < kk->gl.width; x += kk->gl.font_width)
             {
-                uint8_t *attr = kk->qq->attr + offsetx + offsety * kk->qq->width;
-                int offset;
-
-                offset = attr[0] >> 4;
-
                 glDisable(GL_TEXTURE_2D);
-                glColor4bv(gl_bgpal[offset]);
+                glColor4bv(gl_bgpal[attr[0] >> 4]);
                 glBegin(GL_QUADS);
                     glVertex2f(x, y);
                     glVertex2f(x + kk->gl.font_width, y);
@@ -1106,10 +1102,10 @@ void caca_display(caca_t *kk)
                     glVertex2f(x, y + kk->gl.font_height);
                 glEnd();
 
-                offsetx++;
+                attr++;
             }
 
-            offsety++;
+            line++;
         }
 
         /* 2nd pass, avoids changing render state too much */
@@ -1117,18 +1113,17 @@ void caca_display(caca_t *kk)
         glEnable(GL_TEXTURE_2D);
         glBlendFunc(GL_ONE, GL_ONE);
 
-        offsety = 0;
+        line = 0;
         for(y = 0; y < kk->gl.height; y += kk->gl.font_height)
         {
-            offsetx = 0;
+            uint8_t *attr = kk->qq->attr + line * kk->qq->width;
+            unsigned char *chars = kk->qq->chars + line * kk->qq->width;
+
             for(x = 0; x < kk->gl.width; x += kk->gl.font_width)
             {
-                uint8_t *attr = kk->qq->attr + offsetx + offsety * kk->qq->width;
-                unsigned char *chr = kk->qq->chars + offsetx + offsety * kk->qq->width;
-
-                if(chr[0] != ' ')
+                if(chars[0] != ' ')
                 {
-                    glBindTexture(GL_TEXTURE_2D, kk->gl.id[chr[0]-32]);
+                    glBindTexture(GL_TEXTURE_2D, kk->gl.id[chars[0]-32]);
                     glColor4bv(gl_bgpal[attr[0] & 0xf]);
                     glBegin(GL_QUADS);
                         glTexCoord2f(0, kk->gl.sh);
@@ -1141,9 +1136,11 @@ void caca_display(caca_t *kk)
                         glVertex2f(x, y + kk->gl.font_height);
                     glEnd();
                 }
-                offsetx++;
+
+                attr++;
+                chars++;
             }
-            offsety++;
+            line++;
         }
         glDisable(GL_BLEND);
         glDisable(GL_TEXTURE_2D);
