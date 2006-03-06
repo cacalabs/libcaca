@@ -185,26 +185,26 @@ static int const win32_bg_palette[] =
 #endif
 
 #if defined(USE_GL)
-static float const gl_bgpal[][3] =
-{
-    { 0.0f, 0.0f, 0.0f },
-    { 0.0f, 0.0f, 0.5f },
-    { 0.0f, 0.5f, 0.0f },
-    { 0.0f, 0.5f, 0.5f },
-    { 0.5f, 0.0f, 0.0f },
-    { 0.5f, 0.0f, 0.5f },
-    { 0.5f, 0.5f, 0.0f },
-    { 0.5f, 0.5f, 0.5f },
+static unsigned int const gl_bgpal[] =
+  {
+    0,
+    0x0000007F,
+    0x00007F00,
+    0x00007F7F,
+    0x007F0000,
+    0x007F007F,
+    0x007F7F00,
+    0x007F7F7F,
     // + intensity
-    { 0.0f, 0.0f, 0.0f },
-    { 0.0f, 0.0f, 1.0f },
-    { 0.0f, 1.0f, 0.0f },
-    { 0.0f, 1.0f, 1.0f },
-    { 1.0f, 0.0f, 0.0f },
-    { 1.0f, 0.0f, 1.0f },
-    { 1.0f, 1.0f, 0.0f },
-    { 1.0f, 1.0f, 1.0f },
-};
+    0x00000000,
+    0x000000FF,
+    0x0000FF00,
+    0x0000FFFF,
+    0x00FF0000,
+    0x00FF00FF,
+    0x00FFFF00,
+    0x00FFFFFF,
+  };
 
 static caca_t *gl_kk; /* FIXME: we ought to get rid of this */
 #endif
@@ -917,7 +917,7 @@ void caca_display(caca_t *kk)
         int x, y;
         uint8_t *attr = kk->qq->attr;
         uint8_t *chars = kk->qq->chars;
-        for(y = 0; y < kk->qq->height; y++)
+        for(y = 0; y < (int)kk->qq->height; y++)
         {
             SLsmg_gotorc(y, 0);
             for(x = kk->qq->width; x--; )
@@ -962,7 +962,7 @@ void caca_display(caca_t *kk)
         int x, y;
         uint8_t *attr = kk->qq->attr;
         uint8_t *chars = kk->qq->chars;
-        for(y = 0; y < kk->qq->height; y++)
+        for(y = 0; y < (int)kk->qq->height; y++)
         {
             move(y, 0);
             for(x = kk->qq->width; x--; )
@@ -1094,15 +1094,11 @@ void caca_display(caca_t *kk)
             {
                 uint8_t *attr = kk->qq->attr + offsetx + offsety * kk->qq->width;
                 int offset;
-                float br, bg, bb;
+
                 offset = attr[0] >> 4;
 
-                br = gl_bgpal[offset][0];
-                bg = gl_bgpal[offset][1];
-                bb = gl_bgpal[offset][2];
-
                 glDisable(GL_TEXTURE_2D);
-                glColor3f(br, bg, bb);
+                glColor3uiv(&gl_bgpal[offset]);
                 glBegin(GL_QUADS);
                     glVertex2f(x, y);
                     glVertex2f(x + kk->gl.font_width, y);
@@ -1129,17 +1125,11 @@ void caca_display(caca_t *kk)
             {
                 uint8_t *attr = kk->qq->attr + offsetx + offsety * kk->qq->width;
                 unsigned char *chr = kk->qq->chars + offsetx + offsety * kk->qq->width;
-                float fr, fg, fb;
-
-                fr = gl_bgpal[attr[0] & 0xf][0];
-                fg = gl_bgpal[attr[0] & 0xf][1];
-                fb = gl_bgpal[attr[0] & 0xf][2];
 
                 if(chr[0] != ' ')
                 {
                     glBindTexture(GL_TEXTURE_2D, kk->gl.id[chr[0]-32]);
-
-                    glColor3f(fr, fg, fb);
+		    glColor3uiv(&gl_bgpal[attr[0] & 0xf]);
                     glBegin(GL_QUADS);
                         glTexCoord2f(0, kk->gl.sh);
                         glVertex2f(x, y);
