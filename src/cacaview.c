@@ -680,8 +680,8 @@ static void load_image(char const *name)
     fclose(fp);
 
     /* Create the libcaca bitmap */
-    bitmap = caca_create_bitmap(bpp, w, h, depth * w,
-                                rmask, gmask, bmask, amask);
+    bitmap = cucul_create_bitmap(qq, bpp, w, h, depth * w,
+                                 rmask, gmask, bmask, amask);
     if(!bitmap)
     {
         free(pixels);
@@ -690,7 +690,7 @@ static void load_image(char const *name)
     }
 
     if(bpp == 8)
-        caca_set_bitmap_palette(bitmap, red, green, blue, alpha);
+        cucul_set_bitmap_palette(qq, bitmap, red, green, blue, alpha);
 #endif
 }
 

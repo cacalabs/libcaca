@@ -19,13 +19,6 @@
 
 #include "config.h"
 
-#if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
-#   include <inttypes.h>
-#else
-typedef unsigned int uint32_t;
-typedef unsigned char uint8_t;
-#endif
-
 #include <stdio.h> /* BUFSIZ */
 #include <string.h>
 #include <stdlib.h>
@@ -102,7 +95,7 @@ void cucul_putchar(cucul_t *qq, int x, int y, char c)
        y < 0 || y >= (int)qq->height)
         return;
 
-    qq->chars[x + y * qq->width] = c & 0x7f; /* FIXME: ASCII-only */
+    qq->chars[x + y * qq->width] = c & 0x0000007f; /* FIXME: ASCII-only */
     qq->attr[x + y * qq->width] = (qq->bgcolor << 4) | qq->fgcolor;
 }
 
@@ -151,7 +144,7 @@ void cucul_putstr(cucul_t *qq, int x, int y, char const *s)
     t = s;
     while(*t)
     {
-        *chars++ = *t++ & 0x7f; /* FIXME: ASCII-only */
+        *chars++ = *t++ & 0x0000007f; /* FIXME: ASCII-only */
         *attr++ = (qq->bgcolor << 4) | qq->fgcolor;
     }
 }

@@ -19,14 +19,6 @@
 
 #include "config.h"
 
-#if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
-#   include <inttypes.h>
-#else
-typedef unsigned char uint8_t;
-typedef unsigned short uint16_t;
-typedef unsigned int uint32_t;
-#endif
-
 #if defined(HAVE_ENDIAN_H)
 #   include <endian.h>
 #endif

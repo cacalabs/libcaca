@@ -9,22 +9,15 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
-/** \file graphics.c
+/** \file driver_ncurses.c
  *  \version \$Id$
  *  \author Sam Hocevar <sam@zoy.org>
- *  \brief Character drawing
+ *  \brief Ncurses driver
  *
- *  This file contains character and string drawing functions.
+ *  This file contains the libcaca Ncurses input and output driver
  */
 
 #include "config.h"
-
-#if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
-#   include <inttypes.h>
-#else
-typedef unsigned int uint32_t;
-typedef unsigned char uint8_t;
-#endif
 
 #if defined(USE_NCURSES)
 
@@ -54,23 +47,16 @@ typedef unsigned char uint8_t;
 #include "cucul.h"
 #include "cucul_internals.h"
 
-int ncurses_init_graphics(caca_t *);
-int ncurses_end_graphics(caca_t *);
-int ncurses_set_window_title(caca_t *, char const *);
-unsigned int ncurses_get_window_width(caca_t *);
-unsigned int ncurses_get_window_height(caca_t *);
-void ncurses_display(caca_t *);
-void ncurses_handle_resize(caca_t *);
-
 /*
  * Local functions
  */
+
 #if defined(HAVE_SIGNAL)
 static RETSIGTYPE sigwinch_handler(int);
 static caca_t *sigwinch_kk; /* FIXME: we ought to get rid of this */
 #endif
 
-int ncurses_init_graphics(caca_t *kk)
+static int ncurses_init_graphics(caca_t *kk)
 {
     static int curses_colors[] =
     {
@@ -157,7 +143,7 @@ int ncurses_init_graphics(caca_t *kk)
     return 0;
 }
 
-int ncurses_end_graphics(caca_t *kk)
+static int ncurses_end_graphics(caca_t *kk)
 {
     mousemask(kk->ncurses.oldmask, NULL);
     curs_set(1);
@@ -167,24 +153,24 @@ int ncurses_end_graphics(caca_t *kk)
     return 0;
 }
 
-int ncurses_set_window_title(caca_t *kk, char const *title)
+static int ncurses_set_window_title(caca_t *kk, char const *title)
 {
     return 0;
 }
 
-unsigned int ncurses_get_window_width(caca_t *kk)
+static unsigned int ncurses_get_window_width(caca_t *kk)
 {
     /* Fallback to a 6x10 font */
     return kk->qq->width * 6;
 }
 
-unsigned int ncurses_get_window_height(caca_t *kk)
+static unsigned int ncurses_get_window_height(caca_t *kk)
 {
     /* Fallback to a 6x10 font */
     return kk->qq->height * 10;
 }
 
-void ncurses_display(caca_t *kk)
+static void ncurses_display(caca_t *kk)
 {
     int x, y;
     uint8_t *attr = kk->qq->attr;
@@ -201,22 +187,22 @@ void ncurses_display(caca_t *kk)
     refresh();
 }
 
-void ncurses_handle_resize(caca_t *kk)
+static void ncurses_handle_resize(caca_t *kk, unsigned int *new_width,
+                                              unsigned int *new_height)
 {
-    unsigned int new_width, new_height;
     struct winsize size;
 
-    new_width = kk->qq->width;
-    new_height = kk->qq->height;
+    *new_width = kk->qq->width;
+    *new_height = kk->qq->height;
 
     if(ioctl(fileno(stdout), TIOCGWINSZ, &size) == 0)
     {
-        new_width = size.ws_col;
-        new_height = size.ws_row;
+        *new_width = size.ws_col;
+        *new_height = size.ws_row;
 #if defined(HAVE_RESIZE_TERM)
-        resize_term(new_height, new_width);
+        resize_term(*new_height, *new_width);
 #else
-        resizeterm(new_height, new_width);
+        resizeterm(*new_height, *new_width);
 #endif
         wrefresh(curscr);
     }

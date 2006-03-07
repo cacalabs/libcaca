@@ -9,22 +9,15 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
-/** \file graphics.c
+/** \file driver_slang.c
  *  \version \$Id$
  *  \author Sam Hocevar <sam@zoy.org>
- *  \brief Character drawing
+ *  \brief SLang driver
  *
- *  This file contains character and string drawing functions.
+ *  This file contains the libcaca SLang input and output driver
  */
 
 #include "config.h"
-
-#if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
-#   include <inttypes.h>
-#else
-typedef unsigned int uint32_t;
-typedef unsigned char uint8_t;
-#endif
 
 #if defined(USE_SLANG)
 
@@ -112,14 +105,6 @@ static int const slang_assoc[16*16] =
     123, 149, 158, 167, 176, 185, 194, 19, 125, 21, 30, 39, 48, 57, 66, 255,
 };
 
-int slang_init_graphics(caca_t *);
-int slang_end_graphics(caca_t *);
-int slang_set_window_title(caca_t *, char const *);
-unsigned int slang_get_window_width(caca_t *);
-unsigned int slang_get_window_height(caca_t *);
-void slang_display(caca_t *);
-void slang_handle_resize(caca_t *);
-
 /*
  * Local functions
  */
@@ -130,8 +115,7 @@ static RETSIGTYPE sigwinch_handler(int);
 static caca_t *sigwinch_kk; /* FIXME: we ought to get rid of this */
 #endif
 
-#if !defined(_DOXYGEN_SKIP_ME)
-int slang_init_graphics(caca_t *kk)
+static int slang_init_graphics(caca_t *kk)
 {
 #if defined(HAVE_SIGNAL)
     sigwinch_kk = kk;
@@ -145,7 +129,7 @@ int slang_init_graphics(caca_t *kk)
     if(SLkp_init() == -1)
     {
         SLsig_unblock_signals();
-        return NULL;
+        return -1;
     }
 
     SLang_init_tty(-1, 0, 1);
@@ -153,7 +137,7 @@ int slang_init_graphics(caca_t *kk)
     if(SLsmg_init_smg() == -1)
     {
         SLsig_unblock_signals();
-        return NULL;
+        return -1;
     }
 
     SLsig_unblock_signals();
@@ -179,7 +163,7 @@ int slang_init_graphics(caca_t *kk)
     return 0;
 }
 
-int slang_end_graphics(caca_t *kk)
+static int slang_end_graphics(caca_t *kk)
 {
     SLtt_set_mouse_mode(0, 0);
     SLtt_set_cursor_visibility(1);
@@ -188,26 +172,26 @@ int slang_end_graphics(caca_t *kk)
 
     return 0;
 }
-#endif /* _DOXYGEN_SKIP_ME */
 
-int slang_set_window_title(caca_t *kk, char const *title)
+static int slang_set_window_title(caca_t *kk, char const *title)
 {
+    /* FIXME */
     return 0;
 }
 
-unsigned int slang_get_window_width(caca_t *kk)
+static unsigned int slang_get_window_width(caca_t *kk)
 {
     /* Fallback to a 6x10 font */
     return kk->qq->width * 6;
 }
 
-unsigned int slang_get_window_height(caca_t *kk)
+static unsigned int slang_get_window_height(caca_t *kk)
 {
     /* Fallback to a 6x10 font */
     return kk->qq->height * 10;
 }
 
-void slang_display(caca_t *kk)
+static void slang_display(caca_t *kk)
 {
     int x, y;
     uint8_t *attr = kk->qq->attr;
@@ -250,24 +234,20 @@ void slang_display(caca_t *kk)
     SLsmg_refresh();
 }
 
+static void slang_handle_resize(caca_t *kk, unsigned int *new_width,
+                                            unsigned int *new_height)
+{
+    SLtt_get_screen_size();
+    *new_width = SLtt_Screen_Cols;
+    *new_height = SLtt_Screen_Rows;
+
+    if(*new_width != kk->qq->width || *new_height != kk->qq->height)
+        SLsmg_reinit_smg();
+}
+
 /*
  * XXX: following functions are local
  */
-
-void slang_handle_resize(caca_t *kk)
-{
-    unsigned int new_width, new_height;
-
-    new_width = kk->qq->width;
-    new_height = kk->qq->height;
-
-    SLtt_get_screen_size();
-    new_width = SLtt_Screen_Cols;
-    new_height = SLtt_Screen_Rows;
-
-    if(new_width != kk->qq->width || new_height != kk->qq->height)
-        SLsmg_reinit_smg();
-}
 
 static void slang_init_palette(void)
 {

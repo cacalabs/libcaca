@@ -21,13 +21,6 @@
 
 #include "config.h"
 
-#if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
-#   include <inttypes.h>
-#else
-typedef unsigned int uint32_t;
-typedef unsigned char uint8_t;
-#endif
-
 #include <stdlib.h>
 #include <string.h>
 
@@ -37,40 +30,54 @@ typedef unsigned char uint8_t;
 #include "caca_internals.h"
 
 static int caca_init_driver(caca_t *kk);
-static void caca_init_terminal(caca_t *kk);
+static void caca_check_terminal(caca_t *kk);
 
+/** \brief Attach a caca graphical context to a cucul backend context.
+ *
+ *  Create a graphical context using device-dependent features (ncurses for
+ *  terminals, an X11 window, a DOS command window...) that attaches to a
+ *  libcucul canvas. Everything that gets drawn in the libcucul canvas can
+ *  then be displayed by the libcaca driver.
+ *
+ *  \param qq The cucul backend context.
+ *  \return The caca graphical context or NULL if an error occurred.
+ */
 caca_t * caca_attach(cucul_t * qq)
 {
-    int ret;
     caca_t *kk = malloc(sizeof(caca_t));
 
-    ret = caca_init_driver(kk);
-
-    if(ret)
-    {
-        free(kk);
-        return NULL;
-    }
-
-    qq->refcount++;
     kk->qq = qq;
 
-    /* Only for slang and ncurses */
-    caca_init_terminal(kk);
-
-    if(_caca_init_graphics(kk))
+    if(caca_init_driver(kk))
     {
-        qq->refcount--;
         free(kk);
         return NULL;
     }
 
-    /* Initialise events stuff */
+    /* Only needed for slang and ncurses */
+    caca_check_terminal(kk);
+
+    if(kk->driver.init_graphics(kk))
+    {
+        free(kk);
+        return NULL;
+    }
+
+    /* Attached! */
+    kk->qq->refcount++;
+
+    /* Graphics stuff */
+    kk->delay = 0;
+    kk->rendertime = 0;
+
+    /* Events stuff */
+#if defined(USE_SLANG) || defined(USE_NCURSES)
     kk->events.key_timer.last_sec = 0;
     kk->events.key_timer.last_usec = 0;
     kk->events.last_key_ticks = 0;
     kk->events.autorepeat_ticks = 0;
     kk->events.last_key = 0;
+#endif
 
     kk->timer.last_sec = 0;
     kk->timer.last_usec = 0;
@@ -82,6 +89,14 @@ caca_t * caca_attach(cucul_t * qq)
     return kk;
 }
 
+/** \brief Detach a caca graphical context from a cucul backend context.
+ *
+ *  Detach a graphical context from its cucul backend and destroy it. The
+ *  libcucul canvas continues to exist and other graphical contexts can be
+ *  attached to it afterwards.
+ *
+ *  \param qq The caca graphical context.
+ */
 void caca_detach(caca_t *kk)
 {
     kk->driver.end_graphics(kk);
@@ -175,7 +190,7 @@ static int caca_init_driver(caca_t *kk)
     return -1;
 }
 
-static void caca_init_terminal(caca_t *kk)
+static void caca_check_terminal(caca_t *kk)
 {
 #if defined(HAVE_GETENV) && defined(HAVE_PUTENV) && \
      (defined(USE_SLANG) || defined(USE_NCURSES))

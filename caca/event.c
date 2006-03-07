@@ -19,12 +19,6 @@
 
 #include "config.h"
 
-#if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
-#   include <inttypes.h>
-#else
-typedef unsigned char uint8_t;
-#endif
-
 #if defined(USE_SLANG)
 #   if defined(HAVE_SLANG_SLANG_H)
 #       include <slang/slang.h>
@@ -658,11 +652,11 @@ static unsigned int _lowlevel_event(caca_t *kk)
 
         for( ; ; )
         {
-            GetNumberOfConsoleInputEvents(win32_hin, &num);
+            GetNumberOfConsoleInputEvents(kk->win32.hin, &num);
             if(num == 0)
                 break;
 
-            ReadConsoleInput(win32_hin, &rec, 1, &num);
+            ReadConsoleInput(kk->win32.hin, &rec, 1, &num);
             if(rec.EventType == KEY_EVENT)
             {
                 if(rec.Event.KeyEvent.bKeyDown)

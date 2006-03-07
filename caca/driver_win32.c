@@ -9,22 +9,15 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
-/** \file graphics.c
+/** \file driver_win32.c
  *  \version \$Id$
  *  \author Sam Hocevar <sam@zoy.org>
- *  \brief Character drawing
+ *  \brief Win32 driver
  *
- *  This file contains character and string drawing functions.
+ *  This file contains the libcaca Win32 input and output driver
  */
 
 #include "config.h"
-
-#if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
-#   include <inttypes.h>
-#else
-typedef unsigned int uint32_t;
-typedef unsigned char uint8_t;
-#endif
 
 #if defined(USE_WIN32)
 
@@ -87,17 +80,8 @@ static int const win32_bg_palette[] =
     BACKGROUND_INTENSITY | BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE
 };
 
-int win32_init_graphics(caca_t *);
-int win32_end_graphics(caca_t *);
-int win32_set_window_title(caca_t *, char const *);
-unsigned int win32_get_window_width(caca_t *);
-unsigned int win32_get_window_height(caca_t *);
-void win32_display(caca_t *);
-void win32_handle_resize(caca_t *);
-
-int win32_init_graphics(caca_t *kk)
+static int win32_init_graphics(caca_t *kk)
 {
-    CONSOLE_CURSOR_INFO cci;
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     COORD size;
 
@@ -111,9 +95,9 @@ int win32_init_graphics(caca_t *kk)
     if(kk->win32.hout == INVALID_HANDLE_VALUE)
         return -1;
 
-    GetConsoleCursorInfo(kk->win32.hout, &cci);
-    cci.bVisible = FALSE;
-    SetConsoleCursorInfo(kk->win32.hout, &cci);
+    GetConsoleCursorInfo(kk->win32.hout, &kk->win32.cci);
+    kk->win32.cci.bVisible = FALSE;
+    SetConsoleCursorInfo(kk->win32.hout, &kk->win32.cci);
 
     SetConsoleMode(kk->win32.hout, ENABLE_MOUSE_INPUT);
 
@@ -144,11 +128,11 @@ int win32_init_graphics(caca_t *kk)
     SetConsoleMode(kk->win32.front, 0);
     SetConsoleMode(kk->win32.back, 0);
 
-    GetConsoleCursorInfo(kk->win32.front, &cci);
-    cci.dwSize = 0;
-    cci.bVisible = FALSE;
-    SetConsoleCursorInfo(kk->win32.front, &cci);
-    SetConsoleCursorInfo(kk->win32.back, &cci);
+    GetConsoleCursorInfo(kk->win32.front, &kk->win32.cci);
+    kk->win32.cci.dwSize = 0;
+    kk->win32.cci.bVisible = FALSE;
+    SetConsoleCursorInfo(kk->win32.front, &kk->win32.cci);
+    SetConsoleCursorInfo(kk->win32.back, &kk->win32.cci);
 
     SetConsoleActiveScreenBuffer(kk->win32.front);
 
@@ -160,7 +144,7 @@ int win32_init_graphics(caca_t *kk)
     return 0;
 }
 
-int win32_end_graphics(caca_t *kk)
+static int win32_end_graphics(caca_t *kk)
 {
     SetConsoleActiveScreenBuffer(kk->win32.hout);
     CloseHandle(kk->win32.back);
@@ -170,20 +154,20 @@ int win32_end_graphics(caca_t *kk)
                                              | FOREGROUND_RED
                                              | FOREGROUND_GREEN
                                              | FOREGROUND_BLUE);
-    cci.bVisible = TRUE;
-    SetConsoleCursorInfo(kk->win32.hout, &cci);
+    kk->win32.cci.bVisible = TRUE;
+    SetConsoleCursorInfo(kk->win32.hout, &kk->win32.cci);
     CloseHandle(kk->win32.hout);
 
     return 0;
 }
 
-int win32_set_window_title(caca_t *kk, char const *title)
+static int win32_set_window_title(caca_t *kk, char const *title)
 {
     SetConsoleTitle(title);
     return 0;
 }
 
-unsigned int win32_get_window_width(caca_t *kk)
+static unsigned int win32_get_window_width(caca_t *kk)
 {
     /* FIXME */
 
@@ -191,7 +175,7 @@ unsigned int win32_get_window_width(caca_t *kk)
     return kk->qq->width * 6;
 }
 
-unsigned int win32_get_window_height(caca_t *kk)
+static unsigned int win32_get_window_height(caca_t *kk)
 {
     /* FIXME */
 
@@ -199,7 +183,7 @@ unsigned int win32_get_window_height(caca_t *kk)
     return kk->qq->height * 10;
 }
 
-void win32_display(caca_t *kk)
+static void win32_display(caca_t *kk)
 {
     COORD size, pos;
     SMALL_RECT rect;
@@ -224,14 +208,12 @@ void win32_display(caca_t *kk)
     WriteConsoleOutput(kk->win32.front, kk->win32.buffer, size, pos, &rect);
 }
 
-void win32_handle_resize(caca_t *kk)
+static void win32_handle_resize(caca_t *kk, unsigned int *new_width,
+                                            unsigned int *new_height)
 {
-    unsigned int new_width, new_height;
-
-    new_width = kk->qq->width;
-    new_height = kk->qq->height;
-
     /* Nothing to do here. */
+    *new_width = kk->qq->width;
+    *new_height = kk->qq->height;
 }
 
 /*

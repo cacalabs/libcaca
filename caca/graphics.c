@@ -19,13 +19,6 @@
 
 #include "config.h"
 
-#if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
-#   include <inttypes.h>
-#else
-typedef unsigned int uint32_t;
-typedef unsigned char uint8_t;
-#endif
-
 #include <stdio.h> /* BUFSIZ */
 #include <string.h>
 #include <stdlib.h>
@@ -43,26 +36,6 @@ typedef unsigned char uint8_t;
  * Local functions
  */
 static void caca_handle_resize(caca_t *kk);
-
-#if !defined(_DOXYGEN_SKIP_ME)
-int _caca_init_graphics(caca_t *kk)
-{
-    int ret = kk->driver.init_graphics(kk);
-
-    if(!ret)
-        return ret;
-
-    kk->delay = 0;
-    kk->rendertime = 0;
-
-    return 0;
-}
-
-int _caca_end_graphics(caca_t *kk)
-{
-    return kk->driver.end_graphics(kk);
-}
-#endif /* _DOXYGEN_SKIP_ME */
 
 /** \brief Set the window title.
  *
@@ -191,10 +164,7 @@ static void caca_handle_resize(caca_t *kk)
 {
     unsigned int new_width, new_height;
 
-    new_width = kk->qq->width;
-    new_height = kk->qq->height;
-
-    kk->driver.handle_resize(kk);
+    kk->driver.handle_resize(kk, &new_width, &new_height);
 
     /* Tell libcucul we changed size */
     if(new_width != kk->qq->width || new_height != kk->qq->height)

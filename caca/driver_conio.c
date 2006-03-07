@@ -9,22 +9,15 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
-/** \file graphics.c
+/** \file driver_conio.c
  *  \version \$Id$
  *  \author Sam Hocevar <sam@zoy.org>
- *  \brief Character drawing
+ *  \brief DOS/conio.h driver
  *
- *  This file contains character and string drawing functions.
+ *  This file contains the libcaca DOS/conio.h input and output driver
  */
 
 #include "config.h"
-
-#if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
-#   include <inttypes.h>
-#else
-typedef unsigned int uint32_t;
-typedef unsigned char uint8_t;
-#endif
 
 #if defined(USE_CONIO)
 
@@ -50,8 +43,7 @@ typedef unsigned char uint8_t;
 #include "cucul.h"
 #include "cucul_internals.h"
 
-#if !defined(_DOXYGEN_SKIP_ME)
-int conio_init_graphics(caca_t *kk)
+static int conio_init_graphics(caca_t *kk)
 {
     _wscroll = 0;
     _setcursortype(_NOCURSOR);
@@ -72,7 +64,7 @@ int conio_init_graphics(caca_t *kk)
     return 0;
 }
 
-int conio_end_graphics(caca_t *kk)
+static int conio_end_graphics(caca_t *kk)
 {
     _wscroll = 1;
     textcolor((enum COLORS)WHITE);
@@ -85,26 +77,25 @@ int conio_end_graphics(caca_t *kk)
 
     return 0;
 }
-#endif /* _DOXYGEN_SKIP_ME */
 
-int conio_set_window_title(caca_t *kk, char const *title)
+static int conio_set_window_title(caca_t *kk, char const *title)
 {
     return 0;
 }
 
-unsigned int conio_get_window_width(caca_t *kk)
+static unsigned int conio_get_window_width(caca_t *kk)
 {
     /* Fallback to a 6x10 font */
     return kk->qq->width * 6;
 }
 
-unsigned int conio_get_window_height(caca_t *kk)
+static unsigned int conio_get_window_height(caca_t *kk)
 {
     /* Fallback to a 6x10 font */
     return kk->qq->height * 10;
 }
 
-void conio_display(caca_t *kk)
+static void conio_display(caca_t *kk)
 {
     int n;
     char *screen = kk->conio.screen;
@@ -122,9 +113,11 @@ void conio_display(caca_t *kk)
 #   endif
 }
 
-void conio_handle_resize(caca_t *kk)
+static void conio_handle_resize(caca_t *kk, unsigned int *new_width,
+                                            unsigned int *new_height)
 {
-    return;
+    *new_width = kk->qq->width;
+    *new_height = kk->qq->height;
 }
 
 /*

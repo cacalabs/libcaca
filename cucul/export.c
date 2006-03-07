@@ -9,22 +9,17 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
-/** \file char.c
+/** \file export.c
  *  \version \$Id$
  *  \author Sam Hocevar <sam@zoy.org>
- *  \brief Character drawing
+ *  \author Jean-Yves Lamoureux <jylam@lnxscene.org>
+ *  \brief Export function
  *
- *  This file contains character and string drawing functions.
+ *  This file contains export functions for various file formats such
+ *  as HTML or IRC.
  */
 
 #include "config.h"
-
-#if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
-#   include <inttypes.h>
-#else
-typedef unsigned int uint32_t;
-typedef unsigned char uint8_t;
-#endif
 
 #include <stdlib.h>
 #include <stdio.h>

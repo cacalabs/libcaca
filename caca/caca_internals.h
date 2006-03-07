@@ -20,6 +20,14 @@
 #ifndef __CACA_INTERNALS_H__
 #define __CACA_INTERNALS_H__
 
+#if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
+#   include <inttypes.h>
+#else
+typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
+typedef unsigned int uint32_t;
+#endif
+
 #if defined(USE_GL)
 #   include <GL/glut.h>
 #endif
@@ -102,7 +110,7 @@ struct caca_context
         unsigned int (* get_window_width) (caca_t *);
         unsigned int (* get_window_height) (caca_t *);
         void (* display) (caca_t *);
-        void (* handle_resize) (caca_t *);
+        void (* handle_resize) (caca_t *, unsigned int *, unsigned int *);
     } driver;
 
     unsigned int width, height;
@@ -124,6 +132,7 @@ struct caca_context
 #endif
     } events;
 
+    /* FIXME: maybe this should go away */
 #if defined(USE_X11) && !defined(_DOXYGEN_SKIP_ME)
     struct x11
     {
@@ -163,6 +172,7 @@ struct caca_context
         HANDLE hin, hout;
         HANDLE front, back;
         CHAR_INFO *buffer;
+        CONSOLE_CURSOR_INFO cci;
     } win32;
 #endif
 #if defined(USE_GL)
@@ -188,18 +198,8 @@ struct caca_context
 #endif
 };
 
-/* Initialisation functions */
-extern int _caca_init_graphics(caca_t *kk);
-extern int _caca_end_graphics(caca_t *kk);
-
 /* Timer functions */
 extern void _caca_sleep(unsigned int);
 extern unsigned int _caca_getticks(struct caca_timer *);
-
-/* Cached screen size */
-extern unsigned int _caca_width;
-extern unsigned int _caca_height;
-extern int _caca_resize;
-extern int _caca_resize_event;
 
 #endif /* __CACA_INTERNALS_H__ */

@@ -20,6 +20,14 @@
 #ifndef __CUCUL_INTERNALS_H__
 #define __CUCUL_INTERNALS_H__
 
+#if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
+#   include <inttypes.h>
+#else
+typedef unsigned char uint8_t;
+typedef unsigned char uint16_t;
+typedef unsigned int uint32_t;
+#endif
+
 struct cucul_context
 {
     /* Context size */
@@ -27,7 +35,7 @@ struct cucul_context
 
     uint32_t *chars;
     uint8_t *attr;
-    uint8_t *empty_line, *scratch_line;
+    char *empty_line, *scratch_line;
 
     enum cucul_color fgcolor;
     enum cucul_color bgcolor;

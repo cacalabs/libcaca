@@ -9,22 +9,15 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
-/** \file graphics.c
+/** \file driver_x11.c
  *  \version \$Id$
  *  \author Sam Hocevar <sam@zoy.org>
- *  \brief Character drawing
+ *  \brief X11 driver
  *
- *  This file contains character and string drawing functions.
+ *  This file contains the libcaca X11 input and output driver
  */
 
 #include "config.h"
-
-#if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
-#   include <inttypes.h>
-#else
-typedef unsigned int uint32_t;
-typedef unsigned char uint8_t;
-#endif
 
 #if defined(USE_X11)
 
@@ -46,21 +39,12 @@ typedef unsigned char uint8_t;
 #include "cucul.h"
 #include "cucul_internals.h"
 
-int x11_init_graphics(caca_t *);
-int x11_end_graphics(caca_t *);
-int x11_set_window_title(caca_t *, char const *);
-unsigned int x11_get_window_width(caca_t *);
-unsigned int x11_get_window_height(caca_t *);
-void x11_display(caca_t *);
-void x11_handle_resize(caca_t *);
-
 /*
  * Local functions
  */
 static int x11_error_handler(Display *, XErrorEvent *);
 
-#if !defined(_DOXYGEN_SKIP_ME)
-int x11_init_graphics(caca_t *kk)
+static int x11_init_graphics(caca_t *kk)
 {
     static int const x11_palette[] =
     {
@@ -210,7 +194,7 @@ int x11_init_graphics(caca_t *kk)
     return 0;
 }
 
-int x11_end_graphics(caca_t *kk)
+static int x11_end_graphics(caca_t *kk)
 {
     XSync(kk->x11.dpy, False);
 #if defined(HAVE_X11_XKBLIB_H)
@@ -226,25 +210,24 @@ int x11_end_graphics(caca_t *kk)
 
     return 0;
 }
-#endif /* _DOXYGEN_SKIP_ME */
 
-int x11_set_window_title(caca_t *kk, char const *title)
+static int x11_set_window_title(caca_t *kk, char const *title)
 {
     XStoreName(kk->x11.dpy, kk->x11.window, title);
     return 0;
 }
 
-unsigned int x11_get_window_width(caca_t *kk)
+static unsigned int x11_get_window_width(caca_t *kk)
 {
     return kk->qq->width * kk->x11.font_width;
 }
 
-unsigned int x11_get_window_height(caca_t *kk)
+static unsigned int x11_get_window_height(caca_t *kk)
 {
     return kk->qq->height * kk->x11.font_height;
 }
 
-void x11_display(caca_t *kk)
+static void x11_display(caca_t *kk)
 {
     unsigned int x, y, len;
 
@@ -308,17 +291,13 @@ void x11_display(caca_t *kk)
     XFlush(kk->x11.dpy);
 }
 
-void x11_handle_resize(caca_t *kk)
+static void x11_handle_resize(caca_t *kk, unsigned int *new_width,
+                                          unsigned int *new_height)
 {
-    unsigned int new_width, new_height;
-
     Pixmap new_pixmap;
 
-    new_width = kk->qq->width;
-    new_height = kk->qq->height;
-
-    new_width = kk->x11.new_width;
-    new_height = kk->x11.new_height;
+    *new_width = kk->x11.new_width;
+    *new_height = kk->x11.new_height;
 
     new_pixmap = XCreatePixmap(kk->x11.dpy, kk->x11.window,
                                kk->qq->width * kk->x11.font_width,

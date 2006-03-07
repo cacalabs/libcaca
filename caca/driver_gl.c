@@ -9,22 +9,15 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
-/** \file graphics.c
+/** \file driver_gl.c
  *  \version \$Id$
- *  \author Sam Hocevar <sam@zoy.org>
- *  \brief Character drawing
+ *  \author Jean-Yves Lamoureux <jylam@lnxscene.org>
+ *  \brief OpenGL driver
  *
- *  This file contains character and string drawing functions.
+ *  This file contains the libcaca OpenGL input and output driver
  */
 
 #include "config.h"
-
-#if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
-#   include <inttypes.h>
-#else
-typedef unsigned int uint32_t;
-typedef unsigned char uint8_t;
-#endif
 
 #if defined(USE_GL)
 
@@ -82,7 +75,7 @@ static void gl_handle_reshape(int, int);
 static void gl_handle_mouse(int, int, int, int);
 static void gl_handle_mouse_motion(int, int);
 
-int gl_init_graphics(caca_t *kk)
+static int gl_init_graphics(caca_t *kk)
 {
     char *empty_texture;
     char const *geometry;
@@ -186,29 +179,29 @@ int gl_init_graphics(caca_t *kk)
     return 0;
 }
 
-int gl_end_graphics(caca_t *kk)
+static int gl_end_graphics(caca_t *kk)
 {
     glutDestroyWindow(kk->gl.window);
     return 0;
 }
 
-int gl_set_window_title(caca_t *kk, char const *title)
+static int gl_set_window_title(caca_t *kk, char const *title)
 {
     glutSetWindowTitle(title);
     return 0;
 }
 
-unsigned int gl_get_window_width(caca_t *kk)
+static unsigned int gl_get_window_width(caca_t *kk)
 {
     return kk->gl.width;
 }
 
-unsigned int gl_get_window_height(caca_t *kk)
+static unsigned int gl_get_window_height(caca_t *kk)
 {
     return kk->gl.height;
 }
 
-void gl_display(caca_t *kk)
+static void gl_display(caca_t *kk)
 {
     unsigned int x, y, line;
 
@@ -281,18 +274,14 @@ void gl_display(caca_t *kk)
     glutPostRedisplay();
 }
 
-void gl_handle_resize(caca_t *kk)
+static void gl_handle_resize(caca_t *kk, unsigned int *new_width,
+                                         unsigned int *new_height)
 {
-    unsigned int new_width, new_height;
-
-    new_width = kk->qq->width;
-    new_height = kk->qq->height;
-
     kk->gl.width = kk->gl.new_width;
     kk->gl.height = kk->gl.new_height;
 
-    new_width = kk->gl.width / kk->gl.font_width;
-    new_height = (kk->gl.height / kk->gl.font_height) + 1;
+    *new_width = kk->gl.width / kk->gl.font_width;
+    *new_height = (kk->gl.height / kk->gl.font_height) + 1;
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
