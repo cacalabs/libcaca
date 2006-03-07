@@ -1,0 +1,34 @@
+#! /bin/sh
+
+##  DOS cross-compilation for libcaca -- Sam Hocevar <sam@zoy.org>
+##  $Id$
+
+set -x
+set -e
+
+# Clean up our working directory
+DIRNAME="libcaca-dos-`sed -ne '/^VERSION/s/[^0-9]*//p' Makefile`"
+DESTDIR="`pwd`/${DIRNAME}"
+rm -Rf "${DIRNAME}"
+rm -f "${DIRNAME}.zip"
+mkdir "${DIRNAME}"
+
+# Build for DOS
+./configure --host=i386-pc-msdosdjgpp --prefix=/ --bindir=/ --libdir=/ --disable-imlib2 --disable-doc
+make pkglibdir=/lib pkgdatadir=/data
+
+# Install into our private directory
+make install DESTDIR="${DESTDIR}" pkglibdir=/lib pkgdatadir=/
+i386-pc-msdosdjgpp-strip "${DESTDIR}/"*.exe
+rm -Rf "${DESTDIR}/man"
+rm -Rf "${DESTDIR}/include"
+rm -f "${DESTDIR}/caca-config"
+rm -f "${DESTDIR}/"*.a
+mv "${DESTDIR}/share/doc/libcaca-dev/" "${DESTDIR}/doc"
+rmdir "${DESTDIR}/share/doc"
+rmdir "${DESTDIR}/share"
+
+# Pack the directory
+zip "${DIRNAME}.zip" `find "${DIRNAME}"`
+rm -Rf "${DIRNAME}"
+

@@ -69,7 +69,7 @@ static int conio_end_graphics(caca_t *kk)
     _wscroll = 1;
     textcolor((enum COLORS)WHITE);
     textbackground((enum COLORS)BLACK);
-    gotoxy(_caca_width, _caca_height);
+    gotoxy(kk->qq->width, kk->qq->height);
     cputs("\r\n");
     _setcursortype(_NORMALCURSOR);
 

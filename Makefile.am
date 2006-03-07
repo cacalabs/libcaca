@@ -3,7 +3,7 @@
 SUBDIRS = cucul caca src test doc
 DIST_SUBDIRS = $(SUBDIRS) autotools debian msvc
 
-EXTRA_DIST = NOTES COPYING.LGPL bootstrap build-win32 caca-config.in libcaca.spec
+EXTRA_DIST = NOTES COPYING.LGPL bootstrap build-dos build-win32 caca-config.in libcaca.spec
 AUTOMAKE_OPTIONS = dist-bzip2
 
 bin_SCRIPTS = caca-config

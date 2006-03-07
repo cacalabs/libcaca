@@ -22,12 +22,16 @@
 
 #if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
 #   include <inttypes.h>
-#else
+#elif !defined(CUSTOM_INTTYPES)
+#   define CUSTOM_INTTYPES
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
 #endif
 
+#if defined(USE_CONIO)
+#   include <conio.h>
+#endif
 #if defined(USE_GL)
 #   include <GL/glut.h>
 #endif

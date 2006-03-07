@@ -22,7 +22,8 @@
 
 #if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
 #   include <inttypes.h>
-#else
+#elif !defined(CUSTOM_INTTYPES)
+#   define CUSTOM_INTTYPES
 typedef unsigned char uint8_t;
 typedef unsigned char uint16_t;
 typedef unsigned int uint32_t;
