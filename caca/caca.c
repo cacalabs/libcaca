@@ -83,6 +83,9 @@ caca_t * caca_attach(cucul_t * qq)
     kk->timer.last_usec = 0;
     kk->lastticks = 0;
 
+    kk->mouse_x = kk->qq->width / 2;
+    kk->mouse_y = kk->qq->height / 2;
+
     kk->resize = 0;
     kk->resize_event = 0;
 

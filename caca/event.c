@@ -55,22 +55,12 @@
 #include "caca.h"
 #include "caca_internals.h"
 
-static unsigned int _get_next_event(caca_t *kk);
-static unsigned int _lowlevel_event(caca_t *kk);
+static unsigned int _get_next_event(caca_t *);
+static unsigned int _lowlevel_event(caca_t *);
 #if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO)
-static void _push_event(unsigned int);
-static unsigned int _pop_event(void);
+static void _push_event(caca_t *, unsigned int);
+static unsigned int _pop_event(caca_t *);
 #endif
-
-#if !defined(_DOXYGEN_SKIP_ME)
-#define EVENTBUF_LEN 10
-#endif
-#if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO)
-static unsigned int eventbuf[EVENTBUF_LEN];
-static int events = 0;
-#endif
-
-static unsigned int mouse_x = 0, mouse_y = 0;
 
 #if !defined(_DOXYGEN_SKIP_ME)
 /* If no new key was pressed after AUTOREPEAT_THRESHOLD usec, assume the
@@ -144,10 +134,10 @@ unsigned int caca_wait_event(caca_t *kk, unsigned int event_mask)
  */
 unsigned int caca_get_mouse_x(caca_t *kk)
 {
-    if(mouse_x >= kk->qq->width)
-        mouse_x = kk->qq->width - 1;
+    if(kk->mouse_x >= kk->qq->width)
+        kk->mouse_x = kk->qq->width - 1;
 
-    return mouse_x;
+    return kk->mouse_x;
 }
 
 /** \brief Return the Y mouse coordinate.
@@ -161,10 +151,10 @@ unsigned int caca_get_mouse_x(caca_t *kk)
  */
 unsigned int caca_get_mouse_y(caca_t *kk)
 {
-    if(mouse_y >= kk->qq->height)
-        mouse_y = kk->qq->height - 1;
+    if(kk->mouse_y >= kk->qq->height)
+        kk->mouse_y = kk->qq->height - 1;
 
-    return mouse_y;
+    return kk->mouse_y;
 }
 
 /*
@@ -200,7 +190,7 @@ static unsigned int _get_next_event(caca_t *kk)
            && kk->events.autorepeat_ticks > AUTOREPEAT_THRESHOLD
            && kk->events.autorepeat_ticks > AUTOREPEAT_RATE)
     {
-        _push_event(event);
+        _push_event(kk, event);
         kk->events.autorepeat_ticks -= AUTOREPEAT_RATE;
         return CACA_EVENT_KEY_PRESS | kk->events.last_key;
     }
@@ -219,7 +209,7 @@ static unsigned int _get_next_event(caca_t *kk)
           && (kk->events.last_key_ticks > AUTOREPEAT_THRESHOLD
                || (event & CACA_EVENT_KEY_PRESS)))
     {
-        _push_event(event);
+        _push_event(kk, event);
         event = CACA_EVENT_KEY_RELEASE | kk->events.last_key;
         kk->events.last_key = 0;
         return event;
@@ -242,7 +232,7 @@ static unsigned int _lowlevel_event(caca_t *kk)
     unsigned int event;
 
 #if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO)
-    event = _pop_event();
+    event = _pop_event(kk);
 
     if(event)
         return event;
@@ -306,13 +296,13 @@ static unsigned int _lowlevel_event(caca_t *kk)
                 if(newy >= kk->qq->height)
                     newy = kk->qq->height - 1;
 
-                if(mouse_x == newx && mouse_y == newy)
+                if(kk->mouse_x == newx && kk->mouse_y == newy)
                     continue;
 
-                mouse_x = newx;
-                mouse_y = newy;
+                kk->mouse_x = newx;
+                kk->mouse_y = newy;
 
-                return CACA_EVENT_MOUSE_MOTION | (mouse_x << 12) | mouse_y;
+                return CACA_EVENT_MOUSE_MOTION | (kk->mouse_x << 12) | kk->mouse_y;
             }
 
             /* Check for mouse press and release events */
@@ -394,109 +384,109 @@ static unsigned int _lowlevel_event(caca_t *kk)
             switch(mevent.bstate)
             {
                 case BUTTON1_PRESSED:
-                    _push_event(CACA_EVENT_MOUSE_PRESS | 1);
+                    _push_event(kk, CACA_EVENT_MOUSE_PRESS | 1);
                     break;
                 case BUTTON1_RELEASED:
-                    _push_event(CACA_EVENT_MOUSE_RELEASE | 1);
+                    _push_event(kk, CACA_EVENT_MOUSE_RELEASE | 1);
                     break;
                 case BUTTON1_CLICKED:
-                    _push_event(CACA_EVENT_MOUSE_PRESS | 1);
-                    _push_event(CACA_EVENT_MOUSE_RELEASE | 1);
+                    _push_event(kk, CACA_EVENT_MOUSE_PRESS | 1);
+                    _push_event(kk, CACA_EVENT_MOUSE_RELEASE | 1);
                     break;
                 case BUTTON1_DOUBLE_CLICKED:
-                    _push_event(CACA_EVENT_MOUSE_PRESS | 1);
-                    _push_event(CACA_EVENT_MOUSE_RELEASE | 1);
-                    _push_event(CACA_EVENT_MOUSE_PRESS | 1);
-                    _push_event(CACA_EVENT_MOUSE_RELEASE | 1);
+                    _push_event(kk, CACA_EVENT_MOUSE_PRESS | 1);
+                    _push_event(kk, CACA_EVENT_MOUSE_RELEASE | 1);
+                    _push_event(kk, CACA_EVENT_MOUSE_PRESS | 1);
+                    _push_event(kk, CACA_EVENT_MOUSE_RELEASE | 1);
                     break;
                 case BUTTON1_TRIPLE_CLICKED:
-                    _push_event(CACA_EVENT_MOUSE_PRESS | 1);
-                    _push_event(CACA_EVENT_MOUSE_RELEASE | 1);
-                    _push_event(CACA_EVENT_MOUSE_PRESS | 1);
-                    _push_event(CACA_EVENT_MOUSE_RELEASE | 1);
-                    _push_event(CACA_EVENT_MOUSE_PRESS | 1);
-                    _push_event(CACA_EVENT_MOUSE_RELEASE | 1);
+                    _push_event(kk, CACA_EVENT_MOUSE_PRESS | 1);
+                    _push_event(kk, CACA_EVENT_MOUSE_RELEASE | 1);
+                    _push_event(kk, CACA_EVENT_MOUSE_PRESS | 1);
+                    _push_event(kk, CACA_EVENT_MOUSE_RELEASE | 1);
+                    _push_event(kk, CACA_EVENT_MOUSE_PRESS | 1);
+                    _push_event(kk, CACA_EVENT_MOUSE_RELEASE | 1);
                     break;
                 case BUTTON1_RESERVED_EVENT:
                     break;
 
                 case BUTTON2_PRESSED:
-                    _push_event(CACA_EVENT_MOUSE_PRESS | 2);
+                    _push_event(kk, CACA_EVENT_MOUSE_PRESS | 2);
                     break;
                 case BUTTON2_RELEASED:
-                    _push_event(CACA_EVENT_MOUSE_RELEASE | 2);
+                    _push_event(kk, CACA_EVENT_MOUSE_RELEASE | 2);
                     break;
                 case BUTTON2_CLICKED:
-                    _push_event(CACA_EVENT_MOUSE_PRESS | 2);
-                    _push_event(CACA_EVENT_MOUSE_RELEASE | 2);
+                    _push_event(kk, CACA_EVENT_MOUSE_PRESS | 2);
+                    _push_event(kk, CACA_EVENT_MOUSE_RELEASE | 2);
                     break;
                 case BUTTON2_DOUBLE_CLICKED:
-                    _push_event(CACA_EVENT_MOUSE_PRESS | 2);
-                    _push_event(CACA_EVENT_MOUSE_RELEASE | 2);
-                    _push_event(CACA_EVENT_MOUSE_PRESS | 2);
-                    _push_event(CACA_EVENT_MOUSE_RELEASE | 2);
+                    _push_event(kk, CACA_EVENT_MOUSE_PRESS | 2);
+                    _push_event(kk, CACA_EVENT_MOUSE_RELEASE | 2);
+                    _push_event(kk, CACA_EVENT_MOUSE_PRESS | 2);
+                    _push_event(kk, CACA_EVENT_MOUSE_RELEASE | 2);
                     break;
                 case BUTTON2_TRIPLE_CLICKED:
-                    _push_event(CACA_EVENT_MOUSE_PRESS | 2);
-                    _push_event(CACA_EVENT_MOUSE_RELEASE | 2);
-                    _push_event(CACA_EVENT_MOUSE_PRESS | 2);
-                    _push_event(CACA_EVENT_MOUSE_RELEASE | 2);
-                    _push_event(CACA_EVENT_MOUSE_PRESS | 2);
-                    _push_event(CACA_EVENT_MOUSE_RELEASE | 2);
+                    _push_event(kk, CACA_EVENT_MOUSE_PRESS | 2);
+                    _push_event(kk, CACA_EVENT_MOUSE_RELEASE | 2);
+                    _push_event(kk, CACA_EVENT_MOUSE_PRESS | 2);
+                    _push_event(kk, CACA_EVENT_MOUSE_RELEASE | 2);
+                    _push_event(kk, CACA_EVENT_MOUSE_PRESS | 2);
+                    _push_event(kk, CACA_EVENT_MOUSE_RELEASE | 2);
                     break;
                 case BUTTON2_RESERVED_EVENT:
                     break;
 
                 case BUTTON3_PRESSED:
-                    _push_event(CACA_EVENT_MOUSE_PRESS | 3);
+                    _push_event(kk, CACA_EVENT_MOUSE_PRESS | 3);
                     break;
                 case BUTTON3_RELEASED:
-                    _push_event(CACA_EVENT_MOUSE_RELEASE | 3);
+                    _push_event(kk, CACA_EVENT_MOUSE_RELEASE | 3);
                     break;
                 case BUTTON3_CLICKED:
-                    _push_event(CACA_EVENT_MOUSE_PRESS | 3);
-                    _push_event(CACA_EVENT_MOUSE_RELEASE | 3);
+                    _push_event(kk, CACA_EVENT_MOUSE_PRESS | 3);
+                    _push_event(kk, CACA_EVENT_MOUSE_RELEASE | 3);
                     break;
                 case BUTTON3_DOUBLE_CLICKED:
-                    _push_event(CACA_EVENT_MOUSE_PRESS | 3);
-                    _push_event(CACA_EVENT_MOUSE_RELEASE | 3);
-                    _push_event(CACA_EVENT_MOUSE_PRESS | 3);
-                    _push_event(CACA_EVENT_MOUSE_RELEASE | 3);
+                    _push_event(kk, CACA_EVENT_MOUSE_PRESS | 3);
+                    _push_event(kk, CACA_EVENT_MOUSE_RELEASE | 3);
+                    _push_event(kk, CACA_EVENT_MOUSE_PRESS | 3);
+                    _push_event(kk, CACA_EVENT_MOUSE_RELEASE | 3);
                     break;
                 case BUTTON3_TRIPLE_CLICKED:
-                    _push_event(CACA_EVENT_MOUSE_PRESS | 3);
-                    _push_event(CACA_EVENT_MOUSE_RELEASE | 3);
-                    _push_event(CACA_EVENT_MOUSE_PRESS | 3);
-                    _push_event(CACA_EVENT_MOUSE_RELEASE | 3);
-                    _push_event(CACA_EVENT_MOUSE_PRESS | 3);
-                    _push_event(CACA_EVENT_MOUSE_RELEASE | 3);
+                    _push_event(kk, CACA_EVENT_MOUSE_PRESS | 3);
+                    _push_event(kk, CACA_EVENT_MOUSE_RELEASE | 3);
+                    _push_event(kk, CACA_EVENT_MOUSE_PRESS | 3);
+                    _push_event(kk, CACA_EVENT_MOUSE_RELEASE | 3);
+                    _push_event(kk, CACA_EVENT_MOUSE_PRESS | 3);
+                    _push_event(kk, CACA_EVENT_MOUSE_RELEASE | 3);
                     break;
                 case BUTTON3_RESERVED_EVENT:
                     break;
 
                 case BUTTON4_PRESSED:
-                    _push_event(CACA_EVENT_MOUSE_PRESS | 4);
+                    _push_event(kk, CACA_EVENT_MOUSE_PRESS | 4);
                     break;
                 case BUTTON4_RELEASED:
-                    _push_event(CACA_EVENT_MOUSE_RELEASE | 4);
+                    _push_event(kk, CACA_EVENT_MOUSE_RELEASE | 4);
                     break;
                 case BUTTON4_CLICKED:
-                    _push_event(CACA_EVENT_MOUSE_PRESS | 4);
-                    _push_event(CACA_EVENT_MOUSE_RELEASE | 4);
+                    _push_event(kk, CACA_EVENT_MOUSE_PRESS | 4);
+                    _push_event(kk, CACA_EVENT_MOUSE_RELEASE | 4);
                     break;
                 case BUTTON4_DOUBLE_CLICKED:
-                    _push_event(CACA_EVENT_MOUSE_PRESS | 4);
-                    _push_event(CACA_EVENT_MOUSE_RELEASE | 4);
-                    _push_event(CACA_EVENT_MOUSE_PRESS | 4);
-                    _push_event(CACA_EVENT_MOUSE_RELEASE | 4);
+                    _push_event(kk, CACA_EVENT_MOUSE_PRESS | 4);
+                    _push_event(kk, CACA_EVENT_MOUSE_RELEASE | 4);
+                    _push_event(kk, CACA_EVENT_MOUSE_PRESS | 4);
+                    _push_event(kk, CACA_EVENT_MOUSE_RELEASE | 4);
                     break;
                 case BUTTON4_TRIPLE_CLICKED:
-                    _push_event(CACA_EVENT_MOUSE_PRESS | 4);
-                    _push_event(CACA_EVENT_MOUSE_RELEASE | 4);
-                    _push_event(CACA_EVENT_MOUSE_PRESS | 4);
-                    _push_event(CACA_EVENT_MOUSE_RELEASE | 4);
-                    _push_event(CACA_EVENT_MOUSE_PRESS | 4);
-                    _push_event(CACA_EVENT_MOUSE_RELEASE | 4);
+                    _push_event(kk, CACA_EVENT_MOUSE_PRESS | 4);
+                    _push_event(kk, CACA_EVENT_MOUSE_RELEASE | 4);
+                    _push_event(kk, CACA_EVENT_MOUSE_PRESS | 4);
+                    _push_event(kk, CACA_EVENT_MOUSE_RELEASE | 4);
+                    _push_event(kk, CACA_EVENT_MOUSE_PRESS | 4);
+                    _push_event(kk, CACA_EVENT_MOUSE_RELEASE | 4);
                     break;
                 case BUTTON4_RESERVED_EVENT:
                     break;
@@ -505,14 +495,14 @@ static unsigned int _lowlevel_event(caca_t *kk)
                     break;
             }
 
-            if(mouse_x == (unsigned int)mevent.x &&
-               mouse_y == (unsigned int)mevent.y)
-                return _pop_event();
+            if(kk->mouse_x == (unsigned int)mevent.x &&
+               kk->mouse_y == (unsigned int)mevent.y)
+                return _pop_event(kk);
 
-            mouse_x = mevent.x;
-            mouse_y = mevent.y;
+            kk->mouse_x = mevent.x;
+            kk->mouse_y = mevent.y;
 
-            return CACA_EVENT_MOUSE_MOTION | (mouse_x << 12) | mouse_y;
+            return CACA_EVENT_MOUSE_MOTION | (kk->mouse_x << 12) | kk->mouse_y;
         }
 
         event = CACA_EVENT_KEY_PRESS;
@@ -586,16 +576,16 @@ static unsigned int _lowlevel_event(caca_t *kk)
             int button = (SLang_getkey() - ' ' + 1) & 0xf;
             unsigned int x = SLang_getkey() - '!';
             unsigned int y = SLang_getkey() - '!';
-            _push_event(CACA_EVENT_MOUSE_PRESS | button);
-            _push_event(CACA_EVENT_MOUSE_RELEASE | button);
+            _push_event(kk, CACA_EVENT_MOUSE_PRESS | button);
+            _push_event(kk, CACA_EVENT_MOUSE_RELEASE | button);
 
-            if(mouse_x == x && mouse_y == y)
-                return _pop_event();
+            if(kk->mouse_x == x && kk->mouse_y == y)
+                return _pop_event(kk);
 
-            mouse_x = x;
-            mouse_y = y;
+            kk->mouse_x = x;
+            kk->mouse_y = y;
 
-            return CACA_EVENT_MOUSE_MOTION | (mouse_x << 12) | mouse_y;
+            return CACA_EVENT_MOUSE_MOTION | (kk->mouse_x << 12) | kk->mouse_y;
         }
 
         event = CACA_EVENT_KEY_PRESS;
@@ -639,7 +629,7 @@ static unsigned int _lowlevel_event(caca_t *kk)
             return CACA_EVENT_NONE;
 
         event = getch();
-        _push_event(CACA_EVENT_KEY_RELEASE | event);
+        _push_event(kk, CACA_EVENT_KEY_RELEASE | event);
         return CACA_EVENT_KEY_PRESS | event;
     }
     else
@@ -682,14 +672,14 @@ static unsigned int _lowlevel_event(caca_t *kk)
                 {
                     COORD pos = rec.Event.MouseEvent.dwMousePosition;
 
-                    if(mouse_x == (unsigned int)pos.X &&
-                       mouse_y == (unsigned int)pos.Y)
+                    if(kk->mouse_x == (unsigned int)pos.X &&
+                       kk->mouse_y == (unsigned int)pos.Y)
                         continue;
 
-                    mouse_x = pos.X;
-                    mouse_y = pos.Y;
+                    kk->mouse_x = pos.X;
+                    kk->mouse_y = pos.Y;
 
-                    return CACA_EVENT_MOUSE_MOTION | (mouse_x << 12) | mouse_y;
+                    return CACA_EVENT_MOUSE_MOTION | (kk->mouse_x << 12) | kk->mouse_y;
                 }
 #if 0
                 else if(rec.Event.MouseEvent.dwEventFlags == DOUBLE_CLICK)
@@ -737,9 +727,9 @@ static unsigned int _lowlevel_event(caca_t *kk)
                 event|= CACA_EVENT_MOUSE_PRESS | kk->gl.mouse_button;
                 kk->gl.mouse_clicked=0;
             }
-            mouse_x = kk->gl.mouse_x;
-            mouse_y = kk->gl.mouse_y;
-            event |= CACA_EVENT_MOUSE_MOTION | (mouse_x << 12) | mouse_y;
+            kk->mouse_x = kk->gl.mouse_x;
+            kk->mouse_y = kk->gl.mouse_y;
+            event |= CACA_EVENT_MOUSE_MOTION | (kk->mouse_x << 12) | kk->mouse_y;
             kk->gl.mouse_changed = 0;
         }
 
@@ -788,26 +778,26 @@ static unsigned int _lowlevel_event(caca_t *kk)
 }
 
 #if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO)
-static void _push_event(unsigned int event)
+static void _push_event(caca_t *kk, unsigned int event)
 {
-    if(!event || events == EVENTBUF_LEN)
+    if(!event || kk->events.queue == EVENTBUF_LEN)
         return;
-    eventbuf[events] = event;
-    events++;
+    kk->events.buf[kk->events.queue] = event;
+    kk->events.queue++;
 }
 
-static unsigned int _pop_event(void)
+static unsigned int _pop_event(caca_t *kk)
 {
     int i;
     unsigned int event;
 
-    if(events == 0)
+    if(kk->events.queue == 0)
         return CACA_EVENT_NONE;
 
-    event = eventbuf[0];
-    for(i = 1; i < events; i++)
-        eventbuf[i - 1] = eventbuf[i];
-    events--;
+    event = kk->events.buf[0];
+    for(i = 1; i < kk->events.queue; i++)
+        kk->events.buf[i - 1] = kk->events.buf[i];
+    kk->events.queue--;
 
     return event;
 }

@@ -45,6 +45,10 @@ typedef unsigned int uint32_t;
 #   include <X11/Xlib.h>
 #endif
 
+#if !defined(_DOXYGEN_SKIP_ME)
+#   define EVENTBUF_LEN 10
+#endif
+
 /* Graphics driver */
 enum caca_driver
 {
@@ -113,7 +117,8 @@ struct caca_context
         void (* handle_resize) (caca_t *, unsigned int *, unsigned int *);
     } driver;
 
-    unsigned int width, height;
+    //unsigned int width, height;
+    unsigned int mouse_x, mouse_y;
 
     int resize;
     int resize_event;
@@ -124,6 +129,10 @@ struct caca_context
 
     struct events
     {
+#if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO)
+        unsigned int buf[EVENTBUF_LEN];
+        int queue;
+#endif
 #if defined(USE_SLANG) || defined(USE_NCURSES)
         struct caca_timer key_timer;
         unsigned int last_key_ticks;
