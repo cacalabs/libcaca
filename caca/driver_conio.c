@@ -103,7 +103,13 @@ static void conio_display(caca_t *kk)
     uint32_t *chars = kk->qq->chars;
     for(n = kk->qq->height * kk->qq->width; n--; )
     {
-        *screen++ = *chars++ & 0x7f;
+        uint32_t c = *chars++;
+
+        if(c > 0x00000020 && c < 0x00000080)
+            *screen++ = (char)c;
+        else
+            *screen++ = ' ';
+
         *screen++ = *attr++;
     }
 #   if defined(SCREENUPDATE_IN_PC_H)

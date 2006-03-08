@@ -192,8 +192,13 @@ static void ncurses_display(caca_t *kk)
         move(y, 0);
         for(x = kk->qq->width; x--; )
         {
+            uint32_t c = *chars++;
+
             attrset(kk->drv.p->attr[*attr++]);
-            addch(*chars++ & 0x7f);
+            if(c > 0x00000020 && c < 0x00000080)
+                addch((char)c);
+            else
+                addch(' ');
         }
     }
     refresh();

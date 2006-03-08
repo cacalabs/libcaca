@@ -271,6 +271,9 @@ static void x11_display(caca_t *kk)
     /* Then print the foreground characters */
     for(y = 0; y < kk->qq->height; y++)
     {
+        unsigned int yoff = (y + 1) * kk->drv.p->font_height
+                                    - kk->drv.p->font_offset;
+
         for(x = 0; x < kk->qq->width; x += len)
         {
             char buffer[BUFSIZ]; /* FIXME: use a smaller buffer */
@@ -280,27 +283,30 @@ static void x11_display(caca_t *kk)
             len = 1;
 
             /* Skip spaces */
-            if(chars[0] == ' ')
+            if(chars[0] <= 0x00000020 || chars[0] >= 0x00000080)
                 continue;
 
-            buffer[0] = chars[0] & 0x7f;
+            buffer[0] = (char)chars[0];
 
             while(x + len < kk->qq->width
                    && (attr[len] & 0xf) == (attr[0] & 0xf))
             {
-                buffer[len] = chars[len] & 0x7f;
+                if(chars[len] > 0x00000020 && chars[len] < 0x00000080)
+                    buffer[len] = (char)chars[len];
+                else
+                    buffer[len] = ' ';
                 len++;
             }
 
-            XSetForeground(kk->drv.p->dpy, kk->drv.p->gc, kk->drv.p->colors[attr[0] & 0xf]);
+            XSetForeground(kk->drv.p->dpy, kk->drv.p->gc,
+                           kk->drv.p->colors[attr[0] & 0xf]);
             XDrawString(kk->drv.p->dpy, kk->drv.p->pixmap, kk->drv.p->gc,
-                        x * kk->drv.p->font_width,
-                        (y + 1) * kk->drv.p->font_height - kk->drv.p->font_offset,
-                        buffer, len);
+                        x * kk->drv.p->font_width, yoff, buffer, len);
         }
     }
 
-    XCopyArea(kk->drv.p->dpy, kk->drv.p->pixmap, kk->drv.p->window, kk->drv.p->gc, 0, 0,
+    XCopyArea(kk->drv.p->dpy, kk->drv.p->pixmap, kk->drv.p->window,
+              kk->drv.p->gc, 0, 0,
               kk->qq->width * kk->drv.p->font_width,
               kk->qq->height * kk->drv.p->font_height,
               0, 0);

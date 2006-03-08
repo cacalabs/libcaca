@@ -198,7 +198,13 @@ static void win32_display(caca_t *kk)
     /* Render everything to our back buffer */
     for(i = 0; i < kk->qq->width * kk->qq->height; i++)
     {
-        kk->drv.p->buffer[i].Char.AsciiChar = kk->qq->chars[i] & 0x7f;
+        uint32_t c = kk->qq->chars[i];
+
+        if(c > 0x00000020 && c < 0x00000080)
+            kk->drv.p->buffer[i].Char.AsciiChar = (char)c;
+        else
+            kk->drv.p->buffer[i].Char.AsciiChar = ' ';
+
         kk->drv.p->buffer[i].Attributes =
                 win32_fg_palette[kk->qq->attr[i] & 0xf]
                  | win32_bg_palette[kk->qq->attr[i] >> 4];

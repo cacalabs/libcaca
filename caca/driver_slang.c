@@ -203,15 +203,21 @@ static void slang_display(caca_t *kk)
         SLsmg_gotorc(y, 0);
         for(x = kk->qq->width; x--; )
         {
+            uint32_t c = *chars++;
+
 #if defined(OPTIMISE_SLANG_PALETTE)
-            /* If foreground == background, just don't use this colour
-             * pair, and print a space instead of the real character. */
             uint8_t fgcolor = *attr & 0xf;
             uint8_t bgcolor = *attr >> 4;
+
+            /* If foreground == background, just don't use this colour
+             * pair, and print a space instead of the real character. */
             if(fgcolor != bgcolor)
             {
                 SLsmg_set_color(slang_assoc[*attr++]);
-                SLsmg_write_char(*chars++ & 0x7f);
+                if(c > 0x00000020 && 0x00000080)
+                    SLsmg_write_char((char)c);
+                else
+                    SLsmg_write_char(' ');
             }
             else
             {
@@ -224,12 +230,14 @@ static void slang_display(caca_t *kk)
                     fgcolor = CUCUL_COLOR_WHITE;
                 SLsmg_set_color(slang_assoc[fgcolor + 16 * bgcolor]);
                 SLsmg_write_char(' ');
-                chars++;
                 attr++;
             }
 #else
             SLsmg_set_color(*attr++);
-            SLsmg_write_char(*chars++ & 0x7f);
+            if(c > 0x00000020 && 0x00000080)
+                SLsmg_write_char((char)c);
+            else
+                SLsmg_write_char(' ');
 #endif
         }
     }

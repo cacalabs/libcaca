@@ -78,7 +78,7 @@ struct driver_private
     unsigned int new_width, new_height;
     float font_width, font_height;
     float incx, incy;
-    int id[94];
+    int id[128 - 32];
     unsigned char bit;
     unsigned char mouse_changed, mouse_clicked;
     unsigned int mouse_x, mouse_y;
@@ -164,27 +164,27 @@ static int gl_init_graphics(caca_t *kk)
     memset(empty_texture, 0xff, 16 * 16 * 4);
     glEnable(GL_TEXTURE_2D);
 
-    for(i = 0; i < 94; i++)
+    for(i = 32; i < 128; i++)
     {
-        glGenTextures(1, (GLuint*)&kk->drv.p->id[i]);
-        glBindTexture(GL_TEXTURE_2D, kk->drv.p->id[i]);
+        glGenTextures(1, (GLuint*)&kk->drv.p->id[i - 32]);
+        glBindTexture(GL_TEXTURE_2D, kk->drv.p->id[i - 32]);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8,
                      16, 16, 0, GL_RGB, GL_UNSIGNED_BYTE, empty_texture);
     }
 
-    for(i = 0; i < 94; i++)
+    for(i = 32; i < 128; i++)
     {
         glDisable(GL_TEXTURE_2D);
         glClear(GL_COLOR_BUFFER_BIT);
 
         glColor3f(1, 1, 1);
         glRasterPos2f(0, 15);
-        glutBitmapCharacter(GLUT_BITMAP_9_BY_15, i + 32);
+        glutBitmapCharacter(GLUT_BITMAP_9_BY_15, i);
 
         glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, kk->drv.p->id[i]);
+        glBindTexture(GL_TEXTURE_2D, kk->drv.p->id[i - 32]);
         glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
                          0, kk->drv.p->height - 16, 16, 16, 0);
 
@@ -236,7 +236,8 @@ static void gl_display(caca_t *kk)
             glBegin(GL_QUADS);
                 glVertex2f(x, y);
                 glVertex2f(x + kk->drv.p->font_width, y);
-                glVertex2f(x + kk->drv.p->font_width, y + kk->drv.p->font_height);
+                glVertex2f(x + kk->drv.p->font_width,
+                           y + kk->drv.p->font_height);
                 glVertex2f(x, y + kk->drv.p->font_height);
             glEnd();
 
@@ -259,12 +260,11 @@ static void gl_display(caca_t *kk)
 
         for(x = 0; x < kk->drv.p->width; x += kk->drv.p->font_width)
         {
-            if(*chars != (uint32_t)' ')
-            {
-                char ch = *chars & 0x7f;
+            uint32_t c = *chars++;
 
-                /* FIXME: check ch bounds */
-                glBindTexture(GL_TEXTURE_2D, kk->drv.p->id[ch - 32]);
+            if(c > 0x00000020 && c < 0x00000080)
+            {
+                glBindTexture(GL_TEXTURE_2D, kk->drv.p->id[c - 32]);
                 glColor4bv(gl_bgpal[attr[0] & 0xf]);
                 glBegin(GL_QUADS);
                     glTexCoord2f(0, kk->drv.p->sh);
@@ -279,7 +279,6 @@ static void gl_display(caca_t *kk)
             }
 
             attr++;
-            chars++;
         }
         line++;
     }
