@@ -36,6 +36,8 @@ AC_ARG_ENABLE(x11,
   [  --enable-x11            X11 support (autodetected)])
 AC_ARG_ENABLE(gl,
   [  --enable-gl             OpenGL support (autodetected)])
+AC_ARG_ENABLE(network,
+  [  --enable-network        Network support (autodetected)])
 
 dnl example programs features
 AC_ARG_ENABLE(imlib2,
@@ -134,6 +136,17 @@ if test "${enable_gl}" != "no"; then
       CACA_DRIVERS="${CACA_DRIVERS} gl"])])
   if test "${ac_cv_my_have_gl}" = "no" -a "${enable_gl}" = "yes"; then
     AC_MSG_ERROR([cannot find OpenGL+FreeGLUT development files])
+  fi
+fi
+
+if test "${enable_network}" != "no"; then
+  ac_cv_my_have_network="no"
+  AC_CHECK_HEADERS(sys/socket.h,
+     [ac_cv_my_have_network="yes"
+      AC_DEFINE(USE_NETWORK, 1, Define to activate the network backend driver)
+      CACA_DRIVERS="${CACA_DRIVERS} network"])
+  if test "${ac_cv_my_have_network}" = "no" -a "${enable_network}" = "yes"; then
+    AC_MSG_ERROR([cannot find standard networking socket files])
   fi
 fi
 

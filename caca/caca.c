@@ -146,6 +146,11 @@ static int caca_init_driver(caca_t *kk)
             ncurses_init_driver(kk);
         else
 #endif
+#if defined(USE_NETWORK)
+        if(!strcasecmp(var, "network"))
+            network_init_driver(kk);
+        else
+#endif
             return -1;
 
         return 0;
@@ -184,6 +189,10 @@ static int caca_init_driver(caca_t *kk)
 #endif
 #if defined(USE_NCURSES)
     slang_init_driver(kk);
+    return 0;
+#endif
+#if defined(USE_NETWORK)
+    network_init_driver(kk);
     return 0;
 #endif
 

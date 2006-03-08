@@ -54,6 +54,9 @@ enum caca_driver
 #if defined(USE_GL)
     CACA_DRIVER_GL = 6,
 #endif
+#if defined(USE_NETWORK)
+    CACA_DRIVER_NETWORK = 7,
+#endif
     CACA_DRIVER_NONE = 0
 };
 
@@ -76,7 +79,9 @@ void win32_init_driver(caca_t *);
 #if defined(USE_X11)
 void x11_init_driver(caca_t *);
 #endif
-
+#if defined(USE_NETWORK)
+void network_init_driver(caca_t *);
+#endif
 /* Timer structure */
 struct caca_timer
 {
