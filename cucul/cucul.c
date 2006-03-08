@@ -26,7 +26,8 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
-static void cucul_read_environment(cucul_t *qq);
+static void cucul_read_environment(cucul_t *);
+void _cucul_set_size(cucul_t *, unsigned int, unsigned int);
 
 /** \brief Initialise \e libcucul.
  *
@@ -74,118 +75,46 @@ cucul_t * cucul_init(void)
     return qq;
 }
 
-/** \brief Set the screen size.
+/** \brief Set the canvas size.
  *
- *  This function sets the screen width and height, in character cells.
+ *  This function sets the canvas width and height, in character cells.
  *
- *  \param width The desired screen width
- *  \param height The desired screen height
+ *  It is an error to try to resize the canvas if an output driver has
+ *  been attached to the canvas using caca_attach(). You need to remove
+ *  the output driver using caca_detach() before you can change the
+ *  canvas size again.
+ *
+ *  However, the caca output driver can cause a canvas resize through
+ *  user interaction. See the caca_event() documentation for more about
+ *  this.
+ *
+ *  \param width The desired canvas width
+ *  \param height The desired canvas height
  */
 void cucul_set_size(cucul_t *qq, unsigned int width, unsigned int height)
 {
-    unsigned int x, y, old_width, old_height, new_size, old_size;
+    if(qq->refcount)
+        return;
 
-    old_width = qq->width;
-    old_height = qq->height;
-    old_size = old_width * old_height;
-
-    qq->width = width;
-    qq->height = height;
-    new_size = width * height;
-
-    /* Step 1: if new area is bigger, resize the memory area now. */
-    if(new_size > old_size)
-    {
-        qq->chars = realloc(qq->chars, new_size * sizeof(uint32_t));
-        qq->attr = realloc(qq->attr, new_size * sizeof(uint8_t));
-    }
-
-    /* Step 2: move line data if necessary. */
-    if(width == old_width)
-    {
-        /* Width did not change, which means we do not need to move data. */
-        ;
-    }
-    else if(width > old_width)
-    {
-        /* New width is bigger than old width, which means we need to
-         * copy lines starting from the bottom of the screen otherwise
-         * we will overwrite information. */
-        for(y = height < old_height ? height : old_height; y--; )
-        {
-            for(x = old_width; x--; )
-            {
-                qq->chars[y * width + x] = qq->chars[y * old_width + x];
-                qq->attr[y * width + x] = qq->attr[y * old_width + x];
-            }
-
-            /* Zero the end of the line */
-            for(x = width - old_width; x--; )
-                qq->chars[y * width + old_width + x] = (uint32_t)' ';
-            memset(qq->attr + y * width + old_width, 0,
-                   width - old_width);
-        }
-    }
-    else
-    {
-        /* New width is smaller. Copy as many lines as possible. Ignore
-         * the first line, it is already in place. */
-        unsigned int lines = height < old_height ? height : old_height;
-
-        for(y = 1; y < lines; y++)
-        {
-            for(x = 0; x < width; x++)
-            {
-                qq->chars[y * width + x] = qq->chars[y * old_width + x];
-                qq->attr[y * width + x] = qq->attr[y * old_width + x];
-            }
-        }
-    }
-
-    /* Step 3: fill the bottom of the new screen if necessary. */
-    if(height > old_height)
-    {
-        /* Zero the bottom of the screen */
-        for(x = (height - old_height) * width; x--; )
-            qq->chars[old_height * width + x] = (uint32_t)' ';
-        memset(qq->attr + old_height * width, 0,
-               (height - old_height) * width);
-    }
-
-    /* Step 4: if new area is smaller, resize memory area now. */
-    if(new_size <= old_size)
-    {
-        qq->chars = realloc(qq->chars, new_size * sizeof(uint32_t));
-        qq->attr = realloc(qq->attr, new_size * sizeof(uint8_t));
-    }
-
-    /* Recompute the scratch line and the empty line */
-    if(width != old_width)
-    {
-        qq->empty_line = realloc(qq->empty_line, width + 1);
-        memset(qq->empty_line, ' ', width);
-        qq->empty_line[width] = '\0';
-
-        qq->scratch_line = realloc(qq->scratch_line, width + 1);
-    }
+    cucul_set_size_internal(qq, width, height);
 }
 
-/** \brief Get the screen width.
+/** \brief Get the canvas width.
  *
- *  This function returns the current screen width, in character cells.
+ *  This function returns the current canvas width, in character cells.
  *
- *  \return The screen width.
+ *  \return The canvas width.
  */
 unsigned int cucul_get_width(cucul_t *qq)
 {
     return qq->width;
 }
 
-/** \brief Get the screen height.
+/** \brief Get the canvas height.
  *
- *  This function returns the current screen height, in character cells.
+ *  This function returns the current canvas height, in character cells.
  *
- *  \return The screen height.
+ *  \return The canvas height.
  */
 unsigned int cucul_get_height(cucul_t *qq)
 {
@@ -392,5 +321,94 @@ static void cucul_read_environment(cucul_t * qq)
             cucul_set_feature(qq, CUCUL_DITHERING_FSTEIN);
     }
 #endif
+}
+
+void _cucul_set_size(cucul_t *qq, unsigned int width, unsigned int height)
+{
+    unsigned int x, y, old_width, old_height, new_size, old_size;
+
+    old_width = qq->width;
+    old_height = qq->height;
+    old_size = old_width * old_height;
+
+    qq->width = width;
+    qq->height = height;
+    new_size = width * height;
+
+    /* Step 1: if new area is bigger, resize the memory area now. */
+    if(new_size > old_size)
+    {
+        qq->chars = realloc(qq->chars, new_size * sizeof(uint32_t));
+        qq->attr = realloc(qq->attr, new_size * sizeof(uint8_t));
+    }
+
+    /* Step 2: move line data if necessary. */
+    if(width == old_width)
+    {
+        /* Width did not change, which means we do not need to move data. */
+        ;
+    }
+    else if(width > old_width)
+    {
+        /* New width is bigger than old width, which means we need to
+         * copy lines starting from the bottom of the screen otherwise
+         * we will overwrite information. */
+        for(y = height < old_height ? height : old_height; y--; )
+        {
+            for(x = old_width; x--; )
+            {
+                qq->chars[y * width + x] = qq->chars[y * old_width + x];
+                qq->attr[y * width + x] = qq->attr[y * old_width + x];
+            }
+
+            /* Zero the end of the line */
+            for(x = width - old_width; x--; )
+                qq->chars[y * width + old_width + x] = (uint32_t)' ';
+            memset(qq->attr + y * width + old_width, 0,
+                   width - old_width);
+        }
+    }
+    else
+    {
+        /* New width is smaller. Copy as many lines as possible. Ignore
+         * the first line, it is already in place. */
+        unsigned int lines = height < old_height ? height : old_height;
+
+        for(y = 1; y < lines; y++)
+        {
+            for(x = 0; x < width; x++)
+            {
+                qq->chars[y * width + x] = qq->chars[y * old_width + x];
+                qq->attr[y * width + x] = qq->attr[y * old_width + x];
+            }
+        }
+    }
+
+    /* Step 3: fill the bottom of the new screen if necessary. */
+    if(height > old_height)
+    {
+        /* Zero the bottom of the screen */
+        for(x = (height - old_height) * width; x--; )
+            qq->chars[old_height * width + x] = (uint32_t)' ';
+        memset(qq->attr + old_height * width, 0,
+               (height - old_height) * width);
+    }
+
+    /* Step 4: if new area is smaller, resize memory area now. */
+    if(new_size <= old_size)
+    {
+        qq->chars = realloc(qq->chars, new_size * sizeof(uint32_t));
+        qq->attr = realloc(qq->attr, new_size * sizeof(uint8_t));
+    }
+
+    /* Recompute the scratch line and the empty line */
+    if(width != old_width)
+    {
+        qq->empty_line = realloc(qq->empty_line, width + 1);
+        memset(qq->empty_line, ' ', width);
+        qq->empty_line[width] = '\0';
+
+        qq->scratch_line = realloc(qq->scratch_line, width + 1);
+    }
 }
 
