@@ -287,13 +287,13 @@ static unsigned int slang_get_event(caca_t *kk)
         _push_event(kk, CACA_EVENT_MOUSE_PRESS | button);
         _push_event(kk, CACA_EVENT_MOUSE_RELEASE | button);
 
-        if(kk->mouse_x == x && kk->mouse_y == y)
+        if(kk->mouse.x == x && kk->mouse.y == y)
             return _pop_event(kk);
 
-        kk->mouse_x = x;
-        kk->mouse_y = y;
+        kk->mouse.x = x;
+        kk->mouse.y = y;
 
-        return CACA_EVENT_MOUSE_MOTION | (kk->mouse_x << 12) | kk->mouse_y;
+        return CACA_EVENT_MOUSE_MOTION | (kk->mouse.x << 12) | kk->mouse.y;
     }
 
     event = CACA_EVENT_KEY_PRESS;

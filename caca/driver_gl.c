@@ -331,9 +331,9 @@ static unsigned int gl_get_event(caca_t *kk)
             event |= CACA_EVENT_MOUSE_PRESS | kk->drv.p->mouse_button;
             kk->drv.p->mouse_clicked = 0;
         }
-        kk->mouse_x = kk->drv.p->mouse_x;
-        kk->mouse_y = kk->drv.p->mouse_y;
-        event |= CACA_EVENT_MOUSE_MOTION | (kk->mouse_x << 12) | kk->mouse_y;
+        kk->mouse.x = kk->drv.p->mouse_x;
+        kk->mouse.y = kk->drv.p->mouse_y;
+        event |= CACA_EVENT_MOUSE_MOTION | (kk->mouse.x << 12) | kk->mouse.y;
         kk->drv.p->mouse_changed = 0;
     }
 

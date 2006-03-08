@@ -103,10 +103,10 @@ unsigned int caca_wait_event(caca_t *kk, unsigned int event_mask)
  */
 unsigned int caca_get_mouse_x(caca_t *kk)
 {
-    if(kk->mouse_x >= kk->qq->width)
-        kk->mouse_x = kk->qq->width - 1;
+    if(kk->mouse.x >= kk->qq->width)
+        kk->mouse.x = kk->qq->width - 1;
 
-    return kk->mouse_x;
+    return kk->mouse.x;
 }
 
 /** \brief Return the Y mouse coordinate.
@@ -120,10 +120,10 @@ unsigned int caca_get_mouse_x(caca_t *kk)
  */
 unsigned int caca_get_mouse_y(caca_t *kk)
 {
-    if(kk->mouse_y >= kk->qq->height)
-        kk->mouse_y = kk->qq->height - 1;
+    if(kk->mouse.y >= kk->qq->height)
+        kk->mouse.y = kk->qq->height - 1;
 
-    return kk->mouse_y;
+    return kk->mouse.y;
 }
 
 /*

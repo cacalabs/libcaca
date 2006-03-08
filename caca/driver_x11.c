@@ -387,13 +387,13 @@ static unsigned int x11_get_event(caca_t *kk)
             if(newy >= kk->qq->height)
                 newy = kk->qq->height - 1;
 
-            if(kk->mouse_x == newx && kk->mouse_y == newy)
+            if(kk->mouse.x == newx && kk->mouse.y == newy)
                 continue;
 
-            kk->mouse_x = newx;
-            kk->mouse_y = newy;
+            kk->mouse.x = newx;
+            kk->mouse.y = newy;
 
-            return CACA_EVENT_MOUSE_MOTION | (kk->mouse_x << 12) | kk->mouse_y;
+            return CACA_EVENT_MOUSE_MOTION | (kk->mouse.x << 12) | kk->mouse.y;
         }
 
         /* Check for mouse press and release events */

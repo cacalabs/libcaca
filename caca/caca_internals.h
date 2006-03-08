@@ -86,8 +86,10 @@ struct caca_timer
 /* Internal caca context */
 struct caca_context
 {
+    /* A link to our cucul canvas */
     cucul_t *qq;
 
+    /* Device-specific functions */
     struct drv
     {
         enum caca_driver driver;
@@ -103,12 +105,17 @@ struct caca_context
         unsigned int (* get_event) (caca_t *);
     } drv;
 
-    //unsigned int width, height;
-    unsigned int mouse_x, mouse_y;
+    /* Mouse position */
+    struct mouse
+    {
+        unsigned int x, y;
+    } mouse;
 
+    /* Window resize handling */
     int resize;
     int resize_event;
 
+    /* Framerate handling */
     unsigned int delay, rendertime;
     struct caca_timer timer;
     int lastticks;

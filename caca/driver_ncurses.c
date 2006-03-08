@@ -360,14 +360,14 @@ static unsigned int ncurses_get_event(caca_t *kk)
                 break;
         }
 
-        if(kk->mouse_x == (unsigned int)mevent.x &&
-           kk->mouse_y == (unsigned int)mevent.y)
+        if(kk->mouse.x == (unsigned int)mevent.x &&
+           kk->mouse.y == (unsigned int)mevent.y)
             return _pop_event(kk);
 
-        kk->mouse_x = mevent.x;
-        kk->mouse_y = mevent.y;
+        kk->mouse.x = mevent.x;
+        kk->mouse.y = mevent.y;
 
-        return CACA_EVENT_MOUSE_MOTION | (kk->mouse_x << 12) | kk->mouse_y;
+        return CACA_EVENT_MOUSE_MOTION | (kk->mouse.x << 12) | kk->mouse.y;
     }
 
     event = CACA_EVENT_KEY_PRESS;

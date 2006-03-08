@@ -261,14 +261,15 @@ static unsigned int win32_get_event(caca_t *kk)
             {
                 COORD pos = rec.Event.MouseEvent.dwMousePosition;
 
-                if(kk->mouse_x == (unsigned int)pos.X &&
-                   kk->mouse_y == (unsigned int)pos.Y)
+                if(kk->mouse.x == (unsigned int)pos.X &&
+                   kk->mouse.y == (unsigned int)pos.Y)
                     continue;
 
-                kk->mouse_x = pos.X;
-                kk->mouse_y = pos.Y;
+                kk->mouse.x = pos.X;
+                kk->mouse.y = pos.Y;
 
-                return CACA_EVENT_MOUSE_MOTION | (kk->mouse_x << 12) | kk->mouse_y;
+                return CACA_EVENT_MOUSE_MOTION
+                        | (kk->mouse.x << 12) | kk->mouse.y;
             }
 #if 0
             else if(rec.Event.MouseEvent.dwEventFlags == DOUBLE_CLICK)
