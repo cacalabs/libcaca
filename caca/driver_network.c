@@ -75,7 +75,7 @@ static int network_init_graphics(caca_t *kk)
 
 
     kk->drv.p->width = 80;
-    kk->drv.p->height = 25;
+    kk->drv.p->height = 24;
     kk->drv.p->port = 7575; // 75 75 decimal ASCII -> KK   // FIXME, sadly
 
 
@@ -169,20 +169,16 @@ static void network_display(caca_t *kk)
     char *to_send = cucul_get_ansi(kk->qq, 0, &size);;
     to_send = realloc(to_send, kk->qq->width * kk->qq->height * 15 * 3);
     
-
-    if (send(kk->drv.p->new_fd, "\033[s", 4, 0) == -1) {
+    /* ANSI code for move(0,0)*/
+    if (send(kk->drv.p->new_fd, "\033[1,1H", 6, 0) == -1) {
         perror("send");
         return;
     }
+    
     if (send(kk->drv.p->new_fd, to_send, size, 0) == -1) {
         perror("send");
         return;
     }
-    /*   if (send(kk->drv.p->new_fd, "\033?75l\033[2J\033[H", 12, 0) == -1) {
-        perror("send");
-        return;
-    }
-    */
 }
 static void network_handle_resize(caca_t *kk)
 {
