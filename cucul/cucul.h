@@ -203,10 +203,10 @@ void cucul_free_bitmap(cucul_t *, struct cucul_bitmap *);
  *  These functions exports current image to various text formats
  *
  *  @{ */
-char* cucul_get_html(cucul_t *);
-char* cucul_get_html3(cucul_t *);
-char* cucul_get_irc(cucul_t *);
-char* cucul_get_ansi(cucul_t *, int trailing);
+char* cucul_get_html(cucul_t *, int *size);
+char* cucul_get_html3(cucul_t *, int *size);
+char* cucul_get_irc(cucul_t *, int *size);
+char* cucul_get_ansi(cucul_t *, int trailing, int *size);
 /*  @} */
 
 #ifdef __cplusplus

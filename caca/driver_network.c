@@ -44,7 +44,7 @@ struct driver_private
     unsigned int width, height;
     unsigned int port;
     int sockfd, new_fd;
-    struct sockaddr_in my_addr;    // my address information
+    struct sockaddr_in my_addr;
     struct sockaddr_in remote_addr;
     socklen_t sin_size;
     int clilen;
@@ -126,6 +126,7 @@ static int network_init_graphics(caca_t *kk)
            (unsigned int)((kk->drv.p->remote_addr.sin_addr.s_addr)&0x00FF0000)>>16,
            (unsigned int)((kk->drv.p->remote_addr.sin_addr.s_addr)&0xFF000000)>>24);
     
+    /* FIXME, handle >255 sizes */
     codes[16] = (unsigned char) kk->drv.p->width&0xff;
     codes[18] = (unsigned char) kk->drv.p->height&0xff;
 
@@ -164,14 +165,8 @@ static unsigned int network_get_window_height(caca_t *kk)
 
 static void network_display(caca_t *kk)
 {
-    /* Clear screen */
-    /*    if (send(kk->drv.p->new_fd, "\033?75l\033[2J\033[H", 12, 0) == -1) {
-        perror("send");
-        return;
-    }
-    */
-
-    char *to_send = cucul_get_ansi(kk->qq, 0);;
+    int size;
+    char *to_send = cucul_get_ansi(kk->qq, 0, &size);;
     to_send = realloc(to_send, kk->qq->width * kk->qq->height * 15 * 3);
     
 
@@ -179,15 +174,15 @@ static void network_display(caca_t *kk)
         perror("send");
         return;
     }
-    if (send(kk->drv.p->new_fd, to_send, kk->qq->width * kk->qq->height * 15, 0) == -1) {
+    if (send(kk->drv.p->new_fd, to_send, size, 0) == -1) {
         perror("send");
         return;
     }
-    if (send(kk->drv.p->new_fd, "\033?75l\033[2J\033[H", 12, 0) == -1) {
+    /*   if (send(kk->drv.p->new_fd, "\033?75l\033[2J\033[H", 12, 0) == -1) {
         perror("send");
         return;
     }
- 
+    */
 }
 static void network_handle_resize(caca_t *kk)
 {

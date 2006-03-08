@@ -35,7 +35,7 @@
  *  This function generates and returns the HTML representation of
  *  the current image.
  */
-char* cucul_get_html(cucul_t *qq)
+char* cucul_get_html(cucul_t *qq, int *size)
 {
     static int const palette[] =
     {
@@ -94,7 +94,8 @@ char* cucul_get_html(cucul_t *qq)
     cur += sprintf(cur, "</div></body></html>\n");
 
     /* Crop to really used size */
-    buffer = realloc(buffer, (strlen(buffer) + 1) * sizeof(char));
+    *size = (strlen(buffer) + 1) * sizeof(char);
+    buffer = realloc(buffer, *size);
 
     return buffer;
 }
@@ -107,7 +108,7 @@ char* cucul_get_html(cucul_t *qq)
  *  Won't work under gecko (mozilla rendering engine) unless you set
  *  a correct header.
  */
-char* cucul_get_html3(cucul_t *qq)
+char* cucul_get_html3(cucul_t *qq, int *size)
 {
     static int const palette[] =
     {
@@ -170,8 +171,9 @@ char* cucul_get_html3(cucul_t *qq)
     cur += sprintf(cur, "</table>\n");
 
     /* Crop to really used size */
-    buffer = realloc(buffer, (strlen(buffer) + 1) * sizeof(char));
-
+    *size = (strlen(buffer) + 1) * sizeof(char);
+    buffer = realloc(buffer, *size);
+    
     return buffer;
 }
 
@@ -180,7 +182,7 @@ char* cucul_get_html3(cucul_t *qq)
  *  This function generates and returns an IRC representation of
  *  the current image.
  */
-char* cucul_get_irc(cucul_t *qq)
+char* cucul_get_irc(cucul_t *qq, int *size)
 {
     static int const palette[] =
     {
@@ -251,7 +253,8 @@ char* cucul_get_irc(cucul_t *qq)
     *cur++ = '\x0f';
 
     /* Crop to really used size */
-    buffer = realloc(buffer, (strlen(buffer) + 1) * sizeof(char));
+    *size = (strlen(buffer) + 1) * sizeof(char);
+    buffer = realloc(buffer, *size);
 
     return buffer;
 }
@@ -264,7 +267,7 @@ char* cucul_get_irc(cucul_t *qq)
  *                  able to cut/paste the result to a function like printf
  *  \return buffer containing generated ANSI codes as a big string
  */
-char * cucul_get_ansi(cucul_t *qq, int trailing)
+char * cucul_get_ansi(cucul_t *qq, int trailing, int *size)
 {
     static int const palette[] =
     {
@@ -318,7 +321,8 @@ char * cucul_get_ansi(cucul_t *qq, int trailing)
     }
 
     /* Crop to really used size */
-    buffer = realloc(buffer, (strlen(buffer) + 1) * sizeof(char));
+    *size = (strlen(buffer) + 1)* sizeof(char);
+    buffer = realloc(buffer, *size);
 
     return buffer;
 }
