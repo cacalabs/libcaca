@@ -25,6 +25,8 @@ EOF
   exit $1
 }
 
+libs=""
+
 if test $# -eq 0
 then
   usage 1 1>&2
@@ -66,12 +68,23 @@ do
     --libs | --plugin-libs)
       echo_libs=yes
       ;;
+    cucul)
+      libs="$libs -lcucul @CUCUL_LIBS@"
+      ;;
+    caca)
+      libs="$libs -lcaca @CACA_LIBS@ -lcucul @CUCUL_LIBS@"
+      ;;
     *)
       usage 1 1>&2
       ;;
   esac
   shift
 done
+
+if test "$libs" = ""
+then
+  libs="-lcaca @CACA_LIBS@ -lcucul @CUCUL_LIBS@"
+fi
 
 if test "$local_prefix" = "yes"
 then
@@ -105,6 +118,6 @@ fi
 
 if test "$echo_libs" = "yes"
 then
-  echo -L@libdir@ -lcucul -lcaca @CUCUL_LIBS@ @CACA_LIBS@
+  echo -L@libdir@ $libs
 fi
 
