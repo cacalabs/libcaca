@@ -140,10 +140,10 @@ static unsigned int _get_next_event(caca_t *kk)
     event = _lowlevel_event(kk);
 
 #if defined(USE_SLANG)
-    if(kk->driver.driver != CACA_DRIVER_SLANG)
+    if(kk->drv.driver != CACA_DRIVER_SLANG)
 #endif
 #if defined(USE_NCURSES)
-    if(kk->driver.driver != CACA_DRIVER_NCURSES)
+    if(kk->drv.driver != CACA_DRIVER_NCURSES)
 #endif
     return event;
 
@@ -205,7 +205,7 @@ static unsigned int _lowlevel_event(caca_t *kk)
         return event;
 #endif
 
-    return kk->driver.get_event(kk);
+    return kk->drv.get_event(kk);
 }
 
 #if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO)

@@ -27,6 +27,9 @@
 #   include <curses.h>
 #endif
 
+#include <stdlib.h>
+#include <string.h>
+
 #if defined(HAVE_SIGNAL_H)
 #   include <signal.h>
 #endif
@@ -47,6 +50,15 @@
 static RETSIGTYPE sigwinch_handler(int);
 static caca_t *sigwinch_kk; /* FIXME: we ought to get rid of this */
 #endif
+#if defined(HAVE_GETENV) && defined(HAVE_PUTENV)
+static void ncurses_check_terminal(void);
+#endif
+
+struct driver_private
+{
+    int attr[16*16];
+    mmask_t oldmask;
+};
 
 static int ncurses_init_graphics(caca_t *kk)
 {
@@ -75,6 +87,12 @@ static int ncurses_init_graphics(caca_t *kk)
     mmask_t newmask;
     int fg, bg, max;
 
+    kk->drv.p = malloc(sizeof(struct driver_private));
+
+#if defined(HAVE_GETENV) && defined(HAVE_PUTENV)
+    ncurses_check_terminal();
+#endif
+
 #if defined(HAVE_SIGNAL)
     sigwinch_kk = kk;
     signal(SIGWINCH, sigwinch_handler);
@@ -90,7 +108,7 @@ static int ncurses_init_graphics(caca_t *kk)
 
     /* Activate mouse */
     newmask = REPORT_MOUSE_POSITION | ALL_MOUSE_EVENTS;
-    mousemask(newmask, &kk->ncurses.oldmask);
+    mousemask(newmask, &kk->drv.p->oldmask);
     mouseinterval(-1); /* No click emulation */
 
     /* Set the escape delay to a ridiculously low value */
@@ -115,17 +133,17 @@ static int ncurses_init_graphics(caca_t *kk)
              * colour pair to be redefined. */
             int col = ((max + 7 - fg) % max) + max * bg;
             init_pair(col, curses_colors[fg], curses_colors[bg]);
-            kk->ncurses.attr[fg + 16 * bg] = COLOR_PAIR(col);
+            kk->drv.p->attr[fg + 16 * bg] = COLOR_PAIR(col);
 
             if(max == 8)
             {
                 /* Bright fg on simple bg */
-                kk->ncurses.attr[fg + 8 + 16 * bg] = A_BOLD | COLOR_PAIR(col);
+                kk->drv.p->attr[fg + 8 + 16 * bg] = A_BOLD | COLOR_PAIR(col);
                 /* Simple fg on bright bg */
-                kk->ncurses.attr[fg + 16 * (bg + 8)] = A_BLINK
+                kk->drv.p->attr[fg + 16 * (bg + 8)] = A_BLINK
                                                     | COLOR_PAIR(col);
                 /* Bright fg on bright bg */
-                kk->ncurses.attr[fg + 8 + 16 * (bg + 8)] = A_BLINK | A_BOLD
+                kk->drv.p->attr[fg + 8 + 16 * (bg + 8)] = A_BLINK | A_BOLD
                                                         | COLOR_PAIR(col);
             }
         }
@@ -137,10 +155,12 @@ static int ncurses_init_graphics(caca_t *kk)
 
 static int ncurses_end_graphics(caca_t *kk)
 {
-    mousemask(kk->ncurses.oldmask, NULL);
+    mousemask(kk->drv.p->oldmask, NULL);
     curs_set(1);
     noraw();
     endwin();
+
+    free(kk->drv.p);
 
     return 0;
 }
@@ -172,7 +192,7 @@ static void ncurses_display(caca_t *kk)
         move(y, 0);
         for(x = kk->qq->width; x--; )
         {
-            attrset(kk->ncurses.attr[*attr++]);
+            attrset(kk->drv.p->attr[*attr++]);
             addch(*chars++ & 0x7f);
         }
     }
@@ -396,22 +416,60 @@ static RETSIGTYPE sigwinch_handler(int sig)
 }
 #endif
 
+#if defined(HAVE_GETENV) && defined(HAVE_PUTENV)
+static void ncurses_check_terminal(void)
+{
+    char *term, *colorterm, *other;
+
+    term = getenv("TERM");
+    colorterm = getenv("COLORTERM");
+
+    if(term && !strcmp(term, "xterm"))
+    {
+        /* If we are using gnome-terminal, it's really a 16 colour terminal */
+        if(colorterm && !strcmp(colorterm, "gnome-terminal"))
+        {
+            SCREEN *screen;
+            screen = newterm("xterm-16color", stdout, stdin);
+            if(screen == NULL)
+                return;
+            endwin();
+            (void)putenv("TERM=xterm-16color");
+            return;
+        }
+
+        /* Ditto if we are using Konsole */
+        other = getenv("KONSOLE_DCOP_SESSION");
+        if(other)
+        {
+            SCREEN *screen;
+            screen = newterm("xterm-16color", stdout, stdin);
+            if(screen == NULL)
+                return;
+            endwin();
+            (void)putenv("TERM=xterm-16color");
+            return;
+        }
+    }
+}
+#endif
+
 /*
  * Driver initialisation
  */
 
 void ncurses_init_driver(caca_t *kk)
 {
-    kk->driver.driver = CACA_DRIVER_NCURSES;
+    kk->drv.driver = CACA_DRIVER_NCURSES;
 
-    kk->driver.init_graphics = ncurses_init_graphics;
-    kk->driver.end_graphics = ncurses_end_graphics;
-    kk->driver.set_window_title = ncurses_set_window_title;
-    kk->driver.get_window_width = ncurses_get_window_width;
-    kk->driver.get_window_height = ncurses_get_window_height;
-    kk->driver.display = ncurses_display;
-    kk->driver.handle_resize = ncurses_handle_resize;
-    kk->driver.get_event = ncurses_get_event;
+    kk->drv.init_graphics = ncurses_init_graphics;
+    kk->drv.end_graphics = ncurses_end_graphics;
+    kk->drv.set_window_title = ncurses_set_window_title;
+    kk->drv.get_window_width = ncurses_get_window_width;
+    kk->drv.get_window_height = ncurses_get_window_height;
+    kk->drv.display = ncurses_display;
+    kk->drv.handle_resize = ncurses_handle_resize;
+    kk->drv.get_event = ncurses_get_event;
 }
 
 #endif /* USE_NCURSES */

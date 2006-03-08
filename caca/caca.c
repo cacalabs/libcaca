@@ -30,7 +30,6 @@
 #include "caca_internals.h"
 
 static int caca_init_driver(caca_t *kk);
-static void caca_check_terminal(caca_t *kk);
 
 /** \brief Attach a caca graphical context to a cucul backend context.
  *
@@ -54,10 +53,7 @@ caca_t * caca_attach(cucul_t * qq)
         return NULL;
     }
 
-    /* Only needed for slang and ncurses */
-    caca_check_terminal(kk);
-
-    if(kk->driver.init_graphics(kk))
+    if(kk->drv.init_graphics(kk))
     {
         free(kk);
         return NULL;
@@ -102,7 +98,7 @@ caca_t * caca_attach(cucul_t * qq)
  */
 void caca_detach(caca_t *kk)
 {
-    kk->driver.end_graphics(kk);
+    kk->drv.end_graphics(kk);
     kk->qq->refcount--;
     free(kk);
 }
@@ -191,65 +187,5 @@ static int caca_init_driver(caca_t *kk)
 #endif
 
     return -1;
-}
-
-static void caca_check_terminal(caca_t *kk)
-{
-#if defined(HAVE_GETENV) && defined(HAVE_PUTENV) && \
-     (defined(USE_SLANG) || defined(USE_NCURSES))
-    char *term, *colorterm, *other;
-#endif
-
-#if defined(USE_SLANG)
-    if(kk->driver.driver != CACA_DRIVER_SLANG)
-#endif
-#if defined(USE_NCURSES)
-    if(kk->driver.driver != CACA_DRIVER_NCURSES)
-#endif
-    return;
-
-#if defined(HAVE_GETENV) && defined(HAVE_PUTENV) && \
-     (defined(USE_SLANG) || defined(USE_NCURSES))
-    term = getenv("TERM");
-    colorterm = getenv("COLORTERM");
-
-    if(term && !strcmp(term, "xterm"))
-    {
-        /* If we are using gnome-terminal, it's really a 16 colour terminal */
-        if(colorterm && !strcmp(colorterm, "gnome-terminal"))
-        {
-#if defined(USE_NCURSES)
-            if(kk->driver.driver == CACA_DRIVER_NCURSES)
-            {
-                SCREEN *screen;
-                screen = newterm("xterm-16color", stdout, stdin);
-                if(screen == NULL)
-                    return;
-                endwin();
-            }
-#endif
-            (void)putenv("TERM=xterm-16color");
-            return;
-        }
-
-        /* Ditto if we are using Konsole */
-        other = getenv("KONSOLE_DCOP_SESSION");
-        if(other)
-        {
-#if defined(USE_NCURSES)
-            if(kk->driver.driver == CACA_DRIVER_NCURSES)
-            {
-                SCREEN *screen;
-                screen = newterm("xterm-16color", stdout, stdin);
-                if(screen == NULL)
-                    return;
-                endwin();
-            }
-#endif
-            (void)putenv("TERM=xterm-16color");
-            return;
-        }
-    }
-#endif
 }
 

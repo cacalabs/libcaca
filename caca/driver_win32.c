@@ -23,6 +23,8 @@
 
 #include <windows.h>
 
+#include <stdlib.h>
+
 #include "caca.h"
 #include "caca_internals.h"
 #include "cucul.h"
@@ -72,65 +74,75 @@ static int const win32_bg_palette[] =
     BACKGROUND_INTENSITY | BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE
 };
 
+struct driver_private
+{
+    HANDLE hin, hout;
+    HANDLE front, back;
+    CHAR_INFO *buffer;
+    CONSOLE_CURSOR_INFO cci;
+};
+
 static int win32_init_graphics(caca_t *kk)
 {
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     COORD size;
 
+    kk->drv.p = malloc(sizeof(struct driver_private));
+
     /* This call is allowed to fail in case we already have a console */
     AllocConsole();
 
-    kk->win32.hin = GetStdHandle(STD_INPUT_HANDLE);
-    kk->win32.hout = CreateFile("CONOUT$", GENERIC_READ | GENERIC_WRITE,
-                                FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
-                                OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-    if(kk->win32.hout == INVALID_HANDLE_VALUE)
+    kk->drv.p->hin = GetStdHandle(STD_INPUT_HANDLE);
+    kk->drv.p->hout = CreateFile("CONOUT$", GENERIC_READ | GENERIC_WRITE,
+                                 FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
+                                 OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    if(kk->drv.p->hout == INVALID_HANDLE_VALUE)
         return -1;
 
-    GetConsoleCursorInfo(kk->win32.hout, &kk->win32.cci);
-    kk->win32.cci.bVisible = FALSE;
-    SetConsoleCursorInfo(kk->win32.hout, &kk->win32.cci);
+    GetConsoleCursorInfo(kk->drv.p->hout, &kk->drv.p->cci);
+    kk->drv.p->cci.bVisible = FALSE;
+    SetConsoleCursorInfo(kk->drv.p->hout, &kk->drv.p->cci);
 
-    SetConsoleMode(kk->win32.hout, ENABLE_MOUSE_INPUT);
+    SetConsoleMode(kk->drv.p->hout, ENABLE_MOUSE_INPUT);
 
-    kk->win32.front =
+    kk->drv.p->front =
         CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE,
                                   0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
-    if(!kk->win32.front || kk->win32.front == INVALID_HANDLE_VALUE)
+    if(!kk->drv.p->front || kk->drv.p->front == INVALID_HANDLE_VALUE)
         return -1;
 
-    kk->win32.back =
+    kk->drv.p->back =
         CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE,
                                   0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
-    if(!kk->win32.back || kk->win32.back == INVALID_HANDLE_VALUE)
+    if(!kk->drv.p->back || kk->drv.p->back == INVALID_HANDLE_VALUE)
         return -1;
 
-    if(!GetConsoleScreenBufferInfo(kk->win32.hout, &csbi))
+    if(!GetConsoleScreenBufferInfo(kk->drv.p->hout, &csbi))
         return -1;
 
     /* Sample code to get the biggest possible window */
-    //size = GetLargestConsoleWindowSize(kk->win32.hout);
+    //size = GetLargestConsoleWindowSize(kk->drv.p->hout);
     cucul_set_size(kk->qq, csbi.srWindow.Right - csbi.srWindow.Left + 1,
                            csbi.srWindow.Bottom - csbi.srWindow.Top + 1);
     size.X = kk->qq->width;
     size.Y = kk->qq->height;
-    SetConsoleScreenBufferSize(kk->win32.front, size);
-    SetConsoleScreenBufferSize(kk->win32.back, size);
+    SetConsoleScreenBufferSize(kk->drv.p->front, size);
+    SetConsoleScreenBufferSize(kk->drv.p->back, size);
 
-    SetConsoleMode(kk->win32.front, 0);
-    SetConsoleMode(kk->win32.back, 0);
+    SetConsoleMode(kk->drv.p->front, 0);
+    SetConsoleMode(kk->drv.p->back, 0);
 
-    GetConsoleCursorInfo(kk->win32.front, &kk->win32.cci);
-    kk->win32.cci.dwSize = 0;
-    kk->win32.cci.bVisible = FALSE;
-    SetConsoleCursorInfo(kk->win32.front, &kk->win32.cci);
-    SetConsoleCursorInfo(kk->win32.back, &kk->win32.cci);
+    GetConsoleCursorInfo(kk->drv.p->front, &kk->drv.p->cci);
+    kk->drv.p->cci.dwSize = 0;
+    kk->drv.p->cci.bVisible = FALSE;
+    SetConsoleCursorInfo(kk->drv.p->front, &kk->drv.p->cci);
+    SetConsoleCursorInfo(kk->drv.p->back, &kk->drv.p->cci);
 
-    SetConsoleActiveScreenBuffer(kk->win32.front);
+    SetConsoleActiveScreenBuffer(kk->drv.p->front);
 
-    kk->win32.buffer = malloc(kk->qq->width * kk->qq->height
+    kk->drv.p->buffer = malloc(kk->qq->width * kk->qq->height
                                * sizeof(CHAR_INFO));
-    if(kk->win32.buffer == NULL)
+    if(kk->drv.p->buffer == NULL)
         return -1;
 
     return 0;
@@ -138,17 +150,19 @@ static int win32_init_graphics(caca_t *kk)
 
 static int win32_end_graphics(caca_t *kk)
 {
-    SetConsoleActiveScreenBuffer(kk->win32.hout);
-    CloseHandle(kk->win32.back);
-    CloseHandle(kk->win32.front);
+    SetConsoleActiveScreenBuffer(kk->drv.p->hout);
+    CloseHandle(kk->drv.p->back);
+    CloseHandle(kk->drv.p->front);
 
-    SetConsoleTextAttribute(kk->win32.hout, FOREGROUND_INTENSITY
+    SetConsoleTextAttribute(kk->drv.p->hout, FOREGROUND_INTENSITY
                                              | FOREGROUND_RED
                                              | FOREGROUND_GREEN
                                              | FOREGROUND_BLUE);
-    kk->win32.cci.bVisible = TRUE;
-    SetConsoleCursorInfo(kk->win32.hout, &kk->win32.cci);
-    CloseHandle(kk->win32.hout);
+    kk->drv.p->cci.bVisible = TRUE;
+    SetConsoleCursorInfo(kk->drv.p->hout, &kk->drv.p->cci);
+    CloseHandle(kk->drv.p->hout);
+
+    free(kk->drv.p);
 
     return 0;
 }
@@ -184,8 +198,8 @@ static void win32_display(caca_t *kk)
     /* Render everything to our back buffer */
     for(i = 0; i < kk->qq->width * kk->qq->height; i++)
     {
-        kk->win32.buffer[i].Char.AsciiChar = kk->qq->chars[i] & 0x7f;
-        kk->win32.buffer[i].Attributes =
+        kk->drv.p->buffer[i].Char.AsciiChar = kk->qq->chars[i] & 0x7f;
+        kk->drv.p->buffer[i].Attributes =
                 win32_fg_palette[kk->qq->attr[i] & 0xf]
                  | win32_bg_palette[kk->qq->attr[i] >> 4];
     }
@@ -197,7 +211,7 @@ static void win32_display(caca_t *kk)
     rect.Left = rect.Top = 0;
     rect.Right = kk->qq->width - 1;
     rect.Bottom = kk->qq->height - 1;
-    WriteConsoleOutput(kk->win32.front, kk->win32.buffer, size, pos, &rect);
+    WriteConsoleOutput(kk->drv.p->front, kk->drv.p->buffer, size, pos, &rect);
 }
 
 static void win32_handle_resize(caca_t *kk, unsigned int *new_width,
@@ -215,11 +229,11 @@ static unsigned int win32_get_event(caca_t *kk)
 
     for( ; ; )
     {
-        GetNumberOfConsoleInputEvents(kk->win32.hin, &num);
+        GetNumberOfConsoleInputEvents(kk->drv.p->hin, &num);
         if(num == 0)
             break;
 
-        ReadConsoleInput(kk->win32.hin, &rec, 1, &num);
+        ReadConsoleInput(kk->drv.p->hin, &rec, 1, &num);
         if(rec.EventType == KEY_EVENT)
         {
             unsigned int event;
@@ -288,16 +302,16 @@ static unsigned int win32_get_event(caca_t *kk)
 
 void win32_init_driver(caca_t *kk)
 {
-    kk->driver.driver = CACA_DRIVER_WIN32;
+    kk->drv.driver = CACA_DRIVER_WIN32;
 
-    kk->driver.init_graphics = win32_init_graphics;
-    kk->driver.end_graphics = win32_end_graphics;
-    kk->driver.set_window_title = win32_set_window_title;
-    kk->driver.get_window_width = win32_get_window_width;
-    kk->driver.get_window_height = win32_get_window_height;
-    kk->driver.display = win32_display;
-    kk->driver.handle_resize = win32_handle_resize;
-    kk->driver.get_event = win32_get_event;
+    kk->drv.init_graphics = win32_init_graphics;
+    kk->drv.end_graphics = win32_end_graphics;
+    kk->drv.set_window_title = win32_set_window_title;
+    kk->drv.get_window_width = win32_get_window_width;
+    kk->drv.get_window_height = win32_get_window_height;
+    kk->drv.display = win32_display;
+    kk->drv.handle_resize = win32_handle_resize;
+    kk->drv.get_event = win32_get_event;
 }
 
 #endif /* USE_WIN32 */

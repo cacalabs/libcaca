@@ -27,6 +27,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "caca.h"
 #include "caca_internals.h"
@@ -70,6 +71,26 @@ static void gl_handle_reshape(int, int);
 static void gl_handle_mouse(int, int, int, int);
 static void gl_handle_mouse_motion(int, int);
 
+struct driver_private
+{
+    int window;
+    unsigned int width, height;
+    float font_width, font_height;
+    float incx, incy;
+    int id[94];
+    unsigned char resized, bit;
+    unsigned char mouse_changed, mouse_clicked;
+    unsigned int mouse_x, mouse_y;
+    unsigned int mouse_button, mouse_state;
+
+    unsigned char key;
+    int special_key;
+    int new_width;
+    int new_height;
+
+    float sw, sh;
+};
+
 static int gl_init_graphics(caca_t *kk)
 {
     char *empty_texture;
@@ -78,6 +99,8 @@ static int gl_init_graphics(caca_t *kk)
     unsigned int width = 0, height = 0;
     int argc = 1;
     int i;
+
+    kk->drv.p = malloc(sizeof(struct driver_private));
 
     gl_kk = kk;
 
@@ -88,31 +111,31 @@ static int gl_init_graphics(caca_t *kk)
     if(width && height)
         cucul_set_size(kk->qq, width, height);
 
-    kk->gl.font_width = 9;
-    kk->gl.font_height = 15;
+    kk->drv.p->font_width = 9;
+    kk->drv.p->font_height = 15;
 
-    kk->gl.width = kk->qq->width * kk->gl.font_width;
-    kk->gl.height = kk->qq->height * kk->gl.font_height;
+    kk->drv.p->width = kk->qq->width * kk->drv.p->font_width;
+    kk->drv.p->height = kk->qq->height * kk->drv.p->font_height;
 
-    kk->gl.resized = 0;
-    kk->gl.bit = 0;
+    kk->drv.p->resized = 0;
+    kk->drv.p->bit = 0;
 
-    kk->gl.mouse_changed = kk->gl.mouse_clicked = 0;
-    kk->gl.mouse_button = kk->gl.mouse_state = 0;
+    kk->drv.p->mouse_changed = kk->drv.p->mouse_clicked = 0;
+    kk->drv.p->mouse_button = kk->drv.p->mouse_state = 0;
 
-    kk->gl.key = 0;
-    kk->gl.special_key = 0;
+    kk->drv.p->key = 0;
+    kk->drv.p->special_key = 0;
 
-    kk->gl.sw = 9.0f / 16.0f;
-    kk->gl.sh = 15.0f / 16.0f;
+    kk->drv.p->sw = 9.0f / 16.0f;
+    kk->drv.p->sh = 15.0f / 16.0f;
 
     glutInit(&argc, argv);
 
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
-    glutInitWindowSize(kk->gl.width, kk->gl.height);
-    kk->gl.window = glutCreateWindow("caca for GL");
+    glutInitWindowSize(kk->drv.p->width, kk->drv.p->height);
+    kk->drv.p->window = glutCreateWindow("caca for GL");
 
-    gluOrtho2D(0, kk->gl.width, kk->gl.height, 0);
+    gluOrtho2D(0, kk->drv.p->width, kk->drv.p->height, 0);
 
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
@@ -130,7 +153,7 @@ static int gl_init_graphics(caca_t *kk)
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
-    gluOrtho2D(0, kk->gl.width, kk->gl.height, 0);
+    gluOrtho2D(0, kk->drv.p->width, kk->drv.p->height, 0);
 
     glMatrixMode(GL_MODELVIEW);
 
@@ -145,8 +168,8 @@ static int gl_init_graphics(caca_t *kk)
 
     for(i = 0; i < 94; i++)
     {
-        glGenTextures(1, (GLuint*)&kk->gl.id[i]);
-        glBindTexture(GL_TEXTURE_2D, kk->gl.id[i]);
+        glGenTextures(1, (GLuint*)&kk->drv.p->id[i]);
+        glBindTexture(GL_TEXTURE_2D, kk->drv.p->id[i]);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8,
@@ -163,9 +186,9 @@ static int gl_init_graphics(caca_t *kk)
         glutBitmapCharacter(GLUT_BITMAP_9_BY_15, i + 32);
 
         glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, kk->gl.id[i]);
+        glBindTexture(GL_TEXTURE_2D, kk->drv.p->id[i]);
         glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
-                         0, kk->gl.height - 16, 16, 16, 0);
+                         0, kk->drv.p->height - 16, 16, 16, 0);
 
         glutMainLoopEvent();
         glutPostRedisplay();
@@ -176,7 +199,8 @@ static int gl_init_graphics(caca_t *kk)
 
 static int gl_end_graphics(caca_t *kk)
 {
-    glutDestroyWindow(kk->gl.window);
+    glutDestroyWindow(kk->drv.p->window);
+    free(kk->drv.p);
     return 0;
 }
 
@@ -188,12 +212,12 @@ static int gl_set_window_title(caca_t *kk, char const *title)
 
 static unsigned int gl_get_window_width(caca_t *kk)
 {
-    return kk->gl.width;
+    return kk->drv.p->width;
 }
 
 static unsigned int gl_get_window_height(caca_t *kk)
 {
-    return kk->gl.height;
+    return kk->drv.p->height;
 }
 
 static void gl_display(caca_t *kk)
@@ -203,19 +227,19 @@ static void gl_display(caca_t *kk)
     glClear(GL_COLOR_BUFFER_BIT);
 
     line = 0;
-    for(y = 0; y < kk->gl.height; y += kk->gl.font_height)
+    for(y = 0; y < kk->drv.p->height; y += kk->drv.p->font_height)
     {
         uint8_t *attr = kk->qq->attr + line * kk->qq->width;
 
-        for(x = 0; x < kk->gl.width; x += kk->gl.font_width)
+        for(x = 0; x < kk->drv.p->width; x += kk->drv.p->font_width)
         {
             glDisable(GL_TEXTURE_2D);
             glColor4bv(gl_bgpal[attr[0] >> 4]);
             glBegin(GL_QUADS);
                 glVertex2f(x, y);
-                glVertex2f(x + kk->gl.font_width, y);
-                glVertex2f(x + kk->gl.font_width, y + kk->gl.font_height);
-                glVertex2f(x, y + kk->gl.font_height);
+                glVertex2f(x + kk->drv.p->font_width, y);
+                glVertex2f(x + kk->drv.p->font_width, y + kk->drv.p->font_height);
+                glVertex2f(x, y + kk->drv.p->font_height);
             glEnd();
 
             attr++;
@@ -230,29 +254,29 @@ static void gl_display(caca_t *kk)
     glBlendFunc(GL_ONE, GL_ONE);
 
     line = 0;
-    for(y = 0; y < kk->gl.height; y += kk->gl.font_height)
+    for(y = 0; y < kk->drv.p->height; y += kk->drv.p->font_height)
     {
         uint8_t *attr = kk->qq->attr + line * kk->qq->width;
         uint32_t *chars = kk->qq->chars + line * kk->qq->width;
 
-        for(x = 0; x < kk->gl.width; x += kk->gl.font_width)
+        for(x = 0; x < kk->drv.p->width; x += kk->drv.p->font_width)
         {
             if(*chars != (uint32_t)' ')
             {
                 char ch = *chars & 0x7f;
 
                 /* FIXME: check ch bounds */
-                glBindTexture(GL_TEXTURE_2D, kk->gl.id[ch - 32]);
+                glBindTexture(GL_TEXTURE_2D, kk->drv.p->id[ch - 32]);
                 glColor4bv(gl_bgpal[attr[0] & 0xf]);
                 glBegin(GL_QUADS);
-                    glTexCoord2f(0, kk->gl.sh);
+                    glTexCoord2f(0, kk->drv.p->sh);
                     glVertex2f(x, y);
-                    glTexCoord2f(kk->gl.sw, kk->gl.sh);
-                    glVertex2f(x + kk->gl.font_width, y);
-                    glTexCoord2f(kk->gl.sw, 0);
-                    glVertex2f(x + kk->gl.font_width, y + kk->gl.font_height);
+                    glTexCoord2f(kk->drv.p->sw, kk->drv.p->sh);
+                    glVertex2f(x + kk->drv.p->font_width, y);
+                    glTexCoord2f(kk->drv.p->sw, 0);
+                    glVertex2f(x + kk->drv.p->font_width, y + kk->drv.p->font_height);
                     glTexCoord2f(0, 0);
-                    glVertex2f(x, y + kk->gl.font_height);
+                    glVertex2f(x, y + kk->drv.p->font_height);
                 glEnd();
             }
 
@@ -272,18 +296,18 @@ static void gl_display(caca_t *kk)
 static void gl_handle_resize(caca_t *kk, unsigned int *new_width,
                                          unsigned int *new_height)
 {
-    kk->gl.width = kk->gl.new_width;
-    kk->gl.height = kk->gl.new_height;
+    kk->drv.p->width = kk->drv.p->new_width;
+    kk->drv.p->height = kk->drv.p->new_height;
 
-    *new_width = kk->gl.width / kk->gl.font_width;
-    *new_height = (kk->gl.height / kk->gl.font_height) + 1;
+    *new_width = kk->drv.p->width / kk->drv.p->font_width;
+    *new_height = (kk->drv.p->height / kk->drv.p->font_height) + 1;
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
 
-    glViewport(0, 0, kk->gl.width, kk->gl.height);
-    gluOrtho2D(0, kk->gl.width, kk->gl.height, 0);
+    glViewport(0, 0, kk->drv.p->width, kk->drv.p->height);
+    gluOrtho2D(0, kk->drv.p->width, kk->drv.p->height, 0);
     glMatrixMode(GL_MODELVIEW);
 }
 
@@ -293,56 +317,56 @@ static unsigned int gl_get_event(caca_t *kk)
 
     glutMainLoopEvent();
 
-    if(kk->gl.resized && !kk->resize)
+    if(kk->drv.p->resized && !kk->resize)
     {
         kk->resize = 1;
-        kk->gl.resized = 0;
+        kk->drv.p->resized = 0;
         return CACA_EVENT_RESIZE;
     }
 
-    if(kk->gl.mouse_changed)
+    if(kk->drv.p->mouse_changed)
     {
-        if(kk->gl.mouse_clicked)
+        if(kk->drv.p->mouse_clicked)
         {
-            event |= CACA_EVENT_MOUSE_PRESS | kk->gl.mouse_button;
-            kk->gl.mouse_clicked = 0;
+            event |= CACA_EVENT_MOUSE_PRESS | kk->drv.p->mouse_button;
+            kk->drv.p->mouse_clicked = 0;
         }
-        kk->mouse_x = kk->gl.mouse_x;
-        kk->mouse_y = kk->gl.mouse_y;
+        kk->mouse_x = kk->drv.p->mouse_x;
+        kk->mouse_y = kk->drv.p->mouse_y;
         event |= CACA_EVENT_MOUSE_MOTION | (kk->mouse_x << 12) | kk->mouse_y;
-        kk->gl.mouse_changed = 0;
+        kk->drv.p->mouse_changed = 0;
     }
 
-    if(kk->gl.key != 0)
+    if(kk->drv.p->key != 0)
     {
         event |= CACA_EVENT_KEY_PRESS;
-        event |= kk->gl.key;
-        kk->gl.key = 0;
+        event |= kk->drv.p->key;
+        kk->drv.p->key = 0;
         return event;
     }
 
-    if(kk->gl.special_key != 0)
+    if(kk->drv.p->special_key != 0)
     {
         event |= CACA_EVENT_KEY_PRESS;
 
-        switch(kk->gl.special_key)
+        switch(kk->drv.p->special_key)
         {
-            case GLUT_KEY_F1 : kk->gl.special_key = 0; return event | CACA_KEY_F1;
-            case GLUT_KEY_F2 : kk->gl.special_key = 0; return event | CACA_KEY_F2;
-            case GLUT_KEY_F3 : kk->gl.special_key = 0; return event | CACA_KEY_F3;
-            case GLUT_KEY_F4 : kk->gl.special_key = 0; return event | CACA_KEY_F4;
-            case GLUT_KEY_F5 : kk->gl.special_key = 0; return event | CACA_KEY_F5;
-            case GLUT_KEY_F6 : kk->gl.special_key = 0; return event | CACA_KEY_F6;
-            case GLUT_KEY_F7 : kk->gl.special_key = 0; return event | CACA_KEY_F7;
-            case GLUT_KEY_F8 : kk->gl.special_key = 0; return event | CACA_KEY_F8;
-            case GLUT_KEY_F9 : kk->gl.special_key = 0; return event | CACA_KEY_F9;
-            case GLUT_KEY_F10: kk->gl.special_key = 0; return event | CACA_KEY_F10;
-            case GLUT_KEY_F11: kk->gl.special_key = 0; return event | CACA_KEY_F11;
-            case GLUT_KEY_F12: kk->gl.special_key = 0; return event | CACA_KEY_F12;
-            case GLUT_KEY_LEFT : kk->gl.special_key = 0; return event | CACA_KEY_LEFT;
-            case GLUT_KEY_RIGHT: kk->gl.special_key = 0; return event | CACA_KEY_RIGHT;
-            case GLUT_KEY_UP   : kk->gl.special_key = 0; return event | CACA_KEY_UP;
-            case GLUT_KEY_DOWN : kk->gl.special_key = 0; return event | CACA_KEY_DOWN;
+            case GLUT_KEY_F1 : kk->drv.p->special_key = 0; return event | CACA_KEY_F1;
+            case GLUT_KEY_F2 : kk->drv.p->special_key = 0; return event | CACA_KEY_F2;
+            case GLUT_KEY_F3 : kk->drv.p->special_key = 0; return event | CACA_KEY_F3;
+            case GLUT_KEY_F4 : kk->drv.p->special_key = 0; return event | CACA_KEY_F4;
+            case GLUT_KEY_F5 : kk->drv.p->special_key = 0; return event | CACA_KEY_F5;
+            case GLUT_KEY_F6 : kk->drv.p->special_key = 0; return event | CACA_KEY_F6;
+            case GLUT_KEY_F7 : kk->drv.p->special_key = 0; return event | CACA_KEY_F7;
+            case GLUT_KEY_F8 : kk->drv.p->special_key = 0; return event | CACA_KEY_F8;
+            case GLUT_KEY_F9 : kk->drv.p->special_key = 0; return event | CACA_KEY_F9;
+            case GLUT_KEY_F10: kk->drv.p->special_key = 0; return event | CACA_KEY_F10;
+            case GLUT_KEY_F11: kk->drv.p->special_key = 0; return event | CACA_KEY_F11;
+            case GLUT_KEY_F12: kk->drv.p->special_key = 0; return event | CACA_KEY_F12;
+            case GLUT_KEY_LEFT : kk->drv.p->special_key = 0; return event | CACA_KEY_LEFT;
+            case GLUT_KEY_RIGHT: kk->drv.p->special_key = 0; return event | CACA_KEY_RIGHT;
+            case GLUT_KEY_UP   : kk->drv.p->special_key = 0; return event | CACA_KEY_UP;
+            case GLUT_KEY_DOWN : kk->drv.p->special_key = 0; return event | CACA_KEY_DOWN;
             default: return CACA_EVENT_NONE;
         }
     }
@@ -357,50 +381,50 @@ static void gl_handle_keyboard(unsigned char key, int x, int y)
 {
     caca_t *kk = gl_kk;
 
-    kk->gl.key = key;
+    kk->drv.p->key = key;
 }
 
 static void gl_handle_special_key(int key, int x, int y)
 {
     caca_t *kk = gl_kk;
 
-    kk->gl.special_key = key;
+    kk->drv.p->special_key = key;
 }
 
 static void gl_handle_reshape(int w, int h)
 {
     caca_t *kk = gl_kk;
 
-    if(kk->gl.bit) /* Do not handle reshaping at the first time */
+    if(kk->drv.p->bit) /* Do not handle reshaping at the first time */
     {
-        kk->gl.new_width = w;
-        kk->gl.new_height = h;
+        kk->drv.p->new_width = w;
+        kk->drv.p->new_height = h;
 
-        kk->gl.resized = 1;
+        kk->drv.p->resized = 1;
     }
     else
-        kk->gl.bit = 1;
+        kk->drv.p->bit = 1;
 }
 
 static void gl_handle_mouse(int button, int state, int x, int y)
 {
     caca_t *kk = gl_kk;
 
-    kk->gl.mouse_clicked = 1;
-    kk->gl.mouse_button = button;
-    kk->gl.mouse_state = state;
-    kk->gl.mouse_x = x / kk->gl.font_width;
-    kk->gl.mouse_y = y / kk->gl.font_height;
-    kk->gl.mouse_changed = 1;
+    kk->drv.p->mouse_clicked = 1;
+    kk->drv.p->mouse_button = button;
+    kk->drv.p->mouse_state = state;
+    kk->drv.p->mouse_x = x / kk->drv.p->font_width;
+    kk->drv.p->mouse_y = y / kk->drv.p->font_height;
+    kk->drv.p->mouse_changed = 1;
 }
 
 static void gl_handle_mouse_motion(int x, int y)
 {
     caca_t *kk = gl_kk;
 
-    kk->gl.mouse_x = x / kk->gl.font_width;
-    kk->gl.mouse_y = y / kk->gl.font_height;
-    kk->gl.mouse_changed = 1;
+    kk->drv.p->mouse_x = x / kk->drv.p->font_width;
+    kk->drv.p->mouse_y = y / kk->drv.p->font_height;
+    kk->drv.p->mouse_changed = 1;
 }
 
 /*
@@ -409,16 +433,16 @@ static void gl_handle_mouse_motion(int x, int y)
 
 void gl_init_driver(caca_t *kk)
 {
-    kk->driver.driver = CACA_DRIVER_GL;
+    kk->drv.driver = CACA_DRIVER_GL;
 
-    kk->driver.init_graphics = gl_init_graphics;
-    kk->driver.end_graphics = gl_end_graphics;
-    kk->driver.set_window_title = gl_set_window_title;
-    kk->driver.get_window_width = gl_get_window_width;
-    kk->driver.get_window_height = gl_get_window_height;
-    kk->driver.display = gl_display;
-    kk->driver.handle_resize = gl_handle_resize;
-    kk->driver.get_event = gl_get_event;
+    kk->drv.init_graphics = gl_init_graphics;
+    kk->drv.end_graphics = gl_end_graphics;
+    kk->drv.set_window_title = gl_set_window_title;
+    kk->drv.get_window_width = gl_get_window_width;
+    kk->drv.get_window_height = gl_get_window_height;
+    kk->drv.display = gl_display;
+    kk->drv.handle_resize = gl_handle_resize;
+    kk->drv.get_event = gl_get_event;
 }
 
 #endif /* USE_GL */

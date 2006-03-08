@@ -27,29 +27,39 @@
 #   include <pc.h>
 #endif
 
+#include <stdlib.h>
+
 #include "caca.h"
 #include "caca_internals.h"
 #include "cucul.h"
 #include "cucul_internals.h"
 
+struct driver_private
+{
+    struct text_info ti;
+    char *screen;
+};
+
 static int conio_init_graphics(caca_t *kk)
 {
+    kk->drv.p = malloc(sizeof(struct driver_private));
+
     _wscroll = 0;
     _setcursortype(_NOCURSOR);
     clrscr();
 
-    gettextinfo(&kk->conio.ti);
-    kk->conio.screen = malloc(2 * kk->conio.ti.screenwidth
-                                * kk->conio.ti.screenheight * sizeof(char));
-    if(kk->conio.screen == NULL)
+    gettextinfo(&kk->drv.p->ti);
+    kk->drv.p->screen = malloc(2 * kk->drv.p->ti.screenwidth
+                                 * kk->drv.p->ti.screenheight * sizeof(char));
+    if(kk->drv.p->screen == NULL)
         return -1;
 #   if defined(SCREENUPDATE_IN_PC_H)
-    ScreenRetrieve(kk->conio.screen);
+    ScreenRetrieve(kk->drv.p->screen);
 #   else
     /* FIXME */
 #   endif
-    cucul_set_size(kk->qq, kk->conio.ti.screenwidth,
-                           kk->conio.ti.screenheight);
+    cucul_set_size(kk->qq, kk->drv.p->ti.screenwidth,
+                           kk->drv.p->ti.screenheight);
     return 0;
 }
 
@@ -62,7 +72,8 @@ static int conio_end_graphics(caca_t *kk)
     cputs("\r\n");
     _setcursortype(_NORMALCURSOR);
 
-    free(kk->conio.screen);
+    free(kk->drv.p->screen);
+    free(kk->drv.p);
 
     return 0;
 }
@@ -87,7 +98,7 @@ static unsigned int conio_get_window_height(caca_t *kk)
 static void conio_display(caca_t *kk)
 {
     int n;
-    char *screen = kk->conio.screen;
+    char *screen = kk->drv.p->screen;
     uint8_t *attr = kk->qq->attr;
     uint32_t *chars = kk->qq->chars;
     for(n = kk->qq->height * kk->qq->width; n--; )
@@ -96,7 +107,7 @@ static void conio_display(caca_t *kk)
         *screen++ = *attr++;
     }
 #   if defined(SCREENUPDATE_IN_PC_H)
-    ScreenUpdate(kk->conio.screen);
+    ScreenUpdate(kk->drv.p->screen);
 #   else
     /* FIXME */
 #   endif
@@ -127,16 +138,16 @@ static unsigned int conio_get_event(caca_t *kk)
 
 void conio_init_driver(caca_t *kk)
 {
-    kk->driver.driver = CACA_DRIVER_CONIO;
+    kk->drv.driver = CACA_DRIVER_CONIO;
 
-    kk->driver.init_graphics = conio_init_graphics;
-    kk->driver.end_graphics = conio_end_graphics;
-    kk->driver.set_window_title = conio_set_window_title;
-    kk->driver.get_window_width = conio_get_window_width;
-    kk->driver.get_window_height = conio_get_window_height;
-    kk->driver.display = conio_display;
-    kk->driver.handle_resize = conio_handle_resize;
-    kk->driver.get_event = conio_get_event;
+    kk->drv.init_graphics = conio_init_graphics;
+    kk->drv.end_graphics = conio_end_graphics;
+    kk->drv.set_window_title = conio_set_window_title;
+    kk->drv.get_window_width = conio_get_window_width;
+    kk->drv.get_window_height = conio_get_window_height;
+    kk->drv.display = conio_display;
+    kk->drv.handle_resize = conio_handle_resize;
+    kk->drv.get_event = conio_get_event;
 }
 
 #endif /* USE_CONIO */

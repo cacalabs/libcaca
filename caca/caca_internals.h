@@ -29,26 +29,6 @@ typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
 #endif
 
-#if defined(USE_CONIO)
-#   include <conio.h>
-#endif
-#if defined(USE_GL)
-#   include <GL/glut.h>
-#endif
-#if defined(USE_NCURSES)
-#   if defined(HAVE_NCURSES_H)
-#       include <ncurses.h>
-#   else
-#       include <curses.h>
-#   endif
-#endif
-#if defined(USE_WIN32)
-#   include <windows.h>
-#endif
-#if defined(USE_X11)
-#   include <X11/Xlib.h>
-#endif
-
 #if !defined(_DOXYGEN_SKIP_ME)
 #   define EVENTBUF_LEN 10
 #endif
@@ -108,9 +88,10 @@ struct caca_context
 {
     cucul_t *qq;
 
-    struct driver
+    struct drv
     {
         enum caca_driver driver;
+        struct driver_private *p;
 
         int (* init_graphics) (caca_t *);
         int (* end_graphics) (caca_t *);
@@ -120,7 +101,7 @@ struct caca_context
         void (* display) (caca_t *);
         void (* handle_resize) (caca_t *, unsigned int *, unsigned int *);
         unsigned int (* get_event) (caca_t *);
-    } driver;
+    } drv;
 
     //unsigned int width, height;
     unsigned int mouse_x, mouse_y;
@@ -145,71 +126,6 @@ struct caca_context
         unsigned int last_key;
 #endif
     } events;
-
-    /* FIXME: maybe this should go away */
-#if defined(USE_X11) && !defined(_DOXYGEN_SKIP_ME)
-    struct x11
-    {
-        Display *dpy;
-        Window window;
-        Pixmap pixmap;
-        GC gc;
-        long int event_mask;
-        int font_width, font_height;
-        unsigned int new_width, new_height;
-        int colors[16];
-        Font font;
-        XFontStruct *font_struct;
-        int font_offset;
-#if defined(HAVE_X11_XKBLIB_H)
-        Bool autorepeat;
-#endif
-    } x11;
-#endif
-#if defined(USE_NCURSES)
-    struct ncurses
-    {
-        int attr[16*16];
-        mmask_t oldmask;
-    } ncurses;
-#endif
-#if defined(USE_CONIO)
-    struct conio
-    {
-        struct text_info ti;
-        char *screen;
-    } conio;
-#endif
-#if defined(USE_WIN32)
-    struct win32
-    {
-        HANDLE hin, hout;
-        HANDLE front, back;
-        CHAR_INFO *buffer;
-        CONSOLE_CURSOR_INFO cci;
-    } win32;
-#endif
-#if defined(USE_GL)
-    struct gl
-    {
-        int window;
-        unsigned int width, height;
-        float font_width, font_height;
-        float incx, incy;
-        int id[94];
-        unsigned char resized, bit;
-        unsigned char mouse_changed, mouse_clicked;
-        unsigned int mouse_x, mouse_y;
-        unsigned int mouse_button, mouse_state;
-
-        unsigned char key;
-        int special_key;
-        int new_width;
-        int new_height;
-
-        float sw, sh;
-    } gl;
-#endif
 };
 
 /* Timer functions */

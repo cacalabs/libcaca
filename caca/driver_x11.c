@@ -41,6 +41,24 @@
  */
 static int x11_error_handler(Display *, XErrorEvent *);
 
+struct driver_private
+{
+    Display *dpy;
+    Window window;
+    Pixmap pixmap;
+    GC gc;
+    long int event_mask;
+    int font_width, font_height;
+    unsigned int new_width, new_height;
+    int colors[16];
+    Font font;
+    XFontStruct *font_struct;
+    int font_offset;
+#if defined(HAVE_X11_XKBLIB_H)
+    Bool autorepeat;
+#endif
+};
+
 static int x11_init_graphics(caca_t *kk)
 {
     static int const x11_palette[] =
@@ -73,6 +91,8 @@ static int x11_init_graphics(caca_t *kk)
     unsigned int width = 0, height = 0;
     int i;
 
+    kk->drv.p = malloc(sizeof(struct driver_private));
+
     geometry = getenv("CACA_GEOMETRY");
     if(geometry && *(geometry))
         sscanf(geometry, "%ux%u", &width, &height);
@@ -80,8 +100,8 @@ static int x11_init_graphics(caca_t *kk)
     if(width && height)
         cucul_set_size(kk->qq, width, height);
 
-    kk->x11.dpy = XOpenDisplay(NULL);
-    if(kk->x11.dpy == NULL)
+    kk->drv.p->dpy = XOpenDisplay(NULL);
+    if(kk->drv.p->dpy == NULL)
         return -1;
 
     fonts[0] = getenv("CACA_FONT");
@@ -99,18 +119,18 @@ static int x11_init_graphics(caca_t *kk)
         if(!*parser)
         {
             XSetErrorHandler(old_error_handler);
-            XCloseDisplay(kk->x11.dpy);
+            XCloseDisplay(kk->drv.p->dpy);
             return -1;
         }
 
-        kk->x11.font = XLoadFont(kk->x11.dpy, *parser);
-        if(!kk->x11.font)
+        kk->drv.p->font = XLoadFont(kk->drv.p->dpy, *parser);
+        if(!kk->drv.p->font)
             continue;
 
-        kk->x11.font_struct = XQueryFont(kk->x11.dpy, kk->x11.font);
-        if(!kk->x11.font_struct)
+        kk->drv.p->font_struct = XQueryFont(kk->drv.p->dpy, kk->drv.p->font);
+        if(!kk->drv.p->font_struct)
         {
-            XUnloadFont(kk->x11.dpy, kk->x11.font);
+            XUnloadFont(kk->drv.p->dpy, kk->drv.p->font);
             continue;
         }
 
@@ -120,108 +140,110 @@ static int x11_init_graphics(caca_t *kk)
     /* Reset the default X11 error handler */
     XSetErrorHandler(old_error_handler);
 
-    kk->x11.font_width = kk->x11.font_struct->max_bounds.width;
-    kk->x11.font_height = kk->x11.font_struct->max_bounds.ascent
-                         + kk->x11.font_struct->max_bounds.descent;
-    kk->x11.font_offset = kk->x11.font_struct->max_bounds.descent;
+    kk->drv.p->font_width = kk->drv.p->font_struct->max_bounds.width;
+    kk->drv.p->font_height = kk->drv.p->font_struct->max_bounds.ascent
+                         + kk->drv.p->font_struct->max_bounds.descent;
+    kk->drv.p->font_offset = kk->drv.p->font_struct->max_bounds.descent;
 
-    colormap = DefaultColormap(kk->x11.dpy, DefaultScreen(kk->x11.dpy));
+    colormap = DefaultColormap(kk->drv.p->dpy, DefaultScreen(kk->drv.p->dpy));
     for(i = 0; i < 16; i++)
     {
         XColor color;
         color.red = x11_palette[i * 3];
         color.green = x11_palette[i * 3 + 1];
         color.blue = x11_palette[i * 3 + 2];
-        XAllocColor(kk->x11.dpy, colormap, &color);
-        kk->x11.colors[i] = color.pixel;
+        XAllocColor(kk->drv.p->dpy, colormap, &color);
+        kk->drv.p->colors[i] = color.pixel;
     }
 
     x11_winattr.backing_store = Always;
-    x11_winattr.background_pixel = kk->x11.colors[0];
+    x11_winattr.background_pixel = kk->drv.p->colors[0];
     x11_winattr.event_mask = ExposureMask | StructureNotifyMask;
 
-    kk->x11.window =
-        XCreateWindow(kk->x11.dpy, DefaultRootWindow(kk->x11.dpy), 0, 0,
-                      kk->qq->width * kk->x11.font_width,
-                      kk->qq->height * kk->x11.font_height,
+    kk->drv.p->window =
+        XCreateWindow(kk->drv.p->dpy, DefaultRootWindow(kk->drv.p->dpy), 0, 0,
+                      kk->qq->width * kk->drv.p->font_width,
+                      kk->qq->height * kk->drv.p->font_height,
                       0, 0, InputOutput, 0,
                       CWBackingStore | CWBackPixel | CWEventMask,
                       &x11_winattr);
 
-    XStoreName(kk->x11.dpy, kk->x11.window, "caca for X");
+    XStoreName(kk->drv.p->dpy, kk->drv.p->window, "caca for X");
 
-    XSelectInput(kk->x11.dpy, kk->x11.window, StructureNotifyMask);
-    XMapWindow(kk->x11.dpy, kk->x11.window);
+    XSelectInput(kk->drv.p->dpy, kk->drv.p->window, StructureNotifyMask);
+    XMapWindow(kk->drv.p->dpy, kk->drv.p->window);
 
-    kk->x11.gc = XCreateGC(kk->x11.dpy, kk->x11.window, 0, NULL);
-    XSetForeground(kk->x11.dpy, kk->x11.gc, kk->x11.colors[15]);
-    XSetFont(kk->x11.dpy, kk->x11.gc, kk->x11.font);
+    kk->drv.p->gc = XCreateGC(kk->drv.p->dpy, kk->drv.p->window, 0, NULL);
+    XSetForeground(kk->drv.p->dpy, kk->drv.p->gc, kk->drv.p->colors[15]);
+    XSetFont(kk->drv.p->dpy, kk->drv.p->gc, kk->drv.p->font);
 
     for(;;)
     {
         XEvent xevent;
-        XNextEvent(kk->x11.dpy, &xevent);
+        XNextEvent(kk->drv.p->dpy, &xevent);
         if (xevent.type == MapNotify)
             break;
     }
 
 #if defined(HAVE_X11_XKBLIB_H)
     /* Disable autorepeat */
-    XkbSetDetectableAutoRepeat(kk->x11.dpy, True, &kk->x11.autorepeat);
-    if(!kk->x11.autorepeat)
-        XAutoRepeatOff(kk->x11.dpy);
+    XkbSetDetectableAutoRepeat(kk->drv.p->dpy, True, &kk->drv.p->autorepeat);
+    if(!kk->drv.p->autorepeat)
+        XAutoRepeatOff(kk->drv.p->dpy);
 #endif
 
-    kk->x11.event_mask = KeyPressMask | KeyReleaseMask | ButtonPressMask
+    kk->drv.p->event_mask = KeyPressMask | KeyReleaseMask | ButtonPressMask
           | ButtonReleaseMask | PointerMotionMask | StructureNotifyMask
           | ExposureMask;
 
-    XSelectInput(kk->x11.dpy, kk->x11.window, kk->x11.event_mask);
+    XSelectInput(kk->drv.p->dpy, kk->drv.p->window, kk->drv.p->event_mask);
 
-    XSync(kk->x11.dpy, False);
+    XSync(kk->drv.p->dpy, False);
 
-    kk->x11.pixmap = XCreatePixmap(kk->x11.dpy, kk->x11.window,
-                                   kk->qq->width * kk->x11.font_width,
-                                   kk->qq->height * kk->x11.font_height,
-                                   DefaultDepth(kk->x11.dpy,
-                                            DefaultScreen(kk->x11.dpy)));
+    kk->drv.p->pixmap = XCreatePixmap(kk->drv.p->dpy, kk->drv.p->window,
+                                   kk->qq->width * kk->drv.p->font_width,
+                                   kk->qq->height * kk->drv.p->font_height,
+                                   DefaultDepth(kk->drv.p->dpy,
+                                            DefaultScreen(kk->drv.p->dpy)));
 
-    kk->x11.new_width = kk->x11.new_height = 0;
+    kk->drv.p->new_width = kk->drv.p->new_height = 0;
 
     return 0;
 }
 
 static int x11_end_graphics(caca_t *kk)
 {
-    XSync(kk->x11.dpy, False);
+    XSync(kk->drv.p->dpy, False);
 #if defined(HAVE_X11_XKBLIB_H)
-    if(!kk->x11.autorepeat)
-        XAutoRepeatOn(kk->x11.dpy);
+    if(!kk->drv.p->autorepeat)
+        XAutoRepeatOn(kk->drv.p->dpy);
 #endif
-    XFreePixmap(kk->x11.dpy, kk->x11.pixmap);
-    XFreeFont(kk->x11.dpy, kk->x11.font_struct);
-    XFreeGC(kk->x11.dpy, kk->x11.gc);
-    XUnmapWindow(kk->x11.dpy, kk->x11.window);
-    XDestroyWindow(kk->x11.dpy, kk->x11.window);
-    XCloseDisplay(kk->x11.dpy);
+    XFreePixmap(kk->drv.p->dpy, kk->drv.p->pixmap);
+    XFreeFont(kk->drv.p->dpy, kk->drv.p->font_struct);
+    XFreeGC(kk->drv.p->dpy, kk->drv.p->gc);
+    XUnmapWindow(kk->drv.p->dpy, kk->drv.p->window);
+    XDestroyWindow(kk->drv.p->dpy, kk->drv.p->window);
+    XCloseDisplay(kk->drv.p->dpy);
+
+    free(kk->drv.p);
 
     return 0;
 }
 
 static int x11_set_window_title(caca_t *kk, char const *title)
 {
-    XStoreName(kk->x11.dpy, kk->x11.window, title);
+    XStoreName(kk->drv.p->dpy, kk->drv.p->window, title);
     return 0;
 }
 
 static unsigned int x11_get_window_width(caca_t *kk)
 {
-    return kk->qq->width * kk->x11.font_width;
+    return kk->qq->width * kk->drv.p->font_width;
 }
 
 static unsigned int x11_get_window_height(caca_t *kk)
 {
-    return kk->qq->height * kk->x11.font_height;
+    return kk->qq->height * kk->drv.p->font_height;
 }
 
 static void x11_display(caca_t *kk)
@@ -241,11 +263,11 @@ static void x11_display(caca_t *kk)
                    && (attr[len] >> 4) == (attr[0] >> 4))
                 len++;
 
-            XSetForeground(kk->x11.dpy, kk->x11.gc,
-                           kk->x11.colors[attr[0] >> 4]);
-            XFillRectangle(kk->x11.dpy, kk->x11.pixmap, kk->x11.gc,
-                           x * kk->x11.font_width, y * kk->x11.font_height,
-                           len * kk->x11.font_width, kk->x11.font_height);
+            XSetForeground(kk->drv.p->dpy, kk->drv.p->gc,
+                           kk->drv.p->colors[attr[0] >> 4]);
+            XFillRectangle(kk->drv.p->dpy, kk->drv.p->pixmap, kk->drv.p->gc,
+                           x * kk->drv.p->font_width, y * kk->drv.p->font_height,
+                           len * kk->drv.p->font_width, kk->drv.p->font_height);
         }
     }
 
@@ -273,19 +295,19 @@ static void x11_display(caca_t *kk)
                 len++;
             }
 
-            XSetForeground(kk->x11.dpy, kk->x11.gc, kk->x11.colors[attr[0] & 0xf]);
-            XDrawString(kk->x11.dpy, kk->x11.pixmap, kk->x11.gc,
-                        x * kk->x11.font_width,
-                        (y + 1) * kk->x11.font_height - kk->x11.font_offset,
+            XSetForeground(kk->drv.p->dpy, kk->drv.p->gc, kk->drv.p->colors[attr[0] & 0xf]);
+            XDrawString(kk->drv.p->dpy, kk->drv.p->pixmap, kk->drv.p->gc,
+                        x * kk->drv.p->font_width,
+                        (y + 1) * kk->drv.p->font_height - kk->drv.p->font_offset,
                         buffer, len);
         }
     }
 
-    XCopyArea(kk->x11.dpy, kk->x11.pixmap, kk->x11.window, kk->x11.gc, 0, 0,
-              kk->qq->width * kk->x11.font_width,
-              kk->qq->height * kk->x11.font_height,
+    XCopyArea(kk->drv.p->dpy, kk->drv.p->pixmap, kk->drv.p->window, kk->drv.p->gc, 0, 0,
+              kk->qq->width * kk->drv.p->font_width,
+              kk->qq->height * kk->drv.p->font_height,
               0, 0);
-    XFlush(kk->x11.dpy);
+    XFlush(kk->drv.p->dpy);
 }
 
 static void x11_handle_resize(caca_t *kk, unsigned int *new_width,
@@ -293,19 +315,19 @@ static void x11_handle_resize(caca_t *kk, unsigned int *new_width,
 {
     Pixmap new_pixmap;
 
-    *new_width = kk->x11.new_width;
-    *new_height = kk->x11.new_height;
+    *new_width = kk->drv.p->new_width;
+    *new_height = kk->drv.p->new_height;
 
-    new_pixmap = XCreatePixmap(kk->x11.dpy, kk->x11.window,
-                               kk->qq->width * kk->x11.font_width,
-                               kk->qq->height * kk->x11.font_height,
-                               DefaultDepth(kk->x11.dpy,
-                                            DefaultScreen(kk->x11.dpy)));
-    XCopyArea(kk->x11.dpy, kk->x11.pixmap, new_pixmap, kk->x11.gc, 0, 0,
-              kk->qq->width * kk->x11.font_width,
-              kk->qq->height * kk->x11.font_height, 0, 0);
-    XFreePixmap(kk->x11.dpy, kk->x11.pixmap);
-    kk->x11.pixmap = new_pixmap;
+    new_pixmap = XCreatePixmap(kk->drv.p->dpy, kk->drv.p->window,
+                               kk->qq->width * kk->drv.p->font_width,
+                               kk->qq->height * kk->drv.p->font_height,
+                               DefaultDepth(kk->drv.p->dpy,
+                                            DefaultScreen(kk->drv.p->dpy)));
+    XCopyArea(kk->drv.p->dpy, kk->drv.p->pixmap, new_pixmap, kk->drv.p->gc, 0, 0,
+              kk->qq->width * kk->drv.p->font_width,
+              kk->qq->height * kk->drv.p->font_height, 0, 0);
+    XFreePixmap(kk->drv.p->dpy, kk->drv.p->pixmap);
+    kk->drv.p->pixmap = new_pixmap;
 }
 
 static unsigned int x11_get_event(caca_t *kk)
@@ -314,18 +336,18 @@ static unsigned int x11_get_event(caca_t *kk)
     XEvent xevent;
     char key;
 
-    while(XCheckWindowEvent(kk->x11.dpy, kk->x11.window,
-                            kk->x11.event_mask, &xevent) == True)
+    while(XCheckWindowEvent(kk->drv.p->dpy, kk->drv.p->window,
+                            kk->drv.p->event_mask, &xevent) == True)
     {
         KeySym keysym;
 
         /* Expose event */
         if(xevent.type == Expose)
         {
-            XCopyArea(kk->x11.dpy, kk->x11.pixmap,
-                      kk->x11.window, kk->x11.gc, 0, 0,
-                      kk->qq->width * kk->x11.font_width,
-                      kk->qq->height * kk->x11.font_height, 0, 0);
+            XCopyArea(kk->drv.p->dpy, kk->drv.p->pixmap,
+                      kk->drv.p->window, kk->drv.p->gc, 0, 0,
+                      kk->qq->width * kk->drv.p->font_width,
+                      kk->qq->height * kk->drv.p->font_height, 0, 0);
             continue;
         }
 
@@ -334,16 +356,16 @@ static unsigned int x11_get_event(caca_t *kk)
         {
             unsigned int w, h;
 
-            w = (xevent.xconfigure.width + kk->x11.font_width / 3)
-                  / kk->x11.font_width;
-            h = (xevent.xconfigure.height + kk->x11.font_height / 3)
-                  / kk->x11.font_height;
+            w = (xevent.xconfigure.width + kk->drv.p->font_width / 3)
+                  / kk->drv.p->font_width;
+            h = (xevent.xconfigure.height + kk->drv.p->font_height / 3)
+                  / kk->drv.p->font_height;
 
             if(!w || !h || (w == kk->qq->width && h == kk->qq->height))
                 continue;
 
-            kk->x11.new_width = w;
-            kk->x11.new_height = h;
+            kk->drv.p->new_width = w;
+            kk->drv.p->new_height = h;
 
             /* If we are already resizing, ignore the new signal */
             if(kk->resize)
@@ -357,8 +379,8 @@ static unsigned int x11_get_event(caca_t *kk)
         /* Check for mouse motion events */
         if(xevent.type == MotionNotify)
         {
-            unsigned int newx = xevent.xmotion.x / kk->x11.font_width;
-            unsigned int newy = xevent.xmotion.y / kk->x11.font_height;
+            unsigned int newx = xevent.xmotion.x / kk->drv.p->font_width;
+            unsigned int newy = xevent.xmotion.y / kk->drv.p->font_height;
 
             if(newx >= kk->qq->width)
                 newx = kk->qq->width - 1;
@@ -394,7 +416,7 @@ static unsigned int x11_get_event(caca_t *kk)
         if(XLookupString(&xevent.xkey, &key, 1, NULL, NULL))
             return event | key;
 
-        keysym = XKeycodeToKeysym(kk->x11.dpy, xevent.xkey.keycode, 0);
+        keysym = XKeycodeToKeysym(kk->drv.p->dpy, xevent.xkey.keycode, 0);
         switch(keysym)
         {
         case XK_F1:    return event | CACA_KEY_F1;
@@ -439,16 +461,16 @@ static int x11_error_handler(Display *dpy, XErrorEvent *xevent)
 
 void x11_init_driver(caca_t *kk)
 {
-    kk->driver.driver = CACA_DRIVER_X11;
+    kk->drv.driver = CACA_DRIVER_X11;
 
-    kk->driver.init_graphics = x11_init_graphics;
-    kk->driver.end_graphics = x11_end_graphics;
-    kk->driver.set_window_title = x11_set_window_title;
-    kk->driver.get_window_width = x11_get_window_width;
-    kk->driver.get_window_height = x11_get_window_height;
-    kk->driver.display = x11_display;
-    kk->driver.handle_resize = x11_handle_resize;
-    kk->driver.get_event = x11_get_event;
+    kk->drv.init_graphics = x11_init_graphics;
+    kk->drv.end_graphics = x11_end_graphics;
+    kk->drv.set_window_title = x11_set_window_title;
+    kk->drv.get_window_width = x11_get_window_width;
+    kk->drv.get_window_height = x11_get_window_height;
+    kk->drv.display = x11_display;
+    kk->drv.handle_resize = x11_handle_resize;
+    kk->drv.get_event = x11_get_event;
 }
 
 #endif /* USE_X11 */

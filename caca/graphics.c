@@ -47,7 +47,7 @@ static void caca_handle_resize(caca_t *kk);
  */
 int caca_set_window_title(caca_t *kk, char const *title)
 {
-    return kk->driver.set_window_title(kk, title);
+    return kk->drv.set_window_title(kk, title);
 }
 
 /** \brief Get the window width.
@@ -61,7 +61,7 @@ int caca_set_window_title(caca_t *kk, char const *title)
  */
 unsigned int caca_get_window_width(caca_t *kk)
 {
-    return kk->driver.get_window_width(kk);
+    return kk->drv.get_window_width(kk);
 }
 
 /** \brief Get the window height.
@@ -75,7 +75,7 @@ unsigned int caca_get_window_width(caca_t *kk)
  */
 unsigned int caca_get_window_height(caca_t *kk)
 {
-    return kk->driver.get_window_height(kk);
+    return kk->drv.get_window_height(kk);
 }
 
 /** \brief Set the refresh delay.
@@ -128,7 +128,7 @@ void caca_display(caca_t *kk)
 #endif
     int ticks = kk->lastticks + _caca_getticks(&kk->timer);
 
-    kk->driver.display(kk);
+    kk->drv.display(kk);
 
     /* FIXME handle this somewhere else */
     if(kk->resize)
@@ -164,7 +164,7 @@ static void caca_handle_resize(caca_t *kk)
 {
     unsigned int new_width, new_height;
 
-    kk->driver.handle_resize(kk, &new_width, &new_height);
+    kk->drv.handle_resize(kk, &new_width, &new_height);
 
     /* Tell libcucul we changed size */
     if(new_width != kk->qq->width || new_height != kk->qq->height)

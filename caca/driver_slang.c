@@ -27,6 +27,9 @@
 #   include <slang.h>
 #endif
 
+#include <stdlib.h>
+#include <string.h>
+
 #if defined(HAVE_SIGNAL_H)
 #   include <signal.h>
 #endif
@@ -106,9 +109,16 @@ static void slang_init_palette(void);
 static RETSIGTYPE sigwinch_handler(int);
 static caca_t *sigwinch_kk; /* FIXME: we ought to get rid of this */
 #endif
+#if defined(HAVE_GETENV) && defined(HAVE_PUTENV)
+static void slang_check_terminal(void);
+#endif
 
 static int slang_init_graphics(caca_t *kk)
 {
+#if defined(HAVE_GETENV) && defined(HAVE_PUTENV)
+    slang_check_terminal();
+#endif
+
 #if defined(HAVE_SIGNAL)
     sigwinch_kk = kk;
     signal(SIGWINCH, sigwinch_handler);
@@ -375,22 +385,50 @@ static RETSIGTYPE sigwinch_handler(int sig)
 }
 #endif
 
+#if defined(HAVE_GETENV) && defined(HAVE_PUTENV)
+static void slang_check_terminal(void)
+{
+    char *term, *colorterm, *other;
+
+    term = getenv("TERM");
+    colorterm = getenv("COLORTERM");
+
+    if(term && !strcmp(term, "xterm"))
+    {
+        /* If we are using gnome-terminal, it's really a 16 colour terminal */
+        if(colorterm && !strcmp(colorterm, "gnome-terminal"))
+        {
+            (void)putenv("TERM=xterm-16color");
+            return;
+        }
+
+        /* Ditto if we are using Konsole */
+        other = getenv("KONSOLE_DCOP_SESSION");
+        if(other)
+        {
+            (void)putenv("TERM=xterm-16color");
+            return;
+        }
+    }
+}
+#endif
+
 /*
  * Driver initialisation
  */
 
 void slang_init_driver(caca_t *kk)
 {
-    kk->driver.driver = CACA_DRIVER_SLANG;
+    kk->drv.driver = CACA_DRIVER_SLANG;
 
-    kk->driver.init_graphics = slang_init_graphics;
-    kk->driver.end_graphics = slang_end_graphics;
-    kk->driver.set_window_title = slang_set_window_title;
-    kk->driver.get_window_width = slang_get_window_width;
-    kk->driver.get_window_height = slang_get_window_height;
-    kk->driver.display = slang_display;
-    kk->driver.handle_resize = slang_handle_resize;
-    kk->driver.get_event = slang_get_event;
+    kk->drv.init_graphics = slang_init_graphics;
+    kk->drv.end_graphics = slang_end_graphics;
+    kk->drv.set_window_title = slang_set_window_title;
+    kk->drv.get_window_width = slang_get_window_width;
+    kk->drv.get_window_height = slang_get_window_height;
+    kk->drv.display = slang_display;
+    kk->drv.handle_resize = slang_handle_resize;
+    kk->drv.get_event = slang_get_event;
 }
 
 #endif /* USE_SLANG */
