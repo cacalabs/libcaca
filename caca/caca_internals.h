@@ -101,7 +101,7 @@ struct caca_context
         unsigned int (* get_window_width) (caca_t *);
         unsigned int (* get_window_height) (caca_t *);
         void (* display) (caca_t *);
-        void (* handle_resize) (caca_t *, unsigned int *, unsigned int *);
+        void (* handle_resize) (caca_t *);
         unsigned int (* get_event) (caca_t *);
     } drv;
 
@@ -112,8 +112,12 @@ struct caca_context
     } mouse;
 
     /* Window resize handling */
-    int resize;
-    int resize_event;
+    struct resize
+    {
+        int resized;   /* A resize event was requested */
+        //int acked;     /* The event has been acknowledged by the user */
+        unsigned w, h; /* Requested width and height */
+    } resize;
 
     /* Framerate handling */
     unsigned int delay, rendertime;

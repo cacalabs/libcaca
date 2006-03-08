@@ -137,6 +137,14 @@ static unsigned int _get_next_event(caca_t *kk)
 #endif
     unsigned int event;
 
+    /* If we are about to return a resize event, acknowledge it */
+    if(kk->resize.resized)
+    {
+        kk->resize.resized = 0;
+        _caca_handle_resize(kk);
+        return CACA_EVENT_RESIZE;
+    }
+
     event = _lowlevel_event(kk);
 
 #if defined(USE_SLANG)

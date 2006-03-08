@@ -199,38 +199,32 @@ static void ncurses_display(caca_t *kk)
     refresh();
 }
 
-static void ncurses_handle_resize(caca_t *kk, unsigned int *new_width,
-                                              unsigned int *new_height)
+static void ncurses_handle_resize(caca_t *kk)
 {
     struct winsize size;
 
-    *new_width = kk->qq->width;
-    *new_height = kk->qq->height;
-
     if(ioctl(fileno(stdout), TIOCGWINSZ, &size) == 0)
     {
-        *new_width = size.ws_col;
-        *new_height = size.ws_row;
+        kk->resize.w = size.ws_col;
+        kk->resize.h = size.ws_row;
 #if defined(HAVE_RESIZE_TERM)
-        resize_term(*new_height, *new_width);
+        resize_term(kk->resize.h, kk->resize.w);
 #else
-        resizeterm(*new_height, *new_width);
+        resizeterm(*kk->resize.h, *kk->resize.w);
 #endif
         wrefresh(curscr);
+        return;
     }
+
+    /* Fallback */
+    kk->resize.w = kk->qq->width;
+    kk->resize.h = kk->qq->height;
 }
 
 static unsigned int ncurses_get_event(caca_t *kk)
 {
     unsigned int event;
     int intkey;
-
-    if(kk->resize_event)
-    {
-        kk->resize_event = 0;
-        kk->resize = 1;
-        return CACA_EVENT_RESIZE;
-    }
 
     intkey = getch();
     if(intkey == ERR)
@@ -410,7 +404,7 @@ static unsigned int ncurses_get_event(caca_t *kk)
 #if defined(HAVE_SIGNAL)
 static RETSIGTYPE sigwinch_handler(int sig)
 {
-    sigwinch_kk->resize_event = 1;
+    sigwinch_kk->resize.resized = 1;
 
     signal(SIGWINCH, sigwinch_handler);;
 }

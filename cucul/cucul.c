@@ -96,7 +96,7 @@ void cucul_set_size(cucul_t *qq, unsigned int width, unsigned int height)
     if(qq->refcount)
         return;
 
-    cucul_set_size_internal(qq, width, height);
+    _cucul_set_size(qq, width, height);
 }
 
 /** \brief Get the canvas width.

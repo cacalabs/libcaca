@@ -214,12 +214,11 @@ static void win32_display(caca_t *kk)
     WriteConsoleOutput(kk->drv.p->front, kk->drv.p->buffer, size, pos, &rect);
 }
 
-static void win32_handle_resize(caca_t *kk, unsigned int *new_width,
-                                            unsigned int *new_height)
+static void win32_handle_resize(caca_t *kk)
 {
-    /* Nothing to do here. */
-    *new_width = kk->qq->width;
-    *new_height = kk->qq->height;
+    /* FIXME: I don't know what to do here. */
+    kk->resize.w = kk->qq->width;
+    kk->resize.h = kk->qq->height;
 }
 
 static unsigned int win32_get_event(caca_t *kk)

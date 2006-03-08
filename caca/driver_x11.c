@@ -49,7 +49,6 @@ struct driver_private
     GC gc;
     long int event_mask;
     int font_width, font_height;
-    unsigned int new_width, new_height;
     int colors[16];
     Font font;
     XFontStruct *font_struct;
@@ -206,8 +205,6 @@ static int x11_init_graphics(caca_t *kk)
                                    DefaultDepth(kk->drv.p->dpy,
                                             DefaultScreen(kk->drv.p->dpy)));
 
-    kk->drv.p->new_width = kk->drv.p->new_height = 0;
-
     return 0;
 }
 
@@ -310,22 +307,19 @@ static void x11_display(caca_t *kk)
     XFlush(kk->drv.p->dpy);
 }
 
-static void x11_handle_resize(caca_t *kk, unsigned int *new_width,
-                                          unsigned int *new_height)
+static void x11_handle_resize(caca_t *kk)
 {
     Pixmap new_pixmap;
 
-    *new_width = kk->drv.p->new_width;
-    *new_height = kk->drv.p->new_height;
-
     new_pixmap = XCreatePixmap(kk->drv.p->dpy, kk->drv.p->window,
-                               kk->qq->width * kk->drv.p->font_width,
-                               kk->qq->height * kk->drv.p->font_height,
+                               kk->resize.w * kk->drv.p->font_width,
+                               kk->resize.h * kk->drv.p->font_height,
                                DefaultDepth(kk->drv.p->dpy,
                                             DefaultScreen(kk->drv.p->dpy)));
-    XCopyArea(kk->drv.p->dpy, kk->drv.p->pixmap, new_pixmap, kk->drv.p->gc, 0, 0,
-              kk->qq->width * kk->drv.p->font_width,
-              kk->qq->height * kk->drv.p->font_height, 0, 0);
+    XCopyArea(kk->drv.p->dpy, kk->drv.p->pixmap, new_pixmap,
+              kk->drv.p->gc, 0, 0,
+              kk->resize.w * kk->drv.p->font_width,
+              kk->resize.h * kk->drv.p->font_height, 0, 0);
     XFreePixmap(kk->drv.p->dpy, kk->drv.p->pixmap);
     kk->drv.p->pixmap = new_pixmap;
 }
@@ -364,16 +358,11 @@ static unsigned int x11_get_event(caca_t *kk)
             if(!w || !h || (w == kk->qq->width && h == kk->qq->height))
                 continue;
 
-            kk->drv.p->new_width = w;
-            kk->drv.p->new_height = h;
+            kk->resize.w = w;
+            kk->resize.h = h;
+            kk->resize.resized = 1;
 
-            /* If we are already resizing, ignore the new signal */
-            if(kk->resize)
-                continue;
-
-            kk->resize = 1;
-
-            return CACA_EVENT_RESIZE;
+            continue;
         }
 
         /* Check for mouse motion events */

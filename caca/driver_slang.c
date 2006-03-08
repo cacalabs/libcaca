@@ -236,14 +236,13 @@ static void slang_display(caca_t *kk)
     SLsmg_refresh();
 }
 
-static void slang_handle_resize(caca_t *kk, unsigned int *new_width,
-                                            unsigned int *new_height)
+static void slang_handle_resize(caca_t *kk)
 {
     SLtt_get_screen_size();
-    *new_width = SLtt_Screen_Cols;
-    *new_height = SLtt_Screen_Rows;
+    kk->resize.w = SLtt_Screen_Cols;
+    kk->resize.h = SLtt_Screen_Rows;
 
-    if(*new_width != kk->qq->width || *new_height != kk->qq->height)
+    if(kk->resize.w != kk->qq->width || kk->resize.h != kk->qq->height)
         SLsmg_reinit_smg();
 }
 
@@ -251,13 +250,6 @@ static unsigned int slang_get_event(caca_t *kk)
 {
     unsigned int event;
     int intkey;
-
-    if(kk->resize_event)
-    {
-        kk->resize_event = 0;
-        kk->resize = 1;
-        return CACA_EVENT_RESIZE;
-    }
 
     if(!SLang_input_pending(0))
         return CACA_EVENT_NONE;
@@ -379,7 +371,7 @@ static void slang_init_palette(void)
 #if defined(HAVE_SIGNAL)
 static RETSIGTYPE sigwinch_handler(int sig)
 {
-    sigwinch_kk->resize_event = 1;
+    sigwinch_kk->resize.resized = 1;
 
     signal(SIGWINCH, sigwinch_handler);;
 }

@@ -113,11 +113,11 @@ static void conio_display(caca_t *kk)
 #   endif
 }
 
-static void conio_handle_resize(caca_t *kk, unsigned int *new_width,
-                                            unsigned int *new_height)
+static void conio_handle_resize(caca_t *kk)
 {
-    *new_width = kk->qq->width;
-    *new_height = kk->qq->height;
+    /* We know nothing about our window */
+    kk->resize.w = kk->qq->width;
+    kk->resize.h = kk->qq->height;
 }
 
 static unsigned int conio_get_event(caca_t *kk)

@@ -79,11 +79,12 @@ caca_t * caca_attach(cucul_t * qq)
     kk->timer.last_usec = 0;
     kk->lastticks = 0;
 
+    /* Mouse position */
     kk->mouse.x = kk->qq->width / 2;
     kk->mouse.y = kk->qq->height / 2;
 
-    kk->resize = 0;
-    kk->resize_event = 0;
+    /* Resize events */
+    kk->resize.resized = 0;
 
     return kk;
 }

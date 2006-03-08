@@ -75,18 +75,17 @@ struct driver_private
 {
     int window;
     unsigned int width, height;
+    unsigned int new_width, new_height;
     float font_width, font_height;
     float incx, incy;
     int id[94];
-    unsigned char resized, bit;
+    unsigned char bit;
     unsigned char mouse_changed, mouse_clicked;
     unsigned int mouse_x, mouse_y;
     unsigned int mouse_button, mouse_state;
 
     unsigned char key;
     int special_key;
-    int new_width;
-    int new_height;
 
     float sw, sh;
 };
@@ -117,7 +116,6 @@ static int gl_init_graphics(caca_t *kk)
     kk->drv.p->width = kk->qq->width * kk->drv.p->font_width;
     kk->drv.p->height = kk->qq->height * kk->drv.p->font_height;
 
-    kk->drv.p->resized = 0;
     kk->drv.p->bit = 0;
 
     kk->drv.p->mouse_changed = kk->drv.p->mouse_clicked = 0;
@@ -293,14 +291,10 @@ static void gl_display(caca_t *kk)
     glutPostRedisplay();
 }
 
-static void gl_handle_resize(caca_t *kk, unsigned int *new_width,
-                                         unsigned int *new_height)
+static void gl_handle_resize(caca_t *kk)
 {
     kk->drv.p->width = kk->drv.p->new_width;
     kk->drv.p->height = kk->drv.p->new_height;
-
-    *new_width = kk->drv.p->width / kk->drv.p->font_width;
-    *new_height = (kk->drv.p->height / kk->drv.p->font_height) + 1;
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
@@ -317,12 +311,8 @@ static unsigned int gl_get_event(caca_t *kk)
 
     glutMainLoopEvent();
 
-    if(kk->drv.p->resized && !kk->resize)
-    {
-        kk->resize = 1;
-        kk->drv.p->resized = 0;
+    if(kk->resize.resized)
         return CACA_EVENT_RESIZE;
-    }
 
     if(kk->drv.p->mouse_changed)
     {
@@ -400,7 +390,10 @@ static void gl_handle_reshape(int w, int h)
         kk->drv.p->new_width = w;
         kk->drv.p->new_height = h;
 
-        kk->drv.p->resized = 1;
+        kk->resize.w = w / kk->drv.p->font_width;
+        kk->resize.h = (h / kk->drv.p->font_height) + 1;
+
+        kk->resize.resized = 1;
     }
     else
         kk->drv.p->bit = 1;

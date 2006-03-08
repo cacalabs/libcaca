@@ -35,7 +35,7 @@
 /*
  * Local functions
  */
-static void caca_handle_resize(caca_t *kk);
+void _caca_handle_resize(caca_t *kk);
 
 /** \brief Set the window title.
  *
@@ -130,11 +130,11 @@ void caca_display(caca_t *kk)
 
     kk->drv.display(kk);
 
-    /* FIXME handle this somewhere else */
-    if(kk->resize)
+    /* Once the display is finished, we can ack resizes */
+    if(kk->resize.resized)
     {
-        kk->resize = 0;
-        caca_handle_resize(kk);
+        kk->resize.resized = 0;
+        _caca_handle_resize(kk);
     }
 
     /* Wait until kk->delay + time of last call */
@@ -160,14 +160,12 @@ void caca_display(caca_t *kk)
  * XXX: following functions are local
  */
 
-static void caca_handle_resize(caca_t *kk)
+void _caca_handle_resize(caca_t *kk)
 {
-    unsigned int new_width, new_height;
-
-    kk->drv.handle_resize(kk, &new_width, &new_height);
+    kk->drv.handle_resize(kk);
 
     /* Tell libcucul we changed size */
-    if(new_width != kk->qq->width || new_height != kk->qq->height)
-        cucul_set_size(kk->qq, new_width, new_height);
+    if(kk->resize.w != kk->qq->width || kk->resize.h != kk->qq->height)
+        _cucul_set_size(kk->qq, kk->resize.w, kk->resize.h);
 }
 
