@@ -27,14 +27,6 @@
 #   include <slang.h>
 #endif
 
-#include <stdio.h> /* BUFSIZ */
-#include <string.h>
-#include <stdlib.h>
-#if defined(HAVE_UNISTD_H)
-#   include <unistd.h>
-#endif
-#include <stdarg.h>
-
 #if defined(HAVE_SIGNAL_H)
 #   include <signal.h>
 #endif

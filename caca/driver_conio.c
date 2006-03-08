@@ -27,17 +27,6 @@
 #   include <pc.h>
 #endif
 
-#include <string.h>
-#include <stdlib.h>
-#if defined(HAVE_UNISTD_H)
-#   include <unistd.h>
-#endif
-#include <stdarg.h>
-
-#if defined(HAVE_SYS_IOCTL_H)
-#   include <sys/ioctl.h>
-#endif
-
 #include "caca.h"
 #include "caca_internals.h"
 #include "cucul.h"

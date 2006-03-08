@@ -29,12 +29,7 @@
 #endif
 
 #include <stdio.h> /* BUFSIZ */
-#include <string.h>
 #include <stdlib.h>
-#if defined(HAVE_UNISTD_H)
-#   include <unistd.h>
-#endif
-#include <stdarg.h>
 
 #include "caca.h"
 #include "caca_internals.h"
