@@ -120,6 +120,18 @@ static void conio_handle_resize(caca_t *kk, unsigned int *new_width,
     *new_height = kk->qq->height;
 }
 
+static unsigned int conio_get_event(caca_t *kk)
+{
+    unsigned int event;
+
+    if(!_conio_kbhit())
+        return CACA_EVENT_NONE;
+
+    event = getch();
+    _push_event(kk, CACA_EVENT_KEY_RELEASE | event);
+    return CACA_EVENT_KEY_PRESS | event;
+}
+
 /*
  * Driver initialisation
  */
@@ -135,6 +147,7 @@ void conio_init_driver(caca_t *kk)
     kk->driver.get_window_height = conio_get_window_height;
     kk->driver.display = conio_display;
     kk->driver.handle_resize = conio_handle_resize;
+    kk->driver.get_event = conio_get_event;
 }
 
 #endif /* USE_CONIO */

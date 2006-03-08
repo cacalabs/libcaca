@@ -22,6 +22,8 @@
 #if defined(USE_X11)
 
 #include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/keysym.h>
 #if defined(HAVE_X11_XKBLIB_H)
 #   include <X11/XKBlib.h>
 #endif
@@ -162,9 +164,9 @@ static int x11_init_graphics(caca_t *kk)
 
     for(;;)
     {
-        XEvent event;
-        XNextEvent(kk->x11.dpy, &event);
-        if (event.type == MapNotify)
+        XEvent xevent;
+        XNextEvent(kk->x11.dpy, &xevent);
+        if (xevent.type == MapNotify)
             break;
     }
 
@@ -311,11 +313,126 @@ static void x11_handle_resize(caca_t *kk, unsigned int *new_width,
     kk->x11.pixmap = new_pixmap;
 }
 
+static unsigned int x11_get_event(caca_t *kk)
+{
+    unsigned int event = 0;
+    XEvent xevent;
+    char key;
+
+    while(XCheckWindowEvent(kk->x11.dpy, kk->x11.window,
+                            kk->x11.event_mask, &xevent) == True)
+    {
+        KeySym keysym;
+
+        /* Expose event */
+        if(xevent.type == Expose)
+        {
+            XCopyArea(kk->x11.dpy, kk->x11.pixmap,
+                      kk->x11.window, kk->x11.gc, 0, 0,
+                      kk->qq->width * kk->x11.font_width,
+                      kk->qq->height * kk->x11.font_height, 0, 0);
+            continue;
+        }
+
+        /* Resize event */
+        if(xevent.type == ConfigureNotify)
+        {
+            unsigned int w, h;
+
+            w = (xevent.xconfigure.width + kk->x11.font_width / 3)
+                  / kk->x11.font_width;
+            h = (xevent.xconfigure.height + kk->x11.font_height / 3)
+                  / kk->x11.font_height;
+
+            if(!w || !h || (w == kk->qq->width && h == kk->qq->height))
+                continue;
+
+            kk->x11.new_width = w;
+            kk->x11.new_height = h;
+
+            /* If we are already resizing, ignore the new signal */
+            if(kk->resize)
+                continue;
+
+            kk->resize = 1;
+
+            return CACA_EVENT_RESIZE;
+        }
+
+        /* Check for mouse motion events */
+        if(xevent.type == MotionNotify)
+        {
+            unsigned int newx = xevent.xmotion.x / kk->x11.font_width;
+            unsigned int newy = xevent.xmotion.y / kk->x11.font_height;
+
+            if(newx >= kk->qq->width)
+                newx = kk->qq->width - 1;
+            if(newy >= kk->qq->height)
+                newy = kk->qq->height - 1;
+
+            if(kk->mouse_x == newx && kk->mouse_y == newy)
+                continue;
+
+            kk->mouse_x = newx;
+            kk->mouse_y = newy;
+
+            return CACA_EVENT_MOUSE_MOTION | (kk->mouse_x << 12) | kk->mouse_y;
+        }
+
+        /* Check for mouse press and release events */
+        if(xevent.type == ButtonPress)
+            return CACA_EVENT_MOUSE_PRESS
+                    | ((XButtonEvent *)&xevent)->button;
+
+        if(xevent.type == ButtonRelease)
+            return CACA_EVENT_MOUSE_RELEASE
+                    | ((XButtonEvent *)&xevent)->button;
+
+        /* Check for key press and release events */
+        if(xevent.type == KeyPress)
+            event |= CACA_EVENT_KEY_PRESS;
+        else if(xevent.type == KeyRelease)
+            event |= CACA_EVENT_KEY_RELEASE;
+        else
+            continue;
+
+        if(XLookupString(&xevent.xkey, &key, 1, NULL, NULL))
+            return event | key;
+
+        keysym = XKeycodeToKeysym(kk->x11.dpy, xevent.xkey.keycode, 0);
+        switch(keysym)
+        {
+        case XK_F1:    return event | CACA_KEY_F1;
+        case XK_F2:    return event | CACA_KEY_F2;
+        case XK_F3:    return event | CACA_KEY_F3;
+        case XK_F4:    return event | CACA_KEY_F4;
+        case XK_F5:    return event | CACA_KEY_F5;
+        case XK_F6:    return event | CACA_KEY_F6;
+        case XK_F7:    return event | CACA_KEY_F7;
+        case XK_F8:    return event | CACA_KEY_F8;
+        case XK_F9:    return event | CACA_KEY_F9;
+        case XK_F10:   return event | CACA_KEY_F10;
+        case XK_F11:   return event | CACA_KEY_F11;
+        case XK_F12:   return event | CACA_KEY_F12;
+        case XK_F13:   return event | CACA_KEY_F13;
+        case XK_F14:   return event | CACA_KEY_F14;
+        case XK_F15:   return event | CACA_KEY_F15;
+        case XK_Left:  return event | CACA_KEY_LEFT;
+        case XK_Right: return event | CACA_KEY_RIGHT;
+        case XK_Up:    return event | CACA_KEY_UP;
+        case XK_Down:  return event | CACA_KEY_DOWN;
+        default:       return CACA_EVENT_NONE;
+        }
+    }
+
+    return CACA_EVENT_NONE;
+}
+
 /*
  * XXX: following functions are local
  */
 
-static int x11_error_handler(Display *dpy, XErrorEvent *event)
+static int x11_error_handler(Display *dpy, XErrorEvent *xevent)
 {
     /* Ignore the error */
     return 0;
@@ -336,6 +453,7 @@ void x11_init_driver(caca_t *kk)
     kk->driver.get_window_height = x11_get_window_height;
     kk->driver.display = x11_display;
     kk->driver.handle_resize = x11_handle_resize;
+    kk->driver.get_event = x11_get_event;
 }
 
 #endif /* USE_X11 */

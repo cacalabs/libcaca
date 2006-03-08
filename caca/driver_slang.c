@@ -245,6 +245,88 @@ static void slang_handle_resize(caca_t *kk, unsigned int *new_width,
         SLsmg_reinit_smg();
 }
 
+static unsigned int slang_get_event(caca_t *kk)
+{
+    unsigned int event;
+    int intkey;
+
+    if(kk->resize_event)
+    {
+        kk->resize_event = 0;
+        kk->resize = 1;
+        return CACA_EVENT_RESIZE;
+    }
+
+    if(!SLang_input_pending(0))
+        return CACA_EVENT_NONE;
+
+    /* We first use SLang_getkey() to see whether Esc was pressed
+     * alone, then (if it wasn't) we unget the key and use SLkp_getkey()
+     * instead, so that escape sequences are interpreted. */
+    intkey = SLang_getkey();
+
+    if(intkey != 0x1b /* Esc */ || SLang_input_pending(0))
+    {
+        SLang_ungetkey(intkey);
+        intkey = SLkp_getkey();
+    }
+
+    /* If the key was ASCII, return it immediately */
+    if(intkey < 0x100)
+    {
+        return CACA_EVENT_KEY_PRESS | intkey;
+    }
+
+    if(intkey == 0x3e9)
+    {
+        int button = (SLang_getkey() - ' ' + 1) & 0xf;
+        unsigned int x = SLang_getkey() - '!';
+        unsigned int y = SLang_getkey() - '!';
+        _push_event(kk, CACA_EVENT_MOUSE_PRESS | button);
+        _push_event(kk, CACA_EVENT_MOUSE_RELEASE | button);
+
+        if(kk->mouse_x == x && kk->mouse_y == y)
+            return _pop_event(kk);
+
+        kk->mouse_x = x;
+        kk->mouse_y = y;
+
+        return CACA_EVENT_MOUSE_MOTION | (kk->mouse_x << 12) | kk->mouse_y;
+    }
+
+    event = CACA_EVENT_KEY_PRESS;
+
+    switch(intkey)
+    {
+        case SL_KEY_UP: return event | CACA_KEY_UP;
+        case SL_KEY_DOWN: return event | CACA_KEY_DOWN;
+        case SL_KEY_LEFT: return event | CACA_KEY_LEFT;
+        case SL_KEY_RIGHT: return event | CACA_KEY_RIGHT;
+
+        case SL_KEY_IC: return event | CACA_KEY_INSERT;
+        case SL_KEY_DELETE: return event | CACA_KEY_DELETE;
+        case SL_KEY_HOME: return event | CACA_KEY_HOME;
+        case SL_KEY_END: return event | CACA_KEY_END;
+        case SL_KEY_PPAGE: return event | CACA_KEY_PAGEUP;
+        case SL_KEY_NPAGE: return event | CACA_KEY_PAGEDOWN;
+
+        case SL_KEY_F(1): return event | CACA_KEY_F1;
+        case SL_KEY_F(2): return event | CACA_KEY_F2;
+        case SL_KEY_F(3): return event | CACA_KEY_F3;
+        case SL_KEY_F(4): return event | CACA_KEY_F4;
+        case SL_KEY_F(5): return event | CACA_KEY_F5;
+        case SL_KEY_F(6): return event | CACA_KEY_F6;
+        case SL_KEY_F(7): return event | CACA_KEY_F7;
+        case SL_KEY_F(8): return event | CACA_KEY_F8;
+        case SL_KEY_F(9): return event | CACA_KEY_F9;
+        case SL_KEY_F(10): return event | CACA_KEY_F10;
+        case SL_KEY_F(11): return event | CACA_KEY_F11;
+        case SL_KEY_F(12): return event | CACA_KEY_F12;
+    }
+
+    return CACA_EVENT_NONE;
+}
+
 /*
  * XXX: following functions are local
  */
@@ -316,6 +398,7 @@ void slang_init_driver(caca_t *kk)
     kk->driver.get_window_height = slang_get_window_height;
     kk->driver.display = slang_display;
     kk->driver.handle_resize = slang_handle_resize;
+    kk->driver.get_event = slang_get_event;
 }
 
 #endif /* USE_SLANG */

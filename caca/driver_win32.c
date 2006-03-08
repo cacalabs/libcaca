@@ -216,6 +216,80 @@ static void win32_handle_resize(caca_t *kk, unsigned int *new_width,
     *new_height = kk->qq->height;
 }
 
+static unsigned int win32_get_event(caca_t *kk)
+{
+    INPUT_RECORD rec;
+    DWORD num;
+
+    for( ; ; )
+    {
+        GetNumberOfConsoleInputEvents(kk->win32.hin, &num);
+        if(num == 0)
+            break;
+
+        ReadConsoleInput(kk->win32.hin, &rec, 1, &num);
+        if(rec.EventType == KEY_EVENT)
+        {
+            unsigned int event;
+
+            if(rec.Event.KeyEvent.bKeyDown)
+                event = CACA_EVENT_KEY_PRESS;
+            else
+                event = CACA_EVENT_KEY_RELEASE;
+
+            if(rec.Event.KeyEvent.uChar.AsciiChar)
+                return event | rec.Event.KeyEvent.uChar.AsciiChar;
+        }
+
+        if(rec.EventType == MOUSE_EVENT)
+        {
+            if(rec.Event.MouseEvent.dwEventFlags == 0)
+            {
+                if(rec.Event.MouseEvent.dwButtonState & 0x01)
+                    return CACA_EVENT_MOUSE_PRESS | 0x000001;
+
+                if(rec.Event.MouseEvent.dwButtonState & 0x02)
+                    return CACA_EVENT_MOUSE_PRESS | 0x000002;
+            }
+            else if(rec.Event.MouseEvent.dwEventFlags == MOUSE_MOVED)
+            {
+                COORD pos = rec.Event.MouseEvent.dwMousePosition;
+
+                if(kk->mouse_x == (unsigned int)pos.X &&
+                   kk->mouse_y == (unsigned int)pos.Y)
+                    continue;
+
+                kk->mouse_x = pos.X;
+                kk->mouse_y = pos.Y;
+
+                return CACA_EVENT_MOUSE_MOTION | (kk->mouse_x << 12) | kk->mouse_y;
+            }
+#if 0
+            else if(rec.Event.MouseEvent.dwEventFlags == DOUBLE_CLICK)
+            {
+                cout << rec.Event.MouseEvent.dwMousePosition.X << "," <<
+                        rec.Event.MouseEvent.dwMousePosition.Y << "  " << flush;
+            }
+            else if(rec.Event.MouseEvent.dwEventFlags == MOUSE_WHEELED)
+            {
+                SetConsoleCursorPosition(hOut,
+                                         WheelWhere);
+                if(rec.Event.MouseEvent.dwButtonState & 0xFF000000)
+                    cout << "Down" << flush;
+                else
+                    cout << "Up  " << flush;
+            }
+#endif
+        }
+
+        /* Unknown event */
+        return CACA_EVENT_NONE;
+    }
+
+    /* No event */
+    return CACA_EVENT_NONE;
+}
+
 /*
  * Driver initialisation
  */
@@ -231,6 +305,7 @@ void win32_init_driver(caca_t *kk)
     kk->driver.get_window_height = win32_get_window_height;
     kk->driver.display = win32_display;
     kk->driver.handle_resize = win32_handle_resize;
+    kk->driver.get_event = win32_get_event;
 }
 
 #endif /* USE_WIN32 */

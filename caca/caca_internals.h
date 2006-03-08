@@ -119,6 +119,7 @@ struct caca_context
         unsigned int (* get_window_height) (caca_t *);
         void (* display) (caca_t *);
         void (* handle_resize) (caca_t *, unsigned int *, unsigned int *);
+        unsigned int (* get_event) (caca_t *);
     } driver;
 
     //unsigned int width, height;

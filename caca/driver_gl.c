@@ -292,6 +292,68 @@ static void gl_handle_resize(caca_t *kk, unsigned int *new_width,
     glMatrixMode(GL_MODELVIEW);
 }
 
+static unsigned int gl_get_event(caca_t *kk)
+{
+    unsigned int event = 0;
+
+    glutMainLoopEvent();
+
+    if(kk->gl.resized && !kk->resize)
+    {
+        kk->resize = 1;
+        kk->gl.resized = 0;
+        return CACA_EVENT_RESIZE;
+    }
+
+    if(kk->gl.mouse_changed)
+    {
+        if(kk->gl.mouse_clicked)
+        {
+            event |= CACA_EVENT_MOUSE_PRESS | kk->gl.mouse_button;
+            kk->gl.mouse_clicked = 0;
+        }
+        kk->mouse_x = kk->gl.mouse_x;
+        kk->mouse_y = kk->gl.mouse_y;
+        event |= CACA_EVENT_MOUSE_MOTION | (kk->mouse_x << 12) | kk->mouse_y;
+        kk->gl.mouse_changed = 0;
+    }
+
+    if(kk->gl.key != 0)
+    {
+        event |= CACA_EVENT_KEY_PRESS;
+        event |= kk->gl.key;
+        kk->gl.key = 0;
+        return event;
+    }
+
+    if(kk->gl.special_key != 0)
+    {
+        event |= CACA_EVENT_KEY_PRESS;
+
+        switch(kk->gl.special_key)
+        {
+            case GLUT_KEY_F1 : kk->gl.special_key = 0; return event | CACA_KEY_F1;
+            case GLUT_KEY_F2 : kk->gl.special_key = 0; return event | CACA_KEY_F2;
+            case GLUT_KEY_F3 : kk->gl.special_key = 0; return event | CACA_KEY_F3;
+            case GLUT_KEY_F4 : kk->gl.special_key = 0; return event | CACA_KEY_F4;
+            case GLUT_KEY_F5 : kk->gl.special_key = 0; return event | CACA_KEY_F5;
+            case GLUT_KEY_F6 : kk->gl.special_key = 0; return event | CACA_KEY_F6;
+            case GLUT_KEY_F7 : kk->gl.special_key = 0; return event | CACA_KEY_F7;
+            case GLUT_KEY_F8 : kk->gl.special_key = 0; return event | CACA_KEY_F8;
+            case GLUT_KEY_F9 : kk->gl.special_key = 0; return event | CACA_KEY_F9;
+            case GLUT_KEY_F10: kk->gl.special_key = 0; return event | CACA_KEY_F10;
+            case GLUT_KEY_F11: kk->gl.special_key = 0; return event | CACA_KEY_F11;
+            case GLUT_KEY_F12: kk->gl.special_key = 0; return event | CACA_KEY_F12;
+            case GLUT_KEY_LEFT : kk->gl.special_key = 0; return event | CACA_KEY_LEFT;
+            case GLUT_KEY_RIGHT: kk->gl.special_key = 0; return event | CACA_KEY_RIGHT;
+            case GLUT_KEY_UP   : kk->gl.special_key = 0; return event | CACA_KEY_UP;
+            case GLUT_KEY_DOWN : kk->gl.special_key = 0; return event | CACA_KEY_DOWN;
+            default: return CACA_EVENT_NONE;
+        }
+    }
+    return CACA_EVENT_NONE;
+}
+
 /*
  * XXX: following functions are local
  */
@@ -361,6 +423,7 @@ void gl_init_driver(caca_t *kk)
     kk->driver.get_window_height = gl_get_window_height;
     kk->driver.display = gl_display;
     kk->driver.handle_resize = gl_handle_resize;
+    kk->driver.get_event = gl_get_event;
 }
 
 #endif /* USE_GL */
