@@ -179,6 +179,11 @@ static void network_display(caca_t *kk)
         perror("send");
         return;
     }
+    
+    if(to_send) {
+        free(to_send);
+    }
+
 }
 static void network_handle_resize(caca_t *kk)
 {
