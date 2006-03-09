@@ -25,6 +25,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <fcntl.h>
 #include <string.h>
 
 #if defined(HAVE_UNISTD_H)
@@ -49,6 +50,10 @@ struct driver_private
     socklen_t sin_size;
     int clilen;
     char buffer[256];
+
+    int client_count;
+    int *fd_list;
+
 };
 
 
@@ -69,14 +74,19 @@ static char codes[] = {0xff, 0xfb, 0x01,  // WILL ECHO
 static int network_init_graphics(caca_t *kk)
 {
     int yes=1;
+
     printf("Initing network stack.\n");
 
     kk->drv.p = malloc(sizeof(struct driver_private));
-
+    if(kk->drv.p == NULL)
+        return -1;
 
     kk->drv.p->width = 80;
     kk->drv.p->height = 24;
     kk->drv.p->port = 7575; // 75 75 decimal ASCII -> KK   // FIXME, sadly
+    kk->drv.p->client_count = 0;
+    kk->drv.p->fd_list = NULL;
+
 
 
     cucul_set_size(kk->qq, kk->drv.p->width, kk->drv.p->height);
@@ -93,7 +103,6 @@ static int network_init_graphics(caca_t *kk)
         return -1;
     }
 
-
     kk->drv.p->my_addr.sin_family = AF_INET;
     kk->drv.p-> my_addr.sin_port = htons(kk->drv.p->port); 
     kk->drv.p->my_addr.sin_addr.s_addr = INADDR_ANY;
@@ -105,34 +114,14 @@ static int network_init_graphics(caca_t *kk)
         perror("bind");
         return -1;
     }
+
+    /* Non blocking socket */
+    fcntl(kk->drv.p->sockfd, F_SETFL, O_NONBLOCK);
+
+
     printf("listen\n");
     if (listen(kk->drv.p->sockfd, BACKLOG) == -1) {
         perror("listen");
-        return -1;
-    }
-
-    printf("accept\n");
-    kk->drv.p->clilen = sizeof(kk->drv.p->remote_addr);
-    kk->drv.p->new_fd = accept(kk->drv.p->sockfd, (struct sockaddr *) &kk->drv.p->remote_addr, &kk->drv.p->clilen);
-    if (kk->drv.p->new_fd < 0) {
-        perror("ERROR on accept");
-        return -1;
-    }
-
-
-    printf("Got connexion from %d.%d.%d.%d\n", 
-           (unsigned int)((kk->drv.p->remote_addr.sin_addr.s_addr)&0x000000FF),
-           (unsigned int)((kk->drv.p->remote_addr.sin_addr.s_addr)&0x0000FF00)>>8,
-           (unsigned int)((kk->drv.p->remote_addr.sin_addr.s_addr)&0x00FF0000)>>16,
-           (unsigned int)((kk->drv.p->remote_addr.sin_addr.s_addr)&0xFF000000)>>24);
-    
-    /* FIXME, handle >255 sizes */
-    codes[16] = (unsigned char) kk->drv.p->width&0xff;
-    codes[18] = (unsigned char) kk->drv.p->height&0xff;
-
-    /* Send basic telnet codes */
-    if (send(kk->drv.p->new_fd, codes,sizeof(codes) , 0) == -1) {
-        perror("send");
         return -1;
     }
 
@@ -143,13 +132,16 @@ static int network_init_graphics(caca_t *kk)
 
 static int network_end_graphics(caca_t *kk)
 {
-    printf("network end graphics\n");
+    int i;
+    for(i = 0; i < kk->drv.p->client_count; i++) {
+        close(kk->drv.p->fd_list[i]);
+    }
     return 0;
 }
 
 static int network_set_window_title(caca_t *kk, char const *title)
 {
-    printf("network_set_window_title(%s) not implemented yet.\n", title);
+    /* Not handled (yet)*/
     return 0;
 }
 
@@ -165,30 +157,60 @@ static unsigned int network_get_window_height(caca_t *kk)
 
 static void network_display(caca_t *kk)
 {
-    int size;
+    int size, i;
     char *to_send = cucul_get_ansi(kk->qq, 0, &size);;
   
-    
-    /* ANSI code for move(0,0)*/
-    if (send(kk->drv.p->new_fd, "\033[1,1H", 6, 0) == -1) {
-        perror("send");
-        return;
-    }
-    
-    if (send(kk->drv.p->new_fd, to_send, size, 0) == -1) {
-        perror("send");
-        return;
-    }
+    kk->drv.p->clilen = sizeof(kk->drv.p->remote_addr);
+    kk->drv.p->new_fd = accept(kk->drv.p->sockfd, (struct sockaddr *) &kk->drv.p->remote_addr, &kk->drv.p->clilen);
+    if(kk->drv.p->new_fd != -1)
+        {
 
+            if(kk->drv.p->fd_list == NULL) {
+                kk->drv.p->fd_list = malloc(sizeof(int));
+                if(kk->drv.p->fd_list == NULL)
+                    return;
+                kk->drv.p->fd_list[kk->drv.p->client_count] = kk->drv.p->new_fd;
+            } else {
+                kk->drv.p->fd_list = realloc(kk->drv.p->fd_list, (kk->drv.p->client_count+1) * sizeof(int));
+                kk->drv.p->fd_list[kk->drv.p->client_count] = kk->drv.p->new_fd;
+            }
+
+            kk->drv.p->client_count++;
+
+        }
+
+    for(i = 0; i < kk->drv.p->client_count; i++) {
+        if(kk->drv.p->fd_list[i] == -1)
+           continue;
+        
+        /* FIXME, handle >255 sizes */
+            codes[16] = (unsigned char) kk->drv.p->width&0xff;
+            codes[18] = (unsigned char) kk->drv.p->height&0xff;
+            
+            /* Send basic telnet codes */
+            if (send(kk->drv.p->fd_list[i], codes,sizeof(codes) , 0) == -1) {
+                kk->drv.p->fd_list[i] = -1;
+             }
+            
+            /* ANSI code for move(0,0)*/
+            if (send(kk->drv.p->fd_list[i], "\033[1,1H", 6, 0) == -1) {
+                kk->drv.p->fd_list[i] = -1;
+            }
+            
+            if (send(kk->drv.p->fd_list[i], to_send, size, 0) == -1) {
+                kk->drv.p->fd_list[i] = -1;
+            }
+        }
+    
 }
 static void network_handle_resize(caca_t *kk)
 {
-    printf("Resize\n");
- 
+    /* Not handled */
 }
 
 static unsigned int network_get_event(caca_t *kk)
 {
+    /* Not handled */
     return 0;
 }
 
@@ -212,3 +234,4 @@ void network_init_driver(caca_t *kk)
 }
 
 #endif // USE_NETWORK
+
