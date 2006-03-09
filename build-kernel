@@ -1,7 +1,7 @@
 #! /bin/sh
 
 ##  Kernel-mode libcaca compilation script -- Sam Hocevar <sam@zoy.org>
-##  $Id: build-dos 333 2006-03-07 12:39:34Z sam $
+##  $Id$
 
 set -x
 set -e
@@ -15,16 +15,24 @@ LDFLAGS="-nostdlib -Wl,-N -Wl,-Ttext -Wl,100000"
             --enable-vga --disable-imlib2 --disable-doc \
             --host i386
 
-(cd cucul && make)
-(cd caca && make)
+# We need this.
+make clean
 
-(cd src && make cacafire-aafire.o)
+cd cucul && make && cd ..
+cd caca && make && cd ..
 
-(cd kernel &&
-    gcc $CFLAGS -c multiboot.S -o multiboot.o
-    gcc $CFLAGS $CPPFLAGS -c kernel.c -o kernel.o)
+cd src && make cacafire-aafire.o && cd ..
+
+cd kernel &&
+    gcc $CFLAGS -c multiboot.S -o multiboot.o &&
+    gcc $CFLAGS $CPPFLAGS -c kernel.c -o kernel.o &&
+cd ..
 
 gcc $LDFLAGS -o src/cacafire kernel/multiboot.o kernel/kernel.o src/cacafire-aafire.o caca/.libs/libcaca.a cucul/.libs/libcucul.a
 
 objcopy -O binary src/cacafire cacafire.boot
+
+# For further development: create floppy images using the kernel
+#gcc -traditional -c -o bootsect.o bootsect.S
+#ld -Ttext 0x0 -s --oformat binary bootsect.o -o cacafire.img
 

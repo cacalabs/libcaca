@@ -29,8 +29,18 @@ static uint32_t *freemem = (uint32_t*) 0x00200000;
 /* Multiboot kernel entry point */
 void cmain(unsigned long int magic, unsigned long int addr)
 {
+    static char const text[] = "Booting libcaca kernel...";
+    char const *ptr = text;
+    char *video = (char*)0xB8000;
+
     char *argv[] = { NULL };
     int argc = 0;
+
+    /* Print a text message to say hello */
+    while(*ptr)
+        *video = *ptr++; video += 2;
+
+    /* Launch the main program */
     main(argc, argv);
 }
 

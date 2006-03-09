@@ -27,12 +27,29 @@
 #define __BYTE_ORDER 1
 #define __BIG_ENDIAN 2
 
+/* Assembly code for outb and inb */
+extern inline void outb(unsigned char val, unsigned short port);
+extern inline unsigned char inb(unsigned short port);
+
+extern inline void outb(unsigned char val, unsigned short port)
+{
+    __asm__ __volatile__ ("outb %b0,%w1" : : "a" (val), "Nd" (port));
+}
+
+extern inline unsigned char inb(unsigned short port)
+{
+    unsigned char tmp;
+    __asm__ __volatile__ ("inb %w1,%0" : "=a" (tmp) : "Nd" (port));
+    return tmp;
+}
+
 /* Various typedefs -- some are x86-specific */
 #define CUSTOM_INTTYPES
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
-typedef unsigned int uint32_t;
-typedef unsigned int uintptr_t;
+typedef unsigned long int uint32_t;
+typedef long int intptr_t;
+typedef long unsigned int uintptr_t;
 
 typedef unsigned int size_t;
 
