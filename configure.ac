@@ -180,6 +180,7 @@ if test "${enable_vga}" = "yes"; then
   AC_DEFINE(USE_VGA, 1, Define to activate the VGA backend driver)
   CACA_DRIVERS="${CACA_DRIVERS} vga"
 fi
+AM_CONDITIONAL(USE_KERNEL, test "${ac_cv_my_have_vga}" = "yes")
 
 AC_MSG_CHECKING(valid output drivers)
 if test -z "${CACA_DRIVERS}"; then

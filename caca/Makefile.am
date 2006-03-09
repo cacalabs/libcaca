@@ -14,10 +14,11 @@ libcaca_la_SOURCES = \
 	driver_conio.c \
 	driver_gl.c \
 	driver_ncurses.c \
+	driver_network.c \
 	driver_slang.c \
+	driver_vga.c \
 	driver_win32.c \
 	driver_x11.c \
-	driver_network.c \
 	$(NULL)
 libcaca_la_CPPFLAGS = -I$(top_srcdir)/cucul
 libcaca_la_LDFLAGS = -no-undefined
