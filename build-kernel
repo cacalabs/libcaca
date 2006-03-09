@@ -33,6 +33,6 @@ gcc $LDFLAGS -o src/cacafire kernel/multiboot.o kernel/kernel.o src/cacafire-aaf
 objcopy -O binary src/cacafire cacafire.boot
 
 # For further development: create floppy images using the kernel
-gcc -traditional -c -o bootsect.o /usr/src/linux/arch/i386/boot/bootsect.S
-ld -Ttext 0x0 -s --oformat binary bootsect.o -o cacafire.img
+#gcc -traditional -c -o bootsect.o /usr/src/linux/arch/i386/boot/bootsect.S
+#ld -Ttext 0x0 -s --oformat binary bootsect.o -o cacafire.img
 
