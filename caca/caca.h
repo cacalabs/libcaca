@@ -30,7 +30,8 @@
  *  using the conio library, and on Windows systems using either slang or
  *  ncurses (through Cygwin emulation) or conio. There is also a native X11
  *  driver, and an OpenGL driver (through freeglut) that does not require a
- *  text terminal.
+ *  text terminal. For machines without a screen, and with a valid tcp stack,
+ *  the network driver (BSD sockets) should perfectly fit your needs.
  *
  *  \e libcaca is free software, released under the Do What The Fuck You
  *  Want To Public License. This ensures that no one, not even the \e libcaca
@@ -59,7 +60,7 @@
  *      - \c slang uses the S-Lang library.
  *      - \c x11 uses the native X11 driver.
  *      - \c gl uses freeglut and opengl libraries.
- *      - \c null uses nothing at all, and will display nothing as well.
+ *      - \c network uses BSD sockets calls.
  *
  *  \li \b CUCUL_BACKGROUND: set the background type.
  *      - \c solid uses solid coloured backgrounds for all characters. This

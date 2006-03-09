@@ -201,6 +201,7 @@ void cucul_free_bitmap(cucul_t *, struct cucul_bitmap *);
 /** \defgroup exporter Exporters to various formats
  *
  *  These functions exports current image to various text formats
+ *  Returned buffer will be freed() each you'll call the exporter function.
  *
  *  @{ */
 char* cucul_get_html(cucul_t *, int *size);
