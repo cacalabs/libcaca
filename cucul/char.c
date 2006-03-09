@@ -19,19 +19,20 @@
 
 #include "config.h"
 
-#include <stdio.h> /* BUFSIZ */
-#include <string.h>
-#include <stdlib.h>
-#if defined(HAVE_UNISTD_H)
-#   include <unistd.h>
-#endif
-#include <stdarg.h>
-
-#if defined(HAVE_SIGNAL_H)
-#   include <signal.h>
-#endif
-#if defined(HAVE_SYS_IOCTL_H)
-#   include <sys/ioctl.h>
+#if !defined(__KERNEL__)
+#   include <stdio.h> /* BUFSIZ */
+#   include <string.h>
+#   include <stdlib.h>
+#   include <stdarg.h>
+#   if defined(HAVE_UNISTD_H)
+#       include <unistd.h>
+#   endif
+#   if defined(HAVE_SIGNAL_H)
+#       include <signal.h>
+#   endif
+#   if defined(HAVE_SYS_IOCTL_H)
+#       include <sys/ioctl.h>
+#   endif
 #endif
 
 #include "cucul.h"

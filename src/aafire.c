@@ -24,9 +24,11 @@
 
 #ifdef LIBCACA
 #include "config.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#if !defined(__KERNEL__)
+#   include <stdio.h>
+#   include <stdlib.h>
+#   include <string.h>
+#endif
 #include "caca.h"
 #else
 #include <stdio.h>

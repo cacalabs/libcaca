@@ -20,12 +20,12 @@
 #ifndef __CUCUL_INTERNALS_H__
 #define __CUCUL_INTERNALS_H__
 
-#if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
+#if defined(HAVE_INTTYPES_H) && !defined(__KERNEL__)
 #   include <inttypes.h>
-#elif !defined(CUSTOM_INTTYPES)
+#elif !defined(CUSTOM_INTTYPES) && !defined(_DOXYGEN_SKIP_ME)
 #   define CUSTOM_INTTYPES
 typedef unsigned char uint8_t;
-typedef unsigned char uint16_t;
+typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
 #endif
 

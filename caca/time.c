@@ -19,18 +19,18 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-#if defined(HAVE_SYS_TIME_H)
-#   include <sys/time.h>
-#endif
-#include <time.h>
-
-#if defined(USE_WIN32)
-#   include <windows.h>
-#endif
-
-#if defined(HAVE_UNISTD_H)
-#   include <unistd.h>
+#if !defined(__KERNEL__)
+#   include <stdlib.h>
+#   if defined(HAVE_SYS_TIME_H)
+#       include <sys/time.h>
+#   endif
+#   include <time.h>
+#   if defined(USE_WIN32)
+#       include <windows.h>
+#   endif
+#   if defined(HAVE_UNISTD_H)
+#       include <unistd.h>
+#   endif
 #endif
 
 #include "caca.h"
@@ -43,7 +43,7 @@ void _caca_sleep(unsigned int usec)
 #elif defined(HAVE_SLEEP)
         Sleep(usec / 1000);
 #else
-        SLEEP
+        /* SLEEP */
 #endif
 }
 

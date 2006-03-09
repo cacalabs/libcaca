@@ -11,6 +11,7 @@ AM_CONFIG_HEADER(config.h)
 
 AM_PROG_CC_C_O
 AC_PROG_CPP
+AM_PROG_AS
 
 AC_LIBTOOL_WIN32_DLL
 AM_PROG_LIBTOOL
@@ -38,6 +39,8 @@ AC_ARG_ENABLE(gl,
   [  --enable-gl             OpenGL support (autodetected)])
 AC_ARG_ENABLE(network,
   [  --enable-network        Network support (autodetected)])
+AC_ARG_ENABLE(vga,
+  [  --enable-vga            VGA support (default disabled)])
 
 dnl example programs features
 AC_ARG_ENABLE(imlib2,
@@ -47,7 +50,7 @@ dnl conditional builds
 AC_ARG_ENABLE(doc,
   [  --enable-doc            build documentation (needs doxygen and LaTeX)])
 
-AC_CHECK_HEADERS(signal.h sys/ioctl.h sys/time.h inttypes.h endian.h unistd.h)
+AC_CHECK_HEADERS(stdio.h stdarg.h signal.h sys/ioctl.h sys/time.h inttypes.h endian.h unistd.h)
 AC_CHECK_FUNCS(signal ioctl vsnprintf getenv putenv strcasecmp)
 AC_CHECK_FUNCS(usleep gettimeofday)
 
@@ -168,6 +171,16 @@ if test "${enable_ncurses}" != "no"; then
   fi
 fi
 
+if test "${enable_vga}" = "yes"; then
+  ac_cv_my_have_vga="yes"
+  CPPFLAGS="${CPPFLAGS} -I. -D__KERNEL__ -nostdinc -include kernel/kernel.h"
+  CFLAGS="${CFLAGS} -fno-builtin -O2 -Wall"
+  CCASFLAGS="${CCASFLAGS} -I."
+  LDFLAGS="${LDFLAGS} -nostdlib -Wl,-N -Wl,-Ttext -Wl,100000"
+  AC_DEFINE(USE_VGA, 1, Define to activate the VGA backend driver)
+  CACA_DRIVERS="${CACA_DRIVERS} vga"
+fi
+
 AC_MSG_CHECKING(valid output drivers)
 if test -z "${CACA_DRIVERS}"; then
   AC_MSG_RESULT(no)
@@ -244,6 +257,7 @@ AM_CONDITIONAL(USE_LATEX, test "${LATEX}" != "no")
 
 AC_CONFIG_FILES([
   Makefile
+  kernel/Makefile
   cucul/Makefile
   caca/Makefile
   src/Makefile

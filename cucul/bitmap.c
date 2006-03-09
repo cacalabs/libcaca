@@ -19,14 +19,15 @@
 
 #include "config.h"
 
-#if defined(HAVE_ENDIAN_H)
-#   include <endian.h>
+#if !defined(__KERNEL__)
+#   if defined(HAVE_ENDIAN_H)
+#       include <endian.h>
+#   endif
+#   include <stdio.h>
+#   include <stdlib.h>
+#   include <limits.h>
+#   include <string.h>
 #endif
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <limits.h>
-#include <string.h>
 
 #include "cucul.h"
 #include "cucul_internals.h"

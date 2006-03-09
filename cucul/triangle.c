@@ -19,7 +19,9 @@
 
 #include "config.h"
 
-#include <stdlib.h>
+#if !defined(__KERNEL__)
+#   include <stdlib.h>
+#endif
 
 #include "cucul.h"
 #include "cucul_internals.h"

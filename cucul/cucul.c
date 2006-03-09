@@ -20,8 +20,10 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-#include <string.h>
+#if !defined(__KERNEL__)
+#   include <stdlib.h>
+#   include <string.h>
+#endif
 
 #include "cucul.h"
 #include "cucul_internals.h"

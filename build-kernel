@@ -1,0 +1,30 @@
+#! /bin/sh
+
+##  Kernel-mode libcaca compilation script -- Sam Hocevar <sam@zoy.org>
+##  $Id: build-dos 333 2006-03-07 12:39:34Z sam $
+
+set -x
+set -e
+
+CFLAGS="-fno-builtin -O2 -I. -I.. -Wall"
+CPPFLAGS="-D__KERNEL__ -nostdinc -include kernel/kernel.h"
+LDFLAGS="-nostdlib -Wl,-N -Wl,-Ttext -Wl,100000"
+
+./configure --disable-slang --disable-ncurses --disable-win32 \
+            --disable-conio --disable-x11 --disable-gl --disable-network \
+            --enable-vga --disable-imlib2 --disable-doc \
+            --host i386
+
+(cd cucul && make)
+(cd caca && make)
+
+(cd src && make cacafire-aafire.o)
+
+(cd kernel &&
+    gcc $CFLAGS -c multiboot.S -o multiboot.o
+    gcc $CFLAGS $CPPFLAGS -c kernel.c -o kernel.o)
+
+gcc $LDFLAGS -o src/cacafire kernel/multiboot.o kernel/kernel.o src/cacafire-aafire.o caca/.libs/libcaca.a cucul/.libs/libcucul.a
+
+objcopy -O binary src/cacafire cacafire.boot
+
