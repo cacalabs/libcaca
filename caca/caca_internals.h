@@ -20,9 +20,9 @@
 #ifndef __CACA_INTERNALS_H__
 #define __CACA_INTERNALS_H__
 
-#if defined(HAVE_INTTYPES_H) || defined(_DOXYGEN_SKIP_ME)
+#if defined(HAVE_INTTYPES_H) && !defined(__KERNEL__)
 #   include <inttypes.h>
-#elif !defined(CUSTOM_INTTYPES)
+#elif !defined(CUSTOM_INTTYPES) && !defined(_DOXYGEN_SKIP_ME)
 #   define CUSTOM_INTTYPES
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -57,6 +57,9 @@ enum caca_driver
 #if defined(USE_NETWORK)
     CACA_DRIVER_NETWORK = 7,
 #endif
+#if defined(USE_VGA)
+    CACA_DRIVER_VGA = 8,
+#endif
     CACA_DRIVER_NONE = 0
 };
 
@@ -81,6 +84,9 @@ void x11_init_driver(caca_t *);
 #endif
 #if defined(USE_NETWORK)
 void network_init_driver(caca_t *);
+#endif
+#if defined(USE_VGA)
+void vga_init_driver(caca_t *);
 #endif
 /* Timer structure */
 struct caca_timer

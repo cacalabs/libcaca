@@ -21,8 +21,10 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-#include <string.h>
+#if !defined(__KERNEL__)
+#   include <stdlib.h>
+#   include <string.h>
+#endif
 
 #include "cucul.h"
 #include "cucul_internals.h"
@@ -151,6 +153,11 @@ static int caca_init_driver(caca_t *kk)
             network_init_driver(kk);
         else
 #endif
+#if defined(USE_VGA)
+        if(!strcasecmp(var, "vga"))
+            vga_init_driver(kk);
+        else
+#endif
             return -1;
 
         return 0;
@@ -163,6 +170,10 @@ static int caca_init_driver(caca_t *kk)
 #endif
 #if defined(USE_CONIO)
     conio_init_driver(kk);
+    return 0;
+#endif
+#if defined(USE_VGA)
+    vga_init_driver(kk);
     return 0;
 #endif
 #if defined(USE_X11)
