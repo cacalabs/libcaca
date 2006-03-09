@@ -8,6 +8,8 @@ Building libcaca
      --enable-slang: support for the SLang library
      --enable-conio: support for MS-DOS conio.h
      --enable-x11: support for native X11 rendering
+     --enable-gl: support for OpenGL rendering
+     --enable-win32: support for the Windows console
 
      --disable-imlib2: remove Imlib2 support in cacaview
 
@@ -20,19 +22,12 @@ Building libcaca
 
 Using libcaca
 
-   o  Look into the examples/ directory for simple source code examples.
+   o  Look into the src/ directory for source code examples.
 
    o  Compiling a libcaca program is fairly simple:
 
       gcc -c foobar.c -o foobar.o `caca-config --cflags`
       gcc foobar.o -o foobar `caca-config --libs`
-
-   o  If you are writing a shared object that uses libcaca, either a
-      dynamically loadable plug-in or a shared library, you should use
-      the `--plugin-libs' flag for libcaca:
-
-      gcc -fPIC -c libfoo.c -o libfoo.o `caca-config --cflags`
-      gcc -shared libfoo.o -o libfoo.so `caca-config --plugin-libs`
 
 
 Binary packages
