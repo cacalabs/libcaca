@@ -54,6 +54,10 @@ char* cucul_get_html(cucul_t *qq, int *size)
         free(qq->html_buffer);
 
     qq->html_buffer = malloc((13000 + ((qq->width*qq->height) * 40)) * sizeof(char));
+    if(qq->html_buffer == NULL)
+        return NULL;
+
+
     cur = qq->html_buffer;
 
     /* HTML header */
@@ -132,6 +136,9 @@ char* cucul_get_html3(cucul_t *qq, int *size)
         free(qq->html3_buffer);
 
     qq->html3_buffer = malloc((13000 + ((qq->width*qq->height)*40))*sizeof(char));
+    if(qq->html3_buffer == NULL)
+        return NULL;
+
     cur = qq->html3_buffer;
 
     /* Table */
@@ -214,6 +221,9 @@ char* cucul_get_irc(cucul_t *qq, int *size)
         free(qq->irc_buffer);
 
     qq->irc_buffer = malloc((2 + (qq->width * qq->height * 11)) * sizeof(char));
+    if(qq->irc_buffer == NULL)
+        return NULL;
+
     cur = qq->irc_buffer;
 
     *cur++ = '\x0f';
@@ -268,7 +278,7 @@ char* cucul_get_irc(cucul_t *qq, int *size)
     /* Crop to really used size */
     *size = (strlen(qq->irc_buffer) + 1) * sizeof(char);
     qq->irc_buffer = realloc(qq->irc_buffer, *size);
-
+    
     return qq->irc_buffer;
 }
 
@@ -296,6 +306,9 @@ char * cucul_get_ansi(cucul_t *qq, int trailing, int *size)
     if(qq->ansi_buffer)
         free(qq->ansi_buffer);
     qq->ansi_buffer = malloc(((qq->height*9) + (qq->width * qq->height * 20)) * sizeof(char));
+    if(qq->ansi_buffer == NULL)
+        return NULL;
+
     cur = qq->ansi_buffer;
 
     // *cur++ = '';
