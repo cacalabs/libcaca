@@ -97,10 +97,11 @@ static unsigned int conio_get_window_height(caca_t *kk)
 
 static void conio_display(caca_t *kk)
 {
-    int n;
     char *screen = kk->drv.p->screen;
     uint8_t *attr = kk->qq->attr;
     uint32_t *chars = kk->qq->chars;
+    int n;
+
     for(n = kk->qq->height * kk->qq->width; n--; )
     {
         uint32_t c = *chars++;
