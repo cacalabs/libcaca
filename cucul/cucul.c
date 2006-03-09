@@ -72,6 +72,8 @@ cucul_t * cucul_init(void)
         return NULL;
     }
 
+    qq->ansi_buffer = NULL;
+    
     return qq;
 }
 
@@ -269,6 +271,9 @@ void cucul_end(cucul_t *qq)
 
     free(qq->chars);
     free(qq->attr);
+
+    if(qq->ansi_buffer)
+        free(qq->ansi_buffer);
 
     free(qq);
 }

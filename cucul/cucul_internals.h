@@ -45,6 +45,10 @@ struct cucul_context
     enum cucul_feature background, antialiasing, dithering;
 
     unsigned int refcount;
+
+    /* Exporters facilities */
+    unsigned char *ansi_buffer;
+
 };
 
 /* Initialisation functions */

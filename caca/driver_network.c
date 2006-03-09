@@ -167,7 +167,7 @@ static void network_display(caca_t *kk)
 {
     int size;
     char *to_send = cucul_get_ansi(kk->qq, 0, &size);;
-    to_send = realloc(to_send, kk->qq->width * kk->qq->height * 15 * 3);
+  
     
     /* ANSI code for move(0,0)*/
     if (send(kk->drv.p->new_fd, "\033[1,1H", 6, 0) == -1) {
@@ -178,10 +178,6 @@ static void network_display(caca_t *kk)
     if (send(kk->drv.p->new_fd, to_send, size, 0) == -1) {
         perror("send");
         return;
-    }
-    
-    if(to_send) {
-        free(to_send);
     }
 
 }

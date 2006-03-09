@@ -275,13 +275,15 @@ char * cucul_get_ansi(cucul_t *qq, int trailing, int *size)
         30, 34, 32, 36, 31, 35, 33, 37, /* light colors handling is done later */
     };
 
-    char *buffer, *cur;
+    char *cur;
     unsigned int x, y;
 
     /* 20 bytes assumed for max length per pixel.
      * Add height*9 to that (zeroes color at the end and jump to next line) */
-    buffer = malloc(((qq->height*9) + (qq->width * qq->height * 20)) * sizeof(char));
-    cur = buffer;
+    if(qq->ansi_buffer)
+        free(qq->ansi_buffer);
+    qq->ansi_buffer = malloc(((qq->height*9) + (qq->width * qq->height * 20)) * sizeof(char));
+    cur = qq->ansi_buffer;
 
     // *cur++ = '';
 
@@ -321,9 +323,9 @@ char * cucul_get_ansi(cucul_t *qq, int trailing, int *size)
     }
 
     /* Crop to really used size */
-    *size = (strlen(buffer) + 1)* sizeof(char);
-    buffer = realloc(buffer, *size);
+    *size = (strlen(qq->ansi_buffer) + 1)* sizeof(char);
+    qq->ansi_buffer = realloc(qq->ansi_buffer, *size);
 
-    return buffer;
+    return qq->ansi_buffer;
 }
 
