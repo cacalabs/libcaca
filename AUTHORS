@@ -1,6 +1,15 @@
 $Id$
 
-Sam Hocevar <sam@zoy.org> - main programmer
-Jean-Yves Lamoureux <jylam@lnxscene.org> - cacaball, bugs, drivers, exporters
-John Beppu <beppu@lbox.org> - Term::Caca Perl wrapper
+Sam Hocevar <sam@zoy.org>
+ o main programmer
+
+Jean-Yves Lamoureux <jylam@lnxscene.org>
+ o cacaball
+ o OpenGL driver
+ o Pypycaca Python wrapper
+ o exporters
+ o network driver
+
+John Beppu <beppu@lbox.org>
+ o Term::Caca Perl wrapper
 
