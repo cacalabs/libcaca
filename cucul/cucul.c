@@ -75,6 +75,9 @@ cucul_t * cucul_init(void)
     }
 
     qq->ansi_buffer = NULL;
+    qq->irc_buffer = NULL;
+    qq->html3_buffer = NULL;
+    qq->html_buffer = NULL;
     
     return qq;
 }
@@ -276,6 +279,13 @@ void cucul_end(cucul_t *qq)
 
     if(qq->ansi_buffer)
         free(qq->ansi_buffer);
+    if(qq->irc_buffer)
+        free(qq->irc_buffer);
+    if(qq->html3_buffer)
+        free(qq->html3_buffer);
+    if(qq->html_buffer)
+        free(qq->html_buffer);
+
 
     free(qq);
 }

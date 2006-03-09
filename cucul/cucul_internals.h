@@ -47,7 +47,12 @@ struct cucul_context
     unsigned int refcount;
 
     /* Exporters facilities */
-    unsigned char *ansi_buffer;
+    char *ansi_buffer;
+    char *irc_buffer;
+    char *html3_buffer;
+    char *html_buffer;
+    
+
 
 };
 
