@@ -211,4 +211,62 @@ int gettimeofday(struct timeval *tv, struct timezone *tz)
     return 0;
 }
 
+/* math.h functions */
+double cos(double x)
+{
+    double ret = 0.0;
+    double x2;
+    double num = 1.0;
+    double fact = 1.0;
+    int i;
+
+    x = x - ((double)(int)(x / (2 * M_PI))) * (2 * M_PI);
+    x2 = x * x;
+
+    /* cos(x) = 1/0! - x^2/2! + x^4/4! - x^6/6! ... */
+    for(i = 0; i < 10; i++)
+    {
+        ret += num / fact;
+        num *= - x2;
+        fact *= (2 * i + 1) * (2 * i + 2);
+    }
+
+    return ret;
+}
+
+double sin(double x)
+{
+    double ret = 0.0;
+    double x2;
+    double num;
+    double fact = 1.0;
+    int i;
+
+    x = x - ((double)(int)(x / (2 * M_PI))) * (2 * M_PI);
+    x2 = x * x;
+    num = x;
+
+    /* sin(x) = x/1! - x^3/3! + x^5/5! - x^7/7! ... */
+    for(i = 0; i < 10; i++)
+    {
+        ret += num / fact;
+        num *= - x2;
+        fact *= (2 * i + 2) * (2 * i + 3);
+    }
+
+    return ret;
+}
+
+double sqrt(double x)
+{
+    double ret = x;
+    int i;
+
+    /* This is Newton's method */
+    for(i = 0; i < 10; i++)
+        ret = (ret * ret + x) / (ret * 2.0);
+
+    return ret;
+}
+
 #endif /* __KERNEL__ */

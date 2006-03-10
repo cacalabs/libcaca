@@ -24,6 +24,7 @@
 #define BUFSIZ 4096
 #define RAND_MAX ((unsigned int)0x8000000)
 #define INT_MAX ((int)0x7fffffff)
+#define M_PI 3.14159265358979323846
 #define __BYTE_ORDER 1
 #define __BIG_ENDIAN 2
 
@@ -109,4 +110,9 @@ void usleep(unsigned long usec);
 
 /* time.h functions */
 int gettimeofday(struct timeval *tv, struct timezone *tz);
+
+/* math.h functions */
+double cos(double x);
+double sin(double x);
+double sqrt(double x);
 
