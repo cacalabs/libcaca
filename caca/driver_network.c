@@ -27,6 +27,8 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <string.h>
+#include <signal.h>
+#include <errno.h>
 
 #if defined(HAVE_UNISTD_H)
 #   include <unistd.h>
@@ -40,10 +42,10 @@
 
 static void manage_connections(caca_t *kk);
 static int send_data(caca_t *kk, int fd);
-
+ssize_t nonblock_write(int fd, char *buf, size_t len);
 
 struct driver_private
-{ 
+{
     unsigned int width, height;
     unsigned int port;
     int sockfd;
@@ -66,7 +68,7 @@ struct driver_private
 
 
 /* Following vars are static */
-static char codes[] = {0xff, 0xfb, 0x01,  // WILL ECHO                                                              
+static char codes[] = {0xff, 0xfb, 0x01,  // WILL ECHO
                        0xff, 0xfb, 0x03,  // WILL SUPPRESS GO AHEAD
                        0xff, 253, 31,     // DO NAWS
                        0xff, 254, 31,     // DON'T NAWS
@@ -94,7 +96,7 @@ static int network_init_graphics(caca_t *kk)
             net_port = 7575;
     }
 #endif
-    
+
 
     kk->drv.p->width = 80;
     kk->drv.p->height = 23; // Avoid scrolling
@@ -112,12 +114,12 @@ static int network_init_graphics(caca_t *kk)
     }
 
     if (setsockopt(kk->drv.p->sockfd,SOL_SOCKET,SO_REUSEADDR,&yes,sizeof(int)) == -1) {
-        perror("setsockopt");
+        perror("setsockopt SO_REUSEADDR");
         return -1;
     }
 
     kk->drv.p->my_addr.sin_family = AF_INET;
-    kk->drv.p-> my_addr.sin_port = htons(kk->drv.p->port); 
+    kk->drv.p-> my_addr.sin_port = htons(kk->drv.p->port);
     kk->drv.p->my_addr.sin_addr.s_addr = INADDR_ANY;
     memset(&(kk->drv.p->my_addr.sin_zero), '\0', 8);
 
@@ -136,6 +138,9 @@ static int network_init_graphics(caca_t *kk)
     }
 
     kk->drv.p->buffer = NULL;
+
+    /* Ignore SIGPIPE */
+    signal(SIGPIPE, SIG_IGN);
 
     return 0;
 }
@@ -176,13 +181,16 @@ static void network_display(caca_t *kk)
 
     for(i = 0; i < kk->drv.p->client_count; i++)
     {
+        if(kk->drv.p->fd_list[i] == -1)
+            continue;
+
         if(send_data(kk, kk->drv.p->fd_list[i]))
             kk->drv.p->fd_list[i] = -1;
     }
 
     manage_connections(kk);
 }
-  
+
 static void network_handle_resize(caca_t *kk)
 {
     /* Not handled */
@@ -191,7 +199,7 @@ static void network_handle_resize(caca_t *kk)
 static unsigned int network_get_event(caca_t *kk)
 {
     /* Manage new connections as this function will be called sometimes
-     *  more often than display 
+     *  more often than display
      */
     manage_connections(kk);
 
@@ -209,29 +217,36 @@ static void manage_connections(caca_t *kk)
 
     kk->drv.p->clilen = sizeof(kk->drv.p->remote_addr);
     fd = accept(kk->drv.p->sockfd, (struct sockaddr *) &kk->drv.p->remote_addr, &kk->drv.p->clilen);
-    if(fd != -1) /* That's non blocking socket, -1 if no connection received */
-    {
-        if(kk->drv.p->fd_list == NULL)
-        {
-            kk->drv.p->fd_list = malloc(sizeof(int));
-            if(kk->drv.p->fd_list == NULL)
-                return;
-        }
-        else
-        {
-            kk->drv.p->fd_list = realloc(kk->drv.p->fd_list, (kk->drv.p->client_count+1) * sizeof(int));
-        }
 
-        if(send_data(kk, fd) == 0)
-        {
-            kk->drv.p->fd_list[kk->drv.p->client_count] = fd;
-            kk->drv.p->client_count++;
-        }
+    if(fd == -1)
+        return;
+
+    /* Non blocking socket */
+    fcntl(fd, F_SETFL, O_NONBLOCK);
+
+    if(kk->drv.p->fd_list == NULL)
+    {
+        kk->drv.p->fd_list = malloc(sizeof(int));
+        if(kk->drv.p->fd_list == NULL)
+            return;
+    }
+    else
+    {
+        kk->drv.p->fd_list = realloc(kk->drv.p->fd_list,
+                                     (kk->drv.p->client_count+1) * sizeof(int));
+    }
+
+    if(send_data(kk, fd) == 0)
+    {
+        kk->drv.p->fd_list[kk->drv.p->client_count] = fd;
+        kk->drv.p->client_count++;
     }
 }
 
 static int send_data(caca_t *kk, int fd)
 {
+    ssize_t ret;
+
     /* No error, there's just nothing to send yet */
     if(!kk->drv.p->buffer)
         return 0;
@@ -244,20 +259,55 @@ static int send_data(caca_t *kk, int fd)
     codes[16] = (unsigned char) kk->drv.p->width & 0xff;
     codes[17] = (unsigned char) (kk->drv.p->height & 0xff00)>>8;
     codes[18] = (unsigned char) kk->drv.p->height & 0xff;
-            
+
     /* Send basic telnet codes */
-    if (send(fd, codes,sizeof(codes) , 0) == -1)
-        return -1;
-    
+    ret = nonblock_write(fd, codes, sizeof(codes));
+    if(ret == -1)
+        return (errno == EAGAIN) ? 0 : -1;
+
     /* ANSI code for move(0,0)*/
-    if (send(fd, "\033[1,1H", 6, 0) == -1)
-        return -1;
-    
+    ret = nonblock_write(fd, "\033[1,1H", 6);
+    if(ret == -1)
+        return (errno == EAGAIN) ? 0 : -1;
+
     /* Send actual data */
-    if (send(fd, kk->drv.p->buffer, kk->drv.p->size, 0) == -1)
-        return -1;
+    ret = nonblock_write(fd, kk->drv.p->buffer, kk->drv.p->size);
+    if(ret == -1)
+        return (errno == EAGAIN) ? 0 : -1;
 
     return 0;
+}
+
+ssize_t nonblock_write(int fd, char *buf, size_t len)
+{
+    int retries = 10;
+    size_t total = 0;
+    ssize_t ret;
+
+    while(total < len)
+    {
+        do
+        {
+            ret = write(fd, buf, len);
+            if(ret < 0 && errno == EAGAIN)
+            {
+                retries--;
+                if(retries < 0)
+                    break;
+            }
+        }
+        while(ret < 0 && (errno == EINTR || errno == EAGAIN));
+
+        if(ret < 0)
+            return ret;
+        else if(ret == 0)
+            return total;
+
+        total += len;
+        buf += len;
+    }
+
+    return total;
 }
 
 /*
