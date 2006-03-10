@@ -38,6 +38,10 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
+size_t utf8_strlen(const char *s);
+const char *utf8_skip(const char *s, size_t x);
+uint32_t utf8_to_utf32(const char *s);
+
 /** \brief Set the default colour pair.
  *
  *  This function sets the default colour pair. String functions such as
@@ -80,11 +84,14 @@ enum cucul_color cucul_get_bg_color(cucul_t *qq)
     return qq->bgcolor;
 }
 
-/** \brief Print a character.
+/** \brief Print an ASCII character.
  *
- *  This function prints a character at the given coordinates, using the
- *  default foreground and background values. If the coordinates are outside
- *  the screen boundaries, nothing is printed.
+ *  This function prints an ASCII character at the given coordinates, using
+ *  the default foreground and background values. If the coordinates are
+ *  outside the screen boundaries, nothing is printed. If the character
+ *  value is a non-printable character or is outside the ASCII range, it is
+ *  replaced with a space. To print a sequence of bytes forming an UTF-8
+ *  character, use cucul_putstr() instead.
  *
  *  \param x X coordinate.
  *  \param y Y coordinate.
@@ -96,13 +103,43 @@ void cucul_putchar(cucul_t *qq, int x, int y, char c)
        y < 0 || y >= (int)qq->height)
         return;
 
-    qq->chars[x + y * qq->width] = c & 0x0000007f; /* FIXME: ASCII-only */
+    if((unsigned char)c < 0x20 || (unsigned char)c > 0x7f)
+        c = 0x20;
+
+    qq->chars[x + y * qq->width] = c;
+    qq->attr[x + y * qq->width] = (qq->bgcolor << 4) | qq->fgcolor;
+}
+
+/** \brief Print a Unicode character.
+ *
+ *  FIXME: do we really want this function?
+ *
+ *  This function prints a Unicode character (native-endian, 32 bits UCS-4,
+ *  also known as UTF-32) at the given coordinates, using the default
+ *  foreground and background values. If the coordinates are outside the
+ *  screen boundaries, nothing is printed. If the character is an invalid
+ *  Unicode character, it is replaced with a space.
+ *
+ *  \param x X coordinate.
+ *  \param y Y coordinate.
+ *  \param c The character to print.
+ */
+void cucul_putchar32(cucul_t *qq, int x, int y, unsigned long int c)
+{
+    if(x < 0 || x >= (int)qq->width ||
+       y < 0 || y >= (int)qq->height)
+        return;
+
+    if(c < 0x20 || c > 0x7f)
+        c = 0x20;
+
+    qq->chars[x + y * qq->width] = c;
     qq->attr[x + y * qq->width] = (qq->bgcolor << 4) | qq->fgcolor;
 }
 
 /** \brief Print a string.
  *
- *  This function prints a string at the given coordinates, using the
+ *  This function prints an UTF-8 string at the given coordinates, using the
  *  default foreground and background values. The coordinates may be outside
  *  the screen boundaries (eg. a negative Y coordinate) and the string will
  *  be cropped accordingly if it is too long.
@@ -115,38 +152,35 @@ void cucul_putstr(cucul_t *qq, int x, int y, char const *s)
 {
     uint32_t *chars;
     uint8_t *attr;
-    char const *t;
     unsigned int len;
 
     if(y < 0 || y >= (int)qq->height || x >= (int)qq->width)
         return;
 
-    len = strlen(s);
+    len = utf8_strlen(s);
 
     if(x < 0)
     {
         if(len < (unsigned int)-x)
             return;
         len -= -x;
-        s += -x;
+        s = utf8_skip(s, -x);
         x = 0;
-    }
-
-    if(x + len >= qq->width)
-    {
-        len = qq->width - x;
-        memcpy(qq->scratch_line, s, len);
-        qq->scratch_line[len] = '\0';
-        s = qq->scratch_line;
     }
 
     chars = qq->chars + x + y * qq->width;
     attr = qq->attr + x + y * qq->width;
-    t = s;
-    while(*t)
+
+    if(x + len >= qq->width)
+        len = qq->width - x;
+
+    while(len)
     {
-        *chars++ = *t++ & 0x0000007f; /* FIXME: ASCII-only */
+        *chars++ = utf8_to_utf32(s);
         *attr++ = (qq->bgcolor << 4) | qq->fgcolor;
+
+        s = utf8_skip(s, 1);
+        len--;
     }
 }
 
@@ -225,5 +259,85 @@ void cucul_clear(cucul_t *qq)
         cucul_putstr(qq, 0, y, qq->empty_line);
 
     cucul_set_color(qq, oldfg, oldbg);
+}
+
+/*
+ * XXX: The following functions are local.
+ */
+
+static const char trailing[256] =
+{
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+    2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2, 3,3,3,3,3,3,3,3,4,4,4,4,5,5,5,5
+};
+
+static const uint32_t offsets[6] =
+{
+    0x00000000UL, 0x00003080UL, 0x000E2080UL,
+    0x03C82080UL, 0xFA082080UL, 0x82082080UL
+};
+
+size_t utf8_strlen(const char *s)
+{
+    int len = 0;
+    const char *parser = s;
+
+    while(*parser)
+    {
+        int i;
+        int bytes = 1 + trailing[(int)(unsigned char)*parser];
+
+        for(i = 1; i < bytes; i++)
+            if(!parser[i])
+                return len;
+        parser += bytes;
+        len++;
+    }
+
+    return len;
+}
+
+const char *utf8_skip(const char *s, size_t x)
+{
+    const char *parser = s;
+
+    while(x)
+    {
+        int i;
+        int bytes = 1 + trailing[(int)(unsigned char)*parser];
+
+        for(i = 1; i < bytes; i++)
+            if(!parser[i])
+                return parser;
+        parser += bytes;
+        x--;
+    }
+
+    return parser;
+}
+
+uint32_t utf8_to_utf32(const char *s)
+{
+    int bytes = trailing[(int)(unsigned char)*s];
+    uint32_t ret = 0;
+
+    switch(bytes)
+    {
+        /* FIXME: do something for invalid sequences (4 and 5) */
+        case 3: ret += (uint8_t)*s++; ret <<= 6;
+        case 2: ret += (uint8_t)*s++; ret <<= 6;
+        case 1: ret += (uint8_t)*s++; ret <<= 6;
+        case 0: ret += (uint8_t)*s++;
+    }
+
+    ret -= offsets[bytes];
+
+    return ret;
 }
 
