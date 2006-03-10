@@ -108,7 +108,7 @@ static int gl_init_graphics(caca_t *kk)
         sscanf(geometry, "%ux%u", &width, &height);
 
     if(width && height)
-        cucul_set_size(kk->qq, width, height);
+        _cucul_set_size(kk->qq, width, height);
 
     kk->drv.p->font_width = 9;
     kk->drv.p->font_height = 15;

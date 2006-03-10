@@ -122,8 +122,8 @@ static int win32_init_graphics(caca_t *kk)
 
     /* Sample code to get the biggest possible window */
     //size = GetLargestConsoleWindowSize(kk->drv.p->hout);
-    cucul_set_size(kk->qq, csbi.srWindow.Right - csbi.srWindow.Left + 1,
-                           csbi.srWindow.Bottom - csbi.srWindow.Top + 1);
+    _cucul_set_size(kk->qq, csbi.srWindow.Right - csbi.srWindow.Left + 1,
+                            csbi.srWindow.Bottom - csbi.srWindow.Top + 1);
     size.X = kk->qq->width;
     size.Y = kk->qq->height;
     SetConsoleScreenBufferSize(kk->drv.p->front, size);

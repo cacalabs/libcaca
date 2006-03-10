@@ -10,7 +10,7 @@
  */
 
 /** \file driver_network.c
- *  \version \$Id: driver_gl.c 330 2006-03-07 09:17:35Z sam $
+ *  \version \$Id$
  *  \author Jean-Yves Lamoureux <jylam@lnxscene.org>
  *  \brief Network driver
  *
@@ -89,7 +89,7 @@ static int network_init_graphics(caca_t *kk)
 
 
 
-    cucul_set_size(kk->qq, kk->drv.p->width, kk->drv.p->height);
+    _cucul_set_size(kk->qq, kk->drv.p->width, kk->drv.p->height);
 
 
     printf("socket\n");

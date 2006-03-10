@@ -46,8 +46,8 @@ int caca_set_window_title(caca_t *kk, char const *title)
  *
  *  If libcaca runs in a window, get the usable window width. This value can
  *  be used for aspect ratio calculation. If libcaca does not run in a window
- *  or if there is no way to know the font size, assume a 6x10 font is being
- *  used. Note that the units are not necessarily pixels.
+ *  or if there is no way to know the font size, most drivers will assume a
+ *  6x10 font is being used. Note that the units are not necessarily pixels.
  *
  *  \return The window width.
  */

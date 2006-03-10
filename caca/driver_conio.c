@@ -58,8 +58,8 @@ static int conio_init_graphics(caca_t *kk)
 #   else
     /* FIXME */
 #   endif
-    cucul_set_size(kk->qq, kk->drv.p->ti.screenwidth,
-                           kk->drv.p->ti.screenheight);
+    _cucul_set_size(kk->qq, kk->drv.p->ti.screenwidth,
+                            kk->drv.p->ti.screenheight);
     return 0;
 }
 

@@ -148,7 +148,7 @@ static int ncurses_init_graphics(caca_t *kk)
             }
         }
 
-    cucul_set_size(kk->qq, COLS, LINES);
+    _cucul_set_size(kk->qq, COLS, LINES);
 
     return 0;
 }
