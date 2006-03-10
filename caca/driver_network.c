@@ -77,17 +77,30 @@ static char codes[] = {0xff, 0xfb, 0x01,  // WILL ECHO
 static int network_init_graphics(caca_t *kk)
 {
     int yes=1;
+    int net_port = 7575;
+    char *network_port;
+
 
     kk->drv.p = malloc(sizeof(struct driver_private));
     if(kk->drv.p == NULL)
         return -1;
 
+
+#if defined(HAVE_GETENV)
+    network_port = getenv("CACA_NETWORK_PORT");
+    if(network_port && *network_port) {
+        net_port = atoi(network_port);
+        if(!net_port)
+            net_port = 7575;
+    }
+#endif
+    
+
     kk->drv.p->width = 80;
     kk->drv.p->height = 23; // Avoid scrolling
-    kk->drv.p->port = 7575; // 75 75 decimal ASCII -> KK   // FIXME, sadly
     kk->drv.p->client_count = 0;
     kk->drv.p->fd_list = NULL;
-
+    kk->drv.p->port = net_port;
 
 
     _cucul_set_size(kk->qq, kk->drv.p->width, kk->drv.p->height);
@@ -264,6 +277,7 @@ void network_init_driver(caca_t *kk)
     kk->drv.handle_resize = network_handle_resize;
     kk->drv.get_event = network_get_event;
 }
+
 
 #endif // USE_NETWORK
 

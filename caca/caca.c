@@ -114,10 +114,10 @@ static int caca_init_driver(caca_t *kk)
 {
 #if defined(HAVE_GETENV) && defined(HAVE_STRCASECMP)
     char *var = getenv("CACA_DRIVER");
-
+    
     /* If the environment variable was set, use it */
     if(var && *var)
-    {
+        {
 #if defined(USE_WIN32)
         if(!strcasecmp(var, "win32"))
             win32_init_driver(kk);
