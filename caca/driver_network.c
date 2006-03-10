@@ -70,7 +70,7 @@ static char codes[] = {0xff, 0xfb, 0x01,  // WILL ECHO
                        0xff, 0xfb, 0x03,  // WILL SUPPRESS GO AHEAD
                        0xff, 253, 31,     // DO NAWS
                        0xff, 254, 31,     // DON'T NAWS
-                       0xff, 31, 250, 0, 30, 0, 0xFF, // to be replaced 
+                       0xff, 31, 250, 0, 30, 0, 0xFF, // Set size, replaced in display
                        0xff, 240};
 
 
@@ -78,14 +78,12 @@ static int network_init_graphics(caca_t *kk)
 {
     int yes=1;
 
-    printf("Initing network stack.\n");
-
     kk->drv.p = malloc(sizeof(struct driver_private));
     if(kk->drv.p == NULL)
         return -1;
 
     kk->drv.p->width = 80;
-    kk->drv.p->height = 24;
+    kk->drv.p->height = 23; // Avoid scrolling
     kk->drv.p->port = 7575; // 75 75 decimal ASCII -> KK   // FIXME, sadly
     kk->drv.p->client_count = 0;
     kk->drv.p->fd_list = NULL;
@@ -95,12 +93,11 @@ static int network_init_graphics(caca_t *kk)
     _cucul_set_size(kk->qq, kk->drv.p->width, kk->drv.p->height);
 
 
-    printf("socket\n");
     if ((kk->drv.p->sockfd = socket(PF_INET, SOCK_STREAM, 0)) == -1) {
         perror("socket");
         return -1;
     }
-    printf("setsockopt\n");
+
     if (setsockopt(kk->drv.p->sockfd,SOL_SOCKET,SO_REUSEADDR,&yes,sizeof(int)) == -1) {
         perror("setsockopt");
         return -1;
@@ -111,7 +108,6 @@ static int network_init_graphics(caca_t *kk)
     kk->drv.p->my_addr.sin_addr.s_addr = INADDR_ANY;
     memset(&(kk->drv.p->my_addr.sin_zero), '\0', 8);
 
-    printf("bind\n");
     if (bind(kk->drv.p->sockfd, (struct sockaddr *)&kk->drv.p->my_addr, sizeof(struct sockaddr))
                                                                    == -1) {
         perror("bind");
@@ -121,14 +117,10 @@ static int network_init_graphics(caca_t *kk)
     /* Non blocking socket */
     fcntl(kk->drv.p->sockfd, F_SETFL, O_NONBLOCK);
 
-
-    printf("listen\n");
     if (listen(kk->drv.p->sockfd, BACKLOG) == -1) {
         perror("listen");
         return -1;
     }
-
-    printf("network ok.\n");
 
     kk->drv.p->buffer = NULL;
 
@@ -166,6 +158,7 @@ static void network_display(caca_t *kk)
 {
     int i;
 
+    /* Get ANSI representation of the image */
     kk->drv.p->buffer = cucul_get_ansi(kk->qq, 0, &kk->drv.p->size);;
 
     for(i = 0; i < kk->drv.p->client_count; i++)
@@ -184,9 +177,12 @@ static void network_handle_resize(caca_t *kk)
 
 static unsigned int network_get_event(caca_t *kk)
 {
+    /* Manage new connections as this function will be called sometimes
+     *  more often than display 
+     */
     manage_connections(kk);
 
-    /* Not handled */
+    /* Event not handled */
     return 0;
 }
 
@@ -200,7 +196,7 @@ static void manage_connections(caca_t *kk)
 
     kk->drv.p->clilen = sizeof(kk->drv.p->remote_addr);
     fd = accept(kk->drv.p->sockfd, (struct sockaddr *) &kk->drv.p->remote_addr, &kk->drv.p->clilen);
-    if(fd != -1)
+    if(fd != -1) /* That's non blocking socket, -1 if no connection received */
     {
         if(kk->drv.p->fd_list == NULL)
         {
@@ -231,7 +227,9 @@ static int send_data(caca_t *kk, int fd)
         return -1;
 
     /* FIXME, handle >255 sizes */
+    codes[15] = (unsigned char) (kk->drv.p->width & 0xff00)>>8;
     codes[16] = (unsigned char) kk->drv.p->width & 0xff;
+    codes[17] = (unsigned char) (kk->drv.p->height & 0xff00)>>8;
     codes[18] = (unsigned char) kk->drv.p->height & 0xff;
             
     /* Send basic telnet codes */
@@ -242,6 +240,7 @@ static int send_data(caca_t *kk, int fd)
     if (send(fd, "\033[1,1H", 6, 0) == -1)
         return -1;
     
+    /* Send actual data */
     if (send(fd, kk->drv.p->buffer, kk->drv.p->size, 0) == -1)
         return -1;
 

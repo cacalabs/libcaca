@@ -100,9 +100,9 @@ fi
 if test "${enable_slang}" != "no"; then
   ac_cv_my_have_slang="no"
   AC_CHECK_HEADERS(slang.h slang/slang.h,
-   [AC_CHECK_LIB(slang, SLkp_init,
+   [AC_CHECK_LIB(slang, SLsmg_utf8_enable,
      [ac_cv_my_have_slang="yes"
-      AC_DEFINE(USE_SLANG, 1, Define to activate the slang backend driver)
+      AC_DEFINE(USE_SLANG, 1, Define to activate the slang backend driver (needs slang-utf8))
       CPPFLAGS="${CPPFLAGS} -DOPTIMISE_SLANG_PALETTE=1"
       CACA_LIBS="${CACA_LIBS} -lslang"
       CACA_DRIVERS="${CACA_DRIVERS} slang"])])

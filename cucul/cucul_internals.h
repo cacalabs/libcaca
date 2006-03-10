@@ -61,5 +61,7 @@ struct cucul_context
 /* Initialisation functions */
 extern int _cucul_init_bitmap(void);
 extern int _cucul_end_bitmap(void);
+void _cucul_set_size(cucul_t *qq, unsigned int width, unsigned int height);
+
 
 #endif /* __CUCUL_INTERNALS_H__ */
