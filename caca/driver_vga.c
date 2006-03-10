@@ -75,6 +75,9 @@ static int vga_init_graphics(caca_t *kk)
     outb(0x0a, 0x3d4);
     outb(tmp, 0x3d5);
 
+    /* We don't have much choice */
+    _cucul_set_size(kk->qq, 80, 25);
+
     return 0;
 }
 
@@ -100,14 +103,14 @@ static int vga_set_window_title(caca_t *kk, char const *title)
 
 static unsigned int vga_get_window_width(caca_t *kk)
 {
-    /* Fallback to a 6x10 font */
-    return kk->qq->width * 6;
+    /* Fallback to a 320x200 screen */
+    return 320;
 }
 
 static unsigned int vga_get_window_height(caca_t *kk)
 {
-    /* Fallback to a 6x10 font */
-    return kk->qq->height * 10;
+    /* Fallback to a 320x200 screen */
+    return 200;
 }
 
 static void vga_display(caca_t *kk)
