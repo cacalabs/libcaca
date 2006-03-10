@@ -13,8 +13,10 @@
 
 #include "config.h"
 
-#include <math.h>
-#include <string.h>
+#if !defined(__KERNEL__)
+#   include <math.h>
+#   include <string.h>
+#endif
 
 #include "cucul.h"
 #include "caca.h"
