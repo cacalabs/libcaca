@@ -23,6 +23,13 @@
 
 #ifdef __KERNEL__
 
+#define IS_DIGIT(x) (x>='0' && x<='9')
+#define IS_ALPHA(x) (x>='A' && x<='z')
+#define IS_UPPER(x) (x>='A' && x<='Z')
+#define IS_LOWER(x) (x>='a' && x<='z')
+#define UPPER(x) (IS_LOWER(x)?(x+('a'-'A')):x)
+#define LOWER(x) (IS_UPPER(x)?(x-('a'-'A')):x)
+
 /* Our memory mapping */
 static uint32_t *freemem = (uint32_t*) 0x00200000;
 
@@ -130,8 +137,18 @@ size_t strlen(const char *s)
 
 int strcasecmp(const char *s1, const char *s2)
 {
-    /* FIXME */
-    return -1;
+    while((*s1++) && (*s2++)) {
+        char c1 = UPPER(*s1);
+        char c2 = UPPER(*s2);
+        if((*s1)>(*s2))
+            return (*s1)>(*s2);
+        if((*s1)<(*s2))
+            return (*s1)<(*s2);
+    }
+    if((*s1==0) && (*s2==0))
+        return 0;
+
+    return 1; /* FIXME */
 }
 
 /* stdarg.h functions */
