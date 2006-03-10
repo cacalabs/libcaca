@@ -104,6 +104,7 @@ static int const slang_assoc[16*16] =
  * Local functions
  */
 static void slang_init_palette(void);
+static void slang_write_utf32(uint32_t);
 
 #if defined(HAVE_SIGNAL)
 static RETSIGTYPE sigwinch_handler(int);
@@ -160,7 +161,10 @@ static int slang_init_graphics(caca_t *kk)
      * 256 colour pairs */
     SLtt_Has_Alt_Charset = 0;
 
-    cucul_set_size(kk->qq, SLtt_Screen_Cols, SLtt_Screen_Rows);
+    SLsmg_utf8_enable(1); /* 1 == force, 0 == disable, -1 == autodetect */
+    SLtt_utf8_enable(1);
+
+    _cucul_set_size(kk->qq, SLtt_Screen_Cols, SLtt_Screen_Rows);
 
     return 0;
 }
@@ -214,10 +218,7 @@ static void slang_display(caca_t *kk)
             if(fgcolor != bgcolor)
             {
                 SLsmg_set_color(slang_assoc[*attr++]);
-                if(c > 0x00000020 && 0x00000080)
-                    SLsmg_write_char((char)c);
-                else
-                    SLsmg_write_char(' ');
+                slang_write_utf32(c);
             }
             else
             {
@@ -234,10 +235,7 @@ static void slang_display(caca_t *kk)
             }
 #else
             SLsmg_set_color(*attr++);
-            if(c > 0x00000020 && 0x00000080)
-                SLsmg_write_char((char)c);
-            else
-                SLsmg_write_char(' ');
+            slang_write_utf32(c);
 #endif
         }
     }
@@ -374,6 +372,37 @@ static void slang_init_palette(void)
             SLtt_set_color(i, NULL, slang_colors[fg], slang_colors[bg]);
         }
 #endif
+}
+
+static void slang_write_utf32(uint32_t c)
+{
+    static const uint8_t mark[7] =
+    {
+        0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC
+    };
+
+    char buf[10], *parser;
+    int bytes;
+
+    if(c < 0x80)
+    {
+        SLsmg_write_char(c);
+        return;
+    }
+
+    bytes = (c < 0x800) ? 2 : (c < 0x10000) ? 3 : 4;
+    buf[bytes] = '\0';
+    parser = buf + bytes;
+
+    switch(bytes)
+    {
+        case 4: *--parser = (c | 0x80) & 0xbf; c >>= 6;
+        case 3: *--parser = (c | 0x80) & 0xbf; c >>= 6;
+        case 2: *--parser = (c | 0x80) & 0xbf; c >>= 6;
+    }
+    *--parser = c | mark[bytes];
+
+    SLsmg_write_string(buf);
 }
 
 #if defined(HAVE_SIGNAL)
