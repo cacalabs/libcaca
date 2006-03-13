@@ -40,9 +40,37 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
-static void manage_connections(caca_t *kk);
-static int send_data(caca_t *kk, int fd);
-ssize_t nonblock_write(int fd, char *buf, size_t len);
+#define BACKLOG 1337    /* Number of pending connections */
+#define BACKBUFFER 300000 /* Size of per-client buffer */
+
+/* Following vars are static */
+#define INIT_PREFIX \
+    "\xff\xfb\x01" /* WILL ECHO */ \
+    "\xff\xfb\x03" /* WILL SUPPRESS GO AHEAD */ \
+    "\xff\xfd\x31" /* DO NAWS */ \
+    "\xff\xfe\x1f" /* DON'T NAWS */ \
+    "\xff\x1f\xfa____" /* Set size, replaced in display */ \
+    "\xff\xf0" \
+    "\x1b]2;caca for the network\x07" /* Change window title */ \
+    "\x1b[?1049h" /* Clear screen */ \
+    /*"\x1b[?25l"*/ /* Hide cursor */ \
+
+#define ANSI_PREFIX \
+    "\x1b[1;1H" /* move(0,0) */ \
+    "\x1b[1;1H" /* move(0,0) again */
+
+#define ANSI_RESET \
+    "    " /* Garbage */ \
+    "\x1b[?1049h" /* Clear screen */ \
+    "\x1b[?1049h" /* Clear screen again */
+
+struct client
+{
+    int fd;
+    int ready;
+    char buffer[BACKBUFFER];
+    int start, stop;
+};
 
 struct driver_private
 {
@@ -50,70 +78,68 @@ struct driver_private
     unsigned int port;
     int sockfd;
     struct sockaddr_in my_addr;
-    struct sockaddr_in remote_addr;
     socklen_t sin_size;
-    int clilen;
+
+    char prefix[sizeof(INIT_PREFIX)];
 
     char *buffer;
     int size;
 
     int client_count;
-    int *fd_list;
+    struct client *clients;
+
+    void (*sigpipe_handler)(int);
 };
 
-
-
-#define BACKLOG 1337    /* Number of pending connections */
-
-
-
-/* Following vars are static */
-static char codes[] = {0xff, 0xfb, 0x01,  // WILL ECHO
-                       0xff, 0xfb, 0x03,  // WILL SUPPRESS GO AHEAD
-                       0xff, 253, 31,     // DO NAWS
-                       0xff, 254, 31,     // DON'T NAWS
-                       0xff, 31, 250, 0, 30, 0, 0xFF, // Set size, replaced in display
-                       0xff, 240};
-
+static void manage_connections(caca_t *kk);
+static int send_data(caca_t *kk, struct client *c);
+ssize_t nonblock_write(int fd, char *buf, size_t len);
 
 static int network_init_graphics(caca_t *kk)
 {
-    int yes=1;
-    int net_port = 7575;
-    char *network_port;
-
+    int yes = 1, flags;
+    int port = 51914;
+    char *network_port, *tmp;
 
     kk->drv.p = malloc(sizeof(struct driver_private));
     if(kk->drv.p == NULL)
         return -1;
 
-
 #if defined(HAVE_GETENV)
     network_port = getenv("CACA_NETWORK_PORT");
-    if(network_port && *network_port) {
-        net_port = atoi(network_port);
-        if(!net_port)
-            net_port = 7575;
+    if(network_port && *network_port)
+    {
+        int new_port = atoi(network_port);
+        if(new_port)
+            port = new_port;
     }
 #endif
 
-
     kk->drv.p->width = 80;
-    kk->drv.p->height = 23; // Avoid scrolling
+    kk->drv.p->height = 24;
     kk->drv.p->client_count = 0;
-    kk->drv.p->fd_list = NULL;
-    kk->drv.p->port = net_port;
-
+    kk->drv.p->clients = NULL;
+    kk->drv.p->port = port;
 
     _cucul_set_size(kk->qq, kk->drv.p->width, kk->drv.p->height);
 
+    /* FIXME, handle >255 sizes */
+    memcpy(kk->drv.p->prefix, INIT_PREFIX, sizeof(INIT_PREFIX));
+    tmp = strstr(kk->drv.p->prefix, "____");
+    tmp[0] = (unsigned char) (kk->drv.p->width & 0xff00) >> 8;
+    tmp[1] = (unsigned char) kk->drv.p->width & 0xff;
+    tmp[2] = (unsigned char) (kk->drv.p->height & 0xff00) >> 8;
+    tmp[3] = (unsigned char) kk->drv.p->height & 0xff;
 
-    if ((kk->drv.p->sockfd = socket(PF_INET, SOCK_STREAM, 0)) == -1) {
+    if ((kk->drv.p->sockfd = socket(PF_INET, SOCK_STREAM, 0)) == -1)
+    {
         perror("socket");
         return -1;
     }
 
-    if (setsockopt(kk->drv.p->sockfd,SOL_SOCKET,SO_REUSEADDR,&yes,sizeof(int)) == -1) {
+    if (setsockopt(kk->drv.p->sockfd, SOL_SOCKET,
+                   SO_REUSEADDR, &yes, sizeof(int)) == -1)
+    {
         perror("setsockopt SO_REUSEADDR");
         return -1;
     }
@@ -123,24 +149,28 @@ static int network_init_graphics(caca_t *kk)
     kk->drv.p->my_addr.sin_addr.s_addr = INADDR_ANY;
     memset(&(kk->drv.p->my_addr.sin_zero), '\0', 8);
 
-    if (bind(kk->drv.p->sockfd, (struct sockaddr *)&kk->drv.p->my_addr, sizeof(struct sockaddr))
-                                                                   == -1) {
+    if (bind(kk->drv.p->sockfd, (struct sockaddr *)&kk->drv.p->my_addr,
+             sizeof(struct sockaddr)) == -1)
+    {
         perror("bind");
         return -1;
     }
 
     /* Non blocking socket */
-    fcntl(kk->drv.p->sockfd, F_SETFL, O_NONBLOCK);
+    flags = fcntl(kk->drv.p->sockfd, F_GETFL, 0);
+    fcntl(kk->drv.p->sockfd, F_SETFL, flags | O_NONBLOCK);
 
-    if (listen(kk->drv.p->sockfd, BACKLOG) == -1) {
+    if (listen(kk->drv.p->sockfd, BACKLOG) == -1)
+    {
         perror("listen");
         return -1;
     }
 
     kk->drv.p->buffer = NULL;
+    kk->drv.p->size = 0;
 
     /* Ignore SIGPIPE */
-    signal(SIGPIPE, SIG_IGN);
+    kk->drv.p->sigpipe_handler = signal(SIGPIPE, SIG_IGN);
 
     return 0;
 }
@@ -149,16 +179,23 @@ static int network_end_graphics(caca_t *kk)
 {
     int i;
 
-    for(i = 0; i < kk->drv.p->client_count; i++) {
-        close(kk->drv.p->fd_list[i]);
+    for(i = 0; i < kk->drv.p->client_count; i++)
+    {
+        close(kk->drv.p->clients[i].fd);
+        kk->drv.p->clients[i].fd = -1;
     }
+
+    /* Restore SIGPIPE handler */
+    signal(SIGPIPE, kk->drv.p->sigpipe_handler);
+
+    free(kk->drv.p);
 
     return 0;
 }
 
 static int network_set_window_title(caca_t *kk, char const *title)
 {
-    /* Not handled (yet)*/
+    /* Not handled (yet) */
     return 0;
 }
 
@@ -176,16 +213,18 @@ static void network_display(caca_t *kk)
 {
     int i;
 
-    /* Get ANSI representation of the image */
-    kk->drv.p->buffer = cucul_get_ansi(kk->qq, 0, &kk->drv.p->size);;
+    /* Get ANSI representation of the image and skip the end-of buffer
+     * linefeed ("\r\n\0", 3 bytes) */
+    kk->drv.p->buffer = cucul_get_ansi(kk->qq, 0, &kk->drv.p->size);
+    kk->drv.p->size -= 3;
 
     for(i = 0; i < kk->drv.p->client_count; i++)
     {
-        if(kk->drv.p->fd_list[i] == -1)
+        if(kk->drv.p->clients[i].fd == -1)
             continue;
 
-        if(send_data(kk, kk->drv.p->fd_list[i]))
-            kk->drv.p->fd_list[i] = -1;
+        if(send_data(kk, &kk->drv.p->clients[i]))
+            kk->drv.p->clients[i].fd = -1;
     }
 
     manage_connections(kk);
@@ -199,8 +238,7 @@ static void network_handle_resize(caca_t *kk)
 static unsigned int network_get_event(caca_t *kk)
 {
     /* Manage new connections as this function will be called sometimes
-     *  more often than display
-     */
+     * more often than display */
     manage_connections(kk);
 
     /* Event not handled */
@@ -213,74 +251,189 @@ static unsigned int network_get_event(caca_t *kk)
 
 static void manage_connections(caca_t *kk)
 {
-    int fd;
+    int fd, flags;
+    struct sockaddr_in remote_addr;
+    socklen_t len = sizeof(struct sockaddr_in);
 
-    kk->drv.p->clilen = sizeof(kk->drv.p->remote_addr);
-    fd = accept(kk->drv.p->sockfd, (struct sockaddr *) &kk->drv.p->remote_addr, &kk->drv.p->clilen);
-
+    fd = accept(kk->drv.p->sockfd, (struct sockaddr *)&remote_addr, &len);
     if(fd == -1)
         return;
 
     /* Non blocking socket */
-    fcntl(fd, F_SETFL, O_NONBLOCK);
+    flags = fcntl(fd, F_SETFL, 0);
+    fcntl(fd, F_SETFL, flags | O_NONBLOCK);
 
-    if(kk->drv.p->fd_list == NULL)
+    if(kk->drv.p->clients == NULL)
     {
-        kk->drv.p->fd_list = malloc(sizeof(int));
-        if(kk->drv.p->fd_list == NULL)
+        kk->drv.p->clients = malloc(sizeof(struct client));
+        if(kk->drv.p->clients == NULL)
             return;
     }
     else
     {
-        kk->drv.p->fd_list = realloc(kk->drv.p->fd_list,
-                                     (kk->drv.p->client_count+1) * sizeof(int));
+        kk->drv.p->clients = realloc(kk->drv.p->clients,
+                                     (kk->drv.p->client_count+1) * sizeof(struct client));
     }
 
-    if(send_data(kk, fd) == 0)
-    {
-        kk->drv.p->fd_list[kk->drv.p->client_count] = fd;
-        kk->drv.p->client_count++;
-    }
+    kk->drv.p->clients[kk->drv.p->client_count].fd = fd;
+    kk->drv.p->clients[kk->drv.p->client_count].ready = 0;
+    kk->drv.p->clients[kk->drv.p->client_count].start = 0;
+    kk->drv.p->clients[kk->drv.p->client_count].stop = 0;
+
+    /* If we already have data to send, send it to the new client */
+    send_data(kk, &kk->drv.p->clients[kk->drv.p->client_count]);
+
+    kk->drv.p->client_count++;
 }
 
-static int send_data(caca_t *kk, int fd)
+static int send_data(caca_t *kk, struct client *c)
 {
     ssize_t ret;
+
+    /* Not for us */
+    if(c->fd < 0)
+        return -1;
+
+    /* Debug: show incoming data */
+    for(;;)
+    {
+        unsigned char in;
+        ret = read(c->fd, &in, 1);
+        if(ret <= 0)
+            break;
+
+        fprintf(stderr, "client %i said \\x%.02x\n", c->fd, in);
+    }
+
+    /* Send the telnet initialisation commands */
+    if(!c->ready)
+    {
+        ret = nonblock_write(c->fd, kk->drv.p->prefix, sizeof(INIT_PREFIX));
+        if(ret == -1)
+            return (errno == EAGAIN) ? 0 : -1;
+
+        if(ret < (ssize_t)sizeof(INIT_PREFIX))
+            return 0;
+
+        c->ready = 1;
+    }
 
     /* No error, there's just nothing to send yet */
     if(!kk->drv.p->buffer)
         return 0;
 
-    if(fd < 0)
-        return -1;
+    /* If we have backlog, send the backlog */
+    if(c->stop)
+    {
+        ret = nonblock_write(c->fd, c->buffer + c->start, c->stop - c->start);
 
-    /* FIXME, handle >255 sizes */
-    codes[15] = (unsigned char) (kk->drv.p->width & 0xff00)>>8;
-    codes[16] = (unsigned char) kk->drv.p->width & 0xff;
-    codes[17] = (unsigned char) (kk->drv.p->height & 0xff00)>>8;
-    codes[18] = (unsigned char) kk->drv.p->height & 0xff;
+        if(ret == -1)
+        {
+            if(errno == EAGAIN)
+                ret = 0;
+            else
+                return -1;
+        }
 
-    /* Send basic telnet codes */
-    ret = nonblock_write(fd, codes, sizeof(codes));
+        if(ret == c->stop - c->start)
+        {
+            /* We got rid of the backlog! */
+            c->start = c->stop = 0;
+        }
+        else
+        {
+            c->start += ret;
+
+            if(c->stop - c->start + strlen(ANSI_PREFIX) + kk->drv.p->size
+                > BACKBUFFER)
+            {
+                /* Overflow! Empty buffer and start again */
+                memcpy(c->buffer, ANSI_RESET, strlen(ANSI_RESET));
+                c->start = 0;
+                c->stop = strlen(ANSI_RESET);
+                return 0;
+            }
+
+            /* Need to move? */
+            if(c->stop + strlen(ANSI_PREFIX) + kk->drv.p->size > BACKBUFFER)
+            {
+                memmove(c->buffer, c->buffer + c->start, c->stop - c->start);
+                c->stop -= c->start;
+                c->start = 0;
+            }
+
+            memcpy(c->buffer + c->stop, ANSI_PREFIX, strlen(ANSI_PREFIX));
+            c->stop += strlen(ANSI_PREFIX);
+            memcpy(c->buffer + c->stop, kk->drv.p->buffer, kk->drv.p->size);
+            c->stop += kk->drv.p->size;
+
+            return 0;
+        }
+    }
+
+    /* We no longer have backlog, send our new data */
+
+    /* Send ANSI prefix */
+    ret = nonblock_write(c->fd, ANSI_PREFIX, strlen(ANSI_PREFIX));
     if(ret == -1)
-        return (errno == EAGAIN) ? 0 : -1;
+    {
+        if(errno == EAGAIN)
+            ret = 0;
+        else
+            return -1;
+    }
 
-    /* ANSI code for move(0,0)*/
-    ret = nonblock_write(fd, "\033[1,1H", 6);
-    if(ret == -1)
-        return (errno == EAGAIN) ? 0 : -1;
+    if(ret < (ssize_t)strlen(ANSI_PREFIX))
+    {
+        if(strlen(ANSI_PREFIX) + kk->drv.p->size > BACKBUFFER)
+        {
+            /* Overflow! Empty buffer and start again */
+            memcpy(c->buffer, ANSI_RESET, strlen(ANSI_RESET));
+            c->start = 0;
+            c->stop = strlen(ANSI_RESET);
+            return 0;
+        }
+
+        memcpy(c->buffer, ANSI_PREFIX, strlen(ANSI_PREFIX) - ret);
+        c->stop = strlen(ANSI_PREFIX) - ret;
+        memcpy(c->buffer + c->stop, kk->drv.p->buffer, kk->drv.p->size);
+        c->stop += kk->drv.p->size;
+
+        return 0;
+    }
 
     /* Send actual data */
-    ret = nonblock_write(fd, kk->drv.p->buffer, kk->drv.p->size);
+    ret = nonblock_write(c->fd, kk->drv.p->buffer, kk->drv.p->size);
     if(ret == -1)
-        return (errno == EAGAIN) ? 0 : -1;
+    {
+        if(errno == EAGAIN)
+            ret = 0;
+        else
+            return -1;
+    }
+
+    if(ret < kk->drv.p->size)
+    {
+        if(kk->drv.p->size > BACKBUFFER)
+        {
+            /* Overflow! Empty buffer and start again */
+            memcpy(c->buffer, ANSI_RESET, strlen(ANSI_RESET));
+            c->start = 0;
+            c->stop = strlen(ANSI_RESET);
+            return 0;
+        }
+
+        memcpy(c->buffer, kk->drv.p->buffer, kk->drv.p->size - ret);
+        c->stop = kk->drv.p->size - ret;
+
+        return 0;
+    }
 
     return 0;
 }
 
 ssize_t nonblock_write(int fd, char *buf, size_t len)
 {
-    int retries = 10;
     size_t total = 0;
     ssize_t ret;
 
@@ -289,14 +442,8 @@ ssize_t nonblock_write(int fd, char *buf, size_t len)
         do
         {
             ret = write(fd, buf, len);
-            if(ret < 0 && errno == EAGAIN)
-            {
-                retries--;
-                if(retries < 0)
-                    break;
-            }
         }
-        while(ret < 0 && (errno == EINTR || errno == EAGAIN));
+        while(ret < 0 && errno == EINTR);
 
         if(ret < 0)
             return ret;
@@ -329,5 +476,5 @@ void network_init_driver(caca_t *kk)
 }
 
 
-#endif // USE_NETWORK
+#endif /* USE_NETWORK */
 
