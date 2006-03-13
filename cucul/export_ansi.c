@@ -92,7 +92,7 @@ char * cucul_get_ansi(cucul_t *qq, int trailing, int *size)
             prevbg = bg;
         }
         if(!trailing)
-            cur += sprintf(cur, "\033[0m\n\r");
+            cur += sprintf(cur, "\033[0m\r\n");
         else
             cur += sprintf(cur, "\\033[0m\\n\n");
     }
