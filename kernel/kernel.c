@@ -137,18 +137,14 @@ size_t strlen(const char *s)
 
 int strcasecmp(const char *s1, const char *s2)
 {
-    while((*s1++) && (*s2++)) {
-        char c1 = UPPER(*s1);
-        char c2 = UPPER(*s2);
-        if((*s1)>(*s2))
-            return (*s1)>(*s2);
-        if((*s1)<(*s2))
-            return (*s1)<(*s2);
+    while(*s1 && *s2 && UPPER(*s1) == UPPER(*s2))
+    {
+        s1++;
+        s2++;
     }
-    if((*s1==0) && (*s2==0))
-        return 0;
 
-    return 1; /* FIXME */
+    /* Either *s1 or *s2 is 0 */
+    return (int)UPPER(*s1) - (int)UPPER(*s2);
 }
 
 /* stdarg.h functions */
