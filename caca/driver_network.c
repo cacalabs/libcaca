@@ -53,7 +53,7 @@
     "\xff\x1f\xfa____" /* Set size, replaced in display */ \
     "\xff\xf0" \
     "\x1b]2;caca for the network\x07" /* Change window title */ \
-    "\x1b[?1049h" /* Clear screen */ \
+    "\x1b[H\x1b[J" /* Clear screen */ \
     /*"\x1b[?25l"*/ /* Hide cursor */ \
 
 #define ANSI_PREFIX \
