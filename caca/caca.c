@@ -202,7 +202,7 @@ static int caca_init_driver(caca_t *kk)
     return 0;
 #endif
 #if defined(USE_NCURSES)
-    slang_init_driver(kk);
+    ncurses_init_driver(kk);
     return 0;
 #endif
 #if defined(USE_NETWORK)
