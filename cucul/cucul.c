@@ -74,11 +74,6 @@ cucul_t * cucul_init(void)
         return NULL;
     }
 
-    qq->ansi_buffer = NULL;
-    qq->irc_buffer = NULL;
-    qq->html3_buffer = NULL;
-    qq->html_buffer = NULL;
-
     return qq;
 }
 
@@ -277,19 +272,44 @@ void cucul_end(cucul_t *qq)
     free(qq->chars);
     free(qq->attr);
 
-    if(qq->ansi_buffer)
-        free(qq->ansi_buffer);
-    if(qq->irc_buffer)
-        free(qq->irc_buffer);
-    if(qq->html3_buffer)
-        free(qq->html3_buffer);
-    if(qq->html_buffer)
-        free(qq->html_buffer);
-    if(qq->ps_buffer)
-        free(qq->ps_buffer);
-
-
     free(qq);
+}
+
+struct cucul_buffer * cucul_export(cucul_t *qq, enum cucul_format format)
+{
+    struct cucul_buffer *ex;
+
+    ex = malloc(sizeof(struct cucul_buffer));
+
+    switch(format)
+    {
+        case CUCUL_FORMAT_ANSI:
+            _cucul_get_ansi(qq, ex);
+            break;
+        case CUCUL_FORMAT_HTML:
+            _cucul_get_html(qq, ex);
+            break;
+        case CUCUL_FORMAT_HTML3:
+            _cucul_get_html3(qq, ex);
+            break;
+        case CUCUL_FORMAT_IRC:
+            _cucul_get_irc(qq, ex);
+            break;
+        case CUCUL_FORMAT_PS:
+            _cucul_get_ps(qq, ex);
+            break;
+        default:
+            free(ex);
+            return NULL;
+    }
+
+    return ex;
+}
+
+void cucul_free(struct cucul_buffer *ex)
+{
+    free(ex->buffer);
+    free(ex);
 }
 
 /*

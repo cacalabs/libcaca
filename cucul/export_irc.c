@@ -10,7 +10,7 @@
  */
 
 /** \file export.c
- *  \version \$Id: export.c 361 2006-03-09 13:24:06Z jylam $
+ *  \version \$Id$
  *  \author Sam Hocevar <sam@zoy.org>
  *  \author Jean-Yves Lamoureux <jylam@lnxscene.org>
  *  \brief Export function
@@ -36,7 +36,7 @@
  *  This function generates and returns an IRC representation of
  *  the current image.
  */
-char* cucul_get_irc(cucul_t *qq, int *size)
+void _cucul_get_irc(cucul_t *qq, struct cucul_buffer *ex)
 {
     static int const palette[] =
     {
@@ -55,14 +55,10 @@ char* cucul_get_irc(cucul_t *qq, int *size)
      * In real life, the average bytes per pixel value will be around 5.
      */
 
-    if(qq->irc_buffer)
-        free(qq->irc_buffer);
+    ex->size = 2 + (qq->width * qq->height * 11);
+    ex->buffer = malloc(ex->size);
 
-    qq->irc_buffer = malloc((2 + (qq->width * qq->height * 11)) * sizeof(char));
-    if(qq->irc_buffer == NULL)
-        return NULL;
-
-    cur = qq->irc_buffer;
+    cur = ex->buffer;
 
     *cur++ = '\x0f';
 
@@ -114,8 +110,6 @@ char* cucul_get_irc(cucul_t *qq, int *size)
     *cur++ = '\x0f';
 
     /* Crop to really used size */
-    *size = (strlen(qq->irc_buffer) + 1) * sizeof(char);
-    qq->irc_buffer = realloc(qq->irc_buffer, *size);
-    
-    return qq->irc_buffer;
+    ex->size = strlen(ex->buffer) + 1;
+    ex->buffer = realloc(ex->buffer, ex->size);
 }

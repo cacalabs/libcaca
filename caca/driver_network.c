@@ -85,8 +85,7 @@ struct driver_private
 
     char prefix[sizeof(INIT_PREFIX)];
 
-    char *buffer;
-    int size;
+    struct cucul_buffer *ex;
 
     int client_count;
     struct client *clients;
@@ -169,8 +168,7 @@ static int network_init_graphics(caca_t *kk)
         return -1;
     }
 
-    kk->drv.p->buffer = NULL;
-    kk->drv.p->size = 0;
+    kk->drv.p->ex = NULL;
 
     /* Ignore SIGPIPE */
     kk->drv.p->sigpipe_handler = signal(SIGPIPE, SIG_IGN);
@@ -190,6 +188,9 @@ static int network_end_graphics(caca_t *kk)
         close(kk->drv.p->clients[i].fd);
         kk->drv.p->clients[i].fd = -1;
     }
+
+    if(kk->drv.p->ex)
+        cucul_free(kk->drv.p->ex);
 
     /* Restore SIGPIPE handler */
     signal(SIGPIPE, kk->drv.p->sigpipe_handler);
@@ -219,10 +220,17 @@ static void network_display(caca_t *kk)
 {
     int i;
 
+    /* Free the previous export buffer, if any */
+    if(kk->drv.p->ex)
+    {
+        cucul_free(kk->drv.p->ex);
+        kk->drv.p->ex = NULL;
+    }
+
     /* Get ANSI representation of the image and skip the end-of buffer
      * linefeed ("\r\n\0", 3 bytes) */
-    kk->drv.p->buffer = cucul_get_ansi(kk->qq, 0, &kk->drv.p->size);
-    kk->drv.p->size -= 3;
+    kk->drv.p->ex = cucul_export(kk->qq, CUCUL_FORMAT_ANSI);
+    kk->drv.p->ex->size -= 3;
 
     for(i = 0; i < kk->drv.p->client_count; i++)
     {
@@ -370,7 +378,7 @@ static int send_data(caca_t *kk, struct client *c)
     }
 
     /* No error, there's just nothing to send yet */
-    if(!kk->drv.p->buffer)
+    if(!kk->drv.p->ex)
         return 0;
 
     /* If we have backlog, send the backlog */
@@ -395,7 +403,7 @@ static int send_data(caca_t *kk, struct client *c)
         {
             c->start += ret;
 
-            if(c->stop - c->start + strlen(ANSI_PREFIX) + kk->drv.p->size
+            if(c->stop - c->start + strlen(ANSI_PREFIX) + kk->drv.p->ex->size
                 > OUTBUFFER)
             {
                 /* Overflow! Empty buffer and start again */
@@ -406,7 +414,7 @@ static int send_data(caca_t *kk, struct client *c)
             }
 
             /* Need to move? */
-            if(c->stop + strlen(ANSI_PREFIX) + kk->drv.p->size > OUTBUFFER)
+            if(c->stop + strlen(ANSI_PREFIX) + kk->drv.p->ex->size > OUTBUFFER)
             {
                 memmove(c->outbuf, c->outbuf + c->start, c->stop - c->start);
                 c->stop -= c->start;
@@ -415,8 +423,8 @@ static int send_data(caca_t *kk, struct client *c)
 
             memcpy(c->outbuf + c->stop, ANSI_PREFIX, strlen(ANSI_PREFIX));
             c->stop += strlen(ANSI_PREFIX);
-            memcpy(c->outbuf + c->stop, kk->drv.p->buffer, kk->drv.p->size);
-            c->stop += kk->drv.p->size;
+            memcpy(c->outbuf + c->stop, kk->drv.p->ex->buffer, kk->drv.p->ex->size);
+            c->stop += kk->drv.p->ex->size;
 
             return 0;
         }
@@ -436,7 +444,7 @@ static int send_data(caca_t *kk, struct client *c)
 
     if(ret < (ssize_t)strlen(ANSI_PREFIX))
     {
-        if(strlen(ANSI_PREFIX) + kk->drv.p->size > OUTBUFFER)
+        if(strlen(ANSI_PREFIX) + kk->drv.p->ex->size > OUTBUFFER)
         {
             /* Overflow! Empty buffer and start again */
             memcpy(c->outbuf, ANSI_RESET, strlen(ANSI_RESET));
@@ -447,14 +455,14 @@ static int send_data(caca_t *kk, struct client *c)
 
         memcpy(c->outbuf, ANSI_PREFIX, strlen(ANSI_PREFIX) - ret);
         c->stop = strlen(ANSI_PREFIX) - ret;
-        memcpy(c->outbuf + c->stop, kk->drv.p->buffer, kk->drv.p->size);
-        c->stop += kk->drv.p->size;
+        memcpy(c->outbuf + c->stop, kk->drv.p->ex->buffer, kk->drv.p->ex->size);
+        c->stop += kk->drv.p->ex->size;
 
         return 0;
     }
 
     /* Send actual data */
-    ret = nonblock_write(c->fd, kk->drv.p->buffer, kk->drv.p->size);
+    ret = nonblock_write(c->fd, kk->drv.p->ex->buffer, kk->drv.p->ex->size);
     if(ret == -1)
     {
         if(errno == EAGAIN)
@@ -463,9 +471,9 @@ static int send_data(caca_t *kk, struct client *c)
             return -1;
     }
 
-    if(ret < kk->drv.p->size)
+    if(ret < (int)kk->drv.p->ex->size)
     {
-        if(kk->drv.p->size > OUTBUFFER)
+        if(kk->drv.p->ex->size > OUTBUFFER)
         {
             /* Overflow! Empty buffer and start again */
             memcpy(c->outbuf, ANSI_RESET, strlen(ANSI_RESET));
@@ -474,8 +482,8 @@ static int send_data(caca_t *kk, struct client *c)
             return 0;
         }
 
-        memcpy(c->outbuf, kk->drv.p->buffer, kk->drv.p->size - ret);
-        c->stop = kk->drv.p->size - ret;
+        memcpy(c->outbuf, kk->drv.p->ex->buffer, kk->drv.p->ex->size - ret);
+        c->stop = kk->drv.p->ex->size - ret;
 
         return 0;
     }

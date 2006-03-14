@@ -28,7 +28,7 @@ extern "C"
 
 /** \brief Colour definitions.
  *
- *  Colours that can be used with caca_set_color().
+ *  Colours that can be used with cucul_set_color().
  */
 enum cucul_color
 {
@@ -48,6 +48,19 @@ enum cucul_color
     CUCUL_COLOR_LIGHTMAGENTA = 13, /**< The colour index for light magenta. */
     CUCUL_COLOR_YELLOW = 14, /**< The colour index for yellow. */
     CUCUL_COLOR_WHITE = 15 /**< The colour index for white. */
+};
+
+/** \brief Export formats
+ *
+ *  Export formats understood by libcucul.
+ */
+enum cucul_format
+{
+    CUCUL_FORMAT_ANSI = 0, /**< Export to ANSI format. */
+    CUCUL_FORMAT_HTML = 1, /**< Export to HTML format. */
+    CUCUL_FORMAT_HTML3 = 2, /**< Export to old HTMLv3 format. */
+    CUCUL_FORMAT_IRC = 3, /**< Export to text with mIRC colours. */
+    CUCUL_FORMAT_PS = 4, /**< Export to PostScript. */
 };
 
 /** \brief Internal features.
@@ -200,15 +213,18 @@ void cucul_free_bitmap(cucul_t *, struct cucul_bitmap *);
 
 /** \defgroup exporter Exporters to various formats
  *
- *  These functions exports current image to various text formats
- *  Returned buffer will be freed() each you'll call the exporter function.
+ *  These functions export the current canvas to various text formats. It
+ *  is necessary to call cucul_free() to dispose of the data.
  *
  *  @{ */
-char* cucul_get_html(cucul_t *, int *size);
-char* cucul_get_html3(cucul_t *, int *size);
-char* cucul_get_irc(cucul_t *, int *size);
-char* cucul_get_ansi(cucul_t *, int trailing, int *size);
-char* cucul_get_ps(cucul_t *qq, int *size);
+struct cucul_buffer
+{
+    unsigned int size;
+    char *buffer;
+};
+
+struct cucul_buffer * cucul_export(cucul_t *, enum cucul_format);
+void cucul_free(struct cucul_buffer *);
 
 /*  @} */
 

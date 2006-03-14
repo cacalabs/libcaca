@@ -10,7 +10,7 @@
  */
 
 /** \file export.c
- *  \version \$Id: export.c 361 2006-03-09 13:24:06Z jylam $
+ *  \version \$Id$
  *  \author Sam Hocevar <sam@zoy.org>
  *  \author Jean-Yves Lamoureux <jylam@lnxscene.org>
  *  \brief Export function
@@ -39,28 +39,24 @@
  *                  able to cut/paste the result to a function like printf
  *  \return buffer containing generated ANSI codes as a big string
  */
-char * cucul_get_ansi(cucul_t *qq, int trailing, int *size)
+void _cucul_get_ansi(cucul_t *qq, struct cucul_buffer *ex)
 {
     static int const palette[] =
     {
-        30, 34, 32, 36, 31, 35, 33, 37, /* Both lines (light and dark) are the same, */
-        30, 34, 32, 36, 31, 35, 33, 37, /* light colors handling is done later */
+        0,  4,  2,  6, 1,  5,  3,  7,
+        8, 12, 10, 14, 9, 13, 11, 15
     };
 
     char *cur;
     unsigned int x, y;
 
-    /* 20 bytes assumed for max length per pixel.
+    /* 23 bytes assumed for max length per pixel ('\e[5;1;3x;4y;9x;10ym' plus
+     * 4 max bytes for a UTF-8 character).
      * Add height*9 to that (zeroes color at the end and jump to next line) */
-    if(qq->ansi_buffer)
-        free(qq->ansi_buffer);
-    qq->ansi_buffer = malloc(((qq->height*9) + (qq->width * qq->height * 20)) * sizeof(char));
-    if(qq->ansi_buffer == NULL)
-        return NULL;
+    ex->size = (qq->height * 9) + (qq->width * qq->height * 23);
+    ex->buffer = malloc(ex->size);
 
-    cur = qq->ansi_buffer;
-
-    // *cur++ = '';
+    cur = ex->buffer;
 
     for(y = 0; y < qq->height; y++)
     {
@@ -73,34 +69,39 @@ char * cucul_get_ansi(cucul_t *qq, int trailing, int *size)
         for(x = 0; x < qq->width; x++)
         {
             uint8_t fg = palette[lineattr[x] & 0x0f];
-            uint8_t bg = (palette[lineattr[x] >> 4])+10;
+            uint8_t bg = palette[lineattr[x] >> 4];
             uint32_t c = linechar[x];
 
-            if(!trailing)
-                cur += sprintf(cur, "\033[");
-            else
-                cur += sprintf(cur, "\\033[");
+            if(fg != prevfg || bg != prevbg)
+            {
+                cur += sprintf(cur, "\033[0;");
 
-            if(fg > 7)
-                cur += sprintf(cur, "1;%d;%dm",fg,bg);
-            else
-                cur += sprintf(cur, "0;%d;%dm",fg,bg);
+                if(fg < 8)
+                    if(bg < 8)
+                        cur += sprintf(cur, "3%d;4%dm", fg, bg);
+                    else
+                        cur += sprintf(cur, "5;3%d;4%d;10%dm",
+                                            fg, bg - 8, bg - 8);
+                else
+                    if(bg < 8)
+                        cur += sprintf(cur, "1;3%d;4%d;9%dm",
+                                            fg - 8, bg, fg - 8);
+                    else
+                        cur += sprintf(cur, "5;1;3%d;4%d;9%d;10%dm",
+                                            fg - 8, bg - 8, fg - 8, bg - 8);
+            }
+
             *cur++ = c & 0x7f;
-            if((c == '%') && trailing)
-                *cur++ = c & 0x7f;
+
             prevfg = fg;
             prevbg = bg;
         }
-        if(!trailing)
-            cur += sprintf(cur, "\033[0m\r\n");
-        else
-            cur += sprintf(cur, "\\033[0m\\n\n");
+
+        cur += sprintf(cur, "\033[0m\r\n");
     }
 
     /* Crop to really used size */
-    *size = (strlen(qq->ansi_buffer) + 1)* sizeof(char);
-    qq->ansi_buffer = realloc(qq->ansi_buffer, *size);
-
-    return qq->ansi_buffer;
+    ex->size = strlen(ex->buffer) + 1;
+    ex->buffer = realloc(ex->buffer, ex->size);
 }
 

@@ -59,7 +59,7 @@ static char const *ps_header =
  *  This function generates and returns a Postscript representation of
  *  the current image.
  */
-char* cucul_get_ps(cucul_t *qq, int *size)
+void _cucul_get_ps(cucul_t *qq, struct cucul_buffer *ex)
 {
     char *cur;
     int x, y;
@@ -87,16 +87,14 @@ char* cucul_get_ps(cucul_t *qq, int *size)
 	};
 
 
-    if(qq->ps_buffer)
-        free(qq->ps_buffer);
-
     /* 200 is arbitrary but should be ok */
-    qq->ps_buffer = malloc((strlen(ps_header) + (qq->height*qq->width)*200) * sizeof(char));
-    cur = qq->ps_buffer;
+    ex->size = strlen(ps_header) + (qq->width * qq->height * 200);
+    ex->buffer = malloc(ex->size);
+
+    cur = ex->buffer;
 
     /* Header */
     cur += sprintf(cur, "%s", ps_header);
-
 
     /* Background, drawn using csquare macro defined in header */
     for(y=(int)(qq->height-1);y>=0; y--) {
@@ -139,13 +137,7 @@ char* cucul_get_ps(cucul_t *qq, int *size)
     cur += sprintf(cur, "showpage");
 
     /* Crop to really used size */
-    *size = (strlen(qq->ps_buffer) + 1) * sizeof(char);
-
-    qq->ps_buffer = realloc(qq->ps_buffer, *size);
-
-    return qq->ps_buffer;
-
+    ex->size = strlen(ex->buffer) + 1;
+    ex->buffer = realloc(ex->buffer, ex->size);
 }
-
-
 
