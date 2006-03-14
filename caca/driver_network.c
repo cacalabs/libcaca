@@ -98,7 +98,7 @@ ssize_t nonblock_write(int fd, char *buf, size_t len);
 static int network_init_graphics(caca_t *kk)
 {
     int yes = 1, flags;
-    int port = 51914;
+    int port = 0xCACA; /* 51914 */
     char *network_port, *tmp;
 
     kk->drv.p = malloc(sizeof(struct driver_private));
@@ -106,7 +106,7 @@ static int network_init_graphics(caca_t *kk)
         return -1;
 
 #if defined(HAVE_GETENV)
-    network_port = getenv("CACA_NETWORK_PORT");
+    network_port = getenv("CACA_PORT");
     if(network_port && *network_port)
     {
         int new_port = atoi(network_port);
