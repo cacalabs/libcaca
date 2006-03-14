@@ -19,6 +19,7 @@ libcucul_la_SOURCES = \
 	export_irc.c \
 	export_ansi.c \
 	export_html.c \
+	export_ps.c \
 	$(NULL)
 libcucul_la_LDFLAGS = -no-undefined
 libcucul_la_LIBADD = @CUCUL_LIBS@

@@ -208,6 +208,8 @@ char* cucul_get_html(cucul_t *, int *size);
 char* cucul_get_html3(cucul_t *, int *size);
 char* cucul_get_irc(cucul_t *, int *size);
 char* cucul_get_ansi(cucul_t *, int trailing, int *size);
+char* cucul_get_ps(cucul_t *qq, int *size);
+
 /*  @} */
 
 #ifdef __cplusplus

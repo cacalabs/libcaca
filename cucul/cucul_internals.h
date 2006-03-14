@@ -53,9 +53,7 @@ struct cucul_context
     char *irc_buffer;
     char *html3_buffer;
     char *html_buffer;
-    
-
-
+    char *ps_buffer;
 };
 
 /* Initialisation functions */
