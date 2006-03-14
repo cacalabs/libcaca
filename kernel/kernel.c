@@ -27,7 +27,7 @@
 #define IS_ALPHA(x) (x>='A' && x<='z')
 #define IS_UPPER(x) (x>='A' && x<='Z')
 #define IS_LOWER(x) (x>='a' && x<='z')
-#define UPPER(x) (IS_LOWER(x)?(x+('a'-'A')):x)
+#define UPPER(x) (IS_LOWER(x)?(x+('A'-'a')):x)
 #define LOWER(x) (IS_UPPER(x)?(x-('a'-'A')):x)
 
 /* Our memory mapping */
@@ -68,7 +68,7 @@ void free(void *ptr)
 
 void *realloc(void *ptr, size_t size)
 {
-    uint32_t oldsize = ((uint32_t *)ptr)[-1];
+   uint32_t oldsize = ((uint32_t *)ptr)[-1];
     void *p;
     if(oldsize >= size)
         return ptr;
@@ -279,7 +279,7 @@ double sqrt(double x)
     for(i = 0; i < 10; i++)
         ret = (ret * ret + x) / (ret * 2.0);
 
-    return ret;
+    return (double)ret;
 }
 
 #endif /* __KERNEL__ */
