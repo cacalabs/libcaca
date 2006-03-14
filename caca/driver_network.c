@@ -40,8 +40,9 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
-#define BACKLOG 1337    /* Number of pending connections */
-#define BACKBUFFER 300000 /* Size of per-client buffer */
+#define BACKLOG 1337     /* Number of pending connections */
+#define INBUFFER 32      /* Size of per-client input buffer */
+#define OUTBUFFER 300000 /* Size of per-client output buffer */
 
 /* Following vars are static */
 #define INIT_PREFIX \
@@ -68,7 +69,9 @@ struct client
 {
     int fd;
     int ready;
-    char buffer[BACKBUFFER];
+    uint8_t inbuf[INBUFFER];
+    int inbytes;
+    uint8_t outbuf[OUTBUFFER];
     int start, stop;
 };
 
@@ -93,7 +96,7 @@ struct driver_private
 
 static void manage_connections(caca_t *kk);
 static int send_data(caca_t *kk, struct client *c);
-ssize_t nonblock_write(int fd, char *buf, size_t len);
+ssize_t nonblock_write(int fd, void *buf, size_t len);
 
 static int network_init_graphics(caca_t *kk)
 {
@@ -172,6 +175,9 @@ static int network_init_graphics(caca_t *kk)
     /* Ignore SIGPIPE */
     kk->drv.p->sigpipe_handler = signal(SIGPIPE, SIG_IGN);
 
+    fprintf(stderr, "initialised network, listening on port %i\n",
+                    kk->drv.p->port);
+
     return 0;
 }
 
@@ -224,7 +230,12 @@ static void network_display(caca_t *kk)
             continue;
 
         if(send_data(kk, &kk->drv.p->clients[i]))
+        {
+            fprintf(stderr, "client %i dropped connection\n",
+                            kk->drv.p->clients[i].fd);
+            close(kk->drv.p->clients[i].fd);
             kk->drv.p->clients[i].fd = -1;
+        }
     }
 
     manage_connections(kk);
@@ -259,6 +270,9 @@ static void manage_connections(caca_t *kk)
     if(fd == -1)
         return;
 
+    fprintf(stderr, "client %i connected from %s\n",
+                    fd, inet_ntoa(remote_addr.sin_addr));
+
     /* Non blocking socket */
     flags = fcntl(fd, F_SETFL, 0);
     fcntl(fd, F_SETFL, flags | O_NONBLOCK);
@@ -277,11 +291,18 @@ static void manage_connections(caca_t *kk)
 
     kk->drv.p->clients[kk->drv.p->client_count].fd = fd;
     kk->drv.p->clients[kk->drv.p->client_count].ready = 0;
+    kk->drv.p->clients[kk->drv.p->client_count].inbytes = 0;
     kk->drv.p->clients[kk->drv.p->client_count].start = 0;
     kk->drv.p->clients[kk->drv.p->client_count].stop = 0;
 
     /* If we already have data to send, send it to the new client */
-    send_data(kk, &kk->drv.p->clients[kk->drv.p->client_count]);
+    if(send_data(kk, &kk->drv.p->clients[kk->drv.p->client_count]))
+    {
+        fprintf(stderr, "client %i dropped connection\n", fd);
+        close(fd);
+        kk->drv.p->clients[kk->drv.p->client_count].fd = -1;
+        return;
+    }
 
     kk->drv.p->client_count++;
 }
@@ -294,15 +315,45 @@ static int send_data(caca_t *kk, struct client *c)
     if(c->fd < 0)
         return -1;
 
-    /* Debug: show incoming data */
+    /* Listen to incoming data */
     for(;;)
     {
-        unsigned char in;
-        ret = read(c->fd, &in, 1);
+        ret = read(c->fd, c->inbuf + c->inbytes, 1);
         if(ret <= 0)
             break;
 
-        fprintf(stderr, "client %i said \\x%.02x\n", c->fd, in);
+        c->inbytes++;
+
+        /* Check for telnet sequences */
+        if(c->inbuf[0] == 0xff)
+        {
+            if(c->inbytes == 1)
+            {
+                ;
+            }
+            else if(c->inbuf[1] == 0xfd || c->inbuf[1] == 0xfc)
+            {
+                if(c->inbytes == 3)
+                {
+                    fprintf(stderr, "client %i said: %.02x %.02x %.02x\n",
+                            c->fd, c->inbuf[0], c->inbuf[1], c->inbuf[2]);
+                    /* Just ignore, lol */
+                    c->inbytes = 0;
+                }
+            }
+            else
+                c->inbytes = 0;
+        }
+        else if(c->inbytes == 1)
+        {
+            if(c->inbuf[0] == 0x03)
+            {
+                fprintf(stderr, "client %i pressed C-c\n", c->fd);
+                return -1; /* User requested to quit */
+            }
+
+            c->inbytes = 0;
+        }
     }
 
     /* Send the telnet initialisation commands */
@@ -325,7 +376,7 @@ static int send_data(caca_t *kk, struct client *c)
     /* If we have backlog, send the backlog */
     if(c->stop)
     {
-        ret = nonblock_write(c->fd, c->buffer + c->start, c->stop - c->start);
+        ret = nonblock_write(c->fd, c->outbuf + c->start, c->stop - c->start);
 
         if(ret == -1)
         {
@@ -345,26 +396,26 @@ static int send_data(caca_t *kk, struct client *c)
             c->start += ret;
 
             if(c->stop - c->start + strlen(ANSI_PREFIX) + kk->drv.p->size
-                > BACKBUFFER)
+                > OUTBUFFER)
             {
                 /* Overflow! Empty buffer and start again */
-                memcpy(c->buffer, ANSI_RESET, strlen(ANSI_RESET));
+                memcpy(c->outbuf, ANSI_RESET, strlen(ANSI_RESET));
                 c->start = 0;
                 c->stop = strlen(ANSI_RESET);
                 return 0;
             }
 
             /* Need to move? */
-            if(c->stop + strlen(ANSI_PREFIX) + kk->drv.p->size > BACKBUFFER)
+            if(c->stop + strlen(ANSI_PREFIX) + kk->drv.p->size > OUTBUFFER)
             {
-                memmove(c->buffer, c->buffer + c->start, c->stop - c->start);
+                memmove(c->outbuf, c->outbuf + c->start, c->stop - c->start);
                 c->stop -= c->start;
                 c->start = 0;
             }
 
-            memcpy(c->buffer + c->stop, ANSI_PREFIX, strlen(ANSI_PREFIX));
+            memcpy(c->outbuf + c->stop, ANSI_PREFIX, strlen(ANSI_PREFIX));
             c->stop += strlen(ANSI_PREFIX);
-            memcpy(c->buffer + c->stop, kk->drv.p->buffer, kk->drv.p->size);
+            memcpy(c->outbuf + c->stop, kk->drv.p->buffer, kk->drv.p->size);
             c->stop += kk->drv.p->size;
 
             return 0;
@@ -385,18 +436,18 @@ static int send_data(caca_t *kk, struct client *c)
 
     if(ret < (ssize_t)strlen(ANSI_PREFIX))
     {
-        if(strlen(ANSI_PREFIX) + kk->drv.p->size > BACKBUFFER)
+        if(strlen(ANSI_PREFIX) + kk->drv.p->size > OUTBUFFER)
         {
             /* Overflow! Empty buffer and start again */
-            memcpy(c->buffer, ANSI_RESET, strlen(ANSI_RESET));
+            memcpy(c->outbuf, ANSI_RESET, strlen(ANSI_RESET));
             c->start = 0;
             c->stop = strlen(ANSI_RESET);
             return 0;
         }
 
-        memcpy(c->buffer, ANSI_PREFIX, strlen(ANSI_PREFIX) - ret);
+        memcpy(c->outbuf, ANSI_PREFIX, strlen(ANSI_PREFIX) - ret);
         c->stop = strlen(ANSI_PREFIX) - ret;
-        memcpy(c->buffer + c->stop, kk->drv.p->buffer, kk->drv.p->size);
+        memcpy(c->outbuf + c->stop, kk->drv.p->buffer, kk->drv.p->size);
         c->stop += kk->drv.p->size;
 
         return 0;
@@ -414,16 +465,16 @@ static int send_data(caca_t *kk, struct client *c)
 
     if(ret < kk->drv.p->size)
     {
-        if(kk->drv.p->size > BACKBUFFER)
+        if(kk->drv.p->size > OUTBUFFER)
         {
             /* Overflow! Empty buffer and start again */
-            memcpy(c->buffer, ANSI_RESET, strlen(ANSI_RESET));
+            memcpy(c->outbuf, ANSI_RESET, strlen(ANSI_RESET));
             c->start = 0;
             c->stop = strlen(ANSI_RESET);
             return 0;
         }
 
-        memcpy(c->buffer, kk->drv.p->buffer, kk->drv.p->size - ret);
+        memcpy(c->outbuf, kk->drv.p->buffer, kk->drv.p->size - ret);
         c->stop = kk->drv.p->size - ret;
 
         return 0;
@@ -432,7 +483,7 @@ static int send_data(caca_t *kk, struct client *c)
     return 0;
 }
 
-ssize_t nonblock_write(int fd, char *buf, size_t len)
+ssize_t nonblock_write(int fd, void *buf, size_t len)
 {
     size_t total = 0;
     ssize_t ret;
@@ -451,7 +502,7 @@ ssize_t nonblock_write(int fd, char *buf, size_t len)
             return total;
 
         total += len;
-        buf += len;
+        buf = (void *)((uintptr_t)buf + len);
     }
 
     return total;
