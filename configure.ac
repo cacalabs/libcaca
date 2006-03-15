@@ -57,7 +57,7 @@ AC_CHECK_FUNCS(usleep gettimeofday)
 AC_MSG_CHECKING(for Sleep)
 AC_TRY_COMPILE([#include <windows.h>],[Sleep(42);],
  [AC_MSG_RESULT(yes)
-  AC_DEFINE(HAVE_SLEEP, 1, [Define if you have Windows' Sleep])],
+  AC_DEFINE(HAVE_SLEEP, 1, [Define to 1 if you have the `Sleep' function.])],
  [AC_MSG_RESULT(no)])
 AC_CHECK_LIB(m, sin, MATH_LIBS="${MATH_LIBS} -lm")
 
@@ -71,8 +71,8 @@ if test "${enable_conio}" != "no"; then
      [ac_cv_my_have_conio="yes"
       AC_MSG_RESULT(yes)
       AC_DEFINE(SCREENUPDATE_IN_PC_H, 1,
-                Define if <pc.h> defines ScreenUpdate.)
-      AC_DEFINE(USE_CONIO, 1, Define to activate the conio.h backend driver)
+                Define to 1 if <pc.h> defines ScreenUpdate.)
+      AC_DEFINE(USE_CONIO, 1, Define to 1 to activate the conio.h backend driver)
       CACA_DRIVERS="${CACA_DRIVERS} conio"],
      [AC_MSG_RESULT(no)])])
   if test "${ac_cv_my_have_conio}" = "no" -a "${enable_conio}" = "yes"; then
@@ -88,8 +88,8 @@ if test "${enable_win32}" != "no"; then
      [ac_cv_my_have_win32="yes"
       AC_MSG_RESULT(yes)
       AC_DEFINE(ALLOCCONSOLE_IN_WINDOWS_H, 1,
-                Define if <windows.h> defines AllocConsole.)
-      AC_DEFINE(USE_WIN32, 1, Define to activate the win32 backend driver)
+                Define to 1 if <windows.h> defines AllocConsole.)
+      AC_DEFINE(USE_WIN32, 1, Define to 1 to activate the win32 backend driver)
       CACA_DRIVERS="${CACA_DRIVERS} win32"],
      [AC_MSG_RESULT(no)])])
   if test "${ac_cv_my_have_win32}" = "no" -a "${enable_win32}" = "yes"; then
@@ -100,12 +100,14 @@ fi
 if test "${enable_slang}" != "no"; then
   ac_cv_my_have_slang="no"
   AC_CHECK_HEADERS(slang.h slang/slang.h,
-   [AC_CHECK_LIB(slang, SLsmg_utf8_enable,
-     [ac_cv_my_have_slang="yes"
-      AC_DEFINE(USE_SLANG, 1, Define to activate the slang backend driver (needs slang-utf8))
-      CPPFLAGS="${CPPFLAGS} -DOPTIMISE_SLANG_PALETTE=1"
-      CACA_LIBS="${CACA_LIBS} -lslang"
-      CACA_DRIVERS="${CACA_DRIVERS} slang"])])
+   [ac_cv_my_have_slang="yes"
+    AC_DEFINE(USE_SLANG, 1, Define to 1 to activate the slang backend driver)
+    AC_CHECK_LIB(slang, SLsmg_utf8_enable,
+     [AC_DEFINE(HAVE_SLSMG_UTF8_ENABLE, 1, Define to 1 if you have the `SLsmg_utf8_enable' function.)])
+    CPPFLAGS="${CPPFLAGS} -DOPTIMISE_SLANG_PALETTE=1"
+    CACA_LIBS="${CACA_LIBS} -lslang"
+    CACA_DRIVERS="${CACA_DRIVERS} slang"
+    break])
   if test "${ac_cv_my_have_slang}" = "no" -a "${enable_slang}" = "yes"; then
     AC_MSG_ERROR([cannot find slang development files])
   fi
@@ -117,7 +119,7 @@ if test "${enable_x11}" != "no"; then
    [ac_cv_my_have_x11="yes"
     if test -n "${x_includes}"; then X_CFLAGS="-I${x_includes}"; fi
     if test -n "${x_libraries}"; then X_LIBS="-lX11 -L${x_libraries}"; fi
-    AC_DEFINE(USE_X11, 1, Define to activate the X11 backend driver)
+    AC_DEFINE(USE_X11, 1, Define to 1 to activate the X11 backend driver)
     CPPFLAGS="${CPPFLAGS} ${X_CFLAGS}"
     CACA_LIBS="${CACA_LIBS} ${X_LIBS}"
     CACA_DRIVERS="${CACA_DRIVERS} x11"],
@@ -131,12 +133,13 @@ fi
 
 if test "${enable_gl}" != "no"; then
   ac_cv_my_have_gl="no"
-  AC_CHECK_HEADERS(GL/gl.h GL/glut.h,
-   [AC_CHECK_LIB(glut, glutMainLoopEvent,
-     [ac_cv_my_have_gl="yes"
-      AC_DEFINE(USE_GL, 1, Define to activate the OpenGL backend driver)
-      CACA_LIBS="${CACA_LIBS} -lGL -lglut"
-      CACA_DRIVERS="${CACA_DRIVERS} gl"])])
+  AC_CHECK_HEADERS(GL/gl.h,
+   [AC_CHECK_HEADERS(GL/glut.h,
+     [AC_CHECK_LIB(glut, glutMainLoopEvent,
+       [ac_cv_my_have_gl="yes"
+        AC_DEFINE(USE_GL, 1, Define to 1 to activate the OpenGL backend driver)
+        CACA_LIBS="${CACA_LIBS} -lGL -lglut"
+        CACA_DRIVERS="${CACA_DRIVERS} gl"])])])
   if test "${ac_cv_my_have_gl}" = "no" -a "${enable_gl}" = "yes"; then
     AC_MSG_ERROR([cannot find OpenGL+FreeGLUT development files])
   fi
@@ -146,7 +149,7 @@ if test "${enable_network}" != "no"; then
   ac_cv_my_have_network="no"
   AC_CHECK_HEADERS(sys/socket.h,
      [ac_cv_my_have_network="yes"
-      AC_DEFINE(USE_NETWORK, 1, Define to activate the network backend driver)
+      AC_DEFINE(USE_NETWORK, 1, Define to 1 to activate the network backend driver)
       CACA_DRIVERS="${CACA_DRIVERS} network"])
   if test "${ac_cv_my_have_network}" = "no" -a "${enable_network}" = "yes"; then
     AC_MSG_ERROR([cannot find standard networking socket files])
@@ -158,14 +161,15 @@ if test "${enable_ncurses}" != "no"; then
   AC_CHECK_HEADERS(curses.h ncurses.h,
    [AC_CHECK_LIB(ncurses, initscr,
      [ac_cv_my_have_ncurses="yes"
-      AC_DEFINE(USE_NCURSES, 1, Define to activate the ncurses backend driver)
+      AC_DEFINE(USE_NCURSES, 1, Define to 1 to activate the ncurses backend driver)
       CACA_LIBS="${CACA_LIBS} -lncurses"
       CACA_DRIVERS="${CACA_DRIVERS} ncurses"
       dnl  Check for resizeterm or resize_term
       SAVED_LIBS="${LIBS}"
       LIBS="${LIBS} -lncurses"
       AC_CHECK_FUNCS(resizeterm resize_term)
-      LIBS="${SAVED_LIBS}"])])
+      LIBS="${SAVED_LIBS}"])
+    break])
   if test "${ac_cv_my_have_ncurses}" = "no" -a "${enable_ncurses}" = "yes"; then
     AC_MSG_ERROR([cannot find ncurses development files])
   fi
@@ -177,7 +181,7 @@ if test "${enable_vga}" = "yes"; then
   CFLAGS="${CFLAGS} -fno-builtin -O2 -Wall"
   CCASFLAGS="${CCASFLAGS} -I."
   LDFLAGS="${LDFLAGS} -nostdlib -Wl,-N -Wl,-Ttext -Wl,100000"
-  AC_DEFINE(USE_VGA, 1, Define to activate the VGA backend driver)
+  AC_DEFINE(USE_VGA, 1, Define to 1 to activate the VGA backend driver)
   CACA_DRIVERS="${CACA_DRIVERS} vga"
 fi
 AM_CONDITIONAL(USE_KERNEL, test "${ac_cv_my_have_vga}" = "yes")

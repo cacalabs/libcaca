@@ -161,8 +161,10 @@ static int slang_init_graphics(caca_t *kk)
      * 256 colour pairs */
     SLtt_Has_Alt_Charset = 0;
 
+#ifdef HAVE_SLSMG_UTF8_ENABLE
     SLsmg_utf8_enable(1); /* 1 == force, 0 == disable, -1 == autodetect */
     SLtt_utf8_enable(1);
+#endif
 
     _cucul_set_size(kk->qq, SLtt_Screen_Cols, SLtt_Screen_Rows);
 
@@ -390,6 +392,7 @@ static void slang_write_utf32(uint32_t c)
         return;
     }
 
+#ifdef HAVE_SLSMG_UTF8_ENABLE
     bytes = (c < 0x800) ? 2 : (c < 0x10000) ? 3 : 4;
     buf[bytes] = '\0';
     parser = buf + bytes;
@@ -403,6 +406,9 @@ static void slang_write_utf32(uint32_t c)
     *--parser = c | mark[bytes];
 
     SLsmg_write_string(buf);
+#else
+    SLsmg_write_char(' ');
+#endif
 }
 
 #if defined(HAVE_SIGNAL)
@@ -410,7 +416,7 @@ static RETSIGTYPE sigwinch_handler(int sig)
 {
     sigwinch_kk->resize.resized = 1;
 
-    signal(SIGWINCH, sigwinch_handler);;
+    signal(SIGWINCH, sigwinch_handler);
 }
 #endif
 
