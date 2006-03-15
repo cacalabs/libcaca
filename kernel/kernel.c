@@ -143,7 +143,6 @@ int strcasecmp(const char *s1, const char *s2)
         s2++;
     }
 
-    /* Either *s1 or *s2 is 0 */
     return (int)UPPER(*s1) - (int)UPPER(*s2);
 }
 
