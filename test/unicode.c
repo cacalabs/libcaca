@@ -37,7 +37,7 @@ int main(void)
 
     cucul_set_color(qq, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
     cucul_putstr(qq, 1, 2, "This is ASCII:    | abc DEF 123 !@# |");
-    cucul_putstr(qq, 1, 3, "This is Unicode:  | äßç δεφ ░▒▓ ╞╬╗ |");
+    cucul_putstr(qq, 1, 3, "This is Unicode:  | äßç δεφ ☺♥♀ ╞╬╗ |");
     cucul_putstr(qq, 1, 4, "And this is, too: | ἀβϛ ΔЗҒ ᚴᛒᛯ ♩♔✈ |");
 
     cucul_putstr(qq, 1, 5, "If the three lines do not have the same length, there is a bug somewhere.");
