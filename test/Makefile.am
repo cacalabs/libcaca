@@ -1,6 +1,6 @@
 # $Id$
 
-noinst_PROGRAMS = colors demo dithering event hsv optipal spritedit unicode
+noinst_PROGRAMS = colors demo dithering event export hsv optipal spritedit unicode
 
 colors_SOURCES = colors.c
 colors_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
@@ -17,6 +17,10 @@ dithering_CPPFLAGS = -I$(top_srcdir)/cucul -I$(top_srcdir)/caca
 event_SOURCES = event.c
 event_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
 event_CPPFLAGS = -I$(top_srcdir)/cucul -I$(top_srcdir)/caca
+
+export_SOURCES = export.c
+export_LDADD = ../cucul/libcucul.la @CUCUL_LIBS@
+export_CPPFLAGS = -I$(top_srcdir)/cucul
 
 hsv_SOURCES = hsv.c
 hsv_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
