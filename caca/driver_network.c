@@ -46,15 +46,14 @@
 
 /* Following vars are static */
 #define INIT_PREFIX \
-    "\xff\xfb\x01" /* WILL ECHO */ \
-    "\xff\xfb\x03" /* WILL SUPPRESS GO AHEAD */ \
-    "\xff\xfd\x31" /* DO NAWS */ \
-    "\xff\xfe\x1f" /* DON'T NAWS */ \
-    "\xff\x1f\xfa____" /* Set size, replaced in display */ \
-    "\xff\xf0" \
+    "\xff\xfb\x01"     /* WILL ECHO */ \
+    "\xff\xfb\x03"     /* WILL SUPPRESS GO AHEAD */ \
+    "\xff\xfd\x31"     /* DO NAWS */ \
+    "\xff\x1f\xfa____" /* SB NAWS */ \
+    "\xff\xf0"         /* SE */  \
     "\x1b]2;caca for the network\x07" /* Change window title */ \
-    "\x1b[H\x1b[J" /* Clear screen */ \
-    /*"\x1b[?25l"*/ /* Hide cursor */ \
+    "\x1b[H\x1b[J" /* Clear screen */
+    /*"\x1b[?25l"*/ /* Hide cursor */
 
 #define ANSI_PREFIX \
     "\x1b[1;1H" /* move(0,0) */ \
@@ -64,6 +63,22 @@
     "    " /* Garbage */ \
     "\x1b[?1049h" /* Clear screen */ \
     "\x1b[?1049h" /* Clear screen again */
+
+
+static char const telnet_commands[16][5] =
+    {"SE  ", "NOP ", "DM  ", "BRK ", "IP  ", "AO  ", "AYT ", "EC  ",
+     "EL  ", "GA  ", "SB  ", "WILL", "WONT", "DO  ", "DONT", "IAC "};
+
+static char const telnet_options[37][5] =
+    {"????", "ECHO", "????", "SUGH", "????", "STTS", "TIMK", "????", "????", "????",
+     "????", "????", "????", "????", "????", "????", "????", "????", "????", "????",
+     "????", "????", "????", "????", "TTYP", "????", "????", "????", "????", "????",
+     "????", "NAWS", "TRSP", "RMFC", "LIMO", "????", "EVAR"};
+
+
+#define COMMAND_NAME(x) (x>=240)?telnet_commands[x-240]:"????"
+#define OPTION_NAME(x) (x<=36)?telnet_options[x]:"????"
+
 
 struct client
 {
@@ -357,8 +372,9 @@ static int send_data(caca_t *kk, struct client *c)
             {
                 if(c->inbytes == 3)
                 {
-                    fprintf(stderr, "client %i said: %.02x %.02x %.02x\n",
-                            c->fd, c->inbuf[0], c->inbuf[1], c->inbuf[2]);
+                    fprintf(stderr, "client %i said: %.02x %.02x %.02x (%s %s %s)\n",
+                            c->fd, c->inbuf[0], c->inbuf[1], c->inbuf[2],
+			    COMMAND_NAME(c->inbuf[0]), COMMAND_NAME(c->inbuf[1]), OPTION_NAME(c->inbuf[2]));
                     /* Just ignore, lol */
                     c->inbytes = 0;
                 }
