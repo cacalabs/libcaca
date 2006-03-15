@@ -213,6 +213,8 @@ static void display_menu(void)
                  cucul_get_feature_name(dithering));
 
     cucul_putstr(qq, 4, yo - 2, "'q': quit");
+
+    caca_display(kk);
 }
 
 static void demo_all(void)
