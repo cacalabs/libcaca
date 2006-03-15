@@ -200,10 +200,17 @@ static void win32_display(caca_t *kk)
     {
         uint32_t c = kk->qq->chars[i];
 
+#if 0
         if(c > 0x00000020 && c < 0x00000080)
-            kk->drv.p->buffer[i].Char.AsciiChar = (char)c;
+            kk->drv.p->buffer[i].Char.AsciiChar = (uint8_t)c;
         else
             kk->drv.p->buffer[i].Char.AsciiChar = ' ';
+#else
+        if(c > 0x00000020 && c < 0x00010000)
+            kk->drv.p->buffer[i].Char.UnicodeChar = (uint16_t)c;
+        else
+            kk->drv.p->buffer[i].Char.UnicodeChar = (uint16_t)' ';
+#endif
 
         kk->drv.p->buffer[i].Attributes =
                 win32_fg_palette[kk->qq->attr[i] & 0xf]
@@ -217,7 +224,11 @@ static void win32_display(caca_t *kk)
     rect.Left = rect.Top = 0;
     rect.Right = kk->qq->width - 1;
     rect.Bottom = kk->qq->height - 1;
+#if 0
     WriteConsoleOutput(kk->drv.p->front, kk->drv.p->buffer, size, pos, &rect);
+#else
+    WriteConsoleOutputW(kk->drv.p->front, kk->drv.p->buffer, size, pos, &rect);
+#endif
 }
 
 static void win32_handle_resize(caca_t *kk)
