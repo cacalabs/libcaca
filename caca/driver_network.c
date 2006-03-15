@@ -90,7 +90,7 @@ struct driver_private
     int client_count;
     struct client *clients;
 
-    void (*sigpipe_handler)(int);
+    RETSIGTYPE (*sigpipe_handler)(int);
 };
 
 static void manage_connections(caca_t *kk);
@@ -101,24 +101,38 @@ static int network_init_graphics(caca_t *kk)
 {
     int yes = 1, flags;
     int port = 0xCACA; /* 51914 */
-    char *network_port, *tmp;
+    unsigned int width = 0, height = 0;
+    char *tmp;
 
     kk->drv.p = malloc(sizeof(struct driver_private));
     if(kk->drv.p == NULL)
         return -1;
 
 #if defined(HAVE_GETENV)
-    network_port = getenv("CACA_PORT");
-    if(network_port && *network_port)
+    tmp = getenv("CACA_PORT");
+    if(tmp && *tmp)
     {
-        int new_port = atoi(network_port);
+        int new_port = atoi(tmp);
         if(new_port)
             port = new_port;
     }
+
+    tmp = getenv("CACA_GEOMETRY");
+    if(tmp && *tmp)
+        sscanf(tmp, "%ux%u", &width, &height);
 #endif
 
-    kk->drv.p->width = 80;
-    kk->drv.p->height = 24;
+    if(width && height)
+    {
+        kk->drv.p->width = width;
+        kk->drv.p->height = height;
+    }
+    else
+    {
+        kk->drv.p->width = 80;
+        kk->drv.p->height = 24;
+    }
+
     kk->drv.p->client_count = 0;
     kk->drv.p->clients = NULL;
     kk->drv.p->port = port;

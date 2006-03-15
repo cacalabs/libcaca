@@ -87,7 +87,7 @@
  *
  *  \li \b CACA_GEOMETRY: set the video display size. The format of this
  *      variable must be XxY, with X and Y being integer values. This option
- *      currently only works with the X11 and the GL driver.
+ *      currently works with the network, X11 and GL drivers.
  *
  *  \li \b CACA_FONT: set the rendered font. The format of this variable is
  *      implementation dependent, but since it currently only works with the
