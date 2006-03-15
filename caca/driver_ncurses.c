@@ -411,7 +411,7 @@ static RETSIGTYPE sigwinch_handler(int sig)
 {
     sigwinch_kk->resize.resized = 1;
 
-    signal(SIGWINCH, sigwinch_handler);;
+    signal(SIGWINCH, sigwinch_handler);
 }
 #endif
 

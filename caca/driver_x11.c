@@ -93,7 +93,7 @@ static int x11_init_graphics(caca_t *kk)
     kk->drv.p = malloc(sizeof(struct driver_private));
 
     geometry = getenv("CACA_GEOMETRY");
-    if(geometry && *(geometry))
+    if(geometry && *geometry)
         sscanf(geometry, "%ux%u", &width, &height);
 
     if(width && height)

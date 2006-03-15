@@ -104,7 +104,7 @@ static int gl_init_graphics(caca_t *kk)
     gl_kk = kk;
 
     geometry = getenv("CACA_GEOMETRY");
-    if(geometry && *(geometry))
+    if(geometry && *geometry)
         sscanf(geometry, "%ux%u", &width, &height);
 
     if(width && height)

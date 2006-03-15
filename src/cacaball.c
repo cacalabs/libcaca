@@ -165,10 +165,10 @@ static void create_ball(void)
     for(y = 0; y < METASIZE; y++)
         for(x = 0; x < METASIZE; x++)
     {
-	distance = ((METASIZE/2) - x) * ((METASIZE/2) - x)
+        distance = ((METASIZE/2) - x) * ((METASIZE/2) - x)
                  + ((METASIZE/2) - y) * ((METASIZE/2) - y);
         distance = sqrt(distance) * 64 / METASIZE;
-	metaball[x + y * METASIZE] = distance > 15 ? 0 : (255 - distance) * 15;
+        metaball[x + y * METASIZE] = distance > 15 ? 0 : (255 - distance) * 15;
     }
 }
 
