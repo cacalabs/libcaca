@@ -48,10 +48,12 @@ void _cucul_get_html(cucul_t *qq, struct cucul_buffer *ex)
     char *cur;
     unsigned int x, y, len;
 
-    /* 13000 -> css palette
-     * 40 -> max size used for a pixel (plus 10, never know)*/
-    /* FIXME: Check this value */
-    ex->size = 13000 + (qq->width * qq->height * 40);
+    /* The CSS palette: roughly 13000 bytes
+     * A line: 7 chars for "<br />\n"
+     * A glyph: 18 chars for "<span class='bxx'>"
+     *          up to 9 chars for "&#xxxxxx;", far less for pure ASCII
+     *          7 chars for "</span>" */
+    ex->size = 13000 + qq->height * (7 + qq->width * (18 + 9 + 7));
     ex->buffer = malloc(ex->size);
 
     cur = ex->buffer;
@@ -85,10 +87,12 @@ void _cucul_get_html(cucul_t *qq, struct cucul_buffer *ex)
                 x + len < qq->width && lineattr[x + len] == lineattr[x];
                 len++)
             {
-                if(linechar[x + len] == (uint32_t)' ')
+                if(linechar[x + len] <= 0x00000020)
                     cur += sprintf(cur, "&nbsp;");
+                else if(linechar[x + len] < 0x00000080)
+                    cur += sprintf(cur, "%c", linechar[x + len]);
                 else
-                    cur += sprintf(cur, "%c", linechar[x] & 0x7f);
+                    cur += sprintf(cur, "&#%i;", linechar[x + len]);
             }
             cur += sprintf(cur, "</span>");
         }
@@ -125,9 +129,12 @@ void _cucul_get_html3(cucul_t *qq, struct cucul_buffer *ex)
     char *cur;
     unsigned int x, y, len;
 
-    /* 13000 -> css palette
-     * 40 -> max size used for a pixel (plus 10, never know) */
-    ex->size = 13000 + (qq->width * qq->height * 40);
+    /* The CSS palette: roughly 13000 bytes
+     * A line: 10 chars for "<tr></tr>\n"
+     * A glyph: 40 chars for "<td bgcolor=#xxxxxx><font color=#xxxxxx>"
+     *          up to 9 chars for "&#xxxxxx;", far less for pure ASCII
+     *          12 chars for "</font></td>" */
+    ex->size = 13000 + qq->height * (10 + qq->width * (40 + 9 + 12));
     ex->buffer = malloc(ex->size);
 
     cur = ex->buffer;
@@ -163,10 +170,12 @@ void _cucul_get_html3(cucul_t *qq, struct cucul_buffer *ex)
 
             for(i = 0; i < len; i++)
             {
-                if(linechar[x + i] == (uint32_t)' ')
+                if(linechar[x + i] <= 0x00000020)
                     cur += sprintf(cur, "&nbsp;");
+                else if(linechar[x + i] < 0x00000080)
+                    cur += sprintf(cur, "%c", linechar[x + i]);
                 else
-                    cur += sprintf(cur, "%c", linechar[x + i] & 0x7f);
+                    cur += sprintf(cur, "&#%i;", linechar[x + i]);
             }
 
             cur += sprintf(cur, "</font></td>");
