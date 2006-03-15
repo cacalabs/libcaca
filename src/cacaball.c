@@ -28,11 +28,11 @@
 #define XSIZ 256
 #define YSIZ 256
 
-#define METASIZE 100
-#define METABALLS 16
+#define METASIZE 128
+#define METABALLS 12
 
 /* Colour index where to crop balls */
-#define CROPBALL 160
+#define CROPBALL 200
 
 static void create_ball(void);
 static void draw_ball(unsigned int, unsigned int);
