@@ -298,6 +298,9 @@ struct cucul_buffer * cucul_export(cucul_t *qq, enum cucul_format format)
         case CUCUL_FORMAT_PS:
             _cucul_get_ps(qq, ex);
             break;
+        case CUCUL_FORMAT_SVG:
+            _cucul_get_svg(qq, ex);
+            break;
         default:
             free(ex);
             return NULL;

@@ -88,7 +88,7 @@ void _cucul_get_html(cucul_t *qq, struct cucul_buffer *ex)
                 if(linechar[x + len] == (uint32_t)' ')
                     cur += sprintf(cur, "&nbsp;");
                 else
-                    cur += sprintf(cur, "%c", linechar[x + len] & 0x7f);
+                    cur += sprintf(cur, "%c", linechar[x] & 0x7f);
             }
             cur += sprintf(cur, "</span>");
         }

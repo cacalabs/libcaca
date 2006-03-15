@@ -139,5 +139,6 @@ void _cucul_get_ps(cucul_t *qq, struct cucul_buffer *ex)
     /* Crop to really used size */
     ex->size = strlen(ex->buffer) + 1;
     ex->buffer = realloc(ex->buffer, ex->size);
+
 }
 

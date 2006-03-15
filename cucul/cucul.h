@@ -61,6 +61,7 @@ enum cucul_format
     CUCUL_FORMAT_HTML3 = 2, /**< Export to old HTMLv3 format. */
     CUCUL_FORMAT_IRC = 3, /**< Export to text with mIRC colours. */
     CUCUL_FORMAT_PS = 4, /**< Export to PostScript. */
+    CUCUL_FORMAT_SVG = 5, /**< Export to Scalable Vector Graphics format. */
 };
 
 /** \brief Internal features.
