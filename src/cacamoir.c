@@ -26,7 +26,7 @@
 #define YSIZ 256
 
 #define DISCSIZ 512
-#define DISCTHICKNESS 64
+#define DISCTHICKNESS 96
 
 static unsigned char screen[XSIZ * YSIZ];
 static unsigned char disc[DISCSIZ * DISCSIZ];
