@@ -24,6 +24,7 @@
 #include <windows.h>
 
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "caca.h"
 #include "caca_internals.h"
@@ -76,8 +77,7 @@ static int const win32_bg_palette[] =
 
 struct driver_private
 {
-    HANDLE hin, hout;
-    HANDLE front, back;
+    HANDLE hin, hout, screen;
     CHAR_INFO *buffer;
     CONSOLE_CURSOR_INFO cci;
 };
@@ -85,6 +85,7 @@ struct driver_private
 static int win32_init_graphics(caca_t *kk)
 {
     CONSOLE_SCREEN_BUFFER_INFO csbi;
+    SMALL_RECT rect;
     COORD size;
 
     kk->drv.p = malloc(sizeof(struct driver_private));
@@ -105,40 +106,37 @@ static int win32_init_graphics(caca_t *kk)
 
     SetConsoleMode(kk->drv.p->hout, ENABLE_MOUSE_INPUT);
 
-    kk->drv.p->front =
+    kk->drv.p->screen =
         CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE,
                                   0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
-    if(!kk->drv.p->front || kk->drv.p->front == INVALID_HANDLE_VALUE)
+    if(!kk->drv.p->screen || kk->drv.p->screen == INVALID_HANDLE_VALUE)
         return -1;
 
-    kk->drv.p->back =
-        CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE,
-                                  0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
-    if(!kk->drv.p->back || kk->drv.p->back == INVALID_HANDLE_VALUE)
-        return -1;
-
-    if(!GetConsoleScreenBufferInfo(kk->drv.p->hout, &csbi))
-        return -1;
-
-    /* Sample code to get the biggest possible window */
-    //size = GetLargestConsoleWindowSize(kk->drv.p->hout);
-    _cucul_set_size(kk->qq, csbi.srWindow.Right - csbi.srWindow.Left + 1,
-                            csbi.srWindow.Bottom - csbi.srWindow.Top + 1);
+    /* Set the new console size */
     size.X = kk->qq->width;
     size.Y = kk->qq->height;
-    SetConsoleScreenBufferSize(kk->drv.p->front, size);
-    SetConsoleScreenBufferSize(kk->drv.p->back, size);
+    SetConsoleScreenBufferSize(kk->drv.p->screen, size);
 
-    SetConsoleMode(kk->drv.p->front, 0);
-    SetConsoleMode(kk->drv.p->back, 0);
+    rect.Left = rect.Top = 0;
+    rect.Right = kk->qq->width - 1;
+    rect.Bottom = kk->qq->height - 1;
+    SetConsoleWindowInfo(kk->drv.p->screen, TRUE, &rect);
 
-    GetConsoleCursorInfo(kk->drv.p->front, &kk->drv.p->cci);
+    /* Report our new size to libcucul */
+    if(!GetConsoleScreenBufferInfo(kk->drv.p->screen, &csbi))
+        return -1;
+
+    _cucul_set_size(kk->qq, csbi.srWindow.Right - csbi.srWindow.Left + 1,
+                            csbi.srWindow.Bottom - csbi.srWindow.Top + 1);
+
+    SetConsoleMode(kk->drv.p->screen, 0);
+
+    GetConsoleCursorInfo(kk->drv.p->screen, &kk->drv.p->cci);
     kk->drv.p->cci.dwSize = 0;
     kk->drv.p->cci.bVisible = FALSE;
-    SetConsoleCursorInfo(kk->drv.p->front, &kk->drv.p->cci);
-    SetConsoleCursorInfo(kk->drv.p->back, &kk->drv.p->cci);
+    SetConsoleCursorInfo(kk->drv.p->screen, &kk->drv.p->cci);
 
-    SetConsoleActiveScreenBuffer(kk->drv.p->front);
+    SetConsoleActiveScreenBuffer(kk->drv.p->screen);
 
     kk->drv.p->buffer = malloc(kk->qq->width * kk->qq->height
                                * sizeof(CHAR_INFO));
@@ -151,8 +149,7 @@ static int win32_init_graphics(caca_t *kk)
 static int win32_end_graphics(caca_t *kk)
 {
     SetConsoleActiveScreenBuffer(kk->drv.p->hout);
-    CloseHandle(kk->drv.p->back);
-    CloseHandle(kk->drv.p->front);
+    CloseHandle(kk->drv.p->screen);
 
     SetConsoleTextAttribute(kk->drv.p->hout, FOREGROUND_INTENSITY
                                              | FOREGROUND_RED
@@ -195,7 +192,7 @@ static void win32_display(caca_t *kk)
     SMALL_RECT rect;
     unsigned int i;
 
-    /* Render everything to our back buffer */
+    /* Render everything to our screen buffer */
     for(i = 0; i < kk->qq->width * kk->qq->height; i++)
     {
         uint32_t c = kk->qq->chars[i];
@@ -217,7 +214,7 @@ static void win32_display(caca_t *kk)
                  | win32_bg_palette[kk->qq->attr[i] >> 4];
     }
 
-    /* Blit the back buffer to the front buffer */
+    /* Blit the screen buffer */
     size.X = kk->qq->width;
     size.Y = kk->qq->height;
     pos.X = pos.Y = 0;
@@ -225,9 +222,9 @@ static void win32_display(caca_t *kk)
     rect.Right = kk->qq->width - 1;
     rect.Bottom = kk->qq->height - 1;
 #if 0
-    WriteConsoleOutput(kk->drv.p->front, kk->drv.p->buffer, size, pos, &rect);
+    WriteConsoleOutput(kk->drv.p->screen, kk->drv.p->buffer, size, pos, &rect);
 #else
-    WriteConsoleOutputW(kk->drv.p->front, kk->drv.p->buffer, size, pos, &rect);
+    WriteConsoleOutputW(kk->drv.p->screen, kk->drv.p->buffer, size, pos, &rect);
 #endif
 }
 
