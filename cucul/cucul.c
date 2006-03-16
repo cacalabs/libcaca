@@ -50,8 +50,9 @@ cucul_t * cucul_init(void)
     qq->fgcolor = CUCUL_COLOR_LIGHTGRAY;
     qq->bgcolor = CUCUL_COLOR_BLACK;
 
-    /* Initialise to a default size. When a graphic driver attaches to
-     * us, we'll adapt to its size. */
+    /* Initialise to a default size. 80x32 is arbitrary but matches AAlib's
+     * default X11 window. When a graphic driver attaches to us, it can set
+     * a different size. */
     qq->width = 80;
     qq->height = 32;
 
