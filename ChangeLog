@@ -1,4 +1,1719 @@
 ------------------------------------------------------------------------
+r426 | sam | 2006-03-16 19:58:39 +0100 (Thu, 16 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/export_svg.c
+
+  * Fixed Unicode handling and improved coding style in the SVG exporter.
+
+------------------------------------------------------------------------
+r425 | sam | 2006-03-16 19:52:40 +0100 (Thu, 16 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/test/export.c
+
+  * Do not write the trailing \0 when exporting data.
+
+------------------------------------------------------------------------
+r424 | sam | 2006-03-16 19:44:07 +0100 (Thu, 16 Mar 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/export_ps.c
+
+  * Fixed syntax errors in the generated PostScript document if ( ) \ or
+    Unicode characters are encountered.
+
+------------------------------------------------------------------------
+r423 | sam | 2006-03-16 19:09:26 +0100 (Thu, 16 Mar 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/export_ps.c
+
+  * Optimised for speed and space, fixed a few bugs, and improved coding style
+    in the PS exporter (vieux porc !).
+
+------------------------------------------------------------------------
+r422 | sam | 2006-03-16 18:04:09 +0100 (Thu, 16 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/cucul.c
+
+  * Comment clarification.
+
+------------------------------------------------------------------------
+r421 | sam | 2006-03-16 17:59:57 +0100 (Thu, 16 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_win32.c
+
+  * Fix resizing of the Win32 console. It now adapts to the requested size.
+
+------------------------------------------------------------------------
+r420 | sam | 2006-03-16 13:58:55 +0100 (Thu, 16 Mar 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/driver_conio.c
+   M /trunk/caca/driver_vga.c
+
+  * Duplicated the conio.h Unicode->CP437 conversion into the VGA driver.
+  * Cosmetic code changes.
+
+------------------------------------------------------------------------
+r419 | sam | 2006-03-16 13:50:07 +0100 (Thu, 16 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_slang.c
+
+  * Fixed compiler warnings when UTF-8 S-Lang is not available.
+
+------------------------------------------------------------------------
+r418 | sam | 2006-03-16 13:49:20 +0100 (Thu, 16 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_ncurses.c
+   M /trunk/configure.ac
+
+  * Use UTF-8 enable ncurses (ncursesw) if available. Doesn't seem to work.
+
+------------------------------------------------------------------------
+r417 | sam | 2006-03-16 13:46:39 +0100 (Thu, 16 Mar 2006) | 3 lines
+Changed paths:
+   M /trunk/build-win32
+
+  * Distribute the license with Win32 packages and convert text files to
+    CRLF format.
+
+------------------------------------------------------------------------
+r416 | sam | 2006-03-15 23:07:55 +0100 (Wed, 15 Mar 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/driver_conio.c
+   M /trunk/test/unicode.c
+
+  * Added support for Unicode characters that fall into CP437 0x01 - 0x1f to
+    the DOS/conio.h driver, and updated the unicode test accordingly.
+
+------------------------------------------------------------------------
+r415 | sam | 2006-03-15 21:39:43 +0100 (Wed, 15 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/test/export.c
+   M /trunk/test/unicode.c
+
+  * Added a few more Unicode characters to the export and unicode tests.
+
+------------------------------------------------------------------------
+r414 | sam | 2006-03-15 21:30:39 +0100 (Wed, 15 Mar 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/driver_conio.c
+
+  * Partial Unicode support for the DOS/conio.h driver. Glyphs that have
+    equivalents in CP437 0x7f - 0xff are translated.
+
+------------------------------------------------------------------------
+r413 | sam | 2006-03-15 19:41:29 +0100 (Wed, 15 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/export_html.c
+
+  * Unicode support in the HTML exporter.
+
+------------------------------------------------------------------------
+r412 | sam | 2006-03-15 18:42:03 +0100 (Wed, 15 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/caca.c
+
+  * Cosmetic.
+
+------------------------------------------------------------------------
+r411 | sam | 2006-03-15 18:33:03 +0100 (Wed, 15 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/test
+   M /trunk/test/Makefile.am
+   A /trunk/test/export.c
+
+  * Small test program for exporters. Usage: "export html", "export irc" etc.
+
+------------------------------------------------------------------------
+r410 | jylam | 2006-03-15 18:16:09 +0100 (Wed, 15 Mar 2006) | 24 lines
+Changed paths:
+   A /trunk/cucul/export_svg.c
+
+ * Added the SVG exporter sources. SAM IS KOREA KEKEKEK ^^
+*p_e_n_i_s_b_i_r_d_p_e_n_i_s_b_i_r_d_*
+p______...___________________________p
+e____(_..__`'-.,--,__________________e
+n_____'-._'-.__`\a\\_________________n
+i_________'.___.'_(|_________________i
+s____________7____||_________________s
+b___________/___.'_|_________________b
+i__________/_.-'__,J_________________i
+r_________/_________\________________r
+d________||___/______;_______________d
+*________||__|_______|_______________*
+p________`\__\_______|__/__''\_______p
+e__________'._\______/.-`____{}|_____e
+n___________/\_`;_.-'_________/______n
+i___________\_;(((____.--'\_/________i
+s_________.(((_____.-;\______________s
+b____.--'`_____,;`'.'-;\_____________b
+i_taco's____.'____'._.'\\____________i
+r_dick_--'_________|__\_|____________r
+d__________________\_\,_/____________d
+*p_e_n_i_s_b_i_r_d_p_e_n_i_s_b_i_r_d_*
+
+
+------------------------------------------------------------------------
+r409 | jylam | 2006-03-15 17:55:40 +0100 (Wed, 15 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/Makefile.am
+   M /trunk/cucul/cucul.c
+   M /trunk/cucul/cucul.h
+   M /trunk/cucul/export_html.c
+   M /trunk/cucul/export_ps.c
+
+ * Added preliminary (but working) SVG exporter
+
+------------------------------------------------------------------------
+r408 | jylam | 2006-03-15 16:03:43 +0100 (Wed, 15 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_network.c
+
+ * Added telnet commands and options strings for debug
+
+------------------------------------------------------------------------
+r407 | jylam | 2006-03-15 14:48:51 +0100 (Wed, 15 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/test/demo.c
+
+ * Fixed refresh when updating parameter in display_menu()
+
+------------------------------------------------------------------------
+r406 | jylam | 2006-03-15 14:10:34 +0100 (Wed, 15 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/kernel/kernel.c
+
+ * Removed false comment
+
+------------------------------------------------------------------------
+r405 | jylam | 2006-03-15 14:06:25 +0100 (Wed, 15 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/src/cacaball.c
+
+ * Optimised cacaballs a bit
+
+------------------------------------------------------------------------
+r404 | jylam | 2006-03-15 13:51:08 +0100 (Wed, 15 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/src/cacaball.c
+
+ * Better cacaballs parameters
+
+------------------------------------------------------------------------
+r403 | sam | 2006-03-15 11:04:56 +0100 (Wed, 15 Mar 2006) | 3 lines
+Changed paths:
+   M /trunk/src/cacamoir.c
+
+  * Increased cacamoir circle thikness by 50%, because it currently really
+    sucks in small resolutions.
+
+------------------------------------------------------------------------
+r402 | sam | 2006-03-15 11:03:04 +0100 (Wed, 15 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_gl.c
+   M /trunk/caca/driver_ncurses.c
+   M /trunk/caca/driver_x11.c
+   M /trunk/src/cacaball.c
+
+  * Minor coding style fixes.
+
+------------------------------------------------------------------------
+r401 | sam | 2006-03-15 11:02:08 +0100 (Wed, 15 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_win32.c
+
+  * UTF-8 support in the Win32 driver.
+
+------------------------------------------------------------------------
+r400 | sam | 2006-03-15 11:01:14 +0100 (Wed, 15 Mar 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/caca.h
+   M /trunk/caca/driver_network.c
+
+  * Support CACA_GEOMETRY in the network driver. Still defaults to 80x24.
+  * Use RETSIGTYPE for signal handler return values.
+
+------------------------------------------------------------------------
+r399 | sam | 2006-03-15 10:57:04 +0100 (Wed, 15 Mar 2006) | 4 lines
+Changed paths:
+   M /trunk/caca/driver_slang.c
+   M /trunk/configure.ac
+
+  * Do not fail if SLsmg_utf8_enable was not found, just disable UTF-8 support
+    in the SLang driver.
+  * Cosmetic fixes in configure.ac.
+
+------------------------------------------------------------------------
+r398 | sam | 2006-03-14 23:05:34 +0100 (Tue, 14 Mar 2006) | 6 lines
+Changed paths:
+   M /trunk/caca/driver_network.c
+   M /trunk/cucul/cucul.c
+   M /trunk/cucul/cucul.h
+   M /trunk/cucul/cucul_internals.h
+   M /trunk/cucul/export_ansi.c
+   M /trunk/cucul/export_html.c
+   M /trunk/cucul/export_irc.c
+   M /trunk/cucul/export_ps.c
+
+  * Replaced all cucul_get_* exporters with a generic cucul_export() function.
+  * Got rid of static buffers; we now use cucul_free() to free exported
+    buffers.
+  * Fixed light background in the ANSI exporter by adding escape sequences for
+    most terminal emulators.
+
+------------------------------------------------------------------------
+r397 | jylam | 2006-03-14 20:01:19 +0100 (Tue, 14 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/kernel/kernel.c
+
+ * Fixed UPPER() for strcasecmp
+
+------------------------------------------------------------------------
+r396 | sam | 2006-03-14 19:10:30 +0100 (Tue, 14 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/kernel/kernel.c
+
+  * Rewrote strncasecmp. Totally untested, of course.
+
+------------------------------------------------------------------------
+r395 | sam | 2006-03-14 18:09:17 +0100 (Tue, 14 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/export_ps.c
+
+  * STATIC char const. AHAHAHAHA.
+
+------------------------------------------------------------------------
+r394 | sam | 2006-03-14 18:06:12 +0100 (Tue, 14 Mar 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/driver_network.c
+
+  * Do not switch to alternate screen when clearing, because sometimes we
+    are unable to cleanly restore the state.
+
+------------------------------------------------------------------------
+r393 | jylam | 2006-03-14 17:57:53 +0100 (Tue, 14 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/export_ps.c
+
+ * Cosmetic changes. AHAHAH I COMMITED IT MYSELF.
+
+------------------------------------------------------------------------
+r392 | jylam | 2006-03-14 17:51:38 +0100 (Tue, 14 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/export_ps.c
+
+ * Postscript exporter now kinda works. Paper size to be fixed
+
+------------------------------------------------------------------------
+r391 | jylam | 2006-03-14 16:39:38 +0100 (Tue, 14 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/Makefile.am
+   M /trunk/cucul/cucul.c
+   M /trunk/cucul/cucul.h
+   M /trunk/cucul/cucul_internals.h
+   A /trunk/cucul/export_ps.c
+
+ * Added preliminary Postscript (tm) (r) (c) exporter.
+
+------------------------------------------------------------------------
+r390 | sam | 2006-03-14 15:19:58 +0100 (Tue, 14 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_network.c
+
+  * Pressing Ctrl-C on the client side now drops the connection.
+
+------------------------------------------------------------------------
+r389 | sam | 2006-03-14 13:49:32 +0100 (Tue, 14 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/TODO
+
+  * Updated the TODO list, mostly with Unicode-related tasks.
+
+------------------------------------------------------------------------
+r388 | sam | 2006-03-14 13:49:01 +0100 (Tue, 14 Mar 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/caca.h
+   M /trunk/caca/driver_network.c
+
+  * Changed port environment variable to "CACA_PORT". No need to mention it's
+    a network port, we could have guessed.
+
+------------------------------------------------------------------------
+r387 | sam | 2006-03-14 13:30:17 +0100 (Tue, 14 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/caca.c
+
+  * Ooops, fixed an old typo.
+
+------------------------------------------------------------------------
+r386 | sam | 2006-03-14 13:16:11 +0100 (Tue, 14 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/src/cacaball.c
+
+  * Fixed a warning in cacaball.c.
+
+------------------------------------------------------------------------
+r385 | sam | 2006-03-13 20:04:29 +0100 (Mon, 13 Mar 2006) | 11 lines
+Changed paths:
+   M /trunk/caca/driver_network.c
+
+  * Improvements to the network output:
+    + Changed port to 51914 (rationale: it's 0xCACA; so okay, it's outside
+      the registered ports area, but we'd never be accepted anyway).
+    + Retry network sends in caca_get_event(), too.
+    + Have a per-client buffer in case of network congestion. If that buffer
+      gets full, just drop it and start again at the next frame.
+    + Set the window title to "caca for the network".
+    + Do not send the ANSI buffer's terminating \0.
+    + Restore the SIGPIPE handler on close.
+    + Set window size to 80x24 instead of 80x25.
+
+------------------------------------------------------------------------
+r384 | sam | 2006-03-13 19:07:35 +0100 (Mon, 13 Mar 2006) | 24 lines
+Changed paths:
+   M /trunk/cucul/export_ansi.c
+   M /trunk/cucul/export_html.c
+   M /trunk/cucul/export_irc.c
+   M /trunk/perl/lib/Term/Caca/Bitmap.pm
+   M /trunk/perl/lib/Term/Caca/Constants.pm
+   M /trunk/perl/lib/Term/Caca/Sprite.pm
+   M /trunk/perl/lib/Term/Caca.pm
+   M /trunk/perl/lib/Term/Kaka/Bitmap.pm
+   M /trunk/perl/lib/Term/Kaka/Constants.pm
+   M /trunk/perl/lib/Term/Kaka/Sprite.pm
+   M /trunk/perl/lib/Term/Kaka.pm
+   M /trunk/python/pypycaca.c
+   M /trunk/python/pypycaca.h
+
+  * Set svn:keyword Id property on a few files.
+
+  Note to developers: use that chunk in your ~/.subversion/config:
+
+[miscellany]
+enable-auto-props = yes
+
+[auto-props]
+*.m = svn:keywords=Id
+*.h = svn:keywords=Id
+*.mm = svn:keywords=Id
+*.c = svn:keywords=Id
+*.cpp = svn:keywords=Id
+*.pch = svn:keywords=Id
+*.command = svn:keywords=Id
+*.pl = svn:keywords=Id
+*.pm = svn:keywords=Id
+*.py = svn:keywords=Id
+*.sh = svn:keywords=Id
+*.txt = svn:keywords=Id
+*.html = svn:keywords=Id
+*.php = svn:keywords=Id
+
+
+------------------------------------------------------------------------
+r383 | sam | 2006-03-13 19:05:12 +0100 (Mon, 13 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/export_ansi.c
+
+  * Fixed end of lines in the ANSI exporter (CRLF, not LFCR).
+
+------------------------------------------------------------------------
+r382 | sam | 2006-03-13 18:49:04 +0100 (Mon, 13 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/caca.c
+
+  * Fixed an uninitialised variable in the event queue handling.
+
+------------------------------------------------------------------------
+r381 | sam | 2006-03-13 18:38:18 +0100 (Mon, 13 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/test/colors.c
+
+  * Allow the color test to be built as a kernel.
+
+------------------------------------------------------------------------
+r380 | sam | 2006-03-13 18:36:14 +0100 (Mon, 13 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/THANKS
+
+  * Sorted list of extra contributors by topic and added the FSF.
+
+------------------------------------------------------------------------
+r379 | sam | 2006-03-10 20:21:33 +0100 (Fri, 10 Mar 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/driver_network.c
+
+  * Set the client sockets as non-blocking, and implemented non-blocking
+    writes. Currently works very badly with more than one client.
+
+------------------------------------------------------------------------
+r378 | jylam | 2006-03-10 18:56:40 +0100 (Fri, 10 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/kernel/kernel.c
+
+ * wrote strcasecmp for fun
+
+------------------------------------------------------------------------
+r377 | jylam | 2006-03-10 18:41:23 +0100 (Fri, 10 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/Makefile.am
+   A /trunk/cucul/export_ansi.c
+   A /trunk/cucul/export_html.c
+   A /trunk/cucul/export_irc.c
+   D /trunk/cucul/exporter_ansi.c
+   D /trunk/cucul/exporter_html.c
+   D /trunk/cucul/exporter_irc.c
+
+ * Renamed exporter_* to export_*, from God recommendation.
+
+------------------------------------------------------------------------
+r376 | jylam | 2006-03-10 18:32:08 +0100 (Fri, 10 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/Makefile.am
+   D /trunk/cucul/export.c
+   A /trunk/cucul/exporter_ansi.c
+   A /trunk/cucul/exporter_html.c
+   A /trunk/cucul/exporter_irc.c
+
+ * Exploded cucul/export.c
+
+------------------------------------------------------------------------
+r375 | jylam | 2006-03-10 16:11:40 +0100 (Fri, 10 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/caca.c
+   M /trunk/caca/caca.h
+   M /trunk/caca/driver_network.c
+
+ * Added CACA_NETWORK_PORT env and related documentation
+
+------------------------------------------------------------------------
+r374 | jylam | 2006-03-10 15:41:24 +0100 (Fri, 10 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_network.c
+   M /trunk/configure.ac
+   M /trunk/cucul/cucul_internals.h
+
+ * Fixed configure script to check for UTF8 enabled slang, removed network driver debug output, added size > 255 in telnet negociation, fixed scrolling bug in network driver
+
+------------------------------------------------------------------------
+r373 | sam | 2006-03-10 14:06:40 +0100 (Fri, 10 Mar 2006) | 4 lines
+Changed paths:
+   M /trunk/caca/driver_network.c
+
+  * Handle incoming connections in network_get_event() as well as
+    network_display() so that new clients immediately get the contents
+    of the canvas and do not need to wait for a caca_display() call.
+
+------------------------------------------------------------------------
+r372 | sam | 2006-03-10 11:03:30 +0100 (Fri, 10 Mar 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/char.c
+
+  * Preliminary support for UTF-8 in cucul_putstr(). Also added a
+    cucul_putchar32() function but I'm not convinced it will be useful.
+
+------------------------------------------------------------------------
+r371 | sam | 2006-03-10 11:01:22 +0100 (Fri, 10 Mar 2006) | 4 lines
+Changed paths:
+   M /trunk/caca/driver_conio.c
+   M /trunk/caca/driver_gl.c
+   M /trunk/caca/driver_ncurses.c
+   M /trunk/caca/driver_network.c
+   M /trunk/caca/driver_win32.c
+   M /trunk/caca/driver_x11.c
+   M /trunk/caca/graphics.c
+
+  * Use the internal version of cucul_set_size in output drivers so that
+    they can force a resize. We need to find a way to make those specific
+    cucul - caca interactions unavailable to the clueless user.
+
+------------------------------------------------------------------------
+r370 | sam | 2006-03-10 10:48:33 +0100 (Fri, 10 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/src/cacaball.c
+   M /trunk/src/cacamoir.c
+   M /trunk/src/cacaplas.c
+
+  * Made cacamoir, cacaball and cacaplas buildable into a kernel.
+
+------------------------------------------------------------------------
+r369 | sam | 2006-03-10 10:43:13 +0100 (Fri, 10 Mar 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/driver_vga.c
+
+  * Assume the VGA screen is 320x200 and really resize the cucul canvas to
+    80x25 upon initialisation.
+
+------------------------------------------------------------------------
+r368 | sam | 2006-03-10 10:34:16 +0100 (Fri, 10 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_slang.c
+
+  * Added Unicode support to the SLang driver.
+
+------------------------------------------------------------------------
+r367 | sam | 2006-03-10 10:31:32 +0100 (Fri, 10 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/kernel/kernel.c
+   M /trunk/kernel/kernel.h
+
+  * Implemented a few math functions in our kernel: cos(), sin(), sqrt().
+
+------------------------------------------------------------------------
+r366 | sam | 2006-03-10 10:30:30 +0100 (Fri, 10 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/test/unicode.c
+
+  * More Unicode tests: gradient glyphs, double width characters.
+
+------------------------------------------------------------------------
+r365 | jylam | 2006-03-09 20:27:55 +0100 (Thu, 09 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/build-kernel
+
+ * Oops, modified build-kernel while testing and commited it ;)
+
+------------------------------------------------------------------------
+r364 | jylam | 2006-03-09 20:27:14 +0100 (Thu, 09 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/build-kernel
+   M /trunk/caca/driver_network.c
+
+ * Multiplexed sockets, it is now possible to have multiple clients at the same time watching for the same libcaca application. And no fork or threads involved. THAT'S high technology.
+
+------------------------------------------------------------------------
+r363 | sam | 2006-03-09 17:57:32 +0100 (Thu, 09 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_vga.c
+
+  * Fixed VGA colours. The values only range from 0 to 63.
+
+------------------------------------------------------------------------
+r362 | sam | 2006-03-09 16:35:00 +0100 (Thu, 09 Mar 2006) | 4 lines
+Changed paths:
+   M /trunk/build-kernel
+   M /trunk/caca/caca_internals.h
+   M /trunk/cucul/cucul_internals.h
+   M /trunk/kernel/kernel.c
+   M /trunk/kernel/kernel.h
+
+  * Added assembly code for inb() and outb().
+  * Print a small message at kernel boot time just to check that the kernel
+    was properly loaded.
+
+------------------------------------------------------------------------
+r361 | jylam | 2006-03-09 14:24:06 +0100 (Thu, 09 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/export.c
+
+ * Added tests for malloc()'s
+
+------------------------------------------------------------------------
+r360 | jylam | 2006-03-09 14:08:41 +0100 (Thu, 09 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/README
+   M /trunk/cucul/cucul.c
+   M /trunk/cucul/cucul_internals.h
+   M /trunk/cucul/export.c
+
+ * Updated README for network driver, fixed remaining exporters
+
+------------------------------------------------------------------------
+r359 | sam | 2006-03-09 14:04:59 +0100 (Thu, 09 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/Makefile.am
+   M /trunk/configure.ac
+   M /trunk/kernel/Makefile.am
+
+  * Added a conditional to only build the kernel if --enable-vga was set.
+
+------------------------------------------------------------------------
+r358 | sam | 2006-03-09 13:56:33 +0100 (Thu, 09 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/build-kernel
+
+  * Set executable flag to the build-kernel script.
+
+------------------------------------------------------------------------
+r357 | sam | 2006-03-09 13:47:37 +0100 (Thu, 09 Mar 2006) | 3 lines
+Changed paths:
+   A /trunk/COPYING.GPL
+   M /trunk/Makefile.am
+   A /trunk/build-kernel
+   M /trunk/caca/time.c
+   M /trunk/configure.ac
+   M /trunk/cucul/bitmap.c
+   M /trunk/cucul/box.c
+   M /trunk/cucul/char.c
+   M /trunk/cucul/conic.c
+   M /trunk/cucul/cucul.c
+   M /trunk/cucul/cucul_internals.h
+   M /trunk/cucul/export.c
+   M /trunk/cucul/line.c
+   M /trunk/cucul/math.c
+   M /trunk/cucul/sprite.c
+   M /trunk/cucul/triangle.c
+   A /trunk/kernel
+   A /trunk/kernel/Makefile.am
+   A /trunk/kernel/kernel.c
+   A /trunk/kernel/kernel.h
+   A /trunk/kernel/multiboot.S
+   A /trunk/kernel/multiboot.h
+   M /trunk/src
+   M /trunk/src/aafire.c
+
+  * Added glue code to compile libcaca without a libc and build applications
+    as multiboot kernels.
+
+------------------------------------------------------------------------
+r356 | sam | 2006-03-09 13:44:49 +0100 (Thu, 09 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_conio.c
+
+  * Cosmetic change.
+
+------------------------------------------------------------------------
+r355 | sam | 2006-03-09 13:43:10 +0100 (Thu, 09 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/README
+
+  * Slightly updated README.
+
+------------------------------------------------------------------------
+r354 | sam | 2006-03-09 13:41:02 +0100 (Thu, 09 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/caca.c
+   M /trunk/caca/caca_internals.h
+   A /trunk/caca/driver_vga.c
+
+  * Pure VGA output driver.
+
+------------------------------------------------------------------------
+r353 | sam | 2006-03-09 13:37:39 +0100 (Thu, 09 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/graphics.c
+
+  * Removed unused includes.
+
+------------------------------------------------------------------------
+r352 | sam | 2006-03-09 13:35:47 +0100 (Thu, 09 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/AUTHORS
+
+  * Added a few details for authors.
+
+------------------------------------------------------------------------
+r351 | sam | 2006-03-09 13:34:40 +0100 (Thu, 09 Mar 2006) | 3 lines
+Changed paths:
+   M /trunk/test
+   M /trunk/test/Makefile.am
+   A /trunk/test/unicode.c
+
+  * Added a tiny Unicode test program. Of course it does not work yet, but
+    good to have something to start with.
+
+------------------------------------------------------------------------
+r350 | jylam | 2006-03-09 10:52:24 +0100 (Thu, 09 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/caca.h
+   M /trunk/cucul/cucul.h
+
+ * Updated documentation a bit
+
+------------------------------------------------------------------------
+r349 | jylam | 2006-03-09 10:44:54 +0100 (Thu, 09 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_network.c
+   M /trunk/cucul/cucul.c
+   M /trunk/cucul/cucul_internals.h
+   M /trunk/cucul/export.c
+
+ * Changed way temporary buffer of ansi export was handled. Need to do that for other exporters as well.
+
+------------------------------------------------------------------------
+r348 | jylam | 2006-03-09 09:45:40 +0100 (Thu, 09 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_network.c
+
+ * Fixed memory leak in network driver
+
+------------------------------------------------------------------------
+r347 | sam | 2006-03-08 23:39:43 +0100 (Wed, 08 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_gl.c
+
+  * Made the OpenGL colors slightly less saturated.
+
+------------------------------------------------------------------------
+r346 | sam | 2006-03-08 23:29:00 +0100 (Wed, 08 Mar 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/driver_conio.c
+   M /trunk/caca/driver_gl.c
+   M /trunk/caca/driver_ncurses.c
+   M /trunk/caca/driver_slang.c
+   M /trunk/caca/driver_win32.c
+   M /trunk/caca/driver_x11.c
+
+  * Make output drivers more error resilient when handling UTF-32 characters,
+    by simply ignoring everything non ASCII :-)
+
+------------------------------------------------------------------------
+r345 | jylam | 2006-03-08 21:58:07 +0100 (Wed, 08 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_network.c
+
+ * Fixed blinking screen
+
+------------------------------------------------------------------------
+r344 | jylam | 2006-03-08 21:23:06 +0100 (Wed, 08 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_network.c
+   M /trunk/cucul/cucul.h
+   M /trunk/cucul/export.c
+
+ * Exporters now return size of generated data
+
+------------------------------------------------------------------------
+r343 | jylam | 2006-03-08 21:03:24 +0100 (Wed, 08 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/Makefile.am
+   M /trunk/caca/caca.c
+   M /trunk/caca/caca_internals.h
+   A /trunk/caca/driver_network.c
+   M /trunk/configure.ac
+
+ * Added very preliminary network driver
+
+------------------------------------------------------------------------
+r342 | sam | 2006-03-08 20:41:53 +0100 (Wed, 08 Mar 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/caca.c
+   M /trunk/caca/caca_internals.h
+   M /trunk/caca/driver_conio.c
+   M /trunk/caca/driver_gl.c
+   M /trunk/caca/driver_ncurses.c
+   M /trunk/caca/driver_slang.c
+   M /trunk/caca/driver_win32.c
+   M /trunk/caca/driver_x11.c
+   M /trunk/caca/event.c
+   M /trunk/caca/graphics.c
+   M /trunk/cucul/cucul.c
+
+  * Fixed async issues between the driver and libcaca when resizing windows,
+    and simplified the handle_resize() API. Still can be polished.
+
+------------------------------------------------------------------------
+r341 | sam | 2006-03-08 18:20:38 +0100 (Wed, 08 Mar 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/cucul.c
+
+  * cucul_set_size() does nothing if a graphical backend is attached. Added
+    documentation to explain this behaviour.
+
+------------------------------------------------------------------------
+r340 | sam | 2006-03-08 12:27:23 +0100 (Wed, 08 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/caca.c
+   M /trunk/caca/caca_internals.h
+   M /trunk/caca/driver_gl.c
+   M /trunk/caca/driver_ncurses.c
+   M /trunk/caca/driver_slang.c
+   M /trunk/caca/driver_win32.c
+   M /trunk/caca/driver_x11.c
+   M /trunk/caca/event.c
+
+  * Cosmetic changes here and there.
+
+------------------------------------------------------------------------
+r339 | sam | 2006-03-08 11:33:01 +0100 (Wed, 08 Mar 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/caca.c
+   M /trunk/caca/caca_internals.h
+   M /trunk/caca/driver_conio.c
+   M /trunk/caca/driver_gl.c
+   M /trunk/caca/driver_ncurses.c
+   M /trunk/caca/driver_slang.c
+   M /trunk/caca/driver_win32.c
+   M /trunk/caca/driver_x11.c
+   M /trunk/caca/event.c
+   M /trunk/caca/graphics.c
+
+  * Finished moving everything driver-specific to the apropriate driver_*.c
+    files. Phew. Now they just need a few comments.
+
+------------------------------------------------------------------------
+r338 | sam | 2006-03-08 10:51:53 +0100 (Wed, 08 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_conio.c
+   M /trunk/caca/driver_gl.c
+   M /trunk/caca/driver_ncurses.c
+   M /trunk/caca/driver_slang.c
+   M /trunk/caca/driver_win32.c
+   M /trunk/caca/driver_x11.c
+
+  * Cleaned up useless header includes.
+
+------------------------------------------------------------------------
+r337 | sam | 2006-03-08 10:28:41 +0100 (Wed, 08 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/caca_internals.h
+   M /trunk/caca/driver_conio.c
+   M /trunk/caca/driver_gl.c
+   M /trunk/caca/driver_ncurses.c
+   M /trunk/caca/driver_slang.c
+   M /trunk/caca/driver_win32.c
+   M /trunk/caca/driver_x11.c
+   M /trunk/caca/event.c
+
+  * Split event.c into the appropriate driver_*.c files.
+
+------------------------------------------------------------------------
+r336 | sam | 2006-03-08 10:26:46 +0100 (Wed, 08 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/caca-config.in
+
+  * Let us do "caca-config --libs cucul" to get only the libcucul dependencies.
+
+------------------------------------------------------------------------
+r335 | sam | 2006-03-08 10:23:38 +0100 (Wed, 08 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/doc/doxygen.cfg.in
+
+  * Ignore driver_*.c files when building documentation.
+
+------------------------------------------------------------------------
+r334 | sam | 2006-03-08 10:21:55 +0100 (Wed, 08 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+
+  * configure.ac: look for a4wide.sty in more than one location.
+
+------------------------------------------------------------------------
+r333 | sam | 2006-03-07 13:39:34 +0100 (Tue, 07 Mar 2006) | 3 lines
+Changed paths:
+   M /trunk/Makefile.am
+   A /trunk/build-dos (from /trunk/build-win32:327)
+   M /trunk/caca/caca_internals.h
+   M /trunk/caca/driver_conio.c
+   M /trunk/cucul/cucul_internals.h
+
+  * Fixed DOS driver.
+  * Added a build-dos script to cross-compile the DOS version using djgpp.
+
+------------------------------------------------------------------------
+r332 | sam | 2006-03-07 11:46:29 +0100 (Tue, 07 Mar 2006) | 3 lines
+Changed paths:
+   M /trunk/configure.ac
+
+  * configure.ac: removed the "null" frontend. just don't attach any frontend
+    if you do not want any.
+
+------------------------------------------------------------------------
+r331 | sam | 2006-03-07 11:37:59 +0100 (Tue, 07 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/caca.c
+   M /trunk/caca/caca_internals.h
+   M /trunk/caca/event.c
+
+  * Got rid of static variables in the event code.
+
+------------------------------------------------------------------------
+r330 | sam | 2006-03-07 10:17:35 +0100 (Tue, 07 Mar 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/caca.c
+   M /trunk/caca/caca_internals.h
+   M /trunk/caca/driver_conio.c
+   M /trunk/caca/driver_gl.c
+   M /trunk/caca/driver_ncurses.c
+   M /trunk/caca/driver_slang.c
+   M /trunk/caca/driver_win32.c
+   M /trunk/caca/driver_x11.c
+   M /trunk/caca/event.c
+   M /trunk/caca/graphics.c
+   M /trunk/cucul/bitmap.c
+   M /trunk/cucul/box.c
+   M /trunk/cucul/char.c
+   M /trunk/cucul/conic.c
+   M /trunk/cucul/cucul.c
+   M /trunk/cucul/cucul_internals.h
+   M /trunk/cucul/export.c
+   M /trunk/cucul/line.c
+   M /trunk/cucul/math.c
+   M /trunk/cucul/sprite.c
+   M /trunk/cucul/triangle.c
+   M /trunk/src/cacaview.c
+
+  * Polished the driver split a bit (still no events, except resize events),
+    properly credited authors and documented a few things.
+
+------------------------------------------------------------------------
+r329 | sam | 2006-03-07 00:01:59 +0100 (Tue, 07 Mar 2006) | 4 lines
+Changed paths:
+   M /trunk/caca/Makefile.am
+   M /trunk/caca/caca.c
+   M /trunk/caca/caca_internals.h
+   A /trunk/caca/driver_conio.c (from /trunk/caca/graphics.c:327)
+   A /trunk/caca/driver_gl.c (from /trunk/caca/graphics.c:327)
+   A /trunk/caca/driver_ncurses.c (from /trunk/caca/graphics.c:327)
+   A /trunk/caca/driver_slang.c (from /trunk/caca/graphics.c:327)
+   A /trunk/caca/driver_win32.c (from /trunk/caca/graphics.c:327)
+   A /trunk/caca/driver_x11.c (from /trunk/caca/graphics.c:327)
+   M /trunk/caca/event.c
+   M /trunk/caca/graphics.c
+
+  * Split caca/graphics.c into driver-specific files. Resize is currently
+    broken, and event handling is not yet in the driver-specific files, but
+    I will of course fix that later.
+
+------------------------------------------------------------------------
+r328 | sam | 2006-03-06 22:49:48 +0100 (Mon, 06 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+
+  * Ooops, I fucked up the build.
+
+------------------------------------------------------------------------
+r327 | sam | 2006-03-06 22:00:53 +0100 (Mon, 06 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/Makefile.am
+   D /trunk/examples
+   A /trunk/src (from /trunk/examples:326)
+
+  * Moved stuff again.
+
+------------------------------------------------------------------------
+r326 | sam | 2006-03-06 21:57:14 +0100 (Mon, 06 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/Makefile.am
+   A /trunk/caca
+   A /trunk/caca/Makefile.am (from /trunk/src/Makefile.am:325)
+   A /trunk/caca/caca.c (from /trunk/src/caca.c:325)
+   A /trunk/caca/caca.h (from /trunk/src/caca.h:325)
+   A /trunk/caca/caca_internals.h (from /trunk/src/caca_internals.h:325)
+   A /trunk/caca/event.c (from /trunk/src/event.c:325)
+   A /trunk/caca/graphics.c (from /trunk/src/graphics.c:325)
+   A /trunk/caca/time.c (from /trunk/src/time.c:325)
+   M /trunk/configure.ac
+   A /trunk/cucul
+   A /trunk/cucul/Makefile.am (from /trunk/src/Makefile.am:325)
+   A /trunk/cucul/bitmap.c (from /trunk/src/bitmap.c:325)
+   A /trunk/cucul/box.c (from /trunk/src/box.c:325)
+   A /trunk/cucul/char.c (from /trunk/src/char.c:325)
+   A /trunk/cucul/conic.c (from /trunk/src/conic.c:325)
+   A /trunk/cucul/cucul.c (from /trunk/src/cucul.c:325)
+   A /trunk/cucul/cucul.h (from /trunk/src/cucul.h:325)
+   A /trunk/cucul/cucul_internals.h (from /trunk/src/cucul_internals.h:325)
+   A /trunk/cucul/export.c (from /trunk/src/export.c:325)
+   A /trunk/cucul/line.c (from /trunk/src/line.c:325)
+   A /trunk/cucul/math.c (from /trunk/src/math.c:325)
+   A /trunk/cucul/sprite.c (from /trunk/src/sprite.c:325)
+   A /trunk/cucul/triangle.c (from /trunk/src/triangle.c:325)
+   M /trunk/examples/Makefile.am
+   D /trunk/src
+   M /trunk/test/Makefile.am
+
+  * Moved stuff around to differenciate between libcucul and libcaca.
+
+------------------------------------------------------------------------
+r325 | sam | 2006-03-06 20:13:01 +0100 (Mon, 06 Mar 2006) | 3 lines
+Changed paths:
+   M /trunk/src/caca.c
+   M /trunk/src/char.c
+   M /trunk/src/cucul.c
+   M /trunk/src/cucul_internals.h
+   M /trunk/src/export.c
+   M /trunk/src/graphics.c
+
+  * Use 32 bit integers for the character array. No visible difference for
+    now because we only do ASCII, but that will let us do Unicode later.
+
+------------------------------------------------------------------------
+r324 | sam | 2006-03-06 15:17:42 +0100 (Mon, 06 Mar 2006) | 4 lines
+Changed paths:
+   M /trunk/src/caca.h
+   M /trunk/src/graphics.c
+
+  * Removed caca_set_{size,width,height} because cucul_set_size ought to be
+    enough for everyone. Maybe I'll reintroduce caca_set_size sometime in the
+    future because it's libcaca who gets the resize events, after all.
+
+------------------------------------------------------------------------
+r323 | jylam | 2006-03-06 14:50:05 +0100 (Mon, 06 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/src/graphics.c
+
+ * I just suck. I'll goatse myself right after beeing back at home.
+
+------------------------------------------------------------------------
+r322 | sam | 2006-03-06 14:43:23 +0100 (Mon, 06 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/src/graphics.c
+
+  * src/graphics.c: minor optimisations.
+
+------------------------------------------------------------------------
+r321 | sam | 2006-03-06 14:34:57 +0100 (Mon, 06 Mar 2006) | 6 lines
+Changed paths:
+   M /trunk/src/graphics.c
+
+  * Nan mais je voudrais pas avoir l'air d'insister mon gars, mais primo
+    dans la vraie vie, 0x007f7f7f et { 0x00, 0x7f, 0x7f, 0x7f } n'ont pas
+    toujours les bytes dans le meme ordre, deuzio un unsigned int n'a pas
+    toujours 4 bytes, et troizio tu pourrais au moins checker que ca fait
+    pas de warnings et/ou que ca segfaulte pas !
+
+------------------------------------------------------------------------
+r320 | jylam | 2006-03-06 13:13:12 +0100 (Mon, 06 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/src/graphics.c
+
+ * Mais je fais comme je veux bordel de cul !
+
+------------------------------------------------------------------------
+r319 | sam | 2006-03-06 12:08:25 +0100 (Mon, 06 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/src/graphics.c
+
+  * Haha mais vieux porc a pattes !
+
+------------------------------------------------------------------------
+r318 | jylam | 2006-03-06 11:21:48 +0100 (Mon, 06 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/src/graphics.c
+
+ * Reverted to integer colors in GL driver,  fixed a bunch of warnings in slang.
+
+------------------------------------------------------------------------
+r317 | sam | 2006-03-06 09:32:40 +0100 (Mon, 06 Mar 2006) | 9 lines
+Changed paths:
+   M /trunk/caca-config.in
+   M /trunk/configure.ac
+   M /trunk/examples/aafire.c
+   M /trunk/examples/cacaball.c
+   M /trunk/examples/cacamoir.c
+   M /trunk/examples/cacaplas.c
+   M /trunk/examples/cacaview.c
+   M /trunk/src/Makefile.am
+   M /trunk/src/bitmap.c
+   M /trunk/src/box.c
+   M /trunk/src/caca.c
+   M /trunk/src/caca.h
+   M /trunk/src/caca_internals.h
+   M /trunk/src/char.c
+   M /trunk/src/conic.c
+   M /trunk/src/cucul.c
+   M /trunk/src/cucul_internals.h
+   M /trunk/src/event.c
+   M /trunk/src/export.c
+   M /trunk/src/graphics.c
+   M /trunk/src/line.c
+   M /trunk/src/math.c
+   M /trunk/src/sprite.c
+   M /trunk/src/time.c
+   M /trunk/src/triangle.c
+   M /trunk/test/colors.c
+   M /trunk/test/demo.c
+   M /trunk/test/dithering.c
+   M /trunk/test/event.c
+   M /trunk/test/hsv.c
+   M /trunk/test/spritedit.c
+
+  * All output plugins should now work again.
+  * Renamed caca_refresh() into caca_display() which makes more sense.
+  * Optimised gl_bgpal by directly storing floats instead of doing the
+    conversion at runtime.
+  * Handle resizing in cucul_set_size() and try to keep as much information
+    as possible from the previous canvas.
+  * Moved most global variables into cucul_t or caca_t contexts.
+  * Moved time.c into libcaca.
+
+------------------------------------------------------------------------
+r316 | sam | 2006-03-06 09:26:09 +0100 (Mon, 06 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/debian
+   M /trunk/debian/changelog
+   M /trunk/debian/control
+   M /trunk/debian/copyright
+   M /trunk/debian/rules
+   M /trunk/doc/Makefile.am
+   D /trunk/doc/cacademo.1
+   A /trunk/doc/cacafire.1 (from /trunk/doc/cacademo.1:314)
+   M /trunk/libcaca.spec
+   M /trunk/msvc/Makefile.am
+   D /trunk/msvc/cacademo.vcproj
+   M /trunk/msvc/libcaca.sln
+
+  * Removed cacademo from examples, manpages and distributions. It's useless.
+
+------------------------------------------------------------------------
+r315 | sam | 2006-03-06 09:22:09 +0100 (Mon, 06 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/src/cucul.c
+
+  * src/cucul.c: s/width/height/.
+
+------------------------------------------------------------------------
+r314 | sam | 2006-03-05 19:43:13 +0100 (Sun, 05 Mar 2006) | 16 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/doc/doxygen.cfg.in
+   M /trunk/examples
+   M /trunk/examples/Makefile.am
+   M /trunk/examples/aafire.c
+   M /trunk/examples/cacaball.c
+   M /trunk/examples/cacamoir.c
+   M /trunk/examples/cacaplas.c
+   M /trunk/examples/cacaview.c
+   D /trunk/examples/demo.c
+   M /trunk/src/Makefile.am
+   M /trunk/src/bitmap.c
+   M /trunk/src/box.c
+   M /trunk/src/caca.c
+   M /trunk/src/caca.h
+   M /trunk/src/caca_internals.h
+   A /trunk/src/char.c
+   M /trunk/src/conic.c
+   A /trunk/src/cucul.c
+   A /trunk/src/cucul.h (from /trunk/src/caca.h:312)
+   A /trunk/src/cucul_internals.h
+   M /trunk/src/event.c
+   A /trunk/src/export.c
+   M /trunk/src/graphics.c
+   M /trunk/src/line.c
+   M /trunk/src/math.c
+   M /trunk/src/sprite.c
+   M /trunk/src/triangle.c
+   M /trunk/test
+   M /trunk/test/Makefile.am
+   M /trunk/test/colors.c
+   A /trunk/test/demo.c (from /trunk/examples/demo.c:312)
+   M /trunk/test/dithering.c
+   M /trunk/test/event.c
+   M /trunk/test/hsv.c
+   M /trunk/test/optipal.c
+   M /trunk/test/spritedit.c
+
+  A new low-level text management library (canvas for ultrafast compositing
+of unicode letters) is now separated from the higher level rendering and I/O
+(that is, libcaca). This commit totally breaks the API, but once everything
+is polished I will think about source-level backward compatibility. Most
+drivers are broken, but X11 still sorta works.
+
+  The new design is much more object-oriented and allows having several
+active renderers at the same time, changing renderers on the fly, and more
+important, having no renderer at all (useful for converters, or when you
+want to do your own renderer).
+
+  And in case you are still wondering, the libcucul acronym has "Unicode"
+because I want to support at least a subset of Unicode. There are awesome
+glyphs in it, including the ones inherited from Codepage 437 such as
+"gray 25%" that are used in DOS and Win32 ANSI art.
+
+------------------------------------------------------------------------
+r313 | sam | 2006-03-04 19:08:47 +0100 (Sat, 04 Mar 2006) | 2 lines
+Changed paths:
+   M /trunk/bootstrap
+
+  * New updated bootstrap script.
+
+------------------------------------------------------------------------
+r312 | sam | 2006-03-04 01:35:45 +0100 (Sat, 04 Mar 2006) | 2 lines
+Changed paths:
+   R /trunk/COPYING
+   A /trunk/COPYING.LGPL (from /trunk/COPYING:311)
+   M /trunk/Makefile.am
+   M /trunk/debian/copyright
+   M /trunk/doc/cacademo.1
+   M /trunk/examples/cacaball.c
+   M /trunk/examples/cacamoir.c
+   M /trunk/examples/cacaplas.c
+   M /trunk/examples/cacaview.c
+   M /trunk/examples/demo.c
+   M /trunk/perl/Build.PL
+   M /trunk/perl/META.yml
+   M /trunk/python/pypycaca.c
+   M /trunk/python/pypycaca.h
+   M /trunk/src/bitmap.c
+   M /trunk/src/box.c
+   M /trunk/src/caca.c
+   M /trunk/src/caca.h
+   M /trunk/src/caca_internals.h
+   M /trunk/src/conic.c
+   M /trunk/src/event.c
+   M /trunk/src/graphics.c
+   M /trunk/src/line.c
+   M /trunk/src/math.c
+   M /trunk/src/sprite.c
+   M /trunk/src/time.c
+   M /trunk/src/triangle.c
+   M /trunk/test/colors.c
+   M /trunk/test/dithering.c
+   M /trunk/test/event.c
+   M /trunk/test/hsv.c
+   M /trunk/test/optipal.c
+   M /trunk/test/spritedit.c
+
+  * Changed the licensing to WTFPL, as per all copyright holders' permission.
+
+------------------------------------------------------------------------
+r311 | jylam | 2006-02-11 20:20:48 +0100 (Sat, 11 Feb 2006) | 2 lines
+Changed paths:
+   A /trunk/python/caca.txt
+   A /trunk/python/test1.py
+   A /trunk/python/test2.py
+
+  * Added two examples for python bindings (a subset of cacademo, and bitmap example)
+
+------------------------------------------------------------------------
+r310 | jylam | 2006-02-11 16:46:51 +0100 (Sat, 11 Feb 2006) | 2 lines
+Changed paths:
+   M /trunk/src/event.c
+
+  * Fixed bug in events with GL driver
+
+------------------------------------------------------------------------
+r309 | jylam | 2006-02-11 16:11:30 +0100 (Sat, 11 Feb 2006) | 2 lines
+Changed paths:
+   M /trunk/src/graphics.c
+
+  * Improved GL rendering (characters are not blurry anymore)
+
+------------------------------------------------------------------------
+r308 | jylam | 2006-02-05 18:47:23 +0100 (Sun, 05 Feb 2006) | 2 lines
+Changed paths:
+   A /trunk/python
+   A /trunk/python/Makefile
+   A /trunk/python/README
+   A /trunk/python/pypycaca.c
+   A /trunk/python/pypycaca.h
+
+  * Added -preliminary- Python bindings
+
+------------------------------------------------------------------------
+r307 | jylam | 2005-12-08 20:03:06 +0100 (Thu, 08 Dec 2005) | 2 lines
+Changed paths:
+   M /trunk/AUTHORS
+
+  * Updated for my ego trip
+
+------------------------------------------------------------------------
+r306 | jylam | 2005-11-21 22:39:34 +0100 (Mon, 21 Nov 2005) | 2 lines
+Changed paths:
+   M /trunk/examples/cacaball.c
+
+  * Removed debug test, kekeke ^^
+
+------------------------------------------------------------------------
+r305 | jylam | 2005-11-21 18:24:33 +0100 (Mon, 21 Nov 2005) | 2 lines
+Changed paths:
+   M /trunk/examples/cacaball.c
+   M /trunk/src/caca.h
+   M /trunk/src/graphics.c
+
+  * Added caca_set_width, set_height_, set_size
+
+------------------------------------------------------------------------
+r304 | jylam | 2005-11-18 11:46:53 +0100 (Fri, 18 Nov 2005) | 2 lines
+Changed paths:
+   M /trunk/examples/aafire.c
+   M /trunk/examples/cacaball.c
+   M /trunk/examples/cacamoir.c
+   M /trunk/examples/cacaplas.c
+
+  * Fixed remaining warnings with gcc 3.x and 4.x
+
+------------------------------------------------------------------------
+r303 | jylam | 2005-11-17 15:33:43 +0100 (Thu, 17 Nov 2005) | 2 lines
+Changed paths:
+   M /trunk/src/bitmap.c
+   M /trunk/src/graphics.c
+
+  * Fixed warnings under GCC 4.x
+
+------------------------------------------------------------------------
+r302 | jylam | 2005-11-17 15:13:54 +0100 (Thu, 17 Nov 2005) | 2 lines
+Changed paths:
+   M /trunk/src/bitmap.c
+   M /trunk/src/event.c
+   M /trunk/src/graphics.c
+
+* Fixed a bunch of warnings
+
+------------------------------------------------------------------------
+r301 | sam | 2005-11-12 16:39:50 +0100 (Sat, 12 Nov 2005) | 2 lines
+Changed paths:
+   M /trunk/src/graphics.c
+
+  * more coding style fixes.
+
+------------------------------------------------------------------------
+r300 | sam | 2005-11-12 16:30:46 +0100 (Sat, 12 Nov 2005) | 2 lines
+Changed paths:
+   M /trunk/src/caca.c
+
+  * src/caca.c: on Unix, do not use the GL driver if DISPLAY is not set.
+
+------------------------------------------------------------------------
+r299 | sam | 2005-11-12 16:26:02 +0100 (Sat, 12 Nov 2005) | 2 lines
+Changed paths:
+   M /trunk/src/graphics.c
+
+  * src/graphics.c: call glutInit() before calling other glut functions.
+
+------------------------------------------------------------------------
+r298 | sam | 2005-11-12 16:14:38 +0100 (Sat, 12 Nov 2005) | 2 lines
+Changed paths:
+   M /trunk/src/caca.h
+   M /trunk/src/graphics.c
+
+  * coding style fixes.
+
+------------------------------------------------------------------------
+r297 | sam | 2005-11-12 15:47:59 +0100 (Sat, 12 Nov 2005) | 4 lines
+Changed paths:
+   M /trunk/src/bitmap.c
+
+  * src/bitmap.c:
+    + Renamed gammaval into gamma.
+    + Fixed Doxygen comments.
+
+------------------------------------------------------------------------
+r296 | jylam | 2005-07-30 13:58:48 +0200 (Sat, 30 Jul 2005) | 2 lines
+Changed paths:
+   M /trunk/src/event.c
+
+  * src/event.c Fixed compilation problem when compiled without slang nor ncurses
+
+------------------------------------------------------------------------
+r295 | sam | 2005-07-29 15:38:35 +0200 (Fri, 29 Jul 2005) | 2 lines
+Changed paths:
+   M /trunk/debian/Makefile.am
+
+  * debian/Makefile.am: fixed long standing packaging bug (missing MIME file).
+
+------------------------------------------------------------------------
+r294 | jylam | 2005-07-13 19:58:58 +0200 (Wed, 13 Jul 2005) | 2 lines
+Changed paths:
+   M /trunk/src/caca.h
+   M /trunk/src/graphics.c
+
+ * src/graphics.c src/caca.h : Added ANSI exporter
+
+------------------------------------------------------------------------
+r293 | jylam | 2005-07-13 19:45:47 +0200 (Wed, 13 Jul 2005) | 2 lines
+Changed paths:
+   M /trunk/src/bitmap.c
+   M /trunk/src/caca.h
+   M /trunk/src/math.c
+
+ * src/math.c src/bitmap.c src/caca.h Removed powf call, added caca_powf, to remove libm depencies and problems on old compilers/linkers.
+
+------------------------------------------------------------------------
+r292 | sam | 2005-07-08 23:16:38 +0200 (Fri, 08 Jul 2005) | 2 lines
+Changed paths:
+   M /trunk/src/caca.c
+   M /trunk/src/event.c
+
+  * src/event.c src/caca.c: fixed coding style
+
+------------------------------------------------------------------------
+r291 | jylam | 2005-06-25 13:27:31 +0200 (Sat, 25 Jun 2005) | 2 lines
+Changed paths:
+   M /trunk/src/event.c
+   M /trunk/src/graphics.c
+
+ * OpenGL driver mouse support
+
+------------------------------------------------------------------------
+r290 | sam | 2005-06-24 13:54:28 +0200 (Fri, 24 Jun 2005) | 2 lines
+Changed paths:
+   M /trunk/debian/changelog
+
+  * imported previous Debian uploads.
+
+------------------------------------------------------------------------
+r289 | sam | 2005-06-24 13:48:31 +0200 (Fri, 24 Jun 2005) | 2 lines
+Changed paths:
+   M /trunk/src/graphics.c
+
+  * src/graphics.c: more optimisations in the exporters
+
+------------------------------------------------------------------------
+r288 | jylam | 2005-06-23 20:27:02 +0200 (Thu, 23 Jun 2005) | 2 lines
+Changed paths:
+   M /trunk/src/graphics.c
+
+ * made caca_get_html3() use tables again, as div is not html3 (bgcolor in html3 neither, but works on text mode tables-aware browsers
+
+------------------------------------------------------------------------
+r287 | sam | 2005-06-23 18:58:58 +0200 (Thu, 23 Jun 2005) | 2 lines
+Changed paths:
+   M /trunk/src/graphics.c
+
+  * src/graphics.c: cleaned caca_get_html()
+
+------------------------------------------------------------------------
+r286 | sam | 2005-06-23 18:44:14 +0200 (Thu, 23 Jun 2005) | 2 lines
+Changed paths:
+   M /trunk/src/graphics.c
+
+  * src/graphics.c: heavy cleanup in caca_get_html3().
+
+------------------------------------------------------------------------
+r285 | jylam | 2005-06-23 00:06:42 +0200 (Thu, 23 Jun 2005) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/src/caca.c
+   M /trunk/src/caca.h
+   M /trunk/src/caca_internals.h
+   M /trunk/src/event.c
+   M /trunk/src/graphics.c
+
+* Added Null driver and html3 exporter.
+
+------------------------------------------------------------------------
+r284 | jylam | 2005-06-21 18:13:41 +0200 (Tue, 21 Jun 2005) | 2 lines
+Changed paths:
+   M /trunk/src/caca.h
+   M /trunk/src/graphics.c
+
+ GL driver : Updated documentation and added support for CACA_GEOMETRY
+
+------------------------------------------------------------------------
+r283 | jylam | 2005-06-21 16:50:43 +0200 (Tue, 21 Jun 2005) | 2 lines
+Changed paths:
+   M /trunk/src/caca.h
+   M /trunk/src/graphics.c
+
+Added HTML and IRC output support
+
+------------------------------------------------------------------------
+r282 | sam | 2005-06-21 15:46:13 +0200 (Tue, 21 Jun 2005) | 2 lines
+Changed paths:
+   M /trunk/debian/control
+
+  * debian/control: use libslang2 instead of slang1.
+
+------------------------------------------------------------------------
+r281 | jylam | 2005-06-21 15:28:51 +0200 (Tue, 21 Jun 2005) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/src/caca.c
+   M /trunk/src/caca_internals.h
+   M /trunk/src/event.c
+   M /trunk/src/graphics.c
+
+OpenGL support.
+
+------------------------------------------------------------------------
+r280 | sam | 2005-03-26 11:27:30 +0100 (Sat, 26 Mar 2005) | 3 lines
+Changed paths:
+   M /trunk/bootstrap
+   M /trunk/configure.ac
+   M /trunk/examples/Makefile.am
+   M /trunk/src/Makefile.am
+   M /trunk/test/Makefile.am
+
+  * Use libtool for the static library generation; paves the way for
+    a future shared library.
+
+------------------------------------------------------------------------
+r279 | sam | 2005-01-22 17:43:58 +0100 (Sat, 22 Jan 2005) | 2 lines
+Changed paths:
+   M /trunk/src/graphics.c
+
+  * compilation fix.
+
+------------------------------------------------------------------------
+r278 | sam | 2005-01-14 00:59:55 +0100 (Fri, 14 Jan 2005) | 3 lines
+Changed paths:
+   M /trunk/src/bitmap.c
+   M /trunk/src/caca.h
+
+  * src/bitmap.c:
+    + Implemented caca_set_bitmap_gamma().
+
+------------------------------------------------------------------------
+r277 | sam | 2005-01-13 23:19:01 +0100 (Thu, 13 Jan 2005) | 3 lines
+Changed paths:
+   M /trunk/src/caca.h
+   M /trunk/src/graphics.c
+
+  * src/graphics.c:
+    + Implemented caca_get_screen().
+
+------------------------------------------------------------------------
+r276 | sam | 2005-01-13 21:46:00 +0100 (Thu, 13 Jan 2005) | 2 lines
+Changed paths:
+   M /trunk/examples/cacaplas.c
+
+  * examples/cacaplas: slower animation.
+
+------------------------------------------------------------------------
+r275 | sam | 2004-11-21 01:31:13 +0100 (Sun, 21 Nov 2004) | 2 lines
+Changed paths:
+   M /trunk/AUTHORS
+   A /trunk/perl
+   A /trunk/perl/Build.PL
+   A /trunk/perl/MANIFEST
+   A /trunk/perl/MANIFEST.SKIP
+   A /trunk/perl/META.yml
+   A /trunk/perl/Makefile.PL
+   A /trunk/perl/README
+   A /trunk/perl/lib
+   A /trunk/perl/lib/Term
+   A /trunk/perl/lib/Term/Caca
+   A /trunk/perl/lib/Term/Caca/Bitmap.pm
+   A /trunk/perl/lib/Term/Caca/Constants.pm
+   A /trunk/perl/lib/Term/Caca/Sprite.pm
+   A /trunk/perl/lib/Term/Caca.pm
+   A /trunk/perl/lib/Term/Caca.xs
+   A /trunk/perl/lib/Term/Kaka
+   A /trunk/perl/lib/Term/Kaka/Bitmap.pm
+   A /trunk/perl/lib/Term/Kaka/Constants.pm
+   A /trunk/perl/lib/Term/Kaka/Sprite.pm
+   A /trunk/perl/lib/Term/Kaka.pm
+   A /trunk/perl/t
+   A /trunk/perl/t/data
+   A /trunk/perl/t/data/caca.txt
+
+  * Imported John Beppu's Perl wrapper.
+
+------------------------------------------------------------------------
+r274 | sam | 2004-11-05 15:57:50 +0100 (Fri, 05 Nov 2004) | 2 lines
+Changed paths:
+   M /trunk/src/bitmap.c
+
+  * src/bitmap.c: dark background works again with floyd-steinberg.
+
+------------------------------------------------------------------------
+r273 | sam | 2004-11-05 15:44:41 +0100 (Fri, 05 Nov 2004) | 3 lines
+Changed paths:
+   M /trunk/examples/aafire.c
+   M /trunk/examples/cacaball.c
+   M /trunk/examples/cacamoir.c
+   M /trunk/examples/cacaplas.c
+
+  * examples/:
+    + Use Space to pause demos, Esc to quit.
+
+------------------------------------------------------------------------
+r272 | sam | 2004-11-04 23:59:29 +0100 (Thu, 04 Nov 2004) | 2 lines
+Changed paths:
+   M /trunk/src/bitmap.c
+
+  * src/bitmap.c: dark background works again, except with floyd-steinberg.
+
+------------------------------------------------------------------------
+r271 | sam | 2004-11-04 23:28:39 +0100 (Thu, 04 Nov 2004) | 7 lines
+Changed paths:
+   M /trunk/src/bitmap.c
+   M /trunk/src/caca.c
+   M /trunk/src/caca.h
+
+  * src/caca.h:
+    + Introduced CACA_DITHER_FSTEIN.
+  * src/caca.c:
+    + CACA_DITHER_FSTEIN is the default dithering method.
+  * src/bitmap.c:
+    + Fixed other dithering methods. Black background does not work yet.
+
+------------------------------------------------------------------------
+r270 | sam | 2004-11-04 22:19:52 +0100 (Thu, 04 Nov 2004) | 2 lines
+Changed paths:
+   M /trunk/src/bitmap.c
+
+  * src/bitmap.c: oops, removed spurious test code.
+
+------------------------------------------------------------------------
+r269 | sam | 2004-11-04 22:18:52 +0100 (Thu, 04 Nov 2004) | 3 lines
+Changed paths:
+   M /trunk/src/bitmap.c
+
+  * src/bitmap.c:
+    + 7-3-5-1 Floyd-Steinberg dithering. Breaks all other ditherers.
+
+------------------------------------------------------------------------
+r268 | sam | 2004-11-04 21:36:49 +0100 (Thu, 04 Nov 2004) | 3 lines
+Changed paths:
+   M /trunk/doc/Makefile.am
+
+  * doc/Makefile.am:
+    + Really fixed the manpage generation.
+
+------------------------------------------------------------------------
+r267 | sam | 2004-11-04 19:30:34 +0100 (Thu, 04 Nov 2004) | 3 lines
+Changed paths:
+   M /trunk/doc/Makefile.am
+
+  * doc/Makefile.am:
+    + Manpage installation fix.
+
+------------------------------------------------------------------------
+r266 | sam | 2004-11-04 19:16:57 +0100 (Thu, 04 Nov 2004) | 2 lines
+Changed paths:
+   M /trunk/examples/cacaplas.c
+
+  * examples/cacaplas.c: use Esc to quit, Space to pause.
+
+------------------------------------------------------------------------
+r265 | sam | 2004-10-31 20:26:05 +0100 (Sun, 31 Oct 2004) | 3 lines
+Changed paths:
+   M /trunk/THANKS
+   M /trunk/src/graphics.c
+
+  * src/graphics.c:
+    + Win32 speed improvements by Jari Komppa.
+
+------------------------------------------------------------------------
+r264 | sam | 2004-08-06 19:33:46 +0200 (Fri, 06 Aug 2004) | 3 lines
+Changed paths:
+   M /trunk/src/graphics.c
+
+  * src/graphics.c:
+    + Fix strict aliasing rules breakage.
+
+------------------------------------------------------------------------
+r263 | sam | 2004-07-05 14:08:49 +0200 (Mon, 05 Jul 2004) | 3 lines
+Changed paths:
+   M /trunk/bootstrap
+
+  * bootstrap:
+    + Support for automake 1.8.
+
+------------------------------------------------------------------------
+r262 | sam | 2004-07-05 14:07:00 +0200 (Mon, 05 Jul 2004) | 6 lines
+Changed paths:
+   D /trunk/BUGS
+   M /trunk/Makefile.am
+   M /trunk/TODO
+   M /trunk/debian/changelog
+   M /trunk/debian/control
+   M /trunk/debian/rules
+
+  * BUGS TODO:
+    + Removed BUGS, updated TODO.
+  * debian/*:
+    + Depend on libx11-dev instead of xlibs-dev.
+    + New Debian upload.
+
+------------------------------------------------------------------------
+r261 | sam | 2004-02-02 14:51:55 +0100 (Mon, 02 Feb 2004) | 3 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/msvc/config.h
+   M /trunk/src/graphics.c
+
+  * configure.ac src/graphics:
+    + Check for resize_term and resizeterm in -lncurses.
+
+------------------------------------------------------------------------
+r260 | sam | 2004-02-02 03:59:43 +0100 (Mon, 02 Feb 2004) | 2 lines
+Changed paths:
+   A /branches/0.9 (from /trunk:259)
+   M /branches/0.9/ChangeLog
+   M /trunk/ChangeLog
+
+  * 0.9 branch.
+
+------------------------------------------------------------------------
 r259 | sam | 2004-02-02 03:54:43 +0100 (Mon, 02 Feb 2004) | 2 lines
 Changed paths:
    M /trunk/ChangeLog
@@ -1698,7 +3413,7 @@ Changed paths:
     + Link to the XTerm control sequences.
   * examples/view.c:
     + Draw status bar.
-    + Move with 'h' 'j' 'k' 'l', à la vi.
+    + Move with 'h' 'j' 'k' 'l', Ã  la vi.
     + '?' toggles a help menu.
 
 ------------------------------------------------------------------------
@@ -1707,7 +3422,7 @@ Changed paths:
    M /trunk/src/bitmap.c
 
   * src/bitmap.c:
-    + Removed § from the list of default characters due to collisions.
+    + Removed Â§ from the list of default characters due to collisions.
 
 ------------------------------------------------------------------------
 r125 | sam | 2003-11-27 23:54:48 +0100 (Thu, 27 Nov 2003) | 6 lines
@@ -3115,7 +4830,7 @@ Changed paths:
    M /trunk/src/weapons.c
 
   * fixed the ncurses build.
-  * replaced '?\239?\191?\189' with ':' in the fragbomb tail because it's not ASCII.
+  * replaced 'ï¿½' with ':' in the fragbomb tail because it's not ASCII.
 
 ------------------------------------------------------------------------
 r27 | sam | 2002-12-23 17:21:38 +0100 (Mon, 23 Dec 2002) | 6 lines
