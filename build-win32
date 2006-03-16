@@ -14,19 +14,30 @@ rm -f "${DIRNAME}.zip"
 mkdir "${DIRNAME}"
 
 # Build for win32
-./configure --host=i586-mingw32msvc --prefix=/ --bindir=/ --libdir=/ --disable-imlib2 --disable-doc
-make pkglibdir=/lib pkgdatadir=/data
+./configure --host=i586-mingw32msvc --prefix=/ --bindir=/bin --libdir=/lib --disable-imlib2 --disable-doc
+make pkglibdir=/lib pkgdatadir=/data bindir=/bin
 
 # Install into our private directory
-make install DESTDIR="${DESTDIR}" pkglibdir=/lib pkgdatadir=/
+make install DESTDIR="${DESTDIR}" pkglibdir=/lib/ pkgdatadir=/ bindir=/bin/
+cp COPYING COPYING.LGPL "${DESTDIR}/share/doc/libcaca-dev/"
+
+mv "${DESTDIR}/bin/"* "${DESTDIR}/"
+mv "${DESTDIR}/lib/"* "${DESTDIR}/"
 i586-mingw32msvc-strip "${DESTDIR}/"*.exe
+i586-mingw32msvc-strip "${DESTDIR}/"*.dll
+rmdir "${DESTDIR}/bin"
+rmdir "${DESTDIR}/lib"
+
+mkdir "${DESTDIR}/doc"
+for f in `ls "${DESTDIR}/share/doc/libcaca-dev/"`; do
+   sed -e 's/$//' < "${DESTDIR}/share/doc/libcaca-dev/${f}" > "${DESTDIR}/doc/${f}.txt"
+done
+rm -Rf "${DESTDIR}/share"
 rm -Rf "${DESTDIR}/man"
 rm -Rf "${DESTDIR}/include"
 rm -f "${DESTDIR}/caca-config"
 rm -f "${DESTDIR}/"*.a
-mv "${DESTDIR}/share/doc/libcaca-dev/" "${DESTDIR}/doc"
-rmdir "${DESTDIR}/share/doc"
-rmdir "${DESTDIR}/share"
+rm -f "${DESTDIR}/"*.la
 
 # Pack the directory
 zip "${DIRNAME}.zip" `find "${DIRNAME}"`
