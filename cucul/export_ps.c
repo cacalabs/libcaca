@@ -30,7 +30,6 @@
 #include "cucul_internals.h"
 
 static char const *ps_header =
-    //"%!PS-Adobe-2.0\n"
     "%!\n"
     "%% libcaca PDF export\n"
     "%%LanguageLevel: 2\n"
@@ -102,8 +101,8 @@ void _cucul_get_ps(cucul_t *qq, struct cucul_buffer *ex)
 
     for(y = qq->height; y--; )
     {
-        uint8_t *lineattr = qq->attr + y * qq->width;
-        uint32_t *linechar = qq->chars + y * qq->width;
+        uint8_t *lineattr = qq->attr + (qq->height - y - 1) * qq->width;
+        uint32_t *linechar = qq->chars + (qq->height - y - 1) * qq->width;
 
         for(x = 0; x < qq->width; x++)
         {
