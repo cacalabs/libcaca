@@ -190,16 +190,12 @@ static uint8_t conio_utf32_to_cp437(uint32_t c)
         return c;
 
     for(i = 0; i < sizeof(lookup1) / sizeof(*lookup1); i++)
-    {
         if(lookup1[i] == c)
             return 0x01 + i;
-    }
 
     for(i = 0; i < sizeof(lookup2) / sizeof(*lookup2); i++)
-    {
         if(lookup2[i] == c)
             return 0x7f + i;
-    }
 
     return '?';
 }
