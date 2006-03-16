@@ -10,7 +10,7 @@
  */
 
 /** \file export.c
- *  \version \$Id: export_irc.c 384 2006-03-13 18:07:35Z sam $
+ *  \version \$Id$
  *  \author Sam Hocevar <sam@zoy.org>
  *  \author Jean-Yves Lamoureux <jylam@lnxscene.org>
  *  \brief Export function
@@ -29,15 +29,15 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
-static char const *svg_header =
+static char const svg_header[] =
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
     "<svg width=\"%d\" height=\"%d\" viewBox=\"0 0 %d %d\""
-    " xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" "
-    "xml:space=\"preserve\" version=\"1.1\"  baseProfile=\"full\">\n"
+    " xmlns=\"http://www.w3.org/2000/svg\""
+    " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
+    " xml:space=\"preserve\" version=\"1.1\"  baseProfile=\"full\">\n"
     " <defs>\n"
     "  <style type=\"text/css\">\n"
     "    <![CDATA[\n";
-
 
 /** \brief Generate SVG representation of current image.
  *
@@ -46,10 +46,6 @@ static char const *svg_header =
  */
 void _cucul_get_svg(cucul_t *qq, struct cucul_buffer *ex)
 {
-    char *cur;
-    int x, y;
-
-
     static int const palette[] =
     {
         0x000000, 0x000088, 0x008800, 0x008888,
@@ -58,6 +54,9 @@ void _cucul_get_svg(cucul_t *qq, struct cucul_buffer *ex)
         0xff4444, 0xff44ff, 0xffff44, 0xffffff,
     };
 
+    char *cur;
+    unsigned int x, y;
+
     /* 200 is arbitrary but should be ok */
     ex->size = strlen(svg_header) + (qq->width * qq->height * 200);
     ex->buffer = malloc(ex->size);
@@ -65,52 +64,57 @@ void _cucul_get_svg(cucul_t *qq, struct cucul_buffer *ex)
     cur = ex->buffer;
 
     /* Header */
-    cur += sprintf(cur, svg_header, qq->width*6, qq->height*10, qq->width*6, qq->height*10);
+    cur += sprintf(cur, svg_header, qq->width * 6, qq->height * 10,
+                                    qq->width * 6, qq->height * 10);
 
     /* Precalc of colors in CSS style  */
     for(x = 0; x < 0x100; x++)
     {
-        cur += sprintf(cur, ".b%02x {fill:#%06X}\n",
-                       x,
-		       palette[x >> 4 ]);
-
-       cur += sprintf(cur, ".f%02x {fill:#%06X}\n",
-                       x,
-		       palette[x & 0xf ]);
+        cur += sprintf(cur, ".b%02x {fill:#%06X}\n", x, palette[x >> 4]);
+        cur += sprintf(cur, ".f%02x {fill:#%06X}\n", x, palette[x & 0xf]);
     }
 
     cur += sprintf(cur, "]]>\n");
-    cur += sprintf(cur, "</style>\n");
-    cur += sprintf(cur, "</defs>\n");
-    cur += sprintf(cur, "<g id=\"mainlayer\" font-size=\"12\">\n");
-
+    cur += sprintf(cur, "  </style>\n");
+    cur += sprintf(cur, " </defs>\n");
+    cur += sprintf(cur, " <g id=\"mainlayer\" font-size=\"12\">\n");
 
     /* Background */
-    for(y=0; y<(int)(qq->height);y++) {
-	uint8_t *lineattr = qq->attr + y * qq->width;
-        for(x = 0; x < (int)qq->width; x++) {
-	    cur += sprintf(cur, "<rect class=\"b%02x\" x=\"%d\" y=\"%d\" width=\"6\" height=\"10\"/>\n",
-			   lineattr[x],
-			   x*6,
-			   y*10);
-	}
+    for(y = 0; y < qq->height; y++)
+    {
+        uint8_t *lineattr = qq->attr + y * qq->width;
+
+        for(x = 0; x < qq->width; x++)
+        {
+            cur += sprintf(cur, "<rect class=\"b%02x\" x=\"%d\" y=\"%d\""
+                                " width=\"6\" height=\"10\"/>\n",
+                                *lineattr++, x * 6, y * 10);
+        }
     }
 
     /* Text */
-    for(y=0; y<(int)(qq->height);y++) {
-	uint8_t *lineattr = qq->attr + y * qq->width;
-	uint32_t *linechar = qq->chars + y * qq->width;
-        for(x = 0; x < (int)qq->width; x++) {
-	    cur += sprintf(cur, "<text  class=\"f%02x\" x=\"%d\" y=\"%d\">%c</text>\n",
-			   lineattr[x],
-			   x*6,
-			   (y*10)+10,
-			   linechar[x]);
-  	}
+    for(y = 0; y < qq->height; y++)
+    {
+        uint8_t *lineattr = qq->attr + y * qq->width;
+        uint32_t *linechar = qq->chars + y * qq->width;
+
+        for(x = 0; x < qq->width; x++)
+        {
+            uint32_t c = *linechar++;
+
+            cur += sprintf(cur, "<text class=\"f%02x\" x=\"%d\" y=\"%d\">",
+                                *lineattr++, x * 6, (y * 10) + 10);
+            if(c < 0x00000020)
+                cur += sprintf(cur, "?");
+            else if(c < 0x00000080)
+                cur += sprintf(cur, "%c", c);
+            else
+                cur += sprintf(cur, "?"); /* FIXME: SVG supports UTF-8 */
+            cur += sprintf(cur, "</text>\n");
+        }
     }
 
-
-    cur += sprintf(cur, "</g>\n");
+    cur += sprintf(cur, " </g>\n");
     cur += sprintf(cur, "</svg>\n");
 
     /* Crop to really used size */
