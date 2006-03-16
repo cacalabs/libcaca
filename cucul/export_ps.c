@@ -10,7 +10,7 @@
  */
 
 /** \file export.c
- *  \version \$Id: export_irc.c 384 2006-03-13 18:07:35Z sam $
+ *  \version \$Id$
  *  \author Sam Hocevar <sam@zoy.org>
  *  \author Jean-Yves Lamoureux <jylam@lnxscene.org>
  *  \brief Export function
@@ -30,29 +30,30 @@
 #include "cucul_internals.h"
 
 static char const *ps_header =
-    "%%! \n"
-    "%%%% libcaca PDF export      \n"
-    "%%%%LanguageLevel: 2 \n"
-    "%%%%Pages: 1 \n"
-    "%%%%DocumentData: Clean7Bit \n"
-    "/csquare { \n"
-    "        newpath \n"
-    "        0 0 moveto \n"
-    "        0 1 rlineto \n"
-    "        1 0 rlineto \n"
-    "        0 -1 rlineto \n"
-    "        closepath \n"
-    "        setrgbcolor \n"
-    "        fill \n"
-    "} def \n"
-    "/S { \n"
-    "  Show \n"
-    "} bind def \n"
-    "/Courier-Bold findfont \n"
-    "8 scalefont \n"
+    //"%!PS-Adobe-2.0\n"
+    "%!\n"
+    "%% libcaca PDF export\n"
+    "%%LanguageLevel: 2\n"
+    "%%Pages: 1\n"
+    "%%DocumentData: Clean7Bit\n"
+    "/csquare {\n"
+    "  newpath\n"
+    "  0 0 moveto\n"
+    "  0 1 rlineto\n"
+    "  1 0 rlineto\n"
+    "  0 -1 rlineto\n"
+    "  closepath\n"
+    "  setrgbcolor\n"
+    "  fill\n"
+    "} def\n"
+    "/S {\n"
+    "  Show\n"
+    "} bind def\n"
+    "/Courier-Bold findfont\n"
+    "8 scalefont\n"
     "setfont\n"
-    "gsave \n"
-    "6 10 scale \n";
+    "gsave\n"
+    "6 10 scale\n";
 
 /** \brief Generate Postscript representation of current image.
  *
@@ -61,31 +62,17 @@ static char const *ps_header =
  */
 void _cucul_get_ps(cucul_t *qq, struct cucul_buffer *ex)
 {
+    static char const * const palette[] =
+    {
+        "0.0 0.0 0.0", "0.0 0.0 0.5", "0.0 0.5 0.0", "0.0 0.5 0.5",
+        "0.5 0.0 0.0", "0.5 0.0 0.5", "0.5 0.5 0.0", "0.5 0.5 0.5",
+
+        "0.2 0.2 0.2", "0.2 0.2 1.0", "0.2 1.0 0.2", "0.2 1.0 1.0",
+        "1.0 0.2 0.2", "1.0 0.2 1.0", "1.0 1.0 0.2", "1.0 1.0 1.0",
+    };
+
     char *cur;
-    int x, y;
-
-    static float const paletteR[] =
-	{
-	    0,   0,   0,   0,
-	    0.5, 0.5, 0.5, 0.5,
-	    0.5, 0.5, 0.5, 0.5,
-	    1.0, 1.0, 1.0, 1.0,
-	};
-    static float const paletteG[] =
-	{
-	    0, 0, 0.5, 0.5,
-	    0, 0, 0.5, 0.5,
-	    0, 0, 1.0, 1.0,
-	    0, 0, 1.0, 1.0,
-	};
-    static float const paletteB[] =
-	{
-	    0, 0.5, 0,   0.5,
-	    0, 0.5, 0,   0.5,
-	    0, 1.0, 0.5, 1.0,
-	    0, 1.0, 0,   1.0,
-	};
-
+    unsigned int x, y;
 
     /* 200 is arbitrary but should be ok */
     ex->size = strlen(ps_header) + (qq->width * qq->height * 200);
@@ -97,48 +84,41 @@ void _cucul_get_ps(cucul_t *qq, struct cucul_buffer *ex)
     cur += sprintf(cur, "%s", ps_header);
 
     /* Background, drawn using csquare macro defined in header */
-    for(y=(int)(qq->height-1);y>=0; y--) {
+    for(y = qq->height; y--; )
+    {
         uint8_t *lineattr = qq->attr + y * qq->width;
 
-        for(x = 0; x < (int)qq->width; x++) {
-	    float bgR = paletteR[lineattr[x] >> 4];
-	    float bgG = paletteG[lineattr[x] >> 4];
-	    float bgB = paletteB[lineattr[x] >> 4];
+        for(x = 0; x < qq->width; x++)
+        {
+            cur += sprintf(cur, "1 0 translate\n %s csquare\n",
+                                palette[*lineattr++ >> 4]);
+        }
 
-
-	    cur += sprintf(cur, "1 0 translate \n %f %f %f csquare\n", bgR, bgG, bgB);
-  	}
-
-	/* Return to beginning of the line, and jump to the next one */
-	cur += sprintf(cur, "%d 1 translate \n", -qq->width);
-
-
+        /* Return to beginning of the line, and jump to the next one */
+        cur += sprintf(cur, "-%d 1 translate\n", qq->width);
     }
 
-    cur += sprintf(cur, "grestore\n");  // Restore normal transformation matrix
-    for(y=(int)(qq->height-1);y>=0; y--) {
-        uint8_t  *lineattr = qq->attr + y * qq->width;
+    cur += sprintf(cur, "grestore\n"); /* Restore transformation matrix */
+
+    for(y = qq->height; y--; )
+    {
+        uint8_t *lineattr = qq->attr + y * qq->width;
         uint32_t *linechar = qq->chars + y * qq->width;
 
-        for(x = 0; x < (int)qq->width; x++) {
-	    uint32_t cR = linechar[x];
-	    float fgR = paletteR[lineattr[x] & 0x0f];
-	    float fgG = paletteG[lineattr[x] & 0x0f];
-	    float fgB = paletteB[lineattr[x] & 0x0f];
-
-	    cur += sprintf(cur, "newpath\n%d %d moveto\n", (x+1)*6, (y)*10);
-	    cur += sprintf(cur, "%f %f %f setrgbcolor\n", fgR, fgG, fgB);
-	    cur += sprintf(cur, "(%c) show\n", cR);
-
-	}
+        for(x = 0; x < qq->width; x++)
+        {
+            cur += sprintf(cur, "newpath\n");
+            cur += sprintf(cur, "%d %d moveto\n", (x + 1) * 6, y * 10);
+            cur += sprintf(cur, "%s setrgbcolor\n",
+                                palette[*lineattr++ & 0x0f]);
+            cur += sprintf(cur, "(%c) show\n", *linechar++ & 0x7f);
+        }
     }
 
-
-    cur += sprintf(cur, "showpage");
+    cur += sprintf(cur, "showpage\n");
 
     /* Crop to really used size */
     ex->size = strlen(ex->buffer) + 1;
     ex->buffer = realloc(ex->buffer, ex->size);
-
 }
 
