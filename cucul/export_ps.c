@@ -107,11 +107,28 @@ void _cucul_get_ps(cucul_t *qq, struct cucul_buffer *ex)
 
         for(x = 0; x < qq->width; x++)
         {
+            uint32_t c = *linechar++;
+
             cur += sprintf(cur, "newpath\n");
             cur += sprintf(cur, "%d %d moveto\n", (x + 1) * 6, y * 10);
             cur += sprintf(cur, "%s setrgbcolor\n",
                                 palette[*lineattr++ & 0x0f]);
-            cur += sprintf(cur, "(%c) show\n", *linechar++ & 0x7f);
+
+            if(c < 0x00000020)
+                cur += sprintf(cur, "(?) show\n");
+            else if(c >= 0x00000080)
+                cur += sprintf(cur, "(?) show\n");
+            else switch((uint8_t)(c & 0x7f))
+            {
+                case '\\': cur += sprintf(cur, "(\\\\) show\n"); break;
+                case '(': cur += sprintf(cur, "(\\() show\n"); break;
+                case ')':
+                    cur += sprintf(cur, "(\\%c) show\n", c);
+                    break;
+                default:
+                    cur += sprintf(cur, "(%c) show\n", c);
+                    break;
+            }
         }
     }
 
