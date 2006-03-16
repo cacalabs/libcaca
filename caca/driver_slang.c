@@ -378,6 +378,7 @@ static void slang_init_palette(void)
 
 static void slang_write_utf32(uint32_t c)
 {
+#ifdef HAVE_SLSMG_UTF8_ENABLE
     static const uint8_t mark[7] =
     {
         0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC
@@ -385,6 +386,7 @@ static void slang_write_utf32(uint32_t c)
 
     char buf[10], *parser;
     int bytes;
+#endif
 
     if(c < 0x80)
     {
