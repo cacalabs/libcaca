@@ -21,7 +21,11 @@
 
 #if defined(USE_NCURSES)
 
-#if defined(HAVE_NCURSES_H)
+#if defined(HAVE_NCURSESW_NCURSES_H)
+#   include <ncursesw/ncurses.h>
+#elif defined(HAVE_NCURSES_NCURSES_H)
+#   include <ncurses/ncurses.h>
+#elif defined(HAVE_NCURSES_H)
 #   include <ncurses.h>
 #else
 #   include <curses.h>
@@ -53,6 +57,7 @@ static caca_t *sigwinch_kk; /* FIXME: we ought to get rid of this */
 #if defined(HAVE_GETENV) && defined(HAVE_PUTENV)
 static void ncurses_check_terminal(void);
 #endif
+static void ncurses_write_utf32(uint32_t);
 
 struct driver_private
 {
@@ -192,13 +197,8 @@ static void ncurses_display(caca_t *kk)
         move(y, 0);
         for(x = kk->qq->width; x--; )
         {
-            uint32_t c = *chars++;
-
             attrset(kk->drv.p->attr[*attr++]);
-            if(c > 0x00000020 && c < 0x00000080)
-                addch((char)c);
-            else
-                addch(' ');
+            ncurses_write_utf32(*chars++);
         }
     }
     refresh();
@@ -452,6 +452,49 @@ static void ncurses_check_terminal(void)
     }
 }
 #endif
+
+static void ncurses_write_utf32(uint32_t c)
+{
+#if defined(HAVE_NCURSESW_NCURSES_H)
+    static const uint8_t mark[7] =
+    {
+        0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC
+    };
+
+    char buf[10], *parser;
+    int bytes;
+#endif
+
+    if(c < 0x80)
+    {
+        addch(c);
+        return;
+    }
+
+#if defined(HAVE_NCURSESW_NCURSES_H)
+    if(c < 0x10000)
+    {
+        addch(c); /* FIXME: doesn't work either */
+        return;
+    }
+
+    bytes = (c < 0x800) ? 2 : (c < 0x10000) ? 3 : 4;
+    buf[bytes] = '\0';
+    parser = buf + bytes;
+
+    switch(bytes)
+    {
+        case 4: *--parser = (c | 0x80) & 0xbf; c >>= 6;
+        case 3: *--parser = (c | 0x80) & 0xbf; c >>= 6;
+        case 2: *--parser = (c | 0x80) & 0xbf; c >>= 6;
+    }
+    *--parser = c | mark[bytes];
+
+    addstr(buf);
+#else
+    addch(' ');
+#endif
+}
 
 /*
  * Driver initialisation

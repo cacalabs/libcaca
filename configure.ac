@@ -158,17 +158,24 @@ fi
 
 if test "${enable_ncurses}" != "no"; then
   ac_cv_my_have_ncurses="no"
-  AC_CHECK_HEADERS(curses.h ncurses.h,
-   [AC_CHECK_LIB(ncurses, initscr,
-     [ac_cv_my_have_ncurses="yes"
-      AC_DEFINE(USE_NCURSES, 1, Define to 1 to activate the ncurses backend driver)
-      CACA_LIBS="${CACA_LIBS} -lncurses"
-      CACA_DRIVERS="${CACA_DRIVERS} ncurses"
-      dnl  Check for resizeterm or resize_term
-      SAVED_LIBS="${LIBS}"
-      LIBS="${LIBS} -lncurses"
-      AC_CHECK_FUNCS(resizeterm resize_term)
-      LIBS="${SAVED_LIBS}"])
+  AC_CHECK_HEADERS(ncursesw/ncurses.h ncurses/ncurses.h ncurses.h curses.h,
+   [ncurses="no"
+    AC_CHECK_LIB(ncursesw, initscr,
+     [ncurses="-lncursesw"],
+     [AC_CHECK_LIB(ncurses, initscr,
+       [ncurses="-lncurses"])])
+    if test "${ncurses}" = "no"; then
+      continue
+    fi
+    ac_cv_my_have_ncurses="yes"
+    AC_DEFINE(USE_NCURSES, 1, Define to 1 to activate the ncurses backend driver)
+    CACA_LIBS="${CACA_LIBS} ${ncurses}"
+    CACA_DRIVERS="${CACA_DRIVERS} ncurses"
+    dnl  Check for resizeterm or resize_term
+    SAVED_LIBS="${LIBS}"
+    LIBS="${LIBS} ${ncurses}"
+    AC_CHECK_FUNCS(resizeterm resize_term)
+    LIBS="${SAVED_LIBS}"
     break])
   if test "${ac_cv_my_have_ncurses}" = "no" -a "${enable_ncurses}" = "yes"; then
     AC_MSG_ERROR([cannot find ncurses development files])
