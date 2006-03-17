@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
 
     cucul_set_color(qq, CUCUL_COLOR_BLACK, CUCUL_COLOR_WHITE);
     cucul_fill_ellipse(qq, WIDTH / 2, HEIGHT / 2, WIDTH / 4, HEIGHT / 4, ' ');
-    cucul_putstr(qq, WIDTH / 2 - 1, HEIGHT / 2 - 2, "\\o/");
+    cucul_putstr(qq, WIDTH / 2 - 5, HEIGHT / 2 - 2, "(\") \\o/ <&>");
     cucul_putstr(qq, WIDTH / 2 - 7, HEIGHT / 2 + 2, "äβç ░▒▓█▓▒░ ΔЗҒ");
 
     cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_LIGHTBLUE);
