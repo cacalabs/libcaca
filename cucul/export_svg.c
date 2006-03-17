@@ -106,10 +106,36 @@ void _cucul_get_svg(cucul_t *qq, struct cucul_buffer *ex)
                                 *lineattr++, x * 6, (y * 10) + 10);
             if(c < 0x00000020)
                 cur += sprintf(cur, "?");
-            else if(c < 0x00000080)
-                cur += sprintf(cur, "%c", c);
-            else
-                cur += sprintf(cur, "?"); /* FIXME: SVG supports UTF-8 */
+            else if(c > 0x0000007f)
+            {
+                static const uint8_t mark[7] =
+                {
+                    0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC
+                };
+
+                char buf[10], *parser;
+                int bytes = (c < 0x800) ? 2 : (c < 0x10000) ? 3 : 4;
+
+                buf[bytes] = '\0';
+                parser = buf + bytes;
+
+                switch(bytes)
+                {
+                    case 4: *--parser = (c | 0x80) & 0xbf; c >>= 6;
+                    case 3: *--parser = (c | 0x80) & 0xbf; c >>= 6;
+                    case 2: *--parser = (c | 0x80) & 0xbf; c >>= 6;
+                }
+                *--parser = c | mark[bytes];
+
+                cur += sprintf(cur, "%s", buf);
+            }
+            else switch((uint8_t)c)
+            {
+                case '>': cur += sprintf(cur, "&gt;"); break;
+                case '<': cur += sprintf(cur, "&lt;"); break;
+                case '&': cur += sprintf(cur, "&amp;"); break;
+                default: cur += sprintf(cur, "%c", c); break;
+            }
             cur += sprintf(cur, "</text>\n");
         }
     }
