@@ -38,10 +38,6 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
-size_t utf8_strlen(const char *s);
-const char *utf8_skip(const char *s, size_t x);
-uint32_t utf8_to_utf32(const char *s);
-
 /** \brief Set the default colour pair.
  *
  *  This function sets the default colour pair. String functions such as
@@ -157,14 +153,14 @@ void cucul_putstr(cucul_t *qq, int x, int y, char const *s)
     if(y < 0 || y >= (int)qq->height || x >= (int)qq->width)
         return;
 
-    len = utf8_strlen(s);
+    len = _cucul_strlen_utf8(s);
 
     if(x < 0)
     {
         if(len < (unsigned int)-x)
             return;
         len -= -x;
-        s = utf8_skip(s, -x);
+        s = _cucul_skip_utf8(s, -x);
         x = 0;
     }
 
@@ -176,10 +172,10 @@ void cucul_putstr(cucul_t *qq, int x, int y, char const *s)
 
     while(len)
     {
-        *chars++ = utf8_to_utf32(s);
+        *chars++ = _cucul_utf8_to_utf32(s);
         *attr++ = (qq->bgcolor << 4) | qq->fgcolor;
 
-        s = utf8_skip(s, 1);
+        s = _cucul_skip_utf8(s, 1);
         len--;
     }
 }
@@ -259,85 +255,5 @@ void cucul_clear(cucul_t *qq)
         cucul_putstr(qq, 0, y, qq->empty_line);
 
     cucul_set_color(qq, oldfg, oldbg);
-}
-
-/*
- * XXX: The following functions are local.
- */
-
-static const char trailing[256] =
-{
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-    2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2, 3,3,3,3,3,3,3,3,4,4,4,4,5,5,5,5
-};
-
-static const uint32_t offsets[6] =
-{
-    0x00000000UL, 0x00003080UL, 0x000E2080UL,
-    0x03C82080UL, 0xFA082080UL, 0x82082080UL
-};
-
-size_t utf8_strlen(const char *s)
-{
-    int len = 0;
-    const char *parser = s;
-
-    while(*parser)
-    {
-        int i;
-        int bytes = 1 + trailing[(int)(unsigned char)*parser];
-
-        for(i = 1; i < bytes; i++)
-            if(!parser[i])
-                return len;
-        parser += bytes;
-        len++;
-    }
-
-    return len;
-}
-
-const char *utf8_skip(const char *s, size_t x)
-{
-    const char *parser = s;
-
-    while(x)
-    {
-        int i;
-        int bytes = 1 + trailing[(int)(unsigned char)*parser];
-
-        for(i = 1; i < bytes; i++)
-            if(!parser[i])
-                return parser;
-        parser += bytes;
-        x--;
-    }
-
-    return parser;
-}
-
-uint32_t utf8_to_utf32(const char *s)
-{
-    int bytes = trailing[(int)(unsigned char)*s];
-    uint32_t ret = 0;
-
-    switch(bytes)
-    {
-        /* FIXME: do something for invalid sequences (4 and 5) */
-        case 3: ret += (uint8_t)*s++; ret <<= 6;
-        case 2: ret += (uint8_t)*s++; ret <<= 6;
-        case 1: ret += (uint8_t)*s++; ret <<= 6;
-        case 0: ret += (uint8_t)*s++;
-    }
-
-    ret -= offsets[bytes];
-
-    return ret;
 }
 
