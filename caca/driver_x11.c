@@ -283,18 +283,23 @@ static void x11_display(caca_t *kk)
             len = 1;
 
             /* Skip spaces */
-            if(chars[0] <= 0x00000020 || chars[0] >= 0x00000080)
+            if(chars[0] == 0x00000020)
                 continue;
 
-            buffer[0] = (char)chars[0];
+            if(chars[0] > 0x00000020 && chars[0] < 0x00000080)
+                buffer[0] = (char)chars[0];
+            else
+                buffer[0] = '?';
 
             while(x + len < kk->qq->width
                    && (attr[len] & 0xf) == (attr[0] & 0xf))
             {
-                if(chars[len] > 0x00000020 && chars[len] < 0x00000080)
+                if(chars[len] == 0x00000020)
+                    buffer[len] = ' ';
+                else if(chars[len] > 0x00000020 && chars[len] < 0x00000080)
                     buffer[len] = (char)chars[len];
                 else
-                    buffer[len] = ' ';
+                    buffer[len] = '?';
                 len++;
             }
 
