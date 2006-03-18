@@ -29,7 +29,6 @@
 #include "cucul_internals.h"
 
 static void cucul_read_environment(cucul_t *);
-void _cucul_set_size(cucul_t *, unsigned int, unsigned int);
 
 /** \brief Initialise \e libcucul.
  *
@@ -276,11 +275,11 @@ void cucul_end(cucul_t *qq)
     free(qq);
 }
 
-struct cucul_buffer * cucul_export(cucul_t *qq, enum cucul_format format)
+struct cucul_export * cucul_get_export(cucul_t *qq, enum cucul_format format)
 {
-    struct cucul_buffer *ex;
+    struct cucul_export *ex;
 
-    ex = malloc(sizeof(struct cucul_buffer));
+    ex = malloc(sizeof(struct cucul_export));
 
     switch(format)
     {
@@ -310,7 +309,7 @@ struct cucul_buffer * cucul_export(cucul_t *qq, enum cucul_format format)
     return ex;
 }
 
-void cucul_free(struct cucul_buffer *ex)
+void cucul_free_export(struct cucul_export *ex)
 {
     free(ex->buffer);
     free(ex);

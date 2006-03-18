@@ -21,6 +21,8 @@
 #ifndef __CUCUL_H__
 #define __CUCUL_H__
 
+#define CUCUL_API_VERSION_1
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -215,17 +217,17 @@ void cucul_free_bitmap(cucul_t *, struct cucul_bitmap *);
 /** \defgroup exporter Exporters to various formats
  *
  *  These functions export the current canvas to various text formats. It
- *  is necessary to call cucul_free() to dispose of the data.
+ *  is necessary to call cucul_free_export() to dispose of the data.
  *
  *  @{ */
-struct cucul_buffer
+struct cucul_export
 {
     unsigned int size;
     char *buffer;
 };
 
-struct cucul_buffer * cucul_export(cucul_t *, enum cucul_format);
-void cucul_free(struct cucul_buffer *);
+struct cucul_export * cucul_get_export(cucul_t *, enum cucul_format);
+void cucul_free_export(struct cucul_export *);
 
 /*  @} */
 

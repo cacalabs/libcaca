@@ -29,16 +29,12 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
-
-
-/* HTML */
-
 /** \brief Generate HTML representation of current image.
  *
  *  This function generates and returns the HTML representation of
  *  the current image.
  */
-void _cucul_get_html(cucul_t *qq, struct cucul_buffer *ex)
+void _cucul_get_html(cucul_t *qq, struct cucul_export *ex)
 {
     static int const palette[] =
     {
@@ -116,7 +112,7 @@ void _cucul_get_html(cucul_t *qq, struct cucul_buffer *ex)
  *  Won't work under gecko (mozilla rendering engine) unless you set
  *  a correct header.
  */
-void _cucul_get_html3(cucul_t *qq, struct cucul_buffer *ex)
+void _cucul_get_html3(cucul_t *qq, struct cucul_export *ex)
 {
     static int const palette[] =
     {

@@ -29,8 +29,6 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
-
-
 /** \brief Generate ANSI representation of current image.
  *
  *  This function generates and returns an ANSI representation of
@@ -39,7 +37,7 @@
  *                  able to cut/paste the result to a function like printf
  *  \return buffer containing generated ANSI codes as a big string
  */
-void _cucul_get_ansi(cucul_t *qq, struct cucul_buffer *ex)
+void _cucul_get_ansi(cucul_t *qq, struct cucul_export *ex)
 {
     static int const palette[] =
     {

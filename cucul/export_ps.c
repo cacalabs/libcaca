@@ -59,7 +59,7 @@ static char const *ps_header =
  *  This function generates and returns a Postscript representation of
  *  the current image.
  */
-void _cucul_get_ps(cucul_t *qq, struct cucul_buffer *ex)
+void _cucul_get_ps(cucul_t *qq, struct cucul_export *ex)
 {
     static char const * const palette[] =
     {

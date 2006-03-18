@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     cucul_t *qq;
     enum cucul_format format;
     struct cucul_bitmap *bitmap;
-    struct cucul_buffer *buffer;
+    struct cucul_export *buffer;
     int x, y;
 
     if(argc != 2)
@@ -98,9 +98,9 @@ int main(int argc, char *argv[])
     cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_LIGHTBLUE);
     cucul_putstr(qq, WIDTH / 2 - 7, HEIGHT / 2, "    LIBCACA    ");
 
-    buffer = cucul_export(qq, format);
+    buffer = cucul_get_export(qq, format);
     fwrite(buffer->buffer, buffer->size - 1, 1, stdout);
-    cucul_free(buffer);
+    cucul_free_export(buffer);
 
     cucul_end(qq);
 

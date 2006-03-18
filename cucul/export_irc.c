@@ -29,14 +29,12 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
-
-
 /** \brief Generate IRC representation of current image.
  *
  *  This function generates and returns an IRC representation of
  *  the current image.
  */
-void _cucul_get_irc(cucul_t *qq, struct cucul_buffer *ex)
+void _cucul_get_irc(cucul_t *qq, struct cucul_export *ex)
 {
     static int const palette[] =
     {

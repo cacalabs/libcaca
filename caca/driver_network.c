@@ -100,7 +100,7 @@ struct driver_private
 
     char prefix[sizeof(INIT_PREFIX)];
 
-    struct cucul_buffer *ex;
+    struct cucul_export *ex;
 
     int client_count;
     struct client *clients;
@@ -219,7 +219,7 @@ static int network_end_graphics(caca_t *kk)
     }
 
     if(kk->drv.p->ex)
-        cucul_free(kk->drv.p->ex);
+        cucul_free_export(kk->drv.p->ex);
 
     /* Restore SIGPIPE handler */
     signal(SIGPIPE, kk->drv.p->sigpipe_handler);
@@ -252,13 +252,13 @@ static void network_display(caca_t *kk)
     /* Free the previous export buffer, if any */
     if(kk->drv.p->ex)
     {
-        cucul_free(kk->drv.p->ex);
+        cucul_free_export(kk->drv.p->ex);
         kk->drv.p->ex = NULL;
     }
 
     /* Get ANSI representation of the image and skip the end-of buffer
      * linefeed ("\r\n\0", 3 bytes) */
-    kk->drv.p->ex = cucul_export(kk->qq, CUCUL_FORMAT_ANSI);
+    kk->drv.p->ex = cucul_get_export(kk->qq, CUCUL_FORMAT_ANSI);
     kk->drv.p->ex->size -= 3;
 
     for(i = 0; i < kk->drv.p->client_count; i++)
@@ -374,7 +374,7 @@ static int send_data(caca_t *kk, struct client *c)
                 {
                     fprintf(stderr, "client %i said: %.02x %.02x %.02x (%s %s %s)\n",
                             c->fd, c->inbuf[0], c->inbuf[1], c->inbuf[2],
-			    COMMAND_NAME(c->inbuf[0]), COMMAND_NAME(c->inbuf[1]), OPTION_NAME(c->inbuf[2]));
+                            COMMAND_NAME(c->inbuf[0]), COMMAND_NAME(c->inbuf[1]), OPTION_NAME(c->inbuf[2]));
                     /* Just ignore, lol */
                     c->inbytes = 0;
                 }
