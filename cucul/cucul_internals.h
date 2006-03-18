@@ -52,21 +52,21 @@ struct cucul_context
 /* Initialisation functions */
 extern int _cucul_init_bitmap(void);
 extern int _cucul_end_bitmap(void);
-void _cucul_set_size(cucul_t *qq, unsigned int width, unsigned int height);
+extern void _cucul_set_size(cucul_t *, unsigned int, unsigned int);
 
 /* Charset functions */
-unsigned int _cucul_strlen_utf8(char const *s);
-char const *_cucul_skip_utf8(char const *s, unsigned int x);
-uint32_t _cucul_utf8_to_utf32(char const *s);
-uint8_t _cucul_utf32_to_cp437(uint32_t c);
-uint32_t _cucul_cp437_to_utf32(uint8_t c);
+extern unsigned int _cucul_strlen_utf8(char const *);
+extern char const *_cucul_skip_utf8(char const *, unsigned int);
+extern uint32_t _cucul_utf8_to_utf32(char const *);
+extern uint8_t _cucul_utf32_to_cp437(uint32_t);
+extern uint32_t _cucul_cp437_to_utf32(uint8_t);
 
 /* Export functions */
-void _cucul_get_ansi(cucul_t *qq, struct cucul_buffer *ex);
-void _cucul_get_html(cucul_t *qq, struct cucul_buffer *ex);
-void _cucul_get_html3(cucul_t *qq, struct cucul_buffer *ex);
-void _cucul_get_irc(cucul_t *qq, struct cucul_buffer *ex);
-void _cucul_get_ps(cucul_t *qq, struct cucul_buffer *ex);
-void _cucul_get_svg(cucul_t *qq, struct cucul_buffer *ex);
+extern void _cucul_get_ansi(cucul_t *, struct cucul_export *);
+extern void _cucul_get_html(cucul_t *, struct cucul_export *);
+extern void _cucul_get_html3(cucul_t *, struct cucul_export *);
+extern void _cucul_get_irc(cucul_t *, struct cucul_export *);
+extern void _cucul_get_ps(cucul_t *, struct cucul_export *);
+extern void _cucul_get_svg(cucul_t *, struct cucul_export *);
 
 #endif /* __CUCUL_INTERNALS_H__ */

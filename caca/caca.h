@@ -100,6 +100,8 @@
 #ifndef __CACA_H__
 #define __CACA_H__
 
+#define CACA_API_VERSION_1
+
 #include <cucul.h>
 
 #ifdef __cplusplus

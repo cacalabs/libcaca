@@ -152,8 +152,15 @@ struct caca_context
     } events;
 };
 
-/* Timer functions */
+/* Internal timer functions */
 extern void _caca_sleep(unsigned int);
 extern unsigned int _caca_getticks(struct caca_timer *);
+
+/* Internal event functions */
+extern void _caca_handle_resize(caca_t *);
+#if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO)
+extern void _push_event(caca_t *, unsigned int);
+extern unsigned int _pop_event(caca_t *);
+#endif
 
 #endif /* __CACA_INTERNALS_H__ */

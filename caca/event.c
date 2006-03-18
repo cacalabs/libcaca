@@ -26,10 +26,6 @@
 
 static unsigned int _get_next_event(caca_t *);
 static unsigned int _lowlevel_event(caca_t *);
-#if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO)
-void _push_event(caca_t *, unsigned int);
-unsigned int _pop_event(caca_t *);
-#endif
 
 #if !defined(_DOXYGEN_SKIP_ME)
 /* If no new key was pressed after AUTOREPEAT_THRESHOLD usec, assume the

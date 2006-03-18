@@ -47,7 +47,8 @@
  *  \param fgcolor The requested foreground colour.
  *  \param bgcolor The requested background colour.
  */
-void cucul_set_color(cucul_t *qq, enum cucul_color fgcolor, enum cucul_color bgcolor)
+void cucul_set_color(cucul_t *qq, enum cucul_color fgcolor,
+                                  enum cucul_color bgcolor)
 {
     if(fgcolor < 0 || fgcolor > 15 || bgcolor < 0 || bgcolor > 15)
         return;

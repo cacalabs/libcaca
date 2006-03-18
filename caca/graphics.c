@@ -24,11 +24,6 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
-/*
- * Local functions
- */
-void _caca_handle_resize(caca_t *kk);
-
 /** \brief Set the window title.
  *
  *  If libcaca runs in a window, try to change its title. This works with
