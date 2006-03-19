@@ -13,7 +13,8 @@ Low level stuff
 
 High level stuff
 
-   o  Sprite library
+   o  Sprite library. Maybe use ANSI as the format, perhaps with UTF-8
+      extensions (though they'll probably collide with CP437).
 
    o  256 colour sprites instead of 16
 
@@ -32,10 +33,10 @@ Unicode features
 
    o Unicode support for ncurses
 
-   o Translation functions for output drivers that don't support it
-     (for instance, use CP437 in DOS)
+   o DONE 15 Mar 2006: Translation functions for output drivers that don't
+     support it (for instance, use CP437 in DOS)
 
-   o Use &#xxx; for the HTML output
+   o DONE 15 Mar 2006: Use &#xxx; for the HTML output
 
    o Unicode support in bitmap.c: add support for halftoning (░ ▒ ▓ █)
      and quarter blocks (▀ ▄ ▌ ▐ █ ▖ ▗ ▘ ▝ ▚ ▞ ▙ ▛ ▜ ▟).
