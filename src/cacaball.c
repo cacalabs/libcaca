@@ -49,7 +49,7 @@ int main(int argc, char **argv)
     struct cucul_bitmap *cucul_bitmap;
     float i = 10.0, j = 17.0, k = 11.0;
     int p, frame = 0, pause = 0;
-    double frameOffset[360+80];
+    double frameOffset[360 + 80];
     double frameOffset40[360];
     double frameOffset80[360];
 
@@ -83,12 +83,11 @@ int main(int argc, char **argv)
         dk[p] = (float)cucul_rand(500, 4000) / 6000.0;
     }
 
-    for(frame = 0; frame<360; frame++) {
-	frameOffset[frame] = frame * M_PI / 60;
-	frameOffset40[frame] = (frame + 40) * M_PI / 60;
-	frameOffset80[frame] = (frame + 80) * M_PI / 60;
+    for(frame = 0; frame < 360; frame++) {
+        frameOffset[frame] = frame * M_PI / 60;
+        frameOffset40[frame] = (frame + 40) * M_PI / 60;
+        frameOffset80[frame] = (frame + 80) * M_PI / 60;
     }
-
 
     /* Go ! */
     for(;;)
@@ -103,35 +102,25 @@ int main(int argc, char **argv)
             goto paused;
 
         frame++;
-	if(frame>=360)
-	    frame=0;
+        if(frame >= 360)
+            frame = 0;
 
         /* Crop the palette */
         for(p = CROPBALL; p < 255; p++)
         {
             int t1, t2, t3;
             double c1 = 1.0 + sin((double)frameOffset[frame]);
-	    double c2 = 1.0 + sin((double)frameOffset40[frame]);
-	    double c3 = 1.0 + sin((double)frameOffset80[frame]);
+            double c2 = 1.0 + sin((double)frameOffset40[frame]);
+            double c3 = 1.0 + sin((double)frameOffset80[frame]);
 
-
-	    t1 = p < 0x40 ? 0 : p < 0xc0 ? (p - 0x40) * 0x20 : 0xfff;
+            t1 = p < 0x40 ? 0 : p < 0xc0 ? (p - 0x40) * 0x20 : 0xfff;
             t2 = p < 0xe0 ? 0 : (p - 0xe0) * 0x80;
             t3 = p < 0x40 ? p * 0x40 : 0xfff;
-	    t1/=4; t2/=4; t3/=4;
 
-
-            r[p] = c1 * t1
-                 + c2 * t2
-                 + c3 * t3;
-            g[p] = c1 * t2
-                 + c2 * t3
-                 + c3 * t1;
-            b[p] = c1 * t3
-                 + c2 * t1
-                 + c3 * t2;
+            r[p] = (c1 * t1 + c2 * t2 + c3 * t3) / 4;
+            g[p] = (c1 * t2 + c2 * t3 + c3 * t1) / 4;
+            b[p] = (c1 * t3 + c2 * t1 + c3 * t2) / 4;
         }
-
 
         /* Set the palette */
         cucul_set_bitmap_palette(qq, cucul_bitmap, r, g, b, a);
