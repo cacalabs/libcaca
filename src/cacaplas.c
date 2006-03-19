@@ -114,6 +114,9 @@ paused:
         cucul_draw_bitmap(qq, 0, 0,
                           cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
                           bitmap, screen);
+        cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
+        cucul_putstr(qq, cucul_get_width(qq) - 30, cucul_get_height(qq) - 2,
+                     " -=[ Powered by libcaca ]=- ");
         caca_display(kk);
     }
 
