@@ -273,40 +273,104 @@ static void x11_display(caca_t *kk)
     {
         unsigned int yoff = (y + 1) * kk->drv.p->font_height
                                     - kk->drv.p->font_offset;
+        uint32_t *chars = kk->qq->chars + y * kk->qq->width;
 
-        for(x = 0; x < kk->qq->width; x += len)
+        for(x = 0; x < kk->qq->width; x++, chars++)
         {
-            char buffer[BUFSIZ]; /* FIXME: use a smaller buffer */
-            uint32_t *chars = kk->qq->chars + x + y * kk->qq->width;
             uint8_t *attr = kk->qq->attr + x + y * kk->qq->width;
 
-            len = 1;
-
             /* Skip spaces */
-            if(chars[0] == 0x00000020)
+            if(*chars == 0x00000020)
                 continue;
 
-            if(chars[0] > 0x00000020 && chars[0] < 0x00000080)
-                buffer[0] = (char)chars[0];
-            else
-                buffer[0] = '?';
+            XSetForeground(kk->drv.p->dpy, kk->drv.p->gc,
+                           kk->drv.p->colors[*attr & 0xf]);
 
-            while(x + len < kk->qq->width
-                   && (attr[len] & 0xf) == (attr[0] & 0xf))
+            /* Plain ASCII, no problem. */
+            if(*chars > 0x00000020 && *chars < 0x00000080)
             {
-                if(chars[len] == 0x00000020)
-                    buffer[len] = ' ';
-                else if(chars[len] > 0x00000020 && chars[len] < 0x00000080)
-                    buffer[len] = (char)chars[len];
-                else
-                    buffer[len] = '?';
-                len++;
+                char c = (uint8_t)*chars;
+                XDrawString(kk->drv.p->dpy, kk->drv.p->pixmap, kk->drv.p->gc,
+                            x * kk->drv.p->font_width, yoff, &c, 1);
+                continue;
             }
 
-            XSetForeground(kk->drv.p->dpy, kk->drv.p->gc,
-                           kk->drv.p->colors[attr[0] & 0xf]);
-            XDrawString(kk->drv.p->dpy, kk->drv.p->pixmap, kk->drv.p->gc,
-                        x * kk->drv.p->font_width, yoff, buffer, len);
+            /* We want to be able to print a few special Unicode characters
+             * such as the CP437 gradients and half blocks. For unknown
+             * characters, just print '?'. */
+            switch(*chars)
+            {
+                case 0x00002580: /* ▀ */
+                    XFillRectangle(kk->drv.p->dpy, kk->drv.p->pixmap,
+                                   kk->drv.p->gc,
+                                   x * kk->drv.p->font_width,
+                                   y * kk->drv.p->font_height,
+                                   kk->drv.p->font_width,
+                                   kk->drv.p->font_height / 2);
+                    break;
+                case 0x00002584: /* ▄ */
+                    XFillRectangle(kk->drv.p->dpy, kk->drv.p->pixmap,
+                                   kk->drv.p->gc,
+                                   x * kk->drv.p->font_width,
+                                   (y + 1) * kk->drv.p->font_height
+                                           - kk->drv.p->font_height / 2,
+                                   kk->drv.p->font_width,
+                                   kk->drv.p->font_height / 2);
+                    break;
+                case 0x00002588: /* █ */
+                    XFillRectangle(kk->drv.p->dpy, kk->drv.p->pixmap,
+                                   kk->drv.p->gc,
+                                   x * kk->drv.p->font_width,
+                                   y * kk->drv.p->font_height,
+                                   kk->drv.p->font_width,
+                                   kk->drv.p->font_height);
+                    break;
+                case 0x0000258c: /* ▌ */
+                    XFillRectangle(kk->drv.p->dpy, kk->drv.p->pixmap,
+                                   kk->drv.p->gc,
+                                   x * kk->drv.p->font_width,
+                                   y * kk->drv.p->font_height,
+                                   kk->drv.p->font_width / 2,
+                                   kk->drv.p->font_height);
+                    break;
+                case 0x00002590: /* ▐ */
+                    XFillRectangle(kk->drv.p->dpy, kk->drv.p->pixmap,
+                                   kk->drv.p->gc,
+                                   (x + 1) * kk->drv.p->font_width
+                                           - kk->drv.p->font_width / 2,
+                                   y * kk->drv.p->font_height,
+                                   kk->drv.p->font_width / 2,
+                                   kk->drv.p->font_height);
+                    break;
+                case 0x00002593: /* ▓ */
+                case 0x00002592: /* ▒ */
+                case 0x00002591: /* ░ */
+                {
+                    /* FIXME: this sucks utterly */
+                    int i, j, k = *chars - 0x00002591;
+                    for(j = kk->drv.p->font_height; j--; )
+                        for(i = kk->drv.p->font_width; i--; )
+                    {
+                        if(((i + 2 * (j & 1)) & 3) > k)
+                            continue;
+
+                        XDrawPoint(kk->drv.p->dpy, kk->drv.p->pixmap,
+                                   kk->drv.p->gc,
+                                   x * kk->drv.p->font_width + i,
+                                   y * kk->drv.p->font_height + j);
+                    }
+                    break;
+                }
+                default:
+                {
+                    char c;
+                    c = '?';
+                    XDrawString(kk->drv.p->dpy, kk->drv.p->pixmap,
+                                kk->drv.p->gc,
+                                x * kk->drv.p->font_width, yoff, &c, 1);
+                    break;
+                }
+            }
         }
     }
 
