@@ -93,9 +93,9 @@ int main (int argc, char **argv)
         {
             double z = ((double)i) / 256 * 6 * M_PI;
 
-            red[i] = (1.0 + cos(z + r[0] * frame)) / 2 * 0xfff;
-            green[i] = (1.0 + sin(z + r[1] * frame)) / 2 * 0xfff;
-            blue[i] = (1.0 + cos(z + r[2] * frame)) / 2 * 0xfff;
+            red[i] = (1.0 + sin(z + r[1] * frame)) / 2 * 0xfff;
+            blue[i] = (1.0 + cos(z + r[0] * frame)) / 2 * 0xfff;
+            green[i] = (1.0 + cos(z + r[2] * frame)) / 2 * 0xfff;
         }
 
         /* Set the palette */
