@@ -264,7 +264,7 @@ struct cucul_bitmap *cucul_create_bitmap(cucul_t *qq,
  * \param blue Array of 256 blue values.
  * \param alpha Array of 256 alpha values.
  */
-void cucul_set_bitmap_palette(cucul_t *qq, struct cucul_bitmap *bitmap,
+void cucul_set_bitmap_palette(struct cucul_bitmap *bitmap,
                               unsigned int red[], unsigned int green[],
                               unsigned int blue[], unsigned int alpha[])
 {
@@ -302,7 +302,7 @@ void cucul_set_bitmap_palette(cucul_t *qq, struct cucul_bitmap *bitmap,
  * \param bitmap Bitmap object.
  * \param gamma Gamma value.
  */
-void cucul_set_bitmap_gamma(cucul_t *qq, struct cucul_bitmap *bitmap, float gamma)
+void cucul_set_bitmap_gamma(struct cucul_bitmap *bitmap, float gamma)
 {
     int i;
 
@@ -322,7 +322,7 @@ void cucul_set_bitmap_gamma(cucul_t *qq, struct cucul_bitmap *bitmap, float gamm
  *
  * \param bitmap Bitmap object.
  */
-void cucul_free_bitmap(cucul_t *qq, struct cucul_bitmap *bitmap)
+void cucul_free_bitmap(struct cucul_bitmap *bitmap)
 {
     if(!bitmap)
         return;

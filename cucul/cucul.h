@@ -192,7 +192,8 @@ int cucul_get_sprite_width(cucul_t *, struct cucul_sprite const *, int);
 int cucul_get_sprite_height(cucul_t *, struct cucul_sprite const *, int);
 int cucul_get_sprite_dx(cucul_t *, struct cucul_sprite const *, int);
 int cucul_get_sprite_dy(cucul_t *, struct cucul_sprite const *, int);
-void cucul_draw_sprite(cucul_t *, int, int, struct cucul_sprite const *, int);void cucul_free_sprite(cucul_t *, struct cucul_sprite *);
+void cucul_draw_sprite(cucul_t *, int, int, struct cucul_sprite const *, int);
+void cucul_free_sprite(struct cucul_sprite *);
 /*  @} */
 
 /** \defgroup bitmap Bitmap handling
@@ -206,12 +207,12 @@ struct cucul_bitmap *cucul_create_bitmap(cucul_t *, unsigned int, unsigned int,
                                        unsigned int, unsigned int,
                                        unsigned int, unsigned int,
                                        unsigned int, unsigned int);
-void cucul_set_bitmap_palette(cucul_t *, struct cucul_bitmap *,
-                             unsigned int r[], unsigned int g[],
-                             unsigned int b[], unsigned int a[]);
-void cucul_set_bitmap_gamma(cucul_t *, struct cucul_bitmap *, float);
+void cucul_set_bitmap_palette(struct cucul_bitmap *,
+                              unsigned int r[], unsigned int g[],
+                              unsigned int b[], unsigned int a[]);
+void cucul_set_bitmap_gamma(struct cucul_bitmap *, float);
 void cucul_draw_bitmap(cucul_t *, int, int, int, int, struct cucul_bitmap const *, void *);
-void cucul_free_bitmap(cucul_t *, struct cucul_bitmap *);
+void cucul_free_bitmap(struct cucul_bitmap *);
 /*  @} */
 
 /** \defgroup exporter Exporters to various formats

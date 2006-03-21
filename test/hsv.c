@@ -48,7 +48,7 @@ int main(void)
     cucul_draw_bitmap(qq, 0, 0,
                       cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
                       bitmap, buffer);
-    cucul_free_bitmap(qq, bitmap);
+    cucul_free_bitmap(bitmap);
 
     caca_display(kk);
 

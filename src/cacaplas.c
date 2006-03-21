@@ -99,7 +99,7 @@ int main (int argc, char **argv)
         }
 
         /* Set the palette */
-        cucul_set_bitmap_palette(qq, bitmap, red, green, blue, alpha);
+        cucul_set_bitmap_palette(bitmap, red, green, blue, alpha);
 
         do_plasma(screen,
                   (1.0 + sin(((double)frame) * R[0])) / 2,
@@ -121,7 +121,7 @@ paused:
     }
 
 end:
-    cucul_free_bitmap(qq, bitmap);
+    cucul_free_bitmap(bitmap);
     caca_detach(kk);
     cucul_end(qq);
 

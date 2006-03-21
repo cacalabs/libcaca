@@ -173,7 +173,7 @@ int main(int argc, char **argv)
     }
 
     /* Clean up */
-    cucul_free_sprite(qq, sprite);
+    cucul_free_sprite(sprite);
     caca_detach(kk);
     cucul_end(qq);
 
@@ -495,7 +495,7 @@ static void demo_render(void)
     bitmap = cucul_create_bitmap(32, 256, 256, 4 * 256, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
     cucul_draw_bitmap(qq, 0, 0, cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
                      bitmap, buffer);
-    cucul_free_bitmap(qq, bitmap);
+    cucul_free_bitmap(bitmap);
 }
 #endif
 
@@ -538,7 +538,7 @@ static void demo_render(void)
 
     bitmap = cucul_create_bitmap(qq, 32, 256, 256, 4 * 256, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
     cucul_draw_bitmap(qq, 0, 0, cucul_get_width(qq) - 1, cucul_get_height(qq) - 1, bitmap, (char *)buffer);
-    cucul_free_bitmap(qq, bitmap);
+    cucul_free_bitmap(bitmap);
 }
 
 static void draw_circle(int *buffer, int x, int y, int r, int mask, int val)

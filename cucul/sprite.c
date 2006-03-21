@@ -301,7 +301,7 @@ void cucul_draw_sprite(cucul_t *qq, int x, int y, struct cucul_sprite const *spr
  * \param sprite The sprite to be freed.
  * \return void
  */
-void cucul_free_sprite(cucul_t *qq, struct cucul_sprite *sprite)
+void cucul_free_sprite(struct cucul_sprite *sprite)
 {
     int i;
 

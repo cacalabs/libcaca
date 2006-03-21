@@ -88,7 +88,7 @@ int main (int argc, char **argv)
         green[1] = 0.5 * (1 + cos(0.06 * frame + 5.0)) * 0xfff;
         blue[1] = 0.5 * (1 + cos(0.05 * frame + 5.0)) * 0xfff;
 
-        cucul_set_bitmap_palette(qq, bitmap, red, green, blue, alpha);
+        cucul_set_bitmap_palette(bitmap, red, green, blue, alpha);
 
         /* Draw circles */
         x = cos(0.07 * frame + 5.0) * 128.0 + (XSIZ / 2);
@@ -109,7 +109,7 @@ paused:
     }
 
 end:
-    cucul_free_bitmap(qq, bitmap);
+    cucul_free_bitmap(bitmap);
     caca_detach(kk);
     cucul_end(qq);
 

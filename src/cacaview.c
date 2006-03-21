@@ -487,7 +487,7 @@ static void unload_image(void)
     pixels = NULL;
 #endif
     if(bitmap)
-        cucul_free_bitmap(qq, bitmap);
+        cucul_free_bitmap(bitmap);
     bitmap = NULL;
 }
 
@@ -690,7 +690,7 @@ static void load_image(char const *name)
     }
 
     if(bpp == 8)
-        cucul_set_bitmap_palette(qq, bitmap, red, green, blue, alpha);
+        cucul_set_bitmap_palette(bitmap, red, green, blue, alpha);
 #endif
 }
 

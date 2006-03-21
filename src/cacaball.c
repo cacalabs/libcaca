@@ -123,7 +123,7 @@ int main(int argc, char **argv)
         }
 
         /* Set the palette */
-        cucul_set_bitmap_palette(qq, cucul_bitmap, r, g, b, a);
+        cucul_set_bitmap_palette(cucul_bitmap, r, g, b, a);
 
         /* Silly paths for our balls */
         for(p = 0; p < METABALLS; p++)
@@ -157,7 +157,7 @@ paused:
 
     /* End, bye folks */
 end:
-    cucul_free_bitmap(qq, cucul_bitmap);
+    cucul_free_bitmap(cucul_bitmap);
     caca_detach(kk);
     cucul_end(qq);
 

@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
     cucul_draw_bitmap(qq, 0, 0,
                       cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
                       bitmap, pixels);
-    cucul_free_bitmap(qq, bitmap);
+    cucul_free_bitmap(bitmap);
 
     cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLACK);
     cucul_draw_thin_box(qq, 0, 0, WIDTH - 1, HEIGHT - 1);
