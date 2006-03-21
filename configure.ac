@@ -59,6 +59,11 @@ AC_TRY_COMPILE([#include <windows.h>],[Sleep(42);],
  [AC_MSG_RESULT(yes)
   AC_DEFINE(HAVE_SLEEP, 1, [Define to 1 if you have the `Sleep' function.])],
  [AC_MSG_RESULT(no)])
+AC_MSG_CHECKING(for fsin/fcos)
+AC_TRY_COMPILE([],[asm("fsin\n\tfcos");],
+ [AC_MSG_RESULT(yes)
+  AC_DEFINE(HAVE_FSIN_FCOS, 1, [Define to 1 if you have the `fsin' and `fcos' operands.])],
+ [AC_MSG_RESULT(no)])
 AC_CHECK_LIB(m, sin, MATH_LIBS="${MATH_LIBS} -lm")
 
 CACA_DRIVERS="" 

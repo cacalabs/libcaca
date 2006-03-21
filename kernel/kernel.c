@@ -227,6 +227,9 @@ int gettimeofday(struct timeval *tv, struct timezone *tz)
 double cos(double x)
 {
     double ret = 0.0;
+#ifdef HAVE_FSIN_FCOS
+    asm volatile("fcos" : "=t" (ret) : "0" (x));
+#else
     double x2;
     double num = 1.0;
     double fact = 1.0;
@@ -242,13 +245,16 @@ double cos(double x)
         num *= - x2;
         fact *= (2 * i + 1) * (2 * i + 2);
     }
-
+#endif
     return ret;
 }
 
 double sin(double x)
 {
     double ret = 0.0;
+#ifdef HAVE_FSIN_FCOS
+    asm volatile("fsin" : "=t" (ret) : "0" (x));
+#else
     double x2;
     double num;
     double fact = 1.0;
@@ -265,7 +271,7 @@ double sin(double x)
         num *= - x2;
         fact *= (2 * i + 2) * (2 * i + 3);
     }
-
+#endif
     return ret;
 }
 
