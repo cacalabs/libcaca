@@ -50,6 +50,8 @@ cucul_t * cucul_init(unsigned int width, unsigned int height)
 
     cucul_read_environment(qq);
 
+    qq->refcount = 0;
+
     qq->fgcolor = CUCUL_COLOR_LIGHTGRAY;
     qq->bgcolor = CUCUL_COLOR_BLACK;
 
