@@ -258,7 +258,7 @@ static void network_display(caca_t *kk)
 
     /* Get ANSI representation of the image and skip the end-of buffer
      * linefeed ("\r\n\0", 3 bytes) */
-    kk->drv.p->ex = cucul_get_export(kk->qq, CUCUL_FORMAT_ANSI);
+    kk->drv.p->ex = cucul_create_export(kk->qq, CUCUL_FORMAT_ANSI);
     kk->drv.p->ex->size -= 3;
 
     for(i = 0; i < kk->drv.p->client_count; i++)

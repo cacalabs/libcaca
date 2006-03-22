@@ -275,7 +275,7 @@ void cucul_end(cucul_t *qq)
     free(qq);
 }
 
-struct cucul_export * cucul_get_export(cucul_t *qq, enum cucul_format format)
+struct cucul_export * cucul_create_export(cucul_t *qq, enum cucul_format format)
 {
     struct cucul_export *ex;
 

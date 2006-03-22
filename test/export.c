@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
     cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_LIGHTBLUE);
     cucul_putstr(qq, WIDTH / 2 - 7, HEIGHT / 2, "    LIBCACA    ");
 
-    buffer = cucul_get_export(qq, format);
+    buffer = cucul_create_export(qq, format);
     fwrite(buffer->buffer, buffer->size - 1, 1, stdout);
     cucul_free_export(buffer);
 

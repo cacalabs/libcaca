@@ -226,7 +226,7 @@ struct cucul_export
     char *buffer;
 };
 
-struct cucul_export * cucul_get_export(cucul_t *, enum cucul_format);
+struct cucul_export * cucul_create_export(cucul_t *, enum cucul_format);
 void cucul_free_export(struct cucul_export *);
 
 /*  @} */
