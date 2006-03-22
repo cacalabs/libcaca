@@ -118,7 +118,7 @@ typedef struct cucul_context cucul_t;
  *  initialisation, system information retrieval and configuration.
  *
  *  @{ */
-cucul_t * cucul_init(void);
+cucul_t * cucul_init(unsigned int, unsigned int);
 void cucul_set_size(cucul_t *, unsigned int, unsigned int);
 unsigned int cucul_get_width(cucul_t *);
 unsigned int cucul_get_height(cucul_t *);

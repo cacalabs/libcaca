@@ -34,7 +34,7 @@ int main(void)
     struct cucul_bitmap *bitmap;
     int x, y;
 
-    qq = cucul_init();
+    qq = cucul_init(0, 0);
     kk = caca_attach(qq);
 
     for(y = 0; y < 256; y++)

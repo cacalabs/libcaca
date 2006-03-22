@@ -33,7 +33,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    qq = cucul_init();
+    qq = cucul_init(0, 0);
     if(!qq)
         return 1;
     kk = caca_attach(qq);

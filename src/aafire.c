@@ -100,7 +100,7 @@ initialize (void)
 #endif
 
 #ifdef LIBCACA
-  qq = cucul_init();
+  qq = cucul_init(80, 32);
   if (!qq)
     {
       printf ("Failed to initialize libcucul\n");

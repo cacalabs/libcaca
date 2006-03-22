@@ -39,7 +39,7 @@ int main(void)
     int neara, dista, nearb, distb, dist;
     int x, y;
 
-    qq = cucul_init();
+    qq = cucul_init(0, 0);
     kk = caca_attach(qq);
 
     for(x = 0; x < 100; x++)

@@ -26,7 +26,7 @@ int main(int argc, char **argv)
     caca_t *kk;
     int i, j;
 
-    qq = cucul_init();
+    qq = cucul_init(0, 0);
     if(!qq)
         return 1;
 

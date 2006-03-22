@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
         exit(-1);
     }
 
-    qq = cucul_init();
+    qq = cucul_init(0, 0);
     cucul_set_size(qq, WIDTH, HEIGHT);
 
     for(y = 0; y < 256; y++)

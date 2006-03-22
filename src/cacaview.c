@@ -88,7 +88,7 @@ int main(int argc, char **argv)
     int i;
 
     /* Initialise libcucul */
-    qq = cucul_init();
+    qq = cucul_init(0, 0);
     if(!qq)
     {
         fprintf(stderr, "%s: unable to initialise libcucul\n", argv[0]);

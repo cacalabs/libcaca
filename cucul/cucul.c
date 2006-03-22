@@ -37,9 +37,14 @@ static void cucul_read_environment(cucul_t *);
  *  first \e libcucul function to be called in a function. cucul_end() should
  *  be called at the end of the program to free all allocated resources.
  *
+ *  If one of the desired canvas coordinates is zero, a default canvas size
+ *  of 80x32 is used instead.
+ *
+ *  \param width The desired canvas width
+ *  \param height The desired canvas height
  *  \return 0 upon success, a non-zero value if an error occurs.
  */
-cucul_t * cucul_init(void)
+cucul_t * cucul_init(unsigned int width, unsigned int height)
 {
     cucul_t *qq = malloc(sizeof(cucul_t));
 
@@ -48,14 +53,18 @@ cucul_t * cucul_init(void)
     qq->fgcolor = CUCUL_COLOR_LIGHTGRAY;
     qq->bgcolor = CUCUL_COLOR_BLACK;
 
-    /* Initialise to a default size. 80x32 is arbitrary but matches AAlib's
-     * default X11 window. When a graphic driver attaches to us, it can set
-     * a different size. */
     qq->width = qq->width = 0;
     qq->chars = NULL;
     qq->attr = NULL;
     qq->empty_line = qq->scratch_line = NULL;
-    _cucul_set_size(qq, 80, 32);
+
+    /* Initialise to a default size. 80x32 is arbitrary but matches AAlib's
+     * default X11 window. When a graphic driver attaches to us, it can set
+     * a different size. */
+    if(width && height)
+        _cucul_set_size(qq, width, height);
+    else
+        _cucul_set_size(qq, 80, 32);
 
     if(_cucul_init_bitmap())
     {
@@ -70,14 +79,16 @@ cucul_t * cucul_init(void)
  *
  *  This function sets the canvas width and height, in character cells.
  *
+ *  The contents of the canvas are preserved to the extent of the new
+ *  canvas size. Newly allocated character cells at the right and/or at
+ *  the bottom of the canvas are filled with spaces.
+ *
  *  It is an error to try to resize the canvas if an output driver has
  *  been attached to the canvas using caca_attach(). You need to remove
  *  the output driver using caca_detach() before you can change the
- *  canvas size again.
- *
- *  However, the caca output driver can cause a canvas resize through
- *  user interaction. See the caca_event() documentation for more about
- *  this.
+ *  canvas size again. However, the caca output driver can cause a canvas
+ *  resize through user interaction. See the caca_event() documentation
+ *  for more about this.
  *
  *  \param width The desired canvas width
  *  \param height The desired canvas height
