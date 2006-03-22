@@ -1,6 +1,6 @@
 /*
- *  libcucul      Unicode canvas library
- *  libcaca       ASCII-Art library
+ *  libcucul      Canvas for ultrafast compositing of Unicode letters
+ *  libcaca       Colour ASCII-Art library
  *  Copyright (c) 2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *

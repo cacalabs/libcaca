@@ -1,5 +1,5 @@
 /*
- *  libcaca       ASCII-Art library
+ *  libcaca       Colour ASCII-Art library
  *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *

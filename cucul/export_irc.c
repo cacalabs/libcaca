@@ -1,5 +1,5 @@
 /*
- *  libcucul      Unicode canvas library
+ *  libcucul      Canvas for ultrafast compositing of Unicode letters
  *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
