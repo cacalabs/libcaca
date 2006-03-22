@@ -32,6 +32,8 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
+#define CP437 0
+
 /*
  * Local variables
  */
@@ -57,7 +59,7 @@ static int const hsv_palette[] =
 };
 
 /* RGB palette for the new colour picker */
-static int rgb_palette[] =
+static int const rgb_palette[] =
 {
     0x0,   0x0,   0x0,
     0x0,   0x0,   0x7ff,
@@ -77,7 +79,7 @@ static int rgb_palette[] =
     0xfff, 0xfff, 0xfff,
 };
 
-static int rgb_weight[] =
+static int const rgb_weight[] =
 {
     //2, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 2
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
@@ -106,6 +108,7 @@ static int rgb_weight[] =
  * Local prototypes
  */
 static void mask2shift(unsigned int, int *, int *);
+static float gammapow(float x, float y);
 
 static void get_rgba_default(struct cucul_bitmap const *, uint8_t *, int, int,
                              unsigned int *, unsigned int *, unsigned int *,
@@ -172,6 +175,63 @@ static void mask2shift(unsigned int mask, int *right, int *left)
         lshift++;
     }
     *left = 12 - lshift;
+}
+
+static float gammapow(float x, float y)
+{
+#ifdef HAVE_FLDLN2
+    register double logx;
+    register long double v, e;
+#else
+    register float tmp, t, r;
+    int i;
+#endif
+
+    if(x == 0.0)
+        return y == 0.0 ? 1.0 : 0.0;
+
+#ifdef HAVE_FLDLN2
+    /* FIXME: this can be optimised by directly calling fyl2x for x and y */
+    asm volatile("fldln2; fxch; fyl2x"
+                 : "=t" (logx) : "0" (x) : "st(1)");
+
+    asm volatile("fldl2e\n\t"
+                 "fmul %%st(1)\n\t"
+                 "fst %%st(1)\n\t"
+                 "frndint\n\t"
+                 "fxch\n\t"
+                 "fsub %%st(1)\n\t"
+                 "f2xm1\n\t"
+                 : "=t" (v), "=u" (e) : "0" (y * logx));
+    v += 1.0;
+    asm volatile("fscale"
+                 : "=t" (v) : "0" (v), "u" (e));
+    return v;
+#else
+    /* Compute ln(x) as ln(1+t) where t = x - 1, x ∈ ]0,1[
+     *   ln(1+t) = t - t^2/2 + t^3/3 - t^4/4 + t^5/5 ...
+     * The convergence is quite slow, especially when x is near 0. */
+    tmp = t = r = x - 1.0;
+    for(i = 2; i < 30; i++)
+    {
+        r *= -t;
+        tmp += r / i;
+    }
+
+    /* Compute x^-y as e^t where t = y*ln(x):
+     *   e^t = 1 + t/1! + t^2/2! + t^3/3! + t^4/4! + t^5/5! ...
+     * The convergence is a lot faster here, thanks to the factorial. */
+    r = t = - y * tmp;
+    tmp = 1.0 + t;
+    for(i = 2; i < 16; i++)
+    {
+        r = r * t / i;
+        tmp += r;
+    }
+
+    /* Return x^y as 1/(x^-y) */
+    return 1.0 / tmp;
+#endif
 }
 
 /**
@@ -312,7 +372,7 @@ void cucul_set_bitmap_gamma(struct cucul_bitmap *bitmap, float gamma)
     bitmap->gamma = gamma;
 
     for(i = 0; i < 4096; i++)
-        bitmap->gammatab[i] = 4096.0 * cucul_powf((float)i / 4096.0, 1.0 / gamma);
+        bitmap->gammatab[i] = 4096.0 * gammapow((float)i / 4096.0, 1.0 / gamma);
 }
 
 /**
@@ -448,21 +508,17 @@ void cucul_draw_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
 
     /* FIXME: choose better characters! */
 #if !defined(_DOXYGEN_SKIP_ME)
-#   define DCHMAX ((sizeof(density_chars)/sizeof(char const)/4)-1)
+#   define DCHMAX ((sizeof(density_chars)/sizeof(*density_chars)))
 #endif
-    static char const density_chars[] =
-        "    "
-        "...."
-        "::::"
-        ";=;="
-        "tftf"
-        "%$%$"
-        "SK&Z"
-        "XWGM"
-        "@@@@"
-        "8888"
-        "####"
-        "????";
+    static char const * density_chars[] =
+    {
+#if CP437
+        " ", ":", "░", "▒", "?"
+        /* "0", "1", "2", "3", "?" */
+#else
+        " ", ".", ":", ";", "t", "%", "S", "X", "@", "8", "?"
+#endif
+    };
 
     int x, y, w, h, pitch, deltax, deltay;
 
@@ -552,7 +608,7 @@ void cucul_draw_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
         int error[3];
 
         enum cucul_color outfg = 0, outbg = 0;
-        char outch;
+        char const *outch;
 
         r = g = b = a = 0;
 
@@ -675,7 +731,7 @@ void cucul_draw_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
                     distmin = dist;
                 }
             }
-            outch = density_chars[4 * ch];
+            outch = density_chars[ch];
 
             if(qq->dithering == CUCUL_DITHERING_FSTEIN)
             {
@@ -695,7 +751,7 @@ void cucul_draw_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
                 ch = 0;
             else if(ch > (int)(DCHMAX - 1))
                 ch = DCHMAX - 1;
-            outch = density_chars[4 * ch];
+            outch = density_chars[ch];
 
             if(qq->dithering == CUCUL_DITHERING_FSTEIN)
             {
@@ -723,7 +779,7 @@ void cucul_draw_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
 
         /* Now output the character */
         cucul_set_color(qq, outfg, outbg);
-        cucul_putchar(qq, x, y, outch);
+        cucul_putstr(qq, x, y, outch);
 
         _increment_dither();
     }
