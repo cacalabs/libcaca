@@ -275,7 +275,7 @@ void cucul_blit(cucul_t *dst, int x, int y,
 {
     int i, j, starti, startj, endi, endj;
 
-    if(src->width != mask->width || src->height != mask->height)
+    if(mask && (src->width != mask->width || src->height != mask->height))
         return;
 
     starti = x < 0 ? -x : 0;
@@ -283,17 +283,32 @@ void cucul_blit(cucul_t *dst, int x, int y,
     endi = (x + src->width >= dst->width) ? dst->width - x : src->width;
     endj = (y + src->height >= dst->height) ? dst->height - y : src->height;
 
+    if(starti >= endi || startj >= endj)
+        return;
+
     for(j = startj; j < endj; j++)
     {
-        for(i = starti; i < endi; i++)
+        if(mask)
         {
-            if(mask && mask->chars[j * src->width + i] == (uint32_t)' ')
-                continue;
+            for(i = starti; i < endi; i++)
+            {
+                if(mask->chars[j * src->width + i] == (uint32_t)' ')
+                    continue;
 
-            dst->chars[(j + y) * dst->width + (i + x)]
-                                           = src->chars[j * src->width + i];
-            dst->attr[(j + y) * dst->width + (i + x)]
-                                           = src->attr[j * src->width + i];
+                dst->chars[(j + y) * dst->width + (i + x)]
+                                             = src->chars[j * src->width + i];
+                dst->attr[(j + y) * dst->width + (i + x)]
+                                             = src->attr[j * src->width + i];
+            }
+        }
+        else
+        {
+            memcpy(dst->chars + (j + y) * dst->width + starti + x,
+                   src->chars + j * src->width + starti,
+                   (endi - starti) * 4);
+            memcpy(dst->attr + (j + y) * dst->width + starti + x,
+                   src->attr + j * src->width + starti,
+                   (endi - starti) * 1);
         }
     }
 }
