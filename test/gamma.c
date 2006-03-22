@@ -44,20 +44,32 @@ int main(void)
                                0x00ff0000, 0x0000ff00, 0x000000ff, 0x0);
     right = cucul_create_bitmap(qq, 32, 256, 1, 4 * 256,
                                 0x00ff0000, 0x0000ff00, 0x000000ff, 0x0);
-    cucul_set_bitmap_gamma(right, 0.5);
+    caca_set_delay(kk, 20000);
 
-    cucul_draw_bitmap(qq, 0, 0,
-                      cucul_get_width(qq) - 1, cucul_get_height(qq) / 2 - 1,
-                      right, buffer);
-    cucul_draw_bitmap(qq, 0, cucul_get_height(qq) / 2,
-                      cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
-                      left, buffer);
+    for(x = 0; ; x = (x + 1) % 256)
+    {
+        float g = (x > 128) ? (256.0 + 8.0 - x) / 64.0 : (8.0 + x) / 64.0;
+
+        if(caca_get_event(kk, CACA_EVENT_KEY_PRESS))
+            break;
+
+        cucul_draw_bitmap(qq, 0, cucul_get_height(qq) / 2,
+                          cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
+                          left, buffer);
+
+        cucul_set_bitmap_gamma(right, g);
+        cucul_draw_bitmap(qq, 0, 0,
+                          cucul_get_width(qq) - 1, cucul_get_height(qq) / 2 - 1,
+                          right, buffer);
+
+        cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
+        cucul_printf(qq, 1, 2, "gamma %g", g);
+
+        caca_display(kk);
+    }
+
     cucul_free_bitmap(left);
     cucul_free_bitmap(right);
-
-    caca_display(kk);
-
-    while(!caca_get_event(kk, CACA_EVENT_KEY_PRESS));
 
     caca_detach(kk);
     cucul_end(qq);
