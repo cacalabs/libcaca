@@ -26,6 +26,8 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
+static float powf_internal(float x, float y);
+
 /**
  * \brief Generate a random integer within a range.
  *
@@ -70,36 +72,3 @@ unsigned int cucul_sqrt(unsigned int a)
     return 2 * cucul_sqrt(a / 4);
 }
 
-/**
- * \brief powf substitute (x^y)
- * \param x The value to be raised
- * \param y The power to raise x to (only works with integers)
- * \return \p x raised to the power of \p y
- */
-float cucul_powf(float x, float y)
-{
-#ifdef __i386__
-    /* FIXME: this can be optimised by directly calling fyl2x for x and y */
-    register double logx;
-    register long double v, e;
-
-    asm volatile("fldln2; fxch; fyl2x"
-                 : "=t" (logx) : "0" (x) : "st(1)");
-
-    asm volatile("fldl2e\n\t"
-                 "fmul %%st(1)\n\t"
-                 "fst %%st(1)\n\t"
-                 "frndint\n\t"
-                 "fxch\n\t"
-                 "fsub %%st(1)\n\t"
-                 "f2xm1\n\t"
-                 : "=t" (v), "=u" (e) : "0" (y * logx));
-    v += 1.0;
-    asm volatile("fscale"
-                 : "=t" (v) : "0" (v), "u" (e));
-
-    return v;
-#else
-    return x; /* HAHAHA VIEUX PORC */
-#endif
-}

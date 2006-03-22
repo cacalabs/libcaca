@@ -176,7 +176,6 @@ void cucul_fill_triangle(cucul_t *, int, int, int, int, int, int, char);
  *  @{ */
 int cucul_rand(int, int);
 unsigned int cucul_sqrt(unsigned int);
-float cucul_powf(float x, float y);
 /*  @} */
 
 /** \defgroup sprite Sprite handling
