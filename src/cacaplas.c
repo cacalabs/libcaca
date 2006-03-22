@@ -75,7 +75,7 @@ int main (int argc, char **argv)
     }
 
     /* Create a libcucul bitmap */
-    bitmap = cucul_create_bitmap(qq, 8, XSIZ, YSIZ, XSIZ, 0, 0, 0, 0);
+    bitmap = cucul_create_bitmap(8, XSIZ, YSIZ, XSIZ, 0, 0, 0, 0);
 
     /* Main loop */
     for(;;) 

@@ -45,9 +45,9 @@ int main(void)
         buffer[x + 768] =    (x << 16) | (0x00 << 8) | (0xff << 0);
     }
 
-    left = cucul_create_bitmap(qq, 32, 256, 4, 4 * 256,
+    left = cucul_create_bitmap(32, 256, 4, 4 * 256,
                                0x00ff0000, 0x0000ff00, 0x000000ff, 0x0);
-    right = cucul_create_bitmap(qq, 32, 256, 4, 4 * 256,
+    right = cucul_create_bitmap(32, 256, 4, 4 * 256,
                                 0x00ff0000, 0x0000ff00, 0x000000ff, 0x0);
     caca_set_delay(kk, 20000);
 

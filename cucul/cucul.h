@@ -202,10 +202,10 @@ void cucul_free_sprite(struct cucul_sprite *);
  *
  *  @{ */
 struct cucul_bitmap;
-struct cucul_bitmap *cucul_create_bitmap(cucul_t *, unsigned int, unsigned int,
-                                       unsigned int, unsigned int,
-                                       unsigned int, unsigned int,
-                                       unsigned int, unsigned int);
+struct cucul_bitmap *cucul_create_bitmap(unsigned int, unsigned int,
+                                         unsigned int, unsigned int,
+                                         unsigned int, unsigned int,
+                                         unsigned int, unsigned int);
 void cucul_set_bitmap_palette(struct cucul_bitmap *,
                               unsigned int r[], unsigned int g[],
                               unsigned int b[], unsigned int a[]);

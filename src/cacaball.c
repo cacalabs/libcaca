@@ -69,7 +69,7 @@ int main(int argc, char **argv)
 
     /* Create a libcucul bitmap smaller than our pixel buffer, so that we
      * display only the interesting part of it */
-    cucul_bitmap = cucul_create_bitmap(qq, 8, XSIZ - METASIZE, YSIZ - METASIZE,
+    cucul_bitmap = cucul_create_bitmap(8, XSIZ - METASIZE, YSIZ - METASIZE,
                                        XSIZ, 0, 0, 0, 0);
 
     /* Generate ball sprite */

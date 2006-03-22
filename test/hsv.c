@@ -43,7 +43,7 @@ int main(void)
         buffer[y * 256 + x] = ((y * x / 256) << 16) | ((y * x / 256) << 8) | (x<< 0);
     }
 
-    bitmap = cucul_create_bitmap(qq, 32, 256, 256, 4 * 256,
+    bitmap = cucul_create_bitmap(32, 256, 256, 4 * 256,
                                  0x00ff0000, 0x0000ff00, 0x000000ff, 0x0);
     cucul_draw_bitmap(qq, 0, 0,
                       cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,

@@ -545,7 +545,7 @@ static void load_image(char const *name)
     depth = 4;
 
     /* Create the libcucul bitmap */
-    bitmap = cucul_create_bitmap(qq, bpp, w, h, depth * w,
+    bitmap = cucul_create_bitmap(bpp, w, h, depth * w,
                                  rmask, gmask, bmask, amask);
     if(!bitmap)
     {
@@ -712,8 +712,8 @@ static void load_image(char const *name)
 
     fclose(fp);
 
-    /* Create the libcaca bitmap */
-    bitmap = cucul_create_bitmap(qq, bpp, w, h, depth * w,
+    /* Create the libcucul bitmap */
+    bitmap = cucul_create_bitmap(bpp, w, h, depth * w,
                                  rmask, gmask, bmask, amask);
     if(!bitmap)
     {

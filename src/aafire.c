@@ -140,7 +140,7 @@ initialize (void)
 #endif
 
 #ifdef LIBCACA
-  cucul_bitmap = cucul_create_bitmap(qq, 8, XSIZ, YSIZ - 2, XSIZ, 0, 0, 0, 0);
+  cucul_bitmap = cucul_create_bitmap(8, XSIZ, YSIZ - 2, XSIZ, 0, 0, 0, 0);
   cucul_set_bitmap_palette(cucul_bitmap, r, g, b, a);
   bitmap = malloc(4 * cucul_get_width(qq) * cucul_get_height(qq) * sizeof(char));
   memset(bitmap, 0, 4 * cucul_get_width(qq) * cucul_get_height(qq));

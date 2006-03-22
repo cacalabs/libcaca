@@ -258,11 +258,10 @@ static float gammapow(float x, float y)
  * \param amask Bitmask for alpha values.
  * \return Bitmap object, or NULL upon error.
  */
-struct cucul_bitmap *cucul_create_bitmap(cucul_t *qq,
-                                       unsigned int bpp, unsigned int w,
-                                       unsigned int h, unsigned int pitch,
-                                       unsigned int rmask, unsigned int gmask,
-                                       unsigned int bmask, unsigned int amask)
+struct cucul_bitmap *cucul_create_bitmap(unsigned int bpp, unsigned int w,
+                                         unsigned int h, unsigned int pitch,
+                                         unsigned int rmask, unsigned int gmask,
+                                         unsigned int bmask, unsigned int amask)
 {
     struct cucul_bitmap *bitmap;
     int i;
