@@ -40,6 +40,9 @@
 
 #define ZOOM_FACTOR 1.08f
 #define ZOOM_MAX 50
+#define GAMMA_FACTOR 1.04f
+#define GAMMA_MAX 100
+#define GAMMA(g) (((g) < 0) ? 1.0 / gammatab[-(g)] : gammatab[(g)])
 #define PAD_STEP 0.15
 
 /* libcucul/libcaca contexts */
@@ -49,6 +52,7 @@ cucul_t *qq; caca_t *kk;
 static void print_status(void);
 static void print_help(int, int);
 static void set_zoom(int);
+static void set_gamma(int);
 static void load_image(char const *);
 static void unload_image(void);
 static void draw_checkers(int, int, int, int);
@@ -70,8 +74,9 @@ unsigned int red[256], green[256], blue[256], alpha[256];
 #endif
 
 float zoomtab[ZOOM_MAX + 1];
+float gammatab[GAMMA_MAX + 1];
 float xfactor = 1.0, yfactor = 1.0, dx = 0.5, dy = 0.5;
-int zoom = 0, fullscreen = 0, mode, ww, wh;
+int zoom = 0, g = 0, fullscreen = 0, mode, ww, wh;
 
 int main(int argc, char **argv)
 {
@@ -106,7 +111,12 @@ int main(int argc, char **argv)
     /* Fill the zoom table */
     zoomtab[0] = 1.0;
     for(i = 0; i < ZOOM_MAX; i++)
-        zoomtab[i + 1] = zoomtab[i] * 1.08;
+        zoomtab[i + 1] = zoomtab[i] * ZOOM_FACTOR;
+
+    /* Fill the gamma table */
+    gammatab[0] = 1.0;
+    for(i = 0; i < GAMMA_MAX; i++)
+        gammatab[i + 1] = gammatab[i] * GAMMA_FACTOR;
 
     /* Load items into playlist */
     for(i = 1; i < argc; i++)
@@ -226,10 +236,19 @@ int main(int argc, char **argv)
                 update = 1;
                 set_zoom(zoom - 1);
                 break;
+            case 'G':
+                update = 1;
+                set_gamma(g + 1);
+                break;
+            case 'g':
+                update = 1;
+                set_gamma(g - 1);
+                break;
             case 'x':
             case 'X':
                 update = 1;
                 set_zoom(0);
+                set_gamma(0);
                 break;
             case 'k':
             case 'K':
@@ -312,6 +331,7 @@ int main(int argc, char **argv)
             dx = dy = 0.5;
             update = 1;
             set_zoom(0);
+            set_gamma(0);
 
             free(buffer);
         }
@@ -391,7 +411,7 @@ int main(int argc, char **argv)
 
         if(help)
         {
-            print_help(ww - 25, 2);
+            print_help(ww - 26, 2);
         }
 
         caca_display(kk);
@@ -411,10 +431,11 @@ static void print_status(void)
     cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
     cucul_draw_line(qq, 0, 0, ww - 1, 0, ' ');
     cucul_draw_line(qq, 0, wh - 2, ww - 1, wh - 2, '-');
-    cucul_putstr(qq, 0, 0, "q:Quit  np:Next/Prev  +-x:Zoom  "
-                           "hjkl:Move  d:Dithering  a:Antialias");
+    cucul_putstr(qq, 0, 0, "q:Quit  np:Next/Prev  +-x:Zoom  gG:Gamma  "
+                           "hjkl:Move  d:Dither  a:Antialias");
     cucul_putstr(qq, ww - strlen("?:Help"), 0, "?:Help");
     cucul_printf(qq, 3, wh - 2, "cacaview %s", VERSION);
+    cucul_printf(qq, ww - 30, wh - 2, "(gamma: %#.3g)", GAMMA(g));
     cucul_printf(qq, ww - 14, wh - 2, "(zoom: %s%i)", zoom > 0 ? "+" : "", zoom);
 
     cucul_set_color(qq, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
@@ -425,19 +446,21 @@ static void print_help(int x, int y)
 {
     static char const *help[] =
     {
-        " +: zoom in             ",
-        " -: zoom out            ",
-        " x: reset zoom          ",
-        " ---------------------- ",
-        " hjkl: move view        ",
-        " arrows: move view      ",
-        " ---------------------- ",
-        " a: antialiasing method ",
-        " d: dithering method    ",
-        " b: background mode     ",
-        " ---------------------- ",
-        " ?: help                ",
-        " q: quit                ",
+        " +: zoom in              ",
+        " -: zoom out             ",
+        " g: decrease gamma       ",
+        " G: increase gamma       ",
+        " x: reset zoom and gamma ",
+        " ----------------------- ",
+        " hjkl: move view         ",
+        " arrows: move view       ",
+        " ----------------------- ",
+        " a: antialiasing method  ",
+        " d: dithering method     ",
+        " b: background mode      ",
+        " ----------------------- ",
+        " ?: help                 ",
+        " q: quit                 ",
         NULL
     };
 
@@ -472,6 +495,16 @@ static void set_zoom(int new_zoom)
         xfactor = tmp * tmp / yfactor;
         yfactor = tmp;
     }
+}
+
+static void set_gamma(int new_gamma)
+{
+    g = new_gamma;
+
+    if(g > GAMMA_MAX) g = GAMMA_MAX;
+    if(g < -GAMMA_MAX) g = -GAMMA_MAX;
+
+    cucul_set_bitmap_gamma(bitmap, (g < 0) ? 1.0 / gammatab[-g] : gammatab[g]);
 }
 
 static void unload_image(void)
