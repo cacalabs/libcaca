@@ -9,12 +9,13 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
-/** \file char.c
+/** \file canvas.c
  *  \version \$Id$
  *  \author Sam Hocevar <sam@zoy.org>
- *  \brief Character drawing
+ *  \brief Canvas drawing
  *
- *  This file contains character and string drawing functions.
+ *  This file contains various canvas handling functions such as character
+ *  and string drawing.
  */
 
 #include "config.h"
