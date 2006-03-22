@@ -55,6 +55,8 @@ void cmain(unsigned long int magic, unsigned long int addr)
 void *malloc(size_t size)
 {
     uint32_t *p = freemem;
+    if(!size)
+        return NULL;
     size = (size + 0x7) / 4;
     *p = size;
     freemem += size + 1;
@@ -68,10 +70,20 @@ void free(void *ptr)
 
 void *realloc(void *ptr, size_t size)
 {
-   uint32_t oldsize = ((uint32_t *)ptr)[-1];
+    uint32_t oldsize;
     void *p;
-    if(oldsize >= size)
-        return ptr;
+
+    if(!size)
+        return NULL;
+
+    if(!ptr)
+        oldsize = 0;
+    else
+    {
+        oldsize = ((uint32_t *)ptr)[-1];
+        if(oldsize >= size)
+            return ptr;
+    }
 
     p = malloc(size);
     memcpy(p, ptr, oldsize);
