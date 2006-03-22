@@ -30,7 +30,7 @@
 
 static void cucul_read_environment(cucul_t *);
 
-/** \brief Initialise \e libcucul.
+/** \brief Initialise a \e libcucul canvas.
  *
  *  This function initialises internal \e libcucul structures and the backend
  *  that will be used for subsequent graphical operations. It must be the
@@ -42,7 +42,6 @@ static void cucul_read_environment(cucul_t *);
 cucul_t * cucul_init(void)
 {
     cucul_t *qq = malloc(sizeof(cucul_t));
-    int i;
 
     cucul_read_environment(qq);
 
@@ -52,21 +51,11 @@ cucul_t * cucul_init(void)
     /* Initialise to a default size. 80x32 is arbitrary but matches AAlib's
      * default X11 window. When a graphic driver attaches to us, it can set
      * a different size. */
-    qq->width = 80;
-    qq->height = 32;
-
-    qq->chars = malloc(qq->width * qq->height * sizeof(uint32_t));
-    qq->attr = malloc(qq->width * qq->height * sizeof(uint8_t));
-
-    for(i = qq->width * qq->height; i--; )
-        qq->chars[i] = (uint32_t)' ';
-    memset(qq->attr, 0, qq->width * qq->height * sizeof(uint8_t));
-
-    qq->empty_line = malloc(qq->width + 1);
-    memset(qq->empty_line, ' ', qq->width);
-    qq->empty_line[qq->width] = '\0';
-
-    qq->scratch_line = malloc(qq->width + 1);
+    qq->width = qq->width = 0;
+    qq->chars = NULL;
+    qq->attr = NULL;
+    qq->empty_line = qq->scratch_line = NULL;
+    _cucul_set_size(qq, 80, 32);
 
     if(_cucul_init_bitmap())
     {
