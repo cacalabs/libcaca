@@ -65,7 +65,7 @@ void cucul_set_color(cucul_t *qq, enum cucul_color fgcolor,
  *
  *  \return The current foreground colour.
  */
-enum cucul_color cucul_get_fg_color(cucul_t *qq)
+enum cucul_color cucul_get_fg_color(cucul_t const *qq)
 {
     return qq->fgcolor;
 }
@@ -77,7 +77,7 @@ enum cucul_color cucul_get_fg_color(cucul_t *qq)
  *
  *  \return The current background colour.
  */
-enum cucul_color cucul_get_bg_color(cucul_t *qq)
+enum cucul_color cucul_get_bg_color(cucul_t const *qq)
 {
     return qq->bgcolor;
 }
@@ -226,7 +226,7 @@ void cucul_printf(cucul_t *qq, int x, int y, char const *format, ...)
  *
  *  This function fills a byte array with the character values.
  */
-void cucul_get_screen(cucul_t *qq, char *buffer)
+void cucul_get_screen(cucul_t const *qq, char *buffer)
 {
     unsigned int x, y;
 
@@ -257,5 +257,44 @@ void cucul_clear(cucul_t *qq)
         cucul_putstr(qq, 0, y, qq->empty_line);
 
     cucul_set_color(qq, oldfg, oldbg);
+}
+
+/** \brief Blit a canvas onto another one.
+ *
+ *  This function blits a canvas onto another one at the given coordinates.
+ *  An optional mask canvas can be used.
+ *
+ *  \param dst The destination canvas.
+ *  \param x X coordinate.
+ *  \param y Y coordinate.
+ *  \param src The source canvas.
+ *  \param mask The mask canvas.
+ */
+void cucul_blit(cucul_t *dst, int x, int y,
+                cucul_t const *src, cucul_t const *mask)
+{
+    int i, j, starti, startj, endi, endj;
+
+    if(src->width != mask->width || src->height != mask->height)
+        return;
+
+    starti = x < 0 ? -x : 0;
+    startj = y < 0 ? -y : 0;
+    endi = (x + src->width >= dst->width) ? dst->width - x : src->width;
+    endj = (y + src->height >= dst->height) ? dst->height - y : src->height;
+
+    for(j = startj; j < endj; j++)
+    {
+        for(i = starti; i < endi; i++)
+        {
+            if(mask && mask->chars[j * src->width + i] == (uint32_t)' ')
+                continue;
+
+            dst->chars[(j + y) * dst->width + (i + x)]
+                                           = src->chars[j * src->width + i];
+            dst->attr[(j + y) * dst->width + (i + x)]
+                                           = src->attr[j * src->width + i];
+        }
+    }
 }
 

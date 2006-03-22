@@ -21,6 +21,11 @@ typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
 #endif
 
+#if !defined(__KERNEL__)
+#   include <stdio.h>
+#   include <math.h>
+#endif
+
 #include "cucul.h"
 #include "caca.h"
 
@@ -28,14 +33,17 @@ uint32_t buffer[256 * 4];
 
 int main(void)
 {
-    cucul_t *qq;
+    cucul_t *qq, *gg, *mask;
     caca_t *kk;
-
     struct cucul_bitmap *left, *right;
+    float gam = 1.0;
     int x;
 
     qq = cucul_init(0, 0);
     kk = caca_attach(qq);
+
+    gg = cucul_init(cucul_get_width(qq), cucul_get_height(qq));
+    mask = cucul_init(cucul_get_width(qq), cucul_get_height(qq));
 
     for(x = 0; x < 256; x++)
     {
@@ -51,24 +59,50 @@ int main(void)
                                 0x00ff0000, 0x0000ff00, 0x000000ff, 0x0);
     caca_set_delay(kk, 20000);
 
-    for(x = 0; ; x = (x + 1) % 256)
+    for(x = 0; ; x++)
     {
-        float g = (x > 128) ? (256.0 + 8.0 - x) / 64.0 : (8.0 + x) / 64.0;
+        int ev = caca_get_event(kk, CACA_EVENT_KEY_PRESS);
 
-        if(caca_get_event(kk, CACA_EVENT_KEY_PRESS))
+        if(ev == (CACA_EVENT_KEY_PRESS | CACA_KEY_LEFT))
+            gam /= 1.03;
+        else if(ev == (CACA_EVENT_KEY_PRESS | CACA_KEY_RIGHT))
+            gam *= 1.03;
+        else if(ev == (CACA_EVENT_KEY_PRESS | CACA_KEY_DOWN))
+            gam = 1.0;
+        else if(ev == (CACA_EVENT_KEY_PRESS | CACA_KEY_ESCAPE))
             break;
 
-        cucul_draw_bitmap(qq, 0, cucul_get_height(qq) / 2,
+        /* Resize the spare canvas, just in case the main one changed */
+        cucul_set_size(gg, cucul_get_width(qq), cucul_get_height(qq));
+        cucul_set_size(mask, cucul_get_width(qq), cucul_get_height(qq));
+
+        /* Draw the regular bitmap on the main canvas */
+        cucul_draw_bitmap(qq, 0, 0,
                           cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
                           left, buffer);
 
-        cucul_set_bitmap_gamma(right, g);
-        cucul_draw_bitmap(qq, 0, 0,
-                          cucul_get_width(qq) - 1, cucul_get_height(qq) / 2 - 1,
+        /* Draw the gamma-modified bitmap on the spare canvas */
+        cucul_set_bitmap_gamma(right, gam);
+        cucul_draw_bitmap(gg, 0, 0,
+                          cucul_get_width(gg) - 1, cucul_get_height(gg) - 1,
                           right, buffer);
 
+        /* Draw something on the mask */
+        cucul_clear(mask);
+        cucul_set_color(mask, CUCUL_COLOR_WHITE, CUCUL_COLOR_WHITE);
+        cucul_fill_ellipse(mask, (1.0 + sin(0.05 * (float)x))
+                                   * 0.5 * cucul_get_width(mask),
+                                 (1.0 + cos(0.05 * (float)x))
+                                   * 0.5 * cucul_get_height(mask),
+                                 cucul_get_width(mask) / 2,
+                                 cucul_get_height(mask) / 2, '#');
+
+        /* Blit the spare canvas onto the first one */
+        cucul_blit(qq, 0, 0, gg, mask);
+
         cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
-        cucul_printf(qq, 2, 1, "gamma=%g", g);
+        cucul_printf(qq, 2, 1,
+                     "gamma=%g - use arrows to change, Esc to quit", gam);
 
         caca_display(kk);
     }

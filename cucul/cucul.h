@@ -128,20 +128,22 @@ char const *cucul_get_feature_name(enum cucul_feature);
 void cucul_end(cucul_t *);
 /*  @} */
 
-/** \defgroup char Character printing
+/** \defgroup canvas Canvas drawing
  *
- *  These functions provide low-level character printing routines.
+ *  These functions provide low-level character printing routines and
+ *  higher level graphics functions.
  *
  *  @{ */
 void cucul_set_color(cucul_t *, enum cucul_color, enum cucul_color);
-enum cucul_color cucul_get_fg_color(cucul_t *);
-enum cucul_color cucul_get_bg_color(cucul_t *);
+enum cucul_color cucul_get_fg_color(cucul_t const *);
+enum cucul_color cucul_get_bg_color(cucul_t const *);
 char const *cucul_get_color_name(enum cucul_color);
 void cucul_putchar(cucul_t *, int, int, char);
 void cucul_putstr(cucul_t *, int, int, char const *);
 void cucul_printf(cucul_t *, int, int, char const *, ...);
-void cucul_get_screen(cucul_t *, char *);
+void cucul_get_screen(cucul_t const *, char *);
 void cucul_clear(cucul_t *);
+void cucul_blit(cucul_t *, int, int, cucul_t const *, cucul_t const *);
 /*  @} */
 
 /** \defgroup prim Primitives drawing

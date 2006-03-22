@@ -23,7 +23,7 @@ export_LDADD = ../cucul/libcucul.la @CUCUL_LIBS@
 export_CPPFLAGS = -I$(top_srcdir)/cucul
 
 gamma_SOURCES = gamma.c
-gamma_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
+gamma_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@ @MATH_LIBS@
 gamma_CPPFLAGS = -I$(top_srcdir)/cucul -I$(top_srcdir)/caca
 
 hsv_SOURCES = hsv.c
