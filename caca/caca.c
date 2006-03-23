@@ -74,9 +74,9 @@ caca_t * caca_attach(cucul_t * qq)
     kk->events.key_timer.last_usec = 0;
     kk->events.last_key_ticks = 0;
     kk->events.autorepeat_ticks = 0;
-    kk->events.last_key = 0;
+    kk->events.last_key_event.type = CACA_EVENT_NONE;
 #endif
-#if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO)
+#if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO) || defined(USE_GL)
     kk->events.queue = 0;
 #endif
 

@@ -33,6 +33,7 @@ uint32_t buffer[256 * 4];
 
 int main(void)
 {
+    struct caca_event ev;
     cucul_t *qq, *gg, *mask;
     caca_t *kk;
     struct cucul_bitmap *left, *right;
@@ -61,16 +62,19 @@ int main(void)
 
     for(x = 0; ; x++)
     {
-        int ev = caca_get_event(kk, CACA_EVENT_KEY_PRESS);
+        int ret = caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev);
 
-        if(ev == (CACA_EVENT_KEY_PRESS | CACA_KEY_LEFT))
-            gam /= 1.03;
-        else if(ev == (CACA_EVENT_KEY_PRESS | CACA_KEY_RIGHT))
-            gam *= 1.03;
-        else if(ev == (CACA_EVENT_KEY_PRESS | CACA_KEY_DOWN))
-            gam = 1.0;
-        else if(ev == (CACA_EVENT_KEY_PRESS | CACA_KEY_ESCAPE))
-            break;
+        if(ret)
+        {
+            if(ev.data.key.c == CACA_KEY_LEFT)
+                gam /= 1.03;
+            else if(ev.data.key.c == CACA_KEY_RIGHT)
+                gam *= 1.03;
+            else if(ev.data.key.c == CACA_KEY_DOWN)
+                gam = 1.0;
+            else if(ev.data.key.c == CACA_KEY_ESCAPE)
+                break;
+        }
 
         /* Resize the spare canvas, just in case the main one changed */
         cucul_set_size(gg, cucul_get_width(qq), cucul_get_height(qq));

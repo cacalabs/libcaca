@@ -24,6 +24,7 @@ int main(int argc, char **argv)
 {
     cucul_t *qq;
     caca_t *kk;
+    struct caca_event ev;
     int i, j;
 
     qq = cucul_create(0, 0);
@@ -49,7 +50,7 @@ int main(int argc, char **argv)
     }
 
     caca_display(kk);
-    caca_wait_event(kk, CACA_EVENT_KEY_PRESS);
+    caca_wait_event(kk, CACA_EVENT_KEY_PRESS, &ev);
 
     caca_detach(kk);
     cucul_free(qq);

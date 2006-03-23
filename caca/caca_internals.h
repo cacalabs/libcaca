@@ -115,7 +115,7 @@ struct caca_context
         unsigned int (* get_window_height) (caca_t *);
         void (* display) (caca_t *);
         void (* handle_resize) (caca_t *);
-        unsigned int (* get_event) (caca_t *);
+        int (* get_event) (caca_t *, struct caca_event *);
     } drv;
 
     /* Mouse position */
@@ -139,15 +139,15 @@ struct caca_context
 
     struct events
     {
-#if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO)
-        unsigned int buf[EVENTBUF_LEN];
+#if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO) || defined(USE_GL)
+        struct caca_event buf[EVENTBUF_LEN];
         int queue;
 #endif
 #if defined(USE_SLANG) || defined(USE_NCURSES)
         struct caca_timer key_timer;
         unsigned int last_key_ticks;
         unsigned int autorepeat_ticks;
-        unsigned int last_key;
+        struct caca_event last_key_event;
 #endif
     } events;
 };
@@ -158,9 +158,9 @@ extern unsigned int _caca_getticks(struct caca_timer *);
 
 /* Internal event functions */
 extern void _caca_handle_resize(caca_t *);
-#if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO)
-extern void _push_event(caca_t *, unsigned int);
-extern unsigned int _pop_event(caca_t *);
+#if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO) || defined(USE_GL)
+extern void _push_event(caca_t *, struct caca_event *);
+extern int _pop_event(caca_t *, struct caca_event *);
 #endif
 
 #endif /* __CACA_INTERNALS_H__ */

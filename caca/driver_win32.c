@@ -235,7 +235,7 @@ static void win32_handle_resize(caca_t *kk)
     kk->resize.h = kk->qq->height;
 }
 
-static unsigned int win32_get_event(caca_t *kk)
+static int win32_get_event(caca_t *kk, struct caca_event *ev)
 {
     INPUT_RECORD rec;
     DWORD num;
@@ -252,12 +252,19 @@ static unsigned int win32_get_event(caca_t *kk)
             unsigned int event;
 
             if(rec.Event.KeyEvent.bKeyDown)
-                event = CACA_EVENT_KEY_PRESS;
+                ev->type = CACA_EVENT_KEY_PRESS;
             else
-                event = CACA_EVENT_KEY_RELEASE;
+                ev->type = CACA_EVENT_KEY_RELEASE;
 
             if(rec.Event.KeyEvent.uChar.AsciiChar)
-                return event | rec.Event.KeyEvent.uChar.AsciiChar;
+            {
+                ev->data.key.c = rec.Event.KeyEvent.uChar.AsciiChar;
+                ev->data.key.ucs4 = (uint32_t)ev->data.key.c;
+                ev->data.key.utf8[0] = ev->data.key.c;
+                ev->data.key.utf8[1] = '\0';
+
+                return 1;
+            }
         }
 
         if(rec.EventType == MOUSE_EVENT)
@@ -265,10 +272,18 @@ static unsigned int win32_get_event(caca_t *kk)
             if(rec.Event.MouseEvent.dwEventFlags == 0)
             {
                 if(rec.Event.MouseEvent.dwButtonState & 0x01)
-                    return CACA_EVENT_MOUSE_PRESS | 0x000001;
+                {
+                    ev->type = CACA_EVENT_MOUSE_PRESS;
+                    ev->data.mouse.button = 1;
+                    return 1;
+                }
 
                 if(rec.Event.MouseEvent.dwButtonState & 0x02)
-                    return CACA_EVENT_MOUSE_PRESS | 0x000002;
+                {
+                    ev->type = CACA_EVENT_MOUSE_PRESS;
+                    ev->data.mouse.button = 2;
+                    return 1;
+                }
             }
             else if(rec.Event.MouseEvent.dwEventFlags == MOUSE_MOVED)
             {
@@ -281,8 +296,10 @@ static unsigned int win32_get_event(caca_t *kk)
                 kk->mouse.x = pos.X;
                 kk->mouse.y = pos.Y;
 
-                return CACA_EVENT_MOUSE_MOTION
-                        | (kk->mouse.x << 12) | kk->mouse.y;
+                ev->type = CACA_EVENT_MOUSE_MOTION;
+                ev->data.mouse.x = kk->mouse.x;
+                ev->data.mouse.y = kk->mouse.y;
+                return 1;
             }
 #if 0
             else if(rec.Event.MouseEvent.dwEventFlags == DOUBLE_CLICK)
@@ -303,11 +320,13 @@ static unsigned int win32_get_event(caca_t *kk)
         }
 
         /* Unknown event */
-        return CACA_EVENT_NONE;
+        ev->type = CACA_EVENT_NONE;
+        return 0;
     }
 
     /* No event */
-    return CACA_EVENT_NONE;
+    ev->type = CACA_EVENT_NONE;
+    return 0;
 }
 
 /*

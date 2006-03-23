@@ -80,10 +80,14 @@ int main (int argc, char **argv)
     /* Main loop */
     for(;;) 
     {
-        switch(caca_get_event(kk, CACA_EVENT_KEY_PRESS))
+        struct caca_event ev;
+        if(caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev))
         {
-            case CACA_EVENT_KEY_PRESS | CACA_KEY_ESCAPE: goto end;
-            case CACA_EVENT_KEY_PRESS | ' ': pause = !pause;
+            switch(ev.data.key.c)
+            {
+                case CACA_KEY_ESCAPE: goto end;
+                case ' ': pause = !pause;
+            }
         }
 
         if(pause)

@@ -28,6 +28,7 @@ uint32_t buffer[256*256];
 
 int main(void)
 {
+    struct caca_event ev;
     cucul_t *qq;
     caca_t *kk;
 
@@ -52,7 +53,7 @@ int main(void)
 
     caca_display(kk);
 
-    while(!caca_get_event(kk, CACA_EVENT_KEY_PRESS));
+    caca_wait_event(kk, CACA_EVENT_KEY_PRESS, &ev);
 
     caca_detach(kk);
     cucul_free(qq);

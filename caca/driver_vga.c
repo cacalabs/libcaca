@@ -134,10 +134,11 @@ static void vga_handle_resize(caca_t *kk)
     kk->resize.h = kk->qq->height;
 }
 
-static unsigned int vga_get_event(caca_t *kk)
+static int vga_get_event(caca_t *kk, struct caca_event *ev)
 {
     /* FIXME */
-    return CACA_EVENT_NONE;
+    ev->type = CACA_EVENT_NONE;
+    return 0;
 }
 
 /*

@@ -113,16 +113,29 @@ extern "C"
  *
  *  Event types returned by caca_get_event().
  */
-enum caca_event
+enum caca_event_type
 {
-    CACA_EVENT_NONE =          0x00000000, /**< No event. */
-    CACA_EVENT_KEY_PRESS =     0x01000000, /**< A key was pressed. */
-    CACA_EVENT_KEY_RELEASE =   0x02000000, /**< A key was released. */
-    CACA_EVENT_MOUSE_PRESS =   0x04000000, /**< A mouse button was pressed. */
-    CACA_EVENT_MOUSE_RELEASE = 0x08000000, /**< A mouse button was released. */
-    CACA_EVENT_MOUSE_MOTION =  0x10000000, /**< The mouse was moved. */
-    CACA_EVENT_RESIZE =        0x20000000, /**< The window was resized. */
-    CACA_EVENT_ANY =           0xff000000  /**< Bitmask for any event. */
+    CACA_EVENT_NONE =          0x0000, /**< No event. */
+
+    CACA_EVENT_KEY_PRESS =     0x0001, /**< A key was pressed. */
+    CACA_EVENT_KEY_RELEASE =   0x0002, /**< A key was released. */
+    CACA_EVENT_MOUSE_PRESS =   0x0004, /**< A mouse button was pressed. */
+    CACA_EVENT_MOUSE_RELEASE = 0x0008, /**< A mouse button was released. */
+    CACA_EVENT_MOUSE_MOTION =  0x0010, /**< The mouse was moved. */
+    CACA_EVENT_RESIZE =        0x0020, /**< The window was resized. */
+
+    CACA_EVENT_ANY =           0xffff  /**< Bitmask for any event. */
+};
+
+struct caca_event
+{
+    enum caca_event_type type;
+    union
+    {
+        struct { unsigned int x, y, button; } mouse;
+        struct { unsigned int w, h; } resize;
+        struct { unsigned int c; unsigned long int ucs4; char utf8[8]; } key;
+    } data;
 };
 
 /** \brief Special key values.
@@ -196,8 +209,8 @@ int caca_set_window_title(caca_t *kk, char const *);
  *  clicks.
  *
  *  @{ */
-unsigned int caca_get_event(caca_t *kk, unsigned int);
-unsigned int caca_wait_event(caca_t *kk, unsigned int);
+int caca_get_event(caca_t *kk, unsigned int, struct caca_event *);
+int caca_wait_event(caca_t *kk, unsigned int, struct caca_event *);
 unsigned int caca_get_mouse_x(caca_t *kk);
 unsigned int caca_get_mouse_y(caca_t *kk);
 /*  @} */

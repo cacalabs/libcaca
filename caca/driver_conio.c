@@ -121,16 +121,30 @@ static void conio_handle_resize(caca_t *kk)
     kk->resize.h = kk->qq->height;
 }
 
-static unsigned int conio_get_event(caca_t *kk)
+static int conio_get_event(caca_t *kk, struct caca_event *ev)
 {
-    unsigned int event;
+    unsigned char ch;
+    struct caca_event release;
 
     if(!_conio_kbhit())
-        return CACA_EVENT_NONE;
+    {
+        ev->type = CACA_EVENT_NONE;
+        return 0;
+    }
 
-    event = getch();
-    _push_event(kk, CACA_EVENT_KEY_RELEASE | event);
-    return CACA_EVENT_KEY_PRESS | event;
+    ch = getch();
+
+    ev->type = CACA_EVENT_KEY_PRESS;
+    ev->data.key.c = ch;
+    ev->data.key.ucs4 = (uint32_t)ch;
+    ev->data.key.utf8[0] = ch;
+    ev->data.key.utf8[1] = '\0';
+
+    release = *ev;
+    release.type = CACA_EVENT_KEY_RELEASE;
+    _push_event(kk, &release);
+
+    return 1;
 }
 
 /*

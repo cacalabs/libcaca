@@ -143,32 +143,34 @@ int main(int argc, char **argv)
     /* Go ! */
     while(!quit)
     {
+        struct caca_event ev;
         unsigned int const event_mask = CACA_EVENT_KEY_PRESS
                                       | CACA_EVENT_RESIZE
                                       | CACA_EVENT_MOUSE_PRESS;
-        unsigned int event, new_status = 0, new_help = 0;
+        unsigned int new_status = 0, new_help = 0;
+        int event;
 
         if(update)
-            event = caca_get_event(kk, event_mask);
+            event = caca_get_event(kk, event_mask, &ev);
         else
-            event = caca_wait_event(kk, event_mask);
+            event = caca_wait_event(kk, event_mask, &ev);
 
         while(event)
         {
-            if(event & CACA_EVENT_MOUSE_PRESS)
+            if(ev.type & CACA_EVENT_MOUSE_PRESS)
             {
-                if((event & 0x00ffffff) == 1)
+                if(ev.data.mouse.button == 1)
                 {
                     if(items) current = (current + 1) % items;
                     reload = 1;
                 }
-                else if((event & 0x00ffffff) == 2)
+                else if(ev.data.mouse.button == 2)
                 {
                     if(items) current = (items + current - 1) % items;
                     reload = 1;
                 }
             }
-            else if(event & CACA_EVENT_KEY_PRESS) switch(event & 0x00ffffff)
+            else if(ev.type & CACA_EVENT_KEY_PRESS) switch(ev.data.key.c)
             {
             case 'n':
             case 'N':
@@ -287,11 +289,11 @@ int main(int argc, char **argv)
                 quit = 1;
                 break;
             }
-            else if(event == CACA_EVENT_RESIZE)
+            else if(ev.type == CACA_EVENT_RESIZE)
             {
                 caca_display(kk);
-                ww = cucul_get_width(qq);
-                wh = cucul_get_height(qq);
+                ww = ev.data.resize.w;
+                wh = ev.data.resize.h;
                 update = 1;
                 set_zoom(zoom);
             }
@@ -302,7 +304,7 @@ int main(int argc, char **argv)
             if(help || new_help)
                 help = new_help;
 
-            event = caca_get_event(kk, CACA_EVENT_KEY_PRESS);
+            event = caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev);
         }
 
         if(items && reload)

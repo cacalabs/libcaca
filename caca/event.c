@@ -19,13 +19,17 @@
 
 #include "config.h"
 
+#if !defined(__KERNEL__)
+#   include <stdio.h>
+#endif
+
 #include "cucul.h"
 #include "cucul_internals.h"
 #include "caca.h"
 #include "caca_internals.h"
 
-static unsigned int _get_next_event(caca_t *);
-static unsigned int _lowlevel_event(caca_t *);
+static int _get_next_event(caca_t *, struct caca_event *);
+static int _lowlevel_event(caca_t *, struct caca_event *);
 
 #if !defined(_DOXYGEN_SKIP_ME)
 /* If no new key was pressed after AUTOREPEAT_THRESHOLD usec, assume the
@@ -48,17 +52,17 @@ static unsigned int _lowlevel_event(caca_t *);
  * \param event_mask Bitmask of requested events.
  * \return The next matching event in the queue, or 0 if no event is pending.
  */
-unsigned int caca_get_event(caca_t *kk, unsigned int event_mask)
+int caca_get_event(caca_t *kk, unsigned int event_mask, struct caca_event *ev)
 {
     if(!event_mask)
-        return CACA_EVENT_NONE;
+        return 0;
 
     for( ; ; )
     {
-        unsigned int event = _get_next_event(kk);
+        int ret = _get_next_event(kk, ev);
 
-        if(!event || event & event_mask)
-            return event;
+        if(!ret || ev->type & event_mask)
+            return ret;
     }
 }
 
@@ -72,17 +76,17 @@ unsigned int caca_get_event(caca_t *kk, unsigned int event_mask)
  *  \param event_mask Bitmask of requested events.
  *  \return The next event in the queue.
  */
-unsigned int caca_wait_event(caca_t *kk, unsigned int event_mask)
+int caca_wait_event(caca_t *kk, unsigned int event_mask, struct caca_event *ev)
 {
     if(!event_mask)
-        return CACA_EVENT_NONE;
+        return 0;
 
     for( ; ; )
     {
-        unsigned int event = _get_next_event(kk);
+        int ret = _get_next_event(kk, ev);
 
-        if(event & event_mask)
-            return event;
+        if(ret && (ev->type & event_mask))
+            return ret;
 
         _caca_sleep(10000);
     }
@@ -126,22 +130,25 @@ unsigned int caca_get_mouse_y(caca_t *kk)
  * XXX: The following functions are local.
  */
 
-static unsigned int _get_next_event(caca_t *kk)
+static int _get_next_event(caca_t *kk, struct caca_event *ev)
 {
 #if defined(USE_SLANG) || defined(USE_NCURSES)
     unsigned int ticks;
 #endif
-    unsigned int event;
+    int ret;
 
     /* If we are about to return a resize event, acknowledge it */
     if(kk->resize.resized)
     {
         kk->resize.resized = 0;
         _caca_handle_resize(kk);
-        return CACA_EVENT_RESIZE;
+        ev->type = CACA_EVENT_RESIZE;
+        ev->data.resize.w = kk->qq->width;
+        ev->data.resize.h = kk->qq->height;
+        return 1;
     }
 
-    event = _lowlevel_event(kk);
+    ret = _lowlevel_event(kk, ev);
 
 #if defined(USE_SLANG)
     if(kk->drv.driver != CACA_DRIVER_SLANG)
@@ -149,7 +156,7 @@ static unsigned int _get_next_event(caca_t *kk)
 #if defined(USE_NCURSES)
     if(kk->drv.driver != CACA_DRIVER_NCURSES)
 #endif
-    return event;
+    return ret;
 
 #if defined(USE_SLANG) || defined(USE_NCURSES)
     /* Simulate long keypresses using autorepeat features */
@@ -158,83 +165,87 @@ static unsigned int _get_next_event(caca_t *kk)
     kk->events.autorepeat_ticks += ticks;
 
     /* Handle autorepeat */
-    if(kk->events.last_key
+    if(kk->events.last_key_event.type
            && kk->events.autorepeat_ticks > AUTOREPEAT_TRIGGER
            && kk->events.autorepeat_ticks > AUTOREPEAT_THRESHOLD
            && kk->events.autorepeat_ticks > AUTOREPEAT_RATE)
     {
-        _push_event(kk, event);
+        _push_event(kk, ev);
         kk->events.autorepeat_ticks -= AUTOREPEAT_RATE;
-        return CACA_EVENT_KEY_PRESS | kk->events.last_key;
+        *ev = kk->events.last_key_event;
+        return 1;
     }
 
     /* We are in autorepeat mode and the same key was just pressed, ignore
      * this event and return the next one by calling ourselves. */
-    if(event == (CACA_EVENT_KEY_PRESS | kk->events.last_key))
+    if(ev->type == CACA_EVENT_KEY_PRESS
+        && kk->events.last_key_event.type
+        && ev->data.key.c == kk->events.last_key_event.data.key.c
+        && ev->data.key.ucs4 == kk->events.last_key_event.data.key.ucs4)
     {
         kk->events.last_key_ticks = 0;
-        return _get_next_event(kk);
+        return _get_next_event(kk, ev);
     }
 
     /* We are in autorepeat mode, but key has expired or a new key was
      * pressed - store our event and return a key release event first */
-    if(kk->events.last_key
+    if(kk->events.last_key_event.type
           && (kk->events.last_key_ticks > AUTOREPEAT_THRESHOLD
-               || (event & CACA_EVENT_KEY_PRESS)))
+               || (ev->type & CACA_EVENT_KEY_PRESS)))
     {
-        _push_event(kk, event);
-        event = CACA_EVENT_KEY_RELEASE | kk->events.last_key;
-        kk->events.last_key = 0;
-        return event;
+        _push_event(kk, ev);
+        *ev = kk->events.last_key_event;
+        ev->type = CACA_EVENT_KEY_RELEASE;
+        kk->events.last_key_event.type = CACA_EVENT_NONE;
+        return 1;
     }
 
     /* A new key was pressed, enter autorepeat mode */
-    if(event & CACA_EVENT_KEY_PRESS)
+    if(ev->type & CACA_EVENT_KEY_PRESS)
     {
         kk->events.last_key_ticks = 0;
         kk->events.autorepeat_ticks = 0;
-        kk->events.last_key = event & 0x00ffffff;
+        kk->events.last_key_event = *ev;
     }
 
-    return event;
+    return ev->type ? 1 : 0;
 #endif
 }
 
-static unsigned int _lowlevel_event(caca_t *kk)
+static int _lowlevel_event(caca_t *kk, struct caca_event *ev)
 {
 #if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO)
-    unsigned int event = _pop_event(kk);
+    int ret = _pop_event(kk, ev);
 
-    if(event)
-        return event;
+    if(ret)
+        return ret;
 #endif
 
-    return kk->drv.get_event(kk);
+    return kk->drv.get_event(kk, ev);
 }
 
-#if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO)
-void _push_event(caca_t *kk, unsigned int event)
+#if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO) || defined(USE_GL)
+void _push_event(caca_t *kk, struct caca_event *ev)
 {
-    if(!event || kk->events.queue == EVENTBUF_LEN)
+    if(!ev->type || kk->events.queue == EVENTBUF_LEN)
         return;
-    kk->events.buf[kk->events.queue] = event;
+    kk->events.buf[kk->events.queue] = *ev;
     kk->events.queue++;
 }
 
-unsigned int _pop_event(caca_t *kk)
+int _pop_event(caca_t *kk, struct caca_event *ev)
 {
     int i;
-    unsigned int event;
 
     if(kk->events.queue == 0)
-        return CACA_EVENT_NONE;
+        return 0;
 
-    event = kk->events.buf[0];
+    *ev = kk->events.buf[0];
     for(i = 1; i < kk->events.queue; i++)
         kk->events.buf[i - 1] = kk->events.buf[i];
     kk->events.queue--;
 
-    return event;
+    return 1;
 }
 #endif
 

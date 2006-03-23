@@ -68,19 +68,19 @@ int main(int argc, char **argv)
     /* Go ! */
     while(!quit)
     {
+        struct caca_event ev;
         int menu = 0, mouse = 0, xmouse = 0, ymouse = 0;
-        int event;
 
-        while((event = caca_get_event(kk, CACA_EVENT_ANY)))
+        while(caca_get_event(kk, CACA_EVENT_ANY, &ev))
         {
-            if(demo && (event & CACA_EVENT_KEY_PRESS))
+            if(demo && (ev.type & CACA_EVENT_KEY_PRESS))
             {
                 menu = 1;
                 demo = NULL;
             }
-            else if(event & CACA_EVENT_KEY_PRESS)
+            else if(ev.type & CACA_EVENT_KEY_PRESS)
             {
-                switch(event & 0xffff)
+                switch(ev.data.key.c)
                 {
                 case 'q':
                 case 'Q':
@@ -139,11 +139,11 @@ int main(int argc, char **argv)
                 if(demo)
                     cucul_clear(qq);
             }
-            else if(event & CACA_EVENT_MOUSE_MOTION)
+            else if(ev.type & CACA_EVENT_MOUSE_MOTION)
             {
                 mouse = 1;
-                xmouse = (event & 0xfff000) >> 12;
-                ymouse = event & 0xfff;
+                xmouse = ev.data.mouse.x;
+                ymouse = ev.data.mouse.y;
             }
         }
 

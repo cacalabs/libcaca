@@ -283,7 +283,7 @@ static void network_handle_resize(caca_t *kk)
     /* Not handled */
 }
 
-static unsigned int network_get_event(caca_t *kk)
+static int network_get_event(caca_t *kk, struct caca_event *ev)
 {
     /* Manage new connections as this function will be called sometimes
      * more often than display */

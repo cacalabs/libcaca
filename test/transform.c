@@ -49,6 +49,7 @@ static char const *duck[] =
 
 int main(void)
 {
+    struct caca_event ev;
     cucul_t *qq, *normal, *flip, *flop, *rotate;
     caca_t *kk;
     int i;
@@ -107,7 +108,7 @@ int main(void)
 
     caca_display(kk);
 
-    while(!caca_get_event(kk, CACA_EVENT_KEY_PRESS));
+    caca_wait_event(kk, CACA_EVENT_KEY_PRESS, &ev);
 
     caca_detach(kk);
     cucul_free(rotate);

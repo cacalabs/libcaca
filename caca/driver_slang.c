@@ -254,13 +254,15 @@ static void slang_handle_resize(caca_t *kk)
         SLsmg_reinit_smg();
 }
 
-static unsigned int slang_get_event(caca_t *kk)
+static int slang_get_event(caca_t *kk, struct caca_event *ev)
 {
-    unsigned int event;
     int intkey;
 
     if(!SLang_input_pending(0))
-        return CACA_EVENT_NONE;
+    {
+        ev->type = CACA_EVENT_NONE;
+        return 0;
+    }
 
     /* We first use SLang_getkey() to see whether Esc was pressed
      * alone, then (if it wasn't) we unget the key and use SLkp_getkey()
@@ -276,7 +278,9 @@ static unsigned int slang_get_event(caca_t *kk)
     /* If the key was ASCII, return it immediately */
     if(intkey < 0x100)
     {
-        return CACA_EVENT_KEY_PRESS | intkey;
+        ev->type = CACA_EVENT_KEY_PRESS;
+        ev->data.key.c = intkey;
+        return 1;
     }
 
     if(intkey == 0x3e9)
@@ -284,49 +288,59 @@ static unsigned int slang_get_event(caca_t *kk)
         int button = (SLang_getkey() - ' ' + 1) & 0xf;
         unsigned int x = SLang_getkey() - '!';
         unsigned int y = SLang_getkey() - '!';
-        _push_event(kk, CACA_EVENT_MOUSE_PRESS | button);
-        _push_event(kk, CACA_EVENT_MOUSE_RELEASE | button);
+
+        ev->data.mouse.button = button;
+        ev->type = CACA_EVENT_MOUSE_PRESS;
+        _push_event(kk, ev);
+        ev->type = CACA_EVENT_MOUSE_RELEASE;
+        _push_event(kk, ev);
 
         if(kk->mouse.x == x && kk->mouse.y == y)
-            return _pop_event(kk);
+            return _pop_event(kk, ev);
 
         kk->mouse.x = x;
         kk->mouse.y = y;
 
-        return CACA_EVENT_MOUSE_MOTION | (kk->mouse.x << 12) | kk->mouse.y;
+        ev->type = CACA_EVENT_MOUSE_MOTION;
+        ev->data.mouse.x = kk->mouse.x;
+        ev->data.mouse.y = kk->mouse.y;
+        return 1;
     }
-
-    event = CACA_EVENT_KEY_PRESS;
 
     switch(intkey)
     {
-        case SL_KEY_UP: return event | CACA_KEY_UP;
-        case SL_KEY_DOWN: return event | CACA_KEY_DOWN;
-        case SL_KEY_LEFT: return event | CACA_KEY_LEFT;
-        case SL_KEY_RIGHT: return event | CACA_KEY_RIGHT;
+        case SL_KEY_UP: ev->data.key.c = CACA_KEY_UP; break;
+        case SL_KEY_DOWN: ev->data.key.c = CACA_KEY_DOWN; break;
+        case SL_KEY_LEFT: ev->data.key.c = CACA_KEY_LEFT; break;
+        case SL_KEY_RIGHT: ev->data.key.c = CACA_KEY_RIGHT; break;
 
-        case SL_KEY_IC: return event | CACA_KEY_INSERT;
-        case SL_KEY_DELETE: return event | CACA_KEY_DELETE;
-        case SL_KEY_HOME: return event | CACA_KEY_HOME;
-        case SL_KEY_END: return event | CACA_KEY_END;
-        case SL_KEY_PPAGE: return event | CACA_KEY_PAGEUP;
-        case SL_KEY_NPAGE: return event | CACA_KEY_PAGEDOWN;
+        case SL_KEY_IC: ev->data.key.c = CACA_KEY_INSERT; break;
+        case SL_KEY_DELETE: ev->data.key.c = CACA_KEY_DELETE; break;
+        case SL_KEY_HOME: ev->data.key.c = CACA_KEY_HOME; break;
+        case SL_KEY_END: ev->data.key.c = CACA_KEY_END; break;
+        case SL_KEY_PPAGE: ev->data.key.c = CACA_KEY_PAGEUP; break;
+        case SL_KEY_NPAGE: ev->data.key.c = CACA_KEY_PAGEDOWN; break;
 
-        case SL_KEY_F(1): return event | CACA_KEY_F1;
-        case SL_KEY_F(2): return event | CACA_KEY_F2;
-        case SL_KEY_F(3): return event | CACA_KEY_F3;
-        case SL_KEY_F(4): return event | CACA_KEY_F4;
-        case SL_KEY_F(5): return event | CACA_KEY_F5;
-        case SL_KEY_F(6): return event | CACA_KEY_F6;
-        case SL_KEY_F(7): return event | CACA_KEY_F7;
-        case SL_KEY_F(8): return event | CACA_KEY_F8;
-        case SL_KEY_F(9): return event | CACA_KEY_F9;
-        case SL_KEY_F(10): return event | CACA_KEY_F10;
-        case SL_KEY_F(11): return event | CACA_KEY_F11;
-        case SL_KEY_F(12): return event | CACA_KEY_F12;
+        case SL_KEY_F(1): ev->data.key.c = CACA_KEY_F1; break;
+        case SL_KEY_F(2): ev->data.key.c = CACA_KEY_F2; break;
+        case SL_KEY_F(3): ev->data.key.c = CACA_KEY_F3; break;
+        case SL_KEY_F(4): ev->data.key.c = CACA_KEY_F4; break;
+        case SL_KEY_F(5): ev->data.key.c = CACA_KEY_F5; break;
+        case SL_KEY_F(6): ev->data.key.c = CACA_KEY_F6; break;
+        case SL_KEY_F(7): ev->data.key.c = CACA_KEY_F7; break;
+        case SL_KEY_F(8): ev->data.key.c = CACA_KEY_F8; break;
+        case SL_KEY_F(9): ev->data.key.c = CACA_KEY_F9; break;
+        case SL_KEY_F(10): ev->data.key.c = CACA_KEY_F10; break;
+        case SL_KEY_F(11): ev->data.key.c = CACA_KEY_F11; break;
+        case SL_KEY_F(12): ev->data.key.c = CACA_KEY_F12; break;
+
+        default: ev->type = CACA_EVENT_NONE; return 0;
     }
 
-    return CACA_EVENT_NONE;
+    ev->type = CACA_EVENT_KEY_PRESS;
+    ev->data.key.ucs4 = 0;
+    ev->data.key.utf8[0] = '\0';
+    return 1;
 }
 
 /*

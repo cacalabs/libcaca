@@ -399,9 +399,8 @@ static void x11_handle_resize(caca_t *kk)
     kk->drv.p->pixmap = new_pixmap;
 }
 
-static unsigned int x11_get_event(caca_t *kk)
+static int x11_get_event(caca_t *kk, struct caca_event *ev)
 {
-    unsigned int event = 0;
     XEvent xevent;
     char key;
 
@@ -457,56 +456,77 @@ static unsigned int x11_get_event(caca_t *kk)
             kk->mouse.x = newx;
             kk->mouse.y = newy;
 
-            return CACA_EVENT_MOUSE_MOTION | (kk->mouse.x << 12) | kk->mouse.y;
+            ev->type = CACA_EVENT_MOUSE_MOTION;
+            ev->data.mouse.x = kk->mouse.x;
+            ev->data.mouse.y = kk->mouse.y;
+            return 1;
         }
 
         /* Check for mouse press and release events */
         if(xevent.type == ButtonPress)
-            return CACA_EVENT_MOUSE_PRESS
-                    | ((XButtonEvent *)&xevent)->button;
+        {
+            ev->type = CACA_EVENT_MOUSE_PRESS;
+            ev->data.mouse.button = ((XButtonEvent *)&xevent)->button;
+            return 1;
+        }
 
         if(xevent.type == ButtonRelease)
-            return CACA_EVENT_MOUSE_RELEASE
-                    | ((XButtonEvent *)&xevent)->button;
+        {
+            ev->type = CACA_EVENT_MOUSE_RELEASE;
+            ev->data.mouse.button = ((XButtonEvent *)&xevent)->button;
+            return 1;
+        }
 
         /* Check for key press and release events */
         if(xevent.type == KeyPress)
-            event |= CACA_EVENT_KEY_PRESS;
+            ev->type = CACA_EVENT_KEY_PRESS;
         else if(xevent.type == KeyRelease)
-            event |= CACA_EVENT_KEY_RELEASE;
+            ev->type = CACA_EVENT_KEY_RELEASE;
         else
             continue;
 
         if(XLookupString(&xevent.xkey, &key, 1, NULL, NULL))
-            return event | key;
+        {
+            ev->data.key.c = key;
+            ev->data.key.ucs4 = key;
+            ev->data.key.utf8[0] = key;
+            ev->data.key.utf8[1] = '\0';
+            return 1;
+        }
 
         keysym = XKeycodeToKeysym(kk->drv.p->dpy, xevent.xkey.keycode, 0);
         switch(keysym)
         {
-        case XK_F1:    return event | CACA_KEY_F1;
-        case XK_F2:    return event | CACA_KEY_F2;
-        case XK_F3:    return event | CACA_KEY_F3;
-        case XK_F4:    return event | CACA_KEY_F4;
-        case XK_F5:    return event | CACA_KEY_F5;
-        case XK_F6:    return event | CACA_KEY_F6;
-        case XK_F7:    return event | CACA_KEY_F7;
-        case XK_F8:    return event | CACA_KEY_F8;
-        case XK_F9:    return event | CACA_KEY_F9;
-        case XK_F10:   return event | CACA_KEY_F10;
-        case XK_F11:   return event | CACA_KEY_F11;
-        case XK_F12:   return event | CACA_KEY_F12;
-        case XK_F13:   return event | CACA_KEY_F13;
-        case XK_F14:   return event | CACA_KEY_F14;
-        case XK_F15:   return event | CACA_KEY_F15;
-        case XK_Left:  return event | CACA_KEY_LEFT;
-        case XK_Right: return event | CACA_KEY_RIGHT;
-        case XK_Up:    return event | CACA_KEY_UP;
-        case XK_Down:  return event | CACA_KEY_DOWN;
-        default:       return CACA_EVENT_NONE;
+            case XK_F1:    ev->data.key.c = CACA_KEY_F1;    break;
+            case XK_F2:    ev->data.key.c = CACA_KEY_F2;    break;
+            case XK_F3:    ev->data.key.c = CACA_KEY_F3;    break;
+            case XK_F4:    ev->data.key.c = CACA_KEY_F4;    break;
+            case XK_F5:    ev->data.key.c = CACA_KEY_F5;    break;
+            case XK_F6:    ev->data.key.c = CACA_KEY_F6;    break;
+            case XK_F7:    ev->data.key.c = CACA_KEY_F7;    break;
+            case XK_F8:    ev->data.key.c = CACA_KEY_F8;    break;
+            case XK_F9:    ev->data.key.c = CACA_KEY_F9;    break;
+            case XK_F10:   ev->data.key.c = CACA_KEY_F10;   break;
+            case XK_F11:   ev->data.key.c = CACA_KEY_F11;   break;
+            case XK_F12:   ev->data.key.c = CACA_KEY_F12;   break;
+            case XK_F13:   ev->data.key.c = CACA_KEY_F13;   break;
+            case XK_F14:   ev->data.key.c = CACA_KEY_F14;   break;
+            case XK_F15:   ev->data.key.c = CACA_KEY_F15;   break;
+            case XK_Left:  ev->data.key.c = CACA_KEY_LEFT;  break;
+            case XK_Right: ev->data.key.c = CACA_KEY_RIGHT; break;
+            case XK_Up:    ev->data.key.c = CACA_KEY_UP;    break;
+            case XK_Down:  ev->data.key.c = CACA_KEY_DOWN;  break;
+
+            default: ev->type = CACA_EVENT_NONE; return 0;
         }
+
+        ev->data.key.ucs4 = 0;
+        ev->data.key.utf8[0] = '\0';
+        return 1;
     }
 
-    return CACA_EVENT_NONE;
+    ev->type = CACA_EVENT_NONE;
+    return 0;
 }
 
 /*

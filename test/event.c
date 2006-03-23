@@ -23,11 +23,11 @@
 static cucul_t *qq;
 static caca_t *kk;
 
-static void print_event(int, int, unsigned int);
+static void print_event(int, int, struct caca_event *);
 
 int main(int argc, char **argv)
 {
-    int *events;
+    struct caca_event *events;
     int i, h, quit;
 
     qq = cucul_create(0, 0);
@@ -47,23 +47,24 @@ int main(int argc, char **argv)
 
     caca_display(kk);
 
-    events = malloc(h * sizeof(int));
-    memset(events, 0, h * sizeof(int));
+    events = malloc(h * sizeof(struct caca_event));
+    memset(events, 0, h * sizeof(struct caca_event));
 
     for(quit = 0; quit < 4; )
     {
+        struct caca_event ev;
         static char const * quit_string[] = { "", "q", "qu", "qui", "quit" };
-        unsigned int event = caca_wait_event(kk, CACA_EVENT_ANY);
+        int ret = caca_wait_event(kk, CACA_EVENT_ANY, &ev);
 
-        if(!event)
+        if(!ret)
             continue;
 
         do
         {
             /* "quit" quits */
-            if(event & CACA_EVENT_KEY_PRESS)
+            if(ev.type & CACA_EVENT_KEY_PRESS)
             {
-                int key = event & ~CACA_EVENT_KEY_PRESS;
+                int key = ev.data.key.c;
                 if((key == 'q' && quit == 0) || (key == 'u' && quit == 1)
                     || (key == 'i' && quit == 2) || (key == 't' && quit == 3))
                     quit++;
@@ -73,27 +74,27 @@ int main(int argc, char **argv)
                     quit = 0;
             }
 
-            memmove(events + 1, events, (h - 1) * sizeof(int));
-            events[0] = event;
+            memmove(events + 1, events, (h - 1) * sizeof(struct caca_event));
+            events[0] = ev;
 
-            event = caca_get_event(kk, CACA_EVENT_ANY);
+            ret = caca_get_event(kk, CACA_EVENT_ANY, &ev);
         }
-        while(event);
+        while(ret);
 
         cucul_clear(qq);
 
         /* Print current event */
         cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
         cucul_draw_line(qq, 0, 0, cucul_get_width(qq) - 1, 0, " ");
-        print_event(0, 0, events[0]);
+        print_event(0, 0, events);
 
         cucul_draw_line(qq, 0, h, cucul_get_width(qq) - 1, h, " ");
         cucul_printf(qq, 0, h, "type \"quit\" to exit: %s", quit_string[quit]);
 
         /* Print previous events */
         cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLACK);
-        for(i = 1; i < h && events[i]; i++)
-            print_event(0, i, events[i]);
+        for(i = 1; i < h && events[i].type; i++)
+            print_event(0, i, events + i);
 
         caca_display(kk);
     }
@@ -105,39 +106,40 @@ int main(int argc, char **argv)
     return 0;
 }
 
-static void print_event(int x, int y, unsigned int event)
+static void print_event(int x, int y, struct caca_event *ev)
 {
     int character;
 
-    switch(event & 0xff000000)
+    switch(ev->type)
     {
     case CACA_EVENT_NONE:
         cucul_printf(qq, x, y, "CACA_EVENT_NONE");
         break;
     case CACA_EVENT_KEY_PRESS:
-        character = event & 0x00ffffff;
+        character = ev->data.key.c;
         cucul_printf(qq, x, y, "CACA_EVENT_KEY_PRESS 0x%02x (%c)", character,
                      (character > 0x20 && character < 0x80) ? character : '?');
         break;
     case CACA_EVENT_KEY_RELEASE:
-        character = event & 0x00ffffff;
+        character = ev->data.key.c;
         cucul_printf(qq, x, y, "CACA_EVENT_KEY_RELEASE 0x%02x (%c)", character,
                      (character > 0x20 && character < 0x80) ? character : '?');
         break;
     case CACA_EVENT_MOUSE_MOTION:
         cucul_printf(qq, x, y, "CACA_EVENT_MOUSE_MOTION %u %u",
-                     (event & 0x00fff000) >> 12, event & 0x00000fff);
+                     ev->data.mouse.x, ev->data.mouse.y);
         break;
     case CACA_EVENT_MOUSE_PRESS:
         cucul_printf(qq, x, y, "CACA_EVENT_MOUSE_PRESS %u",
-                     event & 0x00ffffff);
+                     ev->data.mouse.button);
         break;
     case CACA_EVENT_MOUSE_RELEASE:
         cucul_printf(qq, x, y, "CACA_EVENT_MOUSE_RELEASE %u",
-                     event & 0x00ffffff);
+                     ev->data.mouse.button);
         break;
     case CACA_EVENT_RESIZE:
-        cucul_printf(qq, x, y, "CACA_EVENT_RESIZE");
+        cucul_printf(qq, x, y, "CACA_EVENT_RESIZE %u %u",
+                     ev->data.resize.w, ev->data.resize.h);
         break;
     default:
         cucul_printf(qq, x, y, "CACA_EVENT_UNKNOWN");

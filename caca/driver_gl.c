@@ -308,62 +308,80 @@ static void gl_handle_resize(caca_t *kk)
     glMatrixMode(GL_MODELVIEW);
 }
 
-static unsigned int gl_get_event(caca_t *kk)
+static int gl_get_event(caca_t *kk, struct caca_event *ev)
 {
-    unsigned int event = 0;
-
     glutMainLoopEvent();
 
     if(kk->resize.resized)
-        return CACA_EVENT_RESIZE;
+    {
+        ev->type = CACA_EVENT_RESIZE;
+        ev->data.resize.w = kk->qq->width;
+        ev->data.resize.h = kk->qq->height;
+        return 1;
+    }
 
     if(kk->drv.p->mouse_changed)
     {
+        ev->type = CACA_EVENT_MOUSE_MOTION;
+        ev->data.mouse.x = kk->mouse.x;
+        ev->data.mouse.y = kk->mouse.y;
+        kk->drv.p->mouse_changed = 0;
+
         if(kk->drv.p->mouse_clicked)
         {
-            event |= CACA_EVENT_MOUSE_PRESS | kk->drv.p->mouse_button;
+            _push_event(kk, ev);
+            ev->type = CACA_EVENT_MOUSE_PRESS;
+            ev->data.mouse.button = kk->drv.p->mouse_button;
             kk->drv.p->mouse_clicked = 0;
         }
-        kk->mouse.x = kk->drv.p->mouse_x;
-        kk->mouse.y = kk->drv.p->mouse_y;
-        event |= CACA_EVENT_MOUSE_MOTION | (kk->mouse.x << 12) | kk->mouse.y;
-        kk->drv.p->mouse_changed = 0;
+
+        return 1;
     }
 
     if(kk->drv.p->key != 0)
     {
-        event |= CACA_EVENT_KEY_PRESS;
-        event |= kk->drv.p->key;
+        ev->type = CACA_EVENT_KEY_PRESS;
+        ev->data.key.c = kk->drv.p->key;
+        ev->data.key.ucs4 = (uint32_t)kk->drv.p->key;
+        ev->data.key.utf8[0] = kk->drv.p->key;
+        ev->data.key.utf8[1] = '\0';
         kk->drv.p->key = 0;
-        return event;
+        return 1;
     }
 
     if(kk->drv.p->special_key != 0)
     {
-        event |= CACA_EVENT_KEY_PRESS;
-
         switch(kk->drv.p->special_key)
         {
-            case GLUT_KEY_F1 : kk->drv.p->special_key = 0; return event | CACA_KEY_F1;
-            case GLUT_KEY_F2 : kk->drv.p->special_key = 0; return event | CACA_KEY_F2;
-            case GLUT_KEY_F3 : kk->drv.p->special_key = 0; return event | CACA_KEY_F3;
-            case GLUT_KEY_F4 : kk->drv.p->special_key = 0; return event | CACA_KEY_F4;
-            case GLUT_KEY_F5 : kk->drv.p->special_key = 0; return event | CACA_KEY_F5;
-            case GLUT_KEY_F6 : kk->drv.p->special_key = 0; return event | CACA_KEY_F6;
-            case GLUT_KEY_F7 : kk->drv.p->special_key = 0; return event | CACA_KEY_F7;
-            case GLUT_KEY_F8 : kk->drv.p->special_key = 0; return event | CACA_KEY_F8;
-            case GLUT_KEY_F9 : kk->drv.p->special_key = 0; return event | CACA_KEY_F9;
-            case GLUT_KEY_F10: kk->drv.p->special_key = 0; return event | CACA_KEY_F10;
-            case GLUT_KEY_F11: kk->drv.p->special_key = 0; return event | CACA_KEY_F11;
-            case GLUT_KEY_F12: kk->drv.p->special_key = 0; return event | CACA_KEY_F12;
-            case GLUT_KEY_LEFT : kk->drv.p->special_key = 0; return event | CACA_KEY_LEFT;
-            case GLUT_KEY_RIGHT: kk->drv.p->special_key = 0; return event | CACA_KEY_RIGHT;
-            case GLUT_KEY_UP   : kk->drv.p->special_key = 0; return event | CACA_KEY_UP;
-            case GLUT_KEY_DOWN : kk->drv.p->special_key = 0; return event | CACA_KEY_DOWN;
-            default: return CACA_EVENT_NONE;
+            case GLUT_KEY_F1 : ev->data.key.c = CACA_KEY_F1; break;
+            case GLUT_KEY_F2 : ev->data.key.c = CACA_KEY_F2; break;
+            case GLUT_KEY_F3 : ev->data.key.c = CACA_KEY_F3; break;
+            case GLUT_KEY_F4 : ev->data.key.c = CACA_KEY_F4; break;
+            case GLUT_KEY_F5 : ev->data.key.c = CACA_KEY_F5; break;
+            case GLUT_KEY_F6 : ev->data.key.c = CACA_KEY_F6; break;
+            case GLUT_KEY_F7 : ev->data.key.c = CACA_KEY_F7; break;
+            case GLUT_KEY_F8 : ev->data.key.c = CACA_KEY_F8; break;
+            case GLUT_KEY_F9 : ev->data.key.c = CACA_KEY_F9; break;
+            case GLUT_KEY_F10: ev->data.key.c = CACA_KEY_F10; break;
+            case GLUT_KEY_F11: ev->data.key.c = CACA_KEY_F11; break;
+            case GLUT_KEY_F12: ev->data.key.c = CACA_KEY_F12; break;
+            case GLUT_KEY_LEFT : ev->data.key.c = CACA_KEY_LEFT; break;
+            case GLUT_KEY_RIGHT: ev->data.key.c = CACA_KEY_RIGHT; break;
+            case GLUT_KEY_UP   : ev->data.key.c = CACA_KEY_UP; break;
+            case GLUT_KEY_DOWN : ev->data.key.c = CACA_KEY_DOWN; break;
+            default: ev->type = CACA_EVENT_NONE; return 0;
         }
+
+        ev->type = CACA_EVENT_KEY_PRESS;
+        ev->data.key.ucs4 = 0;
+        ev->data.key.utf8[0] = '\0';
+
+        kk->drv.p->special_key = 0;
+        return 1;
     }
-    return CACA_EVENT_NONE;
+
+    ev->type = CACA_EVENT_NONE;
+    return 0;
 }
 
 /*

@@ -53,13 +53,13 @@ int main(int argc, char **argv)
     /* Go ! */
     while(!quit)
     {
+        struct caca_event ev;
         int xa, ya, xb, yb;
         char buf[BUFSIZ];
-        int event;
 
-        while((event = caca_get_event(kk, CACA_EVENT_KEY_PRESS)))
+        while(caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev))
         {
-            switch(event & 0x00ffffff)
+            switch(ev.data.key.c)
             {
             case 0:
                 break;
