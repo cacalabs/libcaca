@@ -1,6 +1,6 @@
 # $Id$
 
-noinst_PROGRAMS = colors demo dithering event export gamma hsv optipal spritedit unicode
+noinst_PROGRAMS = colors demo dithering event export gamma hsv optipal spritedit transform unicode
 
 colors_SOURCES = colors.c
 colors_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
@@ -37,6 +37,10 @@ optipal_CPPFLAGS = -I$(top_srcdir)/cucul
 spritedit_SOURCES = spritedit.c
 spritedit_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
 spritedit_CPPFLAGS = -I$(top_srcdir)/cucul -I$(top_srcdir)/caca
+
+transform_SOURCES = transform.c
+transform_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
+transform_CPPFLAGS = -I$(top_srcdir)/cucul -I$(top_srcdir)/caca
 
 unicode_SOURCES = unicode.c
 unicode_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
