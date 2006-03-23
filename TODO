@@ -16,9 +16,6 @@ libcucul
      support, background colour support, thinking of a storage format,
      etc.)
 
-   o support for Unicode characters in the primitives (circle, lines,
-     boxes, etc.)
-
    o bitmap output support (will require one or several custom fonts),
      maybe should be in libcaca.
 
@@ -27,10 +24,6 @@ libcucul
    o support for transparency (CUCUL_COLOR_TRANSPARENT)
 
    o ASCII/ANSI art loading functions (maybe load them as sprites)
-
-   o old school ASCII-art handling functions, for instance mirroring
-     routines that are able to change "\_o< !" into "! >o_/" or even
-     into "/▔o< ¡" with Unicode support added.
 
 
   API-independent stuff
@@ -52,10 +45,6 @@ libcaca
 
    o text edit widget with cursor support (I'm unsure about this, it
      seems pretty difficult)
-
-   o replace the event return value with a structure so that we can put
-     more information into it, such as mouse coordinates or Unicode
-     characters.
 
 
   API-independent stuff
