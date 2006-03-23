@@ -258,7 +258,7 @@ static uint32_t rotatechar(uint32_t ch)
 
     static uint32_t const norotate[] =
     {
-         /* ASCII */
+         /* ASCII - FIXME: a lot are missing */
          (uint32_t)' ', (uint32_t)'*', (uint32_t)'+', (uint32_t)'-',
          (uint32_t)'0', (uint32_t)'8', (uint32_t)':', (uint32_t)'=',
          /* Unicode */
@@ -269,9 +269,11 @@ static uint32_t rotatechar(uint32_t ch)
     static uint32_t const pairs[] =
     {
          /* ASCII */
-         (uint32_t)'(', (uint32_t)')', (uint32_t)'M', (uint32_t)'W',
-         (uint32_t)'b', (uint32_t)'q', (uint32_t)'d', (uint32_t)'p',
-         (uint32_t)'n', (uint32_t)'u', (uint32_t)'.', (uint32_t)'\'',
+         (uint32_t)'(', (uint32_t)')', (uint32_t)'<', (uint32_t)'>',
+         (uint32_t)'[', (uint32_t)']', (uint32_t)'{', (uint32_t)'}',
+         (uint32_t)'.', (uint32_t)'\'',
+         (uint32_t)'M', (uint32_t)'W', (uint32_t)'b', (uint32_t)'q',
+         (uint32_t)'d', (uint32_t)'p', (uint32_t)'n', (uint32_t)'u',
          /* ASCII-Unicode */
          (uint32_t)'_', 0x2594, /* _ ▔ */
          (uint32_t)',', 0x02bb, /* , ʻ */
