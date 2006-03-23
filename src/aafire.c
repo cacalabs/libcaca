@@ -100,7 +100,7 @@ initialize (void)
 #endif
 
 #ifdef LIBCACA
-  qq = cucul_init(80, 32);
+  qq = cucul_create(80, 32);
   if (!qq)
     {
       printf ("Failed to initialize libcucul\n");
@@ -153,7 +153,7 @@ uninitialize (void)
 {
 #ifdef LIBCACA
   caca_detach(kk);
-  cucul_end(qq);
+  cucul_free(qq);
 #else
   aa_close (context);
 #endif

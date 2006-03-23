@@ -39,7 +39,7 @@ int main(void)
     int neara, dista, nearb, distb, dist;
     int x, y;
 
-    qq = cucul_init(0, 0);
+    qq = cucul_create(0, 0);
     kk = caca_attach(qq);
 
     for(x = 0; x < 100; x++)
@@ -126,7 +126,7 @@ int main(void)
     while(!caca_get_event(kk, CACA_EVENT_KEY_PRESS));
 
     caca_detach(kk);
-    cucul_end(qq);
+    cucul_free(qq);
 
     return 0;
 }

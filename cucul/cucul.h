@@ -118,14 +118,14 @@ typedef struct cucul_context cucul_t;
  *  initialisation, system information retrieval and configuration.
  *
  *  @{ */
-cucul_t * cucul_init(unsigned int, unsigned int);
+cucul_t * cucul_create(unsigned int, unsigned int);
 void cucul_set_size(cucul_t *, unsigned int, unsigned int);
 unsigned int cucul_get_width(cucul_t *);
 unsigned int cucul_get_height(cucul_t *);
 enum cucul_feature cucul_get_feature(cucul_t *, enum cucul_feature);
 void cucul_set_feature(cucul_t *, enum cucul_feature);
 char const *cucul_get_feature_name(enum cucul_feature);
-void cucul_end(cucul_t *);
+void cucul_free(cucul_t *);
 /*  @} */
 
 /** \defgroup canvas Canvas drawing

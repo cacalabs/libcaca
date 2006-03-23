@@ -34,7 +34,7 @@ static void cucul_read_environment(cucul_t *);
  *
  *  This function initialises internal \e libcucul structures and the backend
  *  that will be used for subsequent graphical operations. It must be the
- *  first \e libcucul function to be called in a function. cucul_end() should
+ *  first \e libcucul function to be called in a function. cucul_free() should
  *  be called at the end of the program to free all allocated resources.
  *
  *  If one of the desired canvas coordinates is zero, a default canvas size
@@ -44,7 +44,7 @@ static void cucul_read_environment(cucul_t *);
  *  \param height The desired canvas height
  *  \return 0 upon success, a non-zero value if an error occurs.
  */
-cucul_t * cucul_init(unsigned int width, unsigned int height)
+cucul_t * cucul_create(unsigned int width, unsigned int height)
 {
     cucul_t *qq = malloc(sizeof(cucul_t));
 
@@ -260,11 +260,11 @@ char const *cucul_get_feature_name(enum cucul_feature feature)
 
 /** \brief Uninitialise \e libcucul.
  *
- *  This function frees all resources allocated by cucul_init(). After
- *  cucul_end() has been called, no other \e libcucul functions may be used
- *  unless a new call to cucul_init() is done.
+ *  This function frees all resources allocated by cucul_create(). After
+ *  cucul_free() has been called, no other \e libcucul functions may be used
+ *  unless a new call to cucul_create() is done.
  */
-void cucul_end(cucul_t *qq)
+void cucul_free(cucul_t *qq)
 {
     _cucul_end_bitmap();
 

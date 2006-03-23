@@ -53,7 +53,7 @@ int main(int argc, char **argv)
     double frameOffset40[360];
     double frameOffset80[360];
 
-    qq = cucul_init(0, 0);
+    qq = cucul_create(0, 0);
     if(!qq)
         return 1;
     kk = caca_attach(qq);
@@ -159,7 +159,7 @@ paused:
 end:
     cucul_free_bitmap(cucul_bitmap);
     caca_detach(kk);
-    cucul_end(qq);
+    cucul_free(qq);
 
     return 0;
 }

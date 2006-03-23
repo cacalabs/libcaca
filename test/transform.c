@@ -53,13 +53,13 @@ int main(void)
     caca_t *kk;
     int i;
 
-    qq = cucul_init(0, 0);
+    qq = cucul_create(0, 0);
     kk = caca_attach(qq);
 
-    normal = cucul_init(70, 6);
-    flip = cucul_init(70, 6);
-    flop = cucul_init(70, 6);
-    rotate = cucul_init(70, 6);
+    normal = cucul_create(70, 6);
+    flip = cucul_create(70, 6);
+    flop = cucul_create(70, 6);
+    rotate = cucul_create(70, 6);
 
     cucul_set_color(normal, CUCUL_COLOR_LIGHTMAGENTA, CUCUL_COLOR_BLACK);
     for(i = 0; pig[i]; i++)
@@ -110,7 +110,11 @@ int main(void)
     while(!caca_get_event(kk, CACA_EVENT_KEY_PRESS));
 
     caca_detach(kk);
-    cucul_end(qq);
+    cucul_free(rotate);
+    cucul_free(flop);
+    cucul_free(flip);
+    cucul_free(normal);
+    cucul_free(qq);
 
     return 0;
 }

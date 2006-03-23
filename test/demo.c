@@ -45,7 +45,7 @@ int main(int argc, char **argv)
     void (*demo)(void) = NULL;
     int quit = 0;
 
-    qq = cucul_init(0, 0);
+    qq = cucul_create(0, 0);
     if(!qq)
         return 1;
     kk = caca_attach(qq);
@@ -175,7 +175,7 @@ int main(int argc, char **argv)
     /* Clean up */
     cucul_free_sprite(sprite);
     caca_detach(kk);
-    cucul_end(qq);
+    cucul_free(qq);
 
     return 0;
 }

@@ -88,7 +88,7 @@ int main(int argc, char **argv)
     int i;
 
     /* Initialise libcucul */
-    qq = cucul_init(0, 0);
+    qq = cucul_create(0, 0);
     if(!qq)
     {
         fprintf(stderr, "%s: unable to initialise libcucul\n", argv[0]);
@@ -421,7 +421,7 @@ int main(int argc, char **argv)
     /* Clean up */
     unload_image();
     caca_detach(kk);
-    cucul_end(qq);
+    cucul_free(qq);
 
     return 0;
 }

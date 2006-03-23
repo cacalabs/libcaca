@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
         exit(-1);
     }
 
-    qq = cucul_init(0, 0);
+    qq = cucul_create(0, 0);
     cucul_set_size(qq, WIDTH, HEIGHT);
 
     for(y = 0; y < 256; y++)
@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
     fwrite(buffer->buffer, buffer->size - 1, 1, stdout);
     cucul_free_export(buffer);
 
-    cucul_end(qq);
+    cucul_free(qq);
 
     return 0;
 }

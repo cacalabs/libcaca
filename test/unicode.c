@@ -29,7 +29,7 @@ int main(void)
     cucul_t *qq;
     caca_t *kk;
 
-    qq = cucul_init(0, 0);
+    qq = cucul_create(0, 0);
     kk = caca_attach(qq);
 
     cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
@@ -89,7 +89,7 @@ int main(void)
     while(!caca_get_event(kk, CACA_EVENT_KEY_PRESS));
 
     caca_detach(kk);
-    cucul_end(qq);
+    cucul_free(qq);
 
     return 0;
 }

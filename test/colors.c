@@ -26,7 +26,7 @@ int main(int argc, char **argv)
     caca_t *kk;
     int i, j;
 
-    qq = cucul_init(0, 0);
+    qq = cucul_create(0, 0);
     if(!qq)
         return 1;
 
@@ -52,7 +52,7 @@ int main(int argc, char **argv)
     caca_wait_event(kk, CACA_EVENT_KEY_PRESS);
 
     caca_detach(kk);
-    cucul_end(qq);
+    cucul_free(qq);
 
     return 0;
 }

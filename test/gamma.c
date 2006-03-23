@@ -39,11 +39,11 @@ int main(void)
     float gam = 1.0;
     int x;
 
-    qq = cucul_init(0, 0);
+    qq = cucul_create(0, 0);
     kk = caca_attach(qq);
 
-    gg = cucul_init(cucul_get_width(qq), cucul_get_height(qq));
-    mask = cucul_init(cucul_get_width(qq), cucul_get_height(qq));
+    gg = cucul_create(cucul_get_width(qq), cucul_get_height(qq));
+    mask = cucul_create(cucul_get_width(qq), cucul_get_height(qq));
 
     for(x = 0; x < 256; x++)
     {
@@ -111,7 +111,7 @@ int main(void)
     cucul_free_bitmap(right);
 
     caca_detach(kk);
-    cucul_end(qq);
+    cucul_free(qq);
 
     return 0;
 }

@@ -45,7 +45,7 @@ int main (int argc, char **argv)
     struct cucul_bitmap *bitmap;
     int i, x, y, frame = 0, pause = 0;
 
-    qq = cucul_init(0, 0);
+    qq = cucul_create(0, 0);
     if(!qq)
         return 1;
     kk = caca_attach(qq);
@@ -123,7 +123,7 @@ paused:
 end:
     cucul_free_bitmap(bitmap);
     caca_detach(kk);
-    cucul_end(qq);
+    cucul_free(qq);
 
     return 0;
 }
