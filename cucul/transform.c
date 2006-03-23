@@ -167,6 +167,7 @@ static uint32_t flipchar(uint32_t ch)
          (uint32_t)'{', (uint32_t)'}',
          /* ASCII-Unicode */
          (uint32_t)';', 0x204f, /* ; ⁏ */
+         (uint32_t)'`', 0x00b4, /* ` ´ */
          (uint32_t)'E', 0x018e, /* E Ǝ */
          (uint32_t)'N', 0x0418, /* N И */
          (uint32_t)'R', 0x042f, /* R Я */
@@ -220,9 +221,11 @@ static uint32_t flopchar(uint32_t ch)
          (uint32_t)'/', (uint32_t)'\\', (uint32_t)'M', (uint32_t)'W',
          (uint32_t)',', (uint32_t)'`', (uint32_t)'b', (uint32_t)'p',
          (uint32_t)'d', (uint32_t)'q', (uint32_t)'p', (uint32_t)'q',
-         (uint32_t)'f', (uint32_t)'t',
+         (uint32_t)'f', (uint32_t)'t', (uint32_t)'.', (uint32_t)'\'',
          /* ASCII-Unicode */
-         (uint32_t)'_', 0x028c, /* _ ▔ */
+         (uint32_t)'_', 0x2594, /* _ ▔ */
+         (uint32_t)'`', 0x201a, /* ` ‚ */
+         (uint32_t)'!', 0x00a1, /* ! ¡ */
          (uint32_t)'N', 0x0418, /* N И */
          (uint32_t)'P', 0x042c, /* P Ь */
          (uint32_t)'S', 0x01a7, /* S Ƨ */
@@ -268,10 +271,12 @@ static uint32_t rotatechar(uint32_t ch)
          /* ASCII */
          (uint32_t)'(', (uint32_t)')', (uint32_t)'M', (uint32_t)'W',
          (uint32_t)'b', (uint32_t)'q', (uint32_t)'d', (uint32_t)'p',
-         (uint32_t)'n', (uint32_t)'u',
+         (uint32_t)'n', (uint32_t)'u', (uint32_t)'.', (uint32_t)'\'',
          /* ASCII-Unicode */
-         (uint32_t)'_', 0x028c, /* _ ▔ */
+         (uint32_t)'_', 0x2594, /* _ ▔ */
          (uint32_t)',', 0x02bb, /* , ʻ */
+         (uint32_t)'!', 0x00a1, /* ! ¡ */
+         (uint32_t)'?', 0x00bf, /* ? ¿ */
          (uint32_t)'E', 0x018e, /* E Ǝ */
          (uint32_t)'F', 0x2132, /* F Ⅎ */
          (uint32_t)'a', 0x0250, /* a ɐ */
