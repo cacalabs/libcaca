@@ -9,6 +9,7 @@ libcucul_la_SOURCES = \
 	cucul.h \
 	cucul_internals.h \
 	canvas.c \
+	transform.c \
 	charset.c \
 	math.c \
 	line.c \
