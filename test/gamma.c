@@ -95,7 +95,7 @@ int main(void)
                                  (1.0 + cos(0.05 * (float)x))
                                    * 0.5 * cucul_get_height(mask),
                                  cucul_get_width(mask) / 2,
-                                 cucul_get_height(mask) / 2, '#');
+                                 cucul_get_height(mask) / 2, "#");
 
         /* Blit the spare canvas onto the first one */
         cucul_blit(qq, 0, 0, gg, mask);
