@@ -27,7 +27,7 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
-static void ellipsepoints(cucul_t *, int, int, int, int, char);
+static void ellipsepoints(cucul_t *, int, int, int, int, uint32_t);
 
 /**
  * \brief Draw a circle on the screen using the given character.
@@ -38,9 +38,10 @@ static void ellipsepoints(cucul_t *, int, int, int, int, char);
  * \param c Character to draw the circle outline with.
  * \return void
  */
-void cucul_draw_circle(cucul_t *qq, int x, int y, int r, char c)
+void cucul_draw_circle(cucul_t *qq, int x, int y, int r, char const *str)
 {
     int test, dx, dy;
+    uint32_t c = _cucul_utf8_to_utf32(str);
 
     /* Optimized Bresenham. Kick ass. */
     for(test = 0, dx = 0, dy = r ; dx <= dy ; dx++)
@@ -62,7 +63,8 @@ void cucul_draw_circle(cucul_t *qq, int x, int y, int r, char c)
  * \param c Character to fill the ellipse with.
  * \return void
  */
-void cucul_fill_ellipse(cucul_t *qq, int xo, int yo, int a, int b, char c)
+void cucul_fill_ellipse(cucul_t *qq, int xo, int yo, int a, int b,
+                        char const *str)
 {
     int d2;
     int x = 0;
@@ -78,15 +80,15 @@ void cucul_fill_ellipse(cucul_t *qq, int xo, int yo, int a, int b, char c)
         else
         {
             d1 += b*b*(2*x*1) + a*a*(-2*y+2);
-            cucul_draw_line(qq, xo - x, yo - y, xo + x, yo - y, c);
-            cucul_draw_line(qq, xo - x, yo + y, xo + x, yo + y, c);
+            cucul_draw_line(qq, xo - x, yo - y, xo + x, yo - y, str);
+            cucul_draw_line(qq, xo - x, yo + y, xo + x, yo + y, str);
             y--;
         }
         x++;
     }
 
-    cucul_draw_line(qq, xo - x, yo - y, xo + x, yo - y, c);
-    cucul_draw_line(qq, xo - x, yo + y, xo + x, yo + y, c);
+    cucul_draw_line(qq, xo - x, yo - y, xo + x, yo - y, str);
+    cucul_draw_line(qq, xo - x, yo + y, xo + x, yo + y, str);
 
     d2 = b*b*(x+0.5)*(x+0.5) + a*a*(y-1)*(y-1) - a*a*b*b;
     while(y > 0)
@@ -102,8 +104,8 @@ void cucul_fill_ellipse(cucul_t *qq, int xo, int yo, int a, int b, char c)
         }
 
         y--;
-        cucul_draw_line(qq, xo - x, yo - y, xo + x, yo - y, c);
-        cucul_draw_line(qq, xo - x, yo + y, xo + x, yo + y, c);
+        cucul_draw_line(qq, xo - x, yo - y, xo + x, yo - y, str);
+        cucul_draw_line(qq, xo - x, yo + y, xo + x, yo + y, str);
     }
 }
 
@@ -117,12 +119,14 @@ void cucul_fill_ellipse(cucul_t *qq, int xo, int yo, int a, int b, char c)
  * \param c Character to draw the ellipse outline with.
  * \return void
  */
-void cucul_draw_ellipse(cucul_t *qq, int xo, int yo, int a, int b, char c)
+void cucul_draw_ellipse(cucul_t *qq, int xo, int yo, int a, int b,
+                        char const *str)
 {
     int d2;
     int x = 0;
     int y = b;
     int d1 = b*b - (a*a*b) + (a*a/4);
+    uint32_t c = _cucul_utf8_to_utf32(str);
 
     ellipsepoints(qq, xo, yo, x, y, c);
 
@@ -211,7 +215,7 @@ void cucul_draw_thin_ellipse(cucul_t *qq, int xo, int yo, int a, int b)
     }
 }
 
-static void ellipsepoints(cucul_t *qq, int xo, int yo, int x, int y, char c)
+static void ellipsepoints(cucul_t *qq, int xo, int yo, int x, int y, uint32_t c)
 {
     uint8_t b = 0;
 
@@ -225,15 +229,15 @@ static void ellipsepoints(cucul_t *qq, int xo, int yo, int x, int y, char c)
         b |= 0x8;
 
     if((b & (0x1|0x4)) == (0x1|0x4))
-        cucul_putchar(qq, xo + x, yo + y, c);
+        _cucul_putchar32(qq, xo + x, yo + y, c);
 
     if((b & (0x2|0x4)) == (0x2|0x4))
-        cucul_putchar(qq, xo - x, yo + y, c);
+        _cucul_putchar32(qq, xo - x, yo + y, c);
 
     if((b & (0x1|0x8)) == (0x1|0x8))
-        cucul_putchar(qq, xo + x, yo - y, c);
+        _cucul_putchar32(qq, xo + x, yo - y, c);
 
     if((b & (0x2|0x8)) == (0x2|0x8))
-        cucul_putchar(qq, xo - x, yo - y, c);
+        _cucul_putchar32(qq, xo - x, yo - y, c);
 }
 

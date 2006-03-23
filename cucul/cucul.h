@@ -162,23 +162,23 @@ void cucul_rotate(cucul_t *);
  *  boxes, triangles and ellipses.
  *
  *  @{ */
-void cucul_draw_line(cucul_t *, int, int, int, int, char);
-void cucul_draw_polyline(cucul_t *, int const x[], int const y[], int, char);
+void cucul_draw_line(cucul_t *, int, int, int, int, char const *);
+void cucul_draw_polyline(cucul_t *, int const x[], int const y[], int, char const *);
 void cucul_draw_thin_line(cucul_t *, int, int, int, int);
 void cucul_draw_thin_polyline(cucul_t *, int const x[], int const y[], int);
 
-void cucul_draw_circle(cucul_t *, int, int, int, char);
-void cucul_draw_ellipse(cucul_t *, int, int, int, int, char);
+void cucul_draw_circle(cucul_t *, int, int, int, char const *);
+void cucul_draw_ellipse(cucul_t *, int, int, int, int, char const *);
 void cucul_draw_thin_ellipse(cucul_t *, int, int, int, int);
-void cucul_fill_ellipse(cucul_t *, int, int, int, int, char);
+void cucul_fill_ellipse(cucul_t *, int, int, int, int, char const *);
 
-void cucul_draw_box(cucul_t *, int, int, int, int, char);
+void cucul_draw_box(cucul_t *, int, int, int, int, char const *);
 void cucul_draw_thin_box(cucul_t *, int, int, int, int);
-void cucul_fill_box(cucul_t *, int, int, int, int, char);
+void cucul_fill_box(cucul_t *, int, int, int, int, char const *);
 
-void cucul_draw_triangle(cucul_t *, int, int, int, int, int, int, char);
+void cucul_draw_triangle(cucul_t *, int, int, int, int, int, int, char const *);
 void cucul_draw_thin_triangle(cucul_t *, int, int, int, int, int, int);
-void cucul_fill_triangle(cucul_t *, int, int, int, int, int, int, char);
+void cucul_fill_triangle(cucul_t *, int, int, int, int, int, int, char const *);
 /*  @} */
 
 /** \defgroup math Mathematical functions

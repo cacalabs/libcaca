@@ -40,9 +40,9 @@ int main(int argc, char **argv)
     h = cucul_get_height(qq) - 1;
 
     cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
-    cucul_draw_line(qq, 0, 0, cucul_get_width(qq) - 1, 0, ' ');
+    cucul_draw_line(qq, 0, 0, cucul_get_width(qq) - 1, 0, " ");
 
-    cucul_draw_line(qq, 0, h, cucul_get_width(qq) - 1, h, ' ');
+    cucul_draw_line(qq, 0, h, cucul_get_width(qq) - 1, h, " ");
     cucul_putstr(qq, 0, h, "type \"quit\" to exit");
 
     caca_display(kk);
@@ -84,10 +84,10 @@ int main(int argc, char **argv)
 
         /* Print current event */
         cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
-        cucul_draw_line(qq, 0, 0, cucul_get_width(qq) - 1, 0, ' ');
+        cucul_draw_line(qq, 0, 0, cucul_get_width(qq) - 1, 0, " ");
         print_event(0, 0, events[0]);
 
-        cucul_draw_line(qq, 0, h, cucul_get_width(qq) - 1, h, ' ');
+        cucul_draw_line(qq, 0, h, cucul_get_width(qq) - 1, h, " ");
         cucul_printf(qq, 0, h, "type \"quit\" to exit: %s", quit_string[quit]);
 
         /* Print previous events */

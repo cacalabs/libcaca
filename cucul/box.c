@@ -33,15 +33,16 @@
  * \param y1 Y coordinate of the upper-left corner of the box.
  * \param x2 X coordinate of the lower-right corner of the box.
  * \param y2 Y coordinate of the lower-right corner of the box.
- * \param c Character to draw the box outline with.
+ * \param str UTF-8 string containing the character to use to draw the box.
  * \return void
  */
-void cucul_draw_box(cucul_t *qq, int x1, int y1, int x2, int y2, char c)
+void cucul_draw_box(cucul_t *qq, int x1, int y1, int x2, int y2, 
+                    char const *str)
 {
-    cucul_draw_line(qq, x1, y1, x1, y2, c);
-    cucul_draw_line(qq, x1, y2, x2, y2, c);
-    cucul_draw_line(qq, x2, y2, x2, y1, c);
-    cucul_draw_line(qq, x2, y1, x1, y1, c);
+    cucul_draw_line(qq, x1, y1, x1, y2, str);
+    cucul_draw_line(qq, x1, y2, x2, y2, str);
+    cucul_draw_line(qq, x2, y2, x2, y1, str);
+    cucul_draw_line(qq, x2, y1, x1, y1, str);
 }
 
 /**
@@ -78,32 +79,32 @@ void cucul_draw_thin_box(cucul_t *qq, int x1, int y1, int x2, int y2)
     /* Draw edges */
     if(y1 >= 0)
         for(x = x1 < 0 ? 1 : x1 + 1; x < x2 && x < xmax; x++)
-            cucul_putchar(qq, x, y1, '-');
+            _cucul_putchar32(qq, x, y1, (uint32_t)'-');
 
     if(y2 <= ymax)
         for(x = x1 < 0 ? 1 : x1 + 1; x < x2 && x < xmax; x++)
-            cucul_putchar(qq, x, y2, '-');
+            _cucul_putchar32(qq, x, y2, (uint32_t)'-');
 
     if(x1 >= 0)
         for(y = y1 < 0 ? 1 : y1 + 1; y < y2 && y < ymax; y++)
-            cucul_putchar(qq, x1, y, '|');
+            _cucul_putchar32(qq, x1, y, (uint32_t)'|');
 
     if(x2 <= xmax)
         for(y = y1 < 0 ? 1 : y1 + 1; y < y2 && y < ymax; y++)
-            cucul_putchar(qq, x2, y, '|');
+            _cucul_putchar32(qq, x2, y, (uint32_t)'|');
 
     /* Draw corners */
     if(x1 >= 0 && y1 >= 0)
-        cucul_putchar(qq, x1, y1, ',');
+        _cucul_putchar32(qq, x1, y1, (uint32_t)',');
 
     if(x1 >= 0 && y2 <= ymax)
-        cucul_putchar(qq, x1, y2, '`');
+        _cucul_putchar32(qq, x1, y2, (uint32_t)'`');
 
     if(x2 <= xmax && y1 >= 0)
-        cucul_putchar(qq, x2, y1, '.');
+        _cucul_putchar32(qq, x2, y1, (uint32_t)'.');
 
     if(x2 <= xmax && y2 <= ymax)
-        cucul_putchar(qq, x2, y2, '\'');
+        _cucul_putchar32(qq, x2, y2, (uint32_t)'\'');
 }
 
 /**
@@ -113,12 +114,14 @@ void cucul_draw_thin_box(cucul_t *qq, int x1, int y1, int x2, int y2)
  * \param y1 Y coordinate of the upper-left corner of the box.
  * \param x2 X coordinate of the lower-right corner of the box.
  * \param y2 Y coordinate of the lower-right corner of the box.
- * \param c Character to fill the box with.
+ * \param str UTF-8 string containing the character to fill the box with.
  * \return void
  */
-void cucul_fill_box(cucul_t *qq, int x1, int y1, int x2, int y2, char c)
+void cucul_fill_box(cucul_t *qq, int x1, int y1, int x2, int y2,
+                    char const *str)
 {
     int x, y, xmax, ymax;
+    uint32_t c;
 
     if(x1 > x2)
     {
@@ -143,8 +146,10 @@ void cucul_fill_box(cucul_t *qq, int x1, int y1, int x2, int y2, char c)
     if(x2 > xmax) x2 = xmax;
     if(y2 > ymax) y2 = ymax;
 
+    c = _cucul_utf8_to_utf32(str);
+
     for(y = y1; y <= y2; y++)
         for(x = x1; x <= x2; x++)
-            cucul_putchar(qq, x, y, c);
+            _cucul_putchar32(qq, x, y, c);
 }
 

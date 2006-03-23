@@ -100,7 +100,7 @@ int main(int argc, char **argv)
         xb = xa + 1 + cucul_get_sprite_width(qq, sprite, frame);
         yb = ya + 1 + cucul_get_sprite_height(qq, sprite, frame);
         cucul_set_color(qq, CUCUL_COLOR_BLACK, CUCUL_COLOR_BLACK);
-        cucul_fill_box(qq, 57 + xa, 10 + ya, 57 + xb, 10 + yb, ' ');
+        cucul_fill_box(qq, 57 + xa, 10 + ya, 57 + xb, 10 + yb, " ");
         cucul_set_color(qq, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
         cucul_draw_thin_box(qq, 57 + xa, 10 + ya, 57 + xb, 10 + yb);
         cucul_draw_sprite(qq, 57, 10, sprite, frame);

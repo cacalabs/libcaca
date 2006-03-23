@@ -32,7 +32,7 @@ struct line
 {
     int x1, y1;
     int x2, y2;
-    char c;
+    uint32_t c;
     void (*draw) (cucul_t *, struct line*);
 };
 #endif
@@ -49,17 +49,18 @@ static void draw_thin_line(cucul_t*, struct line*);
  * \param y1 Y coordinate of the first point.
  * \param x2 X coordinate of the second point.
  * \param y2 Y coordinate of the second point.
- * \param c Character to draw the line with.
+ * \param str UTF-8 string containing the character to use to draw the line.
  * \return void
  */
-void cucul_draw_line(cucul_t *qq, int x1, int y1, int x2, int y2, char c)
+void cucul_draw_line(cucul_t *qq, int x1, int y1, int x2, int y2,
+                     char const *str)
 {
     struct line s;
     s.x1 = x1;
     s.y1 = y1;
     s.x2 = x2;
     s.y2 = y2;
-    s.c = c;
+    s.c = _cucul_utf8_to_utf32(str);
     s.draw = draw_solid_line;
     clip_line(qq, &s);
 }
@@ -73,14 +74,15 @@ void cucul_draw_line(cucul_t *qq, int x1, int y1, int x2, int y2, char c)
  * \param x Array of X coordinates. Must have \p n + 1 elements.
  * \param y Array of Y coordinates. Must have \p n + 1 elements.
  * \param n Number of lines to draw.
- * \param c Character to draw the lines with.
+ * \param str UTF-8 string containing the character to use to draw the lines.
  * \return void
  */
-void cucul_draw_polyline(cucul_t *qq, int const x[], int const y[], int n, char c)
+void cucul_draw_polyline(cucul_t *qq, int const x[], int const y[], int n,
+                         char const *str)
 {
     int i;
     struct line s;
-    s.c = c;
+    s.c = _cucul_utf8_to_utf32(str);
     s.draw = draw_solid_line;
 
     for(i = 0; i < n; i++)
@@ -254,7 +256,7 @@ static void draw_solid_line(cucul_t *qq, struct line* s)
 
         for(; dx>=0; dx--)
         {
-            cucul_putchar(qq, x1, y1, s->c);
+            _cucul_putchar32(qq, x1, y1, s->c);
             if(delta > 0)
             {
                 x1 += xinc;
@@ -276,7 +278,7 @@ static void draw_solid_line(cucul_t *qq, struct line* s)
 
         for(; dy >= 0; dy--)
         {
-            cucul_putchar(qq, x1, y1, s->c);
+            _cucul_putchar32(qq, x1, y1, s->c);
             if(delta > 0)
             {
                 x1 += xinc;
@@ -301,25 +303,21 @@ static void draw_solid_line(cucul_t *qq, struct line* s)
  */
 static void draw_thin_line(cucul_t *qq, struct line* s)
 {
-    char *charmapx, *charmapy;
+    uint32_t charmapx[2], charmapy[2];
     int x1, y1, x2, y2;
     int dx, dy;
     int yinc;
 
     if(s->x2 >= s->x1)
     {
-        if(s->y1 > s->y2)
-            charmapx = ",'";
-        else
-            charmapx = "`.";
+        charmapx[0] = (s->y1 > s->y2) ? (uint32_t)',' : (uint32_t)'`';
+        charmapx[1] = (s->y1 > s->y2) ? (uint32_t)'\'' : (uint32_t)'.';
         x1 = s->x1; y1 = s->y1; x2 = s->x2; y2 = s->y2;
     }
     else
     {
-        if(s->y1 > s->y2)
-            charmapx = "`.";
-        else
-            charmapx = ",'";
+        charmapx[0] = (s->y1 > s->y2) ? (uint32_t)'`' : (uint32_t)'.';
+        charmapx[1] = (s->y1 > s->y2) ? (uint32_t)',' : (uint32_t)'\'';
         x2 = s->x1; y2 = s->y1; x1 = s->x2; y1 = s->y2;
     }
 
@@ -328,13 +326,15 @@ static void draw_thin_line(cucul_t *qq, struct line* s)
 
     if(y1 > y2)
     {
-        charmapy = ",'";
+        charmapy[0] = (uint32_t)',';
+        charmapy[1] = (uint32_t)'\'';
         yinc = -1;
     }
     else
     {
         yinc = 1;
-        charmapy = "`.";
+        charmapy[0] = (uint32_t)'`';
+        charmapy[1] = (uint32_t)'.';
     }
 
     if(dx >= dy)
@@ -348,7 +348,7 @@ static void draw_thin_line(cucul_t *qq, struct line* s)
         {
             if(delta > 0)
             {
-                cucul_putchar(qq, x1, y1, charmapy[1]);
+                _cucul_putchar32(qq, x1, y1, charmapy[1]);
                 x1++;
                 y1 += yinc;
                 delta += dpru;
@@ -357,9 +357,9 @@ static void draw_thin_line(cucul_t *qq, struct line* s)
             else
             {
                 if(prev)
-                    cucul_putchar(qq, x1, y1, charmapy[0]);
+                    _cucul_putchar32(qq, x1, y1, charmapy[0]);
                 else
-                    cucul_putchar(qq, x1, y1, '-');
+                    _cucul_putchar32(qq, x1, y1, (uint32_t)'-');
                 x1++;
                 delta += dpr;
                 prev = 0;
@@ -376,15 +376,15 @@ static void draw_thin_line(cucul_t *qq, struct line* s)
         {
             if(delta > 0)
             {
-                cucul_putchar(qq, x1, y1, charmapx[0]);
-                cucul_putchar(qq, x1 + 1, y1, charmapx[1]);
+                _cucul_putchar32(qq, x1, y1, charmapx[0]);
+                _cucul_putchar32(qq, x1 + 1, y1, charmapx[1]);
                 x1++;
                 y1 += yinc;
                 delta += dpru;
             }
             else
             {
-                cucul_putchar(qq, x1, y1, '|');
+                _cucul_putchar32(qq, x1, y1, (uint32_t)'|');
                 y1 += yinc;
                 delta += dpr;
             }

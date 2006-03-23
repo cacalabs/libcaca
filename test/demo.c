@@ -241,9 +241,9 @@ static void demo_all(void)
 
     j = 15 + sin(0.03*i) * 8;
     cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLACK);
-    cucul_fill_ellipse(qq, xo, yo, j, j / 2, '#');
+    cucul_fill_ellipse(qq, xo, yo, j, j / 2, "#");
     cucul_set_color(qq, CUCUL_COLOR_YELLOW, CUCUL_COLOR_BLACK);
-    cucul_draw_ellipse(qq, xo, yo, j, j / 2, '#');
+    cucul_draw_ellipse(qq, xo, yo, j, j / 2, "#");
 
     /* Draw the pyramid */
     xo = cucul_get_width(qq) * 5 / 8;
@@ -259,17 +259,17 @@ static void demo_all(void)
     yc = cucul_get_height(qq) * 3 / 4 + cos(0.02*i) * 5;
 
     cucul_set_color(qq, CUCUL_COLOR_GREEN, CUCUL_COLOR_BLACK);
-    cucul_fill_triangle(qq, xo, yo, xb, yb, xa, ya, '%');
+    cucul_fill_triangle(qq, xo, yo, xb, yb, xa, ya, "%");
     cucul_set_color(qq, CUCUL_COLOR_YELLOW, CUCUL_COLOR_BLACK);
     cucul_draw_thin_triangle(qq, xo, yo, xb, yb, xa, ya);
 
     cucul_set_color(qq, CUCUL_COLOR_RED, CUCUL_COLOR_BLACK);
-    cucul_fill_triangle(qq, xa, ya, xb, yb, xc, yc, '#');
+    cucul_fill_triangle(qq, xa, ya, xb, yb, xc, yc, "#");
     cucul_set_color(qq, CUCUL_COLOR_YELLOW, CUCUL_COLOR_BLACK);
     cucul_draw_thin_triangle(qq, xa, ya, xb, yb, xc, yc);
 
     cucul_set_color(qq, CUCUL_COLOR_BLUE, CUCUL_COLOR_BLACK);
-    cucul_fill_triangle(qq, xo, yo, xb, yb, xc, yc, '%');
+    cucul_fill_triangle(qq, xo, yo, xb, yb, xc, yc, "%");
     cucul_set_color(qq, CUCUL_COLOR_YELLOW, CUCUL_COLOR_BLACK);
     cucul_draw_thin_triangle(qq, xo, yo, xb, yb, xc, yc);
 
@@ -373,7 +373,7 @@ static void demo_lines(void)
     if(outline > 1)
         cucul_draw_thin_line(qq, xa, ya, xb, yb);
     else
-        cucul_draw_line(qq, xa, ya, xb, yb, '#');
+        cucul_draw_line(qq, xa, ya, xb, yb, "#");
 }
 
 static void demo_boxes(void)
@@ -394,13 +394,13 @@ static void demo_boxes(void)
     }
 
     cucul_set_color(qq, cucul_rand(0, 15), cucul_rand(0, 15));
-    cucul_fill_box(qq, xa, ya, xb, yb, '#');
+    cucul_fill_box(qq, xa, ya, xb, yb, "#");
 
     cucul_set_color(qq, cucul_rand(0, 15), CUCUL_COLOR_BLACK);
     if(outline == 2)
         cucul_draw_thin_box(qq, xa, ya, xb, yb);
     else if(outline == 1)
-        cucul_draw_box(qq, xa, ya, xb, yb, '#');
+        cucul_draw_box(qq, xa, ya, xb, yb, "#");
 }
 
 static void demo_ellipses(void)
@@ -425,13 +425,13 @@ static void demo_ellipses(void)
     }
 
     cucul_set_color(qq, cucul_rand(0, 15), cucul_rand(0, 15));
-    cucul_fill_ellipse(qq, x, y, a, b, '#');
+    cucul_fill_ellipse(qq, x, y, a, b, "#");
 
     cucul_set_color(qq, cucul_rand(0, 15), CUCUL_COLOR_BLACK);
     if(outline == 2)
         cucul_draw_thin_ellipse(qq, x, y, a, b);
     else if(outline == 1)
-        cucul_draw_ellipse(qq, x, y, a, b, '#');
+        cucul_draw_ellipse(qq, x, y, a, b, "#");
 }
 
 static void demo_triangles(void)
@@ -455,13 +455,13 @@ static void demo_triangles(void)
     }
 
     cucul_set_color(qq, cucul_rand(0, 15), cucul_rand(0, 15));
-    cucul_fill_triangle(qq, xa, ya, xb, yb, xc, yc, '#');
+    cucul_fill_triangle(qq, xa, ya, xb, yb, xc, yc, "#");
 
     cucul_set_color(qq, cucul_rand(0, 15), CUCUL_COLOR_BLACK);
     if(outline == 2)
         cucul_draw_thin_triangle(qq, xa, ya, xb, yb, xc, yc);
     else if(outline == 1)
-        cucul_draw_triangle(qq, xa, ya, xb, yb, xc, yc, '#');
+        cucul_draw_triangle(qq, xa, ya, xb, yb, xc, yc, "#");
 }
 
 static void demo_sprites(void)

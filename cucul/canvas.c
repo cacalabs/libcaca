@@ -108,33 +108,6 @@ void cucul_putchar(cucul_t *qq, int x, int y, char c)
     qq->attr[x + y * qq->width] = (qq->bgcolor << 4) | qq->fgcolor;
 }
 
-/** \brief Print a Unicode character.
- *
- *  FIXME: do we really want this function?
- *
- *  This function prints a Unicode character (native-endian, 32 bits UCS-4,
- *  also known as UTF-32) at the given coordinates, using the default
- *  foreground and background values. If the coordinates are outside the
- *  screen boundaries, nothing is printed. If the character is an invalid
- *  Unicode character, it is replaced with a space.
- *
- *  \param x X coordinate.
- *  \param y Y coordinate.
- *  \param c The character to print.
- */
-void cucul_putchar32(cucul_t *qq, int x, int y, unsigned long int c)
-{
-    if(x < 0 || x >= (int)qq->width ||
-       y < 0 || y >= (int)qq->height)
-        return;
-
-    if(c < 0x20 || c > 0x7f)
-        c = 0x20;
-
-    qq->chars[x + y * qq->width] = c;
-    qq->attr[x + y * qq->width] = (qq->bgcolor << 4) | qq->fgcolor;
-}
-
 /** \brief Print a string.
  *
  *  This function prints an UTF-8 string at the given coordinates, using the
@@ -311,5 +284,19 @@ void cucul_blit(cucul_t *dst, int x, int y,
                    (endi - starti) * 1);
         }
     }
+}
+
+/*
+ * XXX: The following functions are not exported
+ */
+
+void _cucul_putchar32(cucul_t *qq, int x, int y, uint32_t c)
+{
+    if(x < 0 || x >= (int)qq->width ||
+       y < 0 || y >= (int)qq->height)
+        return;
+
+    qq->chars[x + y * qq->width] = c;
+    qq->attr[x + y * qq->width] = (qq->bgcolor << 4) | qq->fgcolor;
 }
 

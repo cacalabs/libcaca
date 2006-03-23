@@ -429,8 +429,8 @@ int main(int argc, char **argv)
 static void print_status(void)
 {
     cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
-    cucul_draw_line(qq, 0, 0, ww - 1, 0, ' ');
-    cucul_draw_line(qq, 0, wh - 2, ww - 1, wh - 2, '-');
+    cucul_draw_line(qq, 0, 0, ww - 1, 0, " ");
+    cucul_draw_line(qq, 0, wh - 2, ww - 1, wh - 2, "-");
     cucul_putstr(qq, 0, 0, "q:Quit  np:Next/Prev  +-x:Zoom  gG:Gamma  "
                            "hjkl:Move  d:Dither  a:Antialias");
     cucul_putstr(qq, ww - strlen("?:Help"), 0, "?:Help");
@@ -439,7 +439,7 @@ static void print_status(void)
     cucul_printf(qq, ww - 14, wh - 2, "(zoom: %s%i)", zoom > 0 ? "+" : "", zoom);
 
     cucul_set_color(qq, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
-    cucul_draw_line(qq, 0, wh - 1, ww - 1, wh - 1, ' ');
+    cucul_draw_line(qq, 0, wh - 1, ww - 1, wh - 1, " ");
 }
 
 static void print_help(int x, int y)

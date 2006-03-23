@@ -49,10 +49,13 @@ struct cucul_context
     unsigned int refcount;
 };
 
-/* Initialisation functions */
+/* Bitmap functions */
 extern int _cucul_init_bitmap(void);
 extern int _cucul_end_bitmap(void);
+
+/* Canvas functions */
 extern void _cucul_set_size(cucul_t *, unsigned int, unsigned int);
+extern void _cucul_putchar32(cucul_t *qq, int x, int y, uint32_t c);
 
 /* Charset functions */
 extern unsigned int _cucul_strlen_utf8(char const *);
