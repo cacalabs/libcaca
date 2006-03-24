@@ -803,7 +803,7 @@ void cucul_draw_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
 
         if(bitmap->invert) {
             outfg = 15-outfg;
-            outbg = 15-outfg;
+            outbg = 15-outbg;
         }
 
         /* Now output the character */
