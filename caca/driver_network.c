@@ -562,6 +562,8 @@ int network_install(caca_t *kk)
     kk->drv.display = network_display;
     kk->drv.handle_resize = network_handle_resize;
     kk->drv.get_event = network_get_event;
+    kk->drv.show_cursor = NULL;
+    kk->drv.hide_cursor = NULL;
 
     return 0;
 }

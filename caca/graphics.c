@@ -143,6 +143,29 @@ void caca_display(caca_t *kk)
         kk->lastticks = 0;
 }
 
+/** \brief Show cursor on capable drivers
+ *
+ *  This function shows the cursor on drivers permitting it.
+ *
+ */
+void caca_show_cursor(caca_t *kk)
+{
+    if(kk->drv.show_cursor)
+	kk->drv.show_cursor(kk);
+}
+
+/** \brief Hide cursor on capable drivers
+ *
+ *  This function hides the cursor on drivers permitting it.
+ *
+ */
+void caca_hide_cursor(caca_t *kk)
+{
+    if(kk->drv.show_cursor)
+	kk->drv.show_cursor(kk);
+}
+
+
 /*
  * XXX: following functions are local
  */

@@ -117,6 +117,8 @@ struct caca_context
         void (* display) (caca_t *);
         void (* handle_resize) (caca_t *);
         int (* get_event) (caca_t *, struct caca_event *);
+	void (* show_cursor) (caca_t *);
+	void (* hide_cursor) (caca_t *);
     } drv;
 
     /* Mouse position */

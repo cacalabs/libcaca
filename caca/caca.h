@@ -244,6 +244,8 @@ int caca_get_event(caca_t *kk, unsigned int, struct caca_event *);
 int caca_wait_event(caca_t *kk, unsigned int, struct caca_event *);
 unsigned int caca_get_mouse_x(caca_t *kk);
 unsigned int caca_get_mouse_y(caca_t *kk);
+void caca_hide_cursor(caca_t *kk);
+void caca_show_cursor(caca_t *kk);
 /*  @} */
 
 #ifdef __cplusplus

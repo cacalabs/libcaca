@@ -157,6 +157,8 @@ int vga_install(caca_t *kk)
     kk->drv.display = vga_display;
     kk->drv.handle_resize = vga_handle_resize;
     kk->drv.get_event = vga_get_event;
+    kk->drv.show_cursor = NULL;
+    kk->drv.hide_cursor = NULL;
 
     return 0;
 }
