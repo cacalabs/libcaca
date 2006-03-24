@@ -387,17 +387,13 @@ static int gl_get_event(caca_t *kk, struct caca_event *ev)
 }
 
 
-static void gl_show_cursor(caca_t *kk)
+static void gl_set_mouse(caca_t *kk, int flag)
 {
-    glutSetCursor(GLUT_CURSOR_RIGHT_ARROW);
+    if(flag)
+        glutSetCursor(GLUT_CURSOR_RIGHT_ARROW);
+    else
+        glutSetCursor(GLUT_CURSOR_NONE);
 }
-
-static void gl_hide_cursor(caca_t *kk)
-{
-    glutSetCursor(GLUT_CURSOR_NONE);
-}
-
-
 
 /*
  * XXX: following functions are local
@@ -477,8 +473,8 @@ int gl_install(caca_t *kk)
     kk->drv.display = gl_display;
     kk->drv.handle_resize = gl_handle_resize;
     kk->drv.get_event = gl_get_event;
-    kk->drv.show_cursor = gl_show_cursor;
-    kk->drv.hide_cursor = gl_hide_cursor;
+    kk->drv.set_mouse = gl_set_mouse;
+
     return 0;
 }
 

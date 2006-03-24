@@ -480,8 +480,7 @@ int slang_install(caca_t *kk)
     kk->drv.display = slang_display;
     kk->drv.handle_resize = slang_handle_resize;
     kk->drv.get_event = slang_get_event;
-    kk->drv.show_cursor = NULL;
-    kk->drv.hide_cursor = NULL;
+    kk->drv.set_mouse = NULL;
 
     return 0;
 }

@@ -62,7 +62,7 @@ int main(int argc, char **argv)
         sprite = cucul_load_sprite(qq, "examples/caca.txt");
 
     /* Disable cursor */
-    caca_hide_cursor(kk);
+    caca_set_mouse(kk, 0);
 
     /* Main menu */
     display_menu();

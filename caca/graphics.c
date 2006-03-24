@@ -143,28 +143,19 @@ void caca_display(caca_t *kk)
         kk->lastticks = 0;
 }
 
-/** \brief Show cursor on capable drivers
+/** \brief Show or hide the mouse pointer.
  *
- *  This function shows the cursor on drivers permitting it.
+ *  This function shows or hides the mouse pointer, for devices that
+ *  support it.
  *
+ *  \param flag 0 hides the pointer, 1 shows the system's default pointer
+ *              (usually an arrow). Other values are reserved for future use.
  */
-void caca_show_cursor(caca_t *kk)
+void caca_set_mouse(caca_t *kk, int flag)
 {
-    if(kk->drv.show_cursor)
-	kk->drv.show_cursor(kk);
+    if(kk->drv.set_mouse)
+        kk->drv.set_mouse(kk, flag);
 }
-
-/** \brief Hide cursor on capable drivers
- *
- *  This function hides the cursor on drivers permitting it.
- *
- */
-void caca_hide_cursor(caca_t *kk)
-{
-    if(kk->drv.hide_cursor)
-	kk->drv.hide_cursor(kk);
-}
-
 
 /*
  * XXX: following functions are local

@@ -209,8 +209,6 @@ static int x11_init_graphics(caca_t *kk)
                                    kk->qq->height * kk->drv.p->font_height,
                                    DefaultDepth(kk->drv.p->dpy,
                                             DefaultScreen(kk->drv.p->dpy)));
-
-
     kk->drv.p->pointer = None;
 
     return 0;
@@ -537,36 +535,37 @@ static int x11_get_event(caca_t *kk, struct caca_event *ev)
     return 0;
 }
 
-static void x11_show_cursor(caca_t *kk)
-{
-    XDefineCursor(kk->drv.p->dpy,kk->drv.p->window, 0);
-}
-
-static void x11_hide_cursor(caca_t *kk)
+static void x11_set_mouse(caca_t *kk, int flags)
 {
     Cursor no_ptr;
     Pixmap bm_no;
     XColor black, dummy;
     Colormap colormap;
-    static char empty[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+    static char const empty[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+
+    if(flags)
+    {
+        XDefineCursor(kk->drv.p->dpy,kk->drv.p->window, 0);
+        return;
+    }
 
     colormap = DefaultColormap(kk->drv.p->dpy, DefaultScreen(kk->drv.p->dpy));
-    if ( !XAllocNamedColor(kk->drv.p->dpy, colormap, "black", &black, &dummy) )
+    if(!XAllocNamedColor(kk->drv.p->dpy, colormap, "black", &black, &dummy))
     {
-      return;
+        return;
     }
-    bm_no = XCreateBitmapFromData(kk->drv.p->dpy, kk->drv.p->window, empty, 8, 8);
-    no_ptr = XCreatePixmapCursor(kk->drv.p->dpy, bm_no, bm_no, &black, &black, 0, 0);
-    XDefineCursor(kk->drv.p->dpy,  kk->drv.p->window, no_ptr);
+    bm_no = XCreateBitmapFromData(kk->drv.p->dpy, kk->drv.p->window,
+                                  empty, 8, 8);
+    no_ptr = XCreatePixmapCursor(kk->drv.p->dpy, bm_no, bm_no,
+                                 &black, &black, 0, 0);
+    XDefineCursor(kk->drv.p->dpy, kk->drv.p->window, no_ptr);
     XFreeCursor(kk->drv.p->dpy, no_ptr);
-    if (bm_no != None)
+    if(bm_no != None)
         XFreePixmap(kk->drv.p->dpy, bm_no);
-    XFreeColors(kk->drv.p->dpy,colormap,&black.pixel,1,0);
+    XFreeColors(kk->drv.p->dpy, colormap, &black.pixel, 1, 0);
 
     XSync(kk->drv.p->dpy, False);
-
 }
-
 
 /*
  * XXX: following functions are local
@@ -599,8 +598,7 @@ int x11_install(caca_t *kk)
     kk->drv.display = x11_display;
     kk->drv.handle_resize = x11_handle_resize;
     kk->drv.get_event = x11_get_event;
-    kk->drv.show_cursor = x11_show_cursor;
-    kk->drv.hide_cursor = x11_hide_cursor;
+    kk->drv.set_mouse = x11_set_mouse;
 
     return 0;
 }
