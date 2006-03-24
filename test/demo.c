@@ -61,6 +61,9 @@ int main(int argc, char **argv)
     if(!sprite)
         sprite = cucul_load_sprite(qq, "examples/caca.txt");
 
+    /* Disable cursor */
+    caca_hide_cursor(kk);
+
     /* Main menu */
     display_menu();
     caca_display(kk);

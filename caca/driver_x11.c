@@ -53,6 +53,7 @@ struct driver_private
     Font font;
     XFontStruct *font_struct;
     int font_offset;
+    Cursor pointer;
 #if defined(HAVE_X11_XKBLIB_H)
     Bool autorepeat;
 #endif
@@ -208,6 +209,9 @@ static int x11_init_graphics(caca_t *kk)
                                    kk->qq->height * kk->drv.p->font_height,
                                    DefaultDepth(kk->drv.p->dpy,
                                             DefaultScreen(kk->drv.p->dpy)));
+
+
+    kk->drv.p->pointer = None;
 
     return 0;
 }
@@ -533,6 +537,21 @@ static int x11_get_event(caca_t *kk, struct caca_event *ev)
     return 0;
 }
 
+static void x11_show_cursor(caca_t *kk)
+{
+
+}
+
+static void x11_hide_cursor(caca_t *kk)
+{
+    XFreeCursor( kk->drv.p->dpy, kk->drv.p->pointer );
+    kk->drv.p->pointer = None;
+    XUndefineCursor( kk->drv.p->dpy, kk->drv.p->window );
+    XSync( kk->drv.p->dpy, False ); /* optional */
+
+}
+
+
 /*
  * XXX: following functions are local
  */
@@ -564,6 +583,8 @@ int x11_install(caca_t *kk)
     kk->drv.display = x11_display;
     kk->drv.handle_resize = x11_handle_resize;
     kk->drv.get_event = x11_get_event;
+    kk->drv.show_cursor = x11_show_cursor;
+    kk->drv.hide_cursor = x11_hide_cursor;
 
     return 0;
 }
