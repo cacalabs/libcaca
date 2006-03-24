@@ -109,7 +109,7 @@ extern "C"
 {
 #endif
 
-/** \brief User events.
+/** \brief User event types.
  *
  *  Event types returned by caca_get_event().
  */
@@ -127,6 +127,37 @@ enum caca_event_type
     CACA_EVENT_ANY =           0xffff  /**< Bitmask for any event. */
 };
 
+/** \brief User events.
+ *
+ *  This structure is filled by caca_get_event() when an event is received.
+ *  The \e type field is always valid. The validity of the \e data union
+ *  depends on the value of the \e type field:
+ *
+ *  \li \b CACA_EVENT_NONE: no other field is valid.
+ *
+ *  \li \b CACA_EVENT_KEY_PRESS, \b CACA_EVENT_KEY_RELEASE: the \e data.key.c
+ *      field is valid and contains either the ASCII value for the key, or
+ *      an \e enum \e caca_key value. If the value is a printable ASCII
+ *      character, the \e data.key.ucs4 and \e data.key.utf8 fields are
+ *      also filled and contain respectively the UCS-4/UTF-32 and the UTF-8
+ *      representations of the character. Otherwise, their content is
+ *      undefined.
+ *
+ *  \li \b CACA_EVENT_MOUSE_PRESS, \b CACA_EVENT_MOUSE_RELEASE: the
+ *      \e data.mouse.button field is valid and contains the index of the
+ *      mouse button that was pressed.
+ *
+ *  \li \b CACA_EVENT_MOUSE_MOTION: the \e data.mouse.x and \e data.mouse.y
+ *      fields are valid and contain the mouse coordinates in character
+ *      cells.
+ *
+ *  \li \b CACA_EVENT_RESIZE: the \e data.resize.w and \e data.resize.h
+ *      fields are valid and contain the new width and height values of
+ *      the \e libcucul canvas attached to \e libcaca.
+ *
+ *  The result of accessing data members outside the above conditions is
+ *  undefined.
+ */
 struct caca_event
 {
     enum caca_event_type type;
@@ -145,51 +176,51 @@ struct caca_event
  */
 enum caca_key
 {
-    CACA_KEY_UNKNOWN = 0, /**< Unknown key. */
+    CACA_KEY_UNKNOWN = 0x00, /**< Unknown key. */
 
     /* The following keys have ASCII equivalents */
-    CACA_KEY_BACKSPACE = 8, /**< The backspace key. */
-    CACA_KEY_TAB = 9, /**< The tabulation key. */
-    CACA_KEY_RETURN = 13, /**< The return key. */
-    CACA_KEY_PAUSE = 19, /**< The pause key. */
-    CACA_KEY_ESCAPE = 27, /**< The escape key. */
-    CACA_KEY_DELETE = 127, /**< The delete key. */
+    CACA_KEY_BACKSPACE = 0x08, /**< The backspace key. */
+    CACA_KEY_TAB =       0x09, /**< The tabulation key. */
+    CACA_KEY_RETURN =    0x0d, /**< The return key. */
+    CACA_KEY_PAUSE =     0x13, /**< The pause key. */
+    CACA_KEY_ESCAPE =    0x1b, /**< The escape key. */
+    CACA_KEY_DELETE =    0x7f, /**< The delete key. */
 
     /* The following keys do not have ASCII equivalents but have been
      * chosen to match the SDL equivalents */
-    CACA_KEY_UP = 273, /**< The up arrow key. */
-    CACA_KEY_DOWN = 274, /**< The down arrow key. */
-    CACA_KEY_LEFT = 275, /**< The left arrow key. */
-    CACA_KEY_RIGHT = 276, /**< The right arrow key. */
+    CACA_KEY_UP =    0x111, /**< The up arrow key. */
+    CACA_KEY_DOWN =  0x112, /**< The down arrow key. */
+    CACA_KEY_LEFT =  0x113, /**< The left arrow key. */
+    CACA_KEY_RIGHT = 0x114, /**< The right arrow key. */
 
-    CACA_KEY_INSERT = 277, /**< The insert key. */
-    CACA_KEY_HOME = 278, /**< The home key. */
-    CACA_KEY_END = 279, /**< The end key. */
-    CACA_KEY_PAGEUP = 280, /**< The page up key. */
-    CACA_KEY_PAGEDOWN = 281, /**< The page down key. */
+    CACA_KEY_INSERT =   0x115, /**< The insert key. */
+    CACA_KEY_HOME =     0x116, /**< The home key. */
+    CACA_KEY_END =      0x117, /**< The end key. */
+    CACA_KEY_PAGEUP =   0x118, /**< The page up key. */
+    CACA_KEY_PAGEDOWN = 0x119, /**< The page down key. */
 
-    CACA_KEY_F1 = 282, /**< The F1 key. */
-    CACA_KEY_F2 = 283, /**< The F2 key. */
-    CACA_KEY_F3 = 284, /**< The F3 key. */
-    CACA_KEY_F4 = 285, /**< The F4 key. */
-    CACA_KEY_F5 = 286, /**< The F5 key. */
-    CACA_KEY_F6 = 287, /**< The F6 key. */
-    CACA_KEY_F7 = 288, /**< The F7 key. */
-    CACA_KEY_F8 = 289, /**< The F8 key. */
-    CACA_KEY_F9 = 290, /**< The F9 key. */
-    CACA_KEY_F10 = 291, /**< The F10 key. */
-    CACA_KEY_F11 = 292, /**< The F11 key. */
-    CACA_KEY_F12 = 293, /**< The F12 key. */
-    CACA_KEY_F13 = 294, /**< The F13 key. */
-    CACA_KEY_F14 = 295, /**< The F14 key. */
-    CACA_KEY_F15 = 296 /**< The F15 key. */
+    CACA_KEY_F1 =  0x11a, /**< The F1 key. */
+    CACA_KEY_F2 =  0x11b, /**< The F2 key. */
+    CACA_KEY_F3 =  0x11c, /**< The F3 key. */
+    CACA_KEY_F4 =  0x11d, /**< The F4 key. */
+    CACA_KEY_F5 =  0x11e, /**< The F5 key. */
+    CACA_KEY_F6 =  0x11f, /**< The F6 key. */
+    CACA_KEY_F7 =  0x120, /**< The F7 key. */
+    CACA_KEY_F8 =  0x121, /**< The F8 key. */
+    CACA_KEY_F9 =  0x122, /**< The F9 key. */
+    CACA_KEY_F10 = 0x123, /**< The F10 key. */
+    CACA_KEY_F11 = 0x124, /**< The F11 key. */
+    CACA_KEY_F12 = 0x125, /**< The F12 key. */
+    CACA_KEY_F13 = 0x126, /**< The F13 key. */
+    CACA_KEY_F14 = 0x127, /**< The F14 key. */
+    CACA_KEY_F15 = 0x128  /**< The F15 key. */
 };
 
 typedef struct caca_context caca_t;
 
 /** \defgroup basic Basic functions
  *
- *  These functions provide the basic \e libcaca routines for library
+ *  These functions provide the basic \e libcaca routines for driver
  *  initialisation, system information retrieval and configuration.
  *
  *  @{ */
