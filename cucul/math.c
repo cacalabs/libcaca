@@ -26,8 +26,6 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
-static float powf_internal(float x, float y);
-
 /**
  * \brief Generate a random integer within a range.
  *
