@@ -92,9 +92,11 @@ static int x11_init_graphics(caca_t *kk)
 
     kk->drv.p = malloc(sizeof(struct driver_private));
 
+#if defined(HAVE_GETENV)
     geometry = getenv("CACA_GEOMETRY");
     if(geometry && *geometry)
         sscanf(geometry, "%ux%u", &width, &height);
+#endif
 
     if(width && height)
         _cucul_set_size(kk->qq, width, height);
@@ -103,10 +105,12 @@ static int x11_init_graphics(caca_t *kk)
     if(kk->drv.p->dpy == NULL)
         return -1;
 
+#if defined(HAVE_GETENV)
     fonts[0] = getenv("CACA_FONT");
     if(fonts[0] && *fonts[0])
         parser = fonts;
     else
+#endif
         parser = fonts + 1;
 
     /* Ignore font errors */
@@ -543,8 +547,13 @@ static int x11_error_handler(Display *dpy, XErrorEvent *xevent)
  * Driver initialisation
  */
 
-void x11_init_driver(caca_t *kk)
+int x11_install(caca_t *kk)
 {
+#if defined(HAVE_GETENV)
+    if(!getenv("DISPLAY") || !*(getenv("DISPLAY")))
+        return -1;
+#endif
+
     kk->drv.driver = CACA_DRIVER_X11;
 
     kk->drv.init_graphics = x11_init_graphics;
@@ -555,6 +564,8 @@ void x11_init_driver(caca_t *kk)
     kk->drv.display = x11_display;
     kk->drv.handle_resize = x11_handle_resize;
     kk->drv.get_event = x11_get_event;
+
+    return 0;
 }
 
 #endif /* USE_X11 */

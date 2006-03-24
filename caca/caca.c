@@ -122,92 +122,56 @@ static int caca_init_driver(caca_t *kk)
     if(var && *var)
     {
 #if defined(USE_WIN32)
-        if(!strcasecmp(var, "win32"))
-            win32_init_driver(kk);
-        else
+        if(!strcasecmp(var, "win32")) return win32_install(kk);
 #endif
 #if defined(USE_CONIO)
-        if(!strcasecmp(var, "conio"))
-            conio_init_driver(kk);
-        else
+        if(!strcasecmp(var, "conio")) return conio_install(kk);
 #endif
 #if defined(USE_X11)
-        if(!strcasecmp(var, "x11"))
-            x11_init_driver(kk);
-        else
+        if(!strcasecmp(var, "x11")) return x11_install(kk);
 #endif
 #if defined(USE_GL)
-        if(!strcasecmp(var, "gl"))
-            gl_init_driver(kk);
-        else
+        if(!strcasecmp(var, "gl")) return gl_install(kk);
 #endif
 #if defined(USE_SLANG)
-        if(!strcasecmp(var, "slang"))
-            slang_init_driver(kk);
-        else
+        if(!strcasecmp(var, "slang")) return slang_install(kk);
 #endif
 #if defined(USE_NCURSES)
-        if(!strcasecmp(var, "ncurses"))
-            ncurses_init_driver(kk);
-        else
+        if(!strcasecmp(var, "ncurses")) return ncurses_install(kk);
 #endif
 #if defined(USE_NETWORK)
-        if(!strcasecmp(var, "network"))
-            network_init_driver(kk);
-        else
+        if(!strcasecmp(var, "network")) return network_install(kk);
 #endif
 #if defined(USE_VGA)
-        if(!strcasecmp(var, "vga"))
-            vga_init_driver(kk);
-        else
+        if(!strcasecmp(var, "vga")) return vga_install(kk);
 #endif
-            return -1;
-
-        return 0;
+        return -1;
     }
 #endif
 
 #if defined(USE_WIN32)
-    win32_init_driver(kk);
-    return 0;
+    if(win32_install(kk) == 0) return 0;
 #endif
 #if defined(USE_CONIO)
-    conio_init_driver(kk);
-    return 0;
+    if(conio_install(kk) == 0) return 0;
 #endif
 #if defined(USE_VGA)
-    vga_init_driver(kk);
-    return 0;
+    if(vga_install(kk) == 0) return 0;
 #endif
 #if defined(USE_X11)
-#if defined(HAVE_GETENV)
-    if(getenv("DISPLAY") && *(getenv("DISPLAY")))
-#endif
-    {
-        x11_init_driver(kk);
-        return 0;
-    }
+    if(x11_install(kk) == 0) return 0;
 #endif
 #if defined(USE_GL)
-#if defined(HAVE_GETENV) && defined(GLUT_XLIB_IMPLEMENTATION)
-    if(getenv("DISPLAY") && *(getenv("DISPLAY")))
-#endif
-    {
-        gl_init_driver(kk);
-        return 0;
-    }
+    if(gl_install(kk) == 0) return 0;
 #endif
 #if defined(USE_SLANG)
-    slang_init_driver(kk);
-    return 0;
+    if(slang_install(kk) == 0) return 0;
 #endif
 #if defined(USE_NCURSES)
-    ncurses_init_driver(kk);
-    return 0;
+    if(ncurses_install(kk) == 0) return 0;
 #endif
 #if defined(USE_NETWORK)
-    network_init_driver(kk);
-    return 0;
+    if(network_install(kk) == 0) return 0;
 #endif
 
     return -1;

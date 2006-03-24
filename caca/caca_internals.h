@@ -38,6 +38,7 @@ typedef long unsigned int uintptr_t;
 /* Graphics driver */
 enum caca_driver
 {
+    CACA_DRIVER_NONE = 0,
 #if defined(USE_CONIO)
     CACA_DRIVER_CONIO = 1,
 #endif
@@ -62,34 +63,34 @@ enum caca_driver
 #if defined(USE_VGA)
     CACA_DRIVER_VGA = 8,
 #endif
-    CACA_DRIVER_NONE = 0
 };
 
 /* Available drivers */
 #if defined(USE_CONIO)
-void conio_init_driver(caca_t *);
+int conio_install(caca_t *);
 #endif
 #if defined(USE_GL)
-void gl_init_driver(caca_t *);
+int gl_install(caca_t *);
 #endif
 #if defined(USE_NCURSES)
-void ncurses_init_driver(caca_t *);
+int ncurses_install(caca_t *);
 #endif
 #if defined(USE_SLANG)
-void slang_init_driver(caca_t *);
+int slang_install(caca_t *);
 #endif
 #if defined(USE_WIN32)
-void win32_init_driver(caca_t *);
+int win32_install(caca_t *);
 #endif
 #if defined(USE_X11)
-void x11_init_driver(caca_t *);
+int x11_install(caca_t *);
 #endif
 #if defined(USE_NETWORK)
-void network_init_driver(caca_t *);
+int network_install(caca_t *);
 #endif
 #if defined(USE_VGA)
-void vga_init_driver(caca_t *);
+int vga_install(caca_t *);
 #endif
+
 /* Timer structure */
 struct caca_timer
 {
@@ -128,7 +129,6 @@ struct caca_context
     struct resize
     {
         int resized;   /* A resize event was requested */
-        //int acked;     /* The event has been acknowledged by the user */
         unsigned w, h; /* Requested width and height */
     } resize;
 

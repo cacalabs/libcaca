@@ -468,7 +468,7 @@ static void slang_check_terminal(void)
  * Driver initialisation
  */
 
-void slang_init_driver(caca_t *kk)
+int slang_install(caca_t *kk)
 {
     kk->drv.driver = CACA_DRIVER_SLANG;
 
@@ -480,6 +480,8 @@ void slang_init_driver(caca_t *kk)
     kk->drv.display = slang_display;
     kk->drv.handle_resize = slang_handle_resize;
     kk->drv.get_event = slang_get_event;
+
+    return 0;
 }
 
 #endif /* USE_SLANG */

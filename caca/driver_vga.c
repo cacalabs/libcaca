@@ -145,7 +145,7 @@ static int vga_get_event(caca_t *kk, struct caca_event *ev)
  * Driver initialisation
  */
 
-void vga_init_driver(caca_t *kk)
+int vga_install(caca_t *kk)
 {
     kk->drv.driver = CACA_DRIVER_VGA;
 
@@ -157,6 +157,8 @@ void vga_init_driver(caca_t *kk)
     kk->drv.display = vga_display;
     kk->drv.handle_resize = vga_handle_resize;
     kk->drv.get_event = vga_get_event;
+
+    return 0;
 }
 
 #endif /* USE_VGA */

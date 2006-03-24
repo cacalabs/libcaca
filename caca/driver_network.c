@@ -550,7 +550,7 @@ ssize_t nonblock_write(int fd, void *buf, size_t len)
  * Driver initialisation
  */
 
-void network_init_driver(caca_t *kk)
+int network_install(caca_t *kk)
 {
     kk->drv.driver = CACA_DRIVER_NETWORK;
 
@@ -562,6 +562,8 @@ void network_init_driver(caca_t *kk)
     kk->drv.display = network_display;
     kk->drv.handle_resize = network_handle_resize;
     kk->drv.get_event = network_get_event;
+
+    return 0;
 }
 
 

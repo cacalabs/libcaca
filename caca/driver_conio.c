@@ -151,7 +151,7 @@ static int conio_get_event(caca_t *kk, struct caca_event *ev)
  * Driver initialisation
  */
 
-void conio_init_driver(caca_t *kk)
+int conio_install(caca_t *kk)
 {
     kk->drv.driver = CACA_DRIVER_CONIO;
 
@@ -163,6 +163,8 @@ void conio_init_driver(caca_t *kk)
     kk->drv.display = conio_display;
     kk->drv.handle_resize = conio_handle_resize;
     kk->drv.get_event = conio_get_event;
+
+    return 0;
 }
 
 #endif /* USE_CONIO */

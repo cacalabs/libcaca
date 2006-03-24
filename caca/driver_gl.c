@@ -106,9 +106,11 @@ static int gl_init_graphics(caca_t *kk)
 
     gl_kk = kk;
 
+#if defined(HAVE_GETENV)
     geometry = getenv("CACA_GEOMETRY");
     if(geometry && *geometry)
         sscanf(geometry, "%ux%u", &width, &height);
+#endif
 
     if(width && height)
         _cucul_set_size(kk->qq, width, height);
@@ -445,8 +447,13 @@ static void gl_handle_mouse_motion(int x, int y)
  * Driver initialisation
  */
 
-void gl_init_driver(caca_t *kk)
+int gl_install(caca_t *kk)
 {
+#if defined(HAVE_GETENV) && defined(GLUT_XLIB_IMPLEMENTATION)
+    if(!getenv("DISPLAY") || !*(getenv("DISPLAY")))
+        return -1;
+#endif
+
     kk->drv.driver = CACA_DRIVER_GL;
 
     kk->drv.init_graphics = gl_init_graphics;
@@ -457,6 +464,8 @@ void gl_init_driver(caca_t *kk)
     kk->drv.display = gl_display;
     kk->drv.handle_resize = gl_handle_resize;
     kk->drv.get_event = gl_get_event;
+
+    return 0;
 }
 
 #endif /* USE_GL */

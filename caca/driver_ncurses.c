@@ -530,7 +530,7 @@ static void ncurses_write_utf32(uint32_t c)
  * Driver initialisation
  */
 
-void ncurses_init_driver(caca_t *kk)
+int ncurses_install(caca_t *kk)
 {
     kk->drv.driver = CACA_DRIVER_NCURSES;
 
@@ -542,6 +542,8 @@ void ncurses_init_driver(caca_t *kk)
     kk->drv.display = ncurses_display;
     kk->drv.handle_resize = ncurses_handle_resize;
     kk->drv.get_event = ncurses_get_event;
+
+    return 0;
 }
 
 #endif /* USE_NCURSES */

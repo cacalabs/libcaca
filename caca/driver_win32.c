@@ -333,7 +333,7 @@ static int win32_get_event(caca_t *kk, struct caca_event *ev)
  * Driver initialisation
  */
 
-void win32_init_driver(caca_t *kk)
+int win32_install(caca_t *kk)
 {
     kk->drv.driver = CACA_DRIVER_WIN32;
 
@@ -345,6 +345,8 @@ void win32_init_driver(caca_t *kk)
     kk->drv.display = win32_display;
     kk->drv.handle_resize = win32_handle_resize;
     kk->drv.get_event = win32_get_event;
+
+    return 0;
 }
 
 #endif /* USE_WIN32 */
