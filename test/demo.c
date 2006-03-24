@@ -493,7 +493,7 @@ static void demo_render(void)
         //*dest++ = ((x >> 3) << 11) | ((y >> 2) << 5) | ((z >> 3));
         *dest++ = (x << 16) | (y << 8) | (z);
     }
-
+    cucul_set_bitmap_invert(bitmap, 1);
     //bitmap = cucul_create_bitmap(16, 256, 256, 2 * 256, 0xf800, 0x07e0, 0x001f, 0x0000);
     bitmap = cucul_create_bitmap(32, 256, 256, 4 * 256, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
     cucul_draw_bitmap(qq, 0, 0, cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
@@ -540,6 +540,7 @@ static void demo_render(void)
         draw_circle(buffer, xo, yo, z, 0x000000ff, 200);
 
     bitmap = cucul_create_bitmap(32, 256, 256, 4 * 256, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+ cucul_set_bitmap_invert(bitmap, 1);
     cucul_draw_bitmap(qq, 0, 0, cucul_get_width(qq) - 1, cucul_get_height(qq) - 1, bitmap, (char *)buffer);
     cucul_free_bitmap(bitmap);
 }

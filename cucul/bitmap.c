@@ -149,6 +149,7 @@ struct cucul_bitmap
     int red[256], green[256], blue[256], alpha[256];
     float gamma;
     int gammatab[4097];
+    unsigned char invert;
 };
 #endif
 
@@ -313,6 +314,9 @@ struct cucul_bitmap *cucul_create_bitmap(unsigned int bpp, unsigned int w,
     for(i = 0; i < 4096; i++)
         bitmap->gammatab[i] = i;
 
+    /* No color inversion by default */
+    bitmap->invert = 0;
+
     return bitmap;
 }
 
@@ -378,6 +382,22 @@ void cucul_set_bitmap_gamma(struct cucul_bitmap *bitmap, float gamma)
     for(i = 0; i < 4096; i++)
         bitmap->gammatab[i] = 4096.0 * gammapow((float)i / 4096.0, 1.0 / gamma);
 }
+
+
+/**
+ * \brief Invert colors of bitmap
+ *
+ * Invert colors of bitmap
+ *
+ * \param bitmap Bitmap object.
+ * \param value 0 for normal behaviour, 1 for invert
+ */
+void cucul_set_bitmap_invert(struct cucul_bitmap *bitmap, unsigned char value)
+{
+    bitmap->invert = (value==0)?0:1;
+}
+
+
 
 /**
  * \brief Free the memory associated with a bitmap.
@@ -779,6 +799,11 @@ void cucul_draw_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
             fs_r[x+1] = 1 * error[0] / 16;
             fs_g[x+1] = 1 * error[1] / 16;
             fs_b[x+1] = 1 * error[2] / 16;
+        }
+
+        if(bitmap->invert) {
+            outfg = 15-outfg;
+            outbg = 15-outfg;
         }
 
         /* Now output the character */

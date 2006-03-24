@@ -223,6 +223,7 @@ void cucul_set_bitmap_palette(struct cucul_bitmap *,
                               unsigned int b[], unsigned int a[]);
 void cucul_set_bitmap_gamma(struct cucul_bitmap *, float);
 void cucul_draw_bitmap(cucul_t *, int, int, int, int, struct cucul_bitmap const *, void *);
+void cucul_set_bitmap_invert(struct cucul_bitmap *, unsigned char);
 void cucul_free_bitmap(struct cucul_bitmap *);
 /*  @} */
 
