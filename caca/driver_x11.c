@@ -539,15 +539,31 @@ static int x11_get_event(caca_t *kk, struct caca_event *ev)
 
 static void x11_show_cursor(caca_t *kk)
 {
-
+    XDefineCursor(kk->drv.p->dpy,kk->drv.p->window, 0);
 }
 
 static void x11_hide_cursor(caca_t *kk)
 {
-    XFreeCursor( kk->drv.p->dpy, kk->drv.p->pointer );
-    kk->drv.p->pointer = None;
-    XUndefineCursor( kk->drv.p->dpy, kk->drv.p->window );
-    XSync( kk->drv.p->dpy, False ); /* optional */
+    Cursor no_ptr;
+    Pixmap bm_no;
+    XColor black, dummy;
+    Colormap colormap;
+    static char empty[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+
+    colormap = DefaultColormap(kk->drv.p->dpy, DefaultScreen(kk->drv.p->dpy));
+    if ( !XAllocNamedColor(kk->drv.p->dpy, colormap, "black", &black, &dummy) )
+    {
+      return;
+    }
+    bm_no = XCreateBitmapFromData(kk->drv.p->dpy, kk->drv.p->window, empty, 8, 8);
+    no_ptr = XCreatePixmapCursor(kk->drv.p->dpy, bm_no, bm_no, &black, &black, 0, 0);
+    XDefineCursor(kk->drv.p->dpy,  kk->drv.p->window, no_ptr);
+    XFreeCursor(kk->drv.p->dpy, no_ptr);
+    if (bm_no != None)
+        XFreePixmap(kk->drv.p->dpy, bm_no);
+    XFreeColors(kk->drv.p->dpy,colormap,&black.pixel,1,0);
+
+    XSync(kk->drv.p->dpy, False);
 
 }
 

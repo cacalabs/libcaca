@@ -161,8 +161,8 @@ void caca_show_cursor(caca_t *kk)
  */
 void caca_hide_cursor(caca_t *kk)
 {
-    if(kk->drv.show_cursor)
-	kk->drv.show_cursor(kk);
+    if(kk->drv.hide_cursor)
+	kk->drv.hide_cursor(kk);
 }
 
 
