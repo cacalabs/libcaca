@@ -152,6 +152,11 @@ if test "${enable_gl}" != "no"; then
        [ac_cv_my_have_gl="yes"
         AC_DEFINE(USE_GL, 1, Define to 1 to activate the OpenGL backend driver)
         CACA_LIBS="${CACA_LIBS} -lGL -lglut"
+        CACA_DRIVERS="${CACA_DRIVERS} gl"])]
+     [AC_CHECK_LIB(glut, glutCheckLoop,
+       [ac_cv_my_have_gl="yes"
+        AC_DEFINE(USE_GLUTCHECKLOOP, 1, Define to 1 to activate the glut3 glutCheckLoop call)
+        CACA_LIBS="${CACA_LIBS} -lGL -lglut"
         CACA_DRIVERS="${CACA_DRIVERS} gl"])])])
   if test "${ac_cv_my_have_gl}" = "no" -a "${enable_gl}" = "yes"; then
     AC_MSG_ERROR([cannot find OpenGL+FreeGLUT development files])

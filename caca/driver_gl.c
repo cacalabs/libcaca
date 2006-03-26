@@ -25,6 +25,10 @@
 #include <GL/glut.h>
 #include <GL/freeglut_ext.h>
 
+#ifdef USE_GLUTCHECKLOOP
+#define glutMainLoopEvent glutCheckLoop
+#endif
+
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -73,6 +77,7 @@ static void gl_handle_special_key(int, int, int);
 static void gl_handle_reshape(int, int);
 static void gl_handle_mouse(int, int, int, int);
 static void gl_handle_mouse_motion(int, int);
+static void _display(void);
 
 struct driver_private
 {
@@ -146,6 +151,8 @@ static int gl_init_graphics(caca_t *kk)
     glutKeyboardFunc(gl_handle_keyboard);
     glutSpecialFunc(gl_handle_special_key);
     glutReshapeFunc(gl_handle_reshape);
+    glutDisplayFunc(_display);
+
 
     glutMouseFunc(gl_handle_mouse);
     glutMotionFunc(gl_handle_mouse_motion);
@@ -222,6 +229,7 @@ static unsigned int gl_get_window_height(caca_t *kk)
 {
     return kk->drv.p->height;
 }
+
 
 static void gl_display(caca_t *kk)
 {
@@ -451,6 +459,15 @@ static void gl_handle_mouse_motion(int x, int y)
     kk->drv.p->mouse_y = y / kk->drv.p->font_height;
     kk->drv.p->mouse_changed = 1;
 }
+
+
+
+static void _display(void)
+{
+    caca_t *kk = gl_kk;
+    gl_display(kk);
+}
+
 
 /*
  * Driver initialisation
