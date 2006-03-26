@@ -21,11 +21,14 @@
 
 #if defined(USE_GL)
 
+#ifndef USE_GLUTCHECKLOOP
 #include <GL/gl.h>
 #include <GL/glut.h>
 #include <GL/freeglut_ext.h>
-
-#ifdef USE_GLUTCHECKLOOP
+#else
+/* glutCheckLoop tested only under MacOSX, so using its default headers path */
+#include <OpenGL/gl.h>
+#include <GLUT/glut.h>
 #define glutMainLoopEvent glutCheckLoop
 #endif
 
