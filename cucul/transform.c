@@ -272,6 +272,7 @@ static uint32_t rotatechar(uint32_t ch)
          (uint32_t)'(', (uint32_t)')', (uint32_t)'<', (uint32_t)'>',
          (uint32_t)'[', (uint32_t)']', (uint32_t)'{', (uint32_t)'}',
          (uint32_t)'.', (uint32_t)'\'',
+         (uint32_t)'6', (uint32_t)'9',
          (uint32_t)'M', (uint32_t)'W', (uint32_t)'b', (uint32_t)'q',
          (uint32_t)'d', (uint32_t)'p', (uint32_t)'n', (uint32_t)'u',
          /* ASCII-Unicode */
