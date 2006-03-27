@@ -29,6 +29,25 @@ static uint32_t flipchar(uint32_t ch);
 static uint32_t flopchar(uint32_t ch);
 static uint32_t rotatechar(uint32_t ch);
 
+/** \brief Invert a canvas' colours.
+ *
+ *  This function inverts a canvas' colours (black becomes white, red
+ *  becomes cyan, etc.) without changing the characters in it.
+ *
+ *  \param qq The canvas to invert.
+ */
+void cucul_invert(cucul_t *qq)
+{
+    uint8_t *attr = qq->attr;
+    unsigned int i;
+
+    for(i = qq->height * qq->width; i--; )
+    {
+        *attr = ~*attr;
+        attr++;
+    }
+}
+
 /** \brief Flip a canvas horizontally.
  *
  *  This function flips a canvas horizontally, choosing characters that

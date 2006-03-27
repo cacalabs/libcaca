@@ -151,6 +151,7 @@ void cucul_blit(cucul_t *, int, int, cucul_t const *, cucul_t const *);
  *  These functions perform horizontal and vertical canvas flipping.
  *
  *  @{ */
+void cucul_invert(cucul_t *);
 void cucul_flip(cucul_t *);
 void cucul_flop(cucul_t *);
 void cucul_rotate(cucul_t *);
