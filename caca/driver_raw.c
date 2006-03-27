@@ -57,18 +57,26 @@ static void raw_display(caca_t *kk)
 {
     uint8_t *attr = kk->qq->attr;
     uint32_t *chars = kk->qq->chars;
-    int n;
+    uint32_t w, h;
+    unsigned int n;
 
-    fprintf(stdout, "CACA %i %i\n", kk->qq->width, kk->qq->height);
+    w = kk->qq->width;
+    h = kk->qq->height;
+
+    fprintf(stdout, "CACA%c%c%c%c%c%c%c%c",
+                    (w >> 24), (w >> 16) & 0xff, (w >> 8) & 0xff, w & 0xff,
+                    (h >> 24), (h >> 16) & 0xff, (h >> 8) & 0xff, h & 0xff);
+
     for(n = kk->qq->height * kk->qq->width; n--; )
     {
         uint32_t c = *chars++;
         uint8_t a = *attr++;
 
-        fprintf(stdout, "%c%c%c%c %c", (c >> 24), (c >> 16) & 0xff,
-                                       (c >> 8) & 0xff, c & 0xff, a);
+        fprintf(stdout, "%c%c%c%c%c", (c >> 24), (c >> 16) & 0xff,
+                                      (c >> 8) & 0xff, c & 0xff, a);
     }
-    fprintf(stdout, "ACAC\n");
+
+    fprintf(stdout, "ACAC");
     fflush(stdout);
 }
 

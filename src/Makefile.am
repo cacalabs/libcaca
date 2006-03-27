@@ -5,7 +5,7 @@ pkgdata_DATA = caca.txt
 EXTRA_DIST = caca.txt
 AM_CPPFLAGS = -I$(top_srcdir)/cucul -I$(top_srcdir)/caca -DLIBCACA=1 -DX_DISPLAY_MISSING=1
 
-bin_PROGRAMS = cacafire cacaball cacaplas cacaview cacamoir
+bin_PROGRAMS = cacafire cacaball cacaplas cacaview cacamoir cacaplay
 
 cacafire_SOURCES = aafire.c
 cacafire_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
@@ -28,4 +28,7 @@ else
 cacaview_CFLAGS =
 cacaview_LDFLAGS =
 endif
+
+cacaplay_SOURCES = cacaplay.c
+cacaplay_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
 
