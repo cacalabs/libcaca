@@ -195,7 +195,7 @@ int main(void)
 
         /* Get ANSI representation of the image and skip the end-of buffer
          * linefeed ("\r\n\0", 3 bytes) */
-        server->ex = cucul_create_export(qq, CUCUL_FORMAT_ANSI);
+        server->ex = cucul_create_export(qq, "ansi");
         server->ex->size -= 3;
 
         for(i = 0; i < server->client_count; i++)

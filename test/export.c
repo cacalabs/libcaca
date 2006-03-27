@@ -35,7 +35,6 @@ uint32_t pixels[256*256];
 int main(int argc, char *argv[])
 {
     cucul_t *qq;
-    enum cucul_format format;
     struct cucul_bitmap *bitmap;
     struct cucul_export *buffer;
     int x, y;
@@ -48,19 +47,12 @@ int main(int argc, char *argv[])
         exit(-1);
     }
 
-    if(!strcasecmp(argv[1], "ansi"))
-        format = CUCUL_FORMAT_ANSI;
-    else if(!strcasecmp(argv[1], "html"))
-        format = CUCUL_FORMAT_HTML;
-    else if(!strcasecmp(argv[1], "html3"))
-        format = CUCUL_FORMAT_HTML3;
-    else if(!strcasecmp(argv[1], "irc"))
-        format = CUCUL_FORMAT_IRC;
-    else if(!strcasecmp(argv[1], "ps"))
-        format = CUCUL_FORMAT_PS;
-    else if(!strcasecmp(argv[1], "svg"))
-        format = CUCUL_FORMAT_SVG;
-    else
+    if(strcasecmp(argv[1], "ansi")
+        && strcasecmp(argv[1], "html")
+        && strcasecmp(argv[1], "html3")
+        && strcasecmp(argv[1], "irc")
+        && strcasecmp(argv[1], "ps")
+        && strcasecmp(argv[1], "svg"))
     {
         fprintf(stderr, "%s: unknown format `%s'\n", argv[0], argv[1]);
         exit(-1);
@@ -98,7 +90,7 @@ int main(int argc, char *argv[])
     cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_LIGHTBLUE);
     cucul_putstr(qq, WIDTH / 2 - 7, HEIGHT / 2, "    LIBCACA    ");
 
-    buffer = cucul_create_export(qq, format);
+    buffer = cucul_create_export(qq, argv[1]);
     fwrite(buffer->buffer, buffer->size - 1, 1, stdout);
     cucul_free_export(buffer);
 

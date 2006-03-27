@@ -52,20 +52,6 @@ enum cucul_color
     CUCUL_COLOR_WHITE = 15 /**< The colour index for white. */
 };
 
-/** \brief Export formats
- *
- *  Export formats understood by libcucul.
- */
-enum cucul_format
-{
-    CUCUL_FORMAT_ANSI = 0, /**< Export to ANSI format. */
-    CUCUL_FORMAT_HTML = 1, /**< Export to HTML format. */
-    CUCUL_FORMAT_HTML3 = 2, /**< Export to old HTMLv3 format. */
-    CUCUL_FORMAT_IRC = 3, /**< Export to text with mIRC colours. */
-    CUCUL_FORMAT_PS = 4, /**< Export to PostScript. */
-    CUCUL_FORMAT_SVG = 5, /**< Export to Scalable Vector Graphics format. */
-};
-
 /** \brief Internal features.
  *
  *  Internal libcaca features such as the rendering method or the dithering
@@ -241,7 +227,7 @@ struct cucul_export
     char *buffer;
 };
 
-struct cucul_export * cucul_create_export(cucul_t *, enum cucul_format);
+struct cucul_export * cucul_create_export(cucul_t *, char const *);
 void cucul_free_export(struct cucul_export *);
 
 /*  @} */

@@ -317,35 +317,28 @@ void cucul_free(cucul_t *qq)
     free(qq);
 }
 
-struct cucul_export * cucul_create_export(cucul_t *qq, enum cucul_format format)
+struct cucul_export * cucul_create_export(cucul_t *qq, char const *format)
 {
     struct cucul_export *ex;
 
     ex = malloc(sizeof(struct cucul_export));
 
-    switch(format)
+    if(!strcasecmp("ansi", format))
+        _cucul_get_ansi(qq, ex);
+    else if(!strcasecmp("html", format))
+        _cucul_get_html(qq, ex);
+    else if(!strcasecmp("html3", format))
+        _cucul_get_html3(qq, ex);
+    else if(!strcasecmp("irc", format))
+        _cucul_get_irc(qq, ex);
+    else if(!strcasecmp("ps", format))
+        _cucul_get_ps(qq, ex);
+    else if(!strcasecmp("svg", format))
+        _cucul_get_svg(qq, ex);
+    else
     {
-        case CUCUL_FORMAT_ANSI:
-            _cucul_get_ansi(qq, ex);
-            break;
-        case CUCUL_FORMAT_HTML:
-            _cucul_get_html(qq, ex);
-            break;
-        case CUCUL_FORMAT_HTML3:
-            _cucul_get_html3(qq, ex);
-            break;
-        case CUCUL_FORMAT_IRC:
-            _cucul_get_irc(qq, ex);
-            break;
-        case CUCUL_FORMAT_PS:
-            _cucul_get_ps(qq, ex);
-            break;
-        case CUCUL_FORMAT_SVG:
-            _cucul_get_svg(qq, ex);
-            break;
-        default:
-            free(ex);
-            return NULL;
+        free(ex);
+        return NULL;
     }
 
     return ex;
