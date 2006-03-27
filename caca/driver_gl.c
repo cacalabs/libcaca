@@ -461,15 +461,18 @@ static void gl_handle_mouse(int button, int state, int x, int y)
     kk->drv.p->mouse_state = state;
     kk->drv.p->mouse_x = x / kk->drv.p->font_width;
     kk->drv.p->mouse_y = y / kk->drv.p->font_height;
+    kk->mouse.x = kk->drv.p->mouse_x;
+    kk->mouse.y = kk->drv.p->mouse_y;
     kk->drv.p->mouse_changed = 1;
 }
 
 static void gl_handle_mouse_motion(int x, int y)
 {
     caca_t *kk = gl_kk;
-
     kk->drv.p->mouse_x = x / kk->drv.p->font_width;
     kk->drv.p->mouse_y = y / kk->drv.p->font_height;
+    kk->mouse.x = kk->drv.p->mouse_x;
+    kk->mouse.y = kk->drv.p->mouse_y;
     kk->drv.p->mouse_changed = 1;
 }
 
