@@ -119,6 +119,7 @@ typedef struct cucul_context cucul_t;
  *
  *  @{ */
 cucul_t * cucul_create(unsigned int, unsigned int);
+cucul_t * cucul_load(void *, unsigned int);
 void cucul_set_size(cucul_t *, unsigned int, unsigned int);
 unsigned int cucul_get_width(cucul_t *);
 unsigned int cucul_get_height(cucul_t *);

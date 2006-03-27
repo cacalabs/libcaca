@@ -77,7 +77,47 @@ cucul_t * cucul_create(unsigned int width, unsigned int height)
     return qq;
 }
 
-/** \brief Set the canvas size.
+cucul_t *cucul_load(void *data, unsigned int size)
+{
+    cucul_t *qq;
+    uint8_t *buf = (uint8_t *)data;
+    unsigned int width, height, n;
+
+    if(size < 12)
+        return NULL;
+
+    if(buf[0] != 'C' || buf[1] != 'A' || buf[2] != 'C' || buf[3] != 'A')
+        return NULL;
+
+    width = ((uint32_t)buf[4] << 24) | ((uint32_t)buf[5] << 16)
+          | ((uint32_t)buf[6] << 8) | (uint32_t)buf[7];
+    height = ((uint32_t)buf[8] << 24) | ((uint32_t)buf[9] << 16)
+           | ((uint32_t)buf[10] << 8) | (uint32_t)buf[11];
+
+    if(!width || !height)
+        return NULL;
+
+    if(size != 12 + width * height * 5 + 4)
+        return NULL;
+
+    qq = cucul_create(width, height);
+
+    if(!qq)
+        return NULL;
+
+    for(n = height * width; n--; )
+    {
+        qq->chars[n] = ((uint32_t)buf[12 + 5 * n] << 24)
+                     | ((uint32_t)buf[13 + 5 * n] << 16)
+                     | ((uint32_t)buf[14 + 5 * n] << 8)
+                     | (uint32_t)buf[15 + 5 * n];
+        qq->attr[n] = buf[16 + 5 * n];
+    }
+
+    return qq;
+}
+
+/** \brief Resize a canvas.
  *
  *  This function sets the canvas width and height, in character cells.
  *
