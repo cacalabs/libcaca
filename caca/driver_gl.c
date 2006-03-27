@@ -30,10 +30,6 @@
 #   include <GL/freeglut_ext.h>
 #endif
 
-#ifdef HAVE_GLUTCHECKLOOP
-#   define glutMainLoopEvent glutCheckLoop
-#endif
-
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -205,7 +201,11 @@ static int gl_init_graphics(caca_t *kk)
         glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
                          0, kk->drv.p->height - 16, 16, 16, 0);
 
+#ifdef HAVE_GLUTCHECKLOOP
+        glutCheckLoop();
+#else
         glutMainLoopEvent();
+#endif
         glutPostRedisplay();
     }
 
@@ -304,7 +304,11 @@ static void gl_display(caca_t *kk)
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
 
+#ifdef HAVE_GLUTCHECKLOOP
+    glutCheckLoop();
+#else
     glutMainLoopEvent();
+#endif
     glutSwapBuffers();
     glutPostRedisplay();
 }
@@ -325,7 +329,11 @@ static void gl_handle_resize(caca_t *kk)
 
 static int gl_get_event(caca_t *kk, struct caca_event *ev)
 {
+#ifdef HAVE_GLUTCHECKLOOP
+    glutCheckLoop();
+#else
     glutMainLoopEvent();
+#endif
 
     if(kk->resize.resized)
     {
