@@ -19,9 +19,6 @@ cacaplas_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@ @MATH_LIBS@
 cacamoir_SOURCES = cacamoir.c
 cacamoir_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@ @MATH_LIBS@
 
-cacaplay_SOURCES = cacaplay.c
-cacaplay_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
-
 cacaview_SOURCES = cacaview.c
 cacaview_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
 if USE_IMLIB2
