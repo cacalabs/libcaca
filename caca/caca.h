@@ -92,9 +92,6 @@
  *  \li \b CACA_FONT: set the rendered font. The format of this variable is
  *      implementation dependent, but since it currently only works with the
  *      X11 driver, an X11 font name such as "fixed" or "5x7" is expected.
- *
- *  \li \b CACA_PORT: set the port the network driver will listen on, when
- *      the output driver is "network". Default port is 51914 (0xCACA).
  */
 
 #ifndef __CACA_H__

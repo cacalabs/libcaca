@@ -15,6 +15,7 @@
 #include "config.h"
 
 #if !defined(__KERNEL__)
+#   include <stdio.h>
 #   include <math.h>
 #   ifndef M_PI
 #       define M_PI 3.14159265358979323846
@@ -39,7 +40,7 @@ static void do_plasma(unsigned char *,
 
 int main (int argc, char **argv)
 {
-    cucul_t *qq; caca_t *kk;
+    cucul_t *qq, *qq2, *mask; caca_t *kk;
     unsigned int red[256], green[256], blue[256], alpha[256];
     double r[3], R[6];
     struct cucul_bitmap *bitmap;
@@ -53,6 +54,9 @@ int main (int argc, char **argv)
         return 1;
 
     caca_set_delay(kk, 20000);
+
+    qq2 = cucul_create(cucul_get_width(qq), cucul_get_height(qq));
+    mask = cucul_create(cucul_get_width(qq), cucul_get_height(qq));
 
     /* Fill various tables */
     for(i = 0 ; i < 256; i++)
@@ -118,6 +122,21 @@ paused:
         cucul_draw_bitmap(qq, 0, 0,
                           cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
                           bitmap, screen);
+
+        cucul_blit(qq2, 0, 0, qq, NULL);
+        cucul_invert(qq2);
+
+        cucul_clear(mask);
+        cucul_set_color(mask, CUCUL_COLOR_WHITE, CUCUL_COLOR_WHITE);
+        cucul_fill_ellipse(mask, (1.0 + 0.7 * sin(0.05 * (float)frame))
+                                   * 0.5 * cucul_get_width(mask),
+                                 (1.0 + 0.7 * cos(0.05 * (float)frame))
+                                   * 0.5 * cucul_get_height(mask),
+                                 cucul_get_width(mask) / 3,
+                                 cucul_get_height(mask) / 3, "#");
+
+        cucul_blit(qq, 0, 0, qq2, mask);
+
         cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
         cucul_putstr(qq, cucul_get_width(qq) - 30, cucul_get_height(qq) - 2,
                      " -=[ Powered by libcaca ]=- ");

@@ -140,9 +140,6 @@ static int caca_init_driver(caca_t *kk)
 #if defined(USE_NCURSES)
         if(!strcasecmp(var, "ncurses")) return ncurses_install(kk);
 #endif
-#if defined(USE_NETWORK)
-        if(!strcasecmp(var, "network")) return network_install(kk);
-#endif
 #if defined(USE_VGA)
         if(!strcasecmp(var, "vga")) return vga_install(kk);
 #endif

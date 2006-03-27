@@ -14,7 +14,6 @@ libcaca_la_SOURCES = \
 	driver_conio.c \
 	driver_gl.c \
 	driver_ncurses.c \
-	driver_network.c \
 	driver_raw.c \
 	driver_slang.c \
 	driver_vga.c \

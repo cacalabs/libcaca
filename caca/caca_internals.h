@@ -46,23 +46,20 @@ enum caca_driver
 #if defined(USE_GL)
     CACA_DRIVER_GL = 3,
 #endif
-#if defined(USE_NETWORK)
-    CACA_DRIVER_NETWORK = 4,
-#endif
 #if defined(USE_NCURSES)
-    CACA_DRIVER_NCURSES = 5,
+    CACA_DRIVER_NCURSES = 4,
 #endif
 #if defined(USE_SLANG)
-    CACA_DRIVER_SLANG = 6,
+    CACA_DRIVER_SLANG = 5,
 #endif
 #if defined(USE_VGA)
-    CACA_DRIVER_VGA = 7,
+    CACA_DRIVER_VGA = 6,
 #endif
 #if defined(USE_WIN32)
-    CACA_DRIVER_WIN32 = 8,
+    CACA_DRIVER_WIN32 = 7,
 #endif
 #if defined(USE_X11)
-    CACA_DRIVER_X11 = 9,
+    CACA_DRIVER_X11 = 8,
 #endif
 };
 
@@ -72,9 +69,6 @@ int conio_install(caca_t *);
 #endif
 #if defined(USE_GL)
 int gl_install(caca_t *);
-#endif
-#if defined(USE_NETWORK)
-int network_install(caca_t *);
 #endif
 #if defined(USE_NCURSES)
 int ncurses_install(caca_t *);
