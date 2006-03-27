@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
  *  This library is free software; you can redistribute it and/or
@@ -133,6 +133,7 @@ static int caca_init_driver(caca_t *kk)
 #if defined(USE_GL)
         if(!strcasecmp(var, "gl")) return gl_install(kk);
 #endif
+        if(!strcasecmp(var, "raw")) return raw_install(kk);
 #if defined(USE_SLANG)
         if(!strcasecmp(var, "slang")) return slang_install(kk);
 #endif
@@ -169,9 +170,6 @@ static int caca_init_driver(caca_t *kk)
 #endif
 #if defined(USE_NCURSES)
     if(ncurses_install(kk) == 0) return 0;
-#endif
-#if defined(USE_NETWORK)
-    if(network_install(kk) == 0) return 0;
 #endif
 
     return -1;

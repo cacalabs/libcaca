@@ -39,56 +39,58 @@ typedef long unsigned int uintptr_t;
 enum caca_driver
 {
     CACA_DRIVER_NONE = 0,
+    CACA_DRIVER_RAW = 1,
 #if defined(USE_CONIO)
-    CACA_DRIVER_CONIO = 1,
-#endif
-#if defined(USE_NCURSES)
-    CACA_DRIVER_NCURSES = 2,
-#endif
-#if defined(USE_SLANG)
-    CACA_DRIVER_SLANG = 3,
-#endif
-#if defined(USE_X11)
-    CACA_DRIVER_X11 = 4,
-#endif
-#if defined(USE_WIN32)
-    CACA_DRIVER_WIN32 = 5,
+    CACA_DRIVER_CONIO = 2,
 #endif
 #if defined(USE_GL)
-    CACA_DRIVER_GL = 6,
+    CACA_DRIVER_GL = 3,
 #endif
 #if defined(USE_NETWORK)
-    CACA_DRIVER_NETWORK = 7,
+    CACA_DRIVER_NETWORK = 4,
+#endif
+#if defined(USE_NCURSES)
+    CACA_DRIVER_NCURSES = 5,
+#endif
+#if defined(USE_SLANG)
+    CACA_DRIVER_SLANG = 6,
 #endif
 #if defined(USE_VGA)
-    CACA_DRIVER_VGA = 8,
+    CACA_DRIVER_VGA = 7,
+#endif
+#if defined(USE_WIN32)
+    CACA_DRIVER_WIN32 = 8,
+#endif
+#if defined(USE_X11)
+    CACA_DRIVER_X11 = 9,
 #endif
 };
 
-/* Available drivers */
+/* Available external drivers */
 #if defined(USE_CONIO)
 int conio_install(caca_t *);
 #endif
 #if defined(USE_GL)
 int gl_install(caca_t *);
 #endif
+#if defined(USE_NETWORK)
+int network_install(caca_t *);
+#endif
 #if defined(USE_NCURSES)
 int ncurses_install(caca_t *);
 #endif
+int raw_install(caca_t *);
 #if defined(USE_SLANG)
 int slang_install(caca_t *);
+#endif
+#if defined(USE_VGA)
+int vga_install(caca_t *);
 #endif
 #if defined(USE_WIN32)
 int win32_install(caca_t *);
 #endif
 #if defined(USE_X11)
 int x11_install(caca_t *);
-#endif
-#if defined(USE_NETWORK)
-int network_install(caca_t *);
-#endif
-#if defined(USE_VGA)
-int vga_install(caca_t *);
 #endif
 
 /* Timer structure */
