@@ -146,19 +146,19 @@ fi
 
 if test "${enable_gl}" != "no"; then
   ac_cv_my_have_gl="no"
-  AC_CHECK_HEADERS(GL/gl.h,
+  AC_CHECK_HEADERS(GL/gl.h OpenGL/gl.h,
    [AC_CHECK_HEADERS(GL/glut.h,
      [AC_CHECK_LIB(glut, glutMainLoopEvent,
-       [ac_cv_my_have_gl="yes"
-        AC_DEFINE(USE_GL, 1, Define to 1 to activate the OpenGL backend driver)
-        CACA_LIBS="${CACA_LIBS} -lGL -lglut"
-        CACA_DRIVERS="${CACA_DRIVERS} gl"])]
+       [ac_cv_my_have_gl="yes"])]
      [AC_CHECK_LIB(glut, glutCheckLoop,
        [ac_cv_my_have_gl="yes"
-        AC_DEFINE(USE_GLUTCHECKLOOP, 1, Define to 1 to activate the glut3 glutCheckLoop call)
-        CACA_LIBS="${CACA_LIBS} -lGL -lglut"
-        CACA_DRIVERS="${CACA_DRIVERS} gl"])])])
-  if test "${ac_cv_my_have_gl}" = "no" -a "${enable_gl}" = "yes"; then
+        AC_DEFINE(HAVE_GLUTCHECKLOOP, 1, Define to 1 if you have the `glutCheckLoop' function.)])])
+      break])
+  if test "${ac_cv_my_have_gl}" = "yes"; then
+    AC_DEFINE(USE_GL, 1, Define to 1 to activate the OpenGL backend driver)
+    CACA_LIBS="${CACA_LIBS} -lGL -lglut"
+    CACA_DRIVERS="${CACA_DRIVERS} gl"
+  elif test "${enable_gl}" = "yes"; then
     AC_MSG_ERROR([cannot find OpenGL+FreeGLUT development files])
   fi
 fi
