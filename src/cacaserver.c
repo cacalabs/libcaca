@@ -97,9 +97,12 @@ struct server
     socklen_t sin_size;
 
     /* Input buffer */
+    uint8_t *input;
+    unsigned int read;
 
     char prefix[sizeof(INIT_PREFIX)];
 
+    cucul_t *qq;
     struct cucul_export *ex;
 
     int client_count;
@@ -114,12 +117,14 @@ ssize_t nonblock_write(int fd, void *buf, size_t len);
 
 int main(void)
 {
-    cucul_t *qq;
     int i, yes = 1, flags;
     struct server *server;
     char *tmp;
 
     server = malloc(sizeof(struct server));
+
+    server->input = malloc(12);
+    server->read = 0;
 
     server->client_count = 0;
     server->clients = NULL;
@@ -168,6 +173,7 @@ int main(void)
         return -1;
     }
 
+    server->qq = NULL;
     server->ex = NULL;
 
     /* Ignore SIGPIPE */
@@ -179,12 +185,37 @@ int main(void)
     /* Main loop */
     for(;;)
     {
+        uint8_t *buf = server->input;
+        uint32_t width, height;
+        unsigned int size;
+
         /* Manage new connections as this function will be called sometimes
          * more often than display */
         manage_connections(server);
 
         /* Read data from stdin */
-        /* FIXME: read data, then continue if there was a new image */
+        read(0, buf, 12);
+
+        while(buf[0] != 'C' && buf[1] != 'A' && buf[2] != 'C' && buf[3] != 'A')
+        {
+            memmove(buf, buf + 1, 11);
+            read(0, buf + 11, 1);
+        }
+
+        width = ((uint32_t)buf[4] << 24) | ((uint32_t)buf[5] << 16)
+              | ((uint32_t)buf[6] << 8) | (uint32_t)buf[7];
+        height = ((uint32_t)buf[8] << 24) | ((uint32_t)buf[9] << 16)
+               | ((uint32_t)buf[10] << 8) | (uint32_t)buf[11];
+
+        size = 12 + width * height * 5 + 4;
+        server->input = realloc(server->input, size);
+        read(0, buf + 12, size - 12);
+
+        /* Free the previous canvas, if any */
+        if(server->qq)
+            cucul_free(server->qq);
+
+        server->qq = cucul_load(buf, size);
 
         /* Free the previous export buffer, if any */
         if(server->ex)
@@ -195,7 +226,7 @@ int main(void)
 
         /* Get ANSI representation of the image and skip the end-of buffer
          * linefeed ("\r\n\0", 3 bytes) */
-        server->ex = cucul_create_export(qq, "ansi");
+        server->ex = cucul_create_export(server->qq, "ansi");
         server->ex->size -= 3;
 
         for(i = 0; i < server->client_count; i++)
