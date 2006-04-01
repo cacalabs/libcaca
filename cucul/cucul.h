@@ -228,6 +228,7 @@ struct cucul_export
 };
 
 struct cucul_export * cucul_create_export(cucul_t *, char const *);
+char const * const * cucul_get_export_list(void);
 void cucul_free_export(struct cucul_export *);
 
 /*  @} */

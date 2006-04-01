@@ -344,6 +344,32 @@ struct cucul_export * cucul_create_export(cucul_t *qq, char const *format)
     return ex;
 }
 
+/**
+ * \brief Get available export formats
+ *
+ * Return a list of available export formats. The list is a NULL-terminated
+ * array of strings, interleaving a string containing the internal value for
+ * the export format, to be used with \e cucul_export(), and a string
+ * containing the natural language description for that export format.
+ *
+ * \return An array of strings.
+ */
+char const * const * cucul_get_export_list(void)
+{
+    static char const * const list[] =
+    {
+        "ansi", "ANSI",
+        "html", "HTML",
+        "html3", "backwards-compatible HTML",
+        "irc", "IRC (mIRC colours)",
+        "ps", "PostScript",
+        "svg", "SVG",
+        NULL, NULL
+    };
+
+    return list;
+}
+
 void cucul_free_export(struct cucul_export *ex)
 {
     free(ex->buffer);
