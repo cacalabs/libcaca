@@ -126,14 +126,6 @@ paused:
         cucul_blit(qq2, 0, 0, qq, NULL);
         cucul_invert(qq2);
 
-        cucul_clear(mask);
-        cucul_set_color(mask, CUCUL_COLOR_WHITE, CUCUL_COLOR_WHITE);
-        cucul_fill_ellipse(mask, (1.0 + 0.7 * sin(0.05 * (float)frame))
-                                   * 0.5 * cucul_get_width(mask),
-                                 (1.0 + 0.7 * cos(0.05 * (float)frame))
-                                   * 0.5 * cucul_get_height(mask),
-                                 cucul_get_width(mask) / 3,
-                                 cucul_get_height(mask) / 3, "#");
 
         cucul_blit(qq, 0, 0, qq2, mask);
 
