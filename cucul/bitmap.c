@@ -314,6 +314,11 @@ struct cucul_bitmap *cucul_create_bitmap(unsigned int bpp, unsigned int w,
     bitmap->glyphs = ascii_glyphs;
     bitmap->glyph_count = sizeof(ascii_glyphs) / sizeof(*ascii_glyphs);
 
+    /* Default dithering mode */
+    bitmap->init_dither = init_fstein_dither;
+    bitmap->get_dither = get_fstein_dither;
+    bitmap->increment_dither = increment_fstein_dither;
+
     return bitmap;
 }
 
