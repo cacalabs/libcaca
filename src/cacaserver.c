@@ -124,7 +124,6 @@ int main(void)
 #ifdef HAVE_WINDOWS_H
 	WORD winsockVersion;
 	WSADATA wsaData;
-	int nret;
 	winsockVersion = MAKEWORD(1, 1);
 
 	WSAStartup(winsockVersion, &wsaData);
