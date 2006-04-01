@@ -78,8 +78,6 @@ void cucul_free(cucul_t *);
  *
  *  @{ */
 void cucul_set_color(cucul_t *, enum cucul_color, enum cucul_color);
-enum cucul_color cucul_get_fg_color(cucul_t const *);
-enum cucul_color cucul_get_bg_color(cucul_t const *);
 char const *cucul_get_color_name(enum cucul_color);
 void cucul_putchar(cucul_t *, int, int, char);
 void cucul_putstr(cucul_t *, int, int, char const *);

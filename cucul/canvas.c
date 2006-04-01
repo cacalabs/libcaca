@@ -58,30 +58,6 @@ void cucul_set_color(cucul_t *qq, enum cucul_color fgcolor,
     qq->bgcolor = bgcolor;
 }
 
-/** \brief Get the current foreground colour.
- *
- *  This function returns the current foreground colour that was set with
- *  cucul_set_color().
- *
- *  \return The current foreground colour.
- */
-enum cucul_color cucul_get_fg_color(cucul_t const *qq)
-{
-    return qq->fgcolor;
-}
-
-/** \brief Get the current background colour.
- *
- *  This function returns the current background colour that was set with
- *  cucul_set_color().
- *
- *  \return The current background colour.
- */
-enum cucul_color cucul_get_bg_color(cucul_t const *qq)
-{
-    return qq->bgcolor;
-}
-
 /** \brief Print an ASCII character.
  *
  *  This function prints an ASCII character at the given coordinates, using

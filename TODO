@@ -27,9 +27,6 @@ libcucul
      number, in case we create several antialiasing methods? Or is it
      just a waste of time?
 
-   o Get rid of cucul_get_fg_color/cucul_get_bg_color, they're really not
-     useful at all.
-
 
   API-independent stuff
   ---------------------
