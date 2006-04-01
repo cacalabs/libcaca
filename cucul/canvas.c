@@ -195,8 +195,8 @@ void cucul_get_screen(cucul_t const *qq, char *buffer)
  */
 void cucul_clear(cucul_t *qq)
 {
-    enum cucul_color oldfg = cucul_get_fg_color(qq);
-    enum cucul_color oldbg = cucul_get_bg_color(qq);
+    enum cucul_color oldfg = qq->fgcolor;
+    enum cucul_color oldbg = qq->bgcolor;
     int y = qq->height;
 
     cucul_set_color(qq, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);

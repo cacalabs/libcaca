@@ -275,8 +275,8 @@ void cucul_draw_sprite(cucul_t *qq, int x, int y, struct cucul_sprite const *spr
 
     frame = &sprite->frames[f];
 
-    oldfg = cucul_get_fg_color(qq);
-    oldbg = cucul_get_bg_color(qq);
+    oldfg = qq->fgcolor;
+    oldbg = qq->bgcolor;
 
     for(j = 0; j < frame->h; j++)
     {
