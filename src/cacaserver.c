@@ -121,6 +121,14 @@ int main(void)
     struct server *server;
     char *tmp;
 
+#ifdef HAVE_WINDOWS_H
+	WORD winsockVersion;
+	WSADATA wsaData;
+	int nret;
+	winsockVersion = MAKEWORD(1, 1);
+
+	WSAStartup(winsockVersion, &wsaData);
+#endif
     server = malloc(sizeof(struct server));
 
     server->input = malloc(12);
@@ -262,6 +270,9 @@ int main(void)
 
     free(server);
 
+#ifdef HAVE_WINDOWS_H
+    WSACleanup();
+#endif
     return 0;
 }
 
