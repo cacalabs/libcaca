@@ -57,7 +57,7 @@ int main(int argc, char **argv)
         int xa, ya, xb, yb;
         char buf[BUFSIZ];
 
-        while(caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev))
+        while(caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev, 0))
         {
             switch(ev.data.key.c)
             {

@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 
     caca_display(kk);
 
-    while(caca_wait_event(kk, CACA_EVENT_KEY_PRESS, &ev))
+    while(caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev, -1))
     {
         if(ev.data.key.c == CACA_KEY_ESCAPE)
             break;

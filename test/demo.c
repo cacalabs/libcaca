@@ -74,7 +74,7 @@ int main(int argc, char **argv)
         struct caca_event ev;
         int menu = 0, mouse = 0, xmouse = 0, ymouse = 0;
 
-        while(caca_get_event(kk, CACA_EVENT_ANY, &ev))
+        while(caca_get_event(kk, CACA_EVENT_ANY, &ev, 0))
         {
             if(demo && (ev.type & CACA_EVENT_KEY_PRESS))
             {
@@ -148,6 +148,10 @@ int main(int argc, char **argv)
                 xmouse = ev.data.mouse.x;
                 ymouse = ev.data.mouse.y;
             }
+            else if(ev.type & CACA_EVENT_RESIZE)
+            {
+                mouse = 1; /* old hack */
+            }
         }
 
         if(menu || (mouse && !demo))
@@ -156,7 +160,8 @@ int main(int argc, char **argv)
             if(mouse && !demo)
             {
                 cucul_set_color(qq, CUCUL_COLOR_RED, CUCUL_COLOR_BLACK);
-                cucul_putstr(qq, xmouse, ymouse, "|\\");
+                cucul_putstr(qq, xmouse, ymouse,     ".");
+                cucul_putstr(qq, xmouse, ymouse + 1, "|\\");
             }
             caca_display(kk);
             mouse = menu = 0;

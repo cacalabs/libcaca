@@ -237,8 +237,7 @@ int caca_set_window_title(caca_t *kk, char const *);
  *  clicks.
  *
  *  @{ */
-int caca_get_event(caca_t *kk, unsigned int, struct caca_event *);
-int caca_wait_event(caca_t *kk, unsigned int, struct caca_event *);
+int caca_get_event(caca_t *kk, unsigned int, struct caca_event *, int);
 unsigned int caca_get_mouse_x(caca_t *kk);
 unsigned int caca_get_mouse_y(caca_t *kk);
 void caca_set_mouse(caca_t *kk, int);

@@ -62,7 +62,7 @@ int main(void)
 
     for(x = 0; ; x++)
     {
-        int ret = caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev);
+        int ret = caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev, 0);
 
         if(ret)
         {

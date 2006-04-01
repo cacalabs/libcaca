@@ -45,50 +45,59 @@ static int _lowlevel_event(caca_t *, struct caca_event *);
  *
  *  This function polls the event queue for mouse or keyboard events matching
  *  the event mask and returns the first matching event. Non-matching events
- *  are discarded. \c event_mask must have a non-zero value. This function is
- *  non-blocking and returns zero if no more events are pending in the queue.
- *  See also caca_wait_event() for a blocking version of this function.
+ *  are discarded. \c event_mask must have a non-zero value.
+ *
+ *  The timeout value tells how long this function needs to wait for an
+ *  event. A value of zero returns immediately and the function returns zero
+ *  if no more events are pending in the queue. A negative value causes the
+ *  function to wait indefinitely until a matching event is received.
  *
  * \param event_mask Bitmask of requested events.
+ * \param timeout A timeout value in microseconds
  * \return The next matching event in the queue, or 0 if no event is pending.
  */
-int caca_get_event(caca_t *kk, unsigned int event_mask, struct caca_event *ev)
+int caca_get_event(caca_t *kk, unsigned int event_mask,
+                   struct caca_event *ev, int timeout)
 {
+    struct caca_timer timer;
+    int usec = 0;
+
     if(!event_mask)
         return 0;
+
+    if(timeout > 0)
+        _caca_getticks(&timer);
 
     for( ; ; )
     {
         int ret = _get_next_event(kk, ev);
 
-        if(!ret || ev->type & event_mask)
-            return ret;
-    }
-}
-
-/** \brief Wait for the next mouse or keyboard input event.
- *
- *  This function returns the first mouse or keyboard event in the queue
- *  that matches the event mask. If no event is pending, it blocks until a
- *  matching event is received. \c event_mask must have a non-zero value.
- *  See also caca_get_event() for a non-blocking version of this function.
- *
- *  \param event_mask Bitmask of requested events.
- *  \return The next event in the queue.
- */
-int caca_wait_event(caca_t *kk, unsigned int event_mask, struct caca_event *ev)
-{
-    if(!event_mask)
-        return 0;
-
-    for( ; ; )
-    {
-        int ret = _get_next_event(kk, ev);
-
-        if(ret && (ev->type & event_mask))
+        /* If we got the event we wanted, return */
+        if(ev->type & event_mask)
             return ret;
 
-        _caca_sleep(10000);
+        /* If there is no timeout, sleep and try again. */
+        if(timeout < 0)
+        {
+            _caca_sleep(10000);
+            continue;
+        }
+
+        /* If we timeouted, return an empty event */
+        if(usec >= timeout)
+        {
+            ev->type = CACA_EVENT_NONE;
+            return 0;
+        }
+
+        /* Otherwise sleep a bit. Our granularity is far too high for values
+         * below 10000 microseconds so we cheat a bit. */
+        if(usec > 10000)
+            _caca_sleep(10000);
+        else
+            _caca_sleep(1000);
+
+        usec += _caca_getticks(&timer);
     }
 }
 

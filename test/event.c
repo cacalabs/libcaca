@@ -54,7 +54,7 @@ int main(int argc, char **argv)
     {
         struct caca_event ev;
         static char const * quit_string[] = { "", "q", "qu", "qui", "quit" };
-        int ret = caca_wait_event(kk, CACA_EVENT_ANY, &ev);
+        int ret = caca_get_event(kk, CACA_EVENT_ANY, &ev, -1);
 
         if(!ret)
             continue;
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
             memmove(events + 1, events, (h - 1) * sizeof(struct caca_event));
             events[0] = ev;
 
-            ret = caca_get_event(kk, CACA_EVENT_ANY, &ev);
+            ret = caca_get_event(kk, CACA_EVENT_ANY, &ev, 0);
         }
         while(ret);
 

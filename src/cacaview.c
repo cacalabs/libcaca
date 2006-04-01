@@ -151,9 +151,9 @@ int main(int argc, char **argv)
         int event;
 
         if(update)
-            event = caca_get_event(kk, event_mask, &ev);
+            event = caca_get_event(kk, event_mask, &ev, 0);
         else
-            event = caca_wait_event(kk, event_mask, &ev);
+            event = caca_get_event(kk, event_mask, &ev, -1);
 
         while(event)
         {
@@ -304,7 +304,7 @@ int main(int argc, char **argv)
             if(help || new_help)
                 help = new_help;
 
-            event = caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev);
+            event = caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev, 0);
         }
 
         if(items && reload)

@@ -266,7 +266,7 @@ game (void)
     {
 #ifdef LIBCACA
       struct caca_event ev;
-      if(caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev))
+      if(caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev, 0))
         {
           switch(ev.data.key.c)
             {
