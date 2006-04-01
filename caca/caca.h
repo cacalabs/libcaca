@@ -30,8 +30,8 @@
  *  using the conio library, and on Windows systems using either slang or
  *  ncurses (through Cygwin emulation) or conio. There is also a native X11
  *  driver, and an OpenGL driver (through freeglut) that does not require a
- *  text terminal. For machines without a screen, and with a valid tcp stack,
- *  the network driver (BSD sockets) should perfectly fit your needs.
+ *  text terminal. For machines without a screen, the raw driver can be used
+ *  to send the output to another machine, using for instance cacaserver.
  *
  *  \e libcaca is free software, released under the Do What The Fuck You
  *  Want To Public License. This ensures that no one, not even the \e libcaca
@@ -51,8 +51,8 @@
  *  \section env Environment variables
  *
  *  Some environment variables can be used to change the behaviour of
- *  \e libcaca or \e libcucul without having to modify the program which
- *  uses them. These variables are:
+ *  \e libcaca without having to modify the program which uses them. These
+ *  variables are:
  *
  *  \li \b CACA_DRIVER: set the backend video driver. In order of preference:
  *      - \c conio uses the DOS conio.h interface.
@@ -60,30 +60,8 @@
  *      - \c slang uses the S-Lang library.
  *      - \c x11 uses the native X11 driver.
  *      - \c gl uses freeglut and opengl libraries.
- *      - \c network uses BSD sockets calls.
- *
- *  \li \b CUCUL_BACKGROUND: set the background type.
- *      - \c solid uses solid coloured backgrounds for all characters. This
- *        feature does not work with all terminal emulators. This is the
- *        default choice.
- *      - \c black uses only black backgrounds to render characters.
- *
- *  \li \b CUCUL_ANTIALIASING: set the antialiasing mode. Antialiasing
- *      smoothens the rendered image and avoids the commonly seen staircase
- *      effect.
- *      - \c none disables antialiasing.
- *      - \c prefilter uses a simple prefilter antialiasing method. This is
- *        the default choice.
- *
- *  \li \b CUCUL_DITHERING: set the dithering mode. Dithering is necessary
- *      when rendering a picture that has more colours than the usually
- *      available palette.
- *      - \c none disables dithering.
- *      - \c ordered2 uses a 2x2 Bayer matrix for dithering.
- *      - \c ordered4 uses a 4x4 Bayer matrix for dithering. This is the
- *        default choice.
- *      - \c ordered8 uses a 8x8 Bayer matrix for dithering.
- *      - \c random uses random dithering.
+ *      - \c raw outputs to the standard output instead of rendering the
+ *        canvas. This is can be used together with cacaserver.
  *
  *  \li \b CACA_GEOMETRY: set the video display size. The format of this
  *      variable must be XxY, with X and Y being integer values. This option

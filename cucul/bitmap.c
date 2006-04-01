@@ -85,7 +85,62 @@ static int const rgb_weight[] =
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 };
 
+/* List of glyphs */
+static char const * ascii_glyphs[] =
+{
+    " ", ".", ":", ";", "t", "%", "S", "X", "@", "8", "?"
+};
+
+static char const * shades_glyphs[] =
+{
+    " ", ":", "░", "▒", "?"
+};
+
+static char const * blocks_glyphs[] =
+{
+    " ", "▘", "▚", "?"
+};
+
 #if !defined(_DOXYGEN_SKIP_ME)
+enum color_mode
+{
+    COLOR_MODE_MONO,
+    COLOR_MODE_GRAY,
+    COLOR_MODE_8,
+    COLOR_MODE_16,
+    COLOR_MODE_FULLGRAY,
+    COLOR_MODE_FULL8,
+    COLOR_MODE_FULL16,
+};
+
+struct cucul_bitmap
+{
+    int bpp, has_palette, has_alpha;
+    int w, h, pitch;
+    int rmask, gmask, bmask, amask;
+    int rright, gright, bright, aright;
+    int rleft, gleft, bleft, aleft;
+    void (*get_hsv)(struct cucul_bitmap *, char *, int, int);
+    int red[256], green[256], blue[256], alpha[256];
+    float gamma;
+    int gammatab[4097];
+
+    /* Bitmap features */
+    int invert, antialias;
+
+    /* Colour mode used for rendering */
+    enum color_mode color_mode;
+
+    /* Glyphs used for rendering */
+    char const * const * glyphs;
+    unsigned glyph_count;
+
+    /* Current dithering method */
+    void (*init_dither) (int);
+    unsigned int (*get_dither) (void);
+    void (*increment_dither) (void);
+};
+
 #define HSV_XRATIO 6
 #define HSV_YRATIO 3
 #define HSV_HRATIO 3
@@ -111,15 +166,16 @@ static void mask2shift(unsigned int, int *, int *);
 static float gammapow(float x, float y);
 
 static void get_rgba_default(struct cucul_bitmap const *, uint8_t *, int, int,
-                             unsigned int *, unsigned int *, unsigned int *,
                              unsigned int *);
-static inline void rgb2hsv_default(int, int, int, int *, int *, int *);
-static inline int sq(int);
 
 /* Dithering methods */
 static void init_no_dither(int);
 static unsigned int get_no_dither(void);
 static void increment_no_dither(void);
+
+static void init_fstein_dither(int);
+static unsigned int get_fstein_dither(void);
+static void increment_fstein_dither(void);
 
 static void init_ordered2_dither(int);
 static unsigned int get_ordered2_dither(void);
@@ -137,107 +193,40 @@ static void init_random_dither(int);
 static unsigned int get_random_dither(void);
 static void increment_random_dither(void);
 
-#if !defined(_DOXYGEN_SKIP_ME)
-struct cucul_bitmap
+static inline int sq(int x)
 {
-    int bpp, has_palette, has_alpha;
-    int w, h, pitch;
-    int rmask, gmask, bmask, amask;
-    int rright, gright, bright, aright;
-    int rleft, gleft, bleft, aleft;
-    void (*get_hsv)(struct cucul_bitmap *, char *, int, int);
-    int red[256], green[256], blue[256], alpha[256];
-    float gamma;
-    int gammatab[4097];
-    unsigned char invert;
-};
-#endif
-
-static void mask2shift(unsigned int mask, int *right, int *left)
-{
-    int rshift = 0, lshift = 0;
-
-    if(!mask)
-    {
-        *right = *left = 0;
-        return;
-    }
-
-    while(!(mask & 1))
-    {
-        mask >>= 1;
-        rshift++;
-    }
-    *right = rshift;
-
-    while(mask & 1)
-    {
-        mask >>= 1;
-        lshift++;
-    }
-    *left = 12 - lshift;
+    return x * x;
 }
 
-static float gammapow(float x, float y)
+static inline void rgb2hsv_default(int r, int g, int b,
+                                   int *hue, int *sat, int *val)
 {
-#ifdef HAVE_FLDLN2
-    register double logx;
-    register long double v, e;
-#else
-    register float tmp, t, t2, r;
-    int i;
-#endif
+    int min, max, delta;
 
-    if(x == 0.0)
-        return y == 0.0 ? 1.0 : 0.0;
+    min = r; max = r;
+    if(min > g) min = g; if(max < g) max = g;
+    if(min > b) min = b; if(max < b) max = b;
 
-#ifdef HAVE_FLDLN2
-    /* FIXME: this can be optimised by directly calling fyl2x for x and y */
-    asm volatile("fldln2; fxch; fyl2x"
-                 : "=t" (logx) : "0" (x) : "st(1)");
+    delta = max - min; /* 0 - 0xfff */
+    *val = max; /* 0 - 0xfff */
 
-    asm volatile("fldl2e\n\t"
-                 "fmul %%st(1)\n\t"
-                 "fst %%st(1)\n\t"
-                 "frndint\n\t"
-                 "fxch\n\t"
-                 "fsub %%st(1)\n\t"
-                 "f2xm1\n\t"
-                 : "=t" (v), "=u" (e) : "0" (y * logx));
-    v += 1.0;
-    asm volatile("fscale"
-                 : "=t" (v) : "0" (v), "u" (e));
-    return v;
-#else
-    /* Compute ln(x) for x ∈ ]0,1]
-     *   ln(x) = 2 * (t + t^3/3 + t^5/5 + ...) with t = (x-1)/(x+1)
-     * The convergence is a bit slow, especially when x is near 0. */
-    t = (x - 1.0) / (x + 1.0);
-    t2 = t * t;
-    tmp = r = t;
-    for(i = 3; i < 20; i += 2)
+    if(delta)
     {
-        r *= t2;
-        tmp += r / i;
+        *sat = 0xfff * delta / max; /* 0 - 0xfff */
+
+        /* Generate *hue between 0 and 0x5fff */
+        if( r == max )
+            *hue = 0x1000 + 0x1000 * (g - b) / delta;
+        else if( g == max )
+            *hue = 0x3000 + 0x1000 * (b - r) / delta;
+        else
+            *hue = 0x5000 + 0x1000 * (r - g) / delta;
     }
-
-    /* Compute -y*ln(x) */
-    tmp = - y * 2.0 * tmp;
-
-    /* Compute x^-y as e^t where t = -y*ln(x):
-     *   e^t = 1 + t/1! + t^2/2! + t^3/3! + t^4/4! + t^5/5! ...
-     * The convergence is quite faster here, thanks to the factorial. */
-    r = t = tmp;
-    tmp = 1.0 + t;
-    for(i = 2; i < 16; i++)
+    else
     {
-        r = r * t / i;
-        tmp += r;
+        *sat = 0;
+        *hue = 0;
     }
-
-    /* Return x^y as 1/(x^-y) */
-    return 1.0 / tmp;
-#endif
 }
 
 /**
@@ -310,12 +299,20 @@ struct cucul_bitmap *cucul_create_bitmap(unsigned int bpp, unsigned int w,
         }
     }
 
+    /* Default features */
+    bitmap->invert = 0;
+    bitmap->antialias = 1;
+
     /* Default gamma value */
     for(i = 0; i < 4096; i++)
         bitmap->gammatab[i] = i;
 
-    /* No color inversion by default */
-    bitmap->invert = 0;
+    /* Default colour mode */
+    bitmap->color_mode = COLOR_MODE_FULL16;
+
+    /* Default character set */
+    bitmap->glyphs = ascii_glyphs;
+    bitmap->glyph_count = sizeof(ascii_glyphs) / sizeof(*ascii_glyphs);
 
     return bitmap;
 }
@@ -363,6 +360,19 @@ void cucul_set_bitmap_palette(struct cucul_bitmap *bitmap,
 }
 
 /**
+ * \brief Set the brightness of a bitmap object.
+ *
+ * Set the brightness of bitmap.
+ *
+ * \param bitmap Bitmap object.
+ * \param brightness brightness value.
+ */
+void cucul_set_bitmap_brightness(struct cucul_bitmap *bitmap, float brightness)
+{
+    /* FIXME */
+}
+
+/**
  * \brief Set the gamma of a bitmap object.
  *
  * Set the gamma of bitmap.
@@ -372,6 +382,9 @@ void cucul_set_bitmap_palette(struct cucul_bitmap *bitmap,
  */
 void cucul_set_bitmap_gamma(struct cucul_bitmap *bitmap, float gamma)
 {
+    /* FIXME: we don't need 4096 calls to gammapow(), we can just compute
+     * 128 of them and do linear interpolation for the rest. This will
+     * probably speed up things a lot. */
     int i;
 
     if(gamma <= 0.0)
@@ -383,6 +396,33 @@ void cucul_set_bitmap_gamma(struct cucul_bitmap *bitmap, float gamma)
         bitmap->gammatab[i] = 4096.0 * gammapow((float)i / 4096.0, 1.0 / gamma);
 }
 
+/**
+ * \brief Set the contrast of a bitmap object.
+ *
+ * Set the contrast of bitmap.
+ *
+ * \param bitmap Bitmap object.
+ * \param contrast contrast value.
+ */
+void cucul_set_bitmap_contrast(struct cucul_bitmap *bitmap, float contrast)
+{
+    /* FIXME */
+}
+
+/**
+ * \brief Set bitmap antialiasing
+ *
+ * Tell the renderer whether to antialias the bitmap. Antialiasing smoothen
+ * the rendered image and avoids the commonly seen staircase effect. The
+ * method used is a simple prefilter antialiasing.
+ *
+ * \param bitmap Bitmap object.
+ * \param value 0 to disable antialiasing, 1 to activate it.
+ */
+void cucul_set_bitmap_antialias(struct cucul_bitmap *bitmap, int value)
+{
+    bitmap->antialias = value ? 1 : 0;
+}
 
 /**
  * \brief Invert colors of bitmap
@@ -392,12 +432,501 @@ void cucul_set_bitmap_gamma(struct cucul_bitmap *bitmap, float gamma)
  * \param bitmap Bitmap object.
  * \param value 0 for normal behaviour, 1 for invert
  */
-void cucul_set_bitmap_invert(struct cucul_bitmap *bitmap, unsigned char value)
+void cucul_set_bitmap_invert(struct cucul_bitmap *bitmap, int value)
 {
-    bitmap->invert = (value==0)?0:1;
+    bitmap->invert = value ? 1 : 0;
 }
 
+/**
+ * \brief Choose colours used for bitmap rendering
+ *
+ * Tell the renderer which colours should be used to render the
+ * bitmap. Valid values for \e str are:
+ *
+ * \li \e "mono": use light gray on a black background.
+ *
+ * \li \e "gray": use white and two shades of gray on a black background.
+ *
+ * \li \e "8": use the 8 ANSI colours on a black background.
+ *
+ * \li \e "16": use the 16 ANSI colours on a black background.
+ *
+ * \li \e "fullgray": use black, white and two shades of gray for both the
+ *     characters and the background.
+ *
+ * \li \e "full8": use the 8 ANSI colours for both the characters and the
+ *     background.
+ *
+ * \li \e "full16": use the 16 ANSI colours for both the characters and the
+ *     background. This is the default value.
+ *
+ * \param bitmap Bitmap object.
+ * \param str A string describing the colour set that will be used
+ *        for the bitmap rendering.
+ */
+void cucul_set_bitmap_color(struct cucul_bitmap *bitmap, char const *str)
+{
+    if(!strcasecmp(str, "mono"))
+        bitmap->color_mode = COLOR_MODE_MONO;
+    else if(!strcasecmp(str, "gray"))
+        bitmap->color_mode = COLOR_MODE_GRAY;
+    else if(!strcasecmp(str, "8"))
+        bitmap->color_mode = COLOR_MODE_8;
+    else if(!strcasecmp(str, "16"))
+        bitmap->color_mode = COLOR_MODE_16;
+    else if(!strcasecmp(str, "fullgray"))
+        bitmap->color_mode = COLOR_MODE_FULLGRAY;
+    else if(!strcasecmp(str, "full8"))
+        bitmap->color_mode = COLOR_MODE_FULL8;
+    else /* "full16" is the default */
+        bitmap->color_mode = COLOR_MODE_FULL16;
+}
 
+/**
+ * \brief Get available colour modes
+ *
+ * Return a list of available colour modes for a given bitmap. The list
+ * is a NULL-terminated array of strings, interleaving a string containing
+ * the internal value for the colour mode, to be used with
+ * \e cucul_set_bitmap_color(), and a string containing the natural
+ * language description for that colour mode.
+ *
+ * \param bitmap Bitmap object.
+ * \return An array of strings.
+ */
+char const * const *
+    cucul_get_bitmap_color_list(struct cucul_bitmap const *bitmap)
+{
+    static char const * const list[] =
+    {
+        "mono", "white on black",
+        "gray", "grayscale on black",
+        "8", "8 colours on black",
+        "16", "16 colours on black",
+        "fullgray", "full grayscale",
+        "full8", "full 8 colours",
+        "full16", "full 16 colours",
+        NULL, NULL
+    };
+
+    return list;
+}
+
+/**
+ * \brief Choose characters used for bitmap rendering
+ *
+ * Tell the renderer which characters should be used to render the
+ * bitmap. Valid values for \e str are:
+ *
+ * \li \e "ascii": use only ASCII characters. This is the default value.
+ *
+ * \li \e "shades": use Unicode characters "U+2591 LIGHT SHADE", "U+2592
+ *     MEDIUM SHADE" and "U+2593 DARK SHADE". These characters are also
+ *     present in the CP437 codepage available on DOS and VGA.
+ *
+ * \li \e "blocks": use Unicode quarter-cell block combinations. These
+ *     characters are only found in the Unicode set.
+ *
+ * \param bitmap Bitmap object.
+ * \param str A string describing the characters that need to be used
+ *        for the bitmap rendering.
+ */
+void cucul_set_bitmap_charset(struct cucul_bitmap *bitmap, char const *str)
+{
+    if(!strcasecmp(str, "shades"))
+    {
+        bitmap->glyphs = shades_glyphs;
+        bitmap->glyph_count = sizeof(shades_glyphs) / sizeof(*shades_glyphs);
+    }
+    else if(!strcasecmp(str, "blocks"))
+    {
+        bitmap->glyphs = blocks_glyphs;
+        bitmap->glyph_count = sizeof(blocks_glyphs) / sizeof(*blocks_glyphs);
+    }
+    else /* "ascii" is the default */
+    {
+        bitmap->glyphs = ascii_glyphs;
+        bitmap->glyph_count = sizeof(ascii_glyphs) / sizeof(*ascii_glyphs);
+    }
+}
+
+/**
+ * \brief Get available bitmap character sets
+ *
+ * Return a list of available character sets for a given bitmap. The list
+ * is a NULL-terminated array of strings, interleaving a string containing
+ * the internal value for the character set, to be used with
+ * \e cucul_set_bitmap_charset(), and a string containing the natural
+ * language description for that character set.
+ *
+ * \param bitmap Bitmap object.
+ * \return An array of strings.
+ */
+char const * const *
+    cucul_get_bitmap_charset_list(struct cucul_bitmap const *bitmap)
+{
+    static char const * const list[] =
+    {
+        "ascii", "plain ASCII",
+        "shades", "CP437 shades",
+        "blocks", "Unicode blocks",
+        NULL, NULL
+    };
+
+    return list;
+}
+
+/**
+ * \brief Set bitmap dithering method
+ *
+ * Tell the renderer which dithering method should be used to render the
+ * bitmap. Dithering is necessary because the picture being rendered has
+ * usually far more colours than the available palette. Valid values for
+ * \e str are:
+ *
+ * \li \e "none": no dithering is used, the nearest matching colour is used.
+ *
+ * \li \e "ordered2": use a 2x2 Bayer matrix for dithering.
+ *
+ * \li \e "ordered4": use a 4x4 Bayer matrix for dithering.
+ *
+ * \li \e "ordered8": use a 8x8 Bayer matrix for dithering.
+ *
+ * \li \e "random": use random dithering.
+ *
+ * \li \e "fstein": use Floyd-Steinberg dithering. This is the default value.
+ *
+ * \param bitmap Bitmap object.
+ * \param str A string describing the dithering method that needs to be used
+ *        for the bitmap rendering.
+ */
+void cucul_set_bitmap_dithering(struct cucul_bitmap *bitmap, char const *str)
+{
+    if(!strcasecmp(str, "none"))
+    {
+        bitmap->init_dither = init_no_dither;
+        bitmap->get_dither = get_no_dither;
+        bitmap->increment_dither = increment_no_dither;
+    }
+    else if(!strcasecmp(str, "ordered2"))
+    {
+        bitmap->init_dither = init_ordered2_dither;
+        bitmap->get_dither = get_ordered2_dither;
+        bitmap->increment_dither = increment_ordered2_dither;
+    }
+    else if(!strcasecmp(str, "ordered4"))
+    {
+        bitmap->init_dither = init_ordered4_dither;
+        bitmap->get_dither = get_ordered4_dither;
+        bitmap->increment_dither = increment_ordered4_dither;
+    }
+    else if(!strcasecmp(str, "ordered4"))
+    {
+        bitmap->init_dither = init_ordered8_dither;
+        bitmap->get_dither = get_ordered8_dither;
+        bitmap->increment_dither = increment_ordered8_dither;
+    }
+    else if(!strcasecmp(str, "random"))
+    {
+        bitmap->init_dither = init_random_dither;
+        bitmap->get_dither = get_random_dither;
+        bitmap->increment_dither = increment_random_dither;
+    }
+    else /* "fstein" is the default */
+    {
+        bitmap->init_dither = init_fstein_dither;
+        bitmap->get_dither = get_fstein_dither;
+        bitmap->increment_dither = increment_fstein_dither;
+    }
+}
+
+/**
+ * \brief Get bitmap dithering methods
+ *
+ * Return a list of available dithering methods for a given bitmap. The list
+ * is a NULL-terminated array of strings, interleaving a string containing
+ * the internal value for the dithering method, to be used with
+ * \e cucul_set_bitmap_dithering(), and a string containing the natural
+ * language description for that dithering method.
+ *
+ * \param bitmap Bitmap object.
+ * \return An array of strings.
+ */
+char const * const *
+    cucul_get_bitmap_dithering_list(struct cucul_bitmap const *bitmap)
+{
+    static char const * const list[] =
+    {
+        "none", "no dithering",
+        "ordered2", "2x2 ordered dithering",
+        "ordered2", "2x2 ordered dithering",
+        "ordered2", "2x2 ordered dithering",
+        "random", "random dithering",
+        "fstein", "Floyd-Steinberg dithering",
+        NULL, NULL
+    };
+
+    return list;
+}
+
+/**
+ * \brief Draw a bitmap on the screen.
+ *
+ * Draw a bitmap at the given coordinates. The bitmap can be of any size and
+ * will be stretched to the text area.
+ *
+ * \param x1 X coordinate of the upper-left corner of the drawing area.
+ * \param y1 Y coordinate of the upper-left corner of the drawing area.
+ * \param x2 X coordinate of the lower-right corner of the drawing area.
+ * \param y2 Y coordinate of the lower-right corner of the drawing area.
+ * \param bitmap Bitmap object to be drawn.
+ * \param pixels Bitmap's pixels.
+ */
+void cucul_draw_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
+                       struct cucul_bitmap const *bitmap, void *pixels)
+{
+    int *floyd_steinberg, *fs_r, *fs_g, *fs_b;
+    int fs_length;
+    int x, y, w, h, pitch, deltax, deltay;
+    unsigned int dchmax;
+
+    if(!bitmap || !pixels)
+        return;
+
+    w = bitmap->w;
+    h = bitmap->h;
+    pitch = bitmap->pitch;
+
+    if(x1 > x2)
+    {
+        int tmp = x2; x2 = x1; x1 = tmp;
+    }
+
+    if(y1 > y2)
+    {
+        int tmp = y2; y2 = y1; y1 = tmp;
+    }
+
+    deltax = x2 - x1 + 1;
+    deltay = y2 - y1 + 1;
+    dchmax = bitmap->glyph_count;
+
+    fs_length = ((int)qq->width <= x2 ? (int)qq->width : x2) + 1;
+    floyd_steinberg = malloc(3 * (fs_length + 2) * sizeof(int));
+    memset(floyd_steinberg, 0, 3 * (fs_length + 2) * sizeof(int));
+    fs_r = floyd_steinberg + 1;
+    fs_g = fs_r + fs_length + 2;
+    fs_b = fs_g + fs_length + 2;
+
+    for(y = y1 > 0 ? y1 : 0; y <= y2 && y <= (int)qq->height; y++)
+    {
+        int remain_r = 0, remain_g = 0, remain_b = 0;
+
+        for(x = x1 > 0 ? x1 : 0, bitmap->init_dither(y);
+            x <= x2 && x <= (int)qq->width;
+            x++)
+    {
+        unsigned int i;
+        int ch = 0, distmin;
+        unsigned int rgba[4];
+        int fg_r = 0, fg_g = 0, fg_b = 0, bg_r, bg_g, bg_b;
+        int fromx, fromy, tox, toy, myx, myy, dots, dist;
+        int error[3];
+
+        enum cucul_color outfg = 0, outbg = 0;
+        char const *outch;
+
+        rgba[0] = rgba[1] = rgba[2] = rgba[3] = 0;
+
+        /* First get RGB */
+        if(bitmap->antialias)
+        {
+            fromx = (x - x1) * w / deltax;
+            fromy = (y - y1) * h / deltay;
+            tox = (x - x1 + 1) * w / deltax;
+            toy = (y - y1 + 1) * h / deltay;
+
+            /* We want at least one pixel */
+            if(tox == fromx) tox++;
+            if(toy == fromy) toy++;
+
+            dots = 0;
+
+            for(myx = fromx; myx < tox; myx++)
+                for(myy = fromy; myy < toy; myy++)
+            {
+                dots++;
+                get_rgba_default(bitmap, pixels, myx, myy, rgba);
+            }
+
+            /* Normalize */
+            rgba[0] /= dots;
+            rgba[1] /= dots;
+            rgba[2] /= dots;
+            rgba[3] /= dots;
+        }
+        else
+        {
+            fromx = (x - x1) * w / deltax;
+            fromy = (y - y1) * h / deltay;
+            tox = (x - x1 + 1) * w / deltax;
+            toy = (y - y1 + 1) * h / deltay;
+
+            /* tox and toy can overflow the screen, but they cannot overflow
+             * when averaged with fromx and fromy because these are guaranteed
+             * to be within the pixel boundaries. */
+            myx = (fromx + tox) / 2;
+            myy = (fromy + toy) / 2;
+
+            get_rgba_default(bitmap, pixels, myx, myy, rgba);
+        }
+
+        if(bitmap->has_alpha && rgba[3] < 0x800)
+        {
+            remain_r = remain_g = remain_b = 0;
+            fs_r[x] = 0;
+            fs_g[x] = 0;
+            fs_b[x] = 0;
+            continue;
+        }
+
+        /* XXX: OMG HAX */
+        if(bitmap->init_dither == init_fstein_dither)
+        {
+            rgba[0] += remain_r;
+            rgba[1] += remain_g;
+            rgba[2] += remain_b;
+        }
+        else
+        {
+            rgba[0] += (bitmap->get_dither() - 0x80) * 4;
+            rgba[1] += (bitmap->get_dither() - 0x80) * 4;
+            rgba[2] += (bitmap->get_dither() - 0x80) * 4;
+        }
+
+        distmin = INT_MAX;
+        for(i = 0; i < 16; i++)
+        {
+            dist = sq(rgba[0] - rgb_palette[i * 3])
+                 + sq(rgba[1] - rgb_palette[i * 3 + 1])
+                 + sq(rgba[2] - rgb_palette[i * 3 + 2]);
+            dist *= rgb_weight[i];
+            if(dist < distmin)
+            {
+                outbg = i;
+                distmin = dist;
+            }
+        }
+        bg_r = rgb_palette[outbg * 3];
+        bg_g = rgb_palette[outbg * 3 + 1];
+        bg_b = rgb_palette[outbg * 3 + 2];
+
+        /* FIXME: we currently only honour "full16" */
+        if(bitmap->color_mode == COLOR_MODE_FULL16)
+        {
+            distmin = INT_MAX;
+            for(i = 0; i < 16; i++)
+            {
+                if(i == outbg)
+                    continue;
+                dist = sq(rgba[0] - rgb_palette[i * 3])
+                     + sq(rgba[1] - rgb_palette[i * 3 + 1])
+                     + sq(rgba[2] - rgb_palette[i * 3 + 2]);
+                dist *= rgb_weight[i];
+                if(dist < distmin)
+                {
+                    outfg = i;
+                    distmin = dist;
+                }
+            }
+            fg_r = rgb_palette[outfg * 3];
+            fg_g = rgb_palette[outfg * 3 + 1];
+            fg_b = rgb_palette[outfg * 3 + 2];
+
+            distmin = INT_MAX;
+            for(i = 0; i < dchmax - 1; i++)
+            {
+                int newr = i * fg_r + ((2*dchmax-1) - i) * bg_r;
+                int newg = i * fg_g + ((2*dchmax-1) - i) * bg_g;
+                int newb = i * fg_b + ((2*dchmax-1) - i) * bg_b;
+                dist = abs(rgba[0] * (2*dchmax-1) - newr)
+                     + abs(rgba[1] * (2*dchmax-1) - newg)
+                     + abs(rgba[2] * (2*dchmax-1) - newb);
+
+                if(dist < distmin)
+                {
+                    ch = i;
+                    distmin = dist;
+                }
+            }
+            outch = bitmap->glyphs[ch];
+
+            /* XXX: OMG HAX */
+            if(bitmap->init_dither == init_fstein_dither)
+            {
+                error[0] = rgba[0] - (fg_r * ch + bg_r * ((2*dchmax-1) - ch)) / (2*dchmax-1);
+                error[1] = rgba[1] - (fg_g * ch + bg_g * ((2*dchmax-1) - ch)) / (2*dchmax-1);
+                error[2] = rgba[2] - (fg_b * ch + bg_b * ((2*dchmax-1) - ch)) / (2*dchmax-1);
+            }
+        }
+        else
+        {
+            unsigned int lum = rgba[0];
+            if(rgba[1] > lum) lum = rgba[1];
+            if(rgba[2] > lum) lum = rgba[2];
+            outfg = outbg;
+            outbg = CUCUL_COLOR_BLACK;
+
+            ch = lum * dchmax / 0x1000;
+            if(ch < 0)
+                ch = 0;
+            else if(ch > (int)(dchmax - 1))
+                ch = dchmax - 1;
+            outch = bitmap->glyphs[ch];
+
+            /* XXX: OMG HAX */
+            if(bitmap->init_dither == init_fstein_dither)
+            {
+                error[0] = rgba[0] - bg_r * ch / (dchmax-1);
+                error[1] = rgba[1] - bg_g * ch / (dchmax-1);
+                error[2] = rgba[2] - bg_b * ch / (dchmax-1);
+            }
+        }
+
+        /* XXX: OMG HAX */
+        if(bitmap->init_dither == init_fstein_dither)
+        {
+            remain_r = fs_r[x+1] + 7 * error[0] / 16;
+            remain_g = fs_g[x+1] + 7 * error[1] / 16;
+            remain_b = fs_b[x+1] + 7 * error[2] / 16;
+            fs_r[x-1] += 3 * error[0] / 16;
+            fs_g[x-1] += 3 * error[1] / 16;
+            fs_b[x-1] += 3 * error[2] / 16;
+            fs_r[x] = 5 * error[0] / 16;
+            fs_g[x] = 5 * error[1] / 16;
+            fs_b[x] = 5 * error[2] / 16;
+            fs_r[x+1] = 1 * error[0] / 16;
+            fs_g[x+1] = 1 * error[1] / 16;
+            fs_b[x+1] = 1 * error[2] / 16;
+        }
+
+        if(bitmap->invert)
+        {
+            outfg = 15 - outfg;
+            outbg = 15 - outbg;
+        }
+
+        /* Now output the character */
+        cucul_set_color(qq, outfg, outbg);
+        cucul_putstr(qq, x, y, outch);
+
+       bitmap->increment_dither();
+    }
+        /* end loop */
+    }
+
+    free(floyd_steinberg);
+}
 
 /**
  * \brief Free the memory associated with a bitmap.
@@ -414,9 +943,101 @@ void cucul_free_bitmap(struct cucul_bitmap *bitmap)
     free(bitmap);
 }
 
+/*
+ * XXX: The following functions are local.
+ */
+
+/* Convert a mask, eg. 0x0000ff00, to shift values, eg. 8 and -4. */
+static void mask2shift(unsigned int mask, int *right, int *left)
+{
+    int rshift = 0, lshift = 0;
+
+    if(!mask)
+    {
+        *right = *left = 0;
+        return;
+    }
+
+    while(!(mask & 1))
+    {
+        mask >>= 1;
+        rshift++;
+    }
+    *right = rshift;
+
+    while(mask & 1)
+    {
+        mask >>= 1;
+        lshift++;
+    }
+    *left = 12 - lshift;
+}
+
+/* Compute x^y without relying on the math library */
+static float gammapow(float x, float y)
+{
+#ifdef HAVE_FLDLN2
+    register double logx;
+    register long double v, e;
+#else
+    register float tmp, t, t2, r;
+    int i;
+#endif
+
+    if(x == 0.0)
+        return y == 0.0 ? 1.0 : 0.0;
+
+#ifdef HAVE_FLDLN2
+    /* FIXME: this can be optimised by directly calling fyl2x for x and y */
+    asm volatile("fldln2; fxch; fyl2x"
+                 : "=t" (logx) : "0" (x) : "st(1)");
+
+    asm volatile("fldl2e\n\t"
+                 "fmul %%st(1)\n\t"
+                 "fst %%st(1)\n\t"
+                 "frndint\n\t"
+                 "fxch\n\t"
+                 "fsub %%st(1)\n\t"
+                 "f2xm1\n\t"
+                 : "=t" (v), "=u" (e) : "0" (y * logx));
+    v += 1.0;
+    asm volatile("fscale"
+                 : "=t" (v) : "0" (v), "u" (e));
+    return v;
+#else
+    /* Compute ln(x) for x ∈ ]0,1]
+     *   ln(x) = 2 * (t + t^3/3 + t^5/5 + ...) with t = (x-1)/(x+1)
+     * The convergence is a bit slow, especially when x is near 0. */
+    t = (x - 1.0) / (x + 1.0);
+    t2 = t * t;
+    tmp = r = t;
+    for(i = 3; i < 20; i += 2)
+    {
+        r *= t2;
+        tmp += r / i;
+    }
+
+    /* Compute -y*ln(x) */
+    tmp = - y * 2.0 * tmp;
+
+    /* Compute x^-y as e^t where t = -y*ln(x):
+     *   e^t = 1 + t/1! + t^2/2! + t^3/3! + t^4/4! + t^5/5! ...
+     * The convergence is quite faster here, thanks to the factorial. */
+    r = t = tmp;
+    tmp = 1.0 + t;
+    for(i = 2; i < 16; i++)
+    {
+        r = r * t / i;
+        tmp += r;
+    }
+
+    /* Return x^y as 1/(x^-y) */
+    return 1.0 / tmp;
+#endif
+}
+
 static void get_rgba_default(struct cucul_bitmap const *bitmap, uint8_t *pixels,
-                             int x, int y, unsigned int *r, unsigned int *g,
-                             unsigned int *b, unsigned int *a)
+                             int x, int y, unsigned int *rgba)
 {
     uint32_t bits;
 
@@ -456,436 +1077,19 @@ static void get_rgba_default(struct cucul_bitmap const *bitmap, uint8_t *pixels,
 
     if(bitmap->has_palette)
     {
-        *r += bitmap->gammatab[bitmap->red[bits]];
-        *g += bitmap->gammatab[bitmap->green[bits]];
-        *b += bitmap->gammatab[bitmap->blue[bits]];
-        *a += bitmap->alpha[bits];
+        rgba[0] += bitmap->gammatab[bitmap->red[bits]];
+        rgba[1] += bitmap->gammatab[bitmap->green[bits]];
+        rgba[2] += bitmap->gammatab[bitmap->blue[bits]];
+        rgba[3] += bitmap->alpha[bits];
     }
     else
     {
-        *r += bitmap->gammatab[((bits & bitmap->rmask) >> bitmap->rright) << bitmap->rleft];
-        *g += bitmap->gammatab[((bits & bitmap->gmask) >> bitmap->gright) << bitmap->gleft];
-        *b += bitmap->gammatab[((bits & bitmap->bmask) >> bitmap->bright) << bitmap->bleft];
-        *a += ((bits & bitmap->amask) >> bitmap->aright) << bitmap->aleft;
+        rgba[0] += bitmap->gammatab[((bits & bitmap->rmask) >> bitmap->rright) << bitmap->rleft];
+        rgba[1] += bitmap->gammatab[((bits & bitmap->gmask) >> bitmap->gright) << bitmap->gleft];
+        rgba[2] += bitmap->gammatab[((bits & bitmap->bmask) >> bitmap->bright) << bitmap->bleft];
+        rgba[3] += ((bits & bitmap->amask) >> bitmap->aright) << bitmap->aleft;
     }
 }
-
-static inline void rgb2hsv_default(int r, int g, int b,
-                                   int *hue, int *sat, int *val)
-{
-    int min, max, delta;
-
-    min = r; max = r;
-    if(min > g) min = g; if(max < g) max = g;
-    if(min > b) min = b; if(max < b) max = b;
-
-    delta = max - min; /* 0 - 0xfff */
-    *val = max; /* 0 - 0xfff */
-
-    if(delta)
-    {
-        *sat = 0xfff * delta / max; /* 0 - 0xfff */
-
-        /* Generate *hue between 0 and 0x5fff */
-        if( r == max )
-            *hue = 0x1000 + 0x1000 * (g - b) / delta;
-        else if( g == max )
-            *hue = 0x3000 + 0x1000 * (b - r) / delta;
-        else
-            *hue = 0x5000 + 0x1000 * (r - g) / delta;
-    }
-    else
-    {
-        *sat = 0;
-        *hue = 0;
-    }
-}
-
-static inline int sq(int x)
-{
-    return x * x;
-}
-
-/**
- * \brief Draw a bitmap on the screen.
- *
- * Draw a bitmap at the given coordinates. The bitmap can be of any size and
- * will be stretched to the text area.
- *
- * \param x1 X coordinate of the upper-left corner of the drawing area.
- * \param y1 Y coordinate of the upper-left corner of the drawing area.
- * \param x2 X coordinate of the lower-right corner of the drawing area.
- * \param y2 Y coordinate of the lower-right corner of the drawing area.
- * \param bitmap Bitmap object to be drawn.
- * \param pixels Bitmap's pixels.
- */
-void cucul_draw_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
-                       struct cucul_bitmap const *bitmap, void *pixels)
-{
-    /* Current dithering method */
-    void (*_init_dither) (int);
-    unsigned int (*_get_dither) (void);
-    void (*_increment_dither) (void);
-
-    int *floyd_steinberg, *fs_r, *fs_g, *fs_b;
-    int fs_length;
-
-    /* FIXME: choose better characters! */
-#if !defined(_DOXYGEN_SKIP_ME)
-#   define DCHMAX ((sizeof(density_chars)/sizeof(*density_chars)))
-#endif
-    static char const * density_chars[] =
-    {
-#if CP437
-        " ", ":", "░", "▒", "?"
-        /* "0", "1", "2", "3", "?" */
-#else
-        " ", ".", ":", ";", "t", "%", "S", "X", "@", "8", "?"
-#endif
-    };
-
-    int x, y, w, h, pitch, deltax, deltay;
-
-    if(!bitmap || !pixels)
-        return;
-
-    w = bitmap->w;
-    h = bitmap->h;
-    pitch = bitmap->pitch;
-
-    if(x1 > x2)
-    {
-        int tmp = x2; x2 = x1; x1 = tmp;
-    }
-
-    if(y1 > y2)
-    {
-        int tmp = y2; y2 = y1; y1 = tmp;
-    }
-
-    deltax = x2 - x1 + 1;
-    deltay = y2 - y1 + 1;
-
-    switch(qq->dithering)
-    {
-    case CUCUL_DITHERING_NONE:
-        _init_dither = init_no_dither;
-        _get_dither = get_no_dither;
-        _increment_dither = increment_no_dither;
-        break;
-
-    case CUCUL_DITHERING_ORDERED2:
-        _init_dither = init_ordered2_dither;
-        _get_dither = get_ordered2_dither;
-        _increment_dither = increment_ordered2_dither;
-        break;
-
-    case CUCUL_DITHERING_ORDERED4:
-        _init_dither = init_ordered4_dither;
-        _get_dither = get_ordered4_dither;
-        _increment_dither = increment_ordered4_dither;
-        break;
-
-    case CUCUL_DITHERING_ORDERED8:
-        _init_dither = init_ordered8_dither;
-        _get_dither = get_ordered8_dither;
-        _increment_dither = increment_ordered8_dither;
-        break;
-
-    case CUCUL_DITHERING_RANDOM:
-        _init_dither = init_random_dither;
-        _get_dither = get_random_dither;
-        _increment_dither = increment_random_dither;
-        break;
-
-    case CUCUL_DITHERING_FSTEIN:
-        _init_dither = init_no_dither;
-        _get_dither = get_no_dither;
-        _increment_dither = increment_no_dither;
-        break;
-
-    default:
-        /* Something wicked happened! */
-        return;
-    }
-
-    fs_length = ((int)qq->width <= x2 ? (int)qq->width : x2) + 1;
-    floyd_steinberg = malloc(3 * (fs_length + 2) * sizeof(int));
-    memset(floyd_steinberg, 0, 3 * (fs_length + 2) * sizeof(int));
-    fs_r = floyd_steinberg + 1;
-    fs_g = fs_r + fs_length + 2;
-    fs_b = fs_g + fs_length + 2;
-
-    for(y = y1 > 0 ? y1 : 0; y <= y2 && y <= (int)qq->height; y++)
-    {
-        int remain_r = 0, remain_g = 0, remain_b = 0;
-
-        for(x = x1 > 0 ? x1 : 0, _init_dither(y);
-            x <= x2 && x <= (int)qq->width;
-            x++)
-    {
-        unsigned int i;
-        int ch = 0, distmin;
-        unsigned int r, g, b, a;
-        int fg_r = 0, fg_g = 0, fg_b = 0, bg_r, bg_g, bg_b;
-        int fromx, fromy, tox, toy, myx, myy, dots, dist;
-        int error[3];
-
-        enum cucul_color outfg = 0, outbg = 0;
-        char const *outch;
-
-        r = g = b = a = 0;
-
-        /* First get RGB */
-        if(qq->antialiasing == CUCUL_ANTIALIASING_PREFILTER)
-        {
-            fromx = (x - x1) * w / deltax;
-            fromy = (y - y1) * h / deltay;
-            tox = (x - x1 + 1) * w / deltax;
-            toy = (y - y1 + 1) * h / deltay;
-
-            /* We want at least one pixel */
-            if(tox == fromx) tox++;
-            if(toy == fromy) toy++;
-
-            dots = 0;
-
-            for(myx = fromx; myx < tox; myx++)
-                for(myy = fromy; myy < toy; myy++)
-            {
-                dots++;
-                get_rgba_default(bitmap, pixels, myx, myy, &r, &g, &b, &a);
-            }
-
-            /* Normalize */
-            r /= dots;
-            g /= dots;
-            b /= dots;
-            a /= dots;
-        }
-        else
-        {
-            fromx = (x - x1) * w / deltax;
-            fromy = (y - y1) * h / deltay;
-            tox = (x - x1 + 1) * w / deltax;
-            toy = (y - y1 + 1) * h / deltay;
-
-            /* tox and toy can overflow the screen, but they cannot overflow
-             * when averaged with fromx and fromy because these are guaranteed
-             * to be within the pixel boundaries. */
-            myx = (fromx + tox) / 2;
-            myy = (fromy + toy) / 2;
-
-            get_rgba_default(bitmap, pixels, myx, myy, &r, &g, &b, &a);
-        }
-
-        if(bitmap->has_alpha && a < 0x800)
-        {
-            remain_r = remain_g = remain_b = 0;
-            fs_r[x] = 0;
-            fs_g[x] = 0;
-            fs_b[x] = 0;
-            continue;
-        }
-
-        if(qq->dithering == CUCUL_DITHERING_FSTEIN)
-        {
-            r += remain_r;
-            g += remain_g;
-            b += remain_b;
-        }
-        else
-        {
-            r += (_get_dither() - 0x80) * 4;
-            g += (_get_dither() - 0x80) * 4;
-            b += (_get_dither() - 0x80) * 4;
-        }
-
-        distmin = INT_MAX;
-        for(i = 0; i < 16; i++)
-        {
-            dist = sq(r - rgb_palette[i * 3])
-                 + sq(g - rgb_palette[i * 3 + 1])
-                 + sq(b - rgb_palette[i * 3 + 2]);
-            dist *= rgb_weight[i];
-            if(dist < distmin)
-            {
-                outbg = i;
-                distmin = dist;
-            }
-        }
-        bg_r = rgb_palette[outbg * 3];
-        bg_g = rgb_palette[outbg * 3 + 1];
-        bg_b = rgb_palette[outbg * 3 + 2];
-
-        if(qq->background == CUCUL_BACKGROUND_SOLID)
-        {
-            distmin = INT_MAX;
-            for(i = 0; i < 16; i++)
-            {
-                if(i == outbg)
-                    continue;
-                dist = sq(r - rgb_palette[i * 3])
-                     + sq(g - rgb_palette[i * 3 + 1])
-                     + sq(b - rgb_palette[i * 3 + 2]);
-                dist *= rgb_weight[i];
-                if(dist < distmin)
-                {
-                    outfg = i;
-                    distmin = dist;
-                }
-            }
-            fg_r = rgb_palette[outfg * 3];
-            fg_g = rgb_palette[outfg * 3 + 1];
-            fg_b = rgb_palette[outfg * 3 + 2];
-
-            distmin = INT_MAX;
-            for(i = 0; i < DCHMAX - 1; i++)
-            {
-                int newr = i * fg_r + ((2*DCHMAX-1) - i) * bg_r;
-                int newg = i * fg_g + ((2*DCHMAX-1) - i) * bg_g;
-                int newb = i * fg_b + ((2*DCHMAX-1) - i) * bg_b;
-                dist = abs(r * (2*DCHMAX-1) - newr)
-                     + abs(g * (2*DCHMAX-1) - newg)
-                     + abs(b * (2*DCHMAX-1) - newb);
-
-                if(dist < distmin)
-                {
-                    ch = i;
-                    distmin = dist;
-                }
-            }
-            outch = density_chars[ch];
-
-            if(qq->dithering == CUCUL_DITHERING_FSTEIN)
-            {
-                error[0] = r - (fg_r * ch + bg_r * ((2*DCHMAX-1) - ch)) / (2*DCHMAX-1);
-                error[1] = g - (fg_g * ch + bg_g * ((2*DCHMAX-1) - ch)) / (2*DCHMAX-1);
-                error[2] = b - (fg_b * ch + bg_b * ((2*DCHMAX-1) - ch)) / (2*DCHMAX-1);
-            }
-        }
-        else
-        {
-            unsigned int lum = r; if(g > lum) lum = g; if(b > lum) lum = b;
-            outfg = outbg;
-            outbg = CUCUL_COLOR_BLACK;
-
-            ch = lum * DCHMAX / 0x1000;
-            if(ch < 0)
-                ch = 0;
-            else if(ch > (int)(DCHMAX - 1))
-                ch = DCHMAX - 1;
-            outch = density_chars[ch];
-
-            if(qq->dithering == CUCUL_DITHERING_FSTEIN)
-            {
-                error[0] = r - bg_r * ch / (DCHMAX-1);
-                error[1] = g - bg_g * ch / (DCHMAX-1);
-                error[2] = b - bg_b * ch / (DCHMAX-1);
-            }
-        }
-
-        if(qq->dithering == CUCUL_DITHERING_FSTEIN)
-        {
-            remain_r = fs_r[x+1] + 7 * error[0] / 16;
-            remain_g = fs_g[x+1] + 7 * error[1] / 16;
-            remain_b = fs_b[x+1] + 7 * error[2] / 16;
-            fs_r[x-1] += 3 * error[0] / 16;
-            fs_g[x-1] += 3 * error[1] / 16;
-            fs_b[x-1] += 3 * error[2] / 16;
-            fs_r[x] = 5 * error[0] / 16;
-            fs_g[x] = 5 * error[1] / 16;
-            fs_b[x] = 5 * error[2] / 16;
-            fs_r[x+1] = 1 * error[0] / 16;
-            fs_g[x+1] = 1 * error[1] / 16;
-            fs_b[x+1] = 1 * error[2] / 16;
-        }
-
-        if(bitmap->invert) {
-            outfg = 15-outfg;
-            outbg = 15-outbg;
-        }
-
-        /* Now output the character */
-        cucul_set_color(qq, outfg, outbg);
-        cucul_putstr(qq, x, y, outch);
-
-        _increment_dither();
-    }
-        /* end loop */
-    }
-
-    free(floyd_steinberg);
-}
-
-#if !defined(_DOXYGEN_SKIP_ME)
-int _cucul_init_bitmap(void)
-{
-    unsigned int v, s, h;
-
-    /* These ones are constant */
-    lookup_colors[0] = CUCUL_COLOR_BLACK;
-    lookup_colors[1] = CUCUL_COLOR_DARKGRAY;
-    lookup_colors[2] = CUCUL_COLOR_LIGHTGRAY;
-    lookup_colors[3] = CUCUL_COLOR_WHITE;
-
-    /* These ones will be overwritten */
-    lookup_colors[4] = CUCUL_COLOR_MAGENTA;
-    lookup_colors[5] = CUCUL_COLOR_LIGHTMAGENTA;
-    lookup_colors[6] = CUCUL_COLOR_RED;
-    lookup_colors[7] = CUCUL_COLOR_LIGHTRED;
-
-    for(v = 0; v < LOOKUP_VAL; v++)
-        for(s = 0; s < LOOKUP_SAT; s++)
-            for(h = 0; h < LOOKUP_HUE; h++)
-    {
-        int i, distbg, distfg, dist;
-        int val, sat, hue;
-        unsigned char outbg, outfg;
-
-        val = 0xfff * v / (LOOKUP_VAL - 1);
-        sat = 0xfff * s / (LOOKUP_SAT - 1);
-        hue = 0xfff * h / (LOOKUP_HUE - 1);
-
-        /* Initialise distances to the distance between pure black HSV
-         * coordinates and our white colour (3) */
-        outbg = outfg = 3;
-        distbg = distfg = HSV_DISTANCE(0, 0, 0, 3);
-
-        /* Calculate distances to eight major colour values and store the
-         * two nearest points in our lookup table. */
-        for(i = 0; i < 8; i++)
-        {
-            dist = HSV_DISTANCE(hue, sat, val, i);
-            if(dist <= distbg)
-            {
-                outfg = outbg;
-                distfg = distbg;
-                outbg = i;
-                distbg = dist;
-            }
-            else if(dist <= distfg)
-            {
-                outfg = i;
-                distfg = dist;
-            }
-        }
-
-        hsv_distances[v][s][h] = (outfg << 4) | outbg;
-    }
-
-    return 0;
-}
-
-int _cucul_end_bitmap(void)
-{
-    return 0;
-}
-#endif /* _DOXYGEN_SKIP_ME */
-
-/*
- * XXX: The following functions are local.
- */
 
 /*
  * No dithering
@@ -901,6 +1105,24 @@ static unsigned int get_no_dither(void)
 }
 
 static void increment_no_dither(void)
+{
+    return;
+}
+
+/*
+ * Floyd-Steinberg dithering
+ */
+static void init_fstein_dither(int line)
+{
+    ;
+}
+
+static unsigned int get_fstein_dither(void)
+{
+    return 0x80;
+}
+
+static void increment_fstein_dither(void)
 {
     return;
 }
@@ -1018,4 +1240,70 @@ static void increment_random_dither(void)
 {
     return;
 }
+
+#if !defined(_DOXYGEN_SKIP_ME)
+int _cucul_init_bitmap(void)
+{
+    unsigned int v, s, h;
+
+    /* These ones are constant */
+    lookup_colors[0] = CUCUL_COLOR_BLACK;
+    lookup_colors[1] = CUCUL_COLOR_DARKGRAY;
+    lookup_colors[2] = CUCUL_COLOR_LIGHTGRAY;
+    lookup_colors[3] = CUCUL_COLOR_WHITE;
+
+    /* These ones will be overwritten */
+    lookup_colors[4] = CUCUL_COLOR_MAGENTA;
+    lookup_colors[5] = CUCUL_COLOR_LIGHTMAGENTA;
+    lookup_colors[6] = CUCUL_COLOR_RED;
+    lookup_colors[7] = CUCUL_COLOR_LIGHTRED;
+
+    for(v = 0; v < LOOKUP_VAL; v++)
+        for(s = 0; s < LOOKUP_SAT; s++)
+            for(h = 0; h < LOOKUP_HUE; h++)
+    {
+        int i, distbg, distfg, dist;
+        int val, sat, hue;
+        unsigned char outbg, outfg;
+
+        val = 0xfff * v / (LOOKUP_VAL - 1);
+        sat = 0xfff * s / (LOOKUP_SAT - 1);
+        hue = 0xfff * h / (LOOKUP_HUE - 1);
+
+        /* Initialise distances to the distance between pure black HSV
+         * coordinates and our white colour (3) */
+        outbg = outfg = 3;
+        distbg = distfg = HSV_DISTANCE(0, 0, 0, 3);
+
+        /* Calculate distances to eight major colour values and store the
+         * two nearest points in our lookup table. */
+        for(i = 0; i < 8; i++)
+        {
+            dist = HSV_DISTANCE(hue, sat, val, i);
+            if(dist <= distbg)
+            {
+                outfg = outbg;
+                distfg = distbg;
+                outbg = i;
+                distbg = dist;
+            }
+            else if(dist <= distfg)
+            {
+                outfg = i;
+                distfg = dist;
+            }
+        }
+
+        hsv_distances[v][s][h] = (outfg << 4) | outbg;
+    }
+
+    return 0;
+}
+
+int _cucul_end_bitmap(void)
+{
+    return 0;
+}
+#endif /* _DOXYGEN_SKIP_ME */
+
 

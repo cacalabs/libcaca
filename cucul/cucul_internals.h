@@ -43,9 +43,6 @@ struct cucul_context
     enum cucul_color fgcolor;
     enum cucul_color bgcolor;
 
-    /* Internal libcucul features */
-    enum cucul_feature background, antialiasing, dithering;
-
     unsigned int refcount;
 };
 

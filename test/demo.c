@@ -100,12 +100,14 @@ int main(int argc, char **argv)
                     bounds = (bounds + 1) % 2;
                     display_menu();
                     break;
+#if 0
                 case 'd':
                 case 'D':
                     dithering = (dithering + 1) % 5;
                     cucul_set_feature(qq, dithering);
                     display_menu();
                     break;
+#endif
                 case 'c':
                     demo = demo_color;
                     break;
@@ -217,8 +219,8 @@ static void display_menu(void)
                  outline == 0 ? "none" : outline == 1 ? "solid" : "thin");
     cucul_printf(qq, 4, 18, "'b': drawing boundaries: %s",
                  bounds == 0 ? "screen" : "infinite");
-    cucul_printf(qq, 4, 19, "'d': dithering (%s)",
-                 cucul_get_feature_name(dithering));
+    //cucul_printf(qq, 4, 19, "'d': dithering (%s)",
+    //             cucul_get_feature_name(dithering));
 
     cucul_putstr(qq, 4, yo - 2, "'q': quit");
 

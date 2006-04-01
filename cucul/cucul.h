@@ -34,67 +34,26 @@ extern "C"
  */
 enum cucul_color
 {
-    CUCUL_COLOR_BLACK = 0, /**< The colour index for black. */
-    CUCUL_COLOR_BLUE = 1, /**< The colour index for blue. */
-    CUCUL_COLOR_GREEN = 2, /**< The colour index for green. */
-    CUCUL_COLOR_CYAN = 3, /**< The colour index for cyan. */
-    CUCUL_COLOR_RED = 4, /**< The colour index for red. */
-    CUCUL_COLOR_MAGENTA = 5, /**< The colour index for magenta. */
-    CUCUL_COLOR_BROWN = 6, /**< The colour index for brown. */
-    CUCUL_COLOR_LIGHTGRAY = 7, /**< The colour index for light gray. */
-    CUCUL_COLOR_DARKGRAY = 8, /**< The colour index for dark gray. */
-    CUCUL_COLOR_LIGHTBLUE = 9, /**< The colour index for blue. */
-    CUCUL_COLOR_LIGHTGREEN = 10, /**< The colour index for light green. */
-    CUCUL_COLOR_LIGHTCYAN = 11, /**< The colour index for light cyan. */
-    CUCUL_COLOR_LIGHTRED = 12, /**< The colour index for light red. */
-    CUCUL_COLOR_LIGHTMAGENTA = 13, /**< The colour index for light magenta. */
-    CUCUL_COLOR_YELLOW = 14, /**< The colour index for yellow. */
-    CUCUL_COLOR_WHITE = 15 /**< The colour index for white. */
+    CUCUL_COLOR_BLACK = 0x0, /**< The colour index for black. */
+    CUCUL_COLOR_BLUE = 0x1, /**< The colour index for blue. */
+    CUCUL_COLOR_GREEN = 0x2, /**< The colour index for green. */
+    CUCUL_COLOR_CYAN = 0x3, /**< The colour index for cyan. */
+    CUCUL_COLOR_RED = 0x4, /**< The colour index for red. */
+    CUCUL_COLOR_MAGENTA = 0x5, /**< The colour index for magenta. */
+    CUCUL_COLOR_BROWN = 0x6, /**< The colour index for brown. */
+    CUCUL_COLOR_LIGHTGRAY = 0x7, /**< The colour index for light gray. */
+    CUCUL_COLOR_DARKGRAY = 0x8, /**< The colour index for dark gray. */
+    CUCUL_COLOR_LIGHTBLUE = 0x9, /**< The colour index for blue. */
+    CUCUL_COLOR_LIGHTGREEN = 0xa, /**< The colour index for light green. */
+    CUCUL_COLOR_LIGHTCYAN = 0xb, /**< The colour index for light cyan. */
+    CUCUL_COLOR_LIGHTRED = 0xc, /**< The colour index for light red. */
+    CUCUL_COLOR_LIGHTMAGENTA = 0xd, /**< The colour index for light magenta. */
+    CUCUL_COLOR_YELLOW = 0xe, /**< The colour index for yellow. */
+    CUCUL_COLOR_WHITE = 0xf, /**< The colour index for white. */
+
+    CUCUL_COLOR_TRANSPARENT = 0xfe, /**< The transparent colour. */
+    CUCUL_COLOR_DEFAULT = 0xff, /**< The output driver's default colour. */
 };
-
-/** \brief Internal features.
- *
- *  Internal libcaca features such as the rendering method or the dithering
- *  mode.
- */
-enum cucul_feature
-{
-    CUCUL_BACKGROUND       = 0x10, /**< Properties of background characters. */
-    CUCUL_BACKGROUND_BLACK = 0x11, /**< Draw only black backgrounds. */
-    CUCUL_BACKGROUND_SOLID = 0x12, /**< Draw coloured solid backgorunds. */
-#define CUCUL_BACKGROUND_MIN 0x11 /**< First background property */
-#define CUCUL_BACKGROUND_MAX 0x12 /**< Last background property */
-
-    CUCUL_ANTIALIASING           = 0x20, /**< Antialiasing features. */
-    CUCUL_ANTIALIASING_NONE      = 0x21, /**< No antialiasing. */
-    CUCUL_ANTIALIASING_PREFILTER = 0x22, /**< Prefilter antialiasing. */
-#define CUCUL_ANTIALIASING_MIN     0x21 /**< First antialiasing feature. */
-#define CUCUL_ANTIALIASING_MAX     0x22 /**< Last antialiasing feature. */
-
-    CUCUL_DITHERING          = 0x30, /**< Dithering methods */
-    CUCUL_DITHERING_NONE     = 0x31, /**< No dithering. */
-    CUCUL_DITHERING_ORDERED2 = 0x32, /**< Ordered 2x2 Bayer dithering. */
-    CUCUL_DITHERING_ORDERED4 = 0x33, /**< Ordered 4x4 Bayer dithering. */
-    CUCUL_DITHERING_ORDERED8 = 0x34, /**< Ordered 8x8 Bayer dithering. */
-    CUCUL_DITHERING_RANDOM   = 0x35, /**< Random dithering. */
-    CUCUL_DITHERING_FSTEIN   = 0x36, /**< Floyd-Steinberg dithering. */
-#define CUCUL_DITHERING_MIN    0x31 /**< First dithering feature. */
-#define CUCUL_DITHERING_MAX    0x36 /**< Last dithering feature. */
-
-    CUCUL_FEATURE_UNKNOWN = 0xffff /**< Unknown feature. */
-};
-
-/*
- * Backwards compatibility macros
- */
-#if !defined(_DOXYGEN_SKIP_ME)
-#define caca_dithering cucul_feature
-#define caca_set_dithering caca_set_feature
-#define caca_get_dithering_name caca_get_feature_name
-#define CACA_DITHER_NONE    CUCUL_DITHERING_NONE
-#define CACA_DITHER_ORDERED CUCUL_DITHERING_ORDERED8
-#define CACA_DITHER_RANDOM  CUCUL_DITHERING_RANDOM
-#endif
 
 typedef struct cucul_context cucul_t;
 
@@ -109,9 +68,6 @@ cucul_t * cucul_load(void *, unsigned int);
 void cucul_set_size(cucul_t *, unsigned int, unsigned int);
 unsigned int cucul_get_width(cucul_t *);
 unsigned int cucul_get_height(cucul_t *);
-enum cucul_feature cucul_get_feature(cucul_t *, enum cucul_feature);
-void cucul_set_feature(cucul_t *, enum cucul_feature);
-char const *cucul_get_feature_name(enum cucul_feature);
 void cucul_free(cucul_t *);
 /*  @} */
 
@@ -209,9 +165,21 @@ struct cucul_bitmap *cucul_create_bitmap(unsigned int, unsigned int,
 void cucul_set_bitmap_palette(struct cucul_bitmap *,
                               unsigned int r[], unsigned int g[],
                               unsigned int b[], unsigned int a[]);
+void cucul_set_bitmap_brightness(struct cucul_bitmap *, float);
 void cucul_set_bitmap_gamma(struct cucul_bitmap *, float);
-void cucul_draw_bitmap(cucul_t *, int, int, int, int, struct cucul_bitmap const *, void *);
-void cucul_set_bitmap_invert(struct cucul_bitmap *, unsigned char);
+void cucul_set_bitmap_contrast(struct cucul_bitmap *, float);
+void cucul_set_bitmap_invert(struct cucul_bitmap *, int);
+void cucul_set_bitmap_antialias(struct cucul_bitmap *, int);
+void cucul_set_bitmap_color(struct cucul_bitmap *, char const *);
+char const * const * cucul_get_bitmap_color_list(struct cucul_bitmap const *);
+void cucul_set_bitmap_charset(struct cucul_bitmap *, char const *);
+char const * const * cucul_get_bitmap_charset_list(struct cucul_bitmap
+                                                   const *);
+void cucul_set_bitmap_dithering(struct cucul_bitmap *, char const *);
+char const * const * cucul_get_bitmap_dithering_list(struct cucul_bitmap
+                                                     const *);
+void cucul_draw_bitmap(cucul_t *, int, int, int, int,
+                       struct cucul_bitmap const *, void *);
 void cucul_free_bitmap(struct cucul_bitmap *);
 /*  @} */
 
