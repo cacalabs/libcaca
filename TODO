@@ -6,15 +6,13 @@ libcucul
   API-dependent stuff
   -------------------
 
-   o brightness, contrast support for bitmaps
-
-   o allow to select the characters that will be used for bitmap
-     rendering, for instance halftoning (░ ▒ ▓ █) and quarter
-     blocks (▀ ▄ ▌ ▐ █ ▖ ▗ ▘ ▝ ▚ ▞ ▙ ▛ ▜ ▟).
-
    o all the sprite stuff (loading, saving, blitting, transparency
      support, background colour support, thinking of a storage format,
      etc.)
+
+   o Or maybe, instead of doing shit with the sprites, just allow canvases
+     to have several buffers, allow to change the active buffer, and treat
+     sprites like that.
 
    o bitmap output support (will require one or several custom fonts),
      maybe should be in libcaca.
@@ -25,12 +23,31 @@ libcucul
 
    o ASCII/ANSI art loading functions (maybe load them as sprites)
 
+   o Shouldn't the antialiasing function accept a string instead of a
+     number, in case we create several antialiasing methods? Or is it
+     just a waste of time?
+
+   o Get rid of cucul_get_fg_color/cucul_get_bg_color, they're really not
+     useful at all.
+
 
   API-independent stuff
   ---------------------
 
+   o Brightness, contrast support for bitmaps (the functions are here, we
+     just need to fill them)
+
+   o Error distribution dithering
+
+   o Add a random factor to the random ditherer. No need to change the API
+     for that, we can just pass "random:10" instead of "random" to the
+     cucul_set_bitmap_dithering() function.
+
+   o Implement the colour modes set in cucul_set_bitmap_color(). For the
+     moment only "full16" and "16" are implemented.
+
    o Fix the thin ellipse rendering (currently it's only |s and -s, we
-     could make them smoother by using ' ` , etc.
+     could make them smoother by using ' ` , etc).
 
    o support for double width glyphs (also needs some libcaca changes)
 
@@ -81,8 +98,6 @@ Language bindings
 
    o PHP (together with the HTML output it would allow for nice web
      applications)
-
-   o maybe Ruby, maybe Java
 
 
   Not that important
@@ -139,5 +154,5 @@ Applications
 
    o Colour support, of course: outputs to IRC, ANSI, HTML...
 
-   o Open FIGlet fonts
+   o Can open FIGlet fonts
 
