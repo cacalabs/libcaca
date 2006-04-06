@@ -82,7 +82,6 @@ char const *cucul_get_color_name(enum cucul_color);
 void cucul_putchar(cucul_t *, int, int, char);
 void cucul_putstr(cucul_t *, int, int, char const *);
 void cucul_printf(cucul_t *, int, int, char const *, ...);
-void cucul_get_screen(cucul_t const *, char *);
 void cucul_clear(cucul_t *);
 void cucul_blit(cucul_t *, int, int, cucul_t const *, cucul_t const *);
 /*  @} */

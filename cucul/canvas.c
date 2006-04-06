@@ -171,24 +171,6 @@ void cucul_printf(cucul_t *qq, int x, int y, char const *format, ...)
         free(buf);
 }
 
-/** \brief Get the screen.
- *
- *  This function fills a byte array with the character values.
- */
-void cucul_get_screen(cucul_t const *qq, char *buffer)
-{
-    unsigned int x, y;
-
-    for(y = 0; y < qq->height; y++)
-    {
-        for(x = 0; x < qq->width; x++)
-        {
-            *buffer++ = qq->attr[x + y * qq->width];
-            *buffer++ = qq->chars[x + y * qq->width] & 0x7f; /* FIXME: ASCII */
-        }
-    }
-}
-
 /** \brief Clear the screen.
  *
  *  This function clears the screen using a black background.
