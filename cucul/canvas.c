@@ -81,7 +81,7 @@ void cucul_putchar(cucul_t *qq, int x, int y, char c)
         c = 0x20;
 
     qq->chars[x + y * qq->width] = c;
-    qq->attr[x + y * qq->width] = (qq->bgcolor << 4) | qq->fgcolor;
+    qq->attr[x + y * qq->width] = (qq->bgcolor << 16) | qq->fgcolor;
 }
 
 /** \brief Print a string.
@@ -97,8 +97,7 @@ void cucul_putchar(cucul_t *qq, int x, int y, char c)
  */
 void cucul_putstr(cucul_t *qq, int x, int y, char const *s)
 {
-    uint32_t *chars;
-    uint8_t *attr;
+    uint32_t *chars, *attr;
     unsigned int len;
 
     if(y < 0 || y >= (int)qq->height || x >= (int)qq->width)
@@ -124,7 +123,7 @@ void cucul_putstr(cucul_t *qq, int x, int y, char const *s)
     while(len)
     {
         *chars++ = _cucul_utf8_to_utf32(s);
-        *attr++ = (qq->bgcolor << 4) | qq->fgcolor;
+        *attr++ = (qq->bgcolor << 16) | qq->fgcolor;
 
         s = _cucul_skip_utf8(s, 1);
         len--;
@@ -239,7 +238,7 @@ void cucul_blit(cucul_t *dst, int x, int y,
                    (endi - starti) * 4);
             memcpy(dst->attr + (j + y) * dst->width + starti + x,
                    src->attr + j * src->width + starti,
-                   (endi - starti) * 1);
+                   (endi - starti) * 4);
         }
     }
 }
@@ -255,6 +254,6 @@ void _cucul_putchar32(cucul_t *qq, int x, int y, uint32_t c)
         return;
 
     qq->chars[x + y * qq->width] = c;
-    qq->attr[x + y * qq->width] = (qq->bgcolor << 4) | qq->fgcolor;
+    qq->attr[x + y * qq->width] = (qq->bgcolor << 16) | qq->fgcolor;
 }
 

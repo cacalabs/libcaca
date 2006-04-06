@@ -116,14 +116,14 @@ static unsigned int vga_get_window_height(caca_t *kk)
 static void vga_display(caca_t *kk)
 {
     char *screen = (char *)(intptr_t)0x000b8000;
-    uint8_t *attr = kk->qq->attr;
+    uint32_t *attr = kk->qq->attr;
     uint32_t *chars = kk->qq->chars;
     int n;
 
     for(n = kk->qq->height * kk->qq->width; n--; )
     {
         *screen++ = _cucul_utf32_to_cp437(*chars++);
-        *screen++ = *attr++;
+        *screen++ = _cucul_rgba32_to_ansi8(*attr++);
     }
 }
 

@@ -72,12 +72,13 @@ void _cucul_get_html(cucul_t *qq, struct cucul_export *ex)
 
     for(y = 0; y < qq->height; y++)
     {
-        uint8_t *lineattr = qq->attr + y * qq->width;
+        uint32_t *lineattr = qq->attr + y * qq->width;
         uint32_t *linechar = qq->chars + y * qq->width;
 
         for(x = 0; x < qq->width; x += len)
         {
-            cur += sprintf(cur, "<span class='b%02x'>", lineattr[x]);
+            cur += sprintf(cur, "<span class='b%02x'>",
+                           _cucul_rgba32_to_ansi8(lineattr[x]));
 
             for(len = 0;
                 x + len < qq->width && lineattr[x + len] == lineattr[x];
@@ -141,7 +142,7 @@ void _cucul_get_html3(cucul_t *qq, struct cucul_export *ex)
 
     for(y = 0; y < qq->height; y++)
     {
-        uint8_t *lineattr = qq->attr + y * qq->width;
+        uint32_t *lineattr = qq->attr + y * qq->width;
         uint32_t *linechar = qq->chars + y * qq->width;
 
         cur += sprintf(cur, "<tr>");
@@ -156,13 +157,14 @@ void _cucul_get_html3(cucul_t *qq, struct cucul_export *ex)
             while(x + len < qq->width && lineattr[x + len] == lineattr[x])
                 len++;
 
-            cur += sprintf(cur, "<td bgcolor=#%06x", palette[lineattr[x] >> 4]);
+            cur += sprintf(cur, "<td bgcolor=#%06x",
+                           _cucul_rgba32_to_ansi4bg(lineattr[x]));
 
             if(len > 1)
                 cur += sprintf(cur, " colspan=%d", len);
 
             cur += sprintf(cur, "><font color=#%06x>",
-                                palette[lineattr[x] & 0x0f]);
+                           _cucul_rgba32_to_ansi4fg(lineattr[x]));
 
             for(i = 0; i < len; i++)
             {

@@ -58,7 +58,7 @@ void _cucul_get_ansi(cucul_t *qq, struct cucul_export *ex)
 
     for(y = 0; y < qq->height; y++)
     {
-        uint8_t *lineattr = qq->attr + y * qq->width;
+        uint32_t *lineattr = qq->attr + y * qq->width;
         uint32_t *linechar = qq->chars + y * qq->width;
 
         uint8_t prevfg = -1;
@@ -66,8 +66,8 @@ void _cucul_get_ansi(cucul_t *qq, struct cucul_export *ex)
 
         for(x = 0; x < qq->width; x++)
         {
-            uint8_t fg = palette[lineattr[x] & 0x0f];
-            uint8_t bg = palette[lineattr[x] >> 4];
+            uint8_t fg = _cucul_rgba32_to_ansi4fg(lineattr[x]);
+            uint8_t bg = _cucul_rgba32_to_ansi4bg(lineattr[x]);
             uint32_t c = linechar[x];
 
             if(fg != prevfg || bg != prevbg)

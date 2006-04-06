@@ -245,12 +245,12 @@ static void gl_display(caca_t *kk)
     line = 0;
     for(y = 0; y < kk->drv.p->height; y += kk->drv.p->font_height)
     {
-        uint8_t *attr = kk->qq->attr + line * kk->qq->width;
+        uint32_t *attr = kk->qq->attr + line * kk->qq->width;
 
         for(x = 0; x < kk->drv.p->width; x += kk->drv.p->font_width)
         {
             glDisable(GL_TEXTURE_2D);
-            glColor4bv(gl_bgpal[attr[0] >> 4]);
+            glColor4bv(gl_bgpal[_cucul_rgba32_to_ansi4bg(*attr++)]);
             glBegin(GL_QUADS);
                 glVertex2f(x, y);
                 glVertex2f(x + kk->drv.p->font_width, y);
@@ -258,8 +258,6 @@ static void gl_display(caca_t *kk)
                            y + kk->drv.p->font_height);
                 glVertex2f(x, y + kk->drv.p->font_height);
             glEnd();
-
-            attr++;
         }
 
         line++;
@@ -273,7 +271,7 @@ static void gl_display(caca_t *kk)
     line = 0;
     for(y = 0; y < kk->drv.p->height; y += kk->drv.p->font_height)
     {
-        uint8_t *attr = kk->qq->attr + line * kk->qq->width;
+        uint32_t *attr = kk->qq->attr + line * kk->qq->width;
         uint32_t *chars = kk->qq->chars + line * kk->qq->width;
 
         for(x = 0; x < kk->drv.p->width; x += kk->drv.p->font_width)
@@ -283,7 +281,7 @@ static void gl_display(caca_t *kk)
             if(c > 0x00000020 && c < 0x00000080)
             {
                 glBindTexture(GL_TEXTURE_2D, kk->drv.p->id[c - 32]);
-                glColor4bv(gl_bgpal[attr[0] & 0xf]);
+                glColor4bv(gl_bgpal[_cucul_rgba32_to_ansi4fg(*attr)]);
                 glBegin(GL_QUADS);
                     glTexCoord2f(0, kk->drv.p->sh);
                     glVertex2f(x, y);

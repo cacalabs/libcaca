@@ -85,12 +85,12 @@ void _cucul_get_ps(cucul_t *qq, struct cucul_export *ex)
     /* Background, drawn using csquare macro defined in header */
     for(y = qq->height; y--; )
     {
-        uint8_t *lineattr = qq->attr + y * qq->width;
+        uint32_t *lineattr = qq->attr + y * qq->width;
 
         for(x = 0; x < qq->width; x++)
         {
             cur += sprintf(cur, "1 0 translate\n %s csquare\n",
-                                palette[*lineattr++ >> 4]);
+                           _cucul_rgba32_to_ansi4bg(*lineattr++));
         }
 
         /* Return to beginning of the line, and jump to the next one */
@@ -101,7 +101,7 @@ void _cucul_get_ps(cucul_t *qq, struct cucul_export *ex)
 
     for(y = qq->height; y--; )
     {
-        uint8_t *lineattr = qq->attr + (qq->height - y - 1) * qq->width;
+        uint32_t *lineattr = qq->attr + (qq->height - y - 1) * qq->width;
         uint32_t *linechar = qq->chars + (qq->height - y - 1) * qq->width;
 
         for(x = 0; x < qq->width; x++)
@@ -111,7 +111,7 @@ void _cucul_get_ps(cucul_t *qq, struct cucul_export *ex)
             cur += sprintf(cur, "newpath\n");
             cur += sprintf(cur, "%d %d moveto\n", (x + 1) * 6, y * 10);
             cur += sprintf(cur, "%s setrgbcolor\n",
-                                palette[*lineattr++ & 0x0f]);
+                                _cucul_rgba32_to_ansi4fg(*lineattr++));
 
             if(c < 0x00000020)
                 cur += sprintf(cur, "(?) show\n");

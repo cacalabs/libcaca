@@ -37,7 +37,7 @@ struct cucul_context
     unsigned int width, height;
 
     uint32_t *chars;
-    uint8_t *attr;
+    uint32_t *attr;
     char *empty_line, *scratch_line;
 
     enum cucul_color fgcolor;
@@ -60,6 +60,11 @@ extern char const *_cucul_skip_utf8(char const *, unsigned int);
 extern uint32_t _cucul_utf8_to_utf32(char const *);
 extern uint8_t _cucul_utf32_to_cp437(uint32_t);
 extern uint32_t _cucul_cp437_to_utf32(uint8_t);
+
+/* Colour functions */
+uint8_t _cucul_rgba32_to_ansi8(uint32_t);
+uint8_t _cucul_rgba32_to_ansi4fg(uint32_t);
+uint8_t _cucul_rgba32_to_ansi4bg(uint32_t);
 
 /* Export functions */
 extern void _cucul_get_ansi(cucul_t *, struct cucul_export *);

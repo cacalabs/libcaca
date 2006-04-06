@@ -21,6 +21,7 @@
 #include "config.h"
 
 #if !defined(__KERNEL__)
+#   include <stdio.h>
 #   include <stdlib.h>
 #   include <string.h>
 #endif
@@ -93,7 +94,7 @@ cucul_t *cucul_load(void *data, unsigned int size)
     if(!width || !height)
         return NULL;
 
-    if(size != 12 + width * height * 5 + 4)
+    if(size != 12 + width * height * 8 + 4)
         return NULL;
 
     if(buf[size - 4] != 'A' || buf[size - 3] != 'C'
@@ -107,11 +108,14 @@ cucul_t *cucul_load(void *data, unsigned int size)
 
     for(n = height * width; n--; )
     {
-        qq->chars[n] = ((uint32_t)buf[12 + 5 * n] << 24)
-                     | ((uint32_t)buf[13 + 5 * n] << 16)
-                     | ((uint32_t)buf[14 + 5 * n] << 8)
-                     | (uint32_t)buf[15 + 5 * n];
-        qq->attr[n] = buf[16 + 5 * n];
+        qq->chars[n] = ((uint32_t)buf[12 + 8 * n] << 24)
+                     | ((uint32_t)buf[13 + 8 * n] << 16)
+                     | ((uint32_t)buf[14 + 8 * n] << 8)
+                     | (uint32_t)buf[15 + 8 * n];
+        qq->attr[n] = ((uint32_t)buf[16 + 8 * n] << 24)
+                    | ((uint32_t)buf[17 + 8 * n] << 16)
+                    | ((uint32_t)buf[18 + 8 * n] << 8)
+                    | (uint32_t)buf[19 + 8 * n];
     }
 
     return qq;
@@ -299,7 +303,7 @@ void _cucul_set_size(cucul_t *qq, unsigned int width, unsigned int height)
     if(new_size > old_size)
     {
         qq->chars = realloc(qq->chars, new_size * sizeof(uint32_t));
-        qq->attr = realloc(qq->attr, new_size * sizeof(uint8_t));
+        qq->attr = realloc(qq->attr, new_size * sizeof(uint32_t));
     }
 
     /* Step 2: move line data if necessary. */
@@ -325,7 +329,7 @@ void _cucul_set_size(cucul_t *qq, unsigned int width, unsigned int height)
             for(x = width - old_width; x--; )
                 qq->chars[y * width + old_width + x] = (uint32_t)' ';
             memset(qq->attr + y * width + old_width, 0,
-                   width - old_width);
+                   (width - old_width) * 4);
         }
     }
     else
@@ -351,14 +355,14 @@ void _cucul_set_size(cucul_t *qq, unsigned int width, unsigned int height)
         for(x = (height - old_height) * width; x--; )
             qq->chars[old_height * width + x] = (uint32_t)' ';
         memset(qq->attr + old_height * width, 0,
-               (height - old_height) * width);
+               (height - old_height) * width * 4);
     }
 
     /* Step 4: if new area is smaller, resize memory area now. */
     if(new_size <= old_size)
     {
         qq->chars = realloc(qq->chars, new_size * sizeof(uint32_t));
-        qq->attr = realloc(qq->attr, new_size * sizeof(uint8_t));
+        qq->attr = realloc(qq->attr, new_size * sizeof(uint32_t));
     }
 
     /* Recompute the scratch line and the empty line */

@@ -259,15 +259,16 @@ static void x11_display(caca_t *kk)
     {
         for(x = 0; x < kk->qq->width; x += len)
         {
-            uint8_t *attr = kk->qq->attr + x + y * kk->qq->width;
+            uint32_t *attr = kk->qq->attr + x + y * kk->qq->width;
+            uint8_t bg = _cucul_rgba32_to_ansi4bg(*attr);
 
             len = 1;
             while(x + len < kk->qq->width
-                   && (attr[len] >> 4) == (attr[0] >> 4))
+                   && _cucul_rgba32_to_ansi4bg(attr[len]) == bg)
                 len++;
 
             XSetForeground(kk->drv.p->dpy, kk->drv.p->gc,
-                           kk->drv.p->colors[attr[0] >> 4]);
+                           kk->drv.p->colors[_cucul_rgba32_to_ansi4bg(*attr)]);
             XFillRectangle(kk->drv.p->dpy, kk->drv.p->pixmap, kk->drv.p->gc,
                            x * kk->drv.p->font_width, y * kk->drv.p->font_height,
                            len * kk->drv.p->font_width, kk->drv.p->font_height);
@@ -283,14 +284,14 @@ static void x11_display(caca_t *kk)
 
         for(x = 0; x < kk->qq->width; x++, chars++)
         {
-            uint8_t *attr = kk->qq->attr + x + y * kk->qq->width;
+            uint32_t *attr = kk->qq->attr + x + y * kk->qq->width;
 
             /* Skip spaces */
             if(*chars == 0x00000020)
                 continue;
 
             XSetForeground(kk->drv.p->dpy, kk->drv.p->gc,
-                           kk->drv.p->colors[*attr & 0xf]);
+                           kk->drv.p->colors[_cucul_rgba32_to_ansi4fg(*attr)]);
 
             /* Plain ASCII, no problem. */
             if(*chars > 0x00000020 && *chars < 0x00000080)

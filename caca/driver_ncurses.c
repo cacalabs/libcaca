@@ -190,14 +190,14 @@ static unsigned int ncurses_get_window_height(caca_t *kk)
 static void ncurses_display(caca_t *kk)
 {
     int x, y;
-    uint8_t *attr = kk->qq->attr;
+    uint32_t *attr = kk->qq->attr;
     uint32_t *chars = kk->qq->chars;
     for(y = 0; y < (int)kk->qq->height; y++)
     {
         move(y, 0);
         for(x = kk->qq->width; x--; )
         {
-            attrset(kk->drv.p->attr[*attr++]);
+            attrset(kk->drv.p->attr[_cucul_rgba32_to_ansi8(*attr++)]);
             ncurses_write_utf32(*chars++);
         }
     }

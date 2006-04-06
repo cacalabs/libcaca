@@ -210,8 +210,8 @@ static void win32_display(caca_t *kk)
 #endif
 
         kk->drv.p->buffer[i].Attributes =
-                win32_fg_palette[kk->qq->attr[i] & 0xf]
-                 | win32_bg_palette[kk->qq->attr[i] >> 4];
+                win32_fg_palette[_cucul_rgba32_to_ansi4fg(kk->qq->attr[i])]
+                 | win32_bg_palette[_cucul_rgba32_to_ansi4bg(kk->qq->attr[i])];
     }
 
     /* Blit the screen buffer */

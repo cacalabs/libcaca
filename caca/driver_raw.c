@@ -55,7 +55,7 @@ static unsigned int raw_get_window_height(caca_t *kk)
 
 static void raw_display(caca_t *kk)
 {
-    uint8_t *attr = kk->qq->attr;
+    uint32_t *attr = kk->qq->attr;
     uint32_t *chars = kk->qq->chars;
     uint32_t w, h;
     unsigned int n;
@@ -70,10 +70,11 @@ static void raw_display(caca_t *kk)
     for(n = kk->qq->height * kk->qq->width; n--; )
     {
         uint32_t c = *chars++;
-        uint8_t a = *attr++;
+        uint32_t a = *attr++;
 
-        fprintf(stdout, "%c%c%c%c%c", (c >> 24), (c >> 16) & 0xff,
-                                      (c >> 8) & 0xff, c & 0xff, a);
+        fprintf(stdout, "%c%c%c%c%c%c%c%c",
+                (c >> 24), (c >> 16) & 0xff, (c >> 8) & 0xff, c & 0xff,
+                (a >> 24), (a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff);
     }
 
     fprintf(stdout, "ACAC");

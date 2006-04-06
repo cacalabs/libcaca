@@ -38,12 +38,12 @@ static uint32_t rotatechar(uint32_t ch);
  */
 void cucul_invert(cucul_t *qq)
 {
-    uint8_t *attr = qq->attr;
+    uint32_t *attr = qq->attr;
     unsigned int i;
 
     for(i = qq->height * qq->width; i--; )
     {
-        *attr = ~*attr;
+        *attr = *attr ^ 0x000f000f;
         attr++;
     }
 }
@@ -63,13 +63,13 @@ void cucul_flip(cucul_t *qq)
     {
         uint32_t *cleft = qq->chars + y * qq->width;
         uint32_t *cright = cleft + qq->width - 1;
-        uint8_t *aleft = qq->attr + y * qq->width;
-        uint8_t *aright = aleft + qq->width - 1;
+        uint32_t *aleft = qq->attr + y * qq->width;
+        uint32_t *aright = aleft + qq->width - 1;
 
         while(cleft < cright)
         {
             uint32_t ch;
-            uint8_t attr;
+            uint32_t attr;
 
             /* Swap attributes */
             attr = *aright; *aright = *aleft; *aleft = attr;
@@ -100,13 +100,13 @@ void cucul_flop(cucul_t *qq)
     {
         uint32_t *ctop = qq->chars + x;
         uint32_t *cbottom = ctop + qq->width * (qq->height - 1);
-        uint8_t *atop = qq->attr + x;
-        uint8_t *abottom = atop + qq->width * (qq->height - 1);
+        uint32_t *atop = qq->attr + x;
+        uint32_t *abottom = atop + qq->width * (qq->height - 1);
 
         while(ctop < cbottom)
         {
             uint32_t ch;
-            uint8_t attr;
+            uint32_t attr;
 
             /* Swap attributes */
             attr = *abottom; *abottom = *atop; *atop = attr;
@@ -135,13 +135,13 @@ void cucul_rotate(cucul_t *qq)
 {
     uint32_t *cbegin = qq->chars;
     uint32_t *cend = cbegin + qq->width * qq->height - 1;
-    uint8_t *abegin = qq->attr;
-    uint8_t *aend = abegin + qq->width * qq->height - 1;
+    uint32_t *abegin = qq->attr;
+    uint32_t *aend = abegin + qq->width * qq->height - 1;
 
     while(cbegin < cend)
     {
         uint32_t ch;
-        uint8_t attr;
+        uint32_t attr;
 
         /* Swap attributes */
         attr = *aend; *aend = *abegin; *abegin = attr;

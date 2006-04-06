@@ -11,6 +11,7 @@ libcucul_la_SOURCES = \
 	canvas.c \
 	transform.c \
 	charset.c \
+	colour.c \
 	math.c \
 	line.c \
 	box.c \
