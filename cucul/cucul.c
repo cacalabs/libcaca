@@ -96,6 +96,10 @@ cucul_t *cucul_load(void *data, unsigned int size)
     if(size != 12 + width * height * 5 + 4)
         return NULL;
 
+    if(buf[size - 4] != 'A' || buf[size - 3] != 'C'
+        || buf[size - 2] != 'A' || buf[size - 1] != 'C')
+        return NULL;
+
     qq = cucul_create(width, height);
 
     if(!qq)
