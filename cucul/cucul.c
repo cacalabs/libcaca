@@ -51,7 +51,7 @@ cucul_t * cucul_create(unsigned int width, unsigned int height)
     qq->fgcolor = CUCUL_COLOR_LIGHTGRAY;
     qq->bgcolor = CUCUL_COLOR_BLACK;
 
-    qq->width = qq->width = 0;
+    qq->width = qq->height = 0;
     qq->chars = NULL;
     qq->attr = NULL;
     qq->empty_line = qq->scratch_line = NULL;
