@@ -224,6 +224,9 @@ int main(void)
 
         server->qq = cucul_load(buf, size);
 
+        if(!server->qq)
+            continue; /* Load error */
+
         /* Free the previous export buffer, if any */
         if(server->ex)
         {
