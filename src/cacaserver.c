@@ -215,7 +215,7 @@ int main(void)
                | ((uint32_t)buf[10] << 8) | (uint32_t)buf[11];
 
         size = 12 + width * height * 5 + 4;
-        server->input = realloc(server->input, size);
+        buf = server->input = realloc(server->input, size);
         read(0, buf + 12, size - 12);
 
         /* Free the previous canvas, if any */
