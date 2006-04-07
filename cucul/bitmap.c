@@ -444,7 +444,7 @@ void cucul_set_bitmap_contrast(struct cucul_bitmap *bitmap, float contrast)
  */
 void cucul_set_bitmap_antialias(struct cucul_bitmap *bitmap, char const *str)
 {
-    else if(!strcasecmp(str, "none"))
+    if(!strcasecmp(str, "none"))
         bitmap->antialias = 0;
     else /* "prefilter" is the default */
         bitmap->antialias = 1;
