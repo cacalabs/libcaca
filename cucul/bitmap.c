@@ -402,6 +402,19 @@ void cucul_set_bitmap_gamma(struct cucul_bitmap *bitmap, float gamma)
 }
 
 /**
+ * \brief Invert colors of bitmap
+ *
+ * Invert colors of bitmap
+ *
+ * \param bitmap Bitmap object.
+ * \param value 0 for normal behaviour, 1 for invert
+ */
+void cucul_set_bitmap_invert(struct cucul_bitmap *bitmap, int value)
+{
+    bitmap->invert = value ? 1 : 0;
+}
+
+/**
  * \brief Set the contrast of a bitmap object.
  *
  * Set the contrast of bitmap.
@@ -418,28 +431,48 @@ void cucul_set_bitmap_contrast(struct cucul_bitmap *bitmap, float contrast)
  * \brief Set bitmap antialiasing
  *
  * Tell the renderer whether to antialias the bitmap. Antialiasing smoothen
- * the rendered image and avoids the commonly seen staircase effect. The
- * method used is a simple prefilter antialiasing.
+ * the rendered image and avoids the commonly seen staircase effect.
+ *
+ * \li \e "none": no antialiasing.
+ *
+ * \li \e "prefilter": simple prefilter antialiasing. This is the default
+ *     value.
  *
  * \param bitmap Bitmap object.
- * \param value 0 to disable antialiasing, 1 to activate it.
+ * \param str A string describing the antialiasing method that will be used
+ *        for the bitmap rendering.
  */
-void cucul_set_bitmap_antialias(struct cucul_bitmap *bitmap, int value)
+void cucul_set_bitmap_antialias(struct cucul_bitmap *bitmap, char const *str)
 {
-    bitmap->antialias = value ? 1 : 0;
+    else if(!strcasecmp(str, "none"))
+        bitmap->antialias = 0;
+    else /* "prefilter" is the default */
+        bitmap->antialias = 1;
 }
 
 /**
- * \brief Invert colors of bitmap
+ * \brief Get available antialiasing methods
  *
- * Invert colors of bitmap
+ * Return a list of available antialiasing methods for a given bitmap. The
+ * list is a NULL-terminated array of strings, interleaving a string
+ * containing the internal value for the antialiasing method to be used with
+ * \e cucul_set_bitmap_antialias(), and a string containing the natural
+ * language description for that antialiasing method.
  *
  * \param bitmap Bitmap object.
- * \param value 0 for normal behaviour, 1 for invert
+ * \return An array of strings.
  */
-void cucul_set_bitmap_invert(struct cucul_bitmap *bitmap, int value)
+char const * const *
+    cucul_get_bitmap_antialias_list(struct cucul_bitmap const *bitmap)
 {
-    bitmap->invert = value ? 1 : 0;
+    static char const * const list[] =
+    {
+        "none", "No antialiasing",
+        "prefilter", "Prefilter antialiasing",
+        NULL, NULL
+    };
+
+    return list;
 }
 
 /**
