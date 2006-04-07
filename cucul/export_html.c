@@ -78,7 +78,7 @@ void _cucul_get_html(cucul_t *qq, struct cucul_export *ex)
         for(x = 0; x < qq->width; x += len)
         {
             cur += sprintf(cur, "<span class='b%02x'>",
-                           _cucul_rgba32_to_ansi8(lineattr[x]));
+                           _cucul_argb32_to_ansi8(lineattr[x]));
 
             for(len = 0;
                 x + len < qq->width && lineattr[x + len] == lineattr[x];
@@ -158,13 +158,13 @@ void _cucul_get_html3(cucul_t *qq, struct cucul_export *ex)
                 len++;
 
             cur += sprintf(cur, "<td bgcolor=#%06x",
-                           _cucul_rgba32_to_ansi4bg(lineattr[x]));
+                           _cucul_argb32_to_ansi4bg(lineattr[x]));
 
             if(len > 1)
                 cur += sprintf(cur, " colspan=%d", len);
 
             cur += sprintf(cur, "><font color=#%06x>",
-                           _cucul_rgba32_to_ansi4fg(lineattr[x]));
+                           _cucul_argb32_to_ansi4fg(lineattr[x]));
 
             for(i = 0; i < len; i++)
             {

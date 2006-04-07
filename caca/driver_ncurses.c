@@ -197,7 +197,7 @@ static void ncurses_display(caca_t *kk)
         move(y, 0);
         for(x = kk->qq->width; x--; )
         {
-            attrset(kk->drv.p->attr[_cucul_rgba32_to_ansi8(*attr++)]);
+            attrset(kk->drv.p->attr[_cucul_argb32_to_ansi8(*attr++)]);
             ncurses_write_utf32(*chars++);
         }
     }

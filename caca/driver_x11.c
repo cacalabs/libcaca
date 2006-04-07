@@ -260,15 +260,15 @@ static void x11_display(caca_t *kk)
         for(x = 0; x < kk->qq->width; x += len)
         {
             uint32_t *attr = kk->qq->attr + x + y * kk->qq->width;
-            uint8_t bg = _cucul_rgba32_to_ansi4bg(*attr);
+            uint8_t bg = _cucul_argb32_to_ansi4bg(*attr);
 
             len = 1;
             while(x + len < kk->qq->width
-                   && _cucul_rgba32_to_ansi4bg(attr[len]) == bg)
+                   && _cucul_argb32_to_ansi4bg(attr[len]) == bg)
                 len++;
 
             XSetForeground(kk->drv.p->dpy, kk->drv.p->gc,
-                           kk->drv.p->colors[_cucul_rgba32_to_ansi4bg(*attr)]);
+                           kk->drv.p->colors[_cucul_argb32_to_ansi4bg(*attr)]);
             XFillRectangle(kk->drv.p->dpy, kk->drv.p->pixmap, kk->drv.p->gc,
                            x * kk->drv.p->font_width, y * kk->drv.p->font_height,
                            len * kk->drv.p->font_width, kk->drv.p->font_height);
@@ -291,7 +291,7 @@ static void x11_display(caca_t *kk)
                 continue;
 
             XSetForeground(kk->drv.p->dpy, kk->drv.p->gc,
-                           kk->drv.p->colors[_cucul_rgba32_to_ansi4fg(*attr)]);
+                           kk->drv.p->colors[_cucul_argb32_to_ansi4fg(*attr)]);
 
             /* Plain ASCII, no problem. */
             if(*chars > 0x00000020 && *chars < 0x00000080)

@@ -212,14 +212,14 @@ static void slang_display(caca_t *kk)
             uint32_t c = *chars++;
 
 #if defined(OPTIMISE_SLANG_PALETTE)
-            uint8_t fgcolor = _cucul_rgba32_to_ansi4fg(*attr);
-            uint8_t bgcolor = _cucul_rgba32_to_ansi4bg(*attr);
+            uint8_t fgcolor = _cucul_argb32_to_ansi4fg(*attr);
+            uint8_t bgcolor = _cucul_argb32_to_ansi4bg(*attr);
 
             /* If foreground == background, just don't use this colour
              * pair, and print a space instead of the real character. */
             if(fgcolor != bgcolor)
             {
-                SLsmg_set_color(slang_assoc[_cucul_rgba32_to_ansi8(*attr++)]);
+                SLsmg_set_color(slang_assoc[_cucul_argb32_to_ansi8(*attr++)]);
                 slang_write_utf32(c);
             }
             else
@@ -236,7 +236,7 @@ static void slang_display(caca_t *kk)
                 attr++;
             }
 #else
-            SLsmg_set_color(_cucul_rgba32_to_ansi8(*attr++));
+            SLsmg_set_color(_cucul_argb32_to_ansi8(*attr++));
             slang_write_utf32(c);
 #endif
         }

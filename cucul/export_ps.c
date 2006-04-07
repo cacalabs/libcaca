@@ -90,7 +90,7 @@ void _cucul_get_ps(cucul_t *qq, struct cucul_export *ex)
         for(x = 0; x < qq->width; x++)
         {
             cur += sprintf(cur, "1 0 translate\n %s csquare\n",
-                           palette[_cucul_rgba32_to_ansi4bg(*lineattr++)]);
+                           palette[_cucul_argb32_to_ansi4bg(*lineattr++)]);
         }
 
         /* Return to beginning of the line, and jump to the next one */
@@ -111,7 +111,7 @@ void _cucul_get_ps(cucul_t *qq, struct cucul_export *ex)
             cur += sprintf(cur, "newpath\n");
             cur += sprintf(cur, "%d %d moveto\n", (x + 1) * 6, y * 10);
             cur += sprintf(cur, "%s setrgbcolor\n",
-                           palette[_cucul_rgba32_to_ansi4fg(*lineattr++)]);
+                           palette[_cucul_argb32_to_ansi4fg(*lineattr++)]);
 
             if(c < 0x00000020)
                 cur += sprintf(cur, "(?) show\n");

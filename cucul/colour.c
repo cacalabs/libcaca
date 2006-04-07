@@ -25,19 +25,19 @@
 
 /* FIXME: could this be inlined? */
 
-uint8_t _cucul_rgba32_to_ansi8(uint32_t c)
+uint8_t _cucul_argb32_to_ansi8(uint32_t c)
 {
     /* FIXME: we need nearest colour handling for non-ANSI */
     return (c & 0x0000000f) | ((c & 0x000f0000) >> 12);
 }
 
-uint8_t _cucul_rgba32_to_ansi4fg(uint32_t c)
+uint8_t _cucul_argb32_to_ansi4fg(uint32_t c)
 {
     /* FIXME: we need nearest colour handling for non-ANSI */
     return c & 0x0000000f;
 }
 
-uint8_t _cucul_rgba32_to_ansi4bg(uint32_t c)
+uint8_t _cucul_argb32_to_ansi4bg(uint32_t c)
 {
     /* FIXME: we need nearest colour handling for non-ANSI */
     return (c & 0x000f0000) >> 16;

@@ -70,8 +70,8 @@ void _cucul_get_irc(cucul_t *qq, struct cucul_export *ex)
 
         for(x = 0; x < qq->width; x++)
         {
-            uint8_t fg = palette[_cucul_rgba32_to_ansi4fg(lineattr[x])];
-            uint8_t bg = palette[_cucul_rgba32_to_ansi4bg(lineattr[x])];
+            uint8_t fg = palette[_cucul_argb32_to_ansi4fg(lineattr[x])];
+            uint8_t bg = palette[_cucul_argb32_to_ansi4bg(lineattr[x])];
             uint32_t c = linechar[x];
 
             if(bg == prevbg)

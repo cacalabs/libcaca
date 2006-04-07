@@ -105,7 +105,7 @@ static void conio_display(caca_t *kk)
     for(n = kk->qq->height * kk->qq->width; n--; )
     {
         *screen++ = _cucul_utf32_to_cp437(*chars++);
-        *screen++ = _cucul_rgba32_to_ansi8(*attr++);
+        *screen++ = _cucul_argb32_to_ansi8(*attr++);
     }
 #   if defined(SCREENUPDATE_IN_PC_H)
     ScreenUpdate(kk->drv.p->screen);

@@ -88,7 +88,7 @@ void _cucul_get_svg(cucul_t *qq, struct cucul_export *ex)
         {
             cur += sprintf(cur, "<rect class=\"b%02x\" x=\"%d\" y=\"%d\""
                                 " width=\"6\" height=\"10\"/>\n",
-                                _cucul_rgba32_to_ansi8(*lineattr++),
+                                _cucul_argb32_to_ansi8(*lineattr++),
                                 x * 6, y * 10);
         }
     }
@@ -104,7 +104,7 @@ void _cucul_get_svg(cucul_t *qq, struct cucul_export *ex)
             uint32_t c = *linechar++;
 
             cur += sprintf(cur, "<text class=\"f%02x\" x=\"%d\" y=\"%d\">",
-                                _cucul_rgba32_to_ansi8(*lineattr++),
+                                _cucul_argb32_to_ansi8(*lineattr++),
                                 x * 6, (y * 10) + 10);
             if(c < 0x00000020)
                 cur += sprintf(cur, "?");
