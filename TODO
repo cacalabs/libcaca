@@ -17,19 +17,17 @@ libcucul
    o bitmap output support (will require one or several custom fonts),
      maybe should be in libcaca.
 
-   o support for more than 16 colours, maybe truecolor, maybe less
-
-   o support for transparency (CUCUL_COLOR_TRANSPARENT)
-
    o ASCII/ANSI art loading functions (maybe load them as sprites)
 
-   o Shouldn't the antialiasing function accept a string instead of a
-     number, in case we create several antialiasing methods? Or is it
-     just a waste of time?
+   o Provide a way to set aspect ratio!
 
 
   API-independent stuff
   ---------------------
+
+   o support for more than 16 colours, maybe truecolor, maybe less
+
+   o support for transparency (CUCUL_COLOR_TRANSPARENT)
 
    o Brightness, contrast support for bitmaps (the functions are here, we
      just need to fill them)
