@@ -58,8 +58,6 @@ void _cucul_get_irc(cucul_t *qq, struct cucul_export *ex)
 
     cur = ex->buffer;
 
-    *cur++ = '\x0f';
-
     for(y = 0; y < qq->height; y++)
     {
         uint32_t *lineattr = qq->attr + y * qq->width;
@@ -105,9 +103,7 @@ void _cucul_get_irc(cucul_t *qq, struct cucul_export *ex)
         *cur++ = '\n';
     }
 
-    *cur++ = '\x0f';
-
     /* Crop to really used size */
-    ex->size = strlen(ex->buffer) + 1;
+    ex->size = (uintptr_t)(cur - ex->buffer);
     ex->buffer = realloc(ex->buffer, ex->size);
 }

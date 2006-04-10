@@ -99,7 +99,7 @@ void _cucul_get_ansi(cucul_t *qq, struct cucul_export *ex)
     }
 
     /* Crop to really used size */
-    ex->size = strlen(ex->buffer) + 1;
+    ex->size = (uintptr_t)(cur - ex->buffer);
     ex->buffer = realloc(ex->buffer, ex->size);
 }
 
