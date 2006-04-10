@@ -40,8 +40,8 @@ struct cucul_context
     uint32_t *attr;
     char *empty_line, *scratch_line;
 
-    enum cucul_color fgcolor;
-    enum cucul_color bgcolor;
+    uint16_t fgcolor;
+    uint16_t bgcolor;
 
     unsigned int refcount;
 };

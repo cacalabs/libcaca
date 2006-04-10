@@ -20,7 +20,7 @@
 #define YRATIO 70*70
 #define FUZZY 5000000
 
-enum cucul_color points[] =
+unsigned int points[] =
 {
     CUCUL_COLOR_BLACK,
     CUCUL_COLOR_DARKGRAY,

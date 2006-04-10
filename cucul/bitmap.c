@@ -43,7 +43,7 @@
 #   define LOOKUP_HUE 16
 #endif
 static unsigned char hsv_distances[LOOKUP_VAL][LOOKUP_SAT][LOOKUP_HUE];
-static enum cucul_color lookup_colors[8];
+static uint16_t lookup_colors[8];
 
 static int const hsv_palette[] =
 {
@@ -771,7 +771,7 @@ void cucul_draw_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
         int fromx, fromy, tox, toy, myx, myy, dots, dist;
         int error[3];
 
-        enum cucul_color outfg = 0, outbg = 0;
+        unsigned int outfg = 0, outbg = 0;
         char const *outch;
 
         rgba[0] = rgba[1] = rgba[2] = rgba[3] = 0;

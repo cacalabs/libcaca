@@ -177,7 +177,7 @@ unsigned int cucul_get_height(cucul_t *qq)
  *  \param color The colour value.
  *  \return A static string containing the colour's name.
  */
-char const *cucul_get_color_name(enum cucul_color color)
+char const *cucul_get_color_name(unsigned int color)
 {
     static char const *color_names[] =
     {

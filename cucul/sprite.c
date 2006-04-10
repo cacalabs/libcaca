@@ -264,7 +264,7 @@ int cucul_get_sprite_dy(cucul_t *qq, struct cucul_sprite const *sprite, int f)
 void cucul_draw_sprite(cucul_t *qq, int x, int y, struct cucul_sprite const *sprite, int f)
 {
     int i, j;
-    enum cucul_color oldfg, oldbg;
+    unsigned int oldfg, oldbg;
     struct cucul_frame *frame;
 
     if(sprite == NULL)

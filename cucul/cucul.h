@@ -28,34 +28,32 @@ extern "C"
 {
 #endif
 
-/** \brief Colour definitions.
+typedef struct cucul_context cucul_t;
+
+/** \defgroup colour Colour definitions
  *
  *  Colours that can be used with cucul_set_color().
- */
-enum cucul_color
-{
-    CUCUL_COLOR_BLACK = 0x0, /**< The colour index for black. */
-    CUCUL_COLOR_BLUE = 0x1, /**< The colour index for blue. */
-    CUCUL_COLOR_GREEN = 0x2, /**< The colour index for green. */
-    CUCUL_COLOR_CYAN = 0x3, /**< The colour index for cyan. */
-    CUCUL_COLOR_RED = 0x4, /**< The colour index for red. */
-    CUCUL_COLOR_MAGENTA = 0x5, /**< The colour index for magenta. */
-    CUCUL_COLOR_BROWN = 0x6, /**< The colour index for brown. */
-    CUCUL_COLOR_LIGHTGRAY = 0x7, /**< The colour index for light gray. */
-    CUCUL_COLOR_DARKGRAY = 0x8, /**< The colour index for dark gray. */
-    CUCUL_COLOR_LIGHTBLUE = 0x9, /**< The colour index for blue. */
-    CUCUL_COLOR_LIGHTGREEN = 0xa, /**< The colour index for light green. */
-    CUCUL_COLOR_LIGHTCYAN = 0xb, /**< The colour index for light cyan. */
-    CUCUL_COLOR_LIGHTRED = 0xc, /**< The colour index for light red. */
-    CUCUL_COLOR_LIGHTMAGENTA = 0xd, /**< The colour index for light magenta. */
-    CUCUL_COLOR_YELLOW = 0xe, /**< The colour index for yellow. */
-    CUCUL_COLOR_WHITE = 0xf, /**< The colour index for white. */
-
-    CUCUL_COLOR_TRANSPARENT = 0xfe, /**< The transparent colour. */
-    CUCUL_COLOR_DEFAULT = 0xff, /**< The output driver's default colour. */
-};
-
-typedef struct cucul_context cucul_t;
+ *
+ *  @{ */
+#define CUCUL_COLOR_BLACK 0x00 /**< The colour index for black. */
+#define CUCUL_COLOR_BLUE 0x01 /**< The colour index for blue. */
+#define CUCUL_COLOR_GREEN 0x02 /**< The colour index for green. */
+#define CUCUL_COLOR_CYAN 0x03 /**< The colour index for cyan. */
+#define CUCUL_COLOR_RED 0x04 /**< The colour index for red. */
+#define CUCUL_COLOR_MAGENTA 0x05 /**< The colour index for magenta. */
+#define CUCUL_COLOR_BROWN 0x06 /**< The colour index for brown. */
+#define CUCUL_COLOR_LIGHTGRAY 0x07 /**< The colour index for light gray. */
+#define CUCUL_COLOR_DARKGRAY 0x08 /**< The colour index for dark gray. */
+#define CUCUL_COLOR_LIGHTBLUE 0x09 /**< The colour index for blue. */
+#define CUCUL_COLOR_LIGHTGREEN 0x0a /**< The colour index for light green. */
+#define CUCUL_COLOR_LIGHTCYAN 0x0b /**< The colour index for light cyan. */
+#define CUCUL_COLOR_LIGHTRED 0x0c /**< The colour index for light red. */
+#define CUCUL_COLOR_LIGHTMAGENTA 0x0d /**< The colour index for light magenta. */
+#define CUCUL_COLOR_YELLOW 0x0e /**< The colour index for yellow. */
+#define CUCUL_COLOR_WHITE 0x0f /**< The colour index for white. */
+#define CUCUL_COLOR_DEFAULT 0x10 /**< The output driver's default colour. */
+#define CUCUL_COLOR_TRANSPARENT 0x20 /**< The transparent colour. */
+/*  @} */
 
 /** \defgroup basic Basic functions
  *
@@ -77,8 +75,8 @@ void cucul_free(cucul_t *);
  *  higher level graphics functions.
  *
  *  @{ */
-void cucul_set_color(cucul_t *, enum cucul_color, enum cucul_color);
-char const *cucul_get_color_name(enum cucul_color);
+void cucul_set_color(cucul_t *, unsigned int, unsigned int);
+char const *cucul_get_color_name(unsigned int);
 void cucul_putchar(cucul_t *, int, int, char);
 void cucul_putstr(cucul_t *, int, int, char const *);
 void cucul_printf(cucul_t *, int, int, char const *, ...);
@@ -196,7 +194,6 @@ struct cucul_export
 struct cucul_export * cucul_create_export(cucul_t *, char const *);
 char const * const * cucul_get_export_list(void);
 void cucul_free_export(struct cucul_export *);
-
 /*  @} */
 
 #ifdef __cplusplus

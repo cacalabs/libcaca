@@ -48,9 +48,9 @@
  *  \param fgcolor The requested foreground colour.
  *  \param bgcolor The requested background colour.
  */
-void cucul_set_color(cucul_t *qq, enum cucul_color fgcolor,
-                                  enum cucul_color bgcolor)
+void cucul_set_color(cucul_t *qq, unsigned int fgcolor, unsigned int bgcolor)
 {
+    /* FIXME */
     if(fgcolor < 0 || fgcolor > 15 || bgcolor < 0 || bgcolor > 15)
         return;
 
@@ -176,8 +176,8 @@ void cucul_printf(cucul_t *qq, int x, int y, char const *format, ...)
  */
 void cucul_clear(cucul_t *qq)
 {
-    enum cucul_color oldfg = qq->fgcolor;
-    enum cucul_color oldbg = qq->bgcolor;
+    uint16_t oldfg = qq->fgcolor;
+    uint16_t oldbg = qq->bgcolor;
     int y = qq->height;
 
     cucul_set_color(qq, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
@@ -186,7 +186,8 @@ void cucul_clear(cucul_t *qq)
     while(y--)
         cucul_putstr(qq, 0, y, qq->empty_line);
 
-    cucul_set_color(qq, oldfg, oldbg);
+    qq->fgcolor = oldfg;
+    qq->bgcolor = oldbg;
 }
 
 /** \brief Blit a canvas onto another one.

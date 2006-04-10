@@ -24,7 +24,7 @@ static void unused_colors(void);
 static int slang_assoc[16*16], palette[16*16];
 
 /* 6 colours in hue order */
-static enum cucul_color const hue_list[] =
+static unsigned int const hue_list[] =
 {
     CUCUL_COLOR_RED,
     CUCUL_COLOR_BROWN,
