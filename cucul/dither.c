@@ -9,7 +9,7 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
-/** \file bitmap.c
+/** \file dither.c
  *  \version \$Id$
  *  \author Sam Hocevar <sam@zoy.org>
  *  \brief Bitmap blitting

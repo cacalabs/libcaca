@@ -24,7 +24,7 @@ libcucul_la_SOURCES = \
 	conic.c \
 	triangle.c \
 	sprite.c \
-	bitmap.c \
+	dither.c \
 	export_irc.c \
 	export_ansi.c \
 	export_html.c \
