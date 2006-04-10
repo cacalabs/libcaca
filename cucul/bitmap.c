@@ -14,7 +14,7 @@
  *  \author Sam Hocevar <sam@zoy.org>
  *  \brief Bitmap blitting
  *
- *  This file contains bitmap blitting functions.
+ *  This file contains bitmap dithering functions.
  */
 
 #include "config.h"
@@ -113,14 +113,14 @@ enum color_mode
     COLOR_MODE_FULL16,
 };
 
-struct cucul_bitmap
+struct cucul_dither
 {
     int bpp, has_palette, has_alpha;
     int w, h, pitch;
     int rmask, gmask, bmask, amask;
     int rright, gright, bright, aright;
     int rleft, gleft, bleft, aleft;
-    void (*get_hsv)(struct cucul_bitmap *, char *, int, int);
+    void (*get_hsv)(struct cucul_dither *, char *, int, int);
     int red[256], green[256], blue[256], alpha[256];
     float gamma;
     int gammatab[4097];
@@ -165,7 +165,7 @@ struct cucul_bitmap
 static void mask2shift(unsigned int, int *, int *);
 static float gammapow(float x, float y);
 
-static void get_rgba_default(struct cucul_bitmap const *, uint8_t *, int, int,
+static void get_rgba_default(struct cucul_dither const *, uint8_t *, int, int,
                              unsigned int *);
 
 /* Dithering methods */
@@ -230,12 +230,12 @@ static inline void rgb2hsv_default(int r, int g, int b,
 }
 
 /**
- * \brief Create an internal bitmap object.
+ * \brief Create an internal dither object.
  *
- * Create a bitmap structure from its coordinates (depth, width, height and
+ * Create a dither structure from its coordinates (depth, width, height and
  * pitch) and pixel mask values. If the depth is 8 bits per pixel, the mask
  * values are ignored and the colour palette should be set using the
- * cucul_set_bitmap_palette() function. For depths greater than 8 bits per
+ * cucul_set_dither_palette() function. For depths greater than 8 bits per
  * pixel, a zero alpha mask causes the alpha values to be ignored.
  *
  * \param bpp Bitmap depth in bits per pixel.
@@ -246,101 +246,101 @@ static inline void rgb2hsv_default(int r, int g, int b,
  * \param gmask Bitmask for green values.
  * \param bmask Bitmask for blue values.
  * \param amask Bitmask for alpha values.
- * \return Bitmap object, or NULL upon error.
+ * \return Dither object, or NULL upon error.
  */
-struct cucul_bitmap *cucul_create_bitmap(unsigned int bpp, unsigned int w,
+struct cucul_dither *cucul_create_dither(unsigned int bpp, unsigned int w,
                                          unsigned int h, unsigned int pitch,
                                          unsigned int rmask, unsigned int gmask,
                                          unsigned int bmask, unsigned int amask)
 {
-    struct cucul_bitmap *bitmap;
+    struct cucul_dither *d;
     int i;
 
     /* Minor sanity test */
     if(!w || !h || !pitch || bpp > 32 || bpp < 8)
         return NULL;
 
-    bitmap = malloc(sizeof(struct cucul_bitmap));
-    if(!bitmap)
+    d = malloc(sizeof(struct cucul_dither));
+    if(!d)
         return NULL;
 
-    bitmap->bpp = bpp;
-    bitmap->has_palette = 0;
-    bitmap->has_alpha = amask ? 1 : 0;
+    d->bpp = bpp;
+    d->has_palette = 0;
+    d->has_alpha = amask ? 1 : 0;
 
-    bitmap->w = w;
-    bitmap->h = h;
-    bitmap->pitch = pitch;
+    d->w = w;
+    d->h = h;
+    d->pitch = pitch;
 
-    bitmap->rmask = rmask;
-    bitmap->gmask = gmask;
-    bitmap->bmask = bmask;
-    bitmap->amask = amask;
+    d->rmask = rmask;
+    d->gmask = gmask;
+    d->bmask = bmask;
+    d->amask = amask;
 
     /* Load bitmasks */
     if(rmask || gmask || bmask || amask)
     {
-        mask2shift(rmask, &bitmap->rright, &bitmap->rleft);
-        mask2shift(gmask, &bitmap->gright, &bitmap->gleft);
-        mask2shift(bmask, &bitmap->bright, &bitmap->bleft);
-        mask2shift(amask, &bitmap->aright, &bitmap->aleft);
+        mask2shift(rmask, &d->rright, &d->rleft);
+        mask2shift(gmask, &d->gright, &d->gleft);
+        mask2shift(bmask, &d->bright, &d->bleft);
+        mask2shift(amask, &d->aright, &d->aleft);
     }
 
     /* In 8 bpp mode, default to a grayscale palette */
     if(bpp == 8)
     {
-        bitmap->has_palette = 1;
-        bitmap->has_alpha = 0;
+        d->has_palette = 1;
+        d->has_alpha = 0;
         for(i = 0; i < 256; i++)
         {
-            bitmap->red[i] = i * 0xfff / 256;
-            bitmap->green[i] = i * 0xfff / 256;
-            bitmap->blue[i] = i * 0xfff / 256;
+            d->red[i] = i * 0xfff / 256;
+            d->green[i] = i * 0xfff / 256;
+            d->blue[i] = i * 0xfff / 256;
         }
     }
 
     /* Default features */
-    bitmap->invert = 0;
-    bitmap->antialias = 1;
+    d->invert = 0;
+    d->antialias = 1;
 
     /* Default gamma value */
     for(i = 0; i < 4096; i++)
-        bitmap->gammatab[i] = i;
+        d->gammatab[i] = i;
 
     /* Default colour mode */
-    bitmap->color_mode = COLOR_MODE_FULL16;
+    d->color_mode = COLOR_MODE_FULL16;
 
     /* Default character set */
-    bitmap->glyphs = ascii_glyphs;
-    bitmap->glyph_count = sizeof(ascii_glyphs) / sizeof(*ascii_glyphs);
+    d->glyphs = ascii_glyphs;
+    d->glyph_count = sizeof(ascii_glyphs) / sizeof(*ascii_glyphs);
 
     /* Default dithering mode */
-    bitmap->init_dither = init_fstein_dither;
-    bitmap->get_dither = get_fstein_dither;
-    bitmap->increment_dither = increment_fstein_dither;
+    d->init_dither = init_fstein_dither;
+    d->get_dither = get_fstein_dither;
+    d->increment_dither = increment_fstein_dither;
 
-    return bitmap;
+    return d;
 }
 
 /**
- * \brief Set the palette of an 8bpp bitmap object.
+ * \brief Set the palette of an 8bpp dither object.
  *
  * Set the palette of an 8 bits per pixel bitmap. Values should be between
  * 0 and 4095 (0xfff).
  *
- * \param bitmap Bitmap object.
+ * \param dither Dither object.
  * \param red Array of 256 red values.
  * \param green Array of 256 green values.
  * \param blue Array of 256 blue values.
  * \param alpha Array of 256 alpha values.
  */
-void cucul_set_bitmap_palette(struct cucul_bitmap *bitmap,
+void cucul_set_dither_palette(struct cucul_dither *d,
                               unsigned int red[], unsigned int green[],
                               unsigned int blue[], unsigned int alpha[])
 {
     int i, has_alpha = 0;
 
-    if(bitmap->bpp != 8)
+    if(d->bpp != 8)
         return;
 
     for(i = 0; i < 256; i++)
@@ -350,42 +350,42 @@ void cucul_set_bitmap_palette(struct cucul_bitmap *bitmap,
            blue[i] >= 0 && blue[i] < 0x1000 &&
            alpha[i] >= 0 && alpha[i] < 0x1000)
         {
-            bitmap->red[i] = red[i];
-            bitmap->green[i] = green[i];
-            bitmap->blue[i] = blue[i];
+            d->red[i] = red[i];
+            d->green[i] = green[i];
+            d->blue[i] = blue[i];
             if(alpha[i])
             {
-                bitmap->alpha[i] = alpha[i];
+                d->alpha[i] = alpha[i];
                 has_alpha = 1;
             }
         }
     }
 
-    bitmap->has_alpha = has_alpha;
+    d->has_alpha = has_alpha;
 }
 
 /**
- * \brief Set the brightness of a bitmap object.
+ * \brief Set the brightness of a dither object.
  *
- * Set the brightness of bitmap.
+ * Set the brightness of dither.
  *
- * \param bitmap Bitmap object.
+ * \param dither Dither object.
  * \param brightness brightness value.
  */
-void cucul_set_bitmap_brightness(struct cucul_bitmap *bitmap, float brightness)
+void cucul_set_dither_brightness(struct cucul_dither *d, float brightness)
 {
     /* FIXME */
 }
 
 /**
- * \brief Set the gamma of a bitmap object.
+ * \brief Set the gamma of a dither object.
  *
- * Set the gamma of bitmap.
+ * Set the gamma of dither.
  *
- * \param bitmap Bitmap object.
+ * \param dither Dither object.
  * \param gamma Gamma value.
  */
-void cucul_set_bitmap_gamma(struct cucul_bitmap *bitmap, float gamma)
+void cucul_set_dither_gamma(struct cucul_dither *d, float gamma)
 {
     /* FIXME: we don't need 4096 calls to gammapow(), we can just compute
      * 128 of them and do linear interpolation for the rest. This will
@@ -395,42 +395,42 @@ void cucul_set_bitmap_gamma(struct cucul_bitmap *bitmap, float gamma)
     if(gamma <= 0.0)
         return;
 
-    bitmap->gamma = gamma;
+    d->gamma = gamma;
 
     for(i = 0; i < 4096; i++)
-        bitmap->gammatab[i] = 4096.0 * gammapow((float)i / 4096.0, 1.0 / gamma);
+        d->gammatab[i] = 4096.0 * gammapow((float)i / 4096.0, 1.0 / gamma);
 }
 
 /**
- * \brief Invert colors of bitmap
+ * \brief Invert colors of dither
  *
- * Invert colors of bitmap
+ * Invert colors of dither
  *
- * \param bitmap Bitmap object.
+ * \param dither Dither object.
  * \param value 0 for normal behaviour, 1 for invert
  */
-void cucul_set_bitmap_invert(struct cucul_bitmap *bitmap, int value)
+void cucul_set_dither_invert(struct cucul_dither *d, int value)
 {
-    bitmap->invert = value ? 1 : 0;
+    d->invert = value ? 1 : 0;
 }
 
 /**
- * \brief Set the contrast of a bitmap object.
+ * \brief Set the contrast of a dither object.
  *
- * Set the contrast of bitmap.
+ * Set the contrast of dither.
  *
- * \param bitmap Bitmap object.
+ * \param dither Dither object.
  * \param contrast contrast value.
  */
-void cucul_set_bitmap_contrast(struct cucul_bitmap *bitmap, float contrast)
+void cucul_set_dither_contrast(struct cucul_dither *d, float contrast)
 {
     /* FIXME */
 }
 
 /**
- * \brief Set bitmap antialiasing
+ * \brief Set dither antialiasing
  *
- * Tell the renderer whether to antialias the bitmap. Antialiasing smoothen
+ * Tell the renderer whether to antialias the dither. Antialiasing smoothen
  * the rendered image and avoids the commonly seen staircase effect.
  *
  * \li \e "none": no antialiasing.
@@ -438,32 +438,32 @@ void cucul_set_bitmap_contrast(struct cucul_bitmap *bitmap, float contrast)
  * \li \e "prefilter": simple prefilter antialiasing. This is the default
  *     value.
  *
- * \param bitmap Bitmap object.
+ * \param dither Dither object.
  * \param str A string describing the antialiasing method that will be used
- *        for the bitmap rendering.
+ *        for the dithering.
  */
-void cucul_set_bitmap_antialias(struct cucul_bitmap *bitmap, char const *str)
+void cucul_set_dither_antialias(struct cucul_dither *d, char const *str)
 {
     if(!strcasecmp(str, "none"))
-        bitmap->antialias = 0;
+        d->antialias = 0;
     else /* "prefilter" is the default */
-        bitmap->antialias = 1;
+        d->antialias = 1;
 }
 
 /**
  * \brief Get available antialiasing methods
  *
- * Return a list of available antialiasing methods for a given bitmap. The
+ * Return a list of available antialiasing methods for a given dither. The
  * list is a NULL-terminated array of strings, interleaving a string
  * containing the internal value for the antialiasing method to be used with
- * \e cucul_set_bitmap_antialias(), and a string containing the natural
+ * \e cucul_set_dither_antialias(), and a string containing the natural
  * language description for that antialiasing method.
  *
- * \param bitmap Bitmap object.
+ * \param dither Dither object.
  * \return An array of strings.
  */
 char const * const *
-    cucul_get_bitmap_antialias_list(struct cucul_bitmap const *bitmap)
+    cucul_get_dither_antialias_list(struct cucul_dither const *d)
 {
     static char const * const list[] =
     {
@@ -476,7 +476,7 @@ char const * const *
 }
 
 /**
- * \brief Choose colours used for bitmap rendering
+ * \brief Choose colours used for dithering
  *
  * Tell the renderer which colours should be used to render the
  * bitmap. Valid values for \e str are:
@@ -498,42 +498,42 @@ char const * const *
  * \li \e "full16": use the 16 ANSI colours for both the characters and the
  *     background. This is the default value.
  *
- * \param bitmap Bitmap object.
+ * \param dither Dither object.
  * \param str A string describing the colour set that will be used
- *        for the bitmap rendering.
+ *        for the dithering.
  */
-void cucul_set_bitmap_color(struct cucul_bitmap *bitmap, char const *str)
+void cucul_set_dither_color(struct cucul_dither *d, char const *str)
 {
     if(!strcasecmp(str, "mono"))
-        bitmap->color_mode = COLOR_MODE_MONO;
+        d->color_mode = COLOR_MODE_MONO;
     else if(!strcasecmp(str, "gray"))
-        bitmap->color_mode = COLOR_MODE_GRAY;
+        d->color_mode = COLOR_MODE_GRAY;
     else if(!strcasecmp(str, "8"))
-        bitmap->color_mode = COLOR_MODE_8;
+        d->color_mode = COLOR_MODE_8;
     else if(!strcasecmp(str, "16"))
-        bitmap->color_mode = COLOR_MODE_16;
+        d->color_mode = COLOR_MODE_16;
     else if(!strcasecmp(str, "fullgray"))
-        bitmap->color_mode = COLOR_MODE_FULLGRAY;
+        d->color_mode = COLOR_MODE_FULLGRAY;
     else if(!strcasecmp(str, "full8"))
-        bitmap->color_mode = COLOR_MODE_FULL8;
+        d->color_mode = COLOR_MODE_FULL8;
     else /* "full16" is the default */
-        bitmap->color_mode = COLOR_MODE_FULL16;
+        d->color_mode = COLOR_MODE_FULL16;
 }
 
 /**
  * \brief Get available colour modes
  *
- * Return a list of available colour modes for a given bitmap. The list
+ * Return a list of available colour modes for a given dither. The list
  * is a NULL-terminated array of strings, interleaving a string containing
  * the internal value for the colour mode, to be used with
- * \e cucul_set_bitmap_color(), and a string containing the natural
+ * \e cucul_set_dither_color(), and a string containing the natural
  * language description for that colour mode.
  *
- * \param bitmap Bitmap object.
+ * \param dither Dither object.
  * \return An array of strings.
  */
 char const * const *
-    cucul_get_bitmap_color_list(struct cucul_bitmap const *bitmap)
+    cucul_get_dither_color_list(struct cucul_dither const *d)
 {
     static char const * const list[] =
     {
@@ -551,10 +551,10 @@ char const * const *
 }
 
 /**
- * \brief Choose characters used for bitmap rendering
+ * \brief Choose characters used for dithering
  *
  * Tell the renderer which characters should be used to render the
- * bitmap. Valid values for \e str are:
+ * dither. Valid values for \e str are:
  *
  * \li \e "ascii": use only ASCII characters. This is the default value.
  *
@@ -565,43 +565,43 @@ char const * const *
  * \li \e "blocks": use Unicode quarter-cell block combinations. These
  *     characters are only found in the Unicode set.
  *
- * \param bitmap Bitmap object.
+ * \param dither Dither object.
  * \param str A string describing the characters that need to be used
- *        for the bitmap rendering.
+ *        for the dithering.
  */
-void cucul_set_bitmap_charset(struct cucul_bitmap *bitmap, char const *str)
+void cucul_set_dither_charset(struct cucul_dither *d, char const *str)
 {
     if(!strcasecmp(str, "shades"))
     {
-        bitmap->glyphs = shades_glyphs;
-        bitmap->glyph_count = sizeof(shades_glyphs) / sizeof(*shades_glyphs);
+        d->glyphs = shades_glyphs;
+        d->glyph_count = sizeof(shades_glyphs) / sizeof(*shades_glyphs);
     }
     else if(!strcasecmp(str, "blocks"))
     {
-        bitmap->glyphs = blocks_glyphs;
-        bitmap->glyph_count = sizeof(blocks_glyphs) / sizeof(*blocks_glyphs);
+        d->glyphs = blocks_glyphs;
+        d->glyph_count = sizeof(blocks_glyphs) / sizeof(*blocks_glyphs);
     }
     else /* "ascii" is the default */
     {
-        bitmap->glyphs = ascii_glyphs;
-        bitmap->glyph_count = sizeof(ascii_glyphs) / sizeof(*ascii_glyphs);
+        d->glyphs = ascii_glyphs;
+        d->glyph_count = sizeof(ascii_glyphs) / sizeof(*ascii_glyphs);
     }
 }
 
 /**
- * \brief Get available bitmap character sets
+ * \brief Get available dither character sets
  *
- * Return a list of available character sets for a given bitmap. The list
+ * Return a list of available character sets for a given dither. The list
  * is a NULL-terminated array of strings, interleaving a string containing
  * the internal value for the character set, to be used with
- * \e cucul_set_bitmap_charset(), and a string containing the natural
+ * \e cucul_set_dither_charset(), and a string containing the natural
  * language description for that character set.
  *
- * \param bitmap Bitmap object.
+ * \param dither Dither object.
  * \return An array of strings.
  */
 char const * const *
-    cucul_get_bitmap_charset_list(struct cucul_bitmap const *bitmap)
+    cucul_get_dither_charset_list(struct cucul_dither const *d)
 {
     static char const * const list[] =
     {
@@ -615,12 +615,11 @@ char const * const *
 }
 
 /**
- * \brief Set bitmap dithering method
+ * \brief Set dithering method
  *
- * Tell the renderer which dithering method should be used to render the
- * bitmap. Dithering is necessary because the picture being rendered has
- * usually far more colours than the available palette. Valid values for
- * \e str are:
+ * Tell the renderer which dithering method should be used. Dithering is
+ * necessary because the picture being rendered has usually far more colours
+ * than the available palette. Valid values for \e str are:
  *
  * \li \e "none": no dithering is used, the nearest matching colour is used.
  *
@@ -634,64 +633,64 @@ char const * const *
  *
  * \li \e "fstein": use Floyd-Steinberg dithering. This is the default value.
  *
- * \param bitmap Bitmap object.
- * \param str A string describing the dithering method that needs to be used
- *        for the bitmap rendering.
+ * \param dither Dither object.
+ * \param str A string describing the method that needs to be used
+ *        for the dithering.
  */
-void cucul_set_bitmap_dithering(struct cucul_bitmap *bitmap, char const *str)
+void cucul_set_dither_mode(struct cucul_dither *d, char const *str)
 {
     if(!strcasecmp(str, "none"))
     {
-        bitmap->init_dither = init_no_dither;
-        bitmap->get_dither = get_no_dither;
-        bitmap->increment_dither = increment_no_dither;
+        d->init_dither = init_no_dither;
+        d->get_dither = get_no_dither;
+        d->increment_dither = increment_no_dither;
     }
     else if(!strcasecmp(str, "ordered2"))
     {
-        bitmap->init_dither = init_ordered2_dither;
-        bitmap->get_dither = get_ordered2_dither;
-        bitmap->increment_dither = increment_ordered2_dither;
+        d->init_dither = init_ordered2_dither;
+        d->get_dither = get_ordered2_dither;
+        d->increment_dither = increment_ordered2_dither;
     }
     else if(!strcasecmp(str, "ordered4"))
     {
-        bitmap->init_dither = init_ordered4_dither;
-        bitmap->get_dither = get_ordered4_dither;
-        bitmap->increment_dither = increment_ordered4_dither;
+        d->init_dither = init_ordered4_dither;
+        d->get_dither = get_ordered4_dither;
+        d->increment_dither = increment_ordered4_dither;
     }
     else if(!strcasecmp(str, "ordered4"))
     {
-        bitmap->init_dither = init_ordered8_dither;
-        bitmap->get_dither = get_ordered8_dither;
-        bitmap->increment_dither = increment_ordered8_dither;
+        d->init_dither = init_ordered8_dither;
+        d->get_dither = get_ordered8_dither;
+        d->increment_dither = increment_ordered8_dither;
     }
     else if(!strcasecmp(str, "random"))
     {
-        bitmap->init_dither = init_random_dither;
-        bitmap->get_dither = get_random_dither;
-        bitmap->increment_dither = increment_random_dither;
+        d->init_dither = init_random_dither;
+        d->get_dither = get_random_dither;
+        d->increment_dither = increment_random_dither;
     }
     else /* "fstein" is the default */
     {
-        bitmap->init_dither = init_fstein_dither;
-        bitmap->get_dither = get_fstein_dither;
-        bitmap->increment_dither = increment_fstein_dither;
+        d->init_dither = init_fstein_dither;
+        d->get_dither = get_fstein_dither;
+        d->increment_dither = increment_fstein_dither;
     }
 }
 
 /**
- * \brief Get bitmap dithering methods
+ * \brief Get dithering methods
  *
- * Return a list of available dithering methods for a given bitmap. The list
+ * Return a list of available dithering methods for a given dither. The list
  * is a NULL-terminated array of strings, interleaving a string containing
  * the internal value for the dithering method, to be used with
- * \e cucul_set_bitmap_dithering(), and a string containing the natural
+ * \e cucul_set_dither_dithering(), and a string containing the natural
  * language description for that dithering method.
  *
- * \param bitmap Bitmap object.
+ * \param dither Dither object.
  * \return An array of strings.
  */
 char const * const *
-    cucul_get_bitmap_dithering_list(struct cucul_bitmap const *bitmap)
+    cucul_get_dither_mode_list(struct cucul_dither const *d)
 {
     static char const * const list[] =
     {
@@ -708,32 +707,32 @@ char const * const *
 }
 
 /**
- * \brief Draw a bitmap on the screen.
+ * \brief Draw a dither on the screen.
  *
- * Draw a bitmap at the given coordinates. The bitmap can be of any size and
+ * Draw a dither at the given coordinates. The dither can be of any size and
  * will be stretched to the text area.
  *
  * \param x1 X coordinate of the upper-left corner of the drawing area.
  * \param y1 Y coordinate of the upper-left corner of the drawing area.
  * \param x2 X coordinate of the lower-right corner of the drawing area.
  * \param y2 Y coordinate of the lower-right corner of the drawing area.
- * \param bitmap Bitmap object to be drawn.
+ * \param dither Dither object to be drawn.
  * \param pixels Bitmap's pixels.
  */
-void cucul_draw_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
-                       struct cucul_bitmap const *bitmap, void *pixels)
+void cucul_dither_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
+                         struct cucul_dither const *d, void *pixels)
 {
     int *floyd_steinberg, *fs_r, *fs_g, *fs_b;
     int fs_length;
     int x, y, w, h, pitch, deltax, deltay;
     unsigned int dchmax;
 
-    if(!bitmap || !pixels)
+    if(!d || !pixels)
         return;
 
-    w = bitmap->w;
-    h = bitmap->h;
-    pitch = bitmap->pitch;
+    w = d->w;
+    h = d->h;
+    pitch = d->pitch;
 
     if(x1 > x2)
     {
@@ -747,7 +746,7 @@ void cucul_draw_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
 
     deltax = x2 - x1 + 1;
     deltay = y2 - y1 + 1;
-    dchmax = bitmap->glyph_count;
+    dchmax = d->glyph_count;
 
     fs_length = ((int)qq->width <= x2 ? (int)qq->width : x2) + 1;
     floyd_steinberg = malloc(3 * (fs_length + 2) * sizeof(int));
@@ -760,7 +759,7 @@ void cucul_draw_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
     {
         int remain_r = 0, remain_g = 0, remain_b = 0;
 
-        for(x = x1 > 0 ? x1 : 0, bitmap->init_dither(y);
+        for(x = x1 > 0 ? x1 : 0, d->init_dither(y);
             x <= x2 && x <= (int)qq->width;
             x++)
     {
@@ -777,7 +776,7 @@ void cucul_draw_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
         rgba[0] = rgba[1] = rgba[2] = rgba[3] = 0;
 
         /* First get RGB */
-        if(bitmap->antialias)
+        if(d->antialias)
         {
             fromx = (x - x1) * w / deltax;
             fromy = (y - y1) * h / deltay;
@@ -794,7 +793,7 @@ void cucul_draw_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
                 for(myy = fromy; myy < toy; myy++)
             {
                 dots++;
-                get_rgba_default(bitmap, pixels, myx, myy, rgba);
+                get_rgba_default(d, pixels, myx, myy, rgba);
             }
 
             /* Normalize */
@@ -816,10 +815,10 @@ void cucul_draw_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
             myx = (fromx + tox) / 2;
             myy = (fromy + toy) / 2;
 
-            get_rgba_default(bitmap, pixels, myx, myy, rgba);
+            get_rgba_default(d, pixels, myx, myy, rgba);
         }
 
-        if(bitmap->has_alpha && rgba[3] < 0x800)
+        if(d->has_alpha && rgba[3] < 0x800)
         {
             remain_r = remain_g = remain_b = 0;
             fs_r[x] = 0;
@@ -829,7 +828,7 @@ void cucul_draw_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
         }
 
         /* XXX: OMG HAX */
-        if(bitmap->init_dither == init_fstein_dither)
+        if(d->init_dither == init_fstein_dither)
         {
             rgba[0] += remain_r;
             rgba[1] += remain_g;
@@ -837,9 +836,9 @@ void cucul_draw_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
         }
         else
         {
-            rgba[0] += (bitmap->get_dither() - 0x80) * 4;
-            rgba[1] += (bitmap->get_dither() - 0x80) * 4;
-            rgba[2] += (bitmap->get_dither() - 0x80) * 4;
+            rgba[0] += (d->get_dither() - 0x80) * 4;
+            rgba[1] += (d->get_dither() - 0x80) * 4;
+            rgba[2] += (d->get_dither() - 0x80) * 4;
         }
 
         distmin = INT_MAX;
@@ -860,7 +859,7 @@ void cucul_draw_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
         bg_b = rgb_palette[outbg * 3 + 2];
 
         /* FIXME: we currently only honour "full16" */
-        if(bitmap->color_mode == COLOR_MODE_FULL16)
+        if(d->color_mode == COLOR_MODE_FULL16)
         {
             distmin = INT_MAX;
             for(i = 0; i < 16; i++)
@@ -897,10 +896,10 @@ void cucul_draw_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
                     distmin = dist;
                 }
             }
-            outch = bitmap->glyphs[ch];
+            outch = d->glyphs[ch];
 
             /* XXX: OMG HAX */
-            if(bitmap->init_dither == init_fstein_dither)
+            if(d->init_dither == init_fstein_dither)
             {
                 error[0] = rgba[0] - (fg_r * ch + bg_r * ((2*dchmax-1) - ch)) / (2*dchmax-1);
                 error[1] = rgba[1] - (fg_g * ch + bg_g * ((2*dchmax-1) - ch)) / (2*dchmax-1);
@@ -920,10 +919,10 @@ void cucul_draw_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
                 ch = 0;
             else if(ch > (int)(dchmax - 1))
                 ch = dchmax - 1;
-            outch = bitmap->glyphs[ch];
+            outch = d->glyphs[ch];
 
             /* XXX: OMG HAX */
-            if(bitmap->init_dither == init_fstein_dither)
+            if(d->init_dither == init_fstein_dither)
             {
                 error[0] = rgba[0] - bg_r * ch / (dchmax-1);
                 error[1] = rgba[1] - bg_g * ch / (dchmax-1);
@@ -932,7 +931,7 @@ void cucul_draw_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
         }
 
         /* XXX: OMG HAX */
-        if(bitmap->init_dither == init_fstein_dither)
+        if(d->init_dither == init_fstein_dither)
         {
             remain_r = fs_r[x+1] + 7 * error[0] / 16;
             remain_g = fs_g[x+1] + 7 * error[1] / 16;
@@ -948,7 +947,7 @@ void cucul_draw_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
             fs_b[x+1] = 1 * error[2] / 16;
         }
 
-        if(bitmap->invert)
+        if(d->invert)
         {
             outfg = 15 - outfg;
             outbg = 15 - outbg;
@@ -958,7 +957,7 @@ void cucul_draw_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
         cucul_set_color(qq, outfg, outbg);
         cucul_putstr(qq, x, y, outch);
 
-       bitmap->increment_dither();
+       d->increment_dither();
     }
         /* end loop */
     }
@@ -967,18 +966,18 @@ void cucul_draw_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
 }
 
 /**
- * \brief Free the memory associated with a bitmap.
+ * \brief Free the memory associated with a dither.
  *
- * Free the memory allocated by cucul_create_bitmap().
+ * Free the memory allocated by cucul_create_dither().
  *
- * \param bitmap Bitmap object.
+ * \param dither Dither object.
  */
-void cucul_free_bitmap(struct cucul_bitmap *bitmap)
+void cucul_free_dither(struct cucul_dither *d)
 {
-    if(!bitmap)
+    if(!d)
         return;
 
-    free(bitmap);
+    free(d);
 }
 
 /*
@@ -1074,14 +1073,14 @@ static float gammapow(float x, float y)
 #endif
 }
 
-static void get_rgba_default(struct cucul_bitmap const *bitmap, uint8_t *pixels,
+static void get_rgba_default(struct cucul_dither const *d, uint8_t *pixels,
                              int x, int y, unsigned int *rgba)
 {
     uint32_t bits;
 
-    pixels += (bitmap->bpp / 8) * x + bitmap->pitch * y;
+    pixels += (d->bpp / 8) * x + d->pitch * y;
 
-    switch(bitmap->bpp / 8)
+    switch(d->bpp / 8)
     {
         case 4:
             bits = *(uint32_t *)pixels;
@@ -1113,19 +1112,19 @@ static void get_rgba_default(struct cucul_bitmap const *bitmap, uint8_t *pixels,
             break;
     }
 
-    if(bitmap->has_palette)
+    if(d->has_palette)
     {
-        rgba[0] += bitmap->gammatab[bitmap->red[bits]];
-        rgba[1] += bitmap->gammatab[bitmap->green[bits]];
-        rgba[2] += bitmap->gammatab[bitmap->blue[bits]];
-        rgba[3] += bitmap->alpha[bits];
+        rgba[0] += d->gammatab[d->red[bits]];
+        rgba[1] += d->gammatab[d->green[bits]];
+        rgba[2] += d->gammatab[d->blue[bits]];
+        rgba[3] += d->alpha[bits];
     }
     else
     {
-        rgba[0] += bitmap->gammatab[((bits & bitmap->rmask) >> bitmap->rright) << bitmap->rleft];
-        rgba[1] += bitmap->gammatab[((bits & bitmap->gmask) >> bitmap->gright) << bitmap->gleft];
-        rgba[2] += bitmap->gammatab[((bits & bitmap->bmask) >> bitmap->bright) << bitmap->bleft];
-        rgba[3] += ((bits & bitmap->amask) >> bitmap->aright) << bitmap->aleft;
+        rgba[0] += d->gammatab[((bits & d->rmask) >> d->rright) << d->rleft];
+        rgba[1] += d->gammatab[((bits & d->gmask) >> d->gright) << d->gleft];
+        rgba[2] += d->gammatab[((bits & d->bmask) >> d->bright) << d->bleft];
+        rgba[3] += ((bits & d->amask) >> d->aright) << d->aleft;
     }
 }
 
@@ -1280,7 +1279,7 @@ static void increment_random_dither(void)
 }
 
 #if !defined(_DOXYGEN_SKIP_ME)
-int _cucul_init_bitmap(void)
+int _cucul_init_dither(void)
 {
     unsigned int v, s, h;
 
@@ -1338,7 +1337,7 @@ int _cucul_init_bitmap(void)
     return 0;
 }
 
-int _cucul_end_bitmap(void)
+int _cucul_end_dither(void)
 {
     return 0;
 }

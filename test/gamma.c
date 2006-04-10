@@ -36,7 +36,7 @@ int main(void)
     struct caca_event ev;
     cucul_t *qq, *gg, *mask;
     caca_t *kk;
-    struct cucul_bitmap *left, *right;
+    struct cucul_dither *left, *right;
     float gam = 1.0;
     int x;
 
@@ -54,9 +54,9 @@ int main(void)
         buffer[x + 768] =    (x << 16) | (0x00 << 8) | (0xff << 0);
     }
 
-    left = cucul_create_bitmap(32, 256, 4, 4 * 256,
+    left = cucul_create_dither(32, 256, 4, 4 * 256,
                                0x00ff0000, 0x0000ff00, 0x000000ff, 0x0);
-    right = cucul_create_bitmap(32, 256, 4, 4 * 256,
+    right = cucul_create_dither(32, 256, 4, 4 * 256,
                                 0x00ff0000, 0x0000ff00, 0x000000ff, 0x0);
     caca_set_delay(kk, 20000);
 
@@ -80,16 +80,16 @@ int main(void)
         cucul_set_size(gg, cucul_get_width(qq), cucul_get_height(qq));
         cucul_set_size(mask, cucul_get_width(qq), cucul_get_height(qq));
 
-        /* Draw the regular bitmap on the main canvas */
-        cucul_draw_bitmap(qq, 0, 0,
-                          cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
-                          left, buffer);
+        /* Draw the regular dither on the main canvas */
+        cucul_dither_bitmap(qq, 0, 0,
+                            cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
+                            left, buffer);
 
-        /* Draw the gamma-modified bitmap on the spare canvas */
-        cucul_set_bitmap_gamma(right, gam);
-        cucul_draw_bitmap(gg, 0, 0,
-                          cucul_get_width(gg) - 1, cucul_get_height(gg) - 1,
-                          right, buffer);
+        /* Draw the gamma-modified dither on the spare canvas */
+        cucul_set_dither_gamma(right, gam);
+        cucul_dither_bitmap(gg, 0, 0,
+                            cucul_get_width(gg) - 1, cucul_get_height(gg) - 1,
+                            right, buffer);
 
         /* Draw something on the mask */
         cucul_clear(mask);
@@ -111,8 +111,8 @@ int main(void)
         caca_display(kk);
     }
 
-    cucul_free_bitmap(left);
-    cucul_free_bitmap(right);
+    cucul_free_dither(left);
+    cucul_free_dither(right);
 
     caca_detach(kk);
     cucul_free(qq);

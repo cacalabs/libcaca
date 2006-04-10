@@ -146,37 +146,35 @@ void cucul_draw_sprite(cucul_t *, int, int, struct cucul_sprite const *, int);
 void cucul_free_sprite(struct cucul_sprite *);
 /*  @} */
 
-/** \defgroup bitmap Bitmap handling
+/** \defgroup dither Bitmap dithering
  *
- *  These functions provide high level routines for bitmap allocation and
+ *  These functions provide high level routines for dither allocation and
  *  rendering.
  *
  *  @{ */
-struct cucul_bitmap;
-struct cucul_bitmap *cucul_create_bitmap(unsigned int, unsigned int,
+struct cucul_dither;
+struct cucul_dither *cucul_create_dither(unsigned int, unsigned int,
                                          unsigned int, unsigned int,
                                          unsigned int, unsigned int,
                                          unsigned int, unsigned int);
-void cucul_set_bitmap_palette(struct cucul_bitmap *,
+void cucul_set_dither_palette(struct cucul_dither *,
                               unsigned int r[], unsigned int g[],
                               unsigned int b[], unsigned int a[]);
-void cucul_set_bitmap_brightness(struct cucul_bitmap *, float);
-void cucul_set_bitmap_gamma(struct cucul_bitmap *, float);
-void cucul_set_bitmap_contrast(struct cucul_bitmap *, float);
-void cucul_set_bitmap_invert(struct cucul_bitmap *, int);
-void cucul_set_bitmap_antialias(struct cucul_bitmap *, char const *);
-char const * const * cucul_get_bitmap_antialias_list(struct cucul_bitmap const *);
-void cucul_set_bitmap_color(struct cucul_bitmap *, char const *);
-char const * const * cucul_get_bitmap_color_list(struct cucul_bitmap const *);
-void cucul_set_bitmap_charset(struct cucul_bitmap *, char const *);
-char const * const * cucul_get_bitmap_charset_list(struct cucul_bitmap
-                                                   const *);
-void cucul_set_bitmap_dithering(struct cucul_bitmap *, char const *);
-char const * const * cucul_get_bitmap_dithering_list(struct cucul_bitmap
-                                                     const *);
-void cucul_draw_bitmap(cucul_t *, int, int, int, int,
-                       struct cucul_bitmap const *, void *);
-void cucul_free_bitmap(struct cucul_bitmap *);
+void cucul_set_dither_brightness(struct cucul_dither *, float);
+void cucul_set_dither_gamma(struct cucul_dither *, float);
+void cucul_set_dither_contrast(struct cucul_dither *, float);
+void cucul_set_dither_invert(struct cucul_dither *, int);
+void cucul_set_dither_antialias(struct cucul_dither *, char const *);
+char const * const * cucul_get_dither_antialias_list(struct cucul_dither const *);
+void cucul_set_dither_color(struct cucul_dither *, char const *);
+char const * const * cucul_get_dither_color_list(struct cucul_dither const *);
+void cucul_set_dither_charset(struct cucul_dither *, char const *);
+char const * const * cucul_get_dither_charset_list(struct cucul_dither const *);
+void cucul_set_dither_mode(struct cucul_dither *, char const *);
+char const * const * cucul_get_dither_mode_list(struct cucul_dither const *);
+void cucul_dither_bitmap(cucul_t *, int, int, int, int,
+                         struct cucul_dither const *, void *);
+void cucul_free_dither(struct cucul_dither *);
 /*  @} */
 
 /** \defgroup exporter Exporters to various formats

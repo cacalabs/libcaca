@@ -65,7 +65,7 @@ cucul_t * cucul_create(unsigned int width, unsigned int height)
     else
         _cucul_set_size(qq, 80, 32);
 
-    if(_cucul_init_bitmap())
+    if(_cucul_init_dither())
     {
         free(qq);
         return NULL;
@@ -213,7 +213,7 @@ char const *cucul_get_color_name(unsigned int color)
  */
 void cucul_free(cucul_t *qq)
 {
-    _cucul_end_bitmap();
+    _cucul_end_dither();
 
     free(qq->empty_line);
     free(qq->scratch_line);

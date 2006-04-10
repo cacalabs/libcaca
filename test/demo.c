@@ -483,7 +483,7 @@ static void demo_sprites(void)
 #if 0
 static void demo_render(void)
 {
-    struct cucul_bitmap *bitmap;
+    struct cucul_dither *dither;
     //short buffer[256*256];
     //short *dest = buffer;
     int buffer[256*256];
@@ -500,12 +500,12 @@ static void demo_render(void)
         //*dest++ = ((x >> 3) << 11) | ((y >> 2) << 5) | ((z >> 3));
         *dest++ = (x << 16) | (y << 8) | (z);
     }
-    cucul_set_bitmap_invert(bitmap, 1);
-    //bitmap = cucul_create_bitmap(16, 256, 256, 2 * 256, 0xf800, 0x07e0, 0x001f, 0x0000);
-    bitmap = cucul_create_bitmap(32, 256, 256, 4 * 256, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
-    cucul_draw_bitmap(qq, 0, 0, cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
-                     bitmap, buffer);
-    cucul_free_bitmap(bitmap);
+    cucul_set_dither_invert(dither, 1);
+    //dither = cucul_create_dither(16, 256, 256, 2 * 256, 0xf800, 0x07e0, 0x001f, 0x0000);
+    dither = cucul_create_dither(32, 256, 256, 4 * 256, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+    cucul_dither_bitmap(qq, 0, 0, cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
+                     dither, buffer);
+    cucul_free_dither(dither);
 }
 #endif
 
@@ -513,7 +513,7 @@ static void draw_circle(int *buffer, int xo, int yo, int r, int mask, int val);
 
 static void demo_render(void)
 {
-    struct cucul_bitmap *bitmap;
+    struct cucul_dither *dither;
     int buffer[256*256];
     int *dest;
     int x, y, z, xo, yo;
@@ -546,10 +546,10 @@ static void demo_render(void)
     for(z = 0; z < 240; z++)
         draw_circle(buffer, xo, yo, z, 0x000000ff, 200);
 
-    bitmap = cucul_create_bitmap(32, 256, 256, 4 * 256, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
- cucul_set_bitmap_invert(bitmap, 1);
-    cucul_draw_bitmap(qq, 0, 0, cucul_get_width(qq) - 1, cucul_get_height(qq) - 1, bitmap, (char *)buffer);
-    cucul_free_bitmap(bitmap);
+    dither = cucul_create_dither(32, 256, 256, 4 * 256, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+ cucul_set_dither_invert(dither, 1);
+    cucul_dither_bitmap(qq, 0, 0, cucul_get_width(qq) - 1, cucul_get_height(qq) - 1, dither, (char *)buffer);
+    cucul_free_dither(dither);
 }
 
 static void draw_circle(int *buffer, int x, int y, int r, int mask, int val)

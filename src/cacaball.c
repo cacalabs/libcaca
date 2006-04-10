@@ -46,7 +46,7 @@ int main(int argc, char **argv)
     unsigned int r[256], g[256], b[256], a[256];
     float d[METABALLS], di[METABALLS], dj[METABALLS], dk[METABALLS];
     unsigned int x[METABALLS], y[METABALLS];
-    struct cucul_bitmap *cucul_bitmap;
+    struct cucul_dither *cucul_dither;
     float i = 10.0, j = 17.0, k = 11.0;
     int p, frame = 0, pause = 0;
     double frameOffset[360 + 80];
@@ -67,9 +67,9 @@ int main(int argc, char **argv)
         r[p] = g[p] = b[p] = a[p] = 0x0;
     r[255] = g[255] = b[255] = 0xfff;
 
-    /* Create a libcucul bitmap smaller than our pixel buffer, so that we
+    /* Create a libcucul dither smaller than our pixel buffer, so that we
      * display only the interesting part of it */
-    cucul_bitmap = cucul_create_bitmap(8, XSIZ - METASIZE, YSIZ - METASIZE,
+    cucul_dither = cucul_create_dither(8, XSIZ - METASIZE, YSIZ - METASIZE,
                                        XSIZ, 0, 0, 0, 0);
 
     /* Generate ball sprite */
@@ -127,7 +127,7 @@ int main(int argc, char **argv)
         }
 
         /* Set the palette */
-        cucul_set_bitmap_palette(cucul_bitmap, r, g, b, a);
+        cucul_set_dither_palette(cucul_dither, r, g, b, a);
 
         /* Silly paths for our balls */
         for(p = 0; p < METABALLS; p++)
@@ -153,9 +153,9 @@ int main(int argc, char **argv)
 
 paused:
         /* Draw our virtual buffer to screen, letting libcucul resize it */
-        cucul_draw_bitmap(qq, 0, 0,
+        cucul_dither_bitmap(qq, 0, 0,
                           cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
-                          cucul_bitmap, pixels + (METASIZE / 2) * (1 + XSIZ));
+                          cucul_dither, pixels + (METASIZE / 2) * (1 + XSIZ));
         cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
         cucul_putstr(qq, cucul_get_width(qq) - 30, cucul_get_height(qq) - 2,
                      " -=[ Powered by libcaca ]=- ");
@@ -165,7 +165,7 @@ paused:
 
     /* End, bye folks */
 end:
-    cucul_free_bitmap(cucul_bitmap);
+    cucul_free_dither(cucul_dither);
     caca_detach(kk);
     cucul_free(qq);
 

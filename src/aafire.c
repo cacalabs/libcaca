@@ -42,7 +42,7 @@
 static cucul_t *qq;
 static caca_t *kk;
 static int XSIZ, YSIZ;
-static struct cucul_bitmap *cucul_bitmap;
+static struct cucul_dither *cucul_dither;
 static char *bitmap;
 static int pause = 0;
 #else
@@ -140,8 +140,8 @@ initialize (void)
 #endif
 
 #ifdef LIBCACA
-  cucul_bitmap = cucul_create_bitmap(8, XSIZ, YSIZ - 2, XSIZ, 0, 0, 0, 0);
-  cucul_set_bitmap_palette(cucul_bitmap, r, g, b, a);
+  cucul_dither = cucul_create_dither(8, XSIZ, YSIZ - 2, XSIZ, 0, 0, 0, 0);
+  cucul_set_dither_palette(cucul_dither, r, g, b, a);
   bitmap = malloc(4 * cucul_get_width(qq) * cucul_get_height(qq) * sizeof(char));
   memset(bitmap, 0, 4 * cucul_get_width(qq) * cucul_get_height(qq));
 #else
@@ -235,9 +235,9 @@ drawfire (void)
   firemain ();
 #ifdef LIBCACA
 paused:
-  cucul_draw_bitmap(qq, 0, 0,
-                    cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
-                    cucul_bitmap, bitmap);
+  cucul_dither_bitmap(qq, 0, 0,
+                      cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
+                      cucul_dither, bitmap);
   cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
   cucul_putstr(qq, cucul_get_width(qq) - 30, cucul_get_height(qq) - 2,
                " -=[ Powered by libcaca ]=- ");

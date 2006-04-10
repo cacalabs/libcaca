@@ -39,7 +39,7 @@ int main (int argc, char **argv)
 {
     cucul_t *qq; caca_t *kk;
     unsigned int red[256], green[256], blue[256], alpha[256];
-    struct cucul_bitmap *bitmap;
+    struct cucul_dither *dither;
     int i, x, y, frame = 0, pause = 0;
 
     qq = cucul_create(0, 0);
@@ -62,8 +62,8 @@ int main (int argc, char **argv)
     for(i = DISCSIZ * 2; i > 0; i -= DISCTHICKNESS)
         draw_disc(i, (i / DISCTHICKNESS) % 2);
 
-    /* Create a libcucul bitmap */
-    bitmap = cucul_create_bitmap(8, XSIZ, YSIZ, XSIZ, 0, 0, 0, 0);
+    /* Create a libcucul dither */
+    dither = cucul_create_dither(8, XSIZ, YSIZ, XSIZ, 0, 0, 0, 0);
 
     /* Main loop */
     for(;;)
@@ -92,7 +92,7 @@ int main (int argc, char **argv)
         green[1] = 0.5 * (1 + cos(0.06 * frame + 5.0)) * 0xfff;
         blue[1] = 0.5 * (1 + cos(0.05 * frame + 5.0)) * 0xfff;
 
-        cucul_set_bitmap_palette(bitmap, red, green, blue, alpha);
+        cucul_set_dither_palette(dither, red, green, blue, alpha);
 
         /* Draw circles */
         x = cos(0.07 * frame + 5.0) * 128.0 + (XSIZ / 2);
@@ -106,9 +106,9 @@ int main (int argc, char **argv)
         frame++;
 
 paused:
-        cucul_draw_bitmap(qq, 0, 0,
-                          cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
-                          bitmap, screen);
+        cucul_dither_bitmap(qq, 0, 0,
+                            cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
+                            dither, screen);
         cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
         cucul_putstr(qq, cucul_get_width(qq) - 30, cucul_get_height(qq) - 2,
                      " -=[ Powered by libcaca ]=- ");
@@ -116,7 +116,7 @@ paused:
     }
 
 end:
-    cucul_free_bitmap(bitmap);
+    cucul_free_dither(dither);
     caca_detach(kk);
     cucul_free(qq);
 

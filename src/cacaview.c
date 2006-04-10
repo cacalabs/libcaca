@@ -67,7 +67,7 @@ static int freadchar(FILE *);
 Imlib_Image image = NULL;
 #endif
 char *pixels = NULL;
-struct cucul_bitmap *bitmap = NULL;
+struct cucul_dither *dither = NULL;
 unsigned int w, h, depth, bpp, rmask, gmask, bmask, amask;
 #if !defined(HAVE_IMLIB2_H)
 unsigned int red[256], green[256], blue[256], alpha[256];
@@ -382,11 +382,11 @@ int main(int argc, char **argv)
                           ww * (1.0 + xfactor) / 2,
                           y + height * (1.0 + yfactor) / 2);
 
-            cucul_draw_bitmap(qq, ww * (1.0 - xfactor) * xdelta,
+            cucul_dither_bitmap(qq, ww * (1.0 - xfactor) * xdelta,
                               y + height * (1.0 - yfactor) * ydelta,
                               ww * (xdelta + (1.0 - xdelta) * xfactor),
                               y + height * (ydelta + (1.0 - ydelta) * yfactor),
-                              bitmap, pixels);
+                              dither, pixels);
         }
 
         if(!fullscreen)
@@ -506,7 +506,7 @@ static void set_gamma(int new_gamma)
     if(g > GAMMA_MAX) g = GAMMA_MAX;
     if(g < -GAMMA_MAX) g = -GAMMA_MAX;
 
-    cucul_set_bitmap_gamma(bitmap, (g < 0) ? 1.0 / gammatab[-g] : gammatab[g]);
+    cucul_set_dither_gamma(dither, (g < 0) ? 1.0 / gammatab[-g] : gammatab[g]);
 }
 
 static void unload_image(void)
@@ -521,9 +521,9 @@ static void unload_image(void)
         free(pixels);
     pixels = NULL;
 #endif
-    if(bitmap)
-        cucul_free_bitmap(bitmap);
-    bitmap = NULL;
+    if(dither)
+        cucul_free_dither(dither);
+    dither = NULL;
 }
 
 static void load_image(char const *name)
@@ -546,10 +546,10 @@ static void load_image(char const *name)
     bpp = 32;
     depth = 4;
 
-    /* Create the libcucul bitmap */
-    bitmap = cucul_create_bitmap(bpp, w, h, depth * w,
+    /* Create the libcucul dither */
+    dither = cucul_create_dither(bpp, w, h, depth * w,
                                  rmask, gmask, bmask, amask);
-    if(!bitmap)
+    if(!dither)
     {
         imlib_free_image();
         image = NULL;
@@ -652,7 +652,7 @@ static void load_image(char const *name)
 
     memset(pixels, 0, w * h * depth);
 
-    /* Read the bitmap data */
+    /* Read the dither data */
     for(i = h; i--; )
     {
         unsigned int j, k, bits = 0;
@@ -714,10 +714,10 @@ static void load_image(char const *name)
 
     fclose(fp);
 
-    /* Create the libcucul bitmap */
-    bitmap = cucul_create_bitmap(bpp, w, h, depth * w,
+    /* Create the libcucul dither */
+    dither = cucul_create_dither(bpp, w, h, depth * w,
                                  rmask, gmask, bmask, amask);
-    if(!bitmap)
+    if(!dither)
     {
         free(pixels);
         pixels = NULL;
@@ -725,7 +725,7 @@ static void load_image(char const *name)
     }
 
     if(bpp == 8)
-        cucul_set_bitmap_palette(bitmap, red, green, blue, alpha);
+        cucul_set_dither_palette(dither, red, green, blue, alpha);
 #endif
 }
 

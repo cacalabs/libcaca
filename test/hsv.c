@@ -32,7 +32,7 @@ int main(void)
     cucul_t *qq;
     caca_t *kk;
 
-    struct cucul_bitmap *bitmap;
+    struct cucul_dither *dither;
     int x, y;
 
     qq = cucul_create(0, 0);
@@ -44,12 +44,12 @@ int main(void)
         buffer[y * 256 + x] = ((y * x / 256) << 16) | ((y * x / 256) << 8) | (x<< 0);
     }
 
-    bitmap = cucul_create_bitmap(32, 256, 256, 4 * 256,
+    dither = cucul_create_dither(32, 256, 256, 4 * 256,
                                  0x00ff0000, 0x0000ff00, 0x000000ff, 0x0);
-    cucul_draw_bitmap(qq, 0, 0,
-                      cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
-                      bitmap, buffer);
-    cucul_free_bitmap(bitmap);
+    cucul_dither_bitmap(qq, 0, 0,
+                        cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
+                        dither, buffer);
+    cucul_free_dither(dither);
 
     caca_display(kk);
 

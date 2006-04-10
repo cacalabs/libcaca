@@ -47,8 +47,8 @@ struct cucul_context
 };
 
 /* Bitmap functions */
-extern int _cucul_init_bitmap(void);
-extern int _cucul_end_bitmap(void);
+extern int _cucul_init_dither(void);
+extern int _cucul_end_dither(void);
 
 /* Canvas functions */
 extern void _cucul_set_size(cucul_t *, unsigned int, unsigned int);

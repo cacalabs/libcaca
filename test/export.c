@@ -35,7 +35,7 @@ uint32_t pixels[256*256];
 int main(int argc, char *argv[])
 {
     cucul_t *qq;
-    struct cucul_bitmap *bitmap;
+    struct cucul_dither *dither;
     struct cucul_export *buffer;
     int x, y;
 
@@ -72,12 +72,12 @@ int main(int argc, char *argv[])
         }
     }
 
-    bitmap = cucul_create_bitmap(32, 256, 256, 4 * 256,
+    dither = cucul_create_dither(32, 256, 256, 4 * 256,
                                  0x00ff0000, 0x0000ff00, 0x000000ff, 0x0);
-    cucul_draw_bitmap(qq, 0, 0,
-                      cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
-                      bitmap, pixels);
-    cucul_free_bitmap(bitmap);
+    cucul_dither_bitmap(qq, 0, 0,
+                        cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
+                        dither, pixels);
+    cucul_free_dither(dither);
 
     cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLACK);
     cucul_draw_thin_box(qq, 0, 0, WIDTH - 1, HEIGHT - 1);
