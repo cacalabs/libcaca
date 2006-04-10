@@ -9,7 +9,7 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
-/** \file export.c
+/** \file export_html.c
  *  \version \$Id$
  *  \author Sam Hocevar <sam@zoy.org>
  *  \author Jean-Yves Lamoureux <jylam@lnxscene.org>
@@ -158,13 +158,13 @@ void _cucul_get_html3(cucul_t *qq, struct cucul_export *ex)
                 len++;
 
             cur += sprintf(cur, "<td bgcolor=#%06x",
-                           _cucul_argb32_to_ansi4bg(lineattr[x]));
+                           palette[_cucul_argb32_to_ansi4bg(lineattr[x])]);
 
             if(len > 1)
                 cur += sprintf(cur, " colspan=%d", len);
 
             cur += sprintf(cur, "><font color=#%06x>",
-                           _cucul_argb32_to_ansi4fg(lineattr[x]));
+                           palette[_cucul_argb32_to_ansi4fg(lineattr[x])]);
 
             for(i = 0; i < len; i++)
             {

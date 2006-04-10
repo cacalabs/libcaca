@@ -9,7 +9,7 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
-/** \file export.c
+/** \file export_svg.c
  *  \version \$Id$
  *  \author Sam Hocevar <sam@zoy.org>
  *  \author Jean-Yves Lamoureux <jylam@lnxscene.org>
