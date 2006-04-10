@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
     cucul_putstr(qq, WIDTH / 2 - 7, HEIGHT / 2, "    LIBCACA    ");
 
     buffer = cucul_create_export(qq, argv[1]);
-    fwrite(buffer->buffer, buffer->size - 1, 1, stdout);
+    fwrite(buffer->buffer, buffer->size, 1, stdout);
     cucul_free_export(buffer);
 
     cucul_free(qq);
