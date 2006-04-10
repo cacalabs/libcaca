@@ -1,5 +1,11 @@
 # $Id$
 
+EXTRA_DIST = cucul.pc.in
+DISTCLEANFILES = cucul.pc
+
+pkgconfig_DATA = cucul.pc
+pkgconfigdir = $(libdir)/pkgconfig
+
 include_HEADERS = cucul.h
 
 lib_LTLIBRARIES = libcucul.la

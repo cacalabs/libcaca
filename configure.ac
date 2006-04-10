@@ -293,10 +293,14 @@ AC_CONFIG_FILES([
   src/Makefile
   test/Makefile
   doc/Makefile
-  doc/doxygen.cfg
   autotools/Makefile
   debian/Makefile
   msvc/Makefile
+])
+AC_CONFIG_FILES([
+  cucul/cucul.pc
+  caca/caca.pc
+  doc/doxygen.cfg
 ])
 AC_CONFIG_FILES([caca-config], [chmod 0755 caca-config])
 AC_OUTPUT

@@ -1,5 +1,11 @@
 # $Id$
 
+EXTRA_DIST = caca.pc.in
+DISTCLEANFILES = caca.pc
+
+pkgconfig_DATA = caca.pc
+pkgconfigdir = $(libdir)/pkgconfig
+
 include_HEADERS = caca.h
 
 lib_LTLIBRARIES = libcaca.la
