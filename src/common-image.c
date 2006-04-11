@@ -27,9 +27,9 @@
 #include "common-image.h"
 
 #if !defined(HAVE_IMLIB2_H)
-static int freadint(FILE *);
-static int freadshort(FILE *);
-static int freadchar(FILE *);
+static unsigned int u32fread(FILE *);
+static unsigned int u16fread(FILE *);
+static unsigned int u8fread(FILE *);
 #endif
 
 struct image * load_image(char const * name)
@@ -85,28 +85,28 @@ struct image * load_image(char const * name)
         return NULL;
     }
 
-    if(freadshort(fp) != 0x4d42)
+    if(u16fread(fp) != 0x4d42)
     {
         fclose(fp);
         free(im);
         return NULL;
     }
 
-    freadint(fp); /* size */
-    freadshort(fp); /* reserved 1 */
-    freadshort(fp); /* reserved 2 */
+    u32fread(fp); /* size */
+    u16fread(fp); /* reserved 1 */
+    u16fread(fp); /* reserved 2 */
 
-    offset = freadint(fp);
+    offset = u32fread(fp);
 
-    tmp = freadint(fp); /* header size */
+    tmp = u32fread(fp); /* header size */
     if(tmp == 40)
     {
-        im->w = freadint(fp);
-        im->h = freadint(fp);
-        planes = freadshort(fp);
-        bpp = freadshort(fp);
+        im->w = u32fread(fp);
+        im->h = u32fread(fp);
+        planes = u16fread(fp);
+        bpp = u16fread(fp);
 
-        tmp = freadint(fp); /* compression */
+        tmp = u32fread(fp); /* compression */
         if(tmp != 0)
         {
             fclose(fp);
@@ -114,35 +114,35 @@ struct image * load_image(char const * name)
             return NULL;
         }
 
-        freadint(fp); /* sizeimage */
-        freadint(fp); /* xpelspermeter */
-        freadint(fp); /* ypelspermeter */
-        freadint(fp); /* biclrused */
-        freadint(fp); /* biclrimportantn */
+        u32fread(fp); /* sizeimage */
+        u32fread(fp); /* xpelspermeter */
+        u32fread(fp); /* ypelspermeter */
+        u32fread(fp); /* biclrused */
+        u32fread(fp); /* biclrimportantn */
 
         colors = (offset - 54) / 4;
         for(i = 0; i < colors && i < 256; i++)
         {
-            blue[i] = freadchar(fp) * 16;
-            green[i] = freadchar(fp) * 16;
-            red[i] = freadchar(fp) * 16;
+            blue[i] = u8fread(fp) * 16;
+            green[i] = u8fread(fp) * 16;
+            red[i] = u8fread(fp) * 16;
             alpha[i] = 0;
-            freadchar(fp);
+            u8fread(fp);
         }
     }
     else if(tmp == 12)
     {
-        im->w = freadint(fp);
-        im->h = freadint(fp);
-        planes = freadshort(fp);
-        bpp = freadshort(fp);
+        im->w = u32fread(fp);
+        im->h = u32fread(fp);
+        planes = u16fread(fp);
+        bpp = u16fread(fp);
 
         colors = (offset - 26) / 3;
         for(i = 0; i < colors && i < 256; i++)
         {
-            blue[i] = freadchar(fp);
-            green[i] = freadchar(fp);
-            red[i] = freadchar(fp);
+            blue[i] = u8fread(fp);
+            green[i] = u8fread(fp);
+            red[i] = u8fread(fp);
             alpha[i] = 0;
         }
     }
@@ -190,7 +190,7 @@ struct image * load_image(char const * name)
                 {
                     k = j % 32;
                     if(k == 0)
-                        bits = freadint(fp);
+                        bits = u32fread(fp);
                     im->pixels[im->w * i * depth + j] =
                         (bits >> ((k & ~0xf) + 0xf - (k & 0xf))) & 0x1;
                 }
@@ -200,7 +200,7 @@ struct image * load_image(char const * name)
                 {
                     k = j % 8;
                     if(k == 0)
-                        bits = freadint(fp);
+                        bits = u32fread(fp);
                     im->pixels[im->w * i * depth + j] =
                         (bits >> (4 * ((k & ~0x1) + 0x1 - (k & 0x1)))) & 0xf;
                 }
@@ -212,7 +212,7 @@ struct image * load_image(char const * name)
                 tmp = (im->w * depth) % 4;
                 tmp = (4 - tmp) % 4;
                 while(tmp--)
-                    freadchar(fp);
+                    u8fread(fp);
                 break;
         }
     }
@@ -269,26 +269,26 @@ void unload_image(struct image * im)
 }
 
 #if !defined(HAVE_IMLIB2_H)
-static int freadint(FILE *fp)
+static unsigned int u32fread(FILE *fp)
 {
     unsigned char buffer[4];
     fread(buffer, 4, 1, fp);
-    return ((int)buffer[3] << 24) | ((int)buffer[2] << 16)
-             | ((int)buffer[1] << 8) | ((int)buffer[0]);
+    return ((unsigned int)buffer[3] << 24) | ((unsigned int)buffer[2] << 16)
+             | ((unsigned int)buffer[1] << 8) | ((unsigned int)buffer[0]);
 }
 
-static int freadshort(FILE *fp)
+static unsigned int u16fread(FILE *fp)
 {
     unsigned char buffer[2];
     fread(buffer, 2, 1, fp);
-    return ((int)buffer[1] << 8) | ((int)buffer[0]);
+    return ((unsigned int)buffer[1] << 8) | ((unsigned int)buffer[0]);
 }
 
-static int freadchar(FILE *fp)
+static unsigned int u8fread(FILE *fp)
 {
     unsigned char buffer;
     fread(&buffer, 1, 1, fp);
-    return (int)buffer;
+    return (unsigned int)buffer;
 }
 #endif
 
