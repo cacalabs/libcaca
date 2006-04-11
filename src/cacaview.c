@@ -17,18 +17,13 @@
 #include <string.h>
 #include <stdlib.h>
 
-#if defined(HAVE_IMLIB2_H)
-#   include <Imlib2.h>
-#else
-#   include <stdio.h>
-#endif
-
 #if defined(HAVE_SLEEP)
 #   include <windows.h>
 #endif
 
 #include "cucul.h"
 #include "caca.h"
+#include "common-image.h"
 
 /* Local macros */
 #define MODE_IMAGE 1
@@ -53,25 +48,10 @@ static void print_status(void);
 static void print_help(int, int);
 static void set_zoom(int);
 static void set_gamma(int);
-static void load_image(char const *);
-static void unload_image(void);
 static void draw_checkers(int, int, int, int);
-#if !defined(HAVE_IMLIB2_H)
-static int freadint(FILE *);
-static int freadshort(FILE *);
-static int freadchar(FILE *);
-#endif
 
 /* Local variables */
-#if defined(HAVE_IMLIB2_H)
-Imlib_Image image = NULL;
-#endif
-char *pixels = NULL;
-struct cucul_dither *dither = NULL;
-unsigned int w, h, depth, bpp, rmask, gmask, bmask, amask;
-#if !defined(HAVE_IMLIB2_H)
-unsigned int red[256], green[256], blue[256], alpha[256];
-#endif
+struct image *im = NULL;
 
 float zoomtab[ZOOM_MAX + 1];
 float gammatab[GAMMA_MAX + 1];
@@ -188,6 +168,7 @@ int main(int argc, char **argv)
                 update = 1;
                 set_zoom(zoom);
                 break;
+#if 0 /* FIXME */
             case 'b':
                 i = 1 + cucul_get_feature(qq, CUCUL_BACKGROUND);
                 if(i > CUCUL_BACKGROUND_MAX) i = CUCUL_BACKGROUND_MIN;
@@ -230,6 +211,7 @@ int main(int argc, char **argv)
                 new_status = STATUS_DITHERING;
                 update = 1;
                 break;
+#endif
             case '+':
                 update = 1;
                 set_zoom(zoom + 1);
@@ -325,8 +307,9 @@ int main(int argc, char **argv)
             ww = cucul_get_width(qq);
             wh = cucul_get_height(qq);
 
-            unload_image();
-            load_image(list[current]);
+            if(im)
+                unload_image(im);
+            im = load_image(list[current]);
             reload = 0;
 
             /* Reset image-specific runtime variables */
@@ -345,7 +328,7 @@ int main(int argc, char **argv)
             cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
             cucul_printf(qq, ww / 2 - 5, wh / 2, " No image. ");
         }
-        else if(!pixels)
+        else if(!im)
         {
 #if defined(HAVE_IMLIB2_H)
 #   define ERROR_STRING " Error loading `%s'. "
@@ -386,13 +369,14 @@ int main(int argc, char **argv)
                               y + height * (1.0 - yfactor) * ydelta,
                               ww * (xdelta + (1.0 - xdelta) * xfactor),
                               y + height * (ydelta + (1.0 - ydelta) * yfactor),
-                              dither, pixels);
+                              im->dither, im->pixels);
         }
 
         if(!fullscreen)
         {
             print_status();
 
+#if 0 /* FIXME */
             cucul_set_color(qq, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
             switch(status)
             {
@@ -409,6 +393,7 @@ int main(int argc, char **argv)
                   cucul_get_feature_name(cucul_get_feature(qq, CUCUL_BACKGROUND)));
                     break;
             }
+#endif
         }
 
         if(help)
@@ -421,7 +406,8 @@ int main(int argc, char **argv)
     }
 
     /* Clean up */
-    unload_image();
+    if(im)
+        unload_image(im);
     caca_detach(kk);
     cucul_free(qq);
 
@@ -478,6 +464,9 @@ static void set_zoom(int new_zoom)
 {
     int height;
 
+    if(!im)
+        return;
+
     zoom = new_zoom;
 
     if(zoom > ZOOM_MAX) zoom = ZOOM_MAX;
@@ -487,7 +476,7 @@ static void set_zoom(int new_zoom)
     height = fullscreen ? wh : wh - 3;
 
     xfactor = (zoom < 0) ? 1.0 / zoomtab[-zoom] : zoomtab[zoom];
-    yfactor = xfactor * ww / height * h / w
+    yfactor = xfactor * ww / height * im->h / im->w
                * cucul_get_height(qq) / cucul_get_width(qq)
                * caca_get_window_width(kk) / caca_get_window_height(kk);
 
@@ -501,232 +490,16 @@ static void set_zoom(int new_zoom)
 
 static void set_gamma(int new_gamma)
 {
+    if(!im)
+        return;
+
     g = new_gamma;
 
     if(g > GAMMA_MAX) g = GAMMA_MAX;
     if(g < -GAMMA_MAX) g = -GAMMA_MAX;
 
-    cucul_set_dither_gamma(dither, (g < 0) ? 1.0 / gammatab[-g] : gammatab[g]);
-}
-
-static void unload_image(void)
-{
-#if defined(HAVE_IMLIB2_H)
-    if(image)
-        imlib_free_image();
-    image = NULL;
-    pixels = NULL;
-#else
-    if(pixels)
-        free(pixels);
-    pixels = NULL;
-#endif
-    if(dither)
-        cucul_free_dither(dither);
-    dither = NULL;
-}
-
-static void load_image(char const *name)
-{
-#if defined(HAVE_IMLIB2_H)
-    /* Load the new image */
-    image = imlib_load_image(name);
-
-    if(!image)
-        return;
-
-    imlib_context_set_image(image);
-    pixels = (char *)imlib_image_get_data_for_reading_only();
-    w = imlib_image_get_width();
-    h = imlib_image_get_height();
-    rmask = 0x00ff0000;
-    gmask = 0x0000ff00;
-    bmask = 0x000000ff;
-    amask = 0xff000000;
-    bpp = 32;
-    depth = 4;
-
-    /* Create the libcucul dither */
-    dither = cucul_create_dither(bpp, w, h, depth * w,
-                                 rmask, gmask, bmask, amask);
-    if(!dither)
-    {
-        imlib_free_image();
-        image = NULL;
-    }
-
-#else
-    /* Try to load a BMP file */
-    FILE *fp;
-    unsigned int i, colors, offset, tmp, planes;
-
-    fp = fopen(name, "rb");
-    if(!fp)
-        return;
-
-    if(freadshort(fp) != 0x4d42)
-    {
-        fclose(fp);
-        return;
-    }
-
-    freadint(fp); /* size */
-    freadshort(fp); /* reserved 1 */
-    freadshort(fp); /* reserved 2 */
-
-    offset = freadint(fp);
-
-    tmp = freadint(fp); /* header size */
-    if(tmp == 40)
-    {
-        w = freadint(fp);
-        h = freadint(fp);
-        planes = freadshort(fp);
-        bpp = freadshort(fp);
-
-        tmp = freadint(fp); /* compression */
-        if(tmp != 0)
-        {
-            fclose(fp);
-            return;
-        }
-
-        freadint(fp); /* sizeimage */
-        freadint(fp); /* xpelspermeter */
-        freadint(fp); /* ypelspermeter */
-        freadint(fp); /* biclrused */
-        freadint(fp); /* biclrimportantn */
-
-        colors = (offset - 54) / 4;
-        for(i = 0; i < colors && i < 256; i++)
-        {
-            blue[i] = freadchar(fp) * 16;
-            green[i] = freadchar(fp) * 16;
-            red[i] = freadchar(fp) * 16;
-            alpha[i] = 0;
-            freadchar(fp);
-        }
-    }
-    else if(tmp == 12)
-    {
-        w = freadint(fp);
-        h = freadint(fp);
-        planes = freadshort(fp);
-        bpp = freadshort(fp);
-
-        colors = (offset - 26) / 3;
-        for(i = 0; i < colors && i < 256; i++)
-        {
-            blue[i] = freadchar(fp);
-            green[i] = freadchar(fp);
-            red[i] = freadchar(fp);
-            alpha[i] = 0;
-        }
-    }
-    else
-    {
-        fclose(fp);
-        return;
-    }
-
-    /* Fill the rest of the palette */
-    for(i = colors; i < 256; i++)
-        blue[i] = green[i] = red[i] = alpha[i] = 0;
-
-    depth = (bpp + 7) / 8;
-
-    /* Sanity check */
-    if(!w || w > 0x10000 || !h || h > 0x10000 || planes != 1 /*|| bpp != 24*/)
-    {
-        fclose(fp);
-        return;
-    }
-
-    /* Allocate the pixel buffer */
-    pixels = malloc(w * h * depth);
-    if(!pixels)
-    {
-        fclose(fp);
-        return;
-    }
-
-    memset(pixels, 0, w * h * depth);
-
-    /* Read the dither data */
-    for(i = h; i--; )
-    {
-        unsigned int j, k, bits = 0;
-
-        switch(bpp)
-        {
-            case 1:
-                for(j = 0; j < w; j++)
-                {
-                    k = j % 32;
-                    if(k == 0)
-                        bits = freadint(fp);
-                    pixels[w * i * depth + j] =
-                        (bits >> ((k & ~0xf) + 0xf - (k & 0xf))) & 0x1;
-                }
-                break;
-            case 4:
-                for(j = 0; j < w; j++)
-                {
-                    k = j % 8;
-                    if(k == 0)
-                        bits = freadint(fp);
-                    pixels[w * i * depth + j] =
-                        (bits >> (4 * ((k & ~0x1) + 0x1 - (k & 0x1)))) & 0xf;
-                }
-                break;
-            default:
-                /* Works for 8bpp, but also for 16, 24 etc. */
-                fread(pixels + w * i * depth, w * depth, 1, fp);
-                /* Pad reads to 4 bytes */
-                tmp = (w * depth) % 4;
-                tmp = (4 - tmp) % 4;
-                while(tmp--)
-                    freadchar(fp);
-                break;
-        }
-    }
-
-    switch(depth)
-    {
-    case 3:
-        rmask = 0xff0000;
-        gmask = 0x00ff00;
-        bmask = 0x0000ff;
-        amask = 0x000000;
-        break;
-    case 2: /* XXX: those are the 16 bits values */
-        rmask = 0x7c00;
-        gmask = 0x03e0;
-        bmask = 0x001f;
-        amask = 0x0000;
-        break;
-    case 1:
-    default:
-        bpp = 8;
-        rmask = gmask = bmask = amask = 0;
-        break;
-    }
-
-    fclose(fp);
-
-    /* Create the libcucul dither */
-    dither = cucul_create_dither(bpp, w, h, depth * w,
-                                 rmask, gmask, bmask, amask);
-    if(!dither)
-    {
-        free(pixels);
-        pixels = NULL;
-        return;
-    }
-
-    if(bpp == 8)
-        cucul_set_dither_palette(dither, red, green, blue, alpha);
-#endif
+    cucul_set_dither_gamma(im->dither,
+                           (g < 0) ? 1.0 / gammatab[-g] : gammatab[g]);
 }
 
 static void draw_checkers(int x1, int y1, int x2, int y2)
@@ -746,28 +519,4 @@ static void draw_checkers(int x1, int y1, int x2, int y2)
         cucul_putchar(qq, xn, yn, ' ');
     }
 }
-
-#if !defined(HAVE_IMLIB2_H)
-static int freadint(FILE *fp)
-{
-    unsigned char buffer[4];
-    fread(buffer, 4, 1, fp);
-    return ((int)buffer[3] << 24) | ((int)buffer[2] << 16)
-             | ((int)buffer[1] << 8) | ((int)buffer[0]);
-}
-
-static int freadshort(FILE *fp)
-{
-    unsigned char buffer[2];
-    fread(buffer, 2, 1, fp);
-    return ((int)buffer[1] << 8) | ((int)buffer[0]);
-}
-
-static int freadchar(FILE *fp)
-{
-    unsigned char buffer;
-    fread(&buffer, 1, 1, fp);
-    return (int)buffer;
-}
-#endif
 
