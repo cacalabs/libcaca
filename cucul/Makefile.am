@@ -25,6 +25,7 @@ libcucul_la_SOURCES = \
 	triangle.c \
 	sprite.c \
 	dither.c \
+	font.c \
 	export_irc.c \
 	export_ansi.c \
 	export_html.c \
