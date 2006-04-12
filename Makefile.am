@@ -1,6 +1,6 @@
 # $Id$
 
-SUBDIRS = kernel cucul caca src test doc
+SUBDIRS = kernel cucul caca src test tools doc
 DIST_SUBDIRS = $(SUBDIRS) autotools debian msvc
 
 EXTRA_DIST = NOTES COPYING.GPL COPYING.LGPL bootstrap build-dos build-kernel build-win32 caca-config.in libcaca.spec

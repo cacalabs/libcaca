@@ -2,7 +2,7 @@
 
 AM_CPPFLAGS = -I$(top_srcdir)/cucul -I$(top_srcdir)/caca -DDATADIR=\"$(pkgdatadir)\"
 
-noinst_PROGRAMS = colors demo dithering event export gamma hsv optipal spritedit transform unicode
+noinst_PROGRAMS = colors demo dithering event export gamma hsv spritedit transform unicode
 
 colors_SOURCES = colors.c
 colors_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
@@ -24,9 +24,6 @@ gamma_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@ @MATH_LIBS@
 
 hsv_SOURCES = hsv.c
 hsv_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
-
-optipal_SOURCES = optipal.c
-optipal_LDADD = ../cucul/libcucul.la @CUCUL_LIBS@
 
 spritedit_SOURCES = spritedit.c
 spritedit_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@

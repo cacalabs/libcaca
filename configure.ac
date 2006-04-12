@@ -292,6 +292,7 @@ AC_CONFIG_FILES([
   caca/Makefile
   src/Makefile
   test/Makefile
+  tools/Makefile
   doc/Makefile
   autotools/Makefile
   debian/Makefile

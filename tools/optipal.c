@@ -1,5 +1,5 @@
 /*
- *  optipal       S-Lang optimised palette generator for libcucul
+ *  optipal       S-Lang optimised palette generator for libcaca
  *  Copyright (c) 2003 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
@@ -15,7 +15,7 @@
 
 #include <stdio.h>
 
-#include "cucul.h"
+#include "cucul.h" /* Only necessary for CUCUL_* macros */
 
 static void base_colors(void);
 static void emulated_colors(void);
