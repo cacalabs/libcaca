@@ -32,6 +32,11 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
+/* Internal fonts */
+uint8_t const font_monospace9[] =
+#include "font_monospace9.h"
+;
+
 struct font_header
 {
     uint32_t control_size, data_size;

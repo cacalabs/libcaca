@@ -26,6 +26,7 @@ libcucul_la_SOURCES = \
 	sprite.c \
 	dither.c \
 	font.c \
+	font_monospace9.h \
 	export_irc.c \
 	export_ansi.c \
 	export_html.c \
