@@ -135,6 +135,39 @@ struct cucul_font *cucul_load_font(void *data, unsigned int size)
     return f;
 }
 
+/** \brief Get a font's maximum glyph width.
+ *
+ *  This function returns the maximum value for the current font's glyphs
+ *
+ *  \param f The font, as returned by \e cucul_load_font()
+ *  \return The maximum glyph width.
+ */
+unsigned int cucul_get_font_width(struct cucul_font *f)
+{
+    return f->header.width;
+}
+
+/** \brief Get a font's maximum glyph height.
+ *
+ *  This function returns the maximum value for the current font's glyphs
+ *
+ *  \param f The font, as returned by \e cucul_load_font()
+ *  \return The maximum glyph height.
+ */
+unsigned int cucul_get_font_height(struct cucul_font *f)
+{
+    return f->header.height;
+}
+
+/** \brief Free a font structure.
+ *
+ *  This function frees all data allocated by \e cucul_load_font(). The
+ *  font structure is no longer usable by other libcucul functions. Once
+ *  this function has returned, the memory area that was given to
+ *  \e cucul_load_font() can be freed.
+ *
+ *  \param f The font, as returned by \e cucul_load_font()
+ */
 void cucul_free_font(struct cucul_font *f)
 {
     free(f->glyph_list);
@@ -142,20 +175,48 @@ void cucul_free_font(struct cucul_font *f)
     free(f);
 }
 
-void cucul_render_canvas(cucul_t *qq, struct cucul_font *f)
+/** \brief Render the canvas onto an image buffer.
+ *
+ *  This function renders the given canvas on an image buffer using a specific
+ *  font. The pixel format is fixed (32-bit ARGB, 8 bits for each component).
+ *
+ *  The required image width can be computed using \e cucul_get_width(qq) and
+ *  \e cucul_get_font_width(f). The required height can be computed using
+ *  \e cucul_get_height(qq) and \e cucul_get_font_height(f).
+ *
+ *  Glyphs that do not fit in the image buffer are currently not rendered at
+ *  all. They may be cropped instead in future versions.
+ *
+ *  \param qq The canvas to render
+ *  \param f The font, as returned by \e cucul_load_font()
+ *  \param buf The image buffer
+ *  \param width The width (in pixels) of the image buffer
+ *  \param height The height (in pixels) of the image buffer
+ *  \param pitch The pitch (in bytes) of an image buffer line.
+ */
+void cucul_render_canvas(cucul_t *qq, struct cucul_font *f,
+                         unsigned char *buf, unsigned int width,
+                         unsigned int height, unsigned int pitch)
 {
-    uint8_t *buf, *glyph = NULL;
-    unsigned int x, y;
-
-    buf = malloc(4 * qq->width * f->header.width
-                   * qq->height * f->header.height);
+    uint8_t *glyph = NULL;
+    unsigned int x, y, xmax, ymax;
 
     if(f->header.bpp != 8)
         glyph = malloc(f->header.width * f->header.height);
 
-    for(y = 0; y < qq->height; y++)
+    if(width < qq->width * f->header.width)
+        xmax = width / f->header.width;
+    else
+        xmax = qq->width;
+
+    if(height < qq->height * f->header.height)
+        ymax = height / f->header.height;
+    else
+        ymax = qq->height;
+
+    for(y = 0; y < ymax; y++)
     {
-        for(x = 0; x < qq->width; x++)
+        for(x = 0; x < xmax; x++)
         {
             uint8_t argb[8];
             unsigned int starty = y * f->header.height;
@@ -207,11 +268,10 @@ void cucul_render_canvas(cucul_t *qq, struct cucul_font *f)
                 break;
             }
 
-            /* Step 2: render glyph using true colours */
+            /* Step 2: render glyph using colour attribute */
             for(j = 0; j < g->height; j++)
             {
-                uint8_t *line = buf + 4 * ((starty + j) * qq->width
-                                             * f->header.width + startx);
+                uint8_t *line = buf + (starty + j) * pitch + 4 * startx;
 
                 for(i = 0; i < g->width; i++)
                 {
@@ -228,19 +288,8 @@ void cucul_render_canvas(cucul_t *qq, struct cucul_font *f)
         }
     }
 
-    for(y = 0; y < qq->height * f->header.height; y++)
-    {
-        for(x = 0; x < qq->width * f->header.width; x++)
-        {
-            printf("%.02x", buf[4 * (y * qq->width * f->header.width + x) + 3]);
-        }
-        printf("\n");
-    }
-
     if(f->header.bpp != 8)
         free(glyph);
-
-    free(buf);
 }
 
 /*

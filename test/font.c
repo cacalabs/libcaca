@@ -33,15 +33,33 @@ int main(int argc, char *argv[])
 {
     cucul_t *qq;
     struct cucul_font *f;
+    unsigned char *buf;
+    unsigned int x, y, w, h;
 
     qq = cucul_create(5, 2);
+    cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLACK);
     cucul_putstr(qq, 0, 0, "ABcde");
     cucul_putstr(qq, 0, 1, "&$âøÿ");
 
     f = cucul_load_font(font_monospace9, 700000);
-    cucul_render_canvas(qq, f);
-    cucul_free_font(f);
 
+    w = cucul_get_width(qq) * cucul_get_font_width(f);
+    h = cucul_get_height(qq) * cucul_get_font_height(f);
+    buf = malloc(4 * w * h);
+
+    cucul_render_canvas(qq, f, buf, w, h, 4 * w);
+
+    for(y = 0; y < h; y++)
+    {
+        for(x = 0; x < w; x++)
+        {
+            printf("%.02x", buf[4 * (y * w + x) + 3]);
+        }
+        printf("\n");
+    }
+
+    free(buf);
+    cucul_free_font(f);
     cucul_free(qq);
 
     return 0;
