@@ -88,13 +88,33 @@ DECLARE_UNPACKGLYPH(4)
 DECLARE_UNPACKGLYPH(2)
 DECLARE_UNPACKGLYPH(1)
 
-struct cucul_font *cucul_load_font(void *data, unsigned int size)
+/** \brief Load a font from memory for future use.
+ *
+ *  This function loads a font and returns a handle to its internal
+ *  structure. The handle can then be used with \e cucul_render_canvas()
+ *  for bitmap output.
+ *
+ *  Internal fonts can also be loaded: if \e size is set to 0, \e data must
+ *  be a string containing the internal font name.
+ *
+ *  If \e size is non-zero, the \e size bytes of memory at address \e data
+ *  are loaded as a font. This memory are must not be freed by the calling
+ *  program until the font handle has been freed with \e cucul_free_font().
+ *
+ *  \param data The memory area containing the font or its name.
+ *  \param size The size of the memory area, or 0 if the font name is given.
+ *  \return A font handle or NULL in case of error.
+ */
+struct cucul_font *cucul_load_font(void const *data, unsigned int size)
 {
     struct cucul_font *f;
     unsigned int i;
 
+    if(size == 0)
+        return cucul_load_font(font_monospace9, 150000); /* FIXME */
+
     f = malloc(sizeof(struct cucul_font));
-    f->private = data;
+    f->private = (void *)(uintptr_t)data;
 
     memcpy(&f->header, f->private + 8, sizeof(struct font_header));
     f->header.control_size = htonl(f->header.control_size);

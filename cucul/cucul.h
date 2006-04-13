@@ -190,7 +190,7 @@ void cucul_free_dither(struct cucul_dither *);
  *
  *  @{ */
 struct cucul_font;
-struct cucul_font *cucul_load_font(void *, unsigned int);
+struct cucul_font *cucul_load_font(void const *, unsigned int);
 unsigned int cucul_get_font_width(struct cucul_font *);
 unsigned int cucul_get_font_height(struct cucul_font *);
 void cucul_render_canvas(cucul_t *, struct cucul_font *, unsigned char *,

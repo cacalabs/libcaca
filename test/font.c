@@ -27,8 +27,6 @@ typedef unsigned int uint32_t;
 
 #include "cucul.h"
 
-extern uint8_t font_monospace9[];
-
 int main(int argc, char *argv[])
 {
     cucul_t *qq;
@@ -36,28 +34,40 @@ int main(int argc, char *argv[])
     unsigned char *buf;
     unsigned int x, y, w, h;
 
-    qq = cucul_create(5, 2);
+    /* Create a canvas */
+    qq = cucul_create(8, 2);
+
+    /* Draw stuff on our canvas */
     cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLACK);
-    cucul_putstr(qq, 0, 0, "ABcde");
-    cucul_putstr(qq, 0, 1, "&$âøÿ");
+    cucul_putstr(qq, 0, 0, "ABcde\\o/");
+    cucul_putstr(qq, 0, 1, "&$âøÿ░▒█");
 
-    f = cucul_load_font(font_monospace9, 700000);
+    /* Load a libcucul internal font */
+    f = cucul_load_font("Monospace 9", 0);
 
+    /* Create our bitmap buffer (32-bit ARGB) */
     w = cucul_get_width(qq) * cucul_get_font_width(f);
     h = cucul_get_height(qq) * cucul_get_font_height(f);
     buf = malloc(4 * w * h);
 
+    /* Render the canvas onto our image buffer */
     cucul_render_canvas(qq, f, buf, w, h, 4 * w);
 
+    /* Just for fun, output the image on the terminal using ASCII art */
     for(y = 0; y < h; y++)
     {
         for(x = 0; x < w; x++)
         {
-            printf("%.02x", buf[4 * (y * w + x) + 3]);
+            static const char list[] = {
+                ' ', '.', ':', 't', 'S', 'R', '#', '@'
+            };
+
+            printf("%c", list[buf[4 * (y * w + x) + 3] / 0x20]);
         }
         printf("\n");
     }
 
+    /* Free everything */
     free(buf);
     cucul_free_font(f);
     cucul_free(qq);
