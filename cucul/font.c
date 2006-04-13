@@ -17,6 +17,162 @@
  *  This file contains font handling functions.
  */
 
+#include "config.h"
+
+#if !defined(__KERNEL__)
+#   if defined(HAVE_ENDIAN_H)
+#       include <endian.h>
+#   endif
+#   include <stdio.h>
+#   include <stdlib.h>
+#   include <string.h>
+#   include <arpa/inet.h>
+#endif
+
+#include "cucul.h"
+#include "cucul_internals.h"
+
+struct font_header
+{
+    uint32_t control_size, data_size;
+    uint16_t version, blocks;
+    uint32_t glyphs;
+    uint16_t bpp, width, height, flags;
+};
+
+struct block_info
+{
+    uint32_t start, stop, index;
+};
+
+struct glyph_info
+{
+    uint16_t width, height;
+    uint32_t data_offset;
+};
+
+struct cucul_font
+{
+    struct font_header header;
+
+    struct block_info *block_list;
+    struct glyph_info *glyph_list;
+    uint8_t *font_data;
+
+    uint8_t *private;
+};
+
+struct cucul_font *cucul_load_font(void *data, unsigned int size)
+{
+    struct cucul_font *f;
+    unsigned int i;
+
+    f = malloc(sizeof(struct cucul_font));
+    f->private = data;
+
+    memcpy(&f->header, f->private + 8, sizeof(struct font_header));
+    f->header.control_size = htonl(f->header.control_size);
+    f->header.data_size = htonl(f->header.data_size);
+    f->header.version = htons(f->header.version);
+    f->header.blocks = htons(f->header.blocks);
+    f->header.glyphs = htonl(f->header.glyphs);
+    f->header.bpp = htons(f->header.bpp);
+    f->header.width = htons(f->header.width);
+    f->header.height = htons(f->header.height);
+    f->header.flags = htons(f->header.flags);
+
+    f->block_list = malloc(f->header.blocks * sizeof(struct block_info));
+    memcpy(f->block_list,
+           f->private + 8 + sizeof(struct font_header),
+           f->header.blocks * sizeof(struct block_info));
+    for(i = 0; i < f->header.blocks; i++)
+    {
+        f->block_list[i].start = htonl(f->block_list[i].start);
+        f->block_list[i].stop = htonl(f->block_list[i].stop);
+        f->block_list[i].index = htonl(f->block_list[i].index);
+    }
+
+    f->glyph_list = malloc(f->header.glyphs * sizeof(struct glyph_info));
+    memcpy(f->glyph_list,
+           f->private + 8 + sizeof(struct font_header)
+                + f->header.blocks * sizeof(struct block_info),
+           f->header.glyphs * sizeof(struct glyph_info));
+    for(i = 0; i < f->header.glyphs; i++)
+    {
+        f->glyph_list[i].width = htons(f->glyph_list[i].width);
+        f->glyph_list[i].height = htons(f->glyph_list[i].height);
+        f->glyph_list[i].data_offset = htonl(f->glyph_list[i].data_offset);
+    }
+
+    f->font_data = f->private + 8 + f->header.control_size;
+
+    return f;
+}
+
+void cucul_free_font(struct cucul_font *f)
+{
+    free(f->glyph_list);
+    free(f->block_list);
+    free(f);
+}
+
+void cucul_render_canvas(cucul_t *qq, struct cucul_font *f)
+{
+    uint8_t *buf = malloc(qq->width * f->header.width * qq->height * f->header.height);
+    unsigned int x, y, i, j;
+
+    for(y = 0; y < qq->height; y++)
+    {
+        for(x = 0; x < qq->width; x++)
+        {
+            unsigned int starty = y * f->header.height;
+            unsigned int startx = x * f->header.width;
+            uint32_t ch = qq->chars[y * qq->width + x];
+            unsigned int b;
+            struct glyph_info *g;
+
+            /* Find the Unicode block where our glyph lies */
+            for(b = 0; b < f->header.blocks; b++)
+            {
+                if(ch < f->block_list[b].start)
+                {
+                    b = f->header.blocks;
+                    break;
+                }
+
+                if(ch < f->block_list[b].stop)
+                    break;
+            }
+
+            /* Glyph not in font? Skip it. */
+            if(b == f->header.blocks)
+                continue;
+
+            g = &f->glyph_list[f->block_list[b].index
+                                + ch - f->block_list[b].start];
+
+            for(j = 0; j < g->height; j++)
+            {
+                for(i = 0; i < g->width; i++)
+                {
+                    /* FIXME: this is 8 bit only */
+                    buf[(starty + j) * qq->width * f->header.width
+                          + startx + i] = f->font_data[g->data_offset + j * g->width + i];
+                }
+            }
+        }
+    }
+
+    for(y = 0; y < qq->height * f->header.height; y++)
+    {
+        for(x = 0; x < qq->width * f->header.width; x++)
+        {
+            printf("%.02x", buf[y * qq->width * f->header.width + x]);
+        }
+        printf("\n");
+    }
+}
+
 /*
  * The libcaca font format, version 1
  * ----------------------------------
@@ -29,7 +185,7 @@
  *    uint8_t caca_file_type[4]; // "FONT"
  *
  * font_header:
- *    uint32_t header_size;      // Header size (font_data - font_header)
+ *    uint32_t control_size;     // Control size (font_data - font_header)
  *    uint32_t data_size;        // Data size (EOF - font_data)
  *
  *    uint16_t version;          // Font format version
@@ -53,9 +209,8 @@
  *    struct
  *    {
  *       uint32_t start;         // Unicode index of the first glyph
- *       uint32_t end;           // Unicode index of the last glyph + 1
- *       uint32_t info_offset;   // Offset (starting from data) to the info
- *                               // for the first glyph
+ *       uint32_t stop;          // Unicode index of the last glyph + 1
+ *       uint32_t index;         // Glyph info index of the first glyph
  *    }
  *    block_list[blocks];
  *

@@ -177,6 +177,17 @@ void cucul_dither_bitmap(cucul_t *, int, int, int, int,
 void cucul_free_dither(struct cucul_dither *);
 /*  @} */
 
+/** \defgroup font Font handling
+ *
+ *  These functions provide font handling routines and high quality
+ *  canvas to bitmap rendering.
+ *
+ *  @{ */
+struct cucul_font;
+struct cucul_font *cucul_load_font(void *, unsigned int);
+void cucul_free_font(struct cucul_font *);
+/*  @} */
+
 /** \defgroup exporter Exporters to various formats
  *
  *  These functions export the current canvas to various text formats. It
