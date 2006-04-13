@@ -25,7 +25,7 @@
 
 #define FONT "Monospace 9"
 #define DPI 96
-#define BPP 8
+#define BPP 4
 
 static int const blocklist[] =
 {
@@ -259,8 +259,7 @@ int main(void)
                     uint8_t pixel = img.buffer[y * img.pitch + x];
 
                     pixel >>= (8 - BPP);
-                    /* FIXME: BPP should appear here */
-                    glyph_data[n / 8] |= (pixel << (n % 8));
+                    glyph_data[n / 8] |= pixel << (8 - BPP - (n % 8));
                     n += BPP;
                 }
             }

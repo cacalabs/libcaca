@@ -67,6 +67,27 @@ struct cucul_font
     uint8_t *private;
 };
 
+#define DECLARE_UNPACKGLYPH(bpp) \
+    static inline void \
+      unpack_glyph ## bpp(uint8_t *glyph, uint8_t *packed_data, \
+                          unsigned int n) \
+{ \
+    unsigned int i; \
+    \
+    for(i = 0; i < n; i++) \
+    { \
+        uint8_t pixel = packed_data[i / (8 / bpp)]; \
+        pixel >>= bpp * ((8 / bpp) - 1 - (i % (8 / bpp))); \
+        pixel %= (1 << bpp); \
+        pixel *= 0xff / ((1 << bpp) - 1); \
+        *glyph++ = pixel; \
+    } \
+}
+
+DECLARE_UNPACKGLYPH(4)
+DECLARE_UNPACKGLYPH(2)
+DECLARE_UNPACKGLYPH(1)
+
 struct cucul_font *cucul_load_font(void *data, unsigned int size)
 {
     struct cucul_font *f;
@@ -123,17 +144,25 @@ void cucul_free_font(struct cucul_font *f)
 
 void cucul_render_canvas(cucul_t *qq, struct cucul_font *f)
 {
-    uint8_t *buf = malloc(qq->width * f->header.width * qq->height * f->header.height);
-    unsigned int x, y, i, j;
+    uint8_t *buf, *glyph = NULL;
+    unsigned int x, y;
+
+    buf = malloc(4 * qq->width * f->header.width
+                   * qq->height * f->header.height);
+
+    if(f->header.bpp != 8)
+        glyph = malloc(f->header.width * f->header.height);
 
     for(y = 0; y < qq->height; y++)
     {
         for(x = 0; x < qq->width; x++)
         {
+            uint8_t argb[8];
             unsigned int starty = y * f->header.height;
             unsigned int startx = x * f->header.width;
             uint32_t ch = qq->chars[y * qq->width + x];
-            unsigned int b;
+            uint32_t attr = qq->attr[y * qq->width + x];
+            unsigned int b, i, j;
             struct glyph_info *g;
 
             /* Find the Unicode block where our glyph lies */
@@ -156,13 +185,44 @@ void cucul_render_canvas(cucul_t *qq, struct cucul_font *f)
             g = &f->glyph_list[f->block_list[b].index
                                 + ch - f->block_list[b].start];
 
+            _cucul_argb32_to_argb4(attr, argb);
+
+            /* Step 1: unpack glyph */
+            switch(f->header.bpp)
+            {
+            case 8:
+                glyph = f->font_data + g->data_offset;
+                break;
+            case 4:
+                unpack_glyph4(glyph, f->font_data + g->data_offset,
+                              g->width * g->height);
+                break;
+            case 2:
+                unpack_glyph2(glyph, f->font_data + g->data_offset,
+                              g->width * g->height);
+                break;
+            case 1:
+                unpack_glyph1(glyph, f->font_data + g->data_offset,
+                              g->width * g->height);
+                break;
+            }
+
+            /* Step 2: render glyph using true colours */
             for(j = 0; j < g->height; j++)
             {
+                uint8_t *line = buf + 4 * ((starty + j) * qq->width
+                                             * f->header.width + startx);
+
                 for(i = 0; i < g->width; i++)
                 {
-                    /* FIXME: this is 8 bit only */
-                    buf[(starty + j) * qq->width * f->header.width
-                          + startx + i] = f->font_data[g->data_offset + j * g->width + i];
+                    uint8_t *pixel = line + 4 * (startx + i);
+                    uint32_t p, q, t;
+
+                    p = glyph[j * g->width + i];
+                    q = 0xff - p;
+
+                    for(t = 0; t < 4; t++)
+                       pixel[t] = (((q * argb[t]) + (p * argb[4 + t])) / 0xf);
                 }
             }
         }
@@ -172,10 +232,15 @@ void cucul_render_canvas(cucul_t *qq, struct cucul_font *f)
     {
         for(x = 0; x < qq->width * f->header.width; x++)
         {
-            printf("%.02x", buf[y * qq->width * f->header.width + x]);
+            printf("%.02x", buf[4 * (y * qq->width * f->header.width + x) + 3]);
         }
         printf("\n");
     }
+
+    if(f->header.bpp != 8)
+        free(glyph);
+
+    free(buf);
 }
 
 /*
