@@ -53,7 +53,7 @@ int main(void)
 
     caca_display(kk);
 
-    caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev, 0);
+    caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev, -1);
 
     caca_detach(kk);
     cucul_free(qq);
