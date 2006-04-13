@@ -42,6 +42,7 @@ static uint8_t nearest_ansi(uint16_t argb16, uint8_t def)
     if(argb16 < 0x5fff) /* too transparent, return default colour */
         return def;
 
+    best = def;
     dist = 0xffff;
     for(i = 0; i < 16; i++)
     {
