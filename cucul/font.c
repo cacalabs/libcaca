@@ -120,6 +120,9 @@ struct cucul_font *cucul_load_font(void const *data, unsigned int size)
         return NULL;
     }
 
+    if(size < sizeof(struct font_header))
+        return NULL;
+
     f = malloc(sizeof(struct cucul_font));
     f->private = (void *)(uintptr_t)data;
 
@@ -134,6 +137,14 @@ struct cucul_font *cucul_load_font(void const *data, unsigned int size)
     f->header.height = htons(f->header.height);
     f->header.flags = htons(f->header.flags);
 
+    if(size != 8 + f->header.control_size + f->header.data_size
+        || (f->header.bpp != 8 && f->header.bpp != 4 &&
+            f->header.bpp != 2 && f->header.bpp != 1))
+    {
+        free(f);
+        return NULL;
+    }
+
     f->block_list = malloc(f->header.blocks * sizeof(struct block_info));
     memcpy(f->block_list,
            f->private + 8 + sizeof(struct font_header),
@@ -143,6 +154,15 @@ struct cucul_font *cucul_load_font(void const *data, unsigned int size)
         f->block_list[i].start = htonl(f->block_list[i].start);
         f->block_list[i].stop = htonl(f->block_list[i].stop);
         f->block_list[i].index = htonl(f->block_list[i].index);
+
+        if(f->block_list[i].start > f->block_list[i].stop
+            || (i > 0 && f->block_list[i].start < f->block_list[i - 1].stop)
+            || f->block_list[i].index >= f->header.glyphs)
+        {
+            free(f->block_list);
+            free(f);
+            return NULL;
+        }
     }
 
     f->glyph_list = malloc(f->header.glyphs * sizeof(struct glyph_info));
@@ -155,6 +175,17 @@ struct cucul_font *cucul_load_font(void const *data, unsigned int size)
         f->glyph_list[i].width = htons(f->glyph_list[i].width);
         f->glyph_list[i].height = htons(f->glyph_list[i].height);
         f->glyph_list[i].data_offset = htonl(f->glyph_list[i].data_offset);
+
+        if(f->glyph_list[i].data_offset >= f->header.data_size
+            || f->glyph_list[i].data_offset
+                + f->glyph_list[i].width * f->glyph_list[i].height *
+                  f->header.bpp / 8 >= f->header.data_size)
+        {
+            free(f->glyph_list);
+            free(f->block_list);
+            free(f);
+            return NULL;
+        }
     }
 
     f->font_data = f->private + 8 + f->header.control_size;
