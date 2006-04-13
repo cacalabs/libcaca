@@ -21,8 +21,10 @@ AC_C_INLINE
 AC_TYPE_SIGNAL
 
 dnl AC_PROG_EGREP only exists in autoconf 2.54+, so we use AC_EGREP_CPP right
-dnl now otherwise it might be set in an obscure if statement.
+dnl now otherwise it might be set in an obscure if statement. Same thing for
+dnl PKG_PROG_PKG_CONFIG which needs to be called first.
 AC_EGREP_CPP(foo, foo)
+PKG_PROG_PKG_CONFIG()
 
 dnl output driver features
 AC_ARG_ENABLE(slang,
@@ -256,6 +258,12 @@ if test "${enable_imlib2}" != "no"; then
   CPPFLAGS="${save_CPPFLAGS}"
 fi
 AM_CONDITIONAL(USE_IMLIB2, test "${ac_cv_my_have_imlib2}" = "yes")
+
+# Build development tools?
+PANGOFT2="no"
+  PKG_CHECK_MODULES(pangoft2, pangoft2,
+   [PANGOFT2="yes"])
+AM_CONDITIONAL(USE_PANGO, test "${PANGO}" != "no")
 
 # Build documentation?
 DOXYGEN="no"
