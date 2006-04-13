@@ -18,6 +18,8 @@
 #include "cucul.h"
 #include "caca.h"
 
+#define DELAY 100
+
 int main(int argc, char **argv)
 {
     cucul_t *qq;
@@ -26,6 +28,8 @@ int main(int argc, char **argv)
     int quit = 0;
     struct cucul_sprite *sprite;
     int frame = 0;
+    unsigned char play = 0;
+    unsigned int delay = 0;
 
     if(argc < 2)
     {
@@ -74,8 +78,27 @@ int main(int argc, char **argv)
                 if(frame < cucul_get_sprite_frames(qq, sprite) - 1)
                     frame++;
                 break;
+	    case 'p':
+		play=!play;
+
             }
         }
+
+	if(play) {
+	    if(!delay) {
+		if(frame < cucul_get_sprite_frames(qq, sprite) - 1) {
+		    frame++;
+		}
+		else {
+		    frame = 0;
+		}
+	    }
+	    delay++;
+	    if(delay>=DELAY) {
+		delay = 0;
+	    }
+	}
+
 
         cucul_clear(qq);
 
