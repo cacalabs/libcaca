@@ -275,7 +275,7 @@ void cucul_render_canvas(cucul_t *qq, struct cucul_font *f,
 
                 for(i = 0; i < g->width; i++)
                 {
-                    uint8_t *pixel = line + 4 * (startx + i);
+                    uint8_t *pixel = line + 4 * i;
                     uint32_t p, q, t;
 
                     p = glyph[j * g->width + i];
