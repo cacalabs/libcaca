@@ -21,18 +21,26 @@ typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
 #endif
 
+#if defined(HAVE_ENDIAN_H)
+#   include <endian.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "cucul.h"
+#include "caca.h"
 
 int main(int argc, char *argv[])
 {
     cucul_t *qq;
+    caca_t *kk;
     struct cucul_font *f;
+    struct cucul_dither *d;
+    struct caca_event ev;
     unsigned char *buf;
-    unsigned int x, y, w, h;
+    unsigned int w, h;
     char const * const * fonts;
 
     /* Create a canvas */
@@ -40,8 +48,11 @@ int main(int argc, char *argv[])
 
     /* Draw stuff on our canvas */
     cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLACK);
-    cucul_putstr(qq, 0, 0, "ABcde\\o/");
-    cucul_putstr(qq, 0, 1, "&$âøÿ░▒█");
+    cucul_putstr(qq, 0, 0, "ABcde");
+    cucul_set_color(qq, CUCUL_COLOR_LIGHTRED, CUCUL_COLOR_BLACK);
+    cucul_putstr(qq, 5, 0, "\\o/");
+    cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
+    cucul_putstr(qq, 0, 1, "&$âøÿØ?!");
 
     /* Load a libcucul internal font */
     fonts = cucul_get_font_list();
@@ -51,6 +62,11 @@ int main(int argc, char *argv[])
         return -1;
     }
     f = cucul_load_font(fonts[0], 0);
+    if(f == NULL)
+    {
+        fprintf(stderr, "error: could not load font \"%s\"\n", fonts[0]);
+        return -1;
+    }
 
     /* Create our bitmap buffer (32-bit ARGB) */
     w = cucul_get_width(qq) * cucul_get_font_width(f);
@@ -60,22 +76,33 @@ int main(int argc, char *argv[])
     /* Render the canvas onto our image buffer */
     cucul_render_canvas(qq, f, buf, w, h, 4 * w);
 
-    /* Just for fun, output the image on the terminal using ASCII art */
-    for(y = 0; y < h; y++)
-    {
-        for(x = 0; x < w; x++)
-        {
-            static const char list[] = {
-                ' ', '.', ':', 't', 'S', 'R', '#', '@'
-            };
+    /* Just for fun, render the image using libcaca */
+    cucul_set_size(qq, 80, 32);
+    kk = caca_attach(qq);
 
-            printf("%c", list[buf[4 * (y * w + x) + 3] / 0x20]);
-        }
-        printf("\n");
-    }
+#if defined(HAVE_ENDIAN_H)
+    if(__BYTE_ORDER == __BIG_ENDIAN)
+#else
+    /* This is compile-time optimised with at least -O1 or -Os */
+    uint32_t const rmask = 0x12345678;
+    if(*(uint8_t const *)&rmask == 0x12)
+#endif
+        d = cucul_create_dither(32, w, h, 4 * w,
+                                0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+    else
+        d = cucul_create_dither(32, w, h, 4 * w,
+                                0x0000ff00, 0x00ff0000, 0xff000000, 0x000000ff);
+
+    cucul_dither_bitmap(qq, 0, 0, cucul_get_width(qq) - 1,
+                                  cucul_get_height(qq) - 1, d, buf);
+    caca_display(kk);
+
+    caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev, -1);
 
     /* Free everything */
+    caca_detach(kk);
     free(buf);
+    cucul_free_dither(d);
     cucul_free_font(f);
     cucul_free(qq);
 

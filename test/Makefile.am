@@ -20,7 +20,7 @@ export_SOURCES = export.c
 export_LDADD = ../cucul/libcucul.la @CUCUL_LIBS@
 
 font_SOURCES = font.c
-font_LDADD = ../cucul/libcucul.la @CUCUL_LIBS@
+font_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
 
 gamma_SOURCES = gamma.c
 gamma_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@ @MATH_LIBS@
