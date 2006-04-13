@@ -33,10 +33,10 @@
 #include "cucul_internals.h"
 
 /* Internal fonts */
-uint8_t const font_monospace9[] =
-#include "font_monospace9.h"
-;
+#include "font_mono9.h"
+#include "font_monobold12.h"
 
+/* Helper structure for font loading */
 struct font_header
 {
     uint32_t control_size, data_size;
@@ -111,7 +111,14 @@ struct cucul_font *cucul_load_font(void const *data, unsigned int size)
     unsigned int i;
 
     if(size == 0)
-        return cucul_load_font(font_monospace9, 150000); /* FIXME */
+    {
+        if(!strcasecmp(data, "Monospace 9"))
+            return cucul_load_font(mono9_data, mono9_size);
+        if(!strcasecmp(data, "Monospace Bold 12"))
+            return cucul_load_font(monobold12_data, monobold12_size);
+
+        return NULL;
+    }
 
     f = malloc(sizeof(struct cucul_font));
     f->private = (void *)(uintptr_t)data;
@@ -153,6 +160,26 @@ struct cucul_font *cucul_load_font(void const *data, unsigned int size)
     f->font_data = f->private + 8 + f->header.control_size;
 
     return f;
+}
+
+/**
+ * \brief Get available builtin fonts
+ *
+ * Return a list of available builtin fonts. The list is a NULL-terminated
+ * array of strings.
+ *
+ * \return An array of strings.
+ */
+char const * const * cucul_get_font_list(void)
+{
+    static char const * const list[] =
+    {
+        "Monospace 9",
+        "Monospace Bold 12",
+        NULL
+    };
+
+    return list;
 }
 
 /** \brief Get a font's maximum glyph width.

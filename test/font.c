@@ -33,6 +33,7 @@ int main(int argc, char *argv[])
     struct cucul_font *f;
     unsigned char *buf;
     unsigned int x, y, w, h;
+    char const * const * fonts;
 
     /* Create a canvas */
     qq = cucul_create(8, 2);
@@ -43,7 +44,13 @@ int main(int argc, char *argv[])
     cucul_putstr(qq, 0, 1, "&$âøÿ░▒█");
 
     /* Load a libcucul internal font */
-    f = cucul_load_font("Monospace 9", 0);
+    fonts = cucul_get_font_list();
+    if(fonts[0] == NULL)
+    {
+        fprintf(stderr, "error: libcucul was compiled without any fonts\n");
+        return -1;
+    }
+    f = cucul_load_font(fonts[0], 0);
 
     /* Create our bitmap buffer (32-bit ARGB) */
     w = cucul_get_width(qq) * cucul_get_font_width(f);
