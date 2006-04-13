@@ -224,11 +224,11 @@ void cucul_free(cucul_t *qq)
     free(qq);
 }
 
-struct cucul_export * cucul_create_export(cucul_t *qq, char const *format)
+struct cucul_buffer * cucul_create_export(cucul_t *qq, char const *format)
 {
-    struct cucul_export *ex;
+    struct cucul_buffer *ex;
 
-    ex = malloc(sizeof(struct cucul_export));
+    ex = malloc(sizeof(struct cucul_buffer));
 
     if(!strcasecmp("ansi", format))
         _cucul_get_ansi(qq, ex);
@@ -256,7 +256,7 @@ struct cucul_export * cucul_create_export(cucul_t *qq, char const *format)
  *
  * Return a list of available export formats. The list is a NULL-terminated
  * array of strings, interleaving a string containing the internal value for
- * the export format, to be used with \e cucul_export(), and a string
+ * the export format, to be used with \e cucul_create_export(), and a string
  * containing the natural language description for that export format.
  *
  * \return An array of strings.
@@ -277,9 +277,9 @@ char const * const * cucul_get_export_list(void)
     return list;
 }
 
-void cucul_free_export(struct cucul_export *ex)
+void cucul_free_export(struct cucul_buffer *ex)
 {
-    free(ex->buffer);
+    free(ex->data);
     free(ex);
 }
 

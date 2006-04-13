@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 {
     cucul_t *qq;
     struct cucul_dither *dither;
-    struct cucul_export *buffer;
+    struct cucul_buffer *buffer;
     int x, y;
 
     if(argc != 2)
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
     cucul_putstr(qq, WIDTH / 2 - 7, HEIGHT / 2, "    LIBCACA    ");
 
     buffer = cucul_create_export(qq, argv[1]);
-    fwrite(buffer->buffer, buffer->size, 1, stdout);
+    fwrite(buffer->data, buffer->size, 1, stdout);
     cucul_free_export(buffer);
 
     cucul_free(qq);

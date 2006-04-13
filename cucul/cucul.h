@@ -30,6 +30,12 @@ extern "C"
 
 typedef struct cucul_context cucul_t;
 
+struct cucul_buffer
+{
+    unsigned int size;
+    char *data;
+};
+
 /** \defgroup colour Colour definitions
  *
  *  Colours that can be used with cucul_set_color().
@@ -194,15 +200,9 @@ void cucul_free_font(struct cucul_font *);
  *  is necessary to call cucul_free_export() to dispose of the data.
  *
  *  @{ */
-struct cucul_export
-{
-    unsigned int size;
-    char *buffer;
-};
-
-struct cucul_export * cucul_create_export(cucul_t *, char const *);
+struct cucul_buffer * cucul_create_export(cucul_t *, char const *);
 char const * const * cucul_get_export_list(void);
-void cucul_free_export(struct cucul_export *);
+void cucul_free_export(struct cucul_buffer *);
 /*  @} */
 
 #ifdef __cplusplus

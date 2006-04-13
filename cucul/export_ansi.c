@@ -37,7 +37,7 @@
  *                  able to cut/paste the result to a function like printf
  *  \return buffer containing generated ANSI codes as a big string
  */
-void _cucul_get_ansi(cucul_t *qq, struct cucul_export *ex)
+void _cucul_get_ansi(cucul_t *qq, struct cucul_buffer *ex)
 {
     static int const palette[] =
     {
@@ -52,9 +52,9 @@ void _cucul_get_ansi(cucul_t *qq, struct cucul_export *ex)
      * 4 max bytes for a UTF-8 character).
      * Add height*9 to that (zeroes color at the end and jump to next line) */
     ex->size = (qq->height * 9) + (qq->width * qq->height * 23);
-    ex->buffer = malloc(ex->size);
+    ex->data = malloc(ex->size);
 
-    cur = ex->buffer;
+    cur = ex->data;
 
     for(y = 0; y < qq->height; y++)
     {
@@ -99,7 +99,7 @@ void _cucul_get_ansi(cucul_t *qq, struct cucul_export *ex)
     }
 
     /* Crop to really used size */
-    ex->size = (uintptr_t)(cur - ex->buffer);
-    ex->buffer = realloc(ex->buffer, ex->size);
+    ex->size = (uintptr_t)(cur - ex->data);
+    ex->data = realloc(ex->data, ex->size);
 }
 

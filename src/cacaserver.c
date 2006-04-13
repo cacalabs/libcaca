@@ -103,7 +103,7 @@ struct server
     char prefix[sizeof(INIT_PREFIX)];
 
     cucul_t *qq;
-    struct cucul_export *ex;
+    struct cucul_buffer *ex;
 
     int client_count;
     struct client *clients;
@@ -438,7 +438,7 @@ static int send_data(struct server *server, struct client *c)
 
             memcpy(c->outbuf + c->stop, ANSI_PREFIX, strlen(ANSI_PREFIX));
             c->stop += strlen(ANSI_PREFIX);
-            memcpy(c->outbuf + c->stop, server->ex->buffer, server->ex->size);
+            memcpy(c->outbuf + c->stop, server->ex->data, server->ex->size);
             c->stop += server->ex->size;
 
             return 0;
@@ -470,14 +470,14 @@ static int send_data(struct server *server, struct client *c)
 
         memcpy(c->outbuf, ANSI_PREFIX, strlen(ANSI_PREFIX) - ret);
         c->stop = strlen(ANSI_PREFIX) - ret;
-        memcpy(c->outbuf + c->stop, server->ex->buffer, server->ex->size);
+        memcpy(c->outbuf + c->stop, server->ex->data, server->ex->size);
         c->stop += server->ex->size;
 
         return 0;
     }
 
     /* Send actual data */
-    ret = nonblock_write(c->fd, server->ex->buffer, server->ex->size);
+    ret = nonblock_write(c->fd, server->ex->data, server->ex->size);
     if(ret == -1)
     {
         if(errno == EAGAIN)
@@ -497,7 +497,7 @@ static int send_data(struct server *server, struct client *c)
             return 0;
         }
 
-        memcpy(c->outbuf, server->ex->buffer, server->ex->size - ret);
+        memcpy(c->outbuf, server->ex->data, server->ex->size - ret);
         c->stop = server->ex->size - ret;
 
         return 0;

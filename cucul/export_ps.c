@@ -59,7 +59,7 @@ static char const *ps_header =
  *  This function generates and returns a Postscript representation of
  *  the current image.
  */
-void _cucul_get_ps(cucul_t *qq, struct cucul_export *ex)
+void _cucul_get_ps(cucul_t *qq, struct cucul_buffer *ex)
 {
     static char const * const palette[] =
     {
@@ -75,9 +75,9 @@ void _cucul_get_ps(cucul_t *qq, struct cucul_export *ex)
 
     /* 200 is arbitrary but should be ok */
     ex->size = strlen(ps_header) + (qq->width * qq->height * 200);
-    ex->buffer = malloc(ex->size);
+    ex->data = malloc(ex->size);
 
-    cur = ex->buffer;
+    cur = ex->data;
 
     /* Header */
     cur += sprintf(cur, "%s", ps_header);
@@ -134,7 +134,7 @@ void _cucul_get_ps(cucul_t *qq, struct cucul_export *ex)
     cur += sprintf(cur, "showpage\n");
 
     /* Crop to really used size */
-    ex->size = (uintptr_t)(cur - ex->buffer);
-    ex->buffer = realloc(ex->buffer, ex->size);
+    ex->size = (uintptr_t)(cur - ex->data);
+    ex->data = realloc(ex->data, ex->size);
 }
 

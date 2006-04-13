@@ -34,7 +34,7 @@
  *  This function generates and returns an IRC representation of
  *  the current image.
  */
-void _cucul_get_irc(cucul_t *qq, struct cucul_export *ex)
+void _cucul_get_irc(cucul_t *qq, struct cucul_buffer *ex)
 {
     static int const palette[] =
     {
@@ -54,9 +54,9 @@ void _cucul_get_irc(cucul_t *qq, struct cucul_export *ex)
      */
 
     ex->size = 2 + (qq->width * qq->height * 11);
-    ex->buffer = malloc(ex->size);
+    ex->data = malloc(ex->size);
 
-    cur = ex->buffer;
+    cur = ex->data;
 
     for(y = 0; y < qq->height; y++)
     {
@@ -104,6 +104,6 @@ void _cucul_get_irc(cucul_t *qq, struct cucul_export *ex)
     }
 
     /* Crop to really used size */
-    ex->size = (uintptr_t)(cur - ex->buffer);
-    ex->buffer = realloc(ex->buffer, ex->size);
+    ex->size = (uintptr_t)(cur - ex->data);
+    ex->data = realloc(ex->data, ex->size);
 }
