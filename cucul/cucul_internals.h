@@ -65,6 +65,7 @@ extern uint32_t _cucul_cp437_to_utf32(uint8_t);
 uint8_t _cucul_argb32_to_ansi8(uint32_t);
 uint8_t _cucul_argb32_to_ansi4fg(uint32_t);
 uint8_t _cucul_argb32_to_ansi4bg(uint32_t);
+void _cucul_argb32_to_argb4(uint32_t, uint8_t[8]);
 
 /* Export functions */
 extern void _cucul_get_ansi(cucul_t *, struct cucul_export *);
