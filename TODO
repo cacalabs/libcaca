@@ -14,12 +14,7 @@ libcucul
      to have several buffers, allow to change the active buffer, and treat
      sprites like that.
 
-   o bitmap output support (will require one or several custom fonts),
-     maybe should be in libcaca.
-
    o ASCII/ANSI art loading functions (maybe load them as sprites)
-
-   o Provide a way to set aspect ratio!
 
 
   API-independent stuff
