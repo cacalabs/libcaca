@@ -138,7 +138,7 @@ struct cucul_font *cucul_load_font(void const *data, unsigned int size)
     if(size != 8 + f->header.control_size + f->header.data_size
         || (f->header.bpp != 8 && f->header.bpp != 4 &&
             f->header.bpp != 2 && f->header.bpp != 1)
-        || (flags & 1) == 0)
+        || (f->header.flags & 1) == 0)
     {
         free(f);
         return NULL;
