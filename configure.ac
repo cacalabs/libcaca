@@ -275,7 +275,7 @@ if test "${enable_doc}" != "no"; then
   fi
 
   # Build LaTeX documentation?
-  AC_PATH_PROG(LATEX, latex, no)
+  AC_PATH_PROG(LATEX, pdflatex, no)
   AC_PATH_PROG(DVIPS, dvips, no)
   if test "${DVIPS}" = "no"; then
     LATEX="no"

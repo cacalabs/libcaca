@@ -8,13 +8,13 @@ if BUILD_DOCUMENTATION
 htmldoc_DATA = html/doxygen.css
 htmldocdir = $(datadir)/doc/libcaca-dev/html
 if USE_LATEX
-psdoc_DATA = latex/libcaca.ps
-psdocdir = $(datadir)/doc/libcaca-dev/ps
+pdfdoc_DATA = latex/libcaca.pdf
+pdfdocdir = $(datadir)/doc/libcaca-dev/pdf
 endif
 endif
 
 html/doxygen.css html/doxygen.png: stamp-doxygen
-latex/libcaca.ps: stamp-latex
+latex/libcaca.pdf: stamp-latex
 
 stamp-doxygen:
 if BUILD_DOCUMENTATION
@@ -25,11 +25,11 @@ endif
 stamp-latex: stamp-doxygen
 if BUILD_DOCUMENTATION
 if USE_LATEX
-	rm -f latex/libcaca.tex latex/libcaca.ps
+	rm -f latex/libcaca.tex latex/libcaca.pdf
 	mv latex/refman.tex latex/libcaca.tex
 	sed 's/setlength{/renewcommand{/' latex/libcaca.tex > latex/refman.tex
-	cd latex && $(MAKE) $(AM_CFLAGS) ps
-	mv latex/refman.ps latex/libcaca.ps
+	cd latex && $(MAKE) $(AM_CFLAGS) refman.pdf
+	mv latex/refman.pdf latex/libcaca.pdf
 	touch stamp-latex
 endif
 endif
