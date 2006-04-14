@@ -1,7 +1,10 @@
 /*
  *  libcucul      Canvas for ultrafast compositing of Unicode letters
  *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
+ *                2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                All Rights Reserved
+ *
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the Do What The Fuck You Want To
@@ -9,12 +12,7 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
-/** \file export_svg.c
- *  \version \$Id$
- *  \author Sam Hocevar <sam@zoy.org>
- *  \author Jean-Yves Lamoureux <jylam@lnxscene.org>
- *  \brief Export function
- *
+/*
  *  This file contains export functions for SVG (Scalable Vector Graphics files
  */
 

@@ -3,17 +3,15 @@
  *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
+ *  $Id$
+ *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the Do What The Fuck You Want To
  *  Public License, Version 2, as published by Sam Hocevar. See
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
-/** \file driver_ncurses.c
- *  \version \$Id$
- *  \author Sam Hocevar <sam@zoy.org>
- *  \brief Ncurses driver
- *
+/*
  *  This file contains the libcaca Ncurses input and output driver
  */
 

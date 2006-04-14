@@ -3,17 +3,15 @@
  *  Copyright (c) 2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
+ *  $Id$
+ *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the Do What The Fuck You Want To
  *  Public License, Version 2, as published by Sam Hocevar. See
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
-/** \file caca.c
- *  \version \$Id$
- *  \author Sam Hocevar <sam@zoy.org>
- *  \brief Main \e libcaca functions
- *
+/*
  *  This file contains the main functions used by \e libcaca applications to
  *  initialise the library, get the screen properties, set the framerate and
  *  so on.

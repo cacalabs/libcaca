@@ -1,6 +1,6 @@
 /*
  *  Imaging tools for cacaview and img2irc
- *  Copyright (c) 2003, 2004, 2005, 2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2003-2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
  *  $Id$

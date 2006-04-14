@@ -1,7 +1,7 @@
 /*
  *  cacaplas      plasma effect for libcaca
- *  Copyright (c) 2004 Sam Hocevar <sam@zoy.org>
- *                1998 Michele Bini <mibin@tin.it>
+ *  Copyright (c) 1998 Michele Bini <mibin@tin.it>
+ *                2004 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
  *  $Id$
