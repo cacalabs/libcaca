@@ -23,6 +23,7 @@
 #ifndef __CUCUL_H__
 #define __CUCUL_H__
 
+/** libcucul API version */
 #define CUCUL_API_VERSION_1
 
 #ifdef __cplusplus
@@ -144,12 +145,12 @@ unsigned int cucul_sqrt(unsigned int);
  *
  *  @{ */
 struct cucul_sprite;
-struct cucul_sprite * cucul_load_sprite(cucul_t *, char const *);
-int cucul_get_sprite_frames(cucul_t *, struct cucul_sprite const *);
-int cucul_get_sprite_width(cucul_t *, struct cucul_sprite const *, int);
-int cucul_get_sprite_height(cucul_t *, struct cucul_sprite const *, int);
-int cucul_get_sprite_dx(cucul_t *, struct cucul_sprite const *, int);
-int cucul_get_sprite_dy(cucul_t *, struct cucul_sprite const *, int);
+struct cucul_sprite * cucul_load_sprite(char const *);
+int cucul_get_sprite_frames(struct cucul_sprite const *);
+int cucul_get_sprite_width(struct cucul_sprite const *, int);
+int cucul_get_sprite_height(struct cucul_sprite const *, int);
+int cucul_get_sprite_dx(struct cucul_sprite const *, int);
+int cucul_get_sprite_dy(struct cucul_sprite const *, int);
 void cucul_draw_sprite(cucul_t *, int, int, struct cucul_sprite const *, int);
 void cucul_free_sprite(struct cucul_sprite *);
 /*  @} */

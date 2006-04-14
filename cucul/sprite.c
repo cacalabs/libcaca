@@ -42,13 +42,12 @@ struct cucul_sprite
 };
 #endif
 
-/**
- * \brief Allocate a sprite loaded from a file.
+/** \brief Allocate a sprite loaded from a file.
  *
- * \param file The filename.
- * \return The sprite, or NULL if an error occured.
+ *  \param file The filename.
+ *  \return The sprite, or NULL if an error occured.
  */
-struct cucul_sprite *cucul_load_sprite(cucul_t *qq, char const *file)
+struct cucul_sprite *cucul_load_sprite(char const *file)
 {
     char buf[BUFSIZ];
     struct cucul_sprite *sprite;
@@ -163,13 +162,12 @@ sprite_alloc_failed:
     return NULL;
 }
 
-/**
- * \brief Return the number of frames in a sprite.
+/** \brief Return the number of frames in a sprite.
  *
- * \param sprite The sprite.
- * \return The number of frames.
+ *  \param sprite The sprite.
+ *  \return The number of frames.
  */
-int cucul_get_sprite_frames(cucul_t *qq, struct cucul_sprite const *sprite)
+int cucul_get_sprite_frames(struct cucul_sprite const *sprite)
 {
     if(sprite == NULL)
         return 0;
@@ -177,14 +175,13 @@ int cucul_get_sprite_frames(cucul_t *qq, struct cucul_sprite const *sprite)
     return sprite->nf;
 }
 
-/**
- * \brief Return the width of a sprite.
+/** \brief Return the width of a sprite.
  *
- * \param sprite The sprite.
- * \param f The frame index.
- * \return The width of the given frame of the sprite.
+ *  \param sprite The sprite.
+ *  \param f The frame index.
+ *  \return The width of the given frame of the sprite.
  */
-int cucul_get_sprite_width(cucul_t *qq, struct cucul_sprite const *sprite, int f)
+int cucul_get_sprite_width(struct cucul_sprite const *sprite, int f)
 {
     if(sprite == NULL)
         return 0;
@@ -195,14 +192,13 @@ int cucul_get_sprite_width(cucul_t *qq, struct cucul_sprite const *sprite, int f
     return sprite->frames[f].w;
 }
 
-/**
- * \brief Return the height of a sprite.
+/** \brief Return the height of a sprite.
  *
- * \param sprite The sprite.
- * \param f The frame index.
- * \return The height of the given frame of the sprite.
+ *  \param sprite The sprite.
+ *  \param f The frame index.
+ *  \return The height of the given frame of the sprite.
  */
-int cucul_get_sprite_height(cucul_t *qq, struct cucul_sprite const *sprite, int f)
+int cucul_get_sprite_height(struct cucul_sprite const *sprite, int f)
 {
     if(sprite == NULL)
         return 0;
@@ -213,14 +209,13 @@ int cucul_get_sprite_height(cucul_t *qq, struct cucul_sprite const *sprite, int 
     return sprite->frames[f].h;
 }
 
-/**
- * \brief Return the X coordinate of a sprite's handle.
+/** \brief Return the X coordinate of a sprite's handle.
  *
- * \param sprite The sprite.
- * \param f The frame index.
- * \return The X coordinate of the given frame's handle.
+ *  \param sprite The sprite.
+ *  \param f The frame index.
+ *  \return The X coordinate of the given frame's handle.
  */
-int cucul_get_sprite_dx(cucul_t *qq, struct cucul_sprite const *sprite, int f)
+int cucul_get_sprite_dx(struct cucul_sprite const *sprite, int f)
 {
     if(sprite == NULL)
         return 0;
@@ -231,14 +226,13 @@ int cucul_get_sprite_dx(cucul_t *qq, struct cucul_sprite const *sprite, int f)
     return sprite->frames[f].dx;
 }
 
-/**
- * \brief Return the Y coordinate of a sprite's handle.
+/** \brief Return the Y coordinate of a sprite's handle.
  *
- * \param sprite The sprite.
- * \param f The frame index.
- * \return The Y coordinate of the given frame's handle.
+ *  \param sprite The sprite.
+ *  \param f The frame index.
+ *  \return The Y coordinate of the given frame's handle.
  */
-int cucul_get_sprite_dy(cucul_t *qq, struct cucul_sprite const *sprite, int f)
+int cucul_get_sprite_dy(struct cucul_sprite const *sprite, int f)
 {
     if(sprite == NULL)
         return 0;
@@ -249,15 +243,15 @@ int cucul_get_sprite_dy(cucul_t *qq, struct cucul_sprite const *sprite, int f)
     return sprite->frames[f].dy;
 }
 
-/**
- * \brief Draw a sprite's specific frame at the given coordinates. If the
- *        frame does not exist, nothing is displayed.
+/** \brief Draw a sprite's specific frame at the given coordinates. If the
+ *         frame does not exist, nothing is displayed.
  *
- * \param x The X coordinate.
- * \param y The Y coordinate.
- * \param sprite The sprite.
- * \param f The frame index.
- * \return void
+ *  \param qq A libcucul canvas
+ *  \param x The X coordinate.
+ *  \param y The Y coordinate.
+ *  \param sprite The sprite.
+ *  \param f The frame index.
+ *  \return void
  */
 void cucul_draw_sprite(cucul_t *qq, int x, int y, struct cucul_sprite const *sprite, int f)
 {
@@ -293,11 +287,10 @@ void cucul_draw_sprite(cucul_t *qq, int x, int y, struct cucul_sprite const *spr
     cucul_set_color(qq, oldfg, oldbg);
 }
 
-/**
- * \brief Free the memory associated with a sprite.
+/** \brief Free the memory associated with a sprite.
  *
- * \param sprite The sprite to be freed.
- * \return void
+ *  \param sprite The sprite to be freed.
+ *  \return void
  */
 void cucul_free_sprite(struct cucul_sprite *sprite)
 {

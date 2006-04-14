@@ -27,14 +27,15 @@
 
 static void ellipsepoints(cucul_t *, int, int, int, int, uint32_t);
 
-/**
- * \brief Draw a circle on the screen using the given character.
+/** \brief Draw a circle on the canvas using the given character.
  *
- * \param x Center X coordinate.
- * \param y Center Y coordinate.
- * \param r Circle radius.
- * \param c Character to draw the circle outline with.
- * \return void
+ *  \param qq The handle to the libcucul canvas.
+ *  \param x Center X coordinate.
+ *  \param y Center Y coordinate.
+ *  \param r Circle radius.
+ *  \param str UTF-8 string representing the character that should be used
+ *         to draw the circle outline.
+ *  \return void
  */
 void cucul_draw_circle(cucul_t *qq, int x, int y, int r, char const *str)
 {
@@ -51,15 +52,16 @@ void cucul_draw_circle(cucul_t *qq, int x, int y, int r, char const *str)
     }
 }
 
-/**
- * \brief Fill an ellipse on the screen using the given character.
+/** \brief Fill an ellipse on the canvas using the given character.
  *
- * \param xo Center X coordinate.
- * \param yo Center Y coordinate.
- * \param a Ellipse X radius.
- * \param b Ellipse Y radius.
- * \param c Character to fill the ellipse with.
- * \return void
+ *  \param qq The handle to the libcucul canvas.
+ *  \param xo Center X coordinate.
+ *  \param yo Center Y coordinate.
+ *  \param a Ellipse X radius.
+ *  \param b Ellipse Y radius.
+ *  \param str UTF-8 string representing the character that should be used
+ *         to fill the ellipse.
+ *  \return void
  */
 void cucul_fill_ellipse(cucul_t *qq, int xo, int yo, int a, int b,
                         char const *str)
@@ -107,15 +109,16 @@ void cucul_fill_ellipse(cucul_t *qq, int xo, int yo, int a, int b,
     }
 }
 
-/**
- * \brief Draw an ellipse on the screen using the given character.
+/** \brief Draw an ellipse on the canvas using the given character.
  *
- * \param xo Center X coordinate.
- * \param yo Center Y coordinate.
- * \param a Ellipse X radius.
- * \param b Ellipse Y radius.
- * \param c Character to draw the ellipse outline with.
- * \return void
+ *  \param qq The handle to the libcucul canvas.
+ *  \param xo Center X coordinate.
+ *  \param yo Center Y coordinate.
+ *  \param a Ellipse X radius.
+ *  \param b Ellipse Y radius.
+ *  \param str UTF-8 string representing the character that should be used
+ *         to draw the ellipse outline.
+ *  \return void
  */
 void cucul_draw_ellipse(cucul_t *qq, int xo, int yo, int a, int b,
                         char const *str)
@@ -161,14 +164,14 @@ void cucul_draw_ellipse(cucul_t *qq, int xo, int yo, int a, int b,
     }
 }
 
-/**
- * \brief Draw a thin ellipse on the screen.
+/** \brief Draw a thin ellipse on the canvas.
  *
- * \param xo Center X coordinate.
- * \param yo Center Y coordinate.
- * \param a Ellipse X radius.
- * \param b Ellipse Y radius.
- * \return void
+ *  \param qq The handle to the libcucul canvas.
+ *  \param xo Center X coordinate.
+ *  \param yo Center Y coordinate.
+ *  \param a Ellipse X radius.
+ *  \param b Ellipse Y radius.
+ *  \return void
  */
 void cucul_draw_thin_ellipse(cucul_t *qq, int xo, int yo, int a, int b)
 {

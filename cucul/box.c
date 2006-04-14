@@ -24,15 +24,15 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
-/**
- * \brief Draw a box on the screen using the given character.
+/** \brief Draw a box on the canvas using the given character.
  *
- * \param x1 X coordinate of the upper-left corner of the box.
- * \param y1 Y coordinate of the upper-left corner of the box.
- * \param x2 X coordinate of the lower-right corner of the box.
- * \param y2 Y coordinate of the lower-right corner of the box.
- * \param str UTF-8 string containing the character to use to draw the box.
- * \return void
+ *  \param qq The handle to the libcucul canvas.
+ *  \param x1 X coordinate of the upper-left corner of the box.
+ *  \param y1 Y coordinate of the upper-left corner of the box.
+ *  \param x2 X coordinate of the lower-right corner of the box.
+ *  \param y2 Y coordinate of the lower-right corner of the box.
+ *  \param str UTF-8 string containing the character to use to draw the box.
+ *  \return void
  */
 void cucul_draw_box(cucul_t *qq, int x1, int y1, int x2, int y2, 
                     char const *str)
@@ -43,14 +43,14 @@ void cucul_draw_box(cucul_t *qq, int x1, int y1, int x2, int y2,
     cucul_draw_line(qq, x2, y1, x1, y1, str);
 }
 
-/**
- * \brief Draw a thin box on the screen.
+/** \brief Draw a thin box on the canvas.
  *
- * \param x1 X coordinate of the upper-left corner of the box.
- * \param y1 Y coordinate of the upper-left corner of the box.
- * \param x2 X coordinate of the lower-right corner of the box.
- * \param y2 Y coordinate of the lower-right corner of the box.
- * \return void
+ *  \param qq The handle to the libcucul canvas.
+ *  \param x1 X coordinate of the upper-left corner of the box.
+ *  \param y1 Y coordinate of the upper-left corner of the box.
+ *  \param x2 X coordinate of the lower-right corner of the box.
+ *  \param y2 Y coordinate of the lower-right corner of the box.
+ *  \return void
  */
 void cucul_draw_thin_box(cucul_t *qq, int x1, int y1, int x2, int y2)
 {
@@ -105,15 +105,15 @@ void cucul_draw_thin_box(cucul_t *qq, int x1, int y1, int x2, int y2)
         _cucul_putchar32(qq, x2, y2, (uint32_t)'\'');
 }
 
-/**
- * \brief Fill a box on the screen using the given character.
+/** \brief Fill a box on the canvas using the given character.
  *
- * \param x1 X coordinate of the upper-left corner of the box.
- * \param y1 Y coordinate of the upper-left corner of the box.
- * \param x2 X coordinate of the lower-right corner of the box.
- * \param y2 Y coordinate of the lower-right corner of the box.
- * \param str UTF-8 string containing the character to fill the box with.
- * \return void
+ *  \param qq The handle to the libcucul canvas.
+ *  \param x1 X coordinate of the upper-left corner of the box.
+ *  \param y1 Y coordinate of the upper-left corner of the box.
+ *  \param x2 X coordinate of the lower-right corner of the box.
+ *  \param y2 Y coordinate of the lower-right corner of the box.
+ *  \param str UTF-8 string containing the character to fill the box with.
+ *  \return void
  */
 void cucul_fill_box(cucul_t *qq, int x1, int y1, int x2, int y2,
                     char const *str)

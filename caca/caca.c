@@ -98,7 +98,7 @@ caca_t * caca_attach(cucul_t * qq)
  *  libcucul canvas continues to exist and other graphical contexts can be
  *  attached to it afterwards.
  *
- *  \param qq The caca graphical context.
+ *  \param kk The libcaca graphical context.
  */
 void caca_detach(caca_t *kk)
 {

@@ -77,6 +77,7 @@
 #ifndef __CACA_H__
 #define __CACA_H__
 
+/** libcaca API version */
 #define CACA_API_VERSION_1
 
 #include <cucul.h>

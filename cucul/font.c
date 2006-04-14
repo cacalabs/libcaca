@@ -34,7 +34,8 @@
 #include "font_mono9.h"
 #include "font_monobold12.h"
 
-/* Helper structure for font loading */
+/* Helper structures for font loading */
+#if !defined(_DOXYGEN_SKIP_ME)
 struct font_header
 {
     uint32_t control_size, data_size;
@@ -64,6 +65,7 @@ struct cucul_font
 
     uint8_t *private;
 };
+#endif
 
 #define DECLARE_UNPACKGLYPH(bpp) \
     static inline void \
@@ -192,13 +194,12 @@ struct cucul_font *cucul_load_font(void const *data, unsigned int size)
     return f;
 }
 
-/**
- * \brief Get available builtin fonts
+/** \brief Get available builtin fonts
  *
- * Return a list of available builtin fonts. The list is a NULL-terminated
- * array of strings.
+ *  Return a list of available builtin fonts. The list is a NULL-terminated
+ *  array of strings.
  *
- * \return An array of strings.
+ *  \return An array of strings.
  */
 char const * const * cucul_get_font_list(void)
 {

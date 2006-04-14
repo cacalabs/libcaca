@@ -24,17 +24,18 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
-/**
- * \brief Draw a triangle on the screen using the given character.
+/** \brief Draw a triangle on the canvas using the given character.
  *
- * \param x1 X coordinate of the first point.
- * \param y1 Y coordinate of the first point.
- * \param x2 X coordinate of the second point.
- * \param y2 Y coordinate of the second point.
- * \param x3 X coordinate of the third point.
- * \param y3 Y coordinate of the third point.
- * \param c Character to draw the triangle outline with.
- * \return void
+ *  \param qq The handle to the libcucul canvas.
+ *  \param x1 X coordinate of the first point.
+ *  \param y1 Y coordinate of the first point.
+ *  \param x2 X coordinate of the second point.
+ *  \param y2 Y coordinate of the second point.
+ *  \param x3 X coordinate of the third point.
+ *  \param y3 Y coordinate of the third point.
+ *  \param str UTF-8 string representing the character that should be used
+ *         to draw the triangle outline.
+ *  \return void
  */
 void cucul_draw_triangle(cucul_t *qq, int x1, int y1, int x2, int y2,
                          int x3, int y3, char const *str)
@@ -44,16 +45,16 @@ void cucul_draw_triangle(cucul_t *qq, int x1, int y1, int x2, int y2,
     cucul_draw_line(qq, x3, y3, x1, y1, str);
 }
 
-/**
- * \brief Draw a thin triangle on the screen.
+/** \brief Draw a thin triangle on the canvas.
  *
- * \param x1 X coordinate of the first point.
- * \param y1 Y coordinate of the first point.
- * \param x2 X coordinate of the second point.
- * \param y2 Y coordinate of the second point.
- * \param x3 X coordinate of the third point.
- * \param y3 Y coordinate of the third point.
- * \return void
+ *  \param qq The handle to the libcucul canvas.
+ *  \param x1 X coordinate of the first point.
+ *  \param y1 Y coordinate of the first point.
+ *  \param x2 X coordinate of the second point.
+ *  \param y2 Y coordinate of the second point.
+ *  \param x3 X coordinate of the third point.
+ *  \param y3 Y coordinate of the third point.
+ *  \return void
  */
 void cucul_draw_thin_triangle(cucul_t *qq, int x1, int y1, int x2, int y2,
                               int x3, int y3)
@@ -63,17 +64,18 @@ void cucul_draw_thin_triangle(cucul_t *qq, int x1, int y1, int x2, int y2,
     cucul_draw_thin_line(qq, x3, y3, x1, y1);
 }
 
-/**
- * \brief Fill a triangle on the screen using the given character.
+/** \brief Fill a triangle on the canvas using the given character.
  *
- * \param x1 X coordinate of the first point.
- * \param y1 Y coordinate of the first point.
- * \param x2 X coordinate of the second point.
- * \param y2 Y coordinate of the second point.
- * \param x3 X coordinate of the third point.
- * \param y3 Y coordinate of the third point.
- * \param c Character to fill the triangle with.
- * \return void
+ *  \param qq The handle to the libcucul canvas.
+ *  \param x1 X coordinate of the first point.
+ *  \param y1 Y coordinate of the first point.
+ *  \param x2 X coordinate of the second point.
+ *  \param y2 Y coordinate of the second point.
+ *  \param x3 X coordinate of the third point.
+ *  \param y3 Y coordinate of the third point.
+ *  \param str UTF-8 string representing the character that should be used
+ *         to fill the triangle.
+ *  \return void
  */
 void cucul_fill_triangle(cucul_t *qq, int x1, int y1, int x2, int y2,
                          int x3, int y3, char const *str)

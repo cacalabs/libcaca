@@ -27,6 +27,7 @@
  *  If libcaca runs in a window, try to change its title. This works with
  *  the X11 and Win32 drivers.
  *
+ *  \param kk The libcaca graphical context.
  *  \param title The desired window title.
  *  \return 0 upon success, a non-zero value if an error occurs.
  */
@@ -42,6 +43,7 @@ int caca_set_window_title(caca_t *kk, char const *title)
  *  or if there is no way to know the font size, most drivers will assume a
  *  6x10 font is being used. Note that the units are not necessarily pixels.
  *
+ *  \param kk The libcaca graphical context.
  *  \return The window width.
  */
 unsigned int caca_get_window_width(caca_t *kk)
@@ -56,6 +58,7 @@ unsigned int caca_get_window_width(caca_t *kk)
  *  or if there is no way to know the font size, assume a 6x10 font is being
  *  used. Note that the units are not necessarily pixels.
  *
+ *  \param kk The libcaca graphical context.
  *  \return The window height.
  */
 unsigned int caca_get_window_height(caca_t *kk)
@@ -72,6 +75,7 @@ unsigned int caca_get_window_height(caca_t *kk)
  *  If the argument is zero, constant framerate is disabled. This is the
  *  default behaviour.
  *
+ *  \param kk The libcaca graphical context.
  *  \param usec The refresh delay in microseconds.
  */
 void caca_set_delay(caca_t *kk, unsigned int usec)
@@ -87,6 +91,7 @@ void caca_set_delay(caca_t *kk, unsigned int usec)
  *  rendering time will not be considerably shorter than the requested delay
  *  even if the real rendering time was shorter.
  *
+ *  \param kk The libcaca graphical context.
  *  \return The render time in microseconds.
  */
 unsigned int caca_get_rendertime(caca_t *kk)
@@ -105,6 +110,8 @@ unsigned int caca_get_rendertime(caca_t *kk)
  *  calls to caca_display() are within a time range shorter than the value
  *  set with caca_set_delay(), the second call will wait a bit before
  *  performing the screen refresh.
+ *
+ *  \param kk The libcaca graphical context.
  */
 void caca_display(caca_t *kk)
 {
@@ -146,6 +153,7 @@ void caca_display(caca_t *kk)
  *  This function shows or hides the mouse pointer, for devices that
  *  support it.
  *
+ *  \param kk The libcaca graphical context.
  *  \param flag 0 hides the pointer, 1 shows the system's default pointer
  *              (usually an arrow). Other values are reserved for future use.
  */

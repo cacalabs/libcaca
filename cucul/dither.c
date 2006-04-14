@@ -227,24 +227,23 @@ static inline void rgb2hsv_default(int r, int g, int b,
     }
 }
 
-/**
- * \brief Create an internal dither object.
+/** \brief Create an internal dither object.
  *
- * Create a dither structure from its coordinates (depth, width, height and
- * pitch) and pixel mask values. If the depth is 8 bits per pixel, the mask
- * values are ignored and the colour palette should be set using the
- * cucul_set_dither_palette() function. For depths greater than 8 bits per
- * pixel, a zero alpha mask causes the alpha values to be ignored.
+ *  Create a dither structure from its coordinates (depth, width, height and
+ *  pitch) and pixel mask values. If the depth is 8 bits per pixel, the mask
+ *  values are ignored and the colour palette should be set using the
+ *  cucul_set_dither_palette() function. For depths greater than 8 bits per
+ *  pixel, a zero alpha mask causes the alpha values to be ignored.
  *
- * \param bpp Bitmap depth in bits per pixel.
- * \param w Bitmap width in pixels.
- * \param h Bitmap height in pixels.
- * \param pitch Bitmap pitch in bytes.
- * \param rmask Bitmask for red values.
- * \param gmask Bitmask for green values.
- * \param bmask Bitmask for blue values.
- * \param amask Bitmask for alpha values.
- * \return Dither object, or NULL upon error.
+ *  \param bpp Bitmap depth in bits per pixel.
+ *  \param w Bitmap width in pixels.
+ *  \param h Bitmap height in pixels.
+ *  \param pitch Bitmap pitch in bytes.
+ *  \param rmask Bitmask for red values.
+ *  \param gmask Bitmask for green values.
+ *  \param bmask Bitmask for blue values.
+ *  \param amask Bitmask for alpha values.
+ *  \return Dither object, or NULL upon error.
  */
 struct cucul_dither *cucul_create_dither(unsigned int bpp, unsigned int w,
                                          unsigned int h, unsigned int pitch,
@@ -320,17 +319,16 @@ struct cucul_dither *cucul_create_dither(unsigned int bpp, unsigned int w,
     return d;
 }
 
-/**
- * \brief Set the palette of an 8bpp dither object.
+/** \brief Set the palette of an 8bpp dither object.
  *
- * Set the palette of an 8 bits per pixel bitmap. Values should be between
- * 0 and 4095 (0xfff).
+ *  Set the palette of an 8 bits per pixel bitmap. Values should be between
+ *  0 and 4095 (0xfff).
  *
- * \param dither Dither object.
- * \param red Array of 256 red values.
- * \param green Array of 256 green values.
- * \param blue Array of 256 blue values.
- * \param alpha Array of 256 alpha values.
+ *  \param d Dither object.
+ *  \param red Array of 256 red values.
+ *  \param green Array of 256 green values.
+ *  \param blue Array of 256 blue values.
+ *  \param alpha Array of 256 alpha values.
  */
 void cucul_set_dither_palette(struct cucul_dither *d,
                               unsigned int red[], unsigned int green[],
@@ -362,26 +360,24 @@ void cucul_set_dither_palette(struct cucul_dither *d,
     d->has_alpha = has_alpha;
 }
 
-/**
- * \brief Set the brightness of a dither object.
+/** \brief Set the brightness of a dither object.
  *
- * Set the brightness of dither.
+ *  Set the brightness of dither.
  *
- * \param dither Dither object.
- * \param brightness brightness value.
+ *  \param d Dither object.
+ *  \param brightness brightness value.
  */
 void cucul_set_dither_brightness(struct cucul_dither *d, float brightness)
 {
     /* FIXME */
 }
 
-/**
- * \brief Set the gamma of a dither object.
+/** \brief Set the gamma of a dither object.
  *
- * Set the gamma of dither.
+ *  Set the gamma of dither.
  *
- * \param dither Dither object.
- * \param gamma Gamma value.
+ *  \param d Dither object.
+ *  \param gamma Gamma value.
  */
 void cucul_set_dither_gamma(struct cucul_dither *d, float gamma)
 {
@@ -399,46 +395,43 @@ void cucul_set_dither_gamma(struct cucul_dither *d, float gamma)
         d->gammatab[i] = 4096.0 * gammapow((float)i / 4096.0, 1.0 / gamma);
 }
 
-/**
- * \brief Invert colors of dither
+/** \brief Invert colors of dither
  *
- * Invert colors of dither
+ *  Invert colors of dither
  *
- * \param dither Dither object.
- * \param value 0 for normal behaviour, 1 for invert
+ *  \param d Dither object.
+ *  \param value 0 for normal behaviour, 1 for invert
  */
 void cucul_set_dither_invert(struct cucul_dither *d, int value)
 {
     d->invert = value ? 1 : 0;
 }
 
-/**
- * \brief Set the contrast of a dither object.
+/** \brief Set the contrast of a dither object.
  *
- * Set the contrast of dither.
+ *  Set the contrast of dither.
  *
- * \param dither Dither object.
- * \param contrast contrast value.
+ *  \param d Dither object.
+ *  \param contrast contrast value.
  */
 void cucul_set_dither_contrast(struct cucul_dither *d, float contrast)
 {
     /* FIXME */
 }
 
-/**
- * \brief Set dither antialiasing
+/** \brief Set dither antialiasing
  *
- * Tell the renderer whether to antialias the dither. Antialiasing smoothen
- * the rendered image and avoids the commonly seen staircase effect.
+ *  Tell the renderer whether to antialias the dither. Antialiasing smoothen
+ *  the rendered image and avoids the commonly seen staircase effect.
  *
- * \li \e "none": no antialiasing.
+ *  \li \e "none": no antialiasing.
  *
- * \li \e "prefilter": simple prefilter antialiasing. This is the default
- *     value.
+ *  \li \e "prefilter": simple prefilter antialiasing. This is the default
+ *      value.
  *
- * \param dither Dither object.
- * \param str A string describing the antialiasing method that will be used
- *        for the dithering.
+ *  \param d Dither object.
+ *  \param str A string describing the antialiasing method that will be used
+ *         for the dithering.
  */
 void cucul_set_dither_antialias(struct cucul_dither *d, char const *str)
 {
@@ -448,17 +441,16 @@ void cucul_set_dither_antialias(struct cucul_dither *d, char const *str)
         d->antialias = 1;
 }
 
-/**
- * \brief Get available antialiasing methods
+/** \brief Get available antialiasing methods
  *
- * Return a list of available antialiasing methods for a given dither. The
- * list is a NULL-terminated array of strings, interleaving a string
- * containing the internal value for the antialiasing method to be used with
- * \e cucul_set_dither_antialias(), and a string containing the natural
- * language description for that antialiasing method.
+ *  Return a list of available antialiasing methods for a given dither. The
+ *  list is a NULL-terminated array of strings, interleaving a string
+ *  containing the internal value for the antialiasing method to be used with
+ *  \e cucul_set_dither_antialias(), and a string containing the natural
+ *  language description for that antialiasing method.
  *
- * \param dither Dither object.
- * \return An array of strings.
+ *  \param d Dither object.
+ *  \return An array of strings.
  */
 char const * const *
     cucul_get_dither_antialias_list(struct cucul_dither const *d)
@@ -473,32 +465,31 @@ char const * const *
     return list;
 }
 
-/**
- * \brief Choose colours used for dithering
+/** \brief Choose colours used for dithering
  *
- * Tell the renderer which colours should be used to render the
- * bitmap. Valid values for \e str are:
+ *  Tell the renderer which colours should be used to render the
+ *  bitmap. Valid values for \e str are:
  *
- * \li \e "mono": use light gray on a black background.
+ *  \li \e "mono": use light gray on a black background.
  *
- * \li \e "gray": use white and two shades of gray on a black background.
+ *  \li \e "gray": use white and two shades of gray on a black background.
  *
- * \li \e "8": use the 8 ANSI colours on a black background.
+ *  \li \e "8": use the 8 ANSI colours on a black background.
  *
- * \li \e "16": use the 16 ANSI colours on a black background.
+ *  \li \e "16": use the 16 ANSI colours on a black background.
  *
- * \li \e "fullgray": use black, white and two shades of gray for both the
- *     characters and the background.
+ *  \li \e "fullgray": use black, white and two shades of gray for both the
+ *      characters and the background.
  *
- * \li \e "full8": use the 8 ANSI colours for both the characters and the
- *     background.
+ *  \li \e "full8": use the 8 ANSI colours for both the characters and the
+ *      background.
  *
- * \li \e "full16": use the 16 ANSI colours for both the characters and the
- *     background. This is the default value.
+ *  \li \e "full16": use the 16 ANSI colours for both the characters and the
+ *      background. This is the default value.
  *
- * \param dither Dither object.
- * \param str A string describing the colour set that will be used
- *        for the dithering.
+ *  \param d Dither object.
+ *  \param str A string describing the colour set that will be used
+ *         for the dithering.
  */
 void cucul_set_dither_color(struct cucul_dither *d, char const *str)
 {
@@ -518,17 +509,16 @@ void cucul_set_dither_color(struct cucul_dither *d, char const *str)
         d->color_mode = COLOR_MODE_FULL16;
 }
 
-/**
- * \brief Get available colour modes
+/** \brief Get available colour modes
  *
- * Return a list of available colour modes for a given dither. The list
- * is a NULL-terminated array of strings, interleaving a string containing
- * the internal value for the colour mode, to be used with
- * \e cucul_set_dither_color(), and a string containing the natural
- * language description for that colour mode.
+ *  Return a list of available colour modes for a given dither. The list
+ *  is a NULL-terminated array of strings, interleaving a string containing
+ *  the internal value for the colour mode, to be used with
+ *  \e cucul_set_dither_color(), and a string containing the natural
+ *  language description for that colour mode.
  *
- * \param dither Dither object.
- * \return An array of strings.
+ *  \param d Dither object.
+ *  \return An array of strings.
  */
 char const * const *
     cucul_get_dither_color_list(struct cucul_dither const *d)
@@ -548,24 +538,23 @@ char const * const *
     return list;
 }
 
-/**
- * \brief Choose characters used for dithering
+/** \brief Choose characters used for dithering
  *
- * Tell the renderer which characters should be used to render the
- * dither. Valid values for \e str are:
+ *  Tell the renderer which characters should be used to render the
+ *  dither. Valid values for \e str are:
  *
- * \li \e "ascii": use only ASCII characters. This is the default value.
+ *  \li \e "ascii": use only ASCII characters. This is the default value.
  *
- * \li \e "shades": use Unicode characters "U+2591 LIGHT SHADE", "U+2592
- *     MEDIUM SHADE" and "U+2593 DARK SHADE". These characters are also
- *     present in the CP437 codepage available on DOS and VGA.
+ *  \li \e "shades": use Unicode characters "U+2591 LIGHT SHADE", "U+2592
+ *      MEDIUM SHADE" and "U+2593 DARK SHADE". These characters are also
+ *      present in the CP437 codepage available on DOS and VGA.
  *
- * \li \e "blocks": use Unicode quarter-cell block combinations. These
- *     characters are only found in the Unicode set.
+ *  \li \e "blocks": use Unicode quarter-cell block combinations. These
+ *      characters are only found in the Unicode set.
  *
- * \param dither Dither object.
- * \param str A string describing the characters that need to be used
- *        for the dithering.
+ *  \param d Dither object.
+ *  \param str A string describing the characters that need to be used
+ *         for the dithering.
  */
 void cucul_set_dither_charset(struct cucul_dither *d, char const *str)
 {
@@ -586,17 +575,16 @@ void cucul_set_dither_charset(struct cucul_dither *d, char const *str)
     }
 }
 
-/**
- * \brief Get available dither character sets
+/** \brief Get available dither character sets
  *
- * Return a list of available character sets for a given dither. The list
- * is a NULL-terminated array of strings, interleaving a string containing
- * the internal value for the character set, to be used with
- * \e cucul_set_dither_charset(), and a string containing the natural
- * language description for that character set.
+ *  Return a list of available character sets for a given dither. The list
+ *  is a NULL-terminated array of strings, interleaving a string containing
+ *  the internal value for the character set, to be used with
+ *  \e cucul_set_dither_charset(), and a string containing the natural
+ *  language description for that character set.
  *
- * \param dither Dither object.
- * \return An array of strings.
+ *  \param d Dither object.
+ *  \return An array of strings.
  */
 char const * const *
     cucul_get_dither_charset_list(struct cucul_dither const *d)
@@ -612,28 +600,27 @@ char const * const *
     return list;
 }
 
-/**
- * \brief Set dithering method
+/** \brief Set dithering method
  *
- * Tell the renderer which dithering method should be used. Dithering is
- * necessary because the picture being rendered has usually far more colours
- * than the available palette. Valid values for \e str are:
+ *  Tell the renderer which dithering method should be used. Dithering is
+ *  necessary because the picture being rendered has usually far more colours
+ *  than the available palette. Valid values for \e str are:
  *
- * \li \e "none": no dithering is used, the nearest matching colour is used.
+ *  \li \e "none": no dithering is used, the nearest matching colour is used.
  *
- * \li \e "ordered2": use a 2x2 Bayer matrix for dithering.
+ *  \li \e "ordered2": use a 2x2 Bayer matrix for dithering.
  *
- * \li \e "ordered4": use a 4x4 Bayer matrix for dithering.
+ *  \li \e "ordered4": use a 4x4 Bayer matrix for dithering.
  *
- * \li \e "ordered8": use a 8x8 Bayer matrix for dithering.
+ *  \li \e "ordered8": use a 8x8 Bayer matrix for dithering.
  *
- * \li \e "random": use random dithering.
+ *  \li \e "random": use random dithering.
  *
- * \li \e "fstein": use Floyd-Steinberg dithering. This is the default value.
+ *  \li \e "fstein": use Floyd-Steinberg dithering. This is the default value.
  *
- * \param dither Dither object.
- * \param str A string describing the method that needs to be used
- *        for the dithering.
+ *  \param d Dither object.
+ *  \param str A string describing the method that needs to be used
+ *         for the dithering.
  */
 void cucul_set_dither_mode(struct cucul_dither *d, char const *str)
 {
@@ -675,17 +662,16 @@ void cucul_set_dither_mode(struct cucul_dither *d, char const *str)
     }
 }
 
-/**
- * \brief Get dithering methods
+/** \brief Get dithering methods
  *
- * Return a list of available dithering methods for a given dither. The list
- * is a NULL-terminated array of strings, interleaving a string containing
- * the internal value for the dithering method, to be used with
- * \e cucul_set_dither_dithering(), and a string containing the natural
- * language description for that dithering method.
+ *  Return a list of available dithering methods for a given dither. The list
+ *  is a NULL-terminated array of strings, interleaving a string containing
+ *  the internal value for the dithering method, to be used with
+ *  \e cucul_set_dither_dithering(), and a string containing the natural
+ *  language description for that dithering method.
  *
- * \param dither Dither object.
- * \return An array of strings.
+ *  \param d Dither object.
+ *  \return An array of strings.
  */
 char const * const *
     cucul_get_dither_mode_list(struct cucul_dither const *d)
@@ -704,18 +690,18 @@ char const * const *
     return list;
 }
 
-/**
- * \brief Draw a dither on the screen.
+/** \brief Draw a dither on the screen.
  *
- * Draw a dither at the given coordinates. The dither can be of any size and
- * will be stretched to the text area.
+ *  Draw a dither at the given coordinates. The dither can be of any size and
+ *  will be stretched to the text area.
  *
- * \param x1 X coordinate of the upper-left corner of the drawing area.
- * \param y1 Y coordinate of the upper-left corner of the drawing area.
- * \param x2 X coordinate of the lower-right corner of the drawing area.
- * \param y2 Y coordinate of the lower-right corner of the drawing area.
- * \param dither Dither object to be drawn.
- * \param pixels Bitmap's pixels.
+ *  \param qq A handle to the libcucul canvas.
+ *  \param x1 X coordinate of the upper-left corner of the drawing area.
+ *  \param y1 Y coordinate of the upper-left corner of the drawing area.
+ *  \param x2 X coordinate of the lower-right corner of the drawing area.
+ *  \param y2 Y coordinate of the lower-right corner of the drawing area.
+ *  \param d Dither object to be drawn.
+ *  \param pixels Bitmap's pixels.
  */
 void cucul_dither_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
                          struct cucul_dither const *d, void *pixels)
@@ -963,12 +949,11 @@ void cucul_dither_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
     free(floyd_steinberg);
 }
 
-/**
- * \brief Free the memory associated with a dither.
+/** \brief Free the memory associated with a dither.
  *
- * Free the memory allocated by cucul_create_dither().
+ *  Free the memory allocated by cucul_create_dither().
  *
- * \param dither Dither object.
+ *  \param d Dither object.
  */
 void cucul_free_dither(struct cucul_dither *d)
 {

@@ -40,15 +40,15 @@ static uint8_t clip_bits(cucul_t*, int, int);
 static void draw_solid_line(cucul_t*, struct line*);
 static void draw_thin_line(cucul_t*, struct line*);
 
-/**
- * \brief Draw a line on the screen using the given character.
+/** \brief Draw a line on the canvas using the given character.
  *
- * \param x1 X coordinate of the first point.
- * \param y1 Y coordinate of the first point.
- * \param x2 X coordinate of the second point.
- * \param y2 Y coordinate of the second point.
- * \param str UTF-8 string containing the character to use to draw the line.
- * \return void
+ *  \param qq The handle to the libcucul canvas.
+ *  \param x1 X coordinate of the first point.
+ *  \param y1 Y coordinate of the first point.
+ *  \param x2 X coordinate of the second point.
+ *  \param y2 Y coordinate of the second point.
+ *  \param str UTF-8 string containing the character to use to draw the line.
+ *  \return void
  */
 void cucul_draw_line(cucul_t *qq, int x1, int y1, int x2, int y2,
                      char const *str)
@@ -63,17 +63,19 @@ void cucul_draw_line(cucul_t *qq, int x1, int y1, int x2, int y2,
     clip_line(qq, &s);
 }
 
-/**
- * \brief Draw a polyline on the screen using the given character and
- *       coordinate arrays. The first and last points are not connected,
- *       so in order to draw a polygon you need to specify the starting
- *       point at the end of the list as well.
+/** \brief Draw a polyline.
  *
- * \param x Array of X coordinates. Must have \p n + 1 elements.
- * \param y Array of Y coordinates. Must have \p n + 1 elements.
- * \param n Number of lines to draw.
- * \param str UTF-8 string containing the character to use to draw the lines.
- * \return void
+ *  Draw a plyline on the canvas using the given character and coordinate
+ *  arrays. The first and last points are not connected, hence in order to
+ *  draw a polygon you need to specify the starting point at the end of the
+ *  list as well.
+ *
+ *  \param qq The handle to the libcucul canvas.
+ *  \param x Array of X coordinates. Must have \p n + 1 elements.
+ *  \param y Array of Y coordinates. Must have \p n + 1 elements.
+ *  \param n Number of lines to draw.
+ *  \param str UTF-8 string containing the character to use to draw the lines.
+ *  \return void
  */
 void cucul_draw_polyline(cucul_t *qq, int const x[], int const y[], int n,
                          char const *str)
@@ -93,14 +95,14 @@ void cucul_draw_polyline(cucul_t *qq, int const x[], int const y[], int n,
     }
 }
 
-/**
- * \brief Draw a thin line on the screen, using ASCII art.
+/** \brief Draw a thin line on the canvas, using ASCII art.
  *
- * \param x1 X coordinate of the first point.
- * \param y1 Y coordinate of the first point.
- * \param x2 X coordinate of the second point.
- * \param y2 Y coordinate of the second point.
- * \return void
+ *  \param qq The handle to the libcucul canvas.
+ *  \param x1 X coordinate of the first point.
+ *  \param y1 Y coordinate of the first point.
+ *  \param x2 X coordinate of the second point.
+ *  \param y2 Y coordinate of the second point.
+ *  \return void
  */
 void cucul_draw_thin_line(cucul_t *qq, int x1, int y1, int x2, int y2)
 {
@@ -113,16 +115,18 @@ void cucul_draw_thin_line(cucul_t *qq, int x1, int y1, int x2, int y2)
     clip_line(qq, &s);
 }
 
-/**
- * \brief Draw a thin polyline on the screen using the given coordinate
- *       arrays and with ASCII art. The first and last points are not
- *       connected, so in order to draw a polygon you need to specify the
- *       starting point at the end of the list as well.
+/** \brief Draw an ASCII art thin polyline.
  *
- * \param x Array of X coordinates. Must have \p n + 1 elements.
- * \param y Array of Y coordinates. Must have \p n + 1 elements.
- * \param n Number of lines to draw.
- * \return void
+ *  Draw a thin polyline on the canvas using the given coordinate arrays and
+ *  with ASCII art. The first and last points are not connected, so in order
+ *  to draw a polygon you need to specify the starting point at the end of
+ *  the list as well.
+ *
+ *  \param qq The handle to the libcucul canvas.
+ *  \param x Array of X coordinates. Must have \p n + 1 elements.
+ *  \param y Array of Y coordinates. Must have \p n + 1 elements.
+ *  \param n Number of lines to draw.
+ *  \return void
  */
 void cucul_draw_thin_polyline(cucul_t *qq, int const x[], int const y[], int n)
 {
@@ -144,12 +148,7 @@ void cucul_draw_thin_polyline(cucul_t *qq, int const x[], int const y[], int n)
  * XXX: The following functions are local.
  */
 
-/**
- * \brief Generic Cohen-Sutherland line clipping function.
- *
- * \param s a line structure
- * \return void
- */
+/* Generic Cohen-Sutherland line clipping function. */
 static void clip_line(cucul_t *qq, struct line* s)
 {
     uint8_t bits1, bits2;
@@ -201,13 +200,7 @@ static void clip_line(cucul_t *qq, struct line* s)
     clip_line(qq, s);
 }
 
-/**
- * \brief Helper function for clip_line().
- *
- * \param x X coordinate of the point.
- * \param y Y coordinate of the point.
- * \return The clipping bits for the given point.
- */
+/* Helper function for clip_line(). */
 static uint8_t clip_bits(cucul_t *qq, int x, int y)
 {
     uint8_t b = 0;
@@ -225,13 +218,8 @@ static uint8_t clip_bits(cucul_t *qq, int x, int y)
     return b;
 }
 
-/**
- * \brief Solid line drawing function, using Bresenham's mid-point line
- *       scan-conversion algorithm.
- *
- * \param s a line structure
- * \return void
- */
+/* Solid line drawing function, using Bresenham's mid-point line
+ * scan-conversion algorithm. */
 static void draw_solid_line(cucul_t *qq, struct line* s)
 {
     int x1, y1, x2, y2;
@@ -292,13 +280,8 @@ static void draw_solid_line(cucul_t *qq, struct line* s)
     }
 }
 
-/**
- * \brief Thin line drawing function, using Bresenham's mid-point line
- *        scan-conversion algorithm and ASCII art graphics.
- *
- * \param s a line structure
- * \return void
- */
+/* Thin line drawing function, using Bresenham's mid-point line
+ * scan-conversion algorithm and ASCII art graphics. */
 static void draw_thin_line(cucul_t *qq, struct line* s)
 {
     uint32_t charmapx[2], charmapy[2];

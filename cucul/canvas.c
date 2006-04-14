@@ -43,6 +43,7 @@
  *  caca_printf() and graphical primitive functions such as caca_draw_line()
  *  will use these colour pairs.
  *
+ *  \param qq A handle to the libcucul canvas.
  *  \param fgcolor The requested foreground colour.
  *  \param bgcolor The requested background colour.
  */
@@ -60,11 +61,12 @@ void cucul_set_color(cucul_t *qq, unsigned int fgcolor, unsigned int bgcolor)
  *
  *  This function prints an ASCII character at the given coordinates, using
  *  the default foreground and background values. If the coordinates are
- *  outside the screen boundaries, nothing is printed. If the character
+ *  outside the canvas boundaries, nothing is printed. If the character
  *  value is a non-printable character or is outside the ASCII range, it is
  *  replaced with a space. To print a sequence of bytes forming an UTF-8
  *  character, use cucul_putstr() instead.
  *
+ *  \param qq A handle to the libcucul canvas.
  *  \param x X coordinate.
  *  \param y Y coordinate.
  *  \param c The character to print.
@@ -86,9 +88,10 @@ void cucul_putchar(cucul_t *qq, int x, int y, char c)
  *
  *  This function prints an UTF-8 string at the given coordinates, using the
  *  default foreground and background values. The coordinates may be outside
- *  the screen boundaries (eg. a negative Y coordinate) and the string will
+ *  the canvas boundaries (eg. a negative Y coordinate) and the string will
  *  be cropped accordingly if it is too long.
  *
+ *  \param qq A handle to the libcucul canvas.
  *  \param x X coordinate.
  *  \param y Y coordinate.
  *  \param s The string to print.
@@ -128,14 +131,15 @@ void cucul_putstr(cucul_t *qq, int x, int y, char const *s)
     }
 }
 
-/** \brief Format a string.
+/** \brief Print a formated string.
  *
  *  This function formats a string at the given coordinates, using the
  *  default foreground and background values. The coordinates may be outside
- *  the screen boundaries (eg. a negative Y coordinate) and the string will
+ *  the canvas boundaries (eg. a negative Y coordinate) and the string will
  *  be cropped accordingly if it is too long. The syntax of the format
  *  string is the same as for the C printf() function.
  *
+ *  \param qq A handle to the libcucul canvas.
  *  \param x X coordinate.
  *  \param y Y coordinate.
  *  \param format The format string to print.
@@ -168,9 +172,9 @@ void cucul_printf(cucul_t *qq, int x, int y, char const *format, ...)
         free(buf);
 }
 
-/** \brief Clear the screen.
+/** \brief Clear the canvas.
  *
- *  This function clears the screen using a black background.
+ *  This function clears the canvas using a black background.
  */
 void cucul_clear(cucul_t *qq)
 {

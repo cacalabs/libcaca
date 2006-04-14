@@ -39,7 +39,7 @@
  *
  *  \param width The desired canvas width
  *  \param height The desired canvas height
- *  \return 0 upon success, a non-zero value if an error occurs.
+ *  \return A libcucul canvas handle upon success, NULL if an error occurred.
  */
 cucul_t * cucul_create(unsigned int width, unsigned int height)
 {
@@ -134,6 +134,7 @@ cucul_t *cucul_load(void *data, unsigned int size)
  *  resize through user interaction. See the caca_event() documentation
  *  for more about this.
  *
+ *  \param qq A libcucul canvas
  *  \param width The desired canvas width
  *  \param height The desired canvas height
  */
@@ -149,6 +150,7 @@ void cucul_set_size(cucul_t *qq, unsigned int width, unsigned int height)
  *
  *  This function returns the current canvas width, in character cells.
  *
+ *  \param qq A libcucul canvas
  *  \return The canvas width.
  */
 unsigned int cucul_get_width(cucul_t *qq)
@@ -160,6 +162,7 @@ unsigned int cucul_get_width(cucul_t *qq)
  *
  *  This function returns the current canvas height, in character cells.
  *
+ *  \param qq A libcucul canvas
  *  \return The canvas height.
  */
 unsigned int cucul_get_height(cucul_t *qq)
@@ -208,6 +211,8 @@ char const *cucul_get_color_name(unsigned int color)
  *  This function frees all resources allocated by cucul_create(). After
  *  cucul_free() has been called, no other \e libcucul functions may be used
  *  unless a new call to cucul_create() is done.
+ *
+ *  \param qq A libcucul canvas
  */
 void cucul_free(cucul_t *qq)
 {
@@ -249,15 +254,14 @@ struct cucul_buffer * cucul_create_export(cucul_t *qq, char const *format)
     return ex;
 }
 
-/**
- * \brief Get available export formats
+/** \brief Get available export formats
  *
- * Return a list of available export formats. The list is a NULL-terminated
- * array of strings, interleaving a string containing the internal value for
- * the export format, to be used with \e cucul_create_export(), and a string
- * containing the natural language description for that export format.
+ *  Return a list of available export formats. The list is a NULL-terminated
+ *  array of strings, interleaving a string containing the internal value for
+ *  the export format, to be used with \e cucul_create_export(), and a string
+ *  containing the natural language description for that export format.
  *
- * \return An array of strings.
+ *  \return An array of strings.
  */
 char const * const * cucul_get_export_list(void)
 {

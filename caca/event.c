@@ -50,9 +50,11 @@ static int _lowlevel_event(caca_t *, struct caca_event *);
  *  if no more events are pending in the queue. A negative value causes the
  *  function to wait indefinitely until a matching event is received.
  *
- * \param event_mask Bitmask of requested events.
- * \param timeout A timeout value in microseconds
- * \return The next matching event in the queue, or 0 if no event is pending.
+ *  \param kk The libcaca graphical context.
+ *  \param event_mask Bitmask of requested events.
+ *  \param timeout A timeout value in microseconds
+ *  \param ev A pointer to a caca_event structure.
+ *  \return The next matching event in the queue, or 0 if no event is pending.
  */
 int caca_get_event(caca_t *kk, unsigned int event_mask,
                    struct caca_event *ev, int timeout)
@@ -106,6 +108,7 @@ int caca_get_event(caca_t *kk, unsigned int event_mask,
  *  drivers are being used, because mouse position is only detected when
  *  the mouse is clicked. Other drivers such as X11 work well.
  *
+ *  \param kk The libcaca graphical context.
  *  \return The X mouse coordinate.
  */
 unsigned int caca_get_mouse_x(caca_t *kk)
@@ -123,6 +126,7 @@ unsigned int caca_get_mouse_x(caca_t *kk)
  *  drivers are being used, because mouse position is only detected when
  *  the mouse is clicked. Other drivers such as X11 work well.
  *
+ *  \param kk The libcaca graphical context.
  *  \return The Y mouse coordinate.
  */
 unsigned int caca_get_mouse_y(caca_t *kk)
