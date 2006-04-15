@@ -1,139 +1,303 @@
-<?xml version="1.0" encoding = "Windows-1252"?>
+<?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.00"
+	Version="8,00"
 	Name="libcaca"
 	ProjectGUID="{8951ECB0-7CFE-41AB-A426-98D7C441BEA4}"
-	Keyword="Win32Proj">
+	Keyword="Win32Proj"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="Debug"
 			IntermediateDirectory="Debug"
 			ConfigurationType="4"
-			CharacterSet="2">
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\msvc"
+				AdditionalIncludeDirectories="..\msvc;&quot;D:\code\libcaca-trunk\cucul&quot;;&quot;D:\code\libcaca-trunk\caca&quot;;&quot;C:\Program Files\Microsoft Platform SDK\Include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
-				MinimalRebuild="TRUE"
+				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="5"
+				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="TRUE"
-				DebugInformationFormat="4"/>
+				Detect64BitPortabilityProblems="true"
+				DebugInformationFormat="4"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/cacaview.lib"/>
+				OutputFile="$(OutDir)/cacaview.lib"
+			/>
 			<Tool
-				Name="VCMIDLTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="Release"
 			IntermediateDirectory="Release"
 			ConfigurationType="4"
-			CharacterSet="2">
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				OmitFramePointers="TRUE"
+				OmitFramePointers="true"
 				AdditionalIncludeDirectories="..\msvc"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
-				StringPooling="TRUE"
-				RuntimeLibrary="4"
-				EnableFunctionLevelLinking="TRUE"
+				StringPooling="true"
+				RuntimeLibrary="0"
+				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="TRUE"
-				DebugInformationFormat="3"/>
+				Detect64BitPortabilityProblems="true"
+				DebugInformationFormat="3"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/cacaview.lib"/>
+				OutputFile="$(OutDir)/cacaview.lib"
+			/>
 			<Tool
-				Name="VCMIDLTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
+	<References>
+	</References>
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm">
+			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm"
+			>
 			<File
-				RelativePath="..\src\bitmap.c">
+				RelativePath="..\cucul\box.c"
+				>
 			</File>
 			<File
-				RelativePath="..\src\box.c">
+				RelativePath="..\caca\caca.c"
+				>
 			</File>
 			<File
-				RelativePath="..\src\caca.c">
+				RelativePath="..\cucul\canvas.c"
+				>
 			</File>
 			<File
-				RelativePath="..\src\conic.c">
+				RelativePath="..\cucul\charset.c"
+				>
 			</File>
 			<File
-				RelativePath="..\src\graphics.c">
+				RelativePath="..\cucul\colour.c"
+				>
 			</File>
 			<File
-				RelativePath="..\src\io.c">
+				RelativePath="..\cucul\conic.c"
+				>
 			</File>
 			<File
-				RelativePath="..\src\line.c">
+				RelativePath="..\cucul\cucul.c"
+				>
 			</File>
 			<File
-				RelativePath="..\src\math.c">
+				RelativePath="..\cucul\dither.c"
+				>
 			</File>
 			<File
-				RelativePath="..\src\sprite.c">
+				RelativePath="..\caca\driver_conio.c"
+				>
 			</File>
 			<File
-				RelativePath="..\src\time.c">
+				RelativePath="..\caca\driver_gl.c"
+				>
 			</File>
 			<File
-				RelativePath="..\src\triangle.c">
+				RelativePath="..\caca\driver_ncurses.c"
+				>
+			</File>
+			<File
+				RelativePath="..\caca\driver_raw.c"
+				>
+			</File>
+			<File
+				RelativePath="..\caca\driver_slang.c"
+				>
+			</File>
+			<File
+				RelativePath="..\caca\driver_vga.c"
+				>
+			</File>
+			<File
+				RelativePath="..\caca\driver_win32.c"
+				>
+			</File>
+			<File
+				RelativePath="..\caca\driver_x11.c"
+				>
+			</File>
+			<File
+				RelativePath="..\caca\event.c"
+				>
+			</File>
+			<File
+				RelativePath="..\cucul\export_ansi.c"
+				>
+			</File>
+			<File
+				RelativePath="..\cucul\export_html.c"
+				>
+			</File>
+			<File
+				RelativePath="..\cucul\export_irc.c"
+				>
+			</File>
+			<File
+				RelativePath="..\cucul\export_ps.c"
+				>
+			</File>
+			<File
+				RelativePath="..\cucul\export_svg.c"
+				>
+			</File>
+			<File
+				RelativePath="..\cucul\font.c"
+				>
+			</File>
+			<File
+				RelativePath="..\caca\graphics.c"
+				>
+			</File>
+			<File
+				RelativePath="..\cucul\line.c"
+				>
+			</File>
+			<File
+				RelativePath="..\cucul\math.c"
+				>
+			</File>
+			<File
+				RelativePath="..\cucul\sprite.c"
+				>
+			</File>
+			<File
+				RelativePath="..\caca\time.c"
+				>
+			</File>
+			<File
+				RelativePath="..\cucul\transform.c"
+				>
+			</File>
+			<File
+				RelativePath="..\cucul\triangle.c"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl;inc">
+			Filter="h;hpp;hxx;hm;inl;inc"
+			>
 			<File
-				RelativePath="..\src\caca.h">
+				RelativePath="..\caca\caca.h"
+				>
 			</File>
 			<File
-				RelativePath="..\src\caca_internals.h">
+				RelativePath="..\caca\caca_internals.h"
+				>
 			</File>
 			<File
-				RelativePath="config.h">
+				RelativePath="config.h"
+				>
+			</File>
+			<File
+				RelativePath="..\cucul\cucul.h"
+				>
+			</File>
+			<File
+				RelativePath="..\cucul\cucul_internals.h"
+				>
 			</File>
 		</Filter>
 	</Files>

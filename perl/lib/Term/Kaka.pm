@@ -68,4 +68,4 @@ be, sound, and smell harsh.
 
 =cut
 
-# $Id: Kaka.pm,v 1.2 2004/10/22 21:12:01 beppu Exp $
+# $Id$

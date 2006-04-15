@@ -140,6 +140,9 @@ struct caca_context
         unsigned int autorepeat_ticks;
         struct caca_event last_key_event;
 #endif
+#if defined(USE_WIN32)
+		unsigned char not_empty_struct;
+#endif
     } events;
 };
 

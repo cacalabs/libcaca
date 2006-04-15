@@ -386,4 +386,4 @@ Term::Caca - perl interface for libcaca (Colour AsCii Art library)
 =cut
 
 # vim:sw=2 sts=2 expandtab
-# $Id: Caca.pm,v 1.5 2004/10/25 18:14:57 beppu Exp $
+# $Id$

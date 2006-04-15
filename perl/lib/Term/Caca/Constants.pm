@@ -329,4 +329,4 @@ Only import the constants pertaining to events and keys:
 
 =cut
 
-# $Id: Constants.pm,v 1.1 2004/10/18 21:00:56 beppu Exp $
+# $Id$

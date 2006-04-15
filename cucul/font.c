@@ -17,6 +17,7 @@
 
 #include "config.h"
 
+#if !defined(USE_WIN32)
 #if !defined(__KERNEL__)
 #   if defined(HAVE_ENDIAN_H)
 #       include <endian.h>
@@ -432,3 +433,4 @@ void cucul_render_canvas(cucul_t *qq, struct cucul_font *f,
  * };
  */
 
+#endif
