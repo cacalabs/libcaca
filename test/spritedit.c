@@ -44,7 +44,7 @@ int main(int argc, char **argv)
     if(!kk)
         return 1;
 
-    sprite = cucul_load_sprite(qq, argv[1]);
+    sprite = cucul_load_sprite(argv[1]);
 
     if(!sprite)
     {
@@ -75,7 +75,7 @@ int main(int argc, char **argv)
                     frame--;
                 break;
             case '+':
-                if(frame < cucul_get_sprite_frames(qq, sprite) - 1)
+                if(frame < cucul_get_sprite_frames(sprite) - 1)
                     frame++;
                 break;
 	    case 'p':
@@ -86,7 +86,7 @@ int main(int argc, char **argv)
 
 	if(play) {
 	    if(!delay) {
-		if(frame < cucul_get_sprite_frames(qq, sprite) - 1) {
+		if(frame < cucul_get_sprite_frames(sprite) - 1) {
 		    frame++;
 		}
 		else {
@@ -109,7 +109,7 @@ int main(int argc, char **argv)
 
         sprintf(buf, "sprite `%s'", argv[1]);
         cucul_putstr(qq, 3, 2, buf);
-        sprintf(buf, "frame %i/%i", frame, cucul_get_sprite_frames(qq, sprite) - 1);
+        sprintf(buf, "frame %i/%i", frame, cucul_get_sprite_frames(sprite) - 1);
         cucul_putstr(qq, 3, 3, buf);
 
         /* Crosshair */
@@ -118,10 +118,10 @@ int main(int argc, char **argv)
         cucul_putchar(qq, 57, 10, '+');
 
         /* Boxed sprite */
-        xa = -1 - cucul_get_sprite_dx(qq, sprite, frame);
-        ya = -1 - cucul_get_sprite_dy(qq, sprite, frame);
-        xb = xa + 1 + cucul_get_sprite_width(qq, sprite, frame);
-        yb = ya + 1 + cucul_get_sprite_height(qq, sprite, frame);
+        xa = -1 - cucul_get_sprite_dx(sprite, frame);
+        ya = -1 - cucul_get_sprite_dy(sprite, frame);
+        xb = xa + 1 + cucul_get_sprite_width(sprite, frame);
+        yb = ya + 1 + cucul_get_sprite_height(sprite, frame);
         cucul_set_color(qq, CUCUL_COLOR_BLACK, CUCUL_COLOR_BLACK);
         cucul_fill_box(qq, 57 + xa, 10 + ya, 57 + xb, 10 + yb, " ");
         cucul_set_color(qq, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);

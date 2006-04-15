@@ -55,11 +55,11 @@ int main(int argc, char **argv)
     caca_set_delay(kk, 40000);
 
     /* Initialize data */
-    sprite = cucul_load_sprite(qq, DATADIR "/caca.txt");
+    sprite = cucul_load_sprite(DATADIR "/caca.txt");
     if(!sprite)
-        sprite = cucul_load_sprite(qq, "caca.txt");
+        sprite = cucul_load_sprite("caca.txt");
     if(!sprite)
-        sprite = cucul_load_sprite(qq, "examples/caca.txt");
+        sprite = cucul_load_sprite("examples/caca.txt");
 
     /* Disable cursor */
     caca_set_mouse(kk, 0);
