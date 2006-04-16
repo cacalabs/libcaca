@@ -8,5 +8,5 @@ Description: Canvas for ultrafast compositing of Unicode letters
 Version: @VERSION@
 Requires: 
 Conflicts: 
-Libs: -L${libdir} -lcaca
+Libs: -L${libdir} -lcucul
 Cflags: -I${includedir}
