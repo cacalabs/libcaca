@@ -41,31 +41,6 @@
  * Global variables
  */
 
-/* Ok, I just suck. */
-static GLbyte const gl_bgpal[][4] =
-{
-    { 0x00, 0x00, 0x00, 0x7f },
-    { 0x00, 0x00, 0x3f, 0x7f },
-    { 0x00, 0x3f, 0x00, 0x7f },
-    { 0x00, 0x3f, 0x3f, 0x7f },
-    { 0x3f, 0x00, 0x00, 0x7f },
-    { 0x3f, 0x00, 0x3f, 0x7f },
-    { 0x3f, 0x3f, 0x00, 0x7f },
-    { 0x3f, 0x3f, 0x3f, 0x7f },
-    // + intensity
-    // >.
-    // ()
-    // ^^
-    { 0x1f, 0x1f, 0x1f, 0x7f },
-    { 0x1f, 0x1f, 0x7f, 0x7f },
-    { 0x1f, 0x7f, 0x1f, 0x7f },
-    { 0x1f, 0x7f, 0x7f, 0x7f },
-    { 0x7f, 0x1f, 0x1f, 0x7f },
-    { 0x7f, 0x1f, 0x7f, 0x7f },
-    { 0x7f, 0x7f, 0x1f, 0x7f },
-    { 0x7f, 0x7f, 0x7f, 0x7f }
-};
-
 static caca_t *gl_kk; /* FIXME: we ought to get rid of this */
 
 /*
@@ -247,8 +222,11 @@ static void gl_display(caca_t *kk)
 
         for(x = 0; x < kk->drv.p->width; x += kk->drv.p->font_width)
         {
+            uint16_t bg = _cucul_argb32_to_rgb12bg(*attr++);
             glDisable(GL_TEXTURE_2D);
-            glColor4bv(gl_bgpal[_cucul_argb32_to_ansi4bg(*attr++)]);
+            glColor3b(((bg & 0xf00) >> 8) * 8,
+                      ((bg & 0x0f0) >> 4) * 8,
+                      (bg & 0x00f) * 8);
             glBegin(GL_QUADS);
                 glVertex2f(x, y);
                 glVertex2f(x + kk->drv.p->font_width, y);
@@ -278,8 +256,11 @@ static void gl_display(caca_t *kk)
 
             if(c > 0x00000020 && c < 0x00000080)
             {
+                uint16_t fg = _cucul_argb32_to_rgb12fg(*attr);
                 glBindTexture(GL_TEXTURE_2D, kk->drv.p->id[c - 32]);
-                glColor4bv(gl_bgpal[_cucul_argb32_to_ansi4fg(*attr)]);
+                glColor3b(((fg & 0xf00) >> 8) * 8,
+                          ((fg & 0x0f0) >> 4) * 8,
+                          (fg & 0x00f) * 8);
                 glBegin(GL_QUADS);
                     glTexCoord2f(0, kk->drv.p->sh);
                     glVertex2f(x, y);

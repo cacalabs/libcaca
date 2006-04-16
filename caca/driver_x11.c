@@ -47,7 +47,7 @@ struct driver_private
     GC gc;
     long int event_mask;
     int font_width, font_height;
-    int colors[16];
+    int colors[4096];
     Font font;
     XFontStruct *font_struct;
     int font_offset;
@@ -59,28 +59,6 @@ struct driver_private
 
 static int x11_init_graphics(caca_t *kk)
 {
-    static int const x11_palette[] =
-    {
-        /* Standard curses colours */
-        0x0,    0x0,    0x0,
-        0x0,    0x0,    0x8000,
-        0x0,    0x8000, 0x0,
-        0x0,    0x8000, 0x8000,
-        0x8000, 0x0,    0x0,
-        0x8000, 0x0,    0x8000,
-        0x8000, 0x8000, 0x0,
-        0x8000, 0x8000, 0x8000,
-        /* Extra values for xterm-16color */
-        0x4000, 0x4000, 0x4000,
-        0x4000, 0x4000, 0xffff,
-        0x4000, 0xffff, 0x4000,
-        0x4000, 0xffff, 0xffff,
-        0xffff, 0x4000, 0x4000,
-        0xffff, 0x4000, 0xffff,
-        0xffff, 0xffff, 0x4000,
-        0xffff, 0xffff, 0xffff,
-    };
-
     Colormap colormap;
     XSetWindowAttributes x11_winattr;
     int (*old_error_handler)(Display *, XErrorEvent *);
@@ -148,18 +126,18 @@ static int x11_init_graphics(caca_t *kk)
     kk->drv.p->font_offset = kk->drv.p->font_struct->max_bounds.descent;
 
     colormap = DefaultColormap(kk->drv.p->dpy, DefaultScreen(kk->drv.p->dpy));
-    for(i = 0; i < 16; i++)
+    for(i = 0x000; i < 0x1000; i++)
     {
         XColor color;
-        color.red = x11_palette[i * 3];
-        color.green = x11_palette[i * 3 + 1];
-        color.blue = x11_palette[i * 3 + 2];
+        color.red = ((i & 0xf00) >> 8) * 0x1111;
+        color.green = ((i & 0x0f0) >> 4) * 0x1111;
+        color.blue = (i & 0x00f) * 0x1111;
         XAllocColor(kk->drv.p->dpy, colormap, &color);
         kk->drv.p->colors[i] = color.pixel;
     }
 
     x11_winattr.backing_store = Always;
-    x11_winattr.background_pixel = kk->drv.p->colors[0];
+    x11_winattr.background_pixel = kk->drv.p->colors[0x000];
     x11_winattr.event_mask = ExposureMask | StructureNotifyMask;
 
     kk->drv.p->window =
@@ -176,7 +154,7 @@ static int x11_init_graphics(caca_t *kk)
     XMapWindow(kk->drv.p->dpy, kk->drv.p->window);
 
     kk->drv.p->gc = XCreateGC(kk->drv.p->dpy, kk->drv.p->window, 0, NULL);
-    XSetForeground(kk->drv.p->dpy, kk->drv.p->gc, kk->drv.p->colors[15]);
+    XSetForeground(kk->drv.p->dpy, kk->drv.p->gc, kk->drv.p->colors[0x888]);
     XSetFont(kk->drv.p->dpy, kk->drv.p->gc, kk->drv.p->font);
 
     for(;;)
@@ -258,15 +236,15 @@ static void x11_display(caca_t *kk)
         for(x = 0; x < kk->qq->width; x += len)
         {
             uint32_t *attr = kk->qq->attr + x + y * kk->qq->width;
-            uint8_t bg = _cucul_argb32_to_ansi4bg(*attr);
+            uint16_t bg = _cucul_argb32_to_rgb12bg(*attr);
 
             len = 1;
             while(x + len < kk->qq->width
-                   && _cucul_argb32_to_ansi4bg(attr[len]) == bg)
+                   && _cucul_argb32_to_rgb12bg(attr[len]) == bg)
                 len++;
 
             XSetForeground(kk->drv.p->dpy, kk->drv.p->gc,
-                           kk->drv.p->colors[_cucul_argb32_to_ansi4bg(*attr)]);
+                           kk->drv.p->colors[bg]);
             XFillRectangle(kk->drv.p->dpy, kk->drv.p->pixmap, kk->drv.p->gc,
                            x * kk->drv.p->font_width, y * kk->drv.p->font_height,
                            len * kk->drv.p->font_width, kk->drv.p->font_height);
@@ -289,7 +267,7 @@ static void x11_display(caca_t *kk)
                 continue;
 
             XSetForeground(kk->drv.p->dpy, kk->drv.p->gc,
-                           kk->drv.p->colors[_cucul_argb32_to_ansi4fg(*attr)]);
+                           kk->drv.p->colors[_cucul_argb32_to_rgb12fg(*attr)]);
 
             /* Plain ASCII, no problem. */
             if(*chars > 0x00000020 && *chars < 0x00000080)
