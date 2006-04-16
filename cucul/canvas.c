@@ -37,26 +37,6 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
-/** \brief Set the default colour pair.
- *
- *  This function sets the default colour pair. String functions such as
- *  caca_printf() and graphical primitive functions such as caca_draw_line()
- *  will use these colour pairs.
- *
- *  \param qq A handle to the libcucul canvas.
- *  \param fgcolor The requested foreground colour.
- *  \param bgcolor The requested background colour.
- */
-void cucul_set_color(cucul_t *qq, unsigned int fgcolor, unsigned int bgcolor)
-{
-    /* FIXME */
-    if(fgcolor < 0 || fgcolor > 15 || bgcolor < 0 || bgcolor > 15)
-        return;
-
-    qq->fgcolor = fgcolor;
-    qq->bgcolor = bgcolor;
-}
-
 /** \brief Print an ASCII character.
  *
  *  This function prints an ASCII character at the given coordinates, using

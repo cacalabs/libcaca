@@ -97,7 +97,8 @@ void cucul_free_buffer(cucul_buffer_t *);
  *  higher level graphics functions.
  *
  *  @{ */
-void cucul_set_color(cucul_t *, unsigned int, unsigned int);
+void cucul_set_color(cucul_t *, unsigned char, unsigned char);
+void cucul_set_truecolor(cucul_t *, unsigned int, unsigned int);
 char const *cucul_get_color_name(unsigned int);
 void cucul_putchar(cucul_t *, int, int, char);
 void cucul_putstr(cucul_t *, int, int, char const *);
