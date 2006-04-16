@@ -42,7 +42,7 @@ static char const svg_header[] =
  *  This function generates and returns a SVG representation of
  *  the current image.
  */
-void _cucul_get_svg(cucul_t *qq, struct cucul_buffer *ex)
+void _cucul_get_svg(cucul_t *qq, cucul_buffer_t *ex)
 {
     static int const palette[] =
     {

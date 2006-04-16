@@ -105,7 +105,9 @@ struct server
     char prefix[sizeof(INIT_PREFIX)];
 
     cucul_t *qq;
-    struct cucul_buffer *ex;
+    cucul_buffer_t *buffer;
+    unsigned long int buflen;
+    void *bufdata;
 
     int client_count;
     struct client *clients;
@@ -183,7 +185,7 @@ int main(void)
     }
 
     server->qq = NULL;
-    server->ex = NULL;
+    server->buffer = NULL;
 
     /* Ignore SIGPIPE */
     server->sigpipe_handler = signal(SIGPIPE, SIG_IGN);
@@ -230,16 +232,16 @@ int main(void)
             continue; /* Load error */
 
         /* Free the previous export buffer, if any */
-        if(server->ex)
+        if(server->buffer)
         {
-            cucul_free_export(server->ex);
-            server->ex = NULL;
+            cucul_free_buffer(server->buffer);
+            server->buffer = NULL;
         }
 
         /* Get ANSI representation of the image and skip the end-of buffer
          * linefeed ("\r\n\0", 3 bytes) */
-        server->ex = cucul_create_export(server->qq, "ansi");
-        server->ex->size -= 3;
+        server->buffer = cucul_create_export(server->qq, "ansi");
+        server->buflen -= 3;
 
         for(i = 0; i < server->client_count; i++)
         {
@@ -266,8 +268,8 @@ int main(void)
         server->clients[i].fd = -1;
     }
 
-    if(server->ex)
-        cucul_free_export(server->ex);
+    if(server->buffer)
+        cucul_free_buffer(server->buffer);
 
     /* Restore SIGPIPE handler */
     signal(SIGPIPE, server->sigpipe_handler);
@@ -395,7 +397,7 @@ static int send_data(struct server *server, struct client *c)
     }
 
     /* No error, there's just nothing to send yet */
-    if(!server->ex)
+    if(!server->buffer)
         return 0;
 
     /* If we have backlog, send the backlog */
@@ -420,7 +422,7 @@ static int send_data(struct server *server, struct client *c)
         {
             c->start += ret;
 
-            if(c->stop - c->start + strlen(ANSI_PREFIX) + server->ex->size
+            if(c->stop - c->start + strlen(ANSI_PREFIX) + server->buflen
                 > OUTBUFFER)
             {
                 /* Overflow! Empty buffer and start again */
@@ -431,7 +433,7 @@ static int send_data(struct server *server, struct client *c)
             }
 
             /* Need to move? */
-            if(c->stop + strlen(ANSI_PREFIX) + server->ex->size > OUTBUFFER)
+            if(c->stop + strlen(ANSI_PREFIX) + server->buflen > OUTBUFFER)
             {
                 memmove(c->outbuf, c->outbuf + c->start, c->stop - c->start);
                 c->stop -= c->start;
@@ -440,8 +442,8 @@ static int send_data(struct server *server, struct client *c)
 
             memcpy(c->outbuf + c->stop, ANSI_PREFIX, strlen(ANSI_PREFIX));
             c->stop += strlen(ANSI_PREFIX);
-            memcpy(c->outbuf + c->stop, server->ex->data, server->ex->size);
-            c->stop += server->ex->size;
+            memcpy(c->outbuf + c->stop, server->bufdata, server->buflen);
+            c->stop += server->buflen;
 
             return 0;
         }
@@ -461,7 +463,7 @@ static int send_data(struct server *server, struct client *c)
 
     if(ret < (ssize_t)strlen(ANSI_PREFIX))
     {
-        if(strlen(ANSI_PREFIX) + server->ex->size > OUTBUFFER)
+        if(strlen(ANSI_PREFIX) + server->buflen > OUTBUFFER)
         {
             /* Overflow! Empty buffer and start again */
             memcpy(c->outbuf, ANSI_RESET, strlen(ANSI_RESET));
@@ -472,14 +474,14 @@ static int send_data(struct server *server, struct client *c)
 
         memcpy(c->outbuf, ANSI_PREFIX, strlen(ANSI_PREFIX) - ret);
         c->stop = strlen(ANSI_PREFIX) - ret;
-        memcpy(c->outbuf + c->stop, server->ex->data, server->ex->size);
-        c->stop += server->ex->size;
+        memcpy(c->outbuf + c->stop, server->bufdata, server->buflen);
+        c->stop += server->buflen;
 
         return 0;
     }
 
     /* Send actual data */
-    ret = nonblock_write(c->fd, server->ex->data, server->ex->size);
+    ret = nonblock_write(c->fd, server->bufdata, server->buflen);
     if(ret == -1)
     {
         if(errno == EAGAIN)
@@ -488,9 +490,9 @@ static int send_data(struct server *server, struct client *c)
             return -1;
     }
 
-    if(ret < (int)server->ex->size)
+    if(ret < (int)server->buflen)
     {
-        if(server->ex->size > OUTBUFFER)
+        if(server->buflen > OUTBUFFER)
         {
             /* Overflow! Empty buffer and start again */
             memcpy(c->outbuf, ANSI_RESET, strlen(ANSI_RESET));
@@ -499,8 +501,8 @@ static int send_data(struct server *server, struct client *c)
             return 0;
         }
 
-        memcpy(c->outbuf, server->ex->data, server->ex->size - ret);
-        c->stop = server->ex->size - ret;
+        memcpy(c->outbuf, server->bufdata, server->buflen - ret);
+        c->stop = server->buflen - ret;
 
         return 0;
     }

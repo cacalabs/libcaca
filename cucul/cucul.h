@@ -31,13 +31,16 @@ extern "C"
 {
 #endif
 
-typedef struct cucul_context cucul_t;
-
-struct cucul_buffer
-{
-    unsigned int size;
-    char *data;
-};
+/** \e libcucul context */
+typedef struct cucul cucul_t;
+/** sprite structure */
+typedef struct cucul_sprite cucul_sprite_t;
+/** dither structure */
+typedef struct cucul_dither cucul_dither_t;
+/** data buffer structure */
+typedef struct cucul_buffer cucul_buffer_t;
+/** font structure */
+typedef struct cucul_font cucul_font_t;
 
 /** \defgroup colour Colour definitions
  *
@@ -64,7 +67,7 @@ struct cucul_buffer
 #define CUCUL_COLOR_TRANSPARENT 0x20 /**< The transparent colour. */
 /*  @} */
 
-/** \defgroup basic Basic functions
+/** \defgroup cucul Basic libcucul functions
  *
  *  These functions provide the basic \e libcaca routines for library
  *  initialisation, system information retrieval and configuration.
@@ -76,6 +79,16 @@ void cucul_set_size(cucul_t *, unsigned int, unsigned int);
 unsigned int cucul_get_width(cucul_t *);
 unsigned int cucul_get_height(cucul_t *);
 void cucul_free(cucul_t *);
+/*  @} */
+
+/** \defgroup buffer Buffer handling
+ *
+ *  These functions provide methods to handle libcucul buffers.
+ *
+ *  @{ */
+unsigned long int cucul_get_buffer_size(cucul_buffer_t *);
+void * cucul_get_buffer_data(cucul_buffer_t *);
+void cucul_free_buffer(cucul_buffer_t *);
 /*  @} */
 
 /** \defgroup canvas Canvas drawing
@@ -144,15 +157,14 @@ unsigned int cucul_sqrt(unsigned int);
  *  and rendering.
  *
  *  @{ */
-struct cucul_sprite;
-struct cucul_sprite * cucul_load_sprite(char const *);
-int cucul_get_sprite_frames(struct cucul_sprite const *);
-int cucul_get_sprite_width(struct cucul_sprite const *, int);
-int cucul_get_sprite_height(struct cucul_sprite const *, int);
-int cucul_get_sprite_dx(struct cucul_sprite const *, int);
-int cucul_get_sprite_dy(struct cucul_sprite const *, int);
-void cucul_draw_sprite(cucul_t *, int, int, struct cucul_sprite const *, int);
-void cucul_free_sprite(struct cucul_sprite *);
+cucul_sprite_t * cucul_load_sprite(char const *);
+int cucul_get_sprite_frames(cucul_sprite_t const *);
+int cucul_get_sprite_width(cucul_sprite_t const *, int);
+int cucul_get_sprite_height(cucul_sprite_t const *, int);
+int cucul_get_sprite_dx(cucul_sprite_t const *, int);
+int cucul_get_sprite_dy(cucul_sprite_t const *, int);
+void cucul_draw_sprite(cucul_t *, int, int, cucul_sprite_t const *, int);
+void cucul_free_sprite(cucul_sprite_t *);
 /*  @} */
 
 /** \defgroup dither Bitmap dithering
@@ -161,29 +173,28 @@ void cucul_free_sprite(struct cucul_sprite *);
  *  rendering.
  *
  *  @{ */
-struct cucul_dither;
-struct cucul_dither *cucul_create_dither(unsigned int, unsigned int,
+cucul_dither_t *cucul_create_dither(unsigned int, unsigned int,
                                          unsigned int, unsigned int,
                                          unsigned int, unsigned int,
                                          unsigned int, unsigned int);
-void cucul_set_dither_palette(struct cucul_dither *,
+void cucul_set_dither_palette(cucul_dither_t *,
                               unsigned int r[], unsigned int g[],
                               unsigned int b[], unsigned int a[]);
-void cucul_set_dither_brightness(struct cucul_dither *, float);
-void cucul_set_dither_gamma(struct cucul_dither *, float);
-void cucul_set_dither_contrast(struct cucul_dither *, float);
-void cucul_set_dither_invert(struct cucul_dither *, int);
-void cucul_set_dither_antialias(struct cucul_dither *, char const *);
-char const * const * cucul_get_dither_antialias_list(struct cucul_dither const *);
-void cucul_set_dither_color(struct cucul_dither *, char const *);
-char const * const * cucul_get_dither_color_list(struct cucul_dither const *);
-void cucul_set_dither_charset(struct cucul_dither *, char const *);
-char const * const * cucul_get_dither_charset_list(struct cucul_dither const *);
-void cucul_set_dither_mode(struct cucul_dither *, char const *);
-char const * const * cucul_get_dither_mode_list(struct cucul_dither const *);
+void cucul_set_dither_brightness(cucul_dither_t *, float);
+void cucul_set_dither_gamma(cucul_dither_t *, float);
+void cucul_set_dither_contrast(cucul_dither_t *, float);
+void cucul_set_dither_invert(cucul_dither_t *, int);
+void cucul_set_dither_antialias(cucul_dither_t *, char const *);
+char const * const * cucul_get_dither_antialias_list(cucul_dither_t const *);
+void cucul_set_dither_color(cucul_dither_t *, char const *);
+char const * const * cucul_get_dither_color_list(cucul_dither_t const *);
+void cucul_set_dither_charset(cucul_dither_t *, char const *);
+char const * const * cucul_get_dither_charset_list(cucul_dither_t const *);
+void cucul_set_dither_mode(cucul_dither_t *, char const *);
+char const * const * cucul_get_dither_mode_list(cucul_dither_t const *);
 void cucul_dither_bitmap(cucul_t *, int, int, int, int,
-                         struct cucul_dither const *, void *);
-void cucul_free_dither(struct cucul_dither *);
+                         cucul_dither_t const *, void *);
+void cucul_free_dither(cucul_dither_t *);
 /*  @} */
 
 /** \defgroup font Font handling
@@ -192,25 +203,23 @@ void cucul_free_dither(struct cucul_dither *);
  *  canvas to bitmap rendering.
  *
  *  @{ */
-struct cucul_font;
-struct cucul_font *cucul_load_font(void const *, unsigned int);
+cucul_font_t *cucul_load_font(void const *, unsigned int);
 char const * const * cucul_get_font_list(void);
-unsigned int cucul_get_font_width(struct cucul_font *);
-unsigned int cucul_get_font_height(struct cucul_font *);
-void cucul_render_canvas(cucul_t *, struct cucul_font *, unsigned char *,
+unsigned int cucul_get_font_width(cucul_font_t *);
+unsigned int cucul_get_font_height(cucul_font_t *);
+void cucul_render_canvas(cucul_t *, cucul_font_t *, unsigned char *,
                          unsigned int, unsigned int, unsigned int);
-void cucul_free_font(struct cucul_font *);
+void cucul_free_font(cucul_font_t *);
 /*  @} */
 
 /** \defgroup exporter Exporters to various formats
  *
  *  These functions export the current canvas to various text formats. It
- *  is necessary to call cucul_free_export() to dispose of the data.
+ *  is necessary to call cucul_free_buffer() to dispose of the data.
  *
  *  @{ */
-struct cucul_buffer * cucul_create_export(cucul_t *, char const *);
+cucul_buffer_t * cucul_create_export(cucul_t *, char const *);
 char const * const * cucul_get_export_list(void);
-void cucul_free_export(struct cucul_buffer *);
 /*  @} */
 
 #ifdef __cplusplus

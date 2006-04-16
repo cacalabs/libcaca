@@ -39,7 +39,7 @@ int main (int argc, char **argv)
 {
     cucul_t *qq; caca_t *kk;
     unsigned int red[256], green[256], blue[256], alpha[256];
-    struct cucul_dither *dither;
+    cucul_dither_t *dither;
     int i, x, y, frame = 0, pause = 0;
 
     qq = cucul_create(0, 0);
@@ -68,7 +68,7 @@ int main (int argc, char **argv)
     /* Main loop */
     for(;;)
     {
-        struct caca_event ev;
+        caca_event_t ev;
         if(caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev, 0))
         {
             switch(ev.data.key.c)

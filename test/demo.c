@@ -35,7 +35,7 @@ static void demo_render(void);
 int bounds = 0;
 int outline = 0;
 int dithering = 0;
-struct cucul_sprite *sprite = NULL;
+cucul_sprite_t *sprite = NULL;
 
 cucul_t *qq;
 caca_t *kk;
@@ -71,7 +71,7 @@ int main(int argc, char **argv)
     /* Go ! */
     while(!quit)
     {
-        struct caca_event ev;
+        caca_event_t ev;
         int menu = 0, mouse = 0, xmouse = 0, ymouse = 0;
 
         while(caca_get_event(kk, CACA_EVENT_ANY, &ev, 0))
@@ -483,7 +483,7 @@ static void demo_sprites(void)
 #if 0
 static void demo_render(void)
 {
-    struct cucul_dither *dither;
+    cucul_dither_t *dither;
     //short buffer[256*256];
     //short *dest = buffer;
     int buffer[256*256];
@@ -513,7 +513,7 @@ static void draw_circle(int *buffer, int xo, int yo, int r, int mask, int val);
 
 static void demo_render(void)
 {
-    struct cucul_dither *dither;
+    cucul_dither_t *dither;
     int buffer[256*256];
     int *dest;
     int x, y, z, xo, yo;

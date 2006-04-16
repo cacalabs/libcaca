@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 {
     cucul_t *qq;
     caca_t *kk;
-    struct caca_event ev;
+    caca_event_t ev;
     int i, j;
 
     qq = cucul_create(0, 0);

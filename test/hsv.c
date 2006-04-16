@@ -28,11 +28,11 @@ uint32_t buffer[256*256];
 
 int main(void)
 {
-    struct caca_event ev;
+    caca_event_t ev;
     cucul_t *qq;
     caca_t *kk;
 
-    struct cucul_dither *dither;
+    cucul_dither_t *dither;
     int x, y;
 
     qq = cucul_create(0, 0);

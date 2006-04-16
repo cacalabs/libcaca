@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 {
     /* libcucul context */
     cucul_t *qq;
-    struct cucul_buffer *export;
+    cucul_buffer_t *export;
     struct image *i;
     int cols = 56, lines;
 
@@ -59,8 +59,9 @@ int main(int argc, char **argv)
     unload_image(i);
 
     export = cucul_create_export(qq, "irc");
-    fwrite(export->data, export->size, 1, stdout);
-    cucul_free_export(export);
+    fwrite(cucul_get_buffer_data(export),
+           cucul_get_buffer_size(export), 1, stdout);
+    cucul_free_buffer(export);
 
     cucul_free(qq);
 

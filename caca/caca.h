@@ -87,23 +87,10 @@ extern "C"
 {
 #endif
 
-/** \brief User event types.
- *
- *  Event types returned by caca_get_event().
- */
-enum caca_event_type
-{
-    CACA_EVENT_NONE =          0x0000, /**< No event. */
-
-    CACA_EVENT_KEY_PRESS =     0x0001, /**< A key was pressed. */
-    CACA_EVENT_KEY_RELEASE =   0x0002, /**< A key was released. */
-    CACA_EVENT_MOUSE_PRESS =   0x0004, /**< A mouse button was pressed. */
-    CACA_EVENT_MOUSE_RELEASE = 0x0008, /**< A mouse button was released. */
-    CACA_EVENT_MOUSE_MOTION =  0x0010, /**< The mouse was moved. */
-    CACA_EVENT_RESIZE =        0x0020, /**< The window was resized. */
-
-    CACA_EVENT_ANY =           0xffff  /**< Bitmask for any event. */
-};
+/** \e libcaca context */
+typedef struct caca caca_t;
+/** event structure */
+typedef struct caca_event caca_event_t;
 
 /** \brief User events.
  *
@@ -138,7 +125,20 @@ enum caca_event_type
  */
 struct caca_event
 {
-    enum caca_event_type type;
+    enum caca_event_type
+    {
+        CACA_EVENT_NONE =          0x0000, /**< No event. */
+
+        CACA_EVENT_KEY_PRESS =     0x0001, /**< A key was pressed. */
+        CACA_EVENT_KEY_RELEASE =   0x0002, /**< A key was released. */
+        CACA_EVENT_MOUSE_PRESS =   0x0004, /**< A mouse button was pressed. */
+        CACA_EVENT_MOUSE_RELEASE = 0x0008, /**< A mouse button was released. */
+        CACA_EVENT_MOUSE_MOTION =  0x0010, /**< The mouse was moved. */
+        CACA_EVENT_RESIZE =        0x0020, /**< The window was resized. */
+
+        CACA_EVENT_ANY =           0xffff  /**< Bitmask for any event. */
+    } type;
+
     union
     {
         struct { unsigned int x, y, button; } mouse;
@@ -194,9 +194,7 @@ enum caca_key
     CACA_KEY_F15 = 0x128  /**< The F15 key. */
 };
 
-typedef struct caca_context caca_t;
-
-/** \defgroup basic Basic functions
+/** \defgroup caca Basic libcaca functions
  *
  *  These functions provide the basic \e libcaca routines for driver
  *  initialisation, system information retrieval and configuration.
@@ -218,7 +216,7 @@ int caca_set_window_title(caca_t *kk, char const *);
  *  clicks.
  *
  *  @{ */
-int caca_get_event(caca_t *kk, unsigned int, struct caca_event *, int);
+int caca_get_event(caca_t *kk, unsigned int, caca_event_t *, int);
 unsigned int caca_get_mouse_x(caca_t *kk);
 unsigned int caca_get_mouse_y(caca_t *kk);
 void caca_set_mouse(caca_t *kk, int);

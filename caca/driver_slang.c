@@ -252,7 +252,7 @@ static void slang_handle_resize(caca_t *kk)
         SLsmg_reinit_smg();
 }
 
-static int slang_get_event(caca_t *kk, struct caca_event *ev)
+static int slang_get_event(caca_t *kk, caca_event_t *ev)
 {
     int intkey;
 

@@ -26,7 +26,7 @@ int main(int argc, char **argv)
     caca_t *kk;
 
     int quit = 0;
-    struct cucul_sprite *sprite;
+    cucul_sprite_t *sprite;
     int frame = 0;
     unsigned char play = 0;
     unsigned int delay = 0;
@@ -57,7 +57,7 @@ int main(int argc, char **argv)
     /* Go ! */
     while(!quit)
     {
-        struct caca_event ev;
+        caca_event_t ev;
         int xa, ya, xb, yb;
         char buf[BUFSIZ];
 

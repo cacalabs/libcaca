@@ -35,8 +35,8 @@ uint32_t pixels[256*256];
 int main(int argc, char *argv[])
 {
     cucul_t *qq;
-    struct cucul_dither *dither;
-    struct cucul_buffer *buffer;
+    cucul_dither_t *dither;
+    cucul_buffer_t *buffer;
     int x, y;
 
     if(argc != 2)
@@ -90,8 +90,9 @@ int main(int argc, char *argv[])
     cucul_putstr(qq, WIDTH / 2 - 7, HEIGHT / 2, "    LIBCACA    ");
 
     buffer = cucul_create_export(qq, argv[1]);
-    fwrite(buffer->data, buffer->size, 1, stdout);
-    cucul_free_export(buffer);
+    fwrite(cucul_get_buffer_data(buffer),
+           cucul_get_buffer_size(buffer), 1, stdout);
+    cucul_free_buffer(buffer);
 
     cucul_free(qq);
 

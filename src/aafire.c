@@ -42,7 +42,7 @@
 static cucul_t *qq;
 static caca_t *kk;
 static int XSIZ, YSIZ;
-static struct cucul_dither *cucul_dither;
+static cucul_dither_t *cucul_dither;
 static char *bitmap;
 static int pause = 0;
 #else
@@ -265,7 +265,7 @@ game (void)
 #endif
     {
 #ifdef LIBCACA
-      struct caca_event ev;
+      caca_event_t ev;
       if(caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev, 0))
         {
           switch(ev.data.key.c)

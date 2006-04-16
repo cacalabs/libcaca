@@ -118,7 +118,7 @@ struct cucul_dither
     int rmask, gmask, bmask, amask;
     int rright, gright, bright, aright;
     int rleft, gleft, bleft, aleft;
-    void (*get_hsv)(struct cucul_dither *, char *, int, int);
+    void (*get_hsv)(cucul_dither_t *, char *, int, int);
     int red[256], green[256], blue[256], alpha[256];
     float gamma;
     int gammatab[4097];
@@ -163,7 +163,7 @@ struct cucul_dither
 static void mask2shift(unsigned int, int *, int *);
 static float gammapow(float x, float y);
 
-static void get_rgba_default(struct cucul_dither const *, uint8_t *, int, int,
+static void get_rgba_default(cucul_dither_t const *, uint8_t *, int, int,
                              unsigned int *);
 
 /* Dithering methods */
@@ -245,19 +245,19 @@ static inline void rgb2hsv_default(int r, int g, int b,
  *  \param amask Bitmask for alpha values.
  *  \return Dither object, or NULL upon error.
  */
-struct cucul_dither *cucul_create_dither(unsigned int bpp, unsigned int w,
-                                         unsigned int h, unsigned int pitch,
-                                         unsigned int rmask, unsigned int gmask,
-                                         unsigned int bmask, unsigned int amask)
+cucul_dither_t *cucul_create_dither(unsigned int bpp, unsigned int w,
+                                    unsigned int h, unsigned int pitch,
+                                    unsigned int rmask, unsigned int gmask,
+                                    unsigned int bmask, unsigned int amask)
 {
-    struct cucul_dither *d;
+    cucul_dither_t *d;
     int i;
 
     /* Minor sanity test */
     if(!w || !h || !pitch || bpp > 32 || bpp < 8)
         return NULL;
 
-    d = malloc(sizeof(struct cucul_dither));
+    d = malloc(sizeof(cucul_dither_t));
     if(!d)
         return NULL;
 
@@ -330,7 +330,7 @@ struct cucul_dither *cucul_create_dither(unsigned int bpp, unsigned int w,
  *  \param blue Array of 256 blue values.
  *  \param alpha Array of 256 alpha values.
  */
-void cucul_set_dither_palette(struct cucul_dither *d,
+void cucul_set_dither_palette(cucul_dither_t *d,
                               unsigned int red[], unsigned int green[],
                               unsigned int blue[], unsigned int alpha[])
 {
@@ -367,7 +367,7 @@ void cucul_set_dither_palette(struct cucul_dither *d,
  *  \param d Dither object.
  *  \param brightness brightness value.
  */
-void cucul_set_dither_brightness(struct cucul_dither *d, float brightness)
+void cucul_set_dither_brightness(cucul_dither_t *d, float brightness)
 {
     /* FIXME */
 }
@@ -379,7 +379,7 @@ void cucul_set_dither_brightness(struct cucul_dither *d, float brightness)
  *  \param d Dither object.
  *  \param gamma Gamma value.
  */
-void cucul_set_dither_gamma(struct cucul_dither *d, float gamma)
+void cucul_set_dither_gamma(cucul_dither_t *d, float gamma)
 {
     /* FIXME: we don't need 4096 calls to gammapow(), we can just compute
      * 128 of them and do linear interpolation for the rest. This will
@@ -402,7 +402,7 @@ void cucul_set_dither_gamma(struct cucul_dither *d, float gamma)
  *  \param d Dither object.
  *  \param value 0 for normal behaviour, 1 for invert
  */
-void cucul_set_dither_invert(struct cucul_dither *d, int value)
+void cucul_set_dither_invert(cucul_dither_t *d, int value)
 {
     d->invert = value ? 1 : 0;
 }
@@ -414,7 +414,7 @@ void cucul_set_dither_invert(struct cucul_dither *d, int value)
  *  \param d Dither object.
  *  \param contrast contrast value.
  */
-void cucul_set_dither_contrast(struct cucul_dither *d, float contrast)
+void cucul_set_dither_contrast(cucul_dither_t *d, float contrast)
 {
     /* FIXME */
 }
@@ -433,7 +433,7 @@ void cucul_set_dither_contrast(struct cucul_dither *d, float contrast)
  *  \param str A string describing the antialiasing method that will be used
  *         for the dithering.
  */
-void cucul_set_dither_antialias(struct cucul_dither *d, char const *str)
+void cucul_set_dither_antialias(cucul_dither_t *d, char const *str)
 {
     if(!strcasecmp(str, "none"))
         d->antialias = 0;
@@ -453,7 +453,7 @@ void cucul_set_dither_antialias(struct cucul_dither *d, char const *str)
  *  \return An array of strings.
  */
 char const * const *
-    cucul_get_dither_antialias_list(struct cucul_dither const *d)
+    cucul_get_dither_antialias_list(cucul_dither_t const *d)
 {
     static char const * const list[] =
     {
@@ -491,7 +491,7 @@ char const * const *
  *  \param str A string describing the colour set that will be used
  *         for the dithering.
  */
-void cucul_set_dither_color(struct cucul_dither *d, char const *str)
+void cucul_set_dither_color(cucul_dither_t *d, char const *str)
 {
     if(!strcasecmp(str, "mono"))
         d->color_mode = COLOR_MODE_MONO;
@@ -521,7 +521,7 @@ void cucul_set_dither_color(struct cucul_dither *d, char const *str)
  *  \return An array of strings.
  */
 char const * const *
-    cucul_get_dither_color_list(struct cucul_dither const *d)
+    cucul_get_dither_color_list(cucul_dither_t const *d)
 {
     static char const * const list[] =
     {
@@ -556,7 +556,7 @@ char const * const *
  *  \param str A string describing the characters that need to be used
  *         for the dithering.
  */
-void cucul_set_dither_charset(struct cucul_dither *d, char const *str)
+void cucul_set_dither_charset(cucul_dither_t *d, char const *str)
 {
     if(!strcasecmp(str, "shades"))
     {
@@ -586,8 +586,7 @@ void cucul_set_dither_charset(struct cucul_dither *d, char const *str)
  *  \param d Dither object.
  *  \return An array of strings.
  */
-char const * const *
-    cucul_get_dither_charset_list(struct cucul_dither const *d)
+char const * const * cucul_get_dither_charset_list(cucul_dither_t const *d)
 {
     static char const * const list[] =
     {
@@ -622,7 +621,7 @@ char const * const *
  *  \param str A string describing the method that needs to be used
  *         for the dithering.
  */
-void cucul_set_dither_mode(struct cucul_dither *d, char const *str)
+void cucul_set_dither_mode(cucul_dither_t *d, char const *str)
 {
     if(!strcasecmp(str, "none"))
     {
@@ -673,8 +672,7 @@ void cucul_set_dither_mode(struct cucul_dither *d, char const *str)
  *  \param d Dither object.
  *  \return An array of strings.
  */
-char const * const *
-    cucul_get_dither_mode_list(struct cucul_dither const *d)
+char const * const * cucul_get_dither_mode_list(cucul_dither_t const *d)
 {
     static char const * const list[] =
     {
@@ -704,7 +702,7 @@ char const * const *
  *  \param pixels Bitmap's pixels.
  */
 void cucul_dither_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
-                         struct cucul_dither const *d, void *pixels)
+                         cucul_dither_t const *d, void *pixels)
 {
     int *floyd_steinberg, *fs_r, *fs_g, *fs_b;
     int fs_length;
@@ -955,7 +953,7 @@ void cucul_dither_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
  *
  *  \param d Dither object.
  */
-void cucul_free_dither(struct cucul_dither *d)
+void cucul_free_dither(cucul_dither_t *d)
 {
     if(!d)
         return;
@@ -1056,7 +1054,7 @@ static float gammapow(float x, float y)
 #endif
 }
 
-static void get_rgba_default(struct cucul_dither const *d, uint8_t *pixels,
+static void get_rgba_default(cucul_dither_t const *d, uint8_t *pixels,
                              int x, int y, unsigned int *rgba)
 {
     uint32_t bits;

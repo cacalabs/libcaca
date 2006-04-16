@@ -404,7 +404,7 @@ static void x11_handle_resize(caca_t *kk)
     kk->drv.p->pixmap = new_pixmap;
 }
 
-static int x11_get_event(caca_t *kk, struct caca_event *ev)
+static int x11_get_event(caca_t *kk, caca_event_t *ev)
 {
     XEvent xevent;
     char key;

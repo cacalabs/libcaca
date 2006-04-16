@@ -46,7 +46,7 @@ int main(int argc, char **argv)
     unsigned int r[256], g[256], b[256], a[256];
     float d[METABALLS], di[METABALLS], dj[METABALLS], dk[METABALLS];
     unsigned int x[METABALLS], y[METABALLS];
-    struct cucul_dither *cucul_dither;
+    cucul_dither_t *cucul_dither;
     float i = 10.0, j = 17.0, k = 11.0;
     int p, frame = 0, pause = 0;
     double frameOffset[360 + 80];
@@ -92,7 +92,7 @@ int main(int argc, char **argv)
     /* Go ! */
     for(;;)
     {
-        struct caca_event ev;
+        caca_event_t ev;
         if(caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev, 0))
         {
             switch(ev.data.key.c)

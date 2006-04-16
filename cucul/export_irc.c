@@ -32,7 +32,7 @@
  *  This function generates and returns an IRC representation of
  *  the current image.
  */
-void _cucul_get_irc(cucul_t *qq, struct cucul_buffer *ex)
+void _cucul_get_irc(cucul_t *qq, cucul_buffer_t *ex)
 {
     static int const palette[] =
     {

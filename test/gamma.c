@@ -33,10 +33,10 @@ uint32_t buffer[256 * 4];
 
 int main(void)
 {
-    struct caca_event ev;
+    caca_event_t ev;
     cucul_t *qq, *gg, *mask;
     caca_t *kk;
-    struct cucul_dither *left, *right;
+    cucul_dither_t *left, *right;
     float gam = 1.0;
     int x;
 

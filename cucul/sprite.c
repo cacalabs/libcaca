@@ -47,17 +47,17 @@ struct cucul_sprite
  *  \param file The filename.
  *  \return The sprite, or NULL if an error occured.
  */
-struct cucul_sprite *cucul_load_sprite(char const *file)
+cucul_sprite_t *cucul_load_sprite(char const *file)
 {
     char buf[BUFSIZ];
-    struct cucul_sprite *sprite;
+    cucul_sprite_t *sprite;
     FILE *fd;
 
     fd = fopen(file, "r");
     if(fd == NULL)
         return NULL;
 
-    sprite = malloc(sizeof(struct cucul_sprite));
+    sprite = malloc(sizeof(cucul_sprite_t));
     if(sprite == NULL)
         goto sprite_alloc_failed;
 
@@ -167,7 +167,7 @@ sprite_alloc_failed:
  *  \param sprite The sprite.
  *  \return The number of frames.
  */
-int cucul_get_sprite_frames(struct cucul_sprite const *sprite)
+int cucul_get_sprite_frames(cucul_sprite_t const *sprite)
 {
     if(sprite == NULL)
         return 0;
@@ -181,7 +181,7 @@ int cucul_get_sprite_frames(struct cucul_sprite const *sprite)
  *  \param f The frame index.
  *  \return The width of the given frame of the sprite.
  */
-int cucul_get_sprite_width(struct cucul_sprite const *sprite, int f)
+int cucul_get_sprite_width(cucul_sprite_t const *sprite, int f)
 {
     if(sprite == NULL)
         return 0;
@@ -198,7 +198,7 @@ int cucul_get_sprite_width(struct cucul_sprite const *sprite, int f)
  *  \param f The frame index.
  *  \return The height of the given frame of the sprite.
  */
-int cucul_get_sprite_height(struct cucul_sprite const *sprite, int f)
+int cucul_get_sprite_height(cucul_sprite_t const *sprite, int f)
 {
     if(sprite == NULL)
         return 0;
@@ -215,7 +215,7 @@ int cucul_get_sprite_height(struct cucul_sprite const *sprite, int f)
  *  \param f The frame index.
  *  \return The X coordinate of the given frame's handle.
  */
-int cucul_get_sprite_dx(struct cucul_sprite const *sprite, int f)
+int cucul_get_sprite_dx(cucul_sprite_t const *sprite, int f)
 {
     if(sprite == NULL)
         return 0;
@@ -232,7 +232,7 @@ int cucul_get_sprite_dx(struct cucul_sprite const *sprite, int f)
  *  \param f The frame index.
  *  \return The Y coordinate of the given frame's handle.
  */
-int cucul_get_sprite_dy(struct cucul_sprite const *sprite, int f)
+int cucul_get_sprite_dy(cucul_sprite_t const *sprite, int f)
 {
     if(sprite == NULL)
         return 0;
@@ -253,7 +253,7 @@ int cucul_get_sprite_dy(struct cucul_sprite const *sprite, int f)
  *  \param f The frame index.
  *  \return void
  */
-void cucul_draw_sprite(cucul_t *qq, int x, int y, struct cucul_sprite const *sprite, int f)
+void cucul_draw_sprite(cucul_t *qq, int x, int y, cucul_sprite_t const *sprite, int f)
 {
     int i, j;
     unsigned int oldfg, oldbg;
@@ -292,7 +292,7 @@ void cucul_draw_sprite(cucul_t *qq, int x, int y, struct cucul_sprite const *spr
  *  \param sprite The sprite to be freed.
  *  \return void
  */
-void cucul_free_sprite(struct cucul_sprite *sprite)
+void cucul_free_sprite(cucul_sprite_t *sprite)
 {
     int i;
 

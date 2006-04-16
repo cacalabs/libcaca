@@ -106,9 +106,9 @@ DECLARE_UNPACKGLYPH(1)
  *  \param size The size of the memory area, or 0 if the font name is given.
  *  \return A font handle or NULL in case of error.
  */
-struct cucul_font *cucul_load_font(void const *data, unsigned int size)
+cucul_font_t *cucul_load_font(void const *data, unsigned int size)
 {
-    struct cucul_font *f;
+    cucul_font_t *f;
     unsigned int i;
 
     if(size == 0)
@@ -124,7 +124,7 @@ struct cucul_font *cucul_load_font(void const *data, unsigned int size)
     if(size < sizeof(struct font_header))
         return NULL;
 
-    f = malloc(sizeof(struct cucul_font));
+    f = malloc(sizeof(cucul_font_t));
     f->private = (void *)(uintptr_t)data;
 
     memcpy(&f->header, f->private + 8, sizeof(struct font_header));
@@ -221,7 +221,7 @@ char const * const * cucul_get_font_list(void)
  *  \param f The font, as returned by \e cucul_load_font()
  *  \return The maximum glyph width.
  */
-unsigned int cucul_get_font_width(struct cucul_font *f)
+unsigned int cucul_get_font_width(cucul_font_t *f)
 {
     return f->header.width;
 }
@@ -233,7 +233,7 @@ unsigned int cucul_get_font_width(struct cucul_font *f)
  *  \param f The font, as returned by \e cucul_load_font()
  *  \return The maximum glyph height.
  */
-unsigned int cucul_get_font_height(struct cucul_font *f)
+unsigned int cucul_get_font_height(cucul_font_t *f)
 {
     return f->header.height;
 }
@@ -247,7 +247,7 @@ unsigned int cucul_get_font_height(struct cucul_font *f)
  *
  *  \param f The font, as returned by \e cucul_load_font()
  */
-void cucul_free_font(struct cucul_font *f)
+void cucul_free_font(cucul_font_t *f)
 {
     free(f->glyph_list);
     free(f->block_list);
@@ -273,7 +273,7 @@ void cucul_free_font(struct cucul_font *f)
  *  \param height The height (in pixels) of the image buffer
  *  \param pitch The pitch (in bytes) of an image buffer line.
  */
-void cucul_render_canvas(cucul_t *qq, struct cucul_font *f,
+void cucul_render_canvas(cucul_t *qq, cucul_font_t *f,
                          unsigned char *buf, unsigned int width,
                          unsigned int height, unsigned int pitch)
 {

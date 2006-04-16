@@ -233,7 +233,7 @@ static void win32_handle_resize(caca_t *kk)
     kk->resize.h = kk->qq->height;
 }
 
-static int win32_get_event(caca_t *kk, struct caca_event *ev)
+static int win32_get_event(caca_t *kk, caca_event_t *ev)
 {
     INPUT_RECORD rec;
     DWORD num;

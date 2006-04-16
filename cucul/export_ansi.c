@@ -35,7 +35,7 @@
  *                  able to cut/paste the result to a function like printf
  *  \return buffer containing generated ANSI codes as a big string
  */
-void _cucul_get_ansi(cucul_t *qq, struct cucul_buffer *ex)
+void _cucul_get_ansi(cucul_t *qq, cucul_buffer_t *ex)
 {
     static int const palette[] =
     {

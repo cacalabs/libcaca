@@ -36,9 +36,9 @@ int main(int argc, char *argv[])
 {
     cucul_t *qq;
     caca_t *kk;
-    struct cucul_font *f;
-    struct cucul_dither *d;
-    struct caca_event ev;
+    cucul_font_t *f;
+    cucul_dither_t *d;
+    caca_event_t ev;
     unsigned char *buf;
     unsigned int w, h;
     char const * const * fonts;

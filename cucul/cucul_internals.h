@@ -25,7 +25,7 @@ typedef long int intptr_t;
 typedef long unsigned int uintptr_t;
 #endif
 
-struct cucul_context
+struct cucul
 {
     /* Context size */
     unsigned int width, height;
@@ -38,6 +38,12 @@ struct cucul_context
     uint16_t bgcolor;
 
     unsigned int refcount;
+};
+
+struct cucul_buffer
+{
+    unsigned long int size;
+    char *data;
 };
 
 /* Bitmap functions */
@@ -62,11 +68,11 @@ uint8_t _cucul_argb32_to_ansi4bg(uint32_t);
 void _cucul_argb32_to_argb4(uint32_t, uint8_t[8]);
 
 /* Export functions */
-extern void _cucul_get_ansi(cucul_t *, struct cucul_buffer *);
-extern void _cucul_get_html(cucul_t *, struct cucul_buffer *);
-extern void _cucul_get_html3(cucul_t *, struct cucul_buffer *);
-extern void _cucul_get_irc(cucul_t *, struct cucul_buffer *);
-extern void _cucul_get_ps(cucul_t *, struct cucul_buffer *);
-extern void _cucul_get_svg(cucul_t *, struct cucul_buffer *);
+extern void _cucul_get_ansi(cucul_t *, cucul_buffer_t *);
+extern void _cucul_get_html(cucul_t *, cucul_buffer_t *);
+extern void _cucul_get_html3(cucul_t *, cucul_buffer_t *);
+extern void _cucul_get_irc(cucul_t *, cucul_buffer_t *);
+extern void _cucul_get_ps(cucul_t *, cucul_buffer_t *);
+extern void _cucul_get_svg(cucul_t *, cucul_buffer_t *);
 
 #endif /* __CUCUL_INTERNALS_H__ */

@@ -26,8 +26,8 @@
 #include "caca.h"
 #include "caca_internals.h"
 
-static int _get_next_event(caca_t *, struct caca_event *);
-static int _lowlevel_event(caca_t *, struct caca_event *);
+static int _get_next_event(caca_t *, caca_event_t *);
+static int _lowlevel_event(caca_t *, caca_event_t *);
 
 #if !defined(_DOXYGEN_SKIP_ME)
 /* If no new key was pressed after AUTOREPEAT_THRESHOLD usec, assume the
@@ -57,9 +57,9 @@ static int _lowlevel_event(caca_t *, struct caca_event *);
  *  \return The next matching event in the queue, or 0 if no event is pending.
  */
 int caca_get_event(caca_t *kk, unsigned int event_mask,
-                   struct caca_event *ev, int timeout)
+                   caca_event_t *ev, int timeout)
 {
-    struct caca_timer timer;
+    caca_timer_t timer;
     int usec = 0;
 
     if(!event_mask)
@@ -141,7 +141,7 @@ unsigned int caca_get_mouse_y(caca_t *kk)
  * XXX: The following functions are local.
  */
 
-static int _get_next_event(caca_t *kk, struct caca_event *ev)
+static int _get_next_event(caca_t *kk, caca_event_t *ev)
 {
 #if defined(USE_SLANG) || defined(USE_NCURSES)
     unsigned int ticks;
@@ -223,7 +223,7 @@ static int _get_next_event(caca_t *kk, struct caca_event *ev)
 #endif
 }
 
-static int _lowlevel_event(caca_t *kk, struct caca_event *ev)
+static int _lowlevel_event(caca_t *kk, caca_event_t *ev)
 {
 #if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO)
     int ret = _pop_event(kk, ev);
@@ -236,7 +236,7 @@ static int _lowlevel_event(caca_t *kk, struct caca_event *ev)
 }
 
 #if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO) || defined(USE_GL)
-void _push_event(caca_t *kk, struct caca_event *ev)
+void _push_event(caca_t *kk, caca_event_t *ev)
 {
     if(!ev->type || kk->events.queue == EVENTBUF_LEN)
         return;
@@ -244,7 +244,7 @@ void _push_event(caca_t *kk, struct caca_event *ev)
     kk->events.queue++;
 }
 
-int _pop_event(caca_t *kk, struct caca_event *ev)
+int _pop_event(caca_t *kk, caca_event_t *ev)
 {
     int i;
 

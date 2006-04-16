@@ -25,6 +25,8 @@ typedef long int intptr_t;
 typedef long unsigned int uintptr_t;
 #endif
 
+typedef struct caca_timer caca_timer_t;
+
 #if !defined(_DOXYGEN_SKIP_ME)
 #   define EVENTBUF_LEN 10
 #endif
@@ -88,7 +90,7 @@ struct caca_timer
 };
 
 /* Internal caca context */
-struct caca_context
+struct caca
 {
     /* A link to our cucul canvas */
     cucul_t *qq;
@@ -106,7 +108,7 @@ struct caca_context
         unsigned int (* get_window_height) (caca_t *);
         void (* display) (caca_t *);
         void (* handle_resize) (caca_t *);
-        int (* get_event) (caca_t *, struct caca_event *);
+        int (* get_event) (caca_t *, caca_event_t *);
         void (* set_mouse) (caca_t *, int);
     } drv;
 
@@ -125,20 +127,20 @@ struct caca_context
 
     /* Framerate handling */
     unsigned int delay, rendertime;
-    struct caca_timer timer;
+    caca_timer_t timer;
     int lastticks;
 
     struct events
     {
 #if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO) || defined(USE_GL)
-        struct caca_event buf[EVENTBUF_LEN];
+        caca_event_t buf[EVENTBUF_LEN];
         int queue;
 #endif
 #if defined(USE_SLANG) || defined(USE_NCURSES)
-        struct caca_timer key_timer;
+        caca_timer_t key_timer;
         unsigned int last_key_ticks;
         unsigned int autorepeat_ticks;
-        struct caca_event last_key_event;
+        caca_event_t last_key_event;
 #endif
 #if defined(USE_WIN32)
 		unsigned char not_empty_struct;
@@ -148,13 +150,13 @@ struct caca_context
 
 /* Internal timer functions */
 extern void _caca_sleep(unsigned int);
-extern unsigned int _caca_getticks(struct caca_timer *);
+extern unsigned int _caca_getticks(caca_timer_t *);
 
 /* Internal event functions */
 extern void _caca_handle_resize(caca_t *);
 #if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO) || defined(USE_GL)
-extern void _push_event(caca_t *, struct caca_event *);
-extern int _pop_event(caca_t *, struct caca_event *);
+extern void _push_event(caca_t *, caca_event_t *);
+extern int _pop_event(caca_t *, caca_event_t *);
 #endif
 
 #endif /* __CACA_INTERNALS_H__ */

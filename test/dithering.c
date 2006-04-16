@@ -34,7 +34,7 @@ char density[] = " -,+:;o&%w$W@#";
 
 int main(void)
 {
-    struct caca_event ev;
+    caca_event_t ev;
     cucul_t *qq;
     caca_t *kk;
     int neara, dista, nearb, distb, dist;

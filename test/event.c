@@ -23,11 +23,11 @@
 static cucul_t *qq;
 static caca_t *kk;
 
-static void print_event(int, int, struct caca_event *);
+static void print_event(int, int, caca_event_t *);
 
 int main(int argc, char **argv)
 {
-    struct caca_event *events;
+    caca_event_t *events;
     int i, h, quit;
 
     qq = cucul_create(0, 0);
@@ -47,12 +47,12 @@ int main(int argc, char **argv)
 
     caca_display(kk);
 
-    events = malloc(h * sizeof(struct caca_event));
-    memset(events, 0, h * sizeof(struct caca_event));
+    events = malloc(h * sizeof(caca_event_t));
+    memset(events, 0, h * sizeof(caca_event_t));
 
     for(quit = 0; quit < 4; )
     {
-        struct caca_event ev;
+        caca_event_t ev;
         static char const * quit_string[] = { "", "q", "qu", "qui", "quit" };
         int ret = caca_get_event(kk, CACA_EVENT_ANY, &ev, -1);
 
@@ -74,7 +74,7 @@ int main(int argc, char **argv)
                     quit = 0;
             }
 
-            memmove(events + 1, events, (h - 1) * sizeof(struct caca_event));
+            memmove(events + 1, events, (h - 1) * sizeof(caca_event_t));
             events[0] = ev;
 
             ret = caca_get_event(kk, CACA_EVENT_ANY, &ev, 0);
@@ -106,7 +106,7 @@ int main(int argc, char **argv)
     return 0;
 }
 
-static void print_event(int x, int y, struct caca_event *ev)
+static void print_event(int x, int y, caca_event_t *ev)
 {
     int character;
 

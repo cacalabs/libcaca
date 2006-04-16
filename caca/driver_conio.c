@@ -119,10 +119,10 @@ static void conio_handle_resize(caca_t *kk)
     kk->resize.h = kk->qq->height;
 }
 
-static int conio_get_event(caca_t *kk, struct caca_event *ev)
+static int conio_get_event(caca_t *kk, caca_event_t *ev)
 {
     unsigned char ch;
-    struct caca_event release;
+    caca_event_t release;
 
     if(!_conio_kbhit())
     {

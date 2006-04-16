@@ -26,7 +26,7 @@
 int main(int argc, char **argv)
 {
     struct stat statbuf;
-    struct caca_event ev;
+    caca_event_t ev;
     cucul_t *qq;
     caca_t *kk;
     void *buffer;

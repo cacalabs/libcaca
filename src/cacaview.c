@@ -123,7 +123,7 @@ int main(int argc, char **argv)
     /* Go ! */
     while(!quit)
     {
-        struct caca_event ev;
+        caca_event_t ev;
         unsigned int const event_mask = CACA_EVENT_KEY_PRESS
                                       | CACA_EVENT_RESIZE
                                       | CACA_EVENT_MOUSE_PRESS;

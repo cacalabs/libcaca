@@ -49,7 +49,7 @@ static char const *duck[] =
 
 int main(void)
 {
-    struct caca_event ev;
+    caca_event_t ev;
     cucul_t *qq, *normal, *flip, *flop, *rotate;
     caca_t *kk;
     int i;

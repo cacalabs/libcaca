@@ -45,7 +45,7 @@ void _caca_sleep(unsigned int usec)
 #endif
 }
 
-unsigned int _caca_getticks(struct caca_timer *timer)
+unsigned int _caca_getticks(caca_timer_t *timer)
 {
 #if defined(HAVE_GETTIMEOFDAY)
     struct timeval tv;

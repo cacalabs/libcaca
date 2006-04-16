@@ -72,6 +72,15 @@ cucul_t * cucul_create(unsigned int width, unsigned int height)
     return qq;
 }
 
+/** \brief Load a memory area into a canvas.
+ *
+ *  This function loads a memory area containing an exported canvas into
+ *  a new \e libcucul canvas.
+ *
+ *  \param data The memory area to be loaded into a canvas.
+ *  \param size The length of the memory area.
+ *  \return A libcucul canvas, or NULL in case of error.
+ */
 cucul_t *cucul_load(void *data, unsigned int size)
 {
     cucul_t *qq;
@@ -227,11 +236,36 @@ void cucul_free(cucul_t *qq)
     free(qq);
 }
 
-struct cucul_buffer * cucul_create_export(cucul_t *qq, char const *format)
+/** \brief Export a canvas into a foreign format.
+ *
+ *  This function exports a libcucul canvas into various foreign formats such
+ *  as ANSI art, HTML, IRC colours, etc. One should use cucul_get_buffer_data()
+ *  and cucul_get_buffer_size() to access the buffer contents. The allocated
+ *  data is valid until cucul_free_buffer() is called.
+ *
+ *  Valid values for \e format are:
+ *
+ *  \li \e "ansi": export ANSI art (CP437 charset with ANSI colour codes).
+ *
+ *  \li \e "html": export an HTML page with CSS information.
+ *
+ *  \li \e "html3": export an HTML table that should be compatible with
+ *      most navigators, including textmode ones.
+ *
+ *  \li \e "irc": export UTF-8 text with mIRC colour codes.
+ *
+ *  \li \e "ps": export a PostScript document.
+ *
+ *  \li \e "svg": export an SVG document.
+ *
+ *  \param qq A libcucul canvas
+ *  \param format A string describing the requested output format.
+ */
+cucul_buffer_t * cucul_create_export(cucul_t *qq, char const *format)
 {
-    struct cucul_buffer *ex;
+    cucul_buffer_t *ex;
 
-    ex = malloc(sizeof(struct cucul_buffer));
+    ex = malloc(sizeof(cucul_buffer_t));
 
     if(!strcasecmp("ansi", format))
         _cucul_get_ansi(qq, ex);
@@ -279,10 +313,43 @@ char const * const * cucul_get_export_list(void)
     return list;
 }
 
-void cucul_free_export(struct cucul_buffer *ex)
+/** \brief Get the buffer size.
+ *
+ *  This function returns the length (in bytes) of the memory area stored
+ *  in the given \e libcucul buffer.
+ *
+ *  \param buf A \e libcucul buffer
+ *  \return The buffer data length.
+ */
+unsigned long int cucul_get_buffer_size(cucul_buffer_t *buf)
 {
-    free(ex->data);
-    free(ex);
+    return buf->size;
+}
+
+/** \brief Get the buffer data.
+ *
+ *  This function returns a pointer to the memory area stored in the given
+ *  \e libcucul buffer.
+ *
+ *  \param buf A \e libcucul buffer
+ *  \return A pointer to the buffer memory area.
+ */
+void * cucul_get_buffer_data(cucul_buffer_t *buf)
+{
+    return buf->data;
+}
+
+/** \brief Free a buffer.
+ *
+ *  This function frees the structures associated with the given
+ *  \e libcucul buffer.
+ *
+ *  \param buf A \e libcucul buffer
+ */
+void cucul_free_buffer(cucul_buffer_t *buf)
+{
+    free(buf->data);
+    free(buf);
 }
 
 /*

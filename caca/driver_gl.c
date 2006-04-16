@@ -323,7 +323,7 @@ static void gl_handle_resize(caca_t *kk)
     glMatrixMode(GL_MODELVIEW);
 }
 
-static int gl_get_event(caca_t *kk, struct caca_event *ev)
+static int gl_get_event(caca_t *kk, caca_event_t *ev)
 {
 #ifdef HAVE_GLUTCHECKLOOP
     glutCheckLoop();
