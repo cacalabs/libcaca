@@ -1,3 +1,25 @@
+/*
+ *  libcucul++      C++ bindings for libcucul
+ *  Copyright (c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
+ *                All Rights Reserved
+ *
+ *  $Id$
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the Do What The Fuck You Want To
+ *  Public License, Version 2, as published by Sam Hocevar. See
+ *  http://sam.zoy.org/wtfpl/COPYING for more details.
+ */
+
+/** \file cucul++.h
+ *  \version \$Id$
+ *  \author Jean-Yves Lamoureux <jylam@lnxscene.org>
+ *  \brief The \e libcucul++ public header.
+ *
+ *  This header contains the public types and functions that applications
+ *  using \e libcucul++ may use.
+ */
+
 #ifndef _CUCUL_PP_H
 #define _CUCUL_PP_H
 #include <stdio.h> // BUFSIZ
