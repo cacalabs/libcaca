@@ -78,5 +78,6 @@ extern void _cucul_get_html3(cucul_t *, cucul_buffer_t *);
 extern void _cucul_get_irc(cucul_t *, cucul_buffer_t *);
 extern void _cucul_get_ps(cucul_t *, cucul_buffer_t *);
 extern void _cucul_get_svg(cucul_t *, cucul_buffer_t *);
+extern void _cucul_get_tga(cucul_t *, cucul_buffer_t *);
 
 #endif /* __CUCUL_INTERNALS_H__ */

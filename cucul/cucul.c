@@ -256,7 +256,9 @@ void cucul_free(cucul_t *qq)
  *
  *  \li \e "ps": export a PostScript document.
  *
- *  \li \e "svg": export an SVG document.
+ *  \li \e "svg": export an SVG vector image.
+ *
+ *  \li \e "tga": export a TGA image.
  *
  *  \param qq A libcucul canvas
  *  \param format A string describing the requested output format.
@@ -266,6 +268,8 @@ cucul_buffer_t * cucul_create_export(cucul_t *qq, char const *format)
     cucul_buffer_t *ex;
 
     ex = malloc(sizeof(cucul_buffer_t));
+    ex->size = 0;
+    ex->data = NULL;
 
     if(!strcasecmp("ansi", format))
         _cucul_get_ansi(qq, ex);
@@ -279,7 +283,10 @@ cucul_buffer_t * cucul_create_export(cucul_t *qq, char const *format)
         _cucul_get_ps(qq, ex);
     else if(!strcasecmp("svg", format))
         _cucul_get_svg(qq, ex);
-    else
+    else if(!strcasecmp("tga", format))
+        _cucul_get_tga(qq, ex);
+
+    if(ex->size == 0)
     {
         free(ex);
         return NULL;
@@ -304,9 +311,10 @@ char const * const * cucul_get_export_list(void)
         "ansi", "ANSI",
         "html", "HTML",
         "html3", "backwards-compatible HTML",
-        "irc", "IRC (mIRC colours)",
-        "ps", "PostScript",
-        "svg", "SVG",
+        "irc", "IRC with mIRC colours",
+        "ps", "PostScript document",
+        "svg", "SVG vector image",
+        "tga", "TGA image",
         NULL, NULL
     };
 

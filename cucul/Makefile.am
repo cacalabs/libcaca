@@ -33,6 +33,7 @@ libcucul_la_SOURCES = \
 	export_html.c \
 	export_ps.c \
 	export_svg.c \
+	export_bitmap.c \
 	$(NULL)
 libcucul_la_LDFLAGS = -no-undefined
 libcucul_la_LIBADD = @CUCUL_LIBS@
