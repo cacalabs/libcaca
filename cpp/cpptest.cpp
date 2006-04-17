@@ -31,16 +31,20 @@ int main(int argc, char *argv[])
     Caca::Event ev;
 
     try {
-    qq = new Cucul();
+        qq = new Cucul();
     } 
     catch (int e) {
         cerr << "Error while initializing cucul (" << e << ")" << endl;
         return -1;
     }
-
-    kk = new Caca(qq);
     
-
+    try {
+        kk = new Caca(qq);
+    }
+    catch(int e) {
+        cerr << "Error while attaching cucul to caca (" << e << ")" << endl;
+        return -1;
+    }
 
     qq->set_color(CUCUL_COLOR_LIGHTMAGENTA, CUCUL_COLOR_BLACK);
 
