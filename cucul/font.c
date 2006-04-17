@@ -180,8 +180,8 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
 
         if(f->glyph_list[i].data_offset >= f->header.data_size
             || f->glyph_list[i].data_offset
-                + f->glyph_list[i].width * f->glyph_list[i].height *
-                  f->header.bpp / 8 >= f->header.data_size)
+                + (f->glyph_list[i].width * f->glyph_list[i].height *
+                   f->header.bpp + 7) / 8 > f->header.data_size)
         {
             free(f->glyph_list);
             free(f->block_list);
