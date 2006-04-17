@@ -194,11 +194,6 @@ int 	Cucul::rand (int min, int max)
     return cucul_rand(min, max);
 }
 
-unsigned int 	Cucul::sqrt (unsigned int v)
-{
-    return cucul_sqrt(v);
-}
-
 Cucul::Sprite * Cucul::load_sprite (char const *f)
 {
     Cucul::Sprite *s = new Cucul::Sprite();

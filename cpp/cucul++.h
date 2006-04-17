@@ -88,7 +88,6 @@ class Cucul {
     void 	draw_thin_triangle ( int, int, int, int, int, int);
     void 	fill_triangle ( int, int, int, int, int, int, char const *);
     int 	rand (int, int);
-    unsigned int 	sqrt (unsigned int);
     Sprite * 	load_sprite (char const *);
     int 	get_sprite_frames (Cucul::Sprite const *);
     int 	get_sprite_width (Cucul::Sprite const *, int);

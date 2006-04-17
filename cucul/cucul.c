@@ -236,6 +236,17 @@ void cucul_free(cucul_t *qq)
     free(qq);
 }
 
+/** \brief Generate a random integer within a range.
+ *
+ *  \param min The lower bound of the integer range.
+ *  \param max The upper bound of the integer range.
+ *  \return A random integer comprised between \p min and \p max, inclusive.
+ */
+int cucul_rand(int min, int max)
+{
+    return min + (int)((1.0*(max-min+1)) * rand() / (RAND_MAX+1.0));
+}
+
 /** \brief Export a canvas into a foreign format.
  *
  *  This function exports a libcucul canvas into various foreign formats such

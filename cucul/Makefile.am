@@ -18,7 +18,6 @@ libcucul_la_SOURCES = \
 	transform.c \
 	charset.c \
 	colour.c \
-	math.c \
 	line.c \
 	box.c \
 	conic.c \

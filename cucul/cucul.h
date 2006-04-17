@@ -79,6 +79,7 @@ void cucul_set_size(cucul_t *, unsigned int, unsigned int);
 unsigned int cucul_get_width(cucul_t *);
 unsigned int cucul_get_height(cucul_t *);
 void cucul_free(cucul_t *);
+int cucul_rand(int, int);
 /*  @} */
 
 /** \defgroup buffer Buffer handling
@@ -141,15 +142,6 @@ void cucul_fill_box(cucul_t *, int, int, int, int, char const *);
 void cucul_draw_triangle(cucul_t *, int, int, int, int, int, int, char const *);
 void cucul_draw_thin_triangle(cucul_t *, int, int, int, int, int, int);
 void cucul_fill_triangle(cucul_t *, int, int, int, int, int, int, char const *);
-/*  @} */
-
-/** \defgroup math Mathematical functions
- *
- *  These functions provide a few useful math-related routines.
- *
- *  @{ */
-int cucul_rand(int, int);
-unsigned int cucul_sqrt(unsigned int);
 /*  @} */
 
 /** \defgroup sprite Sprite handling
