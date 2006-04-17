@@ -67,7 +67,7 @@ int 	Caca::set_window_title (char const *s)
 {
     return caca_set_window_title(kk, s);
 }
-int 	Caca::get_event (unsigned int g, Caca::Event *n, int aa)
+int 	Caca::get_event (unsigned int g, Event *n, int aa)
 {
     return caca_get_event(kk, g, n->e, aa);
 }

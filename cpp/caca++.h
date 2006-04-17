@@ -29,18 +29,32 @@
 #include "cucul++.h"
 
 
+class Event {
+    friend class Caca;
+ public:
+    enum caca_event_type
+    {
+        CACA_EVENT_NONE =          0x0000, /**< No event. */
+
+        CACA_EVENT_KEY_PRESS =     0x0001, /**< A key was pressed. */
+        CACA_EVENT_KEY_RELEASE =   0x0002, /**< A key was released. */
+        CACA_EVENT_MOUSE_PRESS =   0x0004, /**< A mouse button was pressed. */
+        CACA_EVENT_MOUSE_RELEASE = 0x0008, /**< A mouse button was released. */
+        CACA_EVENT_MOUSE_MOTION =  0x0010, /**< The mouse was moved. */
+        CACA_EVENT_RESIZE =        0x0020, /**< The window was resized. */
+
+        CACA_EVENT_ANY =           0xffff  /**< Bitmask for any event. */
+    } type;
+
+ protected:
+    caca_event *e;
+};
+
 class Caca {
  public:
     Caca();
     Caca(Cucul *qq);
     ~Caca();
-
-    class Event {
-        friend class Caca;
-    protected:
-        caca_event *e;
-    };
-
 
     void    attach (Cucul *qq);
     void 	detach ();
@@ -50,7 +64,7 @@ class Caca {
     unsigned int 	get_window_width ();
     unsigned int 	get_window_height ();
     int 	set_window_title (char const *);
-    int 	get_event (unsigned int, Caca::Event*, int);
+    int 	get_event (unsigned int, Event*, int);
     unsigned int 	get_mouse_x ();
     unsigned int 	get_mouse_y ();
     void 	set_mouse (int);
@@ -59,8 +73,6 @@ class Caca {
     
     private:
     caca_t *kk;
-
-
 };
 
 

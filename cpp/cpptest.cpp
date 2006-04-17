@@ -43,7 +43,8 @@ int main(int argc, char *argv[])
 {
     Cucul *qq;
     Caca  *kk;
-    Caca::Event ev;
+    Event ev;
+
     int x = 0, y = 0, ix = 1, iy = 1;
 
 
@@ -66,7 +67,7 @@ int main(int argc, char *argv[])
 
     kk->set_delay(20000);
 
-    while(!kk->get_event(CACA_EVENT_KEY_PRESS, &ev, 0)) {
+    while(!kk->get_event(ev.CACA_EVENT_KEY_PRESS, &ev, 0)) {
         
         /* Draw pig */
         qq->set_color(CUCUL_COLOR_LIGHTMAGENTA, CUCUL_COLOR_BLACK);
