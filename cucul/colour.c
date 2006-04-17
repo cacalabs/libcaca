@@ -175,6 +175,21 @@ uint16_t _cucul_argb32_to_rgb12bg(uint32_t c)
     return bg & 0x0fff;
 }
 
+#define RGB12TO24(i) \
+   ((uint32_t)((i & 0xf00) >> 8) * 0x11 \
+  | (uint32_t)((i & 0x0f0) >> 4) * 0x11 \
+  | (uint32_t)(i & 0x00f) * 0x11)
+
+uint32_t _cucul_argb32_to_rgb24fg(uint32_t c)
+{
+    return RGB12TO24(_cucul_argb32_to_rgb12fg(c));
+}
+
+uint32_t _cucul_argb32_to_rgb24bg(uint32_t c)
+{
+    return RGB12TO24(_cucul_argb32_to_rgb12bg(c));
+}
+
 void _cucul_argb32_to_argb4(uint32_t c, uint8_t argb[8])
 {
     uint16_t fg = c & 0xffff;
