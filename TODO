@@ -53,9 +53,6 @@ libcaca
    o text edit widget with cursor support (I'm unsure about this, it
      seems pretty difficult)
 
-   o add a CACA_QUIT event, or add a way to map the "close window" or other
-     nasty program killing events to a key or series of keys
-
 
   API-independent stuff
   ---------------------

@@ -120,6 +120,8 @@ typedef struct caca_event caca_event_t;
  *      fields are valid and contain the new width and height values of
  *      the \e libcucul canvas attached to \e libcaca.
  *
+ *  \li \b CACA_EVENT_QUIT: no other field is valid.
+ *
  *  The result of accessing data members outside the above conditions is
  *  undefined.
  */
@@ -135,6 +137,7 @@ struct caca_event
         CACA_EVENT_MOUSE_RELEASE = 0x0008, /**< A mouse button was released. */
         CACA_EVENT_MOUSE_MOTION =  0x0010, /**< The mouse was moved. */
         CACA_EVENT_RESIZE =        0x0020, /**< The window was resized. */
+        CACA_EVENT_QUIT =          0x0040, /**< The user requested to quit. */
 
         CACA_EVENT_ANY =           0xffff  /**< Bitmask for any event. */
     } type;

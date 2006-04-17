@@ -52,6 +52,8 @@ struct driver_private
     XFontStruct *font_struct;
     int font_offset;
     Cursor pointer;
+    Atom wm_protocols;
+    Atom wm_delete_window;
 #if defined(HAVE_X11_XKBLIB_H)
     Bool autorepeat;
 #endif
@@ -147,6 +149,15 @@ static int x11_init_graphics(caca_t *kk)
                       0, 0, InputOutput, 0,
                       CWBackingStore | CWBackPixel | CWEventMask,
                       &x11_winattr);
+
+    kk->drv.p->wm_protocols =
+        XInternAtom(kk->drv.p->dpy, "WM_PROTOCOLS", True);
+    kk->drv.p->wm_delete_window =
+        XInternAtom(kk->drv.p->dpy, "WM_DELETE_WINDOW", True);
+
+    if(p_win->wm_protocols != None && p_win->wm_delete_window != None)
+        XSetWMProtocols(kk->drv.p->dpy, kk->drv.p->window,
+                        &kk->drv.p->wm_delete_window, 1);
 
     XStoreName(kk->drv.p->dpy, kk->drv.p->window, "caca for X");
 
@@ -506,6 +517,18 @@ static int x11_get_event(caca_t *kk, caca_event_t *ev)
         ev->data.key.ucs4 = 0;
         ev->data.key.utf8[0] = '\0';
         return 1;
+    }
+
+    while(XCheckTypedEvent(kk->drv.p->dpy, ClientMessage, &xevent))
+    {
+        if(xevent.xclient.message_type != kk->drv.p->wm_protocols)
+            continue;
+
+        if((Atom)xevent.xclient.data.l[0] == kk->drv.p->wm_delete_window)
+        {
+            ev->type = CACA_EVENT_QUIT;
+            return 1;
+        }
     }
 
     ev->type = CACA_EVENT_NONE;

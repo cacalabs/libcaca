@@ -171,9 +171,11 @@ if test "${enable_gl}" != "no"; then
   ac_cv_my_have_gl="no"
   AC_CHECK_HEADERS(GL/gl.h OpenGL/gl.h,
    [AC_CHECK_HEADERS(GL/glut.h,
-     [AC_CHECK_LIB(glut, glutMainLoopEvent,
-       [ac_cv_my_have_gl="yes"])]
-     [AC_CHECK_LIB(glut, glutCheckLoop,
+     [AC_CHECK_LIB(glut, glutCloseFunc,
+       [AC_DEFINE(HAVE_GLUTCLOSEFUNC, 1, Define to 1 if you have the `glutCloseFunc' function.)])
+      AC_CHECK_LIB(glut, glutMainLoopEvent,
+       [ac_cv_my_have_gl="yes"])
+      AC_CHECK_LIB(glut, glutCheckLoop,
        [ac_cv_my_have_gl="yes"
         AC_DEFINE(HAVE_GLUTCHECKLOOP, 1, Define to 1 if you have the `glutCheckLoop' function.)])])
       break])

@@ -51,6 +51,9 @@ static void gl_handle_special_key(int, int, int);
 static void gl_handle_reshape(int, int);
 static void gl_handle_mouse(int, int, int, int);
 static void gl_handle_mouse_motion(int, int);
+#ifdef HAVE_GLUTCLOSEFUNC
+static void gl_handle_close(void);
+#endif
 static void _display(void);
 
 struct driver_private
@@ -61,6 +64,7 @@ struct driver_private
     float font_width, font_height;
     float incx, incy;
     int id[128 - 32];
+    unsigned char close;
     unsigned char bit;
     unsigned char mouse_changed, mouse_clicked;
     unsigned int mouse_x, mouse_y;
@@ -100,6 +104,9 @@ static int gl_init_graphics(caca_t *kk)
     kk->drv.p->width = kk->qq->width * kk->drv.p->font_width;
     kk->drv.p->height = kk->qq->height * kk->drv.p->font_height;
 
+#ifdef HAVE_GLUTCLOSEFUNC
+    kk->drv.p->close = 0;
+#endif
     kk->drv.p->bit = 0;
 
     kk->drv.p->mouse_changed = kk->drv.p->mouse_clicked = 0;
@@ -127,6 +134,9 @@ static int gl_init_graphics(caca_t *kk)
     glutReshapeFunc(gl_handle_reshape);
     glutDisplayFunc(_display);
 
+#ifdef HAVE_GLUTCLOSEFUNC
+    glutCloseFunc(gl_handle_close);
+#endif
 
     glutMouseFunc(gl_handle_mouse);
     glutMotionFunc(gl_handle_mouse_motion);
@@ -207,7 +217,6 @@ static unsigned int gl_get_window_height(caca_t *kk)
 {
     return kk->drv.p->height;
 }
-
 
 static void gl_display(caca_t *kk)
 {
@@ -310,6 +319,15 @@ static int gl_get_event(caca_t *kk, caca_event_t *ev)
     glutCheckLoop();
 #else
     glutMainLoopEvent();
+#endif
+
+#ifdef HAVE_GLUTCLOSEFUNC
+    if(kk->drv.p->close)
+    {
+        kk->drv.p->close = 0;
+        ev->type = CACA_EVENT_QUIT;
+        return 1;
+    }
 #endif
 
     if(kk->resize.resized)
@@ -453,7 +471,13 @@ static void gl_handle_mouse_motion(int x, int y)
     kk->drv.p->mouse_changed = 1;
 }
 
-
+#ifdef HAVE_GLUTCLOSEFUNC
+static void gl_handle_close(void)
+{
+    caca_t *kk = gl_kk;
+    kk->drv.p->close = 1;
+}
+#endif
 
 static void _display(void)
 {
