@@ -1,32 +1,24 @@
 # $Id: Makefile.am 552 2006-04-13 16:10:16Z jylam $
 
-SUFFIXES = .cpp
-
-AM_CXXFLAGS = 
-
 include_HEADERS = cucul++.h caca++.h
+lib_LTLIBRARIES = libcucul++.la libcaca++.la
 
-noinst_LIBRARIES = libcucul++.a libcaca++.a
-
-libcucul___a_SOURCES = \
+libcucul___la_SOURCES = \
 	cucul++.cpp \
 	cucul++.h \
 	$(NULL)
 libcucul___la_LDFLAGS = -no-undefined
-libcucul___la_LIBADD = 
+libcucul___la_LIBADD = ../cucul/libcucul.la
 
-
-libcaca___a_SOURCES = \
+libcaca___la_SOURCES = \
 	caca++.cpp \
 	caca++.h \
 	$(NULL)
 libcaca___la_LDFLAGS = -no-undefined
-libcaca___la_LIBADD = 
-
-
+libcaca___la_LIBADD = ../caca/libcaca.la
 
 noinst_PROGRAMS = cpptest
 
-
 cpptest_SOURCES = cpptest.cpp
-cpptest_LDADD = ../caca/libcaca.la ../cucul/libcucul.la libcucul++.a libcaca++.a @CACA_LIBS@
+cpptest_LDADD = libcaca++.la libcucul++.la @CACA_LIBS@
+
