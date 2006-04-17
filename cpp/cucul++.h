@@ -1,7 +1,8 @@
 #ifndef _CUCUL_PP_H
 #define _CUCUL_PP_H
-
-
+#include <stdio.h> // BUFSIZ
+#include <stdarg.h> // va_*
+#include "config.h"
 #include "cucul.h"
 
 
@@ -41,6 +42,7 @@ class Cucul {
     unsigned int get_height(void);
     void set_color(unsigned int f, unsigned int b);
     char const * get_color_name (unsigned int color);
+    void 	printf ( int x , int y , char const * format,...);
     void putchar (int x, int y, char c);
     void putstr (int x, int y, char *str);
     void 	clear ();

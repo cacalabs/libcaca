@@ -52,7 +52,24 @@ void Cucul::putstr (int x, int y, char *str)
 {
     cucul_putstr(qq, x, y, str);
 }
-//void 	Cucul::printf ( int, int, char const *,...)
+void 	Cucul::printf ( int x , int y , char const * format,...)
+{
+    char tmp[BUFSIZ];
+    char *buf = tmp;
+    va_list args;
+
+    va_start(args, format);
+#if defined(HAVE_VSNPRINTF)
+    vsnprintf(buf, get_width() - x + 1, format, args);
+#else
+    vsprintf(buf, format, args);
+#endif
+    buf[get_width() - x] = '\0';
+    va_end(args);
+
+    putstr(x, y, buf);
+
+}
 
 void 	Cucul::clear ()
 {

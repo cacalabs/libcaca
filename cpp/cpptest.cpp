@@ -46,11 +46,17 @@ int main(int argc, char *argv[])
         return -1;
     }
 
+    
+    /* Draw pig */
     qq->set_color(CUCUL_COLOR_LIGHTMAGENTA, CUCUL_COLOR_BLACK);
-
+   
     for(int i = 0; pig[i]; i++)
         qq->putstr(0, i, (char*)pig[i]);
-
+    
+    /* printf works */
+    qq->set_color(CUCUL_COLOR_LIGHTBLUE, CUCUL_COLOR_BLACK);  
+    qq->printf(7,15, "Powered by libcaca %s", VERSION);
+    
 
     kk->display();
     kk->get_event(CACA_EVENT_KEY_PRESS, &ev, -1);
