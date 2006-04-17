@@ -59,15 +59,6 @@ static char const *ps_header =
  */
 void _cucul_get_ps(cucul_t *qq, cucul_buffer_t *ex)
 {
-    static char const * const palette[] =
-    {
-        "0.0 0.0 0.0", "0.0 0.0 0.5", "0.0 0.5 0.0", "0.0 0.5 0.5",
-        "0.5 0.0 0.0", "0.5 0.0 0.5", "0.5 0.5 0.0", "0.5 0.5 0.5",
-
-        "0.2 0.2 0.2", "0.2 0.2 1.0", "0.2 1.0 0.2", "0.2 1.0 1.0",
-        "1.0 0.2 0.2", "1.0 0.2 1.0", "1.0 1.0 0.2", "1.0 1.0 1.0",
-    };
-
     char *cur;
     unsigned int x, y;
 
@@ -87,8 +78,12 @@ void _cucul_get_ps(cucul_t *qq, cucul_buffer_t *ex)
 
         for(x = 0; x < qq->width; x++)
         {
-            cur += sprintf(cur, "1 0 translate\n %s csquare\n",
-                           palette[_cucul_argb32_to_ansi4bg(*lineattr++)]);
+            uint8_t argb[8];
+            _cucul_argb32_to_argb4(*lineattr++, argb);
+            cur += sprintf(cur, "1 0 translate\n %f %f %f csquare\n",
+                           (float)argb[1] * (1.0 / 0xf),
+                           (float)argb[2] * (1.0 / 0xf),
+                           (float)argb[3] * (1.0 / 0xf));
         }
 
         /* Return to beginning of the line, and jump to the next one */
@@ -104,12 +99,17 @@ void _cucul_get_ps(cucul_t *qq, cucul_buffer_t *ex)
 
         for(x = 0; x < qq->width; x++)
         {
+            uint8_t argb[8];
             uint32_t c = *linechar++;
 
+            _cucul_argb32_to_argb4(*lineattr++, argb);
+
             cur += sprintf(cur, "newpath\n");
-            cur += sprintf(cur, "%d %d moveto\n", (x + 1) * 6, y * 10);
-            cur += sprintf(cur, "%s setrgbcolor\n",
-                           palette[_cucul_argb32_to_ansi4fg(*lineattr++)]);
+            cur += sprintf(cur, "%d %d moveto\n", (x + 1) * 6, y * 10 + 2);
+            cur += sprintf(cur, "%f %f %f setrgbcolor\n",
+                           (float)argb[5] * (1.0 / 0xf),
+                           (float)argb[6] * (1.0 / 0xf),
+                           (float)argb[7] * (1.0 / 0xf));
 
             if(c < 0x00000020)
                 cur += sprintf(cur, "(?) show\n");
@@ -117,8 +117,8 @@ void _cucul_get_ps(cucul_t *qq, cucul_buffer_t *ex)
                 cur += sprintf(cur, "(?) show\n");
             else switch((uint8_t)(c & 0x7f))
             {
-                case '\\': cur += sprintf(cur, "(\\\\) show\n"); break;
-                case '(': cur += sprintf(cur, "(\\() show\n"); break;
+                case '\\':
+                case '(':
                 case ')':
                     cur += sprintf(cur, "(\\%c) show\n", c);
                     break;

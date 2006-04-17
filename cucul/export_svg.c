@@ -32,26 +32,14 @@ static char const svg_header[] =
     "<svg width=\"%d\" height=\"%d\" viewBox=\"0 0 %d %d\""
     " xmlns=\"http://www.w3.org/2000/svg\""
     " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
-    " xml:space=\"preserve\" version=\"1.1\"  baseProfile=\"full\">\n"
-    " <defs>\n"
-    "  <style type=\"text/css\">\n"
-    "    <![CDATA[\n";
+    " xml:space=\"preserve\" version=\"1.1\"  baseProfile=\"full\">\n";
 
-/** \brief Generate SVG representation of current image.
- *
- *  This function generates and returns a SVG representation of
+/*
+ *  This function generates and returns an SVG representation of
  *  the current image.
  */
 void _cucul_get_svg(cucul_t *qq, cucul_buffer_t *ex)
 {
-    static int const palette[] =
-    {
-        0x000000, 0x000088, 0x008800, 0x008888,
-        0x880000, 0x880088, 0x888800, 0x888888,
-        0x444444, 0x4444ff, 0x44ff44, 0x44ffff,
-        0xff4444, 0xff44ff, 0xffff44, 0xffffff,
-    };
-
     char *cur;
     unsigned int x, y;
 
@@ -65,16 +53,6 @@ void _cucul_get_svg(cucul_t *qq, cucul_buffer_t *ex)
     cur += sprintf(cur, svg_header, qq->width * 6, qq->height * 10,
                                     qq->width * 6, qq->height * 10);
 
-    /* Precalc of colors in CSS style  */
-    for(x = 0; x < 0x100; x++)
-    {
-        cur += sprintf(cur, ".b%02x {fill:#%06X}\n", x, palette[x >> 4]);
-        cur += sprintf(cur, ".f%02x {fill:#%06X}\n", x, palette[x & 0xf]);
-    }
-
-    cur += sprintf(cur, "]]>\n");
-    cur += sprintf(cur, "  </style>\n");
-    cur += sprintf(cur, " </defs>\n");
     cur += sprintf(cur, " <g id=\"mainlayer\" font-size=\"12\">\n");
 
     /* Background */
@@ -84,9 +62,9 @@ void _cucul_get_svg(cucul_t *qq, cucul_buffer_t *ex)
 
         for(x = 0; x < qq->width; x++)
         {
-            cur += sprintf(cur, "<rect class=\"b%02x\" x=\"%d\" y=\"%d\""
+            cur += sprintf(cur, "<rect style=\"fill:#%.03x\" x=\"%d\" y=\"%d\""
                                 " width=\"6\" height=\"10\"/>\n",
-                                _cucul_argb32_to_ansi8(*lineattr++),
+                                _cucul_argb32_to_rgb12bg(*lineattr++),
                                 x * 6, y * 10);
         }
     }
@@ -101,8 +79,9 @@ void _cucul_get_svg(cucul_t *qq, cucul_buffer_t *ex)
         {
             uint32_t c = *linechar++;
 
-            cur += sprintf(cur, "<text class=\"f%02x\" x=\"%d\" y=\"%d\">",
-                                _cucul_argb32_to_ansi8(*lineattr++),
+            cur += sprintf(cur, "<text style=\"fill:#%.03x\" "
+                                "x=\"%d\" y=\"%d\">",
+                                _cucul_argb32_to_rgb12fg(*lineattr++),
                                 x * 6, (y * 10) + 10);
             if(c < 0x00000020)
                 cur += sprintf(cur, "?");
