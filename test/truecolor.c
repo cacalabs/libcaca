@@ -45,6 +45,9 @@ int main(void)
         cucul_putstr(qq, x * 2, y, "CA");
     }
 
+    cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_LIGHTBLUE);
+    cucul_putstr(qq, 2, 1, " truecolor libcaca ");
+
     caca_display(kk);
 
     caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev, -1);

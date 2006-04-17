@@ -30,7 +30,7 @@ unsigned int points[] =
     CUCUL_COLOR_LIGHTRED
 };
 
-char density[] = " -,+:;o&%w$W@#";
+char density[] = " ',+:;o&%w$W@#";
 
 int main(void)
 {
