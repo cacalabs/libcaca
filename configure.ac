@@ -11,10 +11,13 @@ AM_CONFIG_HEADER(config.h)
 
 AM_PROG_CC_C_O
 AC_PROG_CPP
+AC_PROG_CXX
 AM_PROG_AS
 
 AC_LIBTOOL_WIN32_DLL
 AM_PROG_LIBTOOL
+AC_LIBTOOL_CXX
+
 
 AC_C_CONST
 AC_C_INLINE
@@ -23,8 +26,16 @@ AC_TYPE_SIGNAL
 dnl AC_PROG_EGREP only exists in autoconf 2.54+, so we use AC_EGREP_CPP right
 dnl now otherwise it might be set in an obscure if statement. Same thing for
 dnl PKG_PROG_PKG_CONFIG which needs to be called first.
-AC_EGREP_CPP(foo, foo)
+AC_EGREP_CPP(yes, foo)
 PKG_PROG_PKG_CONFIG()
+
+dnl Check the C++ compiler and preprocessor.
+AC_PROG_CXX
+AC_PROG_CXXCPP
+
+dnl Set the test language as C++
+AC_LANG([C++])
+
 
 dnl output driver features
 AC_ARG_ENABLE(slang,
@@ -43,6 +54,9 @@ AC_ARG_ENABLE(network,
   [  --enable-network        Network support (autodetected)])
 AC_ARG_ENABLE(vga,
   [  --enable-vga            VGA support (default disabled)])
+
+AC_ARG_ENABLE(cpp,
+  [  --enable-cpp            C++ bindings (autodetected)])
 
 dnl example programs features
 AC_ARG_ENABLE(imlib2,
@@ -75,6 +89,13 @@ AC_TRY_COMPILE([],[asm("fldln2; fldln2; fxch; fyl2x");],
  [AC_MSG_RESULT(no)])
 
 AC_CHECK_LIB(m, sin, MATH_LIBS="${MATH_LIBS} -lm")
+
+
+if test "${enable_cpp}" != "no"; then
+  ac_cv_my_have_cpp="yes"
+  AC_DEFINE(USE_CPP, 1,
+                Define to 1 to enable C++ bindigs)
+fi
 
 CACA_DRIVERS="" 
 
@@ -221,9 +242,14 @@ else
   AC_MSG_RESULT([${CACA_DRIVERS}])
 fi
 
+
+
+
+
 AC_SUBST(MATH_LIBS)
 AC_SUBST(CACA_LIBS)
 AC_SUBST(CUCUL_LIBS)
+AC_SUBST(CUCUL++_LIBS)
 
 # Optimizations
 CFLAGS="${CFLAGS} -g -O2 -fno-strength-reduce -fomit-frame-pointer"
@@ -301,6 +327,7 @@ AC_CONFIG_FILES([
   src/Makefile
   test/Makefile
   tools/Makefile
+  cpp/Makefile
   doc/Makefile
   autotools/Makefile
   debian/Makefile
