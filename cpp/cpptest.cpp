@@ -20,20 +20,22 @@ using namespace std;
 
 
 static char const *pig[]= {
-    "                             _    ",
-    "    _._ _..._ .-',     _.._(`))   ",
-    "   '-. `     '  /-._.-'    ',/    ",
-    "      )         \            '.   ",
-    "     / _    _    |             \\  ",
-    "    |  a    a    /              | ",
-    "    \   .-.                     ; " ,
-    "     '-('' ).-'       ,'       ;  ",
-    "        '-;           |      .'   ",
-    "           \\           \\    /     ",
-    "           | 7  .__  _.-\\   \\     ",
-    "           | |  |  ``/  /`  /     ",
-    "      jgs /,_|  |   /,_/   /      ",
-    "             /,_/      '`-'       ",
+    "                                   ",
+    "                             _     ",
+    "    _._ _..._ .-',     _.._(`))    ",
+    "   '-. `     '  /-._.-'    ',/     ",
+    "      )         \            '.    ",
+    "     / _    _    |             \\   ",
+    "    |  a    a    /              |  ",
+    "    \   .-.                     ;  " ,
+    "     '-('' ).-'       ,'       ;   ",
+    "        '-;           |      .'    ",
+    "           \\           \\    /      ",
+    "           | 7  .__  _.-\\   \\      ",
+    "           | |  |  ``/  /`  /      ",
+    "      jgs /,_|  |   /,_/   /       ",
+    "             /,_/      '`-'        ",
+    "                                   ",
  NULL
 };
 
@@ -42,6 +44,9 @@ int main(int argc, char *argv[])
     Cucul *qq;
     Caca  *kk;
     Caca::Event ev;
+    int x = 0, y = 0, ix = 1, iy = 1;
+
+
 
     try {
         qq = new Cucul();
@@ -59,20 +64,33 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    
-    /* Draw pig */
-    qq->set_color(CUCUL_COLOR_LIGHTMAGENTA, CUCUL_COLOR_BLACK);
-   
-    for(int i = 0; pig[i]; i++)
-        qq->putstr(0, i, (char*)pig[i]);
-    
-    /* printf works */
-    qq->set_color(CUCUL_COLOR_LIGHTBLUE, CUCUL_COLOR_BLACK);  
-    qq->printf(7,15, "Powered by libcaca %s", VERSION);
-    
+    kk->set_delay(20000);
 
-    kk->display();
-    kk->get_event(CACA_EVENT_KEY_PRESS, &ev, -1);
+    while(!kk->get_event(CACA_EVENT_KEY_PRESS, &ev, 0)) {
+        
+        /* Draw pig */
+        qq->set_color(CUCUL_COLOR_LIGHTMAGENTA, CUCUL_COLOR_BLACK);
+        
+        for(int i = 0; pig[i]; i++)
+            qq->putstr(x, y+i, (char*)pig[i]);
+        
+        /* printf works */
+        qq->set_color(CUCUL_COLOR_LIGHTBLUE, CUCUL_COLOR_BLACK);  
+        qq->printf(30,15, "Powered by libcaca %s", VERSION);
+        
+        /* Blit */
+        kk->display();
+
+        x+=ix;
+        y+=iy;
+
+        if(x>=(qq->get_width()-35)  || x<0 )
+            ix=-ix;
+        if(y>=(qq->get_height()-15)   || y<0 )
+            iy=-iy;
+
+
+    }
 
 
     delete kk;
