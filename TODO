@@ -81,9 +81,6 @@ Language bindings
 
    o Fix Perl
 
-   o C++ (given how object-oriented we now are, it will be a walk in the
-     park)
-
    o C# (it's the next big thing, believe me)
 
    o PHP (together with the HTML output it would allow for nice web
