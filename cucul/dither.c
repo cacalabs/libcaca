@@ -1251,7 +1251,7 @@ static void init_random_dither(int line)
 
 static unsigned int get_random_dither(void)
 {
-    return cucul_rand(0x00, 0xff);
+    return cucul_rand(0x00, 0x100);
 }
 
 static void increment_random_dither(void)

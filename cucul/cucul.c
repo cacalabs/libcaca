@@ -241,11 +241,12 @@ void cucul_free_canvas(cucul_canvas_t *cv)
  *
  *  \param min The lower bound of the integer range.
  *  \param max The upper bound of the integer range.
- *  \return A random integer comprised between \p min and \p max, inclusive.
+ *  \return A random integer comprised between \p min  and \p max - 1
+ *  (inclusive).
  */
 int cucul_rand(int min, int max)
 {
-    return min + (int)((1.0*(max-min+1)) * rand() / (RAND_MAX+1.0));
+    return min + (int)((1.0 * (max - min)) * rand() / (RAND_MAX + 1.0));
 }
 
 /*

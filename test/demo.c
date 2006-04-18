@@ -310,8 +310,8 @@ static void demo_all(void)
     /* Draw a trail behind the foreground sprite */
     for(j = i - 60; j < i; j++)
     {
-        int delta = cucul_rand(-5, 5);
-        cucul_set_color(cv, cucul_rand(0, 15), cucul_rand(0, 15));
+        int delta = cucul_rand(-5, 6);
+        cucul_set_color(cv, cucul_rand(0, 16), cucul_rand(0, 16));
         cucul_putchar(cv, cucul_get_canvas_width(cv) / 2
                     + cos(0.02*j) * (delta + cucul_get_canvas_width(cv) / 4),
                    cucul_get_canvas_height(cv) / 2
@@ -327,8 +327,8 @@ static void demo_all(void)
 
 static void demo_dots(void)
 {
-    int xmax = cucul_get_canvas_width(cv) - 1;
-    int ymax = cucul_get_canvas_height(cv) - 1;
+    int xmax = cucul_get_canvas_width(cv);
+    int ymax = cucul_get_canvas_height(cv);
     int i;
     static char chars[10] =
     {
@@ -338,7 +338,7 @@ static void demo_dots(void)
     for(i = 1000; i--;)
     {
         /* Putpixel */
-        cucul_set_color(cv, cucul_rand(0, 15), cucul_rand(0, 15));
+        cucul_set_color(cv, cucul_rand(0, 16), cucul_rand(0, 16));
         cucul_putchar(cv, cucul_rand(0, xmax), cucul_rand(0, ymax),
                       chars[cucul_rand(0, 9)]);
     }
@@ -376,11 +376,11 @@ static void demo_lines(void)
     }
     else
     {
-        xa = cucul_rand(0, w - 1); ya = cucul_rand(0, h - 1);
-        xb = cucul_rand(0, w - 1); yb = cucul_rand(0, h - 1);
+        xa = cucul_rand(0, w); ya = cucul_rand(0, h);
+        xb = cucul_rand(0, w); yb = cucul_rand(0, h);
     }
 
-    cucul_set_color(cv, cucul_rand(0, 15), CUCUL_COLOR_BLACK);
+    cucul_set_color(cv, cucul_rand(0, 16), CUCUL_COLOR_BLACK);
     if(outline > 1)
         cucul_draw_thin_line(cv, xa, ya, xb, yb);
     else
@@ -400,14 +400,14 @@ static void demo_boxes(void)
     }
     else
     {
-        xa = cucul_rand(0, w - 1); ya = cucul_rand(0, h - 1);
-        xb = cucul_rand(0, w - 1); yb = cucul_rand(0, h - 1);
+        xa = cucul_rand(0, w); ya = cucul_rand(0, h);
+        xb = cucul_rand(0, w); yb = cucul_rand(0, h);
     }
 
-    cucul_set_color(cv, cucul_rand(0, 15), cucul_rand(0, 15));
+    cucul_set_color(cv, cucul_rand(0, 16), cucul_rand(0, 16));
     cucul_fill_box(cv, xa, ya, xb, yb, "#");
 
-    cucul_set_color(cv, cucul_rand(0, 15), CUCUL_COLOR_BLACK);
+    cucul_set_color(cv, cucul_rand(0, 16), CUCUL_COLOR_BLACK);
     if(outline == 2)
         cucul_draw_thin_box(cv, xa, ya, xb, yb);
     else if(outline == 1)
@@ -435,10 +435,10 @@ static void demo_ellipses(void)
         } while(x - a < 0 || x + a >= w || y - b < 0 || y + b >= h);
     }
 
-    cucul_set_color(cv, cucul_rand(0, 15), cucul_rand(0, 15));
+    cucul_set_color(cv, cucul_rand(0, 16), cucul_rand(0, 16));
     cucul_fill_ellipse(cv, x, y, a, b, "#");
 
-    cucul_set_color(cv, cucul_rand(0, 15), CUCUL_COLOR_BLACK);
+    cucul_set_color(cv, cucul_rand(0, 16), CUCUL_COLOR_BLACK);
     if(outline == 2)
         cucul_draw_thin_ellipse(cv, x, y, a, b);
     else if(outline == 1)
@@ -460,15 +460,15 @@ static void demo_triangles(void)
     else
     {
 
-        xa = cucul_rand(0, w - 1); ya = cucul_rand(0, h - 1);
-        xb = cucul_rand(0, w - 1); yb = cucul_rand(0, h - 1);
-        xc = cucul_rand(0, w - 1); yc = cucul_rand(0, h - 1);
+        xa = cucul_rand(0, w); ya = cucul_rand(0, h);
+        xb = cucul_rand(0, w); yb = cucul_rand(0, h);
+        xc = cucul_rand(0, w); yc = cucul_rand(0, h);
     }
 
-    cucul_set_color(cv, cucul_rand(0, 15), cucul_rand(0, 15));
+    cucul_set_color(cv, cucul_rand(0, 16), cucul_rand(0, 16));
     cucul_fill_triangle(cv, xa, ya, xb, yb, xc, yc, "#");
 
-    cucul_set_color(cv, cucul_rand(0, 15), CUCUL_COLOR_BLACK);
+    cucul_set_color(cv, cucul_rand(0, 16), CUCUL_COLOR_BLACK);
     if(outline == 2)
         cucul_draw_thin_triangle(cv, xa, ya, xb, yb, xc, yc);
     else if(outline == 1)
@@ -477,8 +477,8 @@ static void demo_triangles(void)
 
 static void demo_sprites(void)
 {
-    cucul_draw_sprite(cv, cucul_rand(0, cucul_get_canvas_width(cv) - 1),
-                   cucul_rand(0, cucul_get_canvas_height(cv) - 1), sprite, 0);
+    cucul_draw_sprite(cv, cucul_rand(0, cucul_get_canvas_width(cv)),
+                      cucul_rand(0, cucul_get_canvas_height(cv)), sprite, 0);
 }
 
 #if 0

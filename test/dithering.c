@@ -54,7 +54,7 @@ int main(void)
 
         /* distance to 40% */
         dist = XRATIO * (x - 40) * (x - 40) + YRATIO * y * y;
-        if(cucul_rand(-FUZZY, FUZZY) + dist < dista)
+        if(cucul_rand(-FUZZY, FUZZY+1) + dist < dista)
         {
             nearb = neara; distb = dista; neara = 1; dista = dist;
         }
@@ -65,22 +65,22 @@ int main(void)
 
         /* check dist to 70% */
         dist = XRATIO * (x - 70) * (x - 70) + YRATIO * y * y;
-        if(cucul_rand(-FUZZY, FUZZY) + dist < dista)
+        if(cucul_rand(-FUZZY, FUZZY+1) + dist < dista)
         {
             nearb = neara; distb = dista; neara = 2; dista = dist;
         }
-        else if(cucul_rand(-FUZZY, FUZZY) + dist < distb)
+        else if(cucul_rand(-FUZZY, FUZZY+1) + dist < distb)
         {
             nearb = 2; distb = dist;
         }
 
         /* check dist to white */
         dist = XRATIO * (x - 100) * (x - 100) + YRATIO * y * y;
-        if(cucul_rand(-FUZZY, FUZZY) + dist < dista)
+        if(cucul_rand(-FUZZY, FUZZY+1) + dist < dista)
         {
             nearb = neara; distb = dista; neara = 3; dista = dist;
         }
-        else if(cucul_rand(-FUZZY, FUZZY) + dist < distb)
+        else if(cucul_rand(-FUZZY, FUZZY+1) + dist < distb)
         {
             nearb = 3; distb = dist;
         }
@@ -89,11 +89,11 @@ int main(void)
         /* check dist to dark */
         dist = XRATIO * (x - 40) * (x - 40) + YRATIO * (y - 100) * (y - 100);
         dist = dist * 12 / 16;
-        if(cucul_rand(-FUZZY, FUZZY) + dist < dista)
+        if(cucul_rand(-FUZZY, FUZZY+1) + dist < dista)
         {
             nearb = neara; distb = dista; neara = 4; dista = dist;
         }
-        else if(cucul_rand(-FUZZY, FUZZY) + dist < distb)
+        else if(cucul_rand(-FUZZY, FUZZY+1) + dist < distb)
         {
             nearb = 4; distb = dist;
         }
@@ -101,11 +101,11 @@ int main(void)
         /* check dist to light */
         dist = XRATIO * (x - 100) * (x - 100) + YRATIO * (y - 100) * (y - 100);
         dist = dist * 8 / 16;
-        if(cucul_rand(-FUZZY, FUZZY) + dist < dista)
+        if(cucul_rand(-FUZZY, FUZZY+1) + dist < dista)
         {
             nearb = neara; distb = dista; neara = 5; dista = dist;
         }
-        else if(cucul_rand(-FUZZY, FUZZY) + dist < distb)
+        else if(cucul_rand(-FUZZY, FUZZY+1) + dist < distb)
         {
             nearb = 5; distb = dist;
         }
