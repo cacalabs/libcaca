@@ -96,13 +96,13 @@ static int gl_init_graphics(caca_t *kk)
 #endif
 
     if(width && height)
-        _cucul_set_size(kk->qq, width, height);
+        _cucul_set_size(kk->c, width, height);
 
     kk->drv.p->font_width = 9;
     kk->drv.p->font_height = 15;
 
-    kk->drv.p->width = kk->qq->width * kk->drv.p->font_width;
-    kk->drv.p->height = kk->qq->height * kk->drv.p->font_height;
+    kk->drv.p->width = kk->c->width * kk->drv.p->font_width;
+    kk->drv.p->height = kk->c->height * kk->drv.p->font_height;
 
 #ifdef HAVE_GLUTCLOSEFUNC
     kk->drv.p->close = 0;
@@ -227,7 +227,7 @@ static void gl_display(caca_t *kk)
     line = 0;
     for(y = 0; y < kk->drv.p->height; y += kk->drv.p->font_height)
     {
-        uint32_t *attr = kk->qq->attr + line * kk->qq->width;
+        uint32_t *attr = kk->c->attr + line * kk->c->width;
 
         for(x = 0; x < kk->drv.p->width; x += kk->drv.p->font_width)
         {
@@ -256,8 +256,8 @@ static void gl_display(caca_t *kk)
     line = 0;
     for(y = 0; y < kk->drv.p->height; y += kk->drv.p->font_height)
     {
-        uint32_t *attr = kk->qq->attr + line * kk->qq->width;
-        uint32_t *chars = kk->qq->chars + line * kk->qq->width;
+        uint32_t *attr = kk->c->attr + line * kk->c->width;
+        uint32_t *chars = kk->c->chars + line * kk->c->width;
 
         for(x = 0; x < kk->drv.p->width; x += kk->drv.p->font_width)
         {
@@ -333,8 +333,8 @@ static int gl_get_event(caca_t *kk, caca_event_t *ev)
     if(kk->resize.resized)
     {
         ev->type = CACA_EVENT_RESIZE;
-        ev->data.resize.w = kk->qq->width;
-        ev->data.resize.h = kk->qq->height;
+        ev->data.resize.w = kk->c->width;
+        ev->data.resize.h = kk->c->height;
         return 1;
     }
 
@@ -359,7 +359,7 @@ static int gl_get_event(caca_t *kk, caca_event_t *ev)
     if(kk->drv.p->key != 0)
     {
         ev->type = CACA_EVENT_KEY_PRESS;
-        ev->data.key.c = kk->drv.p->key;
+        ev->data.key.ch = kk->drv.p->key;
         ev->data.key.ucs4 = (uint32_t)kk->drv.p->key;
         ev->data.key.utf8[0] = kk->drv.p->key;
         ev->data.key.utf8[1] = '\0';
@@ -371,22 +371,22 @@ static int gl_get_event(caca_t *kk, caca_event_t *ev)
     {
         switch(kk->drv.p->special_key)
         {
-            case GLUT_KEY_F1 : ev->data.key.c = CACA_KEY_F1; break;
-            case GLUT_KEY_F2 : ev->data.key.c = CACA_KEY_F2; break;
-            case GLUT_KEY_F3 : ev->data.key.c = CACA_KEY_F3; break;
-            case GLUT_KEY_F4 : ev->data.key.c = CACA_KEY_F4; break;
-            case GLUT_KEY_F5 : ev->data.key.c = CACA_KEY_F5; break;
-            case GLUT_KEY_F6 : ev->data.key.c = CACA_KEY_F6; break;
-            case GLUT_KEY_F7 : ev->data.key.c = CACA_KEY_F7; break;
-            case GLUT_KEY_F8 : ev->data.key.c = CACA_KEY_F8; break;
-            case GLUT_KEY_F9 : ev->data.key.c = CACA_KEY_F9; break;
-            case GLUT_KEY_F10: ev->data.key.c = CACA_KEY_F10; break;
-            case GLUT_KEY_F11: ev->data.key.c = CACA_KEY_F11; break;
-            case GLUT_KEY_F12: ev->data.key.c = CACA_KEY_F12; break;
-            case GLUT_KEY_LEFT : ev->data.key.c = CACA_KEY_LEFT; break;
-            case GLUT_KEY_RIGHT: ev->data.key.c = CACA_KEY_RIGHT; break;
-            case GLUT_KEY_UP   : ev->data.key.c = CACA_KEY_UP; break;
-            case GLUT_KEY_DOWN : ev->data.key.c = CACA_KEY_DOWN; break;
+            case GLUT_KEY_F1 : ev->data.key.ch = CACA_KEY_F1; break;
+            case GLUT_KEY_F2 : ev->data.key.ch = CACA_KEY_F2; break;
+            case GLUT_KEY_F3 : ev->data.key.ch = CACA_KEY_F3; break;
+            case GLUT_KEY_F4 : ev->data.key.ch = CACA_KEY_F4; break;
+            case GLUT_KEY_F5 : ev->data.key.ch = CACA_KEY_F5; break;
+            case GLUT_KEY_F6 : ev->data.key.ch = CACA_KEY_F6; break;
+            case GLUT_KEY_F7 : ev->data.key.ch = CACA_KEY_F7; break;
+            case GLUT_KEY_F8 : ev->data.key.ch = CACA_KEY_F8; break;
+            case GLUT_KEY_F9 : ev->data.key.ch = CACA_KEY_F9; break;
+            case GLUT_KEY_F10: ev->data.key.ch = CACA_KEY_F10; break;
+            case GLUT_KEY_F11: ev->data.key.ch = CACA_KEY_F11; break;
+            case GLUT_KEY_F12: ev->data.key.ch = CACA_KEY_F12; break;
+            case GLUT_KEY_LEFT : ev->data.key.ch = CACA_KEY_LEFT; break;
+            case GLUT_KEY_RIGHT: ev->data.key.ch = CACA_KEY_RIGHT; break;
+            case GLUT_KEY_UP   : ev->data.key.ch = CACA_KEY_UP; break;
+            case GLUT_KEY_DOWN : ev->data.key.ch = CACA_KEY_DOWN; break;
             default: ev->type = CACA_EVENT_NONE; return 0;
         }
 

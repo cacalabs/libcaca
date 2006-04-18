@@ -688,12 +688,12 @@ char const * const * cucul_get_dither_mode_list(cucul_dither_t const *d)
     return list;
 }
 
-/** \brief Draw a dither on the screen.
+/** \brief Dither a bitmap on the canvas.
  *
- *  Draw a dither at the given coordinates. The dither can be of any size and
- *  will be stretched to the text area.
+ *  Dither a bitmap at the given coordinates. The dither can be of any size
+ *  and will be stretched to the text area.
  *
- *  \param qq A handle to the libcucul canvas.
+ *  \param c A handle to the libcucul canvas.
  *  \param x1 X coordinate of the upper-left corner of the drawing area.
  *  \param y1 Y coordinate of the upper-left corner of the drawing area.
  *  \param x2 X coordinate of the lower-right corner of the drawing area.
@@ -701,7 +701,7 @@ char const * const * cucul_get_dither_mode_list(cucul_dither_t const *d)
  *  \param d Dither object to be drawn.
  *  \param pixels Bitmap's pixels.
  */
-void cucul_dither_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
+void cucul_dither_bitmap(cucul_canvas_t *c, int x1, int y1, int x2, int y2,
                          cucul_dither_t const *d, void *pixels)
 {
     int *floyd_steinberg, *fs_r, *fs_g, *fs_b;
@@ -730,19 +730,19 @@ void cucul_dither_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
     deltay = y2 - y1 + 1;
     dchmax = d->glyph_count;
 
-    fs_length = ((int)qq->width <= x2 ? (int)qq->width : x2) + 1;
+    fs_length = ((int)c->width <= x2 ? (int)c->width : x2) + 1;
     floyd_steinberg = malloc(3 * (fs_length + 2) * sizeof(int));
     memset(floyd_steinberg, 0, 3 * (fs_length + 2) * sizeof(int));
     fs_r = floyd_steinberg + 1;
     fs_g = fs_r + fs_length + 2;
     fs_b = fs_g + fs_length + 2;
 
-    for(y = y1 > 0 ? y1 : 0; y <= y2 && y <= (int)qq->height; y++)
+    for(y = y1 > 0 ? y1 : 0; y <= y2 && y <= (int)c->height; y++)
     {
         int remain_r = 0, remain_g = 0, remain_b = 0;
 
         for(x = x1 > 0 ? x1 : 0, d->init_dither(y);
-            x <= x2 && x <= (int)qq->width;
+            x <= x2 && x <= (int)c->width;
             x++)
     {
         unsigned int i;
@@ -791,7 +791,7 @@ void cucul_dither_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
             tox = (x - x1 + 1) * w / deltax;
             toy = (y - y1 + 1) * h / deltay;
 
-            /* tox and toy can overflow the screen, but they cannot overflow
+            /* tox and toy can overflow the canvas, but they cannot overflow
              * when averaged with fromx and fromy because these are guaranteed
              * to be within the pixel boundaries. */
             myx = (fromx + tox) / 2;
@@ -936,8 +936,8 @@ void cucul_dither_bitmap(cucul_t *qq, int x1, int y1, int x2, int y2,
         }
 
         /* Now output the character */
-        cucul_set_color(qq, outfg, outbg);
-        cucul_putstr(qq, x, y, outch);
+        cucul_set_color(c, outfg, outbg);
+        cucul_putstr(c, x, y, outch);
 
        d->increment_dither();
     }

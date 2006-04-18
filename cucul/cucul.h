@@ -32,7 +32,7 @@ extern "C"
 #endif
 
 /** \e libcucul context */
-typedef struct cucul cucul_t;
+typedef struct cucul_canvas cucul_canvas_t;
 /** sprite structure */
 typedef struct cucul_sprite cucul_sprite_t;
 /** dither structure */
@@ -73,12 +73,12 @@ typedef struct cucul_font cucul_font_t;
  *  initialisation, system information retrieval and configuration.
  *
  *  @{ */
-cucul_t * cucul_create(unsigned int, unsigned int);
-cucul_t * cucul_load(void *, unsigned int);
-void cucul_set_size(cucul_t *, unsigned int, unsigned int);
-unsigned int cucul_get_width(cucul_t *);
-unsigned int cucul_get_height(cucul_t *);
-void cucul_free(cucul_t *);
+cucul_canvas_t * cucul_create(unsigned int, unsigned int);
+cucul_canvas_t * cucul_load(void *, unsigned int);
+void cucul_set_size(cucul_canvas_t *, unsigned int, unsigned int);
+unsigned int cucul_get_width(cucul_canvas_t *);
+unsigned int cucul_get_height(cucul_canvas_t *);
+void cucul_free(cucul_canvas_t *);
 int cucul_rand(int, int);
 /*  @} */
 
@@ -98,14 +98,14 @@ void cucul_free_buffer(cucul_buffer_t *);
  *  higher level graphics functions.
  *
  *  @{ */
-void cucul_set_color(cucul_t *, unsigned char, unsigned char);
-void cucul_set_truecolor(cucul_t *, unsigned int, unsigned int);
+void cucul_set_color(cucul_canvas_t *, unsigned char, unsigned char);
+void cucul_set_truecolor(cucul_canvas_t *, unsigned int, unsigned int);
 char const *cucul_get_color_name(unsigned int);
-void cucul_putchar(cucul_t *, int, int, char);
-void cucul_putstr(cucul_t *, int, int, char const *);
-void cucul_printf(cucul_t *, int, int, char const *, ...);
-void cucul_clear(cucul_t *);
-void cucul_blit(cucul_t *, int, int, cucul_t const *, cucul_t const *);
+void cucul_putchar(cucul_canvas_t *, int, int, char);
+void cucul_putstr(cucul_canvas_t *, int, int, char const *);
+void cucul_printf(cucul_canvas_t *, int, int, char const *, ...);
+void cucul_clear(cucul_canvas_t *);
+void cucul_blit(cucul_canvas_t *, int, int, cucul_canvas_t const *, cucul_canvas_t const *);
 /*  @} */
 
 /** \defgroup transform Canvas transformation
@@ -113,10 +113,10 @@ void cucul_blit(cucul_t *, int, int, cucul_t const *, cucul_t const *);
  *  These functions perform horizontal and vertical canvas flipping.
  *
  *  @{ */
-void cucul_invert(cucul_t *);
-void cucul_flip(cucul_t *);
-void cucul_flop(cucul_t *);
-void cucul_rotate(cucul_t *);
+void cucul_invert(cucul_canvas_t *);
+void cucul_flip(cucul_canvas_t *);
+void cucul_flop(cucul_canvas_t *);
+void cucul_rotate(cucul_canvas_t *);
 /*  @} */
 
 /** \defgroup prim Primitives drawing
@@ -125,23 +125,23 @@ void cucul_rotate(cucul_t *);
  *  boxes, triangles and ellipses.
  *
  *  @{ */
-void cucul_draw_line(cucul_t *, int, int, int, int, char const *);
-void cucul_draw_polyline(cucul_t *, int const x[], int const y[], int, char const *);
-void cucul_draw_thin_line(cucul_t *, int, int, int, int);
-void cucul_draw_thin_polyline(cucul_t *, int const x[], int const y[], int);
+void cucul_draw_line(cucul_canvas_t *, int, int, int, int, char const *);
+void cucul_draw_polyline(cucul_canvas_t *, int const x[], int const y[], int, char const *);
+void cucul_draw_thin_line(cucul_canvas_t *, int, int, int, int);
+void cucul_draw_thin_polyline(cucul_canvas_t *, int const x[], int const y[], int);
 
-void cucul_draw_circle(cucul_t *, int, int, int, char const *);
-void cucul_draw_ellipse(cucul_t *, int, int, int, int, char const *);
-void cucul_draw_thin_ellipse(cucul_t *, int, int, int, int);
-void cucul_fill_ellipse(cucul_t *, int, int, int, int, char const *);
+void cucul_draw_circle(cucul_canvas_t *, int, int, int, char const *);
+void cucul_draw_ellipse(cucul_canvas_t *, int, int, int, int, char const *);
+void cucul_draw_thin_ellipse(cucul_canvas_t *, int, int, int, int);
+void cucul_fill_ellipse(cucul_canvas_t *, int, int, int, int, char const *);
 
-void cucul_draw_box(cucul_t *, int, int, int, int, char const *);
-void cucul_draw_thin_box(cucul_t *, int, int, int, int);
-void cucul_fill_box(cucul_t *, int, int, int, int, char const *);
+void cucul_draw_box(cucul_canvas_t *, int, int, int, int, char const *);
+void cucul_draw_thin_box(cucul_canvas_t *, int, int, int, int);
+void cucul_fill_box(cucul_canvas_t *, int, int, int, int, char const *);
 
-void cucul_draw_triangle(cucul_t *, int, int, int, int, int, int, char const *);
-void cucul_draw_thin_triangle(cucul_t *, int, int, int, int, int, int);
-void cucul_fill_triangle(cucul_t *, int, int, int, int, int, int, char const *);
+void cucul_draw_triangle(cucul_canvas_t *, int, int, int, int, int, int, char const *);
+void cucul_draw_thin_triangle(cucul_canvas_t *, int, int, int, int, int, int);
+void cucul_fill_triangle(cucul_canvas_t *, int, int, int, int, int, int, char const *);
 /*  @} */
 
 /** \defgroup sprite Sprite handling
@@ -156,7 +156,7 @@ int cucul_get_sprite_width(cucul_sprite_t const *, int);
 int cucul_get_sprite_height(cucul_sprite_t const *, int);
 int cucul_get_sprite_dx(cucul_sprite_t const *, int);
 int cucul_get_sprite_dy(cucul_sprite_t const *, int);
-void cucul_draw_sprite(cucul_t *, int, int, cucul_sprite_t const *, int);
+void cucul_draw_sprite(cucul_canvas_t *, int, int, cucul_sprite_t const *, int);
 void cucul_free_sprite(cucul_sprite_t *);
 /*  @} */
 
@@ -185,7 +185,7 @@ void cucul_set_dither_charset(cucul_dither_t *, char const *);
 char const * const * cucul_get_dither_charset_list(cucul_dither_t const *);
 void cucul_set_dither_mode(cucul_dither_t *, char const *);
 char const * const * cucul_get_dither_mode_list(cucul_dither_t const *);
-void cucul_dither_bitmap(cucul_t *, int, int, int, int,
+void cucul_dither_bitmap(cucul_canvas_t *, int, int, int, int,
                          cucul_dither_t const *, void *);
 void cucul_free_dither(cucul_dither_t *);
 /*  @} */
@@ -200,7 +200,7 @@ cucul_font_t *cucul_load_font(void const *, unsigned int);
 char const * const * cucul_get_font_list(void);
 unsigned int cucul_get_font_width(cucul_font_t *);
 unsigned int cucul_get_font_height(cucul_font_t *);
-void cucul_render_canvas(cucul_t *, cucul_font_t *, void *,
+void cucul_render_canvas(cucul_canvas_t *, cucul_font_t *, void *,
                          unsigned int, unsigned int, unsigned int);
 void cucul_free_font(cucul_font_t *);
 /*  @} */
@@ -211,7 +211,7 @@ void cucul_free_font(cucul_font_t *);
  *  is necessary to call cucul_free_buffer() to dispose of the data.
  *
  *  @{ */
-cucul_buffer_t * cucul_create_export(cucul_t *, char const *);
+cucul_buffer_t * cucul_create_export(cucul_canvas_t *, char const *);
 char const * const * cucul_get_export_list(void);
 /*  @} */
 

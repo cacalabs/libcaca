@@ -20,55 +20,55 @@
 
 Cucul::Cucul() 
 {
-    qq = cucul_create(0,0);
-    if(!qq) throw -1;
+    c = cucul_create(0,0);
+    if(!c) throw -1;
 }
 Cucul::Cucul(int width, int height) 
 {
-    qq = cucul_create(width, height);
-    if(!qq) throw -1;
+    c = cucul_create(width, height);
+    if(!c) throw -1;
 }
 Cucul::~Cucul() 
 {
-    if(qq) {
-        cucul_free(qq);
+    if(c) {
+        cucul_free(c);
     }
 }
 
-cucul_t *Cucul::get_cucul_t()
+cucul_canvas_t *Cucul::get_cucul_canvas_t()
 {
-    return qq;
+    return c;
 }
 
 
 
 void Cucul::set_size(unsigned int width, unsigned int height) 
 {
-    cucul_set_size (qq, width, height);
+    cucul_set_size (c, width, height);
 }
 unsigned int Cucul::get_width(void) 
 {
-    return cucul_get_width (qq);
+    return cucul_get_width (c);
 }
 unsigned int Cucul::get_height(void) 
 {
-    return cucul_get_height (qq);
+    return cucul_get_height (c);
 }
 void Cucul::set_color(unsigned int f, unsigned int b) 
 {
-    cucul_set_color (qq, f, b);
+    cucul_set_color (c, f, b);
 }
 char const * Cucul::get_color_name (unsigned int color) 
 {
     return cucul_get_color_name (color);
 }
-void Cucul::putchar (int x, int y, char c)
+void Cucul::putchar (int x, int y, char ch)
 {
-    cucul_putchar (qq, x, y, c);
+    cucul_putchar (c, x, y, ch);
 }
 void Cucul::putstr (int x, int y, char *str) 
 {
-    cucul_putstr(qq, x, y, str);
+    cucul_putstr(c, x, y, str);
 }
 void 	Cucul::printf ( int x , int y , char const * format,...)
 {
@@ -91,102 +91,102 @@ void 	Cucul::printf ( int x , int y , char const * format,...)
 
 void 	Cucul::clear ()
 {
-    cucul_clear(qq);
+    cucul_clear(c);
 }
 
 void 	Cucul::blit ( int x, int y, Cucul* c1, Cucul* c2)
 {
-    cucul_blit(qq, x, y, c1->get_cucul_t(), c2->get_cucul_t());
+    cucul_blit(c, x, y, c1->get_cucul_canvas_t(), c2->get_cucul_canvas_t());
 }
 
 void 	Cucul::invert ()
 {
-    cucul_invert(qq);
+    cucul_invert(c);
 }
 
 void 	Cucul::flip ()
 {
-    cucul_flip(qq);
+    cucul_flip(c);
 }
 
 void 	Cucul::flop ()
 {
-    cucul_flop(qq);
+    cucul_flop(c);
 }
 
 void 	Cucul::rotate ()
 {
-    cucul_rotate(qq);
+    cucul_rotate(c);
 }
 
-void 	Cucul::draw_line (int x1 , int y1, int x2, int y2, char const *c)
+void 	Cucul::draw_line (int x1 , int y1, int x2, int y2, char const *ch)
 {
-    cucul_draw_line(qq, x1,y1,x2,y2, c);
+    cucul_draw_line(c, x1,y1,x2,y2, ch);
 }
  
-void 	Cucul::draw_polyline (int const x[], int const y[], int f, char const *c)
+void 	Cucul::draw_polyline (int const x[], int const y[], int f, char const *ch)
 {
-    cucul_draw_polyline(qq, x, y, f, c);
+    cucul_draw_polyline(c, x, y, f, ch);
 }
  
 void 	Cucul::draw_thin_line (int x1 , int y1, int x2, int y2)
 {
-    cucul_draw_thin_line(qq, x1, y1, x2, y2);
+    cucul_draw_thin_line(c, x1, y1, x2, y2);
 }
 
 void 	Cucul::draw_thin_polyline ( int const x[], int const y[], int f)
 {
-    cucul_draw_thin_polyline(qq, x, y, f);
+    cucul_draw_thin_polyline(c, x, y, f);
 }
  
-void 	Cucul::draw_circle ( int x, int y, int d, char const *c)
+void 	Cucul::draw_circle ( int x, int y, int d, char const *ch)
 {
-    cucul_draw_circle(qq, x, y, d, c);
+    cucul_draw_circle(c, x, y, d, ch);
 }
 
-void 	Cucul::draw_ellipse ( int x, int y, int d1, int d2, char const *c)
+void 	Cucul::draw_ellipse ( int x, int y, int d1, int d2, char const *ch)
 {
-    cucul_draw_ellipse(qq, x, y, d1, d2, c);
+    cucul_draw_ellipse(c, x, y, d1, d2, ch);
 }
 
 void 	Cucul::draw_thin_ellipse ( int x, int y, int d1, int d2)
 {
-    cucul_draw_thin_ellipse(qq, x, y, d1, d2);
+    cucul_draw_thin_ellipse(c, x, y, d1, d2);
 }
 
-void 	Cucul::fill_ellipse ( int x, int y, int d1, int d2, char const *c)
+void 	Cucul::fill_ellipse ( int x, int y, int d1, int d2, char const *ch)
 {
-    cucul_fill_ellipse(qq, x, y, d1, d2, c);
+    cucul_fill_ellipse(c, x, y, d1, d2, ch);
 }
 
-void 	Cucul::draw_box ( int x, int y, int w, int h, char const *c)
+void 	Cucul::draw_box ( int x, int y, int w, int h, char const *ch)
 {
-    cucul_draw_box(qq, x, y, w, h, c);
+    cucul_draw_box(c, x, y, w, h, ch);
 }
  
 void 	Cucul::draw_thin_box ( int x, int y, int w, int h)
 {
-    cucul_draw_thin_box(qq, x, y, w, h);
+    cucul_draw_thin_box(c, x, y, w, h);
 }
 
-void 	Cucul::fill_box ( int x, int y, int w, int h, char const *c)
+void 	Cucul::fill_box ( int x, int y, int w, int h, char const *ch)
 {
-    cucul_fill_box(qq, x, y, w, h, c);
+    cucul_fill_box(c, x, y, w, h, ch);
 }
 
-void 	Cucul::draw_triangle ( int x1, int y1, int x2, int y2, int x3, int y3, char const *c)
+void 	Cucul::draw_triangle ( int x1, int y1, int x2, int y2, int x3, int y3, char const *ch)
 {
-    cucul_draw_triangle(qq, x1, y1, x2, y2, x3, y3, c);
+    cucul_draw_triangle(c, x1, y1, x2, y2, x3, y3, ch);
 }
 
 void 	Cucul::draw_thin_triangle ( int x1, int y1, int x2, int y2, int x3, int y3)
 {
-    cucul_draw_thin_triangle(qq, x1, y1, x2, y2, x3, y3);
+    cucul_draw_thin_triangle(c, x1, y1, x2, y2, x3, y3);
 }
 
-void 	Cucul::fill_triangle ( int x1, int y1, int x2, int y2, int x3, int y3, const char *c)
+void 	Cucul::fill_triangle ( int x1, int y1, int x2, int y2, int x3, int y3, const char *ch)
 {
-    cucul_fill_triangle(qq, x1, y1, x2, y2, x3, y3, c);
+    cucul_fill_triangle(c, x1, y1, x2, y2, x3, y3, ch);
 }
 
 int 	Cucul::rand (int min, int max)
@@ -228,7 +228,7 @@ int 	Cucul::get_sprite_dy (Cucul::Sprite const *s, int v)
 
 void 	Cucul::draw_sprite ( int x, int y, Cucul::Sprite const *s, int v)
 {
-    cucul_draw_sprite(qq, x, y, s->sprite, v);
+    cucul_draw_sprite(c, x, y, s->sprite, v);
 }
 
 void 	Cucul::free_sprite (Cucul::Sprite *s)
@@ -310,7 +310,7 @@ char const *const * 	Cucul::get_dither_mode_list ( Cucul::Dither const *d)
 
 void 	Cucul::dither_bitmap ( int x, int y, int w, int h,  Cucul::Dither const *d, void *v)
 {
-    cucul_dither_bitmap(qq, x, y, w, h, d->dither, v);
+    cucul_dither_bitmap(c, x, y, w, h, d->dither, v);
 }
 
 void 	Cucul::free_dither ( Cucul::Dither *d)
@@ -340,9 +340,9 @@ unsigned int 	Cucul::get_font_height ( Cucul::Font *f)
     return cucul_get_font_height(f->font);
 }
 
-void 	Cucul::render_canvas (Cucul::Font *f, unsigned char *c, unsigned int x, unsigned int y, unsigned int w)
+void 	Cucul::render_canvas (Cucul::Font *f, unsigned char *buf, unsigned int x, unsigned int y, unsigned int w)
 {
-    cucul_render_canvas(qq, f->font, c, x,y,w);
+    cucul_render_canvas(c, f->font, buf, x,y,w);
 }
 
 void 	Cucul::free_font ( Cucul::Font *f)
@@ -350,10 +350,10 @@ void 	Cucul::free_font ( Cucul::Font *f)
     cucul_free_font(f->font);
 }
 
-Cucul::Buffer * 	Cucul::create_export (char const *c)
+Cucul::Buffer * 	Cucul::create_export (char const *buf)
 {
     Cucul::Buffer *b = new Cucul::Buffer();
-    b->buffer = cucul_create_export(qq, c);
+    b->buffer = cucul_create_export(c, buf);
     return b;
 }
 

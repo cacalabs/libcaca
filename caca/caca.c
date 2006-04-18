@@ -31,21 +31,21 @@
 
 static int caca_init_driver(caca_t *kk);
 
-/** \brief Attach a caca graphical context to a cucul backend context.
+/** \brief Attach a caca graphical context to a cucul canvas.
  *
  *  Create a graphical context using device-dependent features (ncurses for
  *  terminals, an X11 window, a DOS command window...) that attaches to a
  *  libcucul canvas. Everything that gets drawn in the libcucul canvas can
  *  then be displayed by the libcaca driver.
  *
- *  \param qq The cucul backend context.
+ *  \param c The cucul cavas.
  *  \return The caca graphical context or NULL if an error occurred.
  */
-caca_t * caca_attach(cucul_t * qq)
+caca_t * caca_attach(cucul_canvas_t * c)
 {
     caca_t *kk = malloc(sizeof(caca_t));
 
-    kk->qq = qq;
+    kk->c = c;
 
     if(caca_init_driver(kk))
     {
@@ -60,7 +60,7 @@ caca_t * caca_attach(cucul_t * qq)
     }
 
     /* Attached! */
-    kk->qq->refcount++;
+    kk->c->refcount++;
 
     /* Graphics stuff */
     kk->delay = 0;
@@ -83,8 +83,8 @@ caca_t * caca_attach(cucul_t * qq)
     kk->lastticks = 0;
 
     /* Mouse position */
-    kk->mouse.x = kk->qq->width / 2;
-    kk->mouse.y = kk->qq->height / 2;
+    kk->mouse.x = kk->c->width / 2;
+    kk->mouse.y = kk->c->height / 2;
 
     /* Resize events */
     kk->resize.resized = 0;
@@ -103,7 +103,7 @@ caca_t * caca_attach(cucul_t * qq)
 void caca_detach(caca_t *kk)
 {
     kk->drv.end_graphics(kk);
-    kk->qq->refcount--;
+    kk->c->refcount--;
     free(kk);
 }
 

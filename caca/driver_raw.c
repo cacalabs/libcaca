@@ -53,19 +53,19 @@ static unsigned int raw_get_window_height(caca_t *kk)
 
 static void raw_display(caca_t *kk)
 {
-    uint32_t *attr = kk->qq->attr;
-    uint32_t *chars = kk->qq->chars;
+    uint32_t *attr = kk->c->attr;
+    uint32_t *chars = kk->c->chars;
     uint32_t w, h;
     unsigned int n;
 
-    w = kk->qq->width;
-    h = kk->qq->height;
+    w = kk->c->width;
+    h = kk->c->height;
 
     fprintf(stdout, "CACA%c%c%c%c%c%c%c%c",
                     (w >> 24), (w >> 16) & 0xff, (w >> 8) & 0xff, w & 0xff,
                     (h >> 24), (h >> 16) & 0xff, (h >> 8) & 0xff, h & 0xff);
 
-    for(n = kk->qq->height * kk->qq->width; n--; )
+    for(n = kk->c->height * kk->c->width; n--; )
     {
         uint32_t c = *chars++;
         uint32_t a = *attr++;

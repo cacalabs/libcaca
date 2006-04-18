@@ -27,13 +27,13 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
-static void export_ansi(cucul_t *, cucul_buffer_t *);
-static void export_html(cucul_t *, cucul_buffer_t *);
-static void export_html3(cucul_t *, cucul_buffer_t *);
-static void export_irc(cucul_t *, cucul_buffer_t *);
-static void export_ps(cucul_t *, cucul_buffer_t *);
-static void export_svg(cucul_t *, cucul_buffer_t *);
-static void export_tga(cucul_t *, cucul_buffer_t *);
+static void export_ansi(cucul_canvas_t *, cucul_buffer_t *);
+static void export_html(cucul_canvas_t *, cucul_buffer_t *);
+static void export_html3(cucul_canvas_t *, cucul_buffer_t *);
+static void export_irc(cucul_canvas_t *, cucul_buffer_t *);
+static void export_ps(cucul_canvas_t *, cucul_buffer_t *);
+static void export_svg(cucul_canvas_t *, cucul_buffer_t *);
+static void export_tga(cucul_canvas_t *, cucul_buffer_t *);
 
 /** \brief Export a canvas into a foreign format.
  *
@@ -59,10 +59,10 @@ static void export_tga(cucul_t *, cucul_buffer_t *);
  *
  *  \li \e "tga": export a TGA image.
  *
- *  \param qq A libcucul canvas
+ *  \param c A libcucul canvas
  *  \param format A string describing the requested output format.
  */
-cucul_buffer_t * cucul_create_export(cucul_t *qq, char const *format)
+cucul_buffer_t * cucul_create_export(cucul_canvas_t *c, char const *format)
 {
     cucul_buffer_t *ex;
 
@@ -71,19 +71,19 @@ cucul_buffer_t * cucul_create_export(cucul_t *qq, char const *format)
     ex->data = NULL;
 
     if(!strcasecmp("ansi", format))
-        export_ansi(qq, ex);
+        export_ansi(c, ex);
     else if(!strcasecmp("html", format))
-        export_html(qq, ex);
+        export_html(c, ex);
     else if(!strcasecmp("html3", format))
-        export_html3(qq, ex);
+        export_html3(c, ex);
     else if(!strcasecmp("irc", format))
-        export_irc(qq, ex);
+        export_irc(c, ex);
     else if(!strcasecmp("ps", format))
-        export_ps(qq, ex);
+        export_ps(c, ex);
     else if(!strcasecmp("svg", format))
-        export_svg(qq, ex);
+        export_svg(c, ex);
     else if(!strcasecmp("tga", format))
-        export_tga(qq, ex);
+        export_tga(c, ex);
 
     if(ex->size == 0)
     {
@@ -125,7 +125,7 @@ char const * const * cucul_get_export_list(void)
  */
 
 /* Generate ANSI representation of current canvas. */
-static void export_ansi(cucul_t *qq, cucul_buffer_t *ex)
+static void export_ansi(cucul_canvas_t *c, cucul_buffer_t *ex)
 {
     static uint8_t const palette[] =
     {
@@ -139,24 +139,24 @@ static void export_ansi(cucul_t *qq, cucul_buffer_t *ex)
     /* 23 bytes assumed for max length per pixel ('\e[5;1;3x;4y;9x;10ym' plus
      * 4 max bytes for a UTF-8 character).
      * Add height*9 to that (zeroes color at the end and jump to next line) */
-    ex->size = (qq->height * 9) + (qq->width * qq->height * 23);
+    ex->size = (c->height * 9) + (c->width * c->height * 23);
     ex->data = malloc(ex->size);
 
     cur = ex->data;
 
-    for(y = 0; y < qq->height; y++)
+    for(y = 0; y < c->height; y++)
     {
-        uint32_t *lineattr = qq->attr + y * qq->width;
-        uint32_t *linechar = qq->chars + y * qq->width;
+        uint32_t *lineattr = c->attr + y * c->width;
+        uint32_t *linechar = c->chars + y * c->width;
 
         uint8_t prevfg = -1;
         uint8_t prevbg = -1;
 
-        for(x = 0; x < qq->width; x++)
+        for(x = 0; x < c->width; x++)
         {
             uint8_t fg = palette[_cucul_argb32_to_ansi4fg(lineattr[x])];
             uint8_t bg = palette[_cucul_argb32_to_ansi4bg(lineattr[x])];
-            uint32_t c = linechar[x];
+            uint32_t ch = linechar[x];
 
             if(fg != prevfg || bg != prevbg)
             {
@@ -177,7 +177,7 @@ static void export_ansi(cucul_t *qq, cucul_buffer_t *ex)
                                             fg - 8, bg - 8, fg - 8, bg - 8);
             }
 
-            *cur++ = c & 0x7f;
+            *cur++ = ch & 0x7f;
 
             prevfg = fg;
             prevbg = bg;
@@ -192,7 +192,7 @@ static void export_ansi(cucul_t *qq, cucul_buffer_t *ex)
 }
 
 /* Generate HTML representation of current canvas. */
-static void export_html(cucul_t *qq, cucul_buffer_t *ex)
+static void export_html(cucul_canvas_t *c, cucul_buffer_t *ex)
 {
     char *cur;
     unsigned int x, y, len;
@@ -202,7 +202,7 @@ static void export_html(cucul_t *qq, cucul_buffer_t *ex)
      * A glyph: 47 chars for "<span style="color:#xxx;background-color:#xxx">"
      *          up to 9 chars for "&#xxxxxx;", far less for pure ASCII
      *          7 chars for "</span>" */
-    ex->size = 1000 + qq->height * (7 + qq->width * (47 + 9 + 7));
+    ex->size = 1000 + c->height * (7 + c->width * (47 + 9 + 7));
     ex->data = malloc(ex->size);
 
     cur = ex->data;
@@ -215,12 +215,12 @@ static void export_html(cucul_t *qq, cucul_buffer_t *ex)
     cur += sprintf(cur, "<div cellpadding='0' cellspacing='0' style='%s'>\n",
                         "font-family: monospace, fixed; font-weight: bold;");
 
-    for(y = 0; y < qq->height; y++)
+    for(y = 0; y < c->height; y++)
     {
-        uint32_t *lineattr = qq->attr + y * qq->width;
-        uint32_t *linechar = qq->chars + y * qq->width;
+        uint32_t *lineattr = c->attr + y * c->width;
+        uint32_t *linechar = c->chars + y * c->width;
 
-        for(x = 0; x < qq->width; x += len)
+        for(x = 0; x < c->width; x += len)
         {
             cur += sprintf(cur, "<span style=\"color:#%.03x;"
                                 "background-color:#%.03x\">",
@@ -228,7 +228,7 @@ static void export_html(cucul_t *qq, cucul_buffer_t *ex)
                                 _cucul_argb32_to_rgb12bg(lineattr[x]));
 
             for(len = 0;
-                x + len < qq->width && lineattr[x + len] == lineattr[x];
+                x + len < c->width && lineattr[x + len] == lineattr[x];
                 len++)
             {
                 if(linechar[x + len] <= 0x00000020)
@@ -255,7 +255,7 @@ static void export_html(cucul_t *qq, cucul_buffer_t *ex)
  * but permits viewing in old browsers (or limited ones such as links). It
  * will not work under gecko (mozilla rendering engine) unless you set a
  * correct header. */
-static void export_html3(cucul_t *qq, cucul_buffer_t *ex)
+static void export_html3(cucul_canvas_t *c, cucul_buffer_t *ex)
 {
     char *cur;
     unsigned int x, y, len;
@@ -265,30 +265,30 @@ static void export_html3(cucul_t *qq, cucul_buffer_t *ex)
      * A glyph: 40 chars for "<td bgcolor=#xxxxxx><font color=#xxxxxx>"
      *          up to 9 chars for "&#xxxxxx;", far less for pure ASCII
      *          12 chars for "</font></td>" */
-    ex->size = 1000 + qq->height * (10 + qq->width * (40 + 9 + 12));
+    ex->size = 1000 + c->height * (10 + c->width * (40 + 9 + 12));
     ex->data = malloc(ex->size);
 
     cur = ex->data;
 
     /* Table */
     cur += sprintf(cur, "<table cols='%d' cellpadding='0' cellspacing='0'>\n",
-                        qq->height);
+                        c->height);
 
-    for(y = 0; y < qq->height; y++)
+    for(y = 0; y < c->height; y++)
     {
-        uint32_t *lineattr = qq->attr + y * qq->width;
-        uint32_t *linechar = qq->chars + y * qq->width;
+        uint32_t *lineattr = c->attr + y * c->width;
+        uint32_t *linechar = c->chars + y * c->width;
 
         cur += sprintf(cur, "<tr>");
 
-        for(x = 0; x < qq->width; x += len)
+        for(x = 0; x < c->width; x += len)
         {
             unsigned int i;
 
             /* Use colspan option to factor cells with same attributes
              * (see below) */
             len = 1;
-            while(x + len < qq->width && lineattr[x + len] == lineattr[x])
+            while(x + len < c->width && lineattr[x + len] == lineattr[x])
                 len++;
 
             cur += sprintf(cur, "<td bgcolor=#%.06x",
@@ -324,7 +324,7 @@ static void export_html3(cucul_t *qq, cucul_buffer_t *ex)
 }
 
 /* Export a text file with IRC colours */
-static void export_irc(cucul_t *qq, cucul_buffer_t *ex)
+static void export_irc(cucul_canvas_t *c, cucul_buffer_t *ex)
 {
     static uint8_t const palette[] =
     {
@@ -343,35 +343,35 @@ static void export_irc(cucul_t *qq, cucul_buffer_t *ex)
      * In real life, the average bytes per pixel value will be around 5.
      */
 
-    ex->size = 2 + (qq->width * qq->height * 11);
+    ex->size = 2 + (c->width * c->height * 11);
     ex->data = malloc(ex->size);
 
     cur = ex->data;
 
-    for(y = 0; y < qq->height; y++)
+    for(y = 0; y < c->height; y++)
     {
-        uint32_t *lineattr = qq->attr + y * qq->width;
-        uint32_t *linechar = qq->chars + y * qq->width;
+        uint32_t *lineattr = c->attr + y * c->width;
+        uint32_t *linechar = c->chars + y * c->width;
 
         uint8_t prevfg = -1;
         uint8_t prevbg = -1;
 
-        for(x = 0; x < qq->width; x++)
+        for(x = 0; x < c->width; x++)
         {
             uint8_t fg = palette[_cucul_argb32_to_ansi4fg(lineattr[x])];
             uint8_t bg = palette[_cucul_argb32_to_ansi4bg(lineattr[x])];
-            uint32_t c = linechar[x];
+            uint32_t ch = linechar[x];
 
             if(bg == prevbg)
             {
                 if(fg == prevfg)
                     ; /* Same fg/bg, do nothing */
-                else if(c == (uint32_t)' ')
+                else if(ch == (uint32_t)' ')
                     fg = prevfg; /* Hackety hack */
                 else
                 {
                     cur += sprintf(cur, "\x03%d", fg);
-                    if(c >= (uint32_t)'0' && c <= (uint32_t)'9')
+                    if(ch >= (uint32_t)'0' && ch <= (uint32_t)'9')
                         cur += sprintf(cur, "\x02\x02");
                 }
             }
@@ -382,10 +382,10 @@ static void export_irc(cucul_t *qq, cucul_buffer_t *ex)
                 else
                     cur += sprintf(cur, "\x03%d,%d", fg, bg);
 
-                if(c >= (uint32_t)'0' && c <= (uint32_t)'9')
+                if(ch >= (uint32_t)'0' && ch <= (uint32_t)'9')
                     cur += sprintf(cur, "\x02\x02");
             }
-            *cur++ = c & 0x7f;
+            *cur++ = ch & 0x7f;
             prevfg = fg;
             prevbg = bg;
         }
@@ -399,7 +399,7 @@ static void export_irc(cucul_t *qq, cucul_buffer_t *ex)
 }
 
 /* Export a PostScript document. */
-static void export_ps(cucul_t *qq, cucul_buffer_t *ex)
+static void export_ps(cucul_canvas_t *c, cucul_buffer_t *ex)
 {
     static char const *ps_header =
         "%!\n"
@@ -430,7 +430,7 @@ static void export_ps(cucul_t *qq, cucul_buffer_t *ex)
     unsigned int x, y;
 
     /* 200 is arbitrary but should be ok */
-    ex->size = strlen(ps_header) + (qq->width * qq->height * 200);
+    ex->size = strlen(ps_header) + (c->width * c->height * 200);
     ex->data = malloc(ex->size);
 
     cur = ex->data;
@@ -439,11 +439,11 @@ static void export_ps(cucul_t *qq, cucul_buffer_t *ex)
     cur += sprintf(cur, "%s", ps_header);
 
     /* Background, drawn using csquare macro defined in header */
-    for(y = qq->height; y--; )
+    for(y = c->height; y--; )
     {
-        uint32_t *lineattr = qq->attr + y * qq->width;
+        uint32_t *lineattr = c->attr + y * c->width;
 
-        for(x = 0; x < qq->width; x++)
+        for(x = 0; x < c->width; x++)
         {
             uint8_t argb[8];
             _cucul_argb32_to_argb4(*lineattr++, argb);
@@ -454,20 +454,20 @@ static void export_ps(cucul_t *qq, cucul_buffer_t *ex)
         }
 
         /* Return to beginning of the line, and jump to the next one */
-        cur += sprintf(cur, "-%d 1 translate\n", qq->width);
+        cur += sprintf(cur, "-%d 1 translate\n", c->width);
     }
 
     cur += sprintf(cur, "grestore\n"); /* Restore transformation matrix */
 
-    for(y = qq->height; y--; )
+    for(y = c->height; y--; )
     {
-        uint32_t *lineattr = qq->attr + (qq->height - y - 1) * qq->width;
-        uint32_t *linechar = qq->chars + (qq->height - y - 1) * qq->width;
+        uint32_t *lineattr = c->attr + (c->height - y - 1) * c->width;
+        uint32_t *linechar = c->chars + (c->height - y - 1) * c->width;
 
-        for(x = 0; x < qq->width; x++)
+        for(x = 0; x < c->width; x++)
         {
             uint8_t argb[8];
-            uint32_t c = *linechar++;
+            uint32_t ch = *linechar++;
 
             _cucul_argb32_to_argb4(*lineattr++, argb);
 
@@ -478,19 +478,19 @@ static void export_ps(cucul_t *qq, cucul_buffer_t *ex)
                            (float)argb[6] * (1.0 / 0xf),
                            (float)argb[7] * (1.0 / 0xf));
 
-            if(c < 0x00000020)
+            if(ch < 0x00000020)
                 cur += sprintf(cur, "(?) show\n");
-            else if(c >= 0x00000080)
+            else if(ch >= 0x00000080)
                 cur += sprintf(cur, "(?) show\n");
-            else switch((uint8_t)(c & 0x7f))
+            else switch((uint8_t)(ch & 0x7f))
             {
                 case '\\':
                 case '(':
                 case ')':
-                    cur += sprintf(cur, "(\\%c) show\n", c);
+                    cur += sprintf(cur, "(\\%c) show\n", ch);
                     break;
                 default:
-                    cur += sprintf(cur, "(%c) show\n", c);
+                    cur += sprintf(cur, "(%c) show\n", ch);
                     break;
             }
         }
@@ -504,7 +504,7 @@ static void export_ps(cucul_t *qq, cucul_buffer_t *ex)
 }
 
 /* Export an SVG vector image */
-static void export_svg(cucul_t *qq, cucul_buffer_t *ex)
+static void export_svg(cucul_canvas_t *c, cucul_buffer_t *ex)
 {
     static char const svg_header[] =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -517,23 +517,23 @@ static void export_svg(cucul_t *qq, cucul_buffer_t *ex)
     unsigned int x, y;
 
     /* 200 is arbitrary but should be ok */
-    ex->size = strlen(svg_header) + (qq->width * qq->height * 200);
+    ex->size = strlen(svg_header) + (c->width * c->height * 200);
     ex->data = malloc(ex->size);
 
     cur = ex->data;
 
     /* Header */
-    cur += sprintf(cur, svg_header, qq->width * 6, qq->height * 10,
-                                    qq->width * 6, qq->height * 10);
+    cur += sprintf(cur, svg_header, c->width * 6, c->height * 10,
+                                    c->width * 6, c->height * 10);
 
     cur += sprintf(cur, " <g id=\"mainlayer\" font-size=\"12\">\n");
 
     /* Background */
-    for(y = 0; y < qq->height; y++)
+    for(y = 0; y < c->height; y++)
     {
-        uint32_t *lineattr = qq->attr + y * qq->width;
+        uint32_t *lineattr = c->attr + y * c->width;
 
-        for(x = 0; x < qq->width; x++)
+        for(x = 0; x < c->width; x++)
         {
             cur += sprintf(cur, "<rect style=\"fill:#%.03x\" x=\"%d\" y=\"%d\""
                                 " width=\"6\" height=\"10\"/>\n",
@@ -543,22 +543,22 @@ static void export_svg(cucul_t *qq, cucul_buffer_t *ex)
     }
 
     /* Text */
-    for(y = 0; y < qq->height; y++)
+    for(y = 0; y < c->height; y++)
     {
-        uint32_t *lineattr = qq->attr + y * qq->width;
-        uint32_t *linechar = qq->chars + y * qq->width;
+        uint32_t *lineattr = c->attr + y * c->width;
+        uint32_t *linechar = c->chars + y * c->width;
 
-        for(x = 0; x < qq->width; x++)
+        for(x = 0; x < c->width; x++)
         {
-            uint32_t c = *linechar++;
+            uint32_t ch = *linechar++;
 
             cur += sprintf(cur, "<text style=\"fill:#%.03x\" "
                                 "x=\"%d\" y=\"%d\">",
                                 _cucul_argb32_to_rgb12fg(*lineattr++),
                                 x * 6, (y * 10) + 10);
-            if(c < 0x00000020)
+            if(ch < 0x00000020)
                 cur += sprintf(cur, "?");
-            else if(c > 0x0000007f)
+            else if(ch > 0x0000007f)
             {
                 static const uint8_t mark[7] =
                 {
@@ -566,27 +566,27 @@ static void export_svg(cucul_t *qq, cucul_buffer_t *ex)
                 };
 
                 char buf[10], *parser;
-                int bytes = (c < 0x800) ? 2 : (c < 0x10000) ? 3 : 4;
+                int bytes = (ch < 0x800) ? 2 : (ch < 0x10000) ? 3 : 4;
 
                 buf[bytes] = '\0';
                 parser = buf + bytes;
 
                 switch(bytes)
                 {
-                    case 4: *--parser = (c | 0x80) & 0xbf; c >>= 6;
-                    case 3: *--parser = (c | 0x80) & 0xbf; c >>= 6;
-                    case 2: *--parser = (c | 0x80) & 0xbf; c >>= 6;
+                    case 4: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
+                    case 3: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
+                    case 2: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
                 }
-                *--parser = c | mark[bytes];
+                *--parser = ch | mark[bytes];
 
                 cur += sprintf(cur, "%s", buf);
             }
-            else switch((uint8_t)c)
+            else switch((uint8_t)ch)
             {
                 case '>': cur += sprintf(cur, "&gt;"); break;
                 case '<': cur += sprintf(cur, "&lt;"); break;
                 case '&': cur += sprintf(cur, "&amp;"); break;
-                default: cur += sprintf(cur, "%c", c); break;
+                default: cur += sprintf(cur, "%c", ch); break;
             }
             cur += sprintf(cur, "</text>\n");
         }
@@ -601,7 +601,7 @@ static void export_svg(cucul_t *qq, cucul_buffer_t *ex)
 }
 
 /* Export a TGA image */
-static void export_tga(cucul_t *qq, cucul_buffer_t *ex)
+static void export_tga(cucul_canvas_t *c, cucul_buffer_t *ex)
 {
     char const * const * fontlist;
     char * cur;
@@ -614,8 +614,8 @@ static void export_tga(cucul_t *qq, cucul_buffer_t *ex)
 
     f = cucul_load_font(fontlist[0], 0);
 
-    w = cucul_get_width(qq) * cucul_get_font_width(f);
-    h = cucul_get_height(qq) * cucul_get_font_height(f);
+    w = cucul_get_width(c) * cucul_get_font_width(f);
+    h = cucul_get_height(c) * cucul_get_font_height(f);
 
     ex->size = w * h * 4 + 18; /* 32 bpp + 18 bytes for the header */
     ex->data = malloc(ex->size);
@@ -643,7 +643,7 @@ static void export_tga(cucul_t *qq, cucul_buffer_t *ex)
     /* Color Map Data: no colormap */
 
     /* Image Data */
-    cucul_render_canvas(qq, f, cur, w, h, 4 * w);
+    cucul_render_canvas(c, f, cur, w, h, 4 * w);
 
     /* Swap bytes. What a waste of time. */
     for(i = 0; i < w * h * 4; i += 4)

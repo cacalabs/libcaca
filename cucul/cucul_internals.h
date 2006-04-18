@@ -25,7 +25,7 @@ typedef long int intptr_t;
 typedef long unsigned int uintptr_t;
 #endif
 
-struct cucul
+struct cucul_canvas
 {
     /* Context size */
     unsigned int width, height;
@@ -51,8 +51,8 @@ extern int _cucul_init_dither(void);
 extern int _cucul_end_dither(void);
 
 /* Canvas functions */
-extern void _cucul_set_size(cucul_t *, unsigned int, unsigned int);
-extern void _cucul_putchar32(cucul_t *qq, int x, int y, uint32_t c);
+extern void _cucul_set_size(cucul_canvas_t *, unsigned int, unsigned int);
+extern void _cucul_putchar32(cucul_canvas_t *, int, int, uint32_t);
 
 /* Charset functions */
 extern unsigned int _cucul_strlen_utf8(char const *);

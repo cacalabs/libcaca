@@ -259,21 +259,21 @@ void cucul_free_font(cucul_font_t *f)
  *  This function renders the given canvas on an image buffer using a specific
  *  font. The pixel format is fixed (32-bit ARGB, 8 bits for each component).
  *
- *  The required image width can be computed using \e cucul_get_width(qq) and
+ *  The required image width can be computed using \e cucul_get_width(c) and
  *  \e cucul_get_font_width(f). The required height can be computed using
- *  \e cucul_get_height(qq) and \e cucul_get_font_height(f).
+ *  \e cucul_get_height(c) and \e cucul_get_font_height(f).
  *
  *  Glyphs that do not fit in the image buffer are currently not rendered at
  *  all. They may be cropped instead in future versions.
  *
- *  \param qq The canvas to render
+ *  \param c The canvas to render
  *  \param f The font, as returned by \e cucul_load_font()
  *  \param buf The image buffer
  *  \param width The width (in pixels) of the image buffer
  *  \param height The height (in pixels) of the image buffer
  *  \param pitch The pitch (in bytes) of an image buffer line.
  */
-void cucul_render_canvas(cucul_t *qq, cucul_font_t *f,
+void cucul_render_canvas(cucul_canvas_t *c, cucul_font_t *f,
                          void *buf, unsigned int width,
                          unsigned int height, unsigned int pitch)
 {
@@ -283,15 +283,15 @@ void cucul_render_canvas(cucul_t *qq, cucul_font_t *f,
     if(f->header.bpp != 8)
         glyph = malloc(f->header.width * f->header.height);
 
-    if(width < qq->width * f->header.width)
+    if(width < c->width * f->header.width)
         xmax = width / f->header.width;
     else
-        xmax = qq->width;
+        xmax = c->width;
 
-    if(height < qq->height * f->header.height)
+    if(height < c->height * f->header.height)
         ymax = height / f->header.height;
     else
-        ymax = qq->height;
+        ymax = c->height;
 
     for(y = 0; y < ymax; y++)
     {
@@ -300,8 +300,8 @@ void cucul_render_canvas(cucul_t *qq, cucul_font_t *f,
             uint8_t argb[8];
             unsigned int starty = y * f->header.height;
             unsigned int startx = x * f->header.width;
-            uint32_t ch = qq->chars[y * qq->width + x];
-            uint32_t attr = qq->attr[y * qq->width + x];
+            uint32_t ch = c->chars[y * c->width + x];
+            uint32_t attr = c->attr[y * c->width + x];
             unsigned int b, i, j;
             struct glyph_info *g;
 

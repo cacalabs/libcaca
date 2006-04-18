@@ -37,15 +37,15 @@ static void draw_line(int, int, char);
 
 int main (int argc, char **argv)
 {
-    cucul_t *qq; caca_t *kk;
+    cucul_canvas_t *c; caca_t *kk;
     unsigned int red[256], green[256], blue[256], alpha[256];
     cucul_dither_t *dither;
     int i, x, y, frame = 0, pause = 0;
 
-    qq = cucul_create(0, 0);
-    if(!qq)
+    c = cucul_create(0, 0);
+    if(!c)
         return 1;
-    kk = caca_attach(qq);
+    kk = caca_attach(c);
     if(!kk)
         return 1;
 
@@ -71,7 +71,7 @@ int main (int argc, char **argv)
         caca_event_t ev;
         if(caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev, 0))
         {
-            switch(ev.data.key.c)
+            switch(ev.data.key.ch)
             {
                 case CACA_KEY_ESCAPE: goto end;
                 case ' ': pause = !pause;
@@ -106,11 +106,11 @@ int main (int argc, char **argv)
         frame++;
 
 paused:
-        cucul_dither_bitmap(qq, 0, 0,
-                            cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
+        cucul_dither_bitmap(c, 0, 0,
+                            cucul_get_width(c) - 1, cucul_get_height(c) - 1,
                             dither, screen);
-        cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
-        cucul_putstr(qq, cucul_get_width(qq) - 30, cucul_get_height(qq) - 2,
+        cucul_set_color(c, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
+        cucul_putstr(c, cucul_get_width(c) - 30, cucul_get_height(c) - 2,
                      " -=[ Powered by libcaca ]=- ");
         caca_display(kk);
     }
@@ -118,7 +118,7 @@ paused:
 end:
     cucul_free_dither(dither);
     caca_detach(kk);
-    cucul_free(qq);
+    cucul_free(c);
 
     return 0;
 }

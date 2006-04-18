@@ -56,8 +56,8 @@ static int conio_init_graphics(caca_t *kk)
 #   else
     /* FIXME */
 #   endif
-    _cucul_set_size(kk->qq, kk->drv.p->ti.screenwidth,
-                            kk->drv.p->ti.screenheight);
+    _cucul_set_size(kk->c, kk->drv.p->ti.screenwidth,
+                           kk->drv.p->ti.screenheight);
     return 0;
 }
 
@@ -66,7 +66,7 @@ static int conio_end_graphics(caca_t *kk)
     _wscroll = 1;
     textcolor((enum COLORS)WHITE);
     textbackground((enum COLORS)BLACK);
-    gotoxy(kk->qq->width, kk->qq->height);
+    gotoxy(kk->c->width, kk->c->height);
     cputs("\r\n");
     _setcursortype(_NORMALCURSOR);
 
@@ -84,23 +84,23 @@ static int conio_set_window_title(caca_t *kk, char const *title)
 static unsigned int conio_get_window_width(caca_t *kk)
 {
     /* Fallback to a 6x10 font */
-    return kk->qq->width * 6;
+    return kk->c->width * 6;
 }
 
 static unsigned int conio_get_window_height(caca_t *kk)
 {
     /* Fallback to a 6x10 font */
-    return kk->qq->height * 10;
+    return kk->c->height * 10;
 }
 
 static void conio_display(caca_t *kk)
 {
     char *screen = kk->drv.p->screen;
-    uint32_t *attr = kk->qq->attr;
-    uint32_t *chars = kk->qq->chars;
+    uint32_t *attr = kk->c->attr;
+    uint32_t *chars = kk->c->chars;
     int n;
 
-    for(n = kk->qq->height * kk->qq->width; n--; )
+    for(n = kk->c->height * kk->c->width; n--; )
     {
         *screen++ = _cucul_utf32_to_cp437(*chars++);
         *screen++ = _cucul_argb32_to_ansi8(*attr++);
@@ -115,8 +115,8 @@ static void conio_display(caca_t *kk)
 static void conio_handle_resize(caca_t *kk)
 {
     /* We know nothing about our window */
-    kk->resize.w = kk->qq->width;
-    kk->resize.h = kk->qq->height;
+    kk->resize.w = kk->c->width;
+    kk->resize.h = kk->c->height;
 }
 
 static int conio_get_event(caca_t *kk, caca_event_t *ev)
@@ -133,7 +133,7 @@ static int conio_get_event(caca_t *kk, caca_event_t *ev)
     ch = getch();
 
     ev->type = CACA_EVENT_KEY_PRESS;
-    ev->data.key.c = ch;
+    ev->data.key.ch = ch;
     ev->data.key.ucs4 = (uint32_t)ch;
     ev->data.key.utf8[0] = ch;
     ev->data.key.utf8[1] = '\0';

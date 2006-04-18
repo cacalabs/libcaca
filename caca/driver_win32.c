@@ -111,21 +111,21 @@ static int win32_init_graphics(caca_t *kk)
         return -1;
 
     /* Set the new console size */
-    size.X = kk->qq->width;
-    size.Y = kk->qq->height;
+    size.X = kk->c->width;
+    size.Y = kk->c->height;
     SetConsoleScreenBufferSize(kk->drv.p->screen, size);
 
     rect.Left = rect.Top = 0;
-    rect.Right = kk->qq->width - 1;
-    rect.Bottom = kk->qq->height - 1;
+    rect.Right = kk->c->width - 1;
+    rect.Bottom = kk->c->height - 1;
     SetConsoleWindowInfo(kk->drv.p->screen, TRUE, &rect);
 
     /* Report our new size to libcucul */
     if(!GetConsoleScreenBufferInfo(kk->drv.p->screen, &csbi))
         return -1;
 
-    _cucul_set_size(kk->qq, csbi.srWindow.Right - csbi.srWindow.Left + 1,
-                            csbi.srWindow.Bottom - csbi.srWindow.Top + 1);
+    _cucul_set_size(kk->c, csbi.srWindow.Right - csbi.srWindow.Left + 1,
+                           csbi.srWindow.Bottom - csbi.srWindow.Top + 1);
 
     SetConsoleMode(kk->drv.p->screen, 0);
 
@@ -136,7 +136,7 @@ static int win32_init_graphics(caca_t *kk)
 
     SetConsoleActiveScreenBuffer(kk->drv.p->screen);
 
-    kk->drv.p->buffer = malloc(kk->qq->width * kk->qq->height
+    kk->drv.p->buffer = malloc(kk->c->width * kk->c->height
                                * sizeof(CHAR_INFO));
     if(kk->drv.p->buffer == NULL)
         return -1;
@@ -173,7 +173,7 @@ static unsigned int win32_get_window_width(caca_t *kk)
     /* FIXME */
 
     /* Fallback to a 6x10 font */
-    return kk->qq->width * 6;
+    return kk->c->width * 6;
 }
 
 static unsigned int win32_get_window_height(caca_t *kk)
@@ -181,7 +181,7 @@ static unsigned int win32_get_window_height(caca_t *kk)
     /* FIXME */
 
     /* Fallback to a 6x10 font */
-    return kk->qq->height * 10;
+    return kk->c->height * 10;
 }
 
 static void win32_display(caca_t *kk)
@@ -191,9 +191,9 @@ static void win32_display(caca_t *kk)
     unsigned int i;
 
     /* Render everything to our screen buffer */
-    for(i = 0; i < kk->qq->width * kk->qq->height; i++)
+    for(i = 0; i < kk->c->width * kk->c->height; i++)
     {
-        uint32_t c = kk->qq->chars[i];
+        uint32_t c = kk->c->chars[i];
 
 #if 0
         if(c > 0x00000020 && c < 0x00000080)
@@ -208,17 +208,17 @@ static void win32_display(caca_t *kk)
 #endif
 
         kk->drv.p->buffer[i].Attributes =
-                win32_fg_palette[_cucul_argb32_to_ansi4fg(kk->qq->attr[i])]
-                 | win32_bg_palette[_cucul_argb32_to_ansi4bg(kk->qq->attr[i])];
+                win32_fg_palette[_cucul_argb32_to_ansi4fg(kk->c->attr[i])]
+                 | win32_bg_palette[_cucul_argb32_to_ansi4bg(kk->c->attr[i])];
     }
 
     /* Blit the screen buffer */
-    size.X = kk->qq->width;
-    size.Y = kk->qq->height;
+    size.X = kk->c->width;
+    size.Y = kk->c->height;
     pos.X = pos.Y = 0;
     rect.Left = rect.Top = 0;
-    rect.Right = kk->qq->width - 1;
-    rect.Bottom = kk->qq->height - 1;
+    rect.Right = kk->c->width - 1;
+    rect.Bottom = kk->c->height - 1;
 #if 0
     WriteConsoleOutput(kk->drv.p->screen, kk->drv.p->buffer, size, pos, &rect);
 #else
@@ -229,8 +229,8 @@ static void win32_display(caca_t *kk)
 static void win32_handle_resize(caca_t *kk)
 {
     /* FIXME: I don't know what to do here. */
-    kk->resize.w = kk->qq->width;
-    kk->resize.h = kk->qq->height;
+    kk->resize.w = kk->c->width;
+    kk->resize.h = kk->c->height;
 }
 
 static int win32_get_event(caca_t *kk, caca_event_t *ev)
@@ -256,9 +256,9 @@ static int win32_get_event(caca_t *kk, caca_event_t *ev)
 
             if(rec.Event.KeyEvent.uChar.AsciiChar)
             {
-                ev->data.key.c = rec.Event.KeyEvent.uChar.AsciiChar;
-                ev->data.key.ucs4 = (uint32_t)ev->data.key.c;
-                ev->data.key.utf8[0] = ev->data.key.c;
+                ev->data.key.ch = rec.Event.KeyEvent.uChar.AsciiChar;
+                ev->data.key.ucs4 = (uint32_t)ev->data.key.ch;
+                ev->data.key.utf8[0] = ev->data.key.ch;
                 ev->data.key.utf8[1] = '\0';
 
                 return 1;

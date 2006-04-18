@@ -74,7 +74,7 @@ static int vga_init_graphics(caca_t *kk)
     outb(tmp, 0x3d5);
 
     /* We don't have much choice */
-    _cucul_set_size(kk->qq, 80, 25);
+    _cucul_set_size(kk->c, 80, 25);
 
     return 0;
 }
@@ -114,11 +114,11 @@ static unsigned int vga_get_window_height(caca_t *kk)
 static void vga_display(caca_t *kk)
 {
     char *screen = (char *)(intptr_t)0x000b8000;
-    uint32_t *attr = kk->qq->attr;
-    uint32_t *chars = kk->qq->chars;
+    uint32_t *attr = kk->c->attr;
+    uint32_t *chars = kk->c->chars;
     int n;
 
-    for(n = kk->qq->height * kk->qq->width; n--; )
+    for(n = kk->c->height * kk->c->width; n--; )
     {
         *screen++ = _cucul_utf32_to_cp437(*chars++);
         *screen++ = _cucul_argb32_to_ansi8(*attr++);
@@ -128,8 +128,8 @@ static void vga_display(caca_t *kk)
 static void vga_handle_resize(caca_t *kk)
 {
     /* We know nothing about our window */
-    kk->resize.w = kk->qq->width;
-    kk->resize.h = kk->qq->height;
+    kk->resize.w = kk->c->width;
+    kk->resize.h = kk->c->height;
 }
 
 static int vga_get_event(caca_t *kk, caca_event-t *ev)

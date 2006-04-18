@@ -40,23 +40,23 @@ static void do_plasma(unsigned char *,
 
 int main (int argc, char **argv)
 {
-    cucul_t *qq, *qq2, *mask; caca_t *kk;
+    cucul_canvas_t *c, *c2, *mask; caca_t *kk;
     unsigned int red[256], green[256], blue[256], alpha[256];
     double r[3], R[6];
     cucul_dither_t *dither;
     int i, x, y, frame = 0, pause = 0;
 
-    qq = cucul_create(0, 0);
-    if(!qq)
+    c = cucul_create(0, 0);
+    if(!c)
         return 1;
-    kk = caca_attach(qq);
+    kk = caca_attach(c);
     if(!kk)
         return 1;
 
     caca_set_delay(kk, 20000);
 
-    qq2 = cucul_create(cucul_get_width(qq), cucul_get_height(qq));
-    mask = cucul_create(cucul_get_width(qq), cucul_get_height(qq));
+    c2 = cucul_create(cucul_get_width(c), cucul_get_height(c));
+    mask = cucul_create(cucul_get_width(c), cucul_get_height(c));
 
     /* Fill various tables */
     for(i = 0 ; i < 256; i++)
@@ -87,7 +87,7 @@ int main (int argc, char **argv)
         caca_event_t ev;
         if(caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev, 0))
         {
-            switch(ev.data.key.c)
+            switch(ev.data.key.ch)
             {
                 case CACA_KEY_ESCAPE: goto end;
                 case ' ': pause = !pause;
@@ -119,18 +119,18 @@ int main (int argc, char **argv)
         frame++;
 
 paused:
-        cucul_dither_bitmap(qq, 0, 0,
-                            cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
+        cucul_dither_bitmap(c, 0, 0,
+                            cucul_get_width(c) - 1, cucul_get_height(c) - 1,
                             dither, screen);
 
-        cucul_blit(qq2, 0, 0, qq, NULL);
-        cucul_invert(qq2);
+        cucul_blit(c2, 0, 0, c, NULL);
+        cucul_invert(c2);
 
 
-        cucul_blit(qq, 0, 0, qq2, mask);
+        cucul_blit(c, 0, 0, c2, mask);
 
-        cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
-        cucul_putstr(qq, cucul_get_width(qq) - 30, cucul_get_height(qq) - 2,
+        cucul_set_color(c, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
+        cucul_putstr(c, cucul_get_width(c) - 30, cucul_get_height(c) - 2,
                      " -=[ Powered by libcaca ]=- ");
         caca_display(kk);
     }
@@ -138,7 +138,7 @@ paused:
 end:
     cucul_free_dither(dither);
     caca_detach(kk);
-    cucul_free(qq);
+    cucul_free(c);
 
     return 0;
 }

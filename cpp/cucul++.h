@@ -123,10 +123,10 @@ class Cucul {
 
 
  protected:
-    cucul_t *get_cucul_t();
+    cucul_canvas_t *get_cucul_canvas_t();
 
  private:
-    cucul_t *qq;
+    cucul_canvas_t *c;
 
 
 };

@@ -46,22 +46,22 @@
  *  replaced with a space. To print a sequence of bytes forming an UTF-8
  *  character, use cucul_putstr() instead.
  *
- *  \param qq A handle to the libcucul canvas.
+ *  \param c A handle to the libcucul canvas.
  *  \param x X coordinate.
  *  \param y Y coordinate.
- *  \param c The character to print.
+ *  \param ch The character to print.
  */
-void cucul_putchar(cucul_t *qq, int x, int y, char c)
+void cucul_putchar(cucul_canvas_t *c, int x, int y, char ch)
 {
-    if(x < 0 || x >= (int)qq->width ||
-       y < 0 || y >= (int)qq->height)
+    if(x < 0 || x >= (int)c->width ||
+       y < 0 || y >= (int)c->height)
         return;
 
-    if((unsigned char)c < 0x20 || (unsigned char)c > 0x7f)
-        c = 0x20;
+    if((unsigned char)ch < 0x20 || (unsigned char)ch > 0x7f)
+        ch = 0x20;
 
-    qq->chars[x + y * qq->width] = c;
-    qq->attr[x + y * qq->width] = (qq->bgcolor << 16) | qq->fgcolor;
+    c->chars[x + y * c->width] = ch;
+    c->attr[x + y * c->width] = (c->bgcolor << 16) | c->fgcolor;
 }
 
 /** \brief Print a string.
@@ -71,17 +71,17 @@ void cucul_putchar(cucul_t *qq, int x, int y, char c)
  *  the canvas boundaries (eg. a negative Y coordinate) and the string will
  *  be cropped accordingly if it is too long.
  *
- *  \param qq A handle to the libcucul canvas.
+ *  \param c A handle to the libcucul canvas.
  *  \param x X coordinate.
  *  \param y Y coordinate.
  *  \param s The string to print.
  */
-void cucul_putstr(cucul_t *qq, int x, int y, char const *s)
+void cucul_putstr(cucul_canvas_t *c, int x, int y, char const *s)
 {
     uint32_t *chars, *attr;
     unsigned int len;
 
-    if(y < 0 || y >= (int)qq->height || x >= (int)qq->width)
+    if(y < 0 || y >= (int)c->height || x >= (int)c->width)
         return;
 
     len = _cucul_strlen_utf8(s);
@@ -95,16 +95,16 @@ void cucul_putstr(cucul_t *qq, int x, int y, char const *s)
         x = 0;
     }
 
-    chars = qq->chars + x + y * qq->width;
-    attr = qq->attr + x + y * qq->width;
+    chars = c->chars + x + y * c->width;
+    attr = c->attr + x + y * c->width;
 
-    if(x + len >= qq->width)
-        len = qq->width - x;
+    if(x + len >= c->width)
+        len = c->width - x;
 
     while(len)
     {
         *chars++ = _cucul_utf8_to_utf32(s);
-        *attr++ = (qq->bgcolor << 16) | qq->fgcolor;
+        *attr++ = (c->bgcolor << 16) | c->fgcolor;
 
         s = _cucul_skip_utf8(s, 1);
         len--;
@@ -119,34 +119,34 @@ void cucul_putstr(cucul_t *qq, int x, int y, char const *s)
  *  be cropped accordingly if it is too long. The syntax of the format
  *  string is the same as for the C printf() function.
  *
- *  \param qq A handle to the libcucul canvas.
+ *  \param c A handle to the libcucul canvas.
  *  \param x X coordinate.
  *  \param y Y coordinate.
  *  \param format The format string to print.
  *  \param ... Arguments to the format string.
  */
-void cucul_printf(cucul_t *qq, int x, int y, char const *format, ...)
+void cucul_printf(cucul_canvas_t *c, int x, int y, char const *format, ...)
 {
     char tmp[BUFSIZ];
     char *buf = tmp;
     va_list args;
 
-    if(y < 0 || y >= (int)qq->height || x >= (int)qq->width)
+    if(y < 0 || y >= (int)c->height || x >= (int)c->width)
         return;
 
-    if(qq->width - x + 1 > BUFSIZ)
-        buf = malloc(qq->width - x + 1);
+    if(c->width - x + 1 > BUFSIZ)
+        buf = malloc(c->width - x + 1);
 
     va_start(args, format);
 #if defined(HAVE_VSNPRINTF)
-    vsnprintf(buf, qq->width - x + 1, format, args);
+    vsnprintf(buf, c->width - x + 1, format, args);
 #else
     vsprintf(buf, format, args);
 #endif
-    buf[qq->width - x] = '\0';
+    buf[c->width - x] = '\0';
     va_end(args);
 
-    cucul_putstr(qq, x, y, buf);
+    cucul_putstr(c, x, y, buf);
 
     if(buf != tmp)
         free(buf);
@@ -156,20 +156,20 @@ void cucul_printf(cucul_t *qq, int x, int y, char const *format, ...)
  *
  *  This function clears the canvas using a black background.
  */
-void cucul_clear(cucul_t *qq)
+void cucul_clear(cucul_canvas_t *c)
 {
-    uint16_t oldfg = qq->fgcolor;
-    uint16_t oldbg = qq->bgcolor;
-    int y = qq->height;
+    uint16_t oldfg = c->fgcolor;
+    uint16_t oldbg = c->bgcolor;
+    int y = c->height;
 
-    cucul_set_color(qq, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
+    cucul_set_color(c, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
 
     /* We could use SLsmg_cls() etc., but drawing empty lines is much faster */
     while(y--)
-        cucul_putstr(qq, 0, y, qq->empty_line);
+        cucul_putstr(c, 0, y, c->empty_line);
 
-    qq->fgcolor = oldfg;
-    qq->bgcolor = oldbg;
+    c->fgcolor = oldfg;
+    c->bgcolor = oldbg;
 }
 
 /** \brief Blit a canvas onto another one.
@@ -183,8 +183,8 @@ void cucul_clear(cucul_t *qq)
  *  \param src The source canvas.
  *  \param mask The mask canvas.
  */
-void cucul_blit(cucul_t *dst, int x, int y,
-                cucul_t const *src, cucul_t const *mask)
+void cucul_blit(cucul_canvas_t *dst, int x, int y,
+                cucul_canvas_t const *src, cucul_canvas_t const *mask)
 {
     int i, j, starti, startj, endi, endj;
 
@@ -230,13 +230,13 @@ void cucul_blit(cucul_t *dst, int x, int y,
  * XXX: The following functions are not exported
  */
 
-void _cucul_putchar32(cucul_t *qq, int x, int y, uint32_t c)
+void _cucul_putchar32(cucul_canvas_t *c, int x, int y, uint32_t ch)
 {
-    if(x < 0 || x >= (int)qq->width ||
-       y < 0 || y >= (int)qq->height)
+    if(x < 0 || x >= (int)c->width ||
+       y < 0 || y >= (int)c->height)
         return;
 
-    qq->chars[x + y * qq->width] = c;
-    qq->attr[x + y * qq->width] = (qq->bgcolor << 16) | qq->fgcolor;
+    c->chars[x + y * c->width] = ch;
+    c->attr[x + y * c->width] = (c->bgcolor << 16) | c->fgcolor;
 }
 

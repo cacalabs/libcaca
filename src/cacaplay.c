@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 {
     struct stat statbuf;
     caca_event_t ev;
-    cucul_t *qq;
+    cucul_canvas_t *c;
     caca_t *kk;
     void *buffer;
     int fd;
@@ -53,28 +53,28 @@ int main(int argc, char **argv)
 
     buffer = malloc(statbuf.st_size);
     read(fd, buffer, statbuf.st_size);
-    qq = cucul_load(buffer, statbuf.st_size);
+    c = cucul_load(buffer, statbuf.st_size);
     free(buffer);
 
-    if(!qq)
+    if(!c)
     {
         fprintf(stderr, "%s: invalid caca file %s.\n", argv[0], argv[1]);
         return 1;
     }
 
-    kk = caca_attach(qq);
+    kk = caca_attach(c);
 
     caca_display(kk);
 
     while(caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev, -1))
     {
-        if(ev.data.key.c == CACA_KEY_ESCAPE)
+        if(ev.data.key.ch == CACA_KEY_ESCAPE)
             break;
     }
 
     /* Clean up */
     caca_detach(kk);
-    cucul_free(qq);
+    cucul_free(c);
 
     return 0;
 }

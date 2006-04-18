@@ -172,7 +172,7 @@ void _caca_handle_resize(caca_t *kk)
     kk->drv.handle_resize(kk);
 
     /* Tell libcucul we changed size */
-    if(kk->resize.w != kk->qq->width || kk->resize.h != kk->qq->height)
-        _cucul_set_size(kk->qq, kk->resize.w, kk->resize.h);
+    if(kk->resize.w != kk->c->width || kk->resize.h != kk->c->height)
+        _cucul_set_size(kk->c, kk->resize.w, kk->resize.h);
 }
 

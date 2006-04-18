@@ -26,7 +26,7 @@
 
 /** \brief Draw a triangle on the canvas using the given character.
  *
- *  \param qq The handle to the libcucul canvas.
+ *  \param c The handle to the libcucul canvas.
  *  \param x1 X coordinate of the first point.
  *  \param y1 Y coordinate of the first point.
  *  \param x2 X coordinate of the second point.
@@ -37,17 +37,17 @@
  *         to draw the triangle outline.
  *  \return void
  */
-void cucul_draw_triangle(cucul_t *qq, int x1, int y1, int x2, int y2,
+void cucul_draw_triangle(cucul_canvas_t *c, int x1, int y1, int x2, int y2,
                          int x3, int y3, char const *str)
 {
-    cucul_draw_line(qq, x1, y1, x2, y2, str);
-    cucul_draw_line(qq, x2, y2, x3, y3, str);
-    cucul_draw_line(qq, x3, y3, x1, y1, str);
+    cucul_draw_line(c, x1, y1, x2, y2, str);
+    cucul_draw_line(c, x2, y2, x3, y3, str);
+    cucul_draw_line(c, x3, y3, x1, y1, str);
 }
 
 /** \brief Draw a thin triangle on the canvas.
  *
- *  \param qq The handle to the libcucul canvas.
+ *  \param c The handle to the libcucul canvas.
  *  \param x1 X coordinate of the first point.
  *  \param y1 Y coordinate of the first point.
  *  \param x2 X coordinate of the second point.
@@ -56,17 +56,17 @@ void cucul_draw_triangle(cucul_t *qq, int x1, int y1, int x2, int y2,
  *  \param y3 Y coordinate of the third point.
  *  \return void
  */
-void cucul_draw_thin_triangle(cucul_t *qq, int x1, int y1, int x2, int y2,
+void cucul_draw_thin_triangle(cucul_canvas_t *c, int x1, int y1, int x2, int y2,
                               int x3, int y3)
 {
-    cucul_draw_thin_line(qq, x1, y1, x2, y2);
-    cucul_draw_thin_line(qq, x2, y2, x3, y3);
-    cucul_draw_thin_line(qq, x3, y3, x1, y1);
+    cucul_draw_thin_line(c, x1, y1, x2, y2);
+    cucul_draw_thin_line(c, x2, y2, x3, y3);
+    cucul_draw_thin_line(c, x3, y3, x1, y1);
 }
 
 /** \brief Fill a triangle on the canvas using the given character.
  *
- *  \param qq The handle to the libcucul canvas.
+ *  \param c The handle to the libcucul canvas.
  *  \param x1 X coordinate of the first point.
  *  \param y1 Y coordinate of the first point.
  *  \param x2 X coordinate of the second point.
@@ -77,22 +77,22 @@ void cucul_draw_thin_triangle(cucul_t *qq, int x1, int y1, int x2, int y2,
  *         to fill the triangle.
  *  \return void
  */
-void cucul_fill_triangle(cucul_t *qq, int x1, int y1, int x2, int y2,
+void cucul_fill_triangle(cucul_canvas_t *c, int x1, int y1, int x2, int y2,
                          int x3, int y3, char const *str)
 {
     int x, y, xa, xb, xmax, ymax;
-    uint32_t c;
+    uint32_t ch;
 
     /* Bubble-sort y1 <= y2 <= y3 */
     if(y1 > y2)
     {
-        cucul_fill_triangle(qq, x2, y2, x1, y1, x3, y3, str);
+        cucul_fill_triangle(c, x2, y2, x1, y1, x3, y3, str);
         return;
     }
 
     if(y2 > y3)
     {
-        cucul_fill_triangle(qq, x1, y1, x3, y3, x2, y2, str);
+        cucul_fill_triangle(c, x1, y1, x3, y3, x2, y2, str);
         return;
     }
 
@@ -101,10 +101,10 @@ void cucul_fill_triangle(cucul_t *qq, int x1, int y1, int x2, int y2,
     x2 *= 4;
     x3 *= 4;
 
-    xmax = qq->width - 1;
-    ymax = qq->height - 1;
+    xmax = c->width - 1;
+    ymax = c->height - 1;
 
-    c = _cucul_utf8_to_utf32(str);
+    ch = _cucul_utf8_to_utf32(str);
 
     /* Rasterize our triangle */
     for(y = y1 < 0 ? 0 : y1; y <= y3 && y <= ymax; y++)
@@ -136,7 +136,7 @@ void cucul_fill_triangle(cucul_t *qq, int x1, int y1, int x2, int y2,
         if(xb > xmax) xb = xmax;
 
         for(x = xa; x <= xb; x++)
-            _cucul_putchar32(qq, x, y, c);
+            _cucul_putchar32(c, x, y, ch);
     }
 }
 

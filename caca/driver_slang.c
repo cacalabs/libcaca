@@ -164,7 +164,7 @@ static int slang_init_graphics(caca_t *kk)
     SLtt_utf8_enable(1);
 #endif
 
-    _cucul_set_size(kk->qq, SLtt_Screen_Cols, SLtt_Screen_Rows);
+    _cucul_set_size(kk->c, SLtt_Screen_Cols, SLtt_Screen_Rows);
 
     return 0;
 }
@@ -188,24 +188,24 @@ static int slang_set_window_title(caca_t *kk, char const *title)
 static unsigned int slang_get_window_width(caca_t *kk)
 {
     /* Fallback to a 6x10 font */
-    return kk->qq->width * 6;
+    return kk->c->width * 6;
 }
 
 static unsigned int slang_get_window_height(caca_t *kk)
 {
     /* Fallback to a 6x10 font */
-    return kk->qq->height * 10;
+    return kk->c->height * 10;
 }
 
 static void slang_display(caca_t *kk)
 {
     int x, y;
-    uint32_t *attr = kk->qq->attr;
-    uint32_t *chars = kk->qq->chars;
-    for(y = 0; y < (int)kk->qq->height; y++)
+    uint32_t *attr = kk->c->attr;
+    uint32_t *chars = kk->c->chars;
+    for(y = 0; y < (int)kk->c->height; y++)
     {
         SLsmg_gotorc(y, 0);
-        for(x = kk->qq->width; x--; )
+        for(x = kk->c->width; x--; )
         {
             uint32_t c = *chars++;
 
@@ -248,7 +248,7 @@ static void slang_handle_resize(caca_t *kk)
     kk->resize.w = SLtt_Screen_Cols;
     kk->resize.h = SLtt_Screen_Rows;
 
-    if(kk->resize.w != kk->qq->width || kk->resize.h != kk->qq->height)
+    if(kk->resize.w != kk->c->width || kk->resize.h != kk->c->height)
         SLsmg_reinit_smg();
 }
 
@@ -277,7 +277,7 @@ static int slang_get_event(caca_t *kk, caca_event_t *ev)
     if(intkey < 0x100)
     {
         ev->type = CACA_EVENT_KEY_PRESS;
-        ev->data.key.c = intkey;
+        ev->data.key.ch = intkey;
         return 1;
     }
 
@@ -307,30 +307,30 @@ static int slang_get_event(caca_t *kk, caca_event_t *ev)
 
     switch(intkey)
     {
-        case SL_KEY_UP: ev->data.key.c = CACA_KEY_UP; break;
-        case SL_KEY_DOWN: ev->data.key.c = CACA_KEY_DOWN; break;
-        case SL_KEY_LEFT: ev->data.key.c = CACA_KEY_LEFT; break;
-        case SL_KEY_RIGHT: ev->data.key.c = CACA_KEY_RIGHT; break;
+        case SL_KEY_UP: ev->data.key.ch = CACA_KEY_UP; break;
+        case SL_KEY_DOWN: ev->data.key.ch = CACA_KEY_DOWN; break;
+        case SL_KEY_LEFT: ev->data.key.ch = CACA_KEY_LEFT; break;
+        case SL_KEY_RIGHT: ev->data.key.ch = CACA_KEY_RIGHT; break;
 
-        case SL_KEY_IC: ev->data.key.c = CACA_KEY_INSERT; break;
-        case SL_KEY_DELETE: ev->data.key.c = CACA_KEY_DELETE; break;
-        case SL_KEY_HOME: ev->data.key.c = CACA_KEY_HOME; break;
-        case SL_KEY_END: ev->data.key.c = CACA_KEY_END; break;
-        case SL_KEY_PPAGE: ev->data.key.c = CACA_KEY_PAGEUP; break;
-        case SL_KEY_NPAGE: ev->data.key.c = CACA_KEY_PAGEDOWN; break;
+        case SL_KEY_IC: ev->data.key.ch = CACA_KEY_INSERT; break;
+        case SL_KEY_DELETE: ev->data.key.ch = CACA_KEY_DELETE; break;
+        case SL_KEY_HOME: ev->data.key.ch = CACA_KEY_HOME; break;
+        case SL_KEY_END: ev->data.key.ch = CACA_KEY_END; break;
+        case SL_KEY_PPAGE: ev->data.key.ch = CACA_KEY_PAGEUP; break;
+        case SL_KEY_NPAGE: ev->data.key.ch = CACA_KEY_PAGEDOWN; break;
 
-        case SL_KEY_F(1): ev->data.key.c = CACA_KEY_F1; break;
-        case SL_KEY_F(2): ev->data.key.c = CACA_KEY_F2; break;
-        case SL_KEY_F(3): ev->data.key.c = CACA_KEY_F3; break;
-        case SL_KEY_F(4): ev->data.key.c = CACA_KEY_F4; break;
-        case SL_KEY_F(5): ev->data.key.c = CACA_KEY_F5; break;
-        case SL_KEY_F(6): ev->data.key.c = CACA_KEY_F6; break;
-        case SL_KEY_F(7): ev->data.key.c = CACA_KEY_F7; break;
-        case SL_KEY_F(8): ev->data.key.c = CACA_KEY_F8; break;
-        case SL_KEY_F(9): ev->data.key.c = CACA_KEY_F9; break;
-        case SL_KEY_F(10): ev->data.key.c = CACA_KEY_F10; break;
-        case SL_KEY_F(11): ev->data.key.c = CACA_KEY_F11; break;
-        case SL_KEY_F(12): ev->data.key.c = CACA_KEY_F12; break;
+        case SL_KEY_F(1): ev->data.key.ch = CACA_KEY_F1; break;
+        case SL_KEY_F(2): ev->data.key.ch = CACA_KEY_F2; break;
+        case SL_KEY_F(3): ev->data.key.ch = CACA_KEY_F3; break;
+        case SL_KEY_F(4): ev->data.key.ch = CACA_KEY_F4; break;
+        case SL_KEY_F(5): ev->data.key.ch = CACA_KEY_F5; break;
+        case SL_KEY_F(6): ev->data.key.ch = CACA_KEY_F6; break;
+        case SL_KEY_F(7): ev->data.key.ch = CACA_KEY_F7; break;
+        case SL_KEY_F(8): ev->data.key.ch = CACA_KEY_F8; break;
+        case SL_KEY_F(9): ev->data.key.ch = CACA_KEY_F9; break;
+        case SL_KEY_F(10): ev->data.key.ch = CACA_KEY_F10; break;
+        case SL_KEY_F(11): ev->data.key.ch = CACA_KEY_F11; break;
+        case SL_KEY_F(12): ev->data.key.ch = CACA_KEY_F12; break;
 
         default: ev->type = CACA_EVENT_NONE; return 0;
     }

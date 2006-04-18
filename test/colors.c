@@ -22,29 +22,29 @@
 
 int main(int argc, char **argv)
 {
-    cucul_t *qq;
+    cucul_canvas_t *c;
     caca_t *kk;
     caca_event_t ev;
     int i, j;
 
-    qq = cucul_create(0, 0);
-    if(!qq)
+    c = cucul_create(0, 0);
+    if(!c)
         return 1;
 
-    kk = caca_attach(qq);
+    kk = caca_attach(c);
     if(!kk)
         return 1;
 
-    cucul_clear(qq);
+    cucul_clear(c);
     for(i = 0; i < 16; i++)
     {
-        cucul_set_color(qq, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
-        cucul_printf(qq, 4, i + (i >= 8 ? 4 : 3), "'%c': %i (%s)",
+        cucul_set_color(c, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
+        cucul_printf(c, 4, i + (i >= 8 ? 4 : 3), "'%c': %i (%s)",
                      'a' + i, i, cucul_get_color_name(i));
         for(j = 0; j < 16; j++)
         {
-            cucul_set_color(qq, i, j);
-            cucul_putstr(qq, (j >= 8 ? 41 : 40) + j * 2, i + (i >= 8 ? 4 : 3),
+            cucul_set_color(c, i, j);
+            cucul_putstr(c, (j >= 8 ? 41 : 40) + j * 2, i + (i >= 8 ? 4 : 3),
                          "# ");
         }
     }
@@ -53,7 +53,7 @@ int main(int argc, char **argv)
     caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev, -1);
 
     caca_detach(kk);
-    cucul_free(qq);
+    cucul_free(c);
 
     return 0;
 }

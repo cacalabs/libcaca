@@ -100,7 +100,7 @@ typedef struct caca_event caca_event_t;
  *
  *  \li \b CACA_EVENT_NONE: no other field is valid.
  *
- *  \li \b CACA_EVENT_KEY_PRESS, \b CACA_EVENT_KEY_RELEASE: the \e data.key.c
+ *  \li \b CACA_EVENT_KEY_PRESS, \b CACA_EVENT_KEY_RELEASE: the \e data.key.ch
  *      field is valid and contains either the ASCII value for the key, or
  *      an \e enum \e caca_key value. If the value is a printable ASCII
  *      character, the \e data.key.ucs4 and \e data.key.utf8 fields are
@@ -146,7 +146,7 @@ struct caca_event
     {
         struct { unsigned int x, y, button; } mouse;
         struct { unsigned int w, h; } resize;
-        struct { unsigned int c; unsigned long int ucs4; char utf8[8]; } key;
+        struct { unsigned int ch; unsigned long int ucs4; char utf8[8]; } key;
     } data;
 };
 
@@ -203,14 +203,14 @@ enum caca_key
  *  initialisation, system information retrieval and configuration.
  *
  *  @{ */
-caca_t * caca_attach(cucul_t *qq);
-void caca_detach(caca_t *kk);
-void caca_set_delay(caca_t *kk, unsigned int);
-void caca_display(caca_t *kk);
-unsigned int caca_get_rendertime(caca_t *kk);
-unsigned int caca_get_window_width(caca_t *kk);
-unsigned int caca_get_window_height(caca_t *kk);
-int caca_set_window_title(caca_t *kk, char const *);
+caca_t * caca_attach(cucul_canvas_t *);
+void caca_detach(caca_t *);
+void caca_set_delay(caca_t *, unsigned int);
+void caca_display(caca_t *);
+unsigned int caca_get_rendertime(caca_t *);
+unsigned int caca_get_window_width(caca_t *);
+unsigned int caca_get_window_height(caca_t *);
+int caca_set_window_title(caca_t *, char const *);
 /*  @} */
 
 /** \defgroup event Event handling
@@ -219,10 +219,10 @@ int caca_set_window_title(caca_t *kk, char const *);
  *  clicks.
  *
  *  @{ */
-int caca_get_event(caca_t *kk, unsigned int, caca_event_t *, int);
-unsigned int caca_get_mouse_x(caca_t *kk);
-unsigned int caca_get_mouse_y(caca_t *kk);
-void caca_set_mouse(caca_t *kk, int);
+int caca_get_event(caca_t *, unsigned int, caca_event_t *, int);
+unsigned int caca_get_mouse_x(caca_t *);
+unsigned int caca_get_mouse_y(caca_t *);
+void caca_set_mouse(caca_t *, int);
 /*  @} */
 
 #ifdef __cplusplus

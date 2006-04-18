@@ -93,7 +93,7 @@ struct caca_timer
 struct caca
 {
     /* A link to our cucul canvas */
-    cucul_t *qq;
+    cucul_canvas_t *c;
 
     /* Device-specific functions */
     struct drv

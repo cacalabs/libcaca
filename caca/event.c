@@ -113,8 +113,8 @@ int caca_get_event(caca_t *kk, unsigned int event_mask,
  */
 unsigned int caca_get_mouse_x(caca_t *kk)
 {
-    if(kk->mouse.x >= kk->qq->width)
-        kk->mouse.x = kk->qq->width - 1;
+    if(kk->mouse.x >= kk->c->width)
+        kk->mouse.x = kk->c->width - 1;
 
     return kk->mouse.x;
 }
@@ -131,8 +131,8 @@ unsigned int caca_get_mouse_x(caca_t *kk)
  */
 unsigned int caca_get_mouse_y(caca_t *kk)
 {
-    if(kk->mouse.y >= kk->qq->height)
-        kk->mouse.y = kk->qq->height - 1;
+    if(kk->mouse.y >= kk->c->height)
+        kk->mouse.y = kk->c->height - 1;
 
     return kk->mouse.y;
 }
@@ -154,8 +154,8 @@ static int _get_next_event(caca_t *kk, caca_event_t *ev)
         kk->resize.resized = 0;
         _caca_handle_resize(kk);
         ev->type = CACA_EVENT_RESIZE;
-        ev->data.resize.w = kk->qq->width;
-        ev->data.resize.h = kk->qq->height;
+        ev->data.resize.w = kk->c->width;
+        ev->data.resize.h = kk->c->height;
         return 1;
     }
 
@@ -191,7 +191,7 @@ static int _get_next_event(caca_t *kk, caca_event_t *ev)
      * this event and return the next one by calling ourselves. */
     if(ev->type == CACA_EVENT_KEY_PRESS
         && kk->events.last_key_event.type
-        && ev->data.key.c == kk->events.last_key_event.data.key.c
+        && ev->data.key.ch == kk->events.last_key_event.data.key.ch
         && ev->data.key.ucs4 == kk->events.last_key_event.data.key.ucs4)
     {
         kk->events.last_key_ticks = 0;

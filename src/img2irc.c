@@ -23,7 +23,7 @@
 int main(int argc, char **argv)
 {
     /* libcucul context */
-    cucul_t *qq;
+    cucul_canvas_t *c;
     cucul_buffer_t *export;
     struct image *i;
     int cols = 56, lines;
@@ -34,8 +34,8 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    qq = cucul_create(0, 0);
-    if(!qq)
+    c = cucul_create(0, 0);
+    if(!c)
     {
         fprintf(stderr, "%s: unable to initialise libcucul\n", argv[0]);
         return 1;
@@ -45,25 +45,25 @@ int main(int argc, char **argv)
     if(!i)
     {
         fprintf(stderr, "%s: unable to load %s\n", argv[0], argv[1]);
-        cucul_free(qq);
+        cucul_free(c);
         return 1;
     }
 
     /* Assume a 6×10 font */
     lines = cols * i->h * 6 / i->w / 10;
 
-    cucul_set_size(qq, cols, lines);
-    cucul_clear(qq);
-    cucul_dither_bitmap(qq, 0, 0, cols - 1, lines - 1, i->dither, i->pixels);
+    cucul_set_size(c, cols, lines);
+    cucul_clear(c);
+    cucul_dither_bitmap(c, 0, 0, cols - 1, lines - 1, i->dither, i->pixels);
 
     unload_image(i);
 
-    export = cucul_create_export(qq, "irc");
+    export = cucul_create_export(c, "irc");
     fwrite(cucul_get_buffer_data(export),
            cucul_get_buffer_size(export), 1, stdout);
     cucul_free_buffer(export);
 
-    cucul_free(qq);
+    cucul_free(c);
 
     return 0;
 }

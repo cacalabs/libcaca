@@ -41,35 +41,35 @@
  *  \param height The desired canvas height
  *  \return A libcucul canvas handle upon success, NULL if an error occurred.
  */
-cucul_t * cucul_create(unsigned int width, unsigned int height)
+cucul_canvas_t * cucul_create(unsigned int width, unsigned int height)
 {
-    cucul_t *qq = malloc(sizeof(cucul_t));
+    cucul_canvas_t *c = malloc(sizeof(cucul_canvas_t));
 
-    qq->refcount = 0;
+    c->refcount = 0;
 
-    qq->fgcolor = CUCUL_COLOR_LIGHTGRAY;
-    qq->bgcolor = CUCUL_COLOR_BLACK;
+    c->fgcolor = CUCUL_COLOR_LIGHTGRAY;
+    c->bgcolor = CUCUL_COLOR_BLACK;
 
-    qq->width = qq->height = 0;
-    qq->chars = NULL;
-    qq->attr = NULL;
-    qq->empty_line = qq->scratch_line = NULL;
+    c->width = c->height = 0;
+    c->chars = NULL;
+    c->attr = NULL;
+    c->empty_line = c->scratch_line = NULL;
 
     /* Initialise to a default size. 80x32 is arbitrary but matches AAlib's
      * default X11 window. When a graphic driver attaches to us, it can set
      * a different size. */
     if(width && height)
-        _cucul_set_size(qq, width, height);
+        _cucul_set_size(c, width, height);
     else
-        _cucul_set_size(qq, 80, 32);
+        _cucul_set_size(c, 80, 32);
 
     if(_cucul_init_dither())
     {
-        free(qq);
+        free(c);
         return NULL;
     }
 
-    return qq;
+    return c;
 }
 
 /** \brief Load a memory area into a canvas.
@@ -81,9 +81,9 @@ cucul_t * cucul_create(unsigned int width, unsigned int height)
  *  \param size The length of the memory area.
  *  \return A libcucul canvas, or NULL in case of error.
  */
-cucul_t *cucul_load(void *data, unsigned int size)
+cucul_canvas_t *cucul_load(void *data, unsigned int size)
 {
-    cucul_t *qq;
+    cucul_canvas_t *c;
     uint8_t *buf = (uint8_t *)data;
     unsigned int width, height, n;
 
@@ -108,24 +108,24 @@ cucul_t *cucul_load(void *data, unsigned int size)
         || buf[size - 2] != 'A' || buf[size - 1] != 'C')
         return NULL;
 
-    qq = cucul_create(width, height);
+    c = cucul_create(width, height);
 
-    if(!qq)
+    if(!c)
         return NULL;
 
     for(n = height * width; n--; )
     {
-        qq->chars[n] = ((uint32_t)buf[12 + 8 * n] << 24)
+        c->chars[n] = ((uint32_t)buf[12 + 8 * n] << 24)
                      | ((uint32_t)buf[13 + 8 * n] << 16)
                      | ((uint32_t)buf[14 + 8 * n] << 8)
                      | (uint32_t)buf[15 + 8 * n];
-        qq->attr[n] = ((uint32_t)buf[16 + 8 * n] << 24)
+        c->attr[n] = ((uint32_t)buf[16 + 8 * n] << 24)
                     | ((uint32_t)buf[17 + 8 * n] << 16)
                     | ((uint32_t)buf[18 + 8 * n] << 8)
                     | (uint32_t)buf[19 + 8 * n];
     }
 
-    return qq;
+    return c;
 }
 
 /** \brief Resize a canvas.
@@ -143,40 +143,40 @@ cucul_t *cucul_load(void *data, unsigned int size)
  *  resize through user interaction. See the caca_event() documentation
  *  for more about this.
  *
- *  \param qq A libcucul canvas
+ *  \param c A libcucul canvas
  *  \param width The desired canvas width
  *  \param height The desired canvas height
  */
-void cucul_set_size(cucul_t *qq, unsigned int width, unsigned int height)
+void cucul_set_size(cucul_canvas_t *c, unsigned int width, unsigned int height)
 {
-    if(qq->refcount)
+    if(c->refcount)
         return;
 
-    _cucul_set_size(qq, width, height);
+    _cucul_set_size(c, width, height);
 }
 
 /** \brief Get the canvas width.
  *
  *  This function returns the current canvas width, in character cells.
  *
- *  \param qq A libcucul canvas
+ *  \param c A libcucul canvas
  *  \return The canvas width.
  */
-unsigned int cucul_get_width(cucul_t *qq)
+unsigned int cucul_get_width(cucul_canvas_t *c)
 {
-    return qq->width;
+    return c->width;
 }
 
 /** \brief Get the canvas height.
  *
  *  This function returns the current canvas height, in character cells.
  *
- *  \param qq A libcucul canvas
+ *  \param c A libcucul canvas
  *  \return The canvas height.
  */
-unsigned int cucul_get_height(cucul_t *qq)
+unsigned int cucul_get_height(cucul_canvas_t *c)
 {
-    return qq->height;
+    return c->height;
 }
 
 /** \brief Translate a colour index into the colour's name.
@@ -221,19 +221,19 @@ char const *cucul_get_color_name(unsigned int color)
  *  cucul_free() has been called, no other \e libcucul functions may be used
  *  unless a new call to cucul_create() is done.
  *
- *  \param qq A libcucul canvas
+ *  \param c A libcucul canvas
  */
-void cucul_free(cucul_t *qq)
+void cucul_free(cucul_canvas_t *c)
 {
     _cucul_end_dither();
 
-    free(qq->empty_line);
-    free(qq->scratch_line);
+    free(c->empty_line);
+    free(c->scratch_line);
 
-    free(qq->chars);
-    free(qq->attr);
+    free(c->chars);
+    free(c->attr);
 
-    free(qq);
+    free(c);
 }
 
 /** \brief Generate a random integer within a range.
@@ -290,23 +290,23 @@ void cucul_free_buffer(cucul_buffer_t *buf)
  * XXX: The following functions are local.
  */
 
-void _cucul_set_size(cucul_t *qq, unsigned int width, unsigned int height)
+void _cucul_set_size(cucul_canvas_t *c, unsigned int width, unsigned int height)
 {
     unsigned int x, y, old_width, old_height, new_size, old_size;
 
-    old_width = qq->width;
-    old_height = qq->height;
+    old_width = c->width;
+    old_height = c->height;
     old_size = old_width * old_height;
 
-    qq->width = width;
-    qq->height = height;
+    c->width = width;
+    c->height = height;
     new_size = width * height;
 
     /* Step 1: if new area is bigger, resize the memory area now. */
     if(new_size > old_size)
     {
-        qq->chars = realloc(qq->chars, new_size * sizeof(uint32_t));
-        qq->attr = realloc(qq->attr, new_size * sizeof(uint32_t));
+        c->chars = realloc(c->chars, new_size * sizeof(uint32_t));
+        c->attr = realloc(c->attr, new_size * sizeof(uint32_t));
     }
 
     /* Step 2: move line data if necessary. */
@@ -324,14 +324,14 @@ void _cucul_set_size(cucul_t *qq, unsigned int width, unsigned int height)
         {
             for(x = old_width; x--; )
             {
-                qq->chars[y * width + x] = qq->chars[y * old_width + x];
-                qq->attr[y * width + x] = qq->attr[y * old_width + x];
+                c->chars[y * width + x] = c->chars[y * old_width + x];
+                c->attr[y * width + x] = c->attr[y * old_width + x];
             }
 
             /* Zero the end of the line */
             for(x = width - old_width; x--; )
-                qq->chars[y * width + old_width + x] = (uint32_t)' ';
-            memset(qq->attr + y * width + old_width, 0,
+                c->chars[y * width + old_width + x] = (uint32_t)' ';
+            memset(c->attr + y * width + old_width, 0,
                    (width - old_width) * 4);
         }
     }
@@ -345,8 +345,8 @@ void _cucul_set_size(cucul_t *qq, unsigned int width, unsigned int height)
         {
             for(x = 0; x < width; x++)
             {
-                qq->chars[y * width + x] = qq->chars[y * old_width + x];
-                qq->attr[y * width + x] = qq->attr[y * old_width + x];
+                c->chars[y * width + x] = c->chars[y * old_width + x];
+                c->attr[y * width + x] = c->attr[y * old_width + x];
             }
         }
     }
@@ -356,26 +356,26 @@ void _cucul_set_size(cucul_t *qq, unsigned int width, unsigned int height)
     {
         /* Zero the bottom of the screen */
         for(x = (height - old_height) * width; x--; )
-            qq->chars[old_height * width + x] = (uint32_t)' ';
-        memset(qq->attr + old_height * width, 0,
+            c->chars[old_height * width + x] = (uint32_t)' ';
+        memset(c->attr + old_height * width, 0,
                (height - old_height) * width * 4);
     }
 
     /* Step 4: if new area is smaller, resize memory area now. */
     if(new_size <= old_size)
     {
-        qq->chars = realloc(qq->chars, new_size * sizeof(uint32_t));
-        qq->attr = realloc(qq->attr, new_size * sizeof(uint32_t));
+        c->chars = realloc(c->chars, new_size * sizeof(uint32_t));
+        c->attr = realloc(c->attr, new_size * sizeof(uint32_t));
     }
 
     /* Recompute the scratch line and the empty line */
     if(width != old_width)
     {
-        qq->empty_line = realloc(qq->empty_line, width + 1);
-        memset(qq->empty_line, ' ', width);
-        qq->empty_line[width] = '\0';
+        c->empty_line = realloc(c->empty_line, width + 1);
+        memset(c->empty_line, ' ', width);
+        c->empty_line[width] = '\0';
 
-        qq->scratch_line = realloc(qq->scratch_line, width + 1);
+        c->scratch_line = realloc(c->scratch_line, width + 1);
     }
 }
 

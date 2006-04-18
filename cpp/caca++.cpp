@@ -25,18 +25,18 @@ Caca::Caca(void)
 {
 
 }
-Caca::Caca(Cucul *qq) 
+Caca::Caca(Cucul *c) 
 {
-    kk = caca_attach(qq->get_cucul_t());
+    kk = caca_attach(c->get_cucul_canvas_t());
     if(!kk) throw -1;
 }
 Caca::~Caca() 
 {
     caca_detach(kk);
 }
-void Caca::attach(Cucul *qq)
+void Caca::attach(Cucul *c)
 {
-    kk = caca_attach(qq->get_cucul_t());
+    kk = caca_attach(c->get_cucul_canvas_t());
     if(!kk) throw -1;
 }
 void 	Caca::detach ()

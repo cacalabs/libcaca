@@ -104,7 +104,7 @@ struct server
 
     char prefix[sizeof(INIT_PREFIX)];
 
-    cucul_t *qq;
+    cucul_canvas_t *canvas;
     cucul_buffer_t *buffer;
     unsigned long int buflen;
     void *bufdata;
@@ -184,7 +184,7 @@ int main(void)
         return -1;
     }
 
-    server->qq = NULL;
+    server->canvas = NULL;
     server->buffer = NULL;
 
     /* Ignore SIGPIPE */
@@ -223,12 +223,12 @@ int main(void)
         read(0, buf + 12, size - 12);
 
         /* Free the previous canvas, if any */
-        if(server->qq)
-            cucul_free(server->qq);
+        if(server->canvas)
+            cucul_free(server->canvas);
 
-        server->qq = cucul_load(buf, size);
+        server->canvas = cucul_load(buf, size);
 
-        if(!server->qq)
+        if(!server->canvas)
             continue; /* Load error */
 
         /* Free the previous export buffer, if any */
@@ -240,7 +240,7 @@ int main(void)
 
         /* Get ANSI representation of the image and skip the end-of buffer
          * linefeed ("\r\n\0", 3 bytes) */
-        server->buffer = cucul_create_export(server->qq, "ansi");
+        server->buffer = cucul_create_export(server->canvas, "ansi");
         server->buflen -= 3;
 
         for(i = 0; i < server->client_count; i++)

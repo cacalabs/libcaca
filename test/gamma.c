@@ -34,17 +34,17 @@ uint32_t buffer[256 * 4];
 int main(void)
 {
     caca_event_t ev;
-    cucul_t *qq, *gg, *mask;
+    cucul_canvas_t *c, *gg, *mask;
     caca_t *kk;
     cucul_dither_t *left, *right;
     float gam = 1.0;
     int x;
 
-    qq = cucul_create(0, 0);
-    kk = caca_attach(qq);
+    c = cucul_create(0, 0);
+    kk = caca_attach(c);
 
-    gg = cucul_create(cucul_get_width(qq), cucul_get_height(qq));
-    mask = cucul_create(cucul_get_width(qq), cucul_get_height(qq));
+    gg = cucul_create(cucul_get_width(c), cucul_get_height(c));
+    mask = cucul_create(cucul_get_width(c), cucul_get_height(c));
 
     for(x = 0; x < 256; x++)
     {
@@ -66,23 +66,23 @@ int main(void)
 
         if(ret)
         {
-            if(ev.data.key.c == CACA_KEY_LEFT)
+            if(ev.data.key.ch == CACA_KEY_LEFT)
                 gam /= 1.03;
-            else if(ev.data.key.c == CACA_KEY_RIGHT)
+            else if(ev.data.key.ch == CACA_KEY_RIGHT)
                 gam *= 1.03;
-            else if(ev.data.key.c == CACA_KEY_DOWN)
+            else if(ev.data.key.ch == CACA_KEY_DOWN)
                 gam = 1.0;
-            else if(ev.data.key.c == CACA_KEY_ESCAPE)
+            else if(ev.data.key.ch == CACA_KEY_ESCAPE)
                 break;
         }
 
         /* Resize the spare canvas, just in case the main one changed */
-        cucul_set_size(gg, cucul_get_width(qq), cucul_get_height(qq));
-        cucul_set_size(mask, cucul_get_width(qq), cucul_get_height(qq));
+        cucul_set_size(gg, cucul_get_width(c), cucul_get_height(c));
+        cucul_set_size(mask, cucul_get_width(c), cucul_get_height(c));
 
         /* Draw the regular dither on the main canvas */
-        cucul_dither_bitmap(qq, 0, 0,
-                            cucul_get_width(qq) - 1, cucul_get_height(qq) - 1,
+        cucul_dither_bitmap(c, 0, 0,
+                            cucul_get_width(c) - 1, cucul_get_height(c) - 1,
                             left, buffer);
 
         /* Draw the gamma-modified dither on the spare canvas */
@@ -102,10 +102,10 @@ int main(void)
                                  cucul_get_height(mask) / 2, "#");
 
         /* Blit the spare canvas onto the first one */
-        cucul_blit(qq, 0, 0, gg, mask);
+        cucul_blit(c, 0, 0, gg, mask);
 
-        cucul_set_color(qq, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
-        cucul_printf(qq, 2, 1,
+        cucul_set_color(c, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
+        cucul_printf(c, 2, 1,
                      "gamma=%g - use arrows to change, Esc to quit", gam);
 
         caca_display(kk);
@@ -115,7 +115,7 @@ int main(void)
     cucul_free_dither(right);
 
     caca_detach(kk);
-    cucul_free(qq);
+    cucul_free(c);
 
     return 0;
 }

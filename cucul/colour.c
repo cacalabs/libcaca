@@ -36,17 +36,17 @@ static const uint16_t ansitab[16] =
  *  Color values are those defined in \e cucul.h, such as CUCUL_COLOR_RED
  *  or CUCUL_COLOR_TRANSPARENT.
  *
- *  \param qq A handle to the libcucul canvas.
+ *  \param c A handle to the libcucul canvas.
  *  \param fg The requested foreground colour.
  *  \param bg The requested background colour.
  */
-void cucul_set_color(cucul_t *qq, unsigned char fg, unsigned char bg)
+void cucul_set_color(cucul_canvas_t *c, unsigned char fg, unsigned char bg)
 {
     if(fg > 0x20 || bg > 0x20)
         return;
 
-    qq->fgcolor = fg;
-    qq->bgcolor = bg;
+    c->fgcolor = fg;
+    c->bgcolor = bg;
 }
 
 /** \brief Set the default colour pair (truecolor version).
@@ -59,11 +59,11 @@ void cucul_set_color(cucul_t *qq, unsigned char fg, unsigned char bg)
  *  instance, 0xf088 is solid dark cyan (A=15 R=0 G=8 B=8), and 0x8fff is
  *  white with 50% alpha (A=8 R=15 G=15 B=15).
  *
- *  \param qq A handle to the libcucul canvas.
+ *  \param c A handle to the libcucul canvas.
  *  \param fg The requested foreground colour.
  *  \param bg The requested background colour.
  */
-void cucul_set_truecolor(cucul_t *qq, unsigned int fg, unsigned int bg)
+void cucul_set_truecolor(cucul_canvas_t *c, unsigned int fg, unsigned int bg)
 {
     if(fg > 0xffff || bg > 0xffff)
         return;
@@ -74,8 +74,8 @@ void cucul_set_truecolor(cucul_t *qq, unsigned int fg, unsigned int bg)
     if(bg < 0x100)
         bg += 0x100;
 
-    qq->fgcolor = fg;
-    qq->bgcolor = bg;
+    c->fgcolor = fg;
+    c->bgcolor = bg;
 }
 
 /*
@@ -124,28 +124,28 @@ static uint8_t nearest_ansi(uint16_t argb16, uint8_t def)
     return best;
 }
 
-uint8_t _cucul_argb32_to_ansi8(uint32_t c)
+uint8_t _cucul_argb32_to_ansi8(uint32_t ch)
 {
-    uint16_t fg = c & 0xffff;
-    uint16_t bg = c >> 16;
+    uint16_t fg = ch & 0xffff;
+    uint16_t bg = ch >> 16;
 
     return nearest_ansi(fg, CUCUL_COLOR_LIGHTGRAY)
             | (nearest_ansi(bg, CUCUL_COLOR_BLACK) << 4);
 }
 
-uint8_t _cucul_argb32_to_ansi4fg(uint32_t c)
+uint8_t _cucul_argb32_to_ansi4fg(uint32_t ch)
 {
-    return nearest_ansi(c & 0xffff, CUCUL_COLOR_LIGHTGRAY);
+    return nearest_ansi(ch & 0xffff, CUCUL_COLOR_LIGHTGRAY);
 }
 
-uint8_t _cucul_argb32_to_ansi4bg(uint32_t c)
+uint8_t _cucul_argb32_to_ansi4bg(uint32_t ch)
 {
-    return nearest_ansi(c >> 16, CUCUL_COLOR_BLACK);
+    return nearest_ansi(ch >> 16, CUCUL_COLOR_BLACK);
 }
 
-uint16_t _cucul_argb32_to_rgb12fg(uint32_t c)
+uint16_t _cucul_argb32_to_rgb12fg(uint32_t ch)
 {
-    uint16_t fg = c & 0xffff;
+    uint16_t fg = ch & 0xffff;
 
     if(fg < CUCUL_COLOR_DEFAULT)
         return ansitab[fg] & 0x0fff;
@@ -159,9 +159,9 @@ uint16_t _cucul_argb32_to_rgb12fg(uint32_t c)
     return fg & 0x0fff;
 }
 
-uint16_t _cucul_argb32_to_rgb12bg(uint32_t c)
+uint16_t _cucul_argb32_to_rgb12bg(uint32_t ch)
 {
-    uint16_t bg = c >> 16;
+    uint16_t bg = ch >> 16;
 
     if(bg < CUCUL_COLOR_DEFAULT)
         return ansitab[bg] & 0x0fff;
@@ -180,20 +180,20 @@ uint16_t _cucul_argb32_to_rgb12bg(uint32_t c)
   | ((uint32_t)((i & 0x0f0) >> 4) * 0x001100) \
   | ((uint32_t)(i & 0x00f) * 0x000011))
 
-uint32_t _cucul_argb32_to_rgb24fg(uint32_t c)
+uint32_t _cucul_argb32_to_rgb24fg(uint32_t ch)
 {
-    return RGB12TO24(_cucul_argb32_to_rgb12fg(c));
+    return RGB12TO24(_cucul_argb32_to_rgb12fg(ch));
 }
 
-uint32_t _cucul_argb32_to_rgb24bg(uint32_t c)
+uint32_t _cucul_argb32_to_rgb24bg(uint32_t ch)
 {
-    return RGB12TO24(_cucul_argb32_to_rgb12bg(c));
+    return RGB12TO24(_cucul_argb32_to_rgb12bg(ch));
 }
 
-void _cucul_argb32_to_argb4(uint32_t c, uint8_t argb[8])
+void _cucul_argb32_to_argb4(uint32_t ch, uint8_t argb[8])
 {
-    uint16_t fg = c & 0xffff;
-    uint16_t bg = c >> 16;
+    uint16_t fg = ch & 0xffff;
+    uint16_t bg = ch >> 16;
 
     if(fg < CUCUL_COLOR_DEFAULT)
         fg = ansitab[fg];

@@ -78,7 +78,7 @@ static int x11_init_graphics(caca_t *kk)
 #endif
 
     if(width && height)
-        _cucul_set_size(kk->qq, width, height);
+        _cucul_set_size(kk->c, width, height);
 
     kk->drv.p->dpy = XOpenDisplay(NULL);
     if(kk->drv.p->dpy == NULL)
@@ -144,8 +144,8 @@ static int x11_init_graphics(caca_t *kk)
 
     kk->drv.p->window =
         XCreateWindow(kk->drv.p->dpy, DefaultRootWindow(kk->drv.p->dpy), 0, 0,
-                      kk->qq->width * kk->drv.p->font_width,
-                      kk->qq->height * kk->drv.p->font_height,
+                      kk->c->width * kk->drv.p->font_width,
+                      kk->c->height * kk->drv.p->font_height,
                       0, 0, InputOutput, 0,
                       CWBackingStore | CWBackPixel | CWEventMask,
                       &x11_winattr);
@@ -192,8 +192,8 @@ static int x11_init_graphics(caca_t *kk)
     XSync(kk->drv.p->dpy, False);
 
     kk->drv.p->pixmap = XCreatePixmap(kk->drv.p->dpy, kk->drv.p->window,
-                                   kk->qq->width * kk->drv.p->font_width,
-                                   kk->qq->height * kk->drv.p->font_height,
+                                   kk->c->width * kk->drv.p->font_width,
+                                   kk->c->height * kk->drv.p->font_height,
                                    DefaultDepth(kk->drv.p->dpy,
                                             DefaultScreen(kk->drv.p->dpy)));
     kk->drv.p->pointer = None;
@@ -228,12 +228,12 @@ static int x11_set_window_title(caca_t *kk, char const *title)
 
 static unsigned int x11_get_window_width(caca_t *kk)
 {
-    return kk->qq->width * kk->drv.p->font_width;
+    return kk->c->width * kk->drv.p->font_width;
 }
 
 static unsigned int x11_get_window_height(caca_t *kk)
 {
-    return kk->qq->height * kk->drv.p->font_height;
+    return kk->c->height * kk->drv.p->font_height;
 }
 
 static void x11_display(caca_t *kk)
@@ -242,15 +242,15 @@ static void x11_display(caca_t *kk)
 
     /* First draw the background colours. Splitting the process in two
      * loops like this is actually slightly faster. */
-    for(y = 0; y < kk->qq->height; y++)
+    for(y = 0; y < kk->c->height; y++)
     {
-        for(x = 0; x < kk->qq->width; x += len)
+        for(x = 0; x < kk->c->width; x += len)
         {
-            uint32_t *attr = kk->qq->attr + x + y * kk->qq->width;
+            uint32_t *attr = kk->c->attr + x + y * kk->c->width;
             uint16_t bg = _cucul_argb32_to_rgb12bg(*attr);
 
             len = 1;
-            while(x + len < kk->qq->width
+            while(x + len < kk->c->width
                    && _cucul_argb32_to_rgb12bg(attr[len]) == bg)
                 len++;
 
@@ -263,15 +263,15 @@ static void x11_display(caca_t *kk)
     }
 
     /* Then print the foreground characters */
-    for(y = 0; y < kk->qq->height; y++)
+    for(y = 0; y < kk->c->height; y++)
     {
         unsigned int yoff = (y + 1) * kk->drv.p->font_height
                                     - kk->drv.p->font_offset;
-        uint32_t *chars = kk->qq->chars + y * kk->qq->width;
+        uint32_t *chars = kk->c->chars + y * kk->c->width;
 
-        for(x = 0; x < kk->qq->width; x++, chars++)
+        for(x = 0; x < kk->c->width; x++, chars++)
         {
-            uint32_t *attr = kk->qq->attr + x + y * kk->qq->width;
+            uint32_t *attr = kk->c->attr + x + y * kk->c->width;
 
             /* Skip spaces */
             if(*chars == 0x00000020)
@@ -370,8 +370,8 @@ static void x11_display(caca_t *kk)
 
     XCopyArea(kk->drv.p->dpy, kk->drv.p->pixmap, kk->drv.p->window,
               kk->drv.p->gc, 0, 0,
-              kk->qq->width * kk->drv.p->font_width,
-              kk->qq->height * kk->drv.p->font_height,
+              kk->c->width * kk->drv.p->font_width,
+              kk->c->height * kk->drv.p->font_height,
               0, 0);
     XFlush(kk->drv.p->dpy);
 }
@@ -408,8 +408,8 @@ static int x11_get_event(caca_t *kk, caca_event_t *ev)
         {
             XCopyArea(kk->drv.p->dpy, kk->drv.p->pixmap,
                       kk->drv.p->window, kk->drv.p->gc, 0, 0,
-                      kk->qq->width * kk->drv.p->font_width,
-                      kk->qq->height * kk->drv.p->font_height, 0, 0);
+                      kk->c->width * kk->drv.p->font_width,
+                      kk->c->height * kk->drv.p->font_height, 0, 0);
             continue;
         }
 
@@ -423,7 +423,7 @@ static int x11_get_event(caca_t *kk, caca_event_t *ev)
             h = (xevent.xconfigure.height + kk->drv.p->font_height / 3)
                   / kk->drv.p->font_height;
 
-            if(!w || !h || (w == kk->qq->width && h == kk->qq->height))
+            if(!w || !h || (w == kk->c->width && h == kk->c->height))
                 continue;
 
             kk->resize.w = w;
@@ -439,10 +439,10 @@ static int x11_get_event(caca_t *kk, caca_event_t *ev)
             unsigned int newx = xevent.xmotion.x / kk->drv.p->font_width;
             unsigned int newy = xevent.xmotion.y / kk->drv.p->font_height;
 
-            if(newx >= kk->qq->width)
-                newx = kk->qq->width - 1;
-            if(newy >= kk->qq->height)
-                newy = kk->qq->height - 1;
+            if(newx >= kk->c->width)
+                newx = kk->c->width - 1;
+            if(newy >= kk->c->height)
+                newy = kk->c->height - 1;
 
             if(kk->mouse.x == newx && kk->mouse.y == newy)
                 continue;
@@ -481,7 +481,7 @@ static int x11_get_event(caca_t *kk, caca_event_t *ev)
 
         if(XLookupString(&xevent.xkey, &key, 1, NULL, NULL))
         {
-            ev->data.key.c = key;
+            ev->data.key.ch = key;
             ev->data.key.ucs4 = key;
             ev->data.key.utf8[0] = key;
             ev->data.key.utf8[1] = '\0';
@@ -491,25 +491,25 @@ static int x11_get_event(caca_t *kk, caca_event_t *ev)
         keysym = XKeycodeToKeysym(kk->drv.p->dpy, xevent.xkey.keycode, 0);
         switch(keysym)
         {
-            case XK_F1:    ev->data.key.c = CACA_KEY_F1;    break;
-            case XK_F2:    ev->data.key.c = CACA_KEY_F2;    break;
-            case XK_F3:    ev->data.key.c = CACA_KEY_F3;    break;
-            case XK_F4:    ev->data.key.c = CACA_KEY_F4;    break;
-            case XK_F5:    ev->data.key.c = CACA_KEY_F5;    break;
-            case XK_F6:    ev->data.key.c = CACA_KEY_F6;    break;
-            case XK_F7:    ev->data.key.c = CACA_KEY_F7;    break;
-            case XK_F8:    ev->data.key.c = CACA_KEY_F8;    break;
-            case XK_F9:    ev->data.key.c = CACA_KEY_F9;    break;
-            case XK_F10:   ev->data.key.c = CACA_KEY_F10;   break;
-            case XK_F11:   ev->data.key.c = CACA_KEY_F11;   break;
-            case XK_F12:   ev->data.key.c = CACA_KEY_F12;   break;
-            case XK_F13:   ev->data.key.c = CACA_KEY_F13;   break;
-            case XK_F14:   ev->data.key.c = CACA_KEY_F14;   break;
-            case XK_F15:   ev->data.key.c = CACA_KEY_F15;   break;
-            case XK_Left:  ev->data.key.c = CACA_KEY_LEFT;  break;
-            case XK_Right: ev->data.key.c = CACA_KEY_RIGHT; break;
-            case XK_Up:    ev->data.key.c = CACA_KEY_UP;    break;
-            case XK_Down:  ev->data.key.c = CACA_KEY_DOWN;  break;
+            case XK_F1:    ev->data.key.ch = CACA_KEY_F1;    break;
+            case XK_F2:    ev->data.key.ch = CACA_KEY_F2;    break;
+            case XK_F3:    ev->data.key.ch = CACA_KEY_F3;    break;
+            case XK_F4:    ev->data.key.ch = CACA_KEY_F4;    break;
+            case XK_F5:    ev->data.key.ch = CACA_KEY_F5;    break;
+            case XK_F6:    ev->data.key.ch = CACA_KEY_F6;    break;
+            case XK_F7:    ev->data.key.ch = CACA_KEY_F7;    break;
+            case XK_F8:    ev->data.key.ch = CACA_KEY_F8;    break;
+            case XK_F9:    ev->data.key.ch = CACA_KEY_F9;    break;
+            case XK_F10:   ev->data.key.ch = CACA_KEY_F10;   break;
+            case XK_F11:   ev->data.key.ch = CACA_KEY_F11;   break;
+            case XK_F12:   ev->data.key.ch = CACA_KEY_F12;   break;
+            case XK_F13:   ev->data.key.ch = CACA_KEY_F13;   break;
+            case XK_F14:   ev->data.key.ch = CACA_KEY_F14;   break;
+            case XK_F15:   ev->data.key.ch = CACA_KEY_F15;   break;
+            case XK_Left:  ev->data.key.ch = CACA_KEY_LEFT;  break;
+            case XK_Right: ev->data.key.ch = CACA_KEY_RIGHT; break;
+            case XK_Up:    ev->data.key.ch = CACA_KEY_UP;    break;
+            case XK_Down:  ev->data.key.ch = CACA_KEY_DOWN;  break;
 
             default: ev->type = CACA_EVENT_NONE; return 0;
         }
