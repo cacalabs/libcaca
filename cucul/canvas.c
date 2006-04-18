@@ -154,15 +154,18 @@ void cucul_printf(cucul_canvas_t *cv, int x, int y, char const *format, ...)
 
 /** \brief Clear the canvas.
  *
- *  This function clears the canvas using a black background.
+ *  This function clears the canvas using the given background colour.
+ *
+ *  \param cv The canvas to clear.
+ *  \param bg The background colour to use.
  */
-void cucul_clear(cucul_canvas_t *cv)
+void cucul_clear_canvas(cucul_canvas_t *cv, unsigned char bg)
 {
     uint16_t oldfg = cv->fgcolor;
     uint16_t oldbg = cv->bgcolor;
     int y = cv->height;
 
-    cucul_set_color(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
+    cucul_set_color(cv, CUCUL_COLOR_DEFAULT, bg);
 
     /* We could use SLsmg_cls() etc., but drawing empty lines is much faster */
     while(y--)

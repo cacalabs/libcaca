@@ -89,9 +89,9 @@ void 	Cucul::printf ( int x , int y , char const * format,...)
 
 }
 
-void 	Cucul::clear ()
+void 	Cucul::clear ( unsigned char bg )
 {
-    cucul_clear(cv);
+    cucul_clear_canvas(cv, bg);
 }
 
 void 	Cucul::blit ( int x, int y, Cucul* c1, Cucul* c2)

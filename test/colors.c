@@ -35,7 +35,7 @@ int main(int argc, char **argv)
     if(!dp)
         return 1;
 
-    cucul_clear(cv);
+    cucul_clear_canvas(cv, CUCUL_COLOR_BLACK);
     for(i = 0; i < 16; i++)
     {
         cucul_set_color(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);

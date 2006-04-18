@@ -90,7 +90,7 @@ int main(void)
                             cucul_get_canvas_height(cw) - 1, right, buffer);
 
         /* Draw something on the mask */
-        cucul_clear(mask);
+        cucul_clear_canvas(mask, CUCUL_COLOR_BLACK);
         cucul_set_color(mask, CUCUL_COLOR_WHITE, CUCUL_COLOR_WHITE);
         cucul_fill_ellipse(mask, (1.0 + sin(0.05 * (float)x))
                                    * 0.5 * cucul_get_canvas_width(mask),

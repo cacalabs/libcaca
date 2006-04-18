@@ -53,7 +53,7 @@ int main(int argc, char **argv)
     lines = cols * i->h * 6 / i->w / 10;
 
     cucul_set_canvas_size(cv, cols, lines);
-    cucul_clear(cv);
+    cucul_clear_canvas(cv, CUCUL_COLOR_TRANSPARENT);
     cucul_dither_bitmap(cv, 0, 0, cols - 1, lines - 1, i->dither, i->pixels);
 
     unload_image(i);
