@@ -27,12 +27,7 @@ libcucul_la_SOURCES = \
 	font.c \
 	font_mono9.h \
 	font_monobold12.h \
-	export_irc.c \
-	export_ansi.c \
-	export_html.c \
-	export_ps.c \
-	export_svg.c \
-	export_bitmap.c \
+	export.c \
 	$(NULL)
 libcucul_la_LDFLAGS = -no-undefined
 libcucul_la_LIBADD = @CUCUL_LIBS@

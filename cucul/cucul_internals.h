@@ -71,13 +71,4 @@ uint32_t _cucul_argb32_to_rgb24fg(uint32_t);
 uint32_t _cucul_argb32_to_rgb24bg(uint32_t);
 void _cucul_argb32_to_argb4(uint32_t, uint8_t[8]);
 
-/* Export functions */
-extern void _cucul_get_ansi(cucul_t *, cucul_buffer_t *);
-extern void _cucul_get_html(cucul_t *, cucul_buffer_t *);
-extern void _cucul_get_html3(cucul_t *, cucul_buffer_t *);
-extern void _cucul_get_irc(cucul_t *, cucul_buffer_t *);
-extern void _cucul_get_ps(cucul_t *, cucul_buffer_t *);
-extern void _cucul_get_svg(cucul_t *, cucul_buffer_t *);
-extern void _cucul_get_tga(cucul_t *, cucul_buffer_t *);
-
 #endif /* __CUCUL_INTERNALS_H__ */
