@@ -176,9 +176,9 @@ uint16_t _cucul_argb32_to_rgb12bg(uint32_t c)
 }
 
 #define RGB12TO24(i) \
-   ((uint32_t)((i & 0xf00) >> 8) * 0x11 \
-  | (uint32_t)((i & 0x0f0) >> 4) * 0x11 \
-  | (uint32_t)(i & 0x00f) * 0x11)
+   (((uint32_t)((i & 0xf00) >> 8) * 0x110000) \
+  | ((uint32_t)((i & 0x0f0) >> 4) * 0x001100) \
+  | ((uint32_t)(i & 0x00f) * 0x000011))
 
 uint32_t _cucul_argb32_to_rgb24fg(uint32_t c)
 {
