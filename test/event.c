@@ -118,12 +118,12 @@ static void print_event(int x, int y, caca_event_t *ev)
     case CACA_EVENT_KEY_PRESS:
         character = ev->data.key.c;
         cucul_printf(qq, x, y, "CACA_EVENT_KEY_PRESS 0x%02x (%c)", character,
-                     (character > 0x20 && character < 0x80) ? character : '?');
+                     (character > 0x1f && character < 0x80) ? character : '?');
         break;
     case CACA_EVENT_KEY_RELEASE:
         character = ev->data.key.c;
         cucul_printf(qq, x, y, "CACA_EVENT_KEY_RELEASE 0x%02x (%c)", character,
-                     (character > 0x20 && character < 0x80) ? character : '?');
+                     (character > 0x1f && character < 0x80) ? character : '?');
         break;
     case CACA_EVENT_MOUSE_MOTION:
         cucul_printf(qq, x, y, "CACA_EVENT_MOUSE_MOTION %u %u",
@@ -140,6 +140,9 @@ static void print_event(int x, int y, caca_event_t *ev)
     case CACA_EVENT_RESIZE:
         cucul_printf(qq, x, y, "CACA_EVENT_RESIZE %u %u",
                      ev->data.resize.w, ev->data.resize.h);
+        break;
+    case CACA_EVENT_QUIT:
+        cucul_printf(qq, x, y, "CACA_EVENT_QUIT");
         break;
     default:
         cucul_printf(qq, x, y, "CACA_EVENT_UNKNOWN");
