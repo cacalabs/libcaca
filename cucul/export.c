@@ -127,7 +127,7 @@ char const * const * cucul_get_export_list(void)
 /* Generate ANSI representation of current canvas. */
 static void export_ansi(cucul_t *qq, cucul_buffer_t *ex)
 {
-    static int const palette[] =
+    static uint8_t const palette[] =
     {
         0,  4,  2,  6, 1,  5,  3,  7,
         8, 12, 10, 14, 9, 13, 11, 15
@@ -194,7 +194,7 @@ static void export_ansi(cucul_t *qq, cucul_buffer_t *ex)
 /* Generate HTML representation of current canvas. */
 static void export_html(cucul_t *qq, cucul_buffer_t *ex)
 {
-    static int const palette[] =
+    static uint16_t const palette[] =
     {
         0x000, 0x008, 0x080, 0x088, 0x800, 0x808, 0x880, 0x888,
         0x444, 0x44f, 0x4f4, 0x4ff, 0xf44, 0xf4f, 0xff4, 0xfff,
@@ -268,7 +268,7 @@ static void export_html(cucul_t *qq, cucul_buffer_t *ex)
  * correct header. */
 static void export_html3(cucul_t *qq, cucul_buffer_t *ex)
 {
-    static int const palette[] =
+    static uint32_t const palette[] =
     {
         0x000000, 0x000088, 0x008800, 0x008888,
         0x880000, 0x880088, 0x888800, 0x888888,
@@ -345,7 +345,7 @@ static void export_html3(cucul_t *qq, cucul_buffer_t *ex)
 /* Export a text file with IRC colours */
 static void export_irc(cucul_t *qq, cucul_buffer_t *ex)
 {
-    static int const palette[] =
+    static uint8_t const palette[] =
     {
         1, 2, 3, 10, 5, 6, 7, 15, /* Dark */
         14, 12, 9, 11, 4, 13, 8, 0, /* Light */
@@ -622,16 +622,16 @@ static void export_svg(cucul_t *qq, cucul_buffer_t *ex)
 /* Export a TGA image */
 static void export_tga(cucul_t *qq, cucul_buffer_t *ex)
 {
-    char const * const * fonts;
+    char const * const * fontlist;
     char * cur;
     cucul_font_t *f;
     unsigned int i, w, h;
 
-    fonts = cucul_get_font_list();
-    if(!fonts[0])
+    fontlist = cucul_get_font_list();
+    if(!fontlist[0])
         return;
 
-    f = cucul_load_font(fonts[0], 0);
+    f = cucul_load_font(fontlist[0], 0);
 
     w = cucul_get_width(qq) * cucul_get_font_width(f);
     h = cucul_get_height(qq) * cucul_get_font_height(f);

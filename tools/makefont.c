@@ -11,7 +11,7 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  *
  * Usage:
- *   makefont
+ *   makefont <prefix> <font> <dpi> <bpp>
  */
 
 #include <stdio.h>
