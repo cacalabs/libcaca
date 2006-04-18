@@ -200,7 +200,7 @@ cucul_font_t *cucul_load_font(void const *, unsigned int);
 char const * const * cucul_get_font_list(void);
 unsigned int cucul_get_font_width(cucul_font_t *);
 unsigned int cucul_get_font_height(cucul_font_t *);
-void cucul_render_canvas(cucul_t *, cucul_font_t *, unsigned char *,
+void cucul_render_canvas(cucul_t *, cucul_font_t *, void *,
                          unsigned int, unsigned int, unsigned int);
 void cucul_free_font(cucul_font_t *);
 /*  @} */

@@ -274,7 +274,7 @@ void cucul_free_font(cucul_font_t *f)
  *  \param pitch The pitch (in bytes) of an image buffer line.
  */
 void cucul_render_canvas(cucul_t *qq, cucul_font_t *f,
-                         unsigned char *buf, unsigned int width,
+                         void *buf, unsigned int width,
                          unsigned int height, unsigned int pitch)
 {
     uint8_t *glyph = NULL;
@@ -350,7 +350,8 @@ void cucul_render_canvas(cucul_t *qq, cucul_font_t *f,
             /* Step 2: render glyph using colour attribute */
             for(j = 0; j < g->height; j++)
             {
-                uint8_t *line = buf + (starty + j) * pitch + 4 * startx;
+                uint8_t *line = buf;
+                line += (starty + j) * pitch + 4 * startx;
 
                 for(i = 0; i < g->width; i++)
                 {
