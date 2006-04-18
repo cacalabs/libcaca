@@ -12,12 +12,12 @@ AM_CONFIG_HEADER(config.h)
 AM_PROG_CC_C_O
 AC_PROG_CPP
 AC_PROG_CXX
+AC_PROG_CXXCPP
 AM_PROG_AS
 
 AC_LIBTOOL_WIN32_DLL
 AM_PROG_LIBTOOL
 AC_LIBTOOL_CXX
-
 
 AC_C_CONST
 AC_C_INLINE
@@ -28,14 +28,6 @@ dnl now otherwise it might be set in an obscure if statement. Same thing for
 dnl PKG_PROG_PKG_CONFIG which needs to be called first.
 AC_EGREP_CPP(yes, foo)
 PKG_PROG_PKG_CONFIG()
-
-dnl Check the C++ compiler and preprocessor.
-AC_PROG_CXX
-AC_PROG_CXXCPP
-
-dnl Set the test language as C++
-AC_LANG([C++])
-
 
 dnl output driver features
 AC_ARG_ENABLE(slang,
@@ -55,6 +47,7 @@ AC_ARG_ENABLE(network,
 AC_ARG_ENABLE(vga,
   [  --enable-vga            VGA support (default disabled)])
 
+dnl language bindings
 AC_ARG_ENABLE(cpp,
   [  --enable-cpp            C++ bindings (autodetected)])
 
@@ -160,7 +153,7 @@ if test "${enable_x11}" != "no"; then
     CACA_LIBS="${CACA_LIBS} ${X_LIBS}"
     CACA_DRIVERS="${CACA_DRIVERS} x11"],
    [ac_cv_my_have_x11="no"],
-   [[-lXt -L${x_libraries}]])
+   [[-lXt `if test -n "${x_libraries}"; then echo -L${x_libraries}; fi`]])
   AC_CHECK_HEADERS(X11/XKBlib.h)
   if test "${ac_cv_my_have_x11}" != "yes" -a "${enable_x11}" = "yes"; then
     AC_MSG_ERROR([cannot find X11 development files])
@@ -244,14 +237,9 @@ else
   AC_MSG_RESULT([${CACA_DRIVERS}])
 fi
 
-
-
-
-
 AC_SUBST(MATH_LIBS)
 AC_SUBST(CACA_LIBS)
 AC_SUBST(CUCUL_LIBS)
-AC_SUBST(CUCUL++_LIBS)
 
 # Optimizations
 CFLAGS="${CFLAGS} -g -O2 -fno-strength-reduce -fomit-frame-pointer"
