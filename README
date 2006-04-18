@@ -10,9 +10,10 @@ Building libcaca
      --enable-x11: support for native X11 rendering
      --enable-gl: support for OpenGL rendering
      --enable-win32: support for the Windows console
-     --enable-network: support for network output
 
      --disable-imlib2: remove Imlib2 support in cacaview
+
+     --disable-doc: do not build documentation
 
    o  Cross-compilation examples:
  
@@ -23,17 +24,10 @@ Building libcaca
 
 Using libcaca
 
-   o  Look into the src/ directory for source code examples.
+   o  Look into the src/ and test/ directories for source code examples.
 
    o  Compiling a libcaca program is fairly simple:
 
-      gcc -c foobar.c -o foobar.o `caca-config --cflags`
-      gcc foobar.o -o foobar `caca-config --libs`
-
-
-Binary packages
-
-   o  As the API is not stable yet, everyone should statically link libcaca
-      with their programs or libraries. DO NOT DISTRIBUTE SHARED VERSIONS
-      OF LIBCACA.
+      gcc -c foobar.c -o foobar.o `pkg-config --cflags caca`
+      gcc foobar.o -o foobar `pkg-config --libs caca`
 

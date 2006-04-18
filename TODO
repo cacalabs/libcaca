@@ -16,8 +16,6 @@ libcucul
 
    o ASCII/ANSI art loading functions (maybe load them as sprites)
 
-   o throw away cucul_sqrt() and put cucul_rand() somewhere else
-
 
   API-independent stuff
   ---------------------
@@ -42,6 +40,8 @@ libcucul
    o support for double width glyphs (also needs some libcaca changes)
 
    o better mask support in cucul_blit()
+
+   o factor Unicode character conversions, especially UCS4 -> UTF-8
 
 
 libcaca
