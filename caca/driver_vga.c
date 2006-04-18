@@ -49,7 +49,7 @@ static uint8_t const vga_colors[][4] =
     { 0x3f,   0x3f, 0x3f, 0x3f },
 };
 
-static int vga_init_graphics(caca_t *kk)
+static int vga_init_graphics(caca_display_t *dp)
 {
     int i;
     uint8_t tmp;
@@ -74,12 +74,12 @@ static int vga_init_graphics(caca_t *kk)
     outb(tmp, 0x3d5);
 
     /* We don't have much choice */
-    _cucul_set_size(kk->c, 80, 25);
+    _cucul_set_size(dp->cv, 80, 25);
 
     return 0;
 }
 
-static int vga_end_graphics(caca_t *kk)
+static int vga_end_graphics(caca_display_t *dp)
 {
     uint8_t tmp;
 
@@ -93,46 +93,46 @@ static int vga_end_graphics(caca_t *kk)
     return 0;
 }
 
-static int vga_set_window_title(caca_t *kk, char const *title)
+static int vga_set_window_title(caca_display_t *dp, char const *title)
 {
     /* Unsupported, of course. */
     return 0;
 }
 
-static unsigned int vga_get_window_width(caca_t *kk)
+static unsigned int vga_get_window_width(caca_display_t *dp)
 {
     /* Fallback to a 320x200 screen */
     return 320;
 }
 
-static unsigned int vga_get_window_height(caca_t *kk)
+static unsigned int vga_get_window_height(caca_display_t *dp)
 {
     /* Fallback to a 320x200 screen */
     return 200;
 }
 
-static void vga_display(caca_t *kk)
+static void vga_display(caca_display_t *dp)
 {
     char *screen = (char *)(intptr_t)0x000b8000;
-    uint32_t *attr = kk->c->attr;
-    uint32_t *chars = kk->c->chars;
+    uint32_t *attr = dp->cv->attr;
+    uint32_t *chars = dp->cv->chars;
     int n;
 
-    for(n = kk->c->height * kk->c->width; n--; )
+    for(n = dp->cv->height * dp->cv->width; n--; )
     {
         *screen++ = _cucul_utf32_to_cp437(*chars++);
         *screen++ = _cucul_argb32_to_ansi8(*attr++);
     }
 }
 
-static void vga_handle_resize(caca_t *kk)
+static void vga_handle_resize(caca_display_t *dp)
 {
     /* We know nothing about our window */
-    kk->resize.w = kk->c->width;
-    kk->resize.h = kk->c->height;
+    dp->resize.w = dp->cv->width;
+    dp->resize.h = dp->cv->height;
 }
 
-static int vga_get_event(caca_t *kk, caca_event-t *ev)
+static int vga_get_event(caca_display_t *dp, caca_event-t *ev)
 {
     /* FIXME */
     ev->type = CACA_EVENT_NONE;
@@ -143,19 +143,19 @@ static int vga_get_event(caca_t *kk, caca_event-t *ev)
  * Driver initialisation
  */
 
-int vga_install(caca_t *kk)
+int vga_install(caca_display_t *dp)
 {
-    kk->drv.driver = CACA_DRIVER_VGA;
+    dp->drv.driver = CACA_DRIVER_VGA;
 
-    kk->drv.init_graphics = vga_init_graphics;
-    kk->drv.end_graphics = vga_end_graphics;
-    kk->drv.set_window_title = vga_set_window_title;
-    kk->drv.get_window_width = vga_get_window_width;
-    kk->drv.get_window_height = vga_get_window_height;
-    kk->drv.display = vga_display;
-    kk->drv.handle_resize = vga_handle_resize;
-    kk->drv.get_event = vga_get_event;
-    kk->drv.set_mouse = NULL;
+    dp->drv.init_graphics = vga_init_graphics;
+    dp->drv.end_graphics = vga_end_graphics;
+    dp->drv.set_window_title = vga_set_window_title;
+    dp->drv.get_window_width = vga_get_window_width;
+    dp->drv.get_window_height = vga_get_window_height;
+    dp->drv.display = vga_display;
+    dp->drv.handle_resize = vga_handle_resize;
+    dp->drv.get_event = vga_get_event;
+    dp->drv.set_mouse = NULL;
 
     return 0;
 }

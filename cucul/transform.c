@@ -32,14 +32,14 @@ static uint32_t rotatechar(uint32_t ch);
  *  This function inverts a canvas' colours (black becomes white, red
  *  becomes cyan, etc.) without changing the characters in it.
  *
- *  \param c The canvas to invert.
+ *  \param cv The canvas to invert.
  */
-void cucul_invert(cucul_canvas_t *c)
+void cucul_invert(cucul_canvas_t *cv)
 {
-    uint32_t *attr = c->attr;
+    uint32_t *attr = cv->attr;
     unsigned int i;
 
-    for(i = c->height * c->width; i--; )
+    for(i = cv->height * cv->width; i--; )
     {
         *attr = *attr ^ 0x000f000f;
         attr++;
@@ -51,18 +51,18 @@ void cucul_invert(cucul_canvas_t *c)
  *  This function flips a canvas horizontally, choosing characters that
  *  look like the mirrored version wherever possible.
  *
- *  \param c The canvas to flip.
+ *  \param cv The canvas to flip.
  */
-void cucul_flip(cucul_canvas_t *c)
+void cucul_flip(cucul_canvas_t *cv)
 {
     unsigned int y;
 
-    for(y = 0; y < c->height; y++)
+    for(y = 0; y < cv->height; y++)
     {
-        uint32_t *cleft = c->chars + y * c->width;
-        uint32_t *cright = cleft + c->width - 1;
-        uint32_t *aleft = c->attr + y * c->width;
-        uint32_t *aright = aleft + c->width - 1;
+        uint32_t *cleft = cv->chars + y * cv->width;
+        uint32_t *cright = cleft + cv->width - 1;
+        uint32_t *aleft = cv->attr + y * cv->width;
+        uint32_t *aright = aleft + cv->width - 1;
 
         while(cleft < cright)
         {
@@ -88,18 +88,18 @@ void cucul_flip(cucul_canvas_t *c)
  *  This function flips a canvas vertically, choosing characters that
  *  look like the mirrored version wherever possible.
  *
- *  \param c The canvas to flop.
+ *  \param cv The canvas to flop.
  */
-void cucul_flop(cucul_canvas_t *c)
+void cucul_flop(cucul_canvas_t *cv)
 {
     unsigned int x;
 
-    for(x = 0; x < c->width; x++)
+    for(x = 0; x < cv->width; x++)
     {
-        uint32_t *ctop = c->chars + x;
-        uint32_t *cbottom = ctop + c->width * (c->height - 1);
-        uint32_t *atop = c->attr + x;
-        uint32_t *abottom = atop + c->width * (c->height - 1);
+        uint32_t *ctop = cv->chars + x;
+        uint32_t *cbottom = ctop + cv->width * (cv->height - 1);
+        uint32_t *atop = cv->attr + x;
+        uint32_t *abottom = atop + cv->width * (cv->height - 1);
 
         while(ctop < cbottom)
         {
@@ -112,8 +112,8 @@ void cucul_flop(cucul_canvas_t *c)
             /* Swap characters */
             ch = *cbottom; *cbottom = flopchar(*ctop); *ctop = flopchar(ch);
 
-            ctop += c->width; cbottom -= c->width;
-            atop += c->width; abottom -= c->width;
+            ctop += cv->width; cbottom -= cv->width;
+            atop += cv->width; abottom -= cv->width;
         }
 
         if(ctop == cbottom)
@@ -127,14 +127,14 @@ void cucul_flop(cucul_canvas_t *c)
  *  choosing characters that look like the mirrored version wherever
  *  possible.
  *
- *  \param c The canvas to rotate.
+ *  \param cv The canvas to rotate.
  */
-void cucul_rotate(cucul_canvas_t *c)
+void cucul_rotate(cucul_canvas_t *cv)
 {
-    uint32_t *cbegin = c->chars;
-    uint32_t *cend = cbegin + c->width * c->height - 1;
-    uint32_t *abegin = c->attr;
-    uint32_t *aend = abegin + c->width * c->height - 1;
+    uint32_t *cbegin = cv->chars;
+    uint32_t *cend = cbegin + cv->width * cv->height - 1;
+    uint32_t *abegin = cv->attr;
+    uint32_t *aend = abegin + cv->width * cv->height - 1;
 
     while(cbegin < cend)
     {

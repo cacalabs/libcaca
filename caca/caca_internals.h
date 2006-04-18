@@ -61,26 +61,26 @@ enum caca_driver
 
 /* Available external drivers */
 #if defined(USE_CONIO)
-int conio_install(caca_t *);
+int conio_install(caca_display_t *);
 #endif
 #if defined(USE_GL)
-int gl_install(caca_t *);
+int gl_install(caca_display_t *);
 #endif
 #if defined(USE_NCURSES)
-int ncurses_install(caca_t *);
+int ncurses_install(caca_display_t *);
 #endif
-int raw_install(caca_t *);
+int raw_install(caca_display_t *);
 #if defined(USE_SLANG)
-int slang_install(caca_t *);
+int slang_install(caca_display_t *);
 #endif
 #if defined(USE_VGA)
-int vga_install(caca_t *);
+int vga_install(caca_display_t *);
 #endif
 #if defined(USE_WIN32)
-int win32_install(caca_t *);
+int win32_install(caca_display_t *);
 #endif
 #if defined(USE_X11)
-int x11_install(caca_t *);
+int x11_install(caca_display_t *);
 #endif
 
 /* Timer structure */
@@ -89,11 +89,11 @@ struct caca_timer
     int last_sec, last_usec;
 };
 
-/* Internal caca context */
-struct caca
+/* Internal caca display context */
+struct caca_display
 {
     /* A link to our cucul canvas */
-    cucul_canvas_t *c;
+    cucul_canvas_t *cv;
 
     /* Device-specific functions */
     struct drv
@@ -101,15 +101,15 @@ struct caca
         enum caca_driver driver;
         struct driver_private *p;
 
-        int (* init_graphics) (caca_t *);
-        int (* end_graphics) (caca_t *);
-        int (* set_window_title) (caca_t *, char const *);
-        unsigned int (* get_window_width) (caca_t *);
-        unsigned int (* get_window_height) (caca_t *);
-        void (* display) (caca_t *);
-        void (* handle_resize) (caca_t *);
-        int (* get_event) (caca_t *, caca_event_t *);
-        void (* set_mouse) (caca_t *, int);
+        int (* init_graphics) (caca_display_t *);
+        int (* end_graphics) (caca_display_t *);
+        int (* set_window_title) (caca_display_t *, char const *);
+        unsigned int (* get_window_width) (caca_display_t *);
+        unsigned int (* get_window_height) (caca_display_t *);
+        void (* display) (caca_display_t *);
+        void (* handle_resize) (caca_display_t *);
+        int (* get_event) (caca_display_t *, caca_event_t *);
+        void (* set_mouse) (caca_display_t *, int);
     } drv;
 
     /* Mouse position */
@@ -153,10 +153,10 @@ extern void _caca_sleep(unsigned int);
 extern unsigned int _caca_getticks(caca_timer_t *);
 
 /* Internal event functions */
-extern void _caca_handle_resize(caca_t *);
+extern void _caca_handle_resize(caca_display_t *);
 #if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO) || defined(USE_GL)
-extern void _push_event(caca_t *, caca_event_t *);
-extern int _pop_event(caca_t *, caca_event_t *);
+extern void _push_event(caca_display_t *, caca_event_t *);
+extern int _pop_event(caca_display_t *, caca_event_t *);
 #endif
 
 #endif /* __CACA_INTERNALS_H__ */

@@ -50,12 +50,12 @@ static char const *duck[] =
 int main(void)
 {
     caca_event_t ev;
-    cucul_canvas_t *c, *normal, *flip, *flop, *rotate;
-    caca_t *kk;
+    cucul_canvas_t *cv, *normal, *flip, *flop, *rotate;
+    caca_display_t *dp;
     int i;
 
-    c = cucul_create(0, 0);
-    kk = caca_attach(c);
+    cv = cucul_create(0, 0);
+    dp = caca_attach(cv);
 
     normal = cucul_create(70, 6);
     flip = cucul_create(70, 6);
@@ -96,26 +96,26 @@ int main(void)
     cucul_rotate(rotate);
 
     /* Blit the transformed canvas onto the main canvas */
-    cucul_set_color(c, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
-    cucul_putstr(c, 0, 0, "normal");
-    cucul_blit(c, 10, 0, normal, NULL);
-    cucul_putstr(c, 0, 6, "flip");
-    cucul_blit(c, 10, 6, flip, NULL);
-    cucul_putstr(c, 0, 12, "flop");
-    cucul_blit(c, 10, 12, flop, NULL);
-    cucul_putstr(c, 0, 18, "rotate");
-    cucul_blit(c, 10, 18, rotate, NULL);
+    cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
+    cucul_putstr(cv, 0, 0, "normal");
+    cucul_blit(cv, 10, 0, normal, NULL);
+    cucul_putstr(cv, 0, 6, "flip");
+    cucul_blit(cv, 10, 6, flip, NULL);
+    cucul_putstr(cv, 0, 12, "flop");
+    cucul_blit(cv, 10, 12, flop, NULL);
+    cucul_putstr(cv, 0, 18, "rotate");
+    cucul_blit(cv, 10, 18, rotate, NULL);
 
-    caca_display(kk);
+    caca_display(dp);
 
-    caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev, -1);
+    caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
 
-    caca_detach(kk);
+    caca_detach(dp);
     cucul_free(rotate);
     cucul_free(flop);
     cucul_free(flip);
     cucul_free(normal);
-    cucul_free(c);
+    cucul_free(cv);
 
     return 0;
 }

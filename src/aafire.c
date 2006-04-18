@@ -39,8 +39,8 @@
 #endif
 #define MAXTABLE (256*5)
 #ifdef LIBCACA
-static cucul_canvas_t *c;
-static caca_t *kk;
+static cucul_canvas_t *cv;
+static caca_display_t *dp;
 static int XSIZ, YSIZ;
 static cucul_dither_t *cucul_dither;
 static char *bitmap;
@@ -100,21 +100,21 @@ initialize (void)
 #endif
 
 #ifdef LIBCACA
-  c = cucul_create(80, 32);
-  if (!c)
+  cv = cucul_create(80, 32);
+  if (!cv)
     {
       printf ("Failed to initialize libcucul\n");
       exit (1);
     }
-  kk = caca_attach(c);
-  if (!kk)
+  dp = caca_attach(cv);
+  if (!dp)
     {
       printf ("Failed to initialize libcaca\n");
       exit (1);
     }
-  caca_set_delay(kk, 10000);
-  XSIZ = cucul_get_width(c) * 2;
-  YSIZ = cucul_get_height(c) * 2 - 4;
+  caca_set_delay(dp, 10000);
+  XSIZ = cucul_get_width(cv) * 2;
+  YSIZ = cucul_get_height(cv) * 2 - 4;
 #else
   context = aa_autoinit (&aa_defparams);
   if (context == NULL)
@@ -142,8 +142,8 @@ initialize (void)
 #ifdef LIBCACA
   cucul_dither = cucul_create_dither(8, XSIZ, YSIZ - 2, XSIZ, 0, 0, 0, 0);
   cucul_set_dither_palette(cucul_dither, r, g, b, a);
-  bitmap = malloc(4 * cucul_get_width(c) * cucul_get_height(c) * sizeof(char));
-  memset(bitmap, 0, 4 * cucul_get_width(c) * cucul_get_height(c));
+  bitmap = malloc(4 * cucul_get_width(cv) * cucul_get_height(cv) * sizeof(char));
+  memset(bitmap, 0, 4 * cucul_get_width(cv) * cucul_get_height(cv));
 #else
   aa_hidecursor (context);
 #endif
@@ -152,8 +152,8 @@ static void
 uninitialize (void)
 {
 #ifdef LIBCACA
-  caca_detach(kk);
-  cucul_free(c);
+  caca_detach(dp);
+  cucul_free(cv);
 #else
   aa_close (context);
 #endif
@@ -235,14 +235,14 @@ drawfire (void)
   firemain ();
 #ifdef LIBCACA
 paused:
-  cucul_dither_bitmap(c, 0, 0,
-                      cucul_get_width(c) - 1, cucul_get_height(c) - 1,
+  cucul_dither_bitmap(cv, 0, 0,
+                      cucul_get_width(cv) - 1, cucul_get_height(cv) - 1,
                       cucul_dither, bitmap);
-  cucul_set_color(c, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
-  cucul_putstr(c, cucul_get_width(c) - 30, cucul_get_height(c) - 2,
+  cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
+  cucul_putstr(cv, cucul_get_width(cv) - 30, cucul_get_height(cv) - 2,
                " -=[ Powered by libcaca ]=- ");
   
-  caca_display(kk);
+  caca_display(dp);
   /*XSIZ = caca_get_width() * 2;
   YSIZ = caca_get_height() * 2 - 4;*/
 #else
@@ -266,7 +266,7 @@ game (void)
     {
 #ifdef LIBCACA
       caca_event_t ev;
-      if(caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev, 0))
+      if(caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, 0))
         {
           switch(ev.data.key.ch)
             {

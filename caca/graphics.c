@@ -27,13 +27,13 @@
  *  If libcaca runs in a window, try to change its title. This works with
  *  the X11 and Win32 drivers.
  *
- *  \param kk The libcaca graphical context.
+ *  \param dp The libcaca graphical context.
  *  \param title The desired window title.
  *  \return 0 upon success, a non-zero value if an error occurs.
  */
-int caca_set_window_title(caca_t *kk, char const *title)
+int caca_set_window_title(caca_display_t *dp, char const *title)
 {
-    return kk->drv.set_window_title(kk, title);
+    return dp->drv.set_window_title(dp, title);
 }
 
 /** \brief Get the window width.
@@ -43,12 +43,12 @@ int caca_set_window_title(caca_t *kk, char const *title)
  *  or if there is no way to know the font size, most drivers will assume a
  *  6x10 font is being used. Note that the units are not necessarily pixels.
  *
- *  \param kk The libcaca graphical context.
+ *  \param dp The libcaca graphical context.
  *  \return The window width.
  */
-unsigned int caca_get_window_width(caca_t *kk)
+unsigned int caca_get_window_width(caca_display_t *dp)
 {
-    return kk->drv.get_window_width(kk);
+    return dp->drv.get_window_width(dp);
 }
 
 /** \brief Get the window height.
@@ -58,12 +58,12 @@ unsigned int caca_get_window_width(caca_t *kk)
  *  or if there is no way to know the font size, assume a 6x10 font is being
  *  used. Note that the units are not necessarily pixels.
  *
- *  \param kk The libcaca graphical context.
+ *  \param dp The libcaca graphical context.
  *  \return The window height.
  */
-unsigned int caca_get_window_height(caca_t *kk)
+unsigned int caca_get_window_height(caca_display_t *dp)
 {
-    return kk->drv.get_window_height(kk);
+    return dp->drv.get_window_height(dp);
 }
 
 /** \brief Set the refresh delay.
@@ -75,12 +75,12 @@ unsigned int caca_get_window_height(caca_t *kk)
  *  If the argument is zero, constant framerate is disabled. This is the
  *  default behaviour.
  *
- *  \param kk The libcaca graphical context.
+ *  \param dp The libcaca graphical context.
  *  \param usec The refresh delay in microseconds.
  */
-void caca_set_delay(caca_t *kk, unsigned int usec)
+void caca_set_delay(caca_display_t *dp, unsigned int usec)
 {
-    kk->delay = usec;
+    dp->delay = usec;
 }
 
 /** \brief Get the average rendering time.
@@ -91,12 +91,12 @@ void caca_set_delay(caca_t *kk, unsigned int usec)
  *  rendering time will not be considerably shorter than the requested delay
  *  even if the real rendering time was shorter.
  *
- *  \param kk The libcaca graphical context.
+ *  \param dp The libcaca graphical context.
  *  \return The render time in microseconds.
  */
-unsigned int caca_get_rendertime(caca_t *kk)
+unsigned int caca_get_rendertime(caca_display_t *dp)
 {
-    return kk->rendertime;
+    return dp->rendertime;
 }
 
 /** \brief Flush pending changes and redraw the screen.
@@ -111,41 +111,41 @@ unsigned int caca_get_rendertime(caca_t *kk)
  *  set with caca_set_delay(), the second call will wait a bit before
  *  performing the screen refresh.
  *
- *  \param kk The libcaca graphical context.
+ *  \param dp The libcaca graphical context.
  */
-void caca_display(caca_t *kk)
+void caca_display(caca_display_t *dp)
 {
 #if !defined(_DOXYGEN_SKIP_ME)
 #define IDLE_USEC 10000
 #endif
-    int ticks = kk->lastticks + _caca_getticks(&kk->timer);
+    int ticks = dp->lastticks + _caca_getticks(&dp->timer);
 
-    kk->drv.display(kk);
+    dp->drv.display(dp);
 
     /* Once the display is finished, we can ack resizes */
-    if(kk->resize.resized)
+    if(dp->resize.resized)
     {
-        kk->resize.resized = 0;
-        _caca_handle_resize(kk);
+        dp->resize.resized = 0;
+        _caca_handle_resize(dp);
     }
 
-    /* Wait until kk->delay + time of last call */
-    ticks += _caca_getticks(&kk->timer);
-    for(ticks += _caca_getticks(&kk->timer);
-        ticks + IDLE_USEC < (int)kk->delay;
-        ticks += _caca_getticks(&kk->timer))
+    /* Wait until dp->delay + time of last call */
+    ticks += _caca_getticks(&dp->timer);
+    for(ticks += _caca_getticks(&dp->timer);
+        ticks + IDLE_USEC < (int)dp->delay;
+        ticks += _caca_getticks(&dp->timer))
     {
         _caca_sleep(IDLE_USEC);
     }
 
     /* Update the sliding mean of the render time */
-    kk->rendertime = (7 * kk->rendertime + ticks) / 8;
+    dp->rendertime = (7 * dp->rendertime + ticks) / 8;
 
-    kk->lastticks = ticks - kk->delay;
+    dp->lastticks = ticks - dp->delay;
 
     /* If we drifted too much, it's bad, bad, bad. */
-    if(kk->lastticks > (int)kk->delay)
-        kk->lastticks = 0;
+    if(dp->lastticks > (int)dp->delay)
+        dp->lastticks = 0;
 }
 
 /** \brief Show or hide the mouse pointer.
@@ -153,26 +153,26 @@ void caca_display(caca_t *kk)
  *  This function shows or hides the mouse pointer, for devices that
  *  support it.
  *
- *  \param kk The libcaca graphical context.
+ *  \param dp The libcaca graphical context.
  *  \param flag 0 hides the pointer, 1 shows the system's default pointer
  *              (usually an arrow). Other values are reserved for future use.
  */
-void caca_set_mouse(caca_t *kk, int flag)
+void caca_set_mouse(caca_display_t *dp, int flag)
 {
-    if(kk->drv.set_mouse)
-        kk->drv.set_mouse(kk, flag);
+    if(dp->drv.set_mouse)
+        dp->drv.set_mouse(dp, flag);
 }
 
 /*
  * XXX: following functions are local
  */
 
-void _caca_handle_resize(caca_t *kk)
+void _caca_handle_resize(caca_display_t *dp)
 {
-    kk->drv.handle_resize(kk);
+    dp->drv.handle_resize(dp);
 
     /* Tell libcucul we changed size */
-    if(kk->resize.w != kk->c->width || kk->resize.h != kk->c->height)
-        _cucul_set_size(kk->c, kk->resize.w, kk->resize.h);
+    if(dp->resize.w != dp->cv->width || dp->resize.h != dp->cv->height)
+        _cucul_set_size(dp->cv, dp->resize.w, dp->resize.h);
 }
 

@@ -26,8 +26,8 @@
 #include "caca.h"
 #include "caca_internals.h"
 
-static int _get_next_event(caca_t *, caca_event_t *);
-static int _lowlevel_event(caca_t *, caca_event_t *);
+static int _get_next_event(caca_display_t *, caca_event_t *);
+static int _lowlevel_event(caca_display_t *, caca_event_t *);
 
 #if !defined(_DOXYGEN_SKIP_ME)
 /* If no new key was pressed after AUTOREPEAT_THRESHOLD usec, assume the
@@ -50,13 +50,13 @@ static int _lowlevel_event(caca_t *, caca_event_t *);
  *  if no more events are pending in the queue. A negative value causes the
  *  function to wait indefinitely until a matching event is received.
  *
- *  \param kk The libcaca graphical context.
+ *  \param dp The libcaca graphical context.
  *  \param event_mask Bitmask of requested events.
  *  \param timeout A timeout value in microseconds
  *  \param ev A pointer to a caca_event structure.
  *  \return The next matching event in the queue, or 0 if no event is pending.
  */
-int caca_get_event(caca_t *kk, unsigned int event_mask,
+int caca_get_event(caca_display_t *dp, unsigned int event_mask,
                    caca_event_t *ev, int timeout)
 {
     caca_timer_t timer;
@@ -70,7 +70,7 @@ int caca_get_event(caca_t *kk, unsigned int event_mask,
 
     for( ; ; )
     {
-        int ret = _get_next_event(kk, ev);
+        int ret = _get_next_event(dp, ev);
 
         /* If we got the event we wanted, return */
         if(ev->type & event_mask)
@@ -108,15 +108,15 @@ int caca_get_event(caca_t *kk, unsigned int event_mask,
  *  drivers are being used, because mouse position is only detected when
  *  the mouse is clicked. Other drivers such as X11 work well.
  *
- *  \param kk The libcaca graphical context.
+ *  \param dp The libcaca graphical context.
  *  \return The X mouse coordinate.
  */
-unsigned int caca_get_mouse_x(caca_t *kk)
+unsigned int caca_get_mouse_x(caca_display_t *dp)
 {
-    if(kk->mouse.x >= kk->c->width)
-        kk->mouse.x = kk->c->width - 1;
+    if(dp->mouse.x >= dp->cv->width)
+        dp->mouse.x = dp->cv->width - 1;
 
-    return kk->mouse.x;
+    return dp->mouse.x;
 }
 
 /** \brief Return the Y mouse coordinate.
@@ -126,22 +126,22 @@ unsigned int caca_get_mouse_x(caca_t *kk)
  *  drivers are being used, because mouse position is only detected when
  *  the mouse is clicked. Other drivers such as X11 work well.
  *
- *  \param kk The libcaca graphical context.
+ *  \param dp The libcaca graphical context.
  *  \return The Y mouse coordinate.
  */
-unsigned int caca_get_mouse_y(caca_t *kk)
+unsigned int caca_get_mouse_y(caca_display_t *dp)
 {
-    if(kk->mouse.y >= kk->c->height)
-        kk->mouse.y = kk->c->height - 1;
+    if(dp->mouse.y >= dp->cv->height)
+        dp->mouse.y = dp->cv->height - 1;
 
-    return kk->mouse.y;
+    return dp->mouse.y;
 }
 
 /*
  * XXX: The following functions are local.
  */
 
-static int _get_next_event(caca_t *kk, caca_event_t *ev)
+static int _get_next_event(caca_display_t *dp, caca_event_t *ev)
 {
 #if defined(USE_SLANG) || defined(USE_NCURSES)
     unsigned int ticks;
@@ -149,112 +149,112 @@ static int _get_next_event(caca_t *kk, caca_event_t *ev)
     int ret;
 
     /* If we are about to return a resize event, acknowledge it */
-    if(kk->resize.resized)
+    if(dp->resize.resized)
     {
-        kk->resize.resized = 0;
-        _caca_handle_resize(kk);
+        dp->resize.resized = 0;
+        _caca_handle_resize(dp);
         ev->type = CACA_EVENT_RESIZE;
-        ev->data.resize.w = kk->c->width;
-        ev->data.resize.h = kk->c->height;
+        ev->data.resize.w = dp->cv->width;
+        ev->data.resize.h = dp->cv->height;
         return 1;
     }
 
-    ret = _lowlevel_event(kk, ev);
+    ret = _lowlevel_event(dp, ev);
 
 #if defined(USE_SLANG)
-    if(kk->drv.driver != CACA_DRIVER_SLANG)
+    if(dp->drv.driver != CACA_DRIVER_SLANG)
 #endif
 #if defined(USE_NCURSES)
-    if(kk->drv.driver != CACA_DRIVER_NCURSES)
+    if(dp->drv.driver != CACA_DRIVER_NCURSES)
 #endif
     return ret;
 
 #if defined(USE_SLANG) || defined(USE_NCURSES)
     /* Simulate long keypresses using autorepeat features */
-    ticks = _caca_getticks(&kk->events.key_timer);
-    kk->events.last_key_ticks += ticks;
-    kk->events.autorepeat_ticks += ticks;
+    ticks = _caca_getticks(&dp->events.key_timer);
+    dp->events.last_key_ticks += ticks;
+    dp->events.autorepeat_ticks += ticks;
 
     /* Handle autorepeat */
-    if(kk->events.last_key_event.type
-           && kk->events.autorepeat_ticks > AUTOREPEAT_TRIGGER
-           && kk->events.autorepeat_ticks > AUTOREPEAT_THRESHOLD
-           && kk->events.autorepeat_ticks > AUTOREPEAT_RATE)
+    if(dp->events.last_key_event.type
+           && dp->events.autorepeat_ticks > AUTOREPEAT_TRIGGER
+           && dp->events.autorepeat_ticks > AUTOREPEAT_THRESHOLD
+           && dp->events.autorepeat_ticks > AUTOREPEAT_RATE)
     {
-        _push_event(kk, ev);
-        kk->events.autorepeat_ticks -= AUTOREPEAT_RATE;
-        *ev = kk->events.last_key_event;
+        _push_event(dp, ev);
+        dp->events.autorepeat_ticks -= AUTOREPEAT_RATE;
+        *ev = dp->events.last_key_event;
         return 1;
     }
 
     /* We are in autorepeat mode and the same key was just pressed, ignore
      * this event and return the next one by calling ourselves. */
     if(ev->type == CACA_EVENT_KEY_PRESS
-        && kk->events.last_key_event.type
-        && ev->data.key.ch == kk->events.last_key_event.data.key.ch
-        && ev->data.key.ucs4 == kk->events.last_key_event.data.key.ucs4)
+        && dp->events.last_key_event.type
+        && ev->data.key.ch == dp->events.last_key_event.data.key.ch
+        && ev->data.key.ucs4 == dp->events.last_key_event.data.key.ucs4)
     {
-        kk->events.last_key_ticks = 0;
-        return _get_next_event(kk, ev);
+        dp->events.last_key_ticks = 0;
+        return _get_next_event(dp, ev);
     }
 
     /* We are in autorepeat mode, but key has expired or a new key was
      * pressed - store our event and return a key release event first */
-    if(kk->events.last_key_event.type
-          && (kk->events.last_key_ticks > AUTOREPEAT_THRESHOLD
+    if(dp->events.last_key_event.type
+          && (dp->events.last_key_ticks > AUTOREPEAT_THRESHOLD
                || (ev->type & CACA_EVENT_KEY_PRESS)))
     {
-        _push_event(kk, ev);
-        *ev = kk->events.last_key_event;
+        _push_event(dp, ev);
+        *ev = dp->events.last_key_event;
         ev->type = CACA_EVENT_KEY_RELEASE;
-        kk->events.last_key_event.type = CACA_EVENT_NONE;
+        dp->events.last_key_event.type = CACA_EVENT_NONE;
         return 1;
     }
 
     /* A new key was pressed, enter autorepeat mode */
     if(ev->type & CACA_EVENT_KEY_PRESS)
     {
-        kk->events.last_key_ticks = 0;
-        kk->events.autorepeat_ticks = 0;
-        kk->events.last_key_event = *ev;
+        dp->events.last_key_ticks = 0;
+        dp->events.autorepeat_ticks = 0;
+        dp->events.last_key_event = *ev;
     }
 
     return ev->type ? 1 : 0;
 #endif
 }
 
-static int _lowlevel_event(caca_t *kk, caca_event_t *ev)
+static int _lowlevel_event(caca_display_t *dp, caca_event_t *ev)
 {
 #if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO)
-    int ret = _pop_event(kk, ev);
+    int ret = _pop_event(dp, ev);
 
     if(ret)
         return ret;
 #endif
 
-    return kk->drv.get_event(kk, ev);
+    return dp->drv.get_event(dp, ev);
 }
 
 #if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO) || defined(USE_GL)
-void _push_event(caca_t *kk, caca_event_t *ev)
+void _push_event(caca_display_t *dp, caca_event_t *ev)
 {
-    if(!ev->type || kk->events.queue == EVENTBUF_LEN)
+    if(!ev->type || dp->events.queue == EVENTBUF_LEN)
         return;
-    kk->events.buf[kk->events.queue] = *ev;
-    kk->events.queue++;
+    dp->events.buf[dp->events.queue] = *ev;
+    dp->events.queue++;
 }
 
-int _pop_event(caca_t *kk, caca_event_t *ev)
+int _pop_event(caca_display_t *dp, caca_event_t *ev)
 {
     int i;
 
-    if(kk->events.queue == 0)
+    if(dp->events.queue == 0)
         return 0;
 
-    *ev = kk->events.buf[0];
-    for(i = 1; i < kk->events.queue; i++)
-        kk->events.buf[i - 1] = kk->events.buf[i];
-    kk->events.queue--;
+    *ev = dp->events.buf[0];
+    for(i = 1; i < dp->events.queue; i++)
+        dp->events.buf[i - 1] = dp->events.buf[i];
+    dp->events.queue--;
 
     return 1;
 }

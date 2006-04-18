@@ -29,7 +29,7 @@
 #include "caca.h"
 #include "caca_internals.h"
 
-static int caca_init_driver(caca_t *kk);
+static int caca_init_driver(caca_display_t *dp);
 
 /** \brief Attach a caca graphical context to a cucul canvas.
  *
@@ -38,58 +38,58 @@ static int caca_init_driver(caca_t *kk);
  *  libcucul canvas. Everything that gets drawn in the libcucul canvas can
  *  then be displayed by the libcaca driver.
  *
- *  \param c The cucul cavas.
+ *  \param cv The cucul cavas.
  *  \return The caca graphical context or NULL if an error occurred.
  */
-caca_t * caca_attach(cucul_canvas_t * c)
+caca_display_t * caca_attach(cucul_canvas_t * cv)
 {
-    caca_t *kk = malloc(sizeof(caca_t));
+    caca_display_t *dp = malloc(sizeof(caca_display_t));
 
-    kk->c = c;
+    dp->cv = cv;
 
-    if(caca_init_driver(kk))
+    if(caca_init_driver(dp))
     {
-        free(kk);
+        free(dp);
         return NULL;
     }
 
-    if(kk->drv.init_graphics(kk))
+    if(dp->drv.init_graphics(dp))
     {
-        free(kk);
+        free(dp);
         return NULL;
     }
 
     /* Attached! */
-    kk->c->refcount++;
+    dp->cv->refcount++;
 
     /* Graphics stuff */
-    kk->delay = 0;
-    kk->rendertime = 0;
+    dp->delay = 0;
+    dp->rendertime = 0;
 
     /* Events stuff */
 #if defined(USE_SLANG) || defined(USE_NCURSES)
-    kk->events.key_timer.last_sec = 0;
-    kk->events.key_timer.last_usec = 0;
-    kk->events.last_key_ticks = 0;
-    kk->events.autorepeat_ticks = 0;
-    kk->events.last_key_event.type = CACA_EVENT_NONE;
+    dp->events.key_timer.last_sec = 0;
+    dp->events.key_timer.last_usec = 0;
+    dp->events.last_key_ticks = 0;
+    dp->events.autorepeat_ticks = 0;
+    dp->events.last_key_event.type = CACA_EVENT_NONE;
 #endif
 #if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO) || defined(USE_GL)
-    kk->events.queue = 0;
+    dp->events.queue = 0;
 #endif
 
-    kk->timer.last_sec = 0;
-    kk->timer.last_usec = 0;
-    kk->lastticks = 0;
+    dp->timer.last_sec = 0;
+    dp->timer.last_usec = 0;
+    dp->lastticks = 0;
 
     /* Mouse position */
-    kk->mouse.x = kk->c->width / 2;
-    kk->mouse.y = kk->c->height / 2;
+    dp->mouse.x = dp->cv->width / 2;
+    dp->mouse.y = dp->cv->height / 2;
 
     /* Resize events */
-    kk->resize.resized = 0;
+    dp->resize.resized = 0;
 
-    return kk;
+    return dp;
 }
 
 /** \brief Detach a caca graphical context from a cucul backend context.
@@ -98,20 +98,20 @@ caca_t * caca_attach(cucul_canvas_t * c)
  *  libcucul canvas continues to exist and other graphical contexts can be
  *  attached to it afterwards.
  *
- *  \param kk The libcaca graphical context.
+ *  \param dp The libcaca graphical context.
  */
-void caca_detach(caca_t *kk)
+void caca_detach(caca_display_t *dp)
 {
-    kk->drv.end_graphics(kk);
-    kk->c->refcount--;
-    free(kk);
+    dp->drv.end_graphics(dp);
+    dp->cv->refcount--;
+    free(dp);
 }
 
 /*
  * XXX: The following functions are local.
  */
 
-static int caca_init_driver(caca_t *kk)
+static int caca_init_driver(caca_display_t *dp)
 {
 #if defined(HAVE_GETENV) && defined(HAVE_STRCASECMP)
     char *var = getenv("CACA_DRIVER");
@@ -120,51 +120,51 @@ static int caca_init_driver(caca_t *kk)
     if(var && *var)
     {
 #if defined(USE_WIN32)
-        if(!strcasecmp(var, "win32")) return win32_install(kk);
+        if(!strcasecmp(var, "win32")) return win32_install(dp);
 #endif
 #if defined(USE_CONIO)
-        if(!strcasecmp(var, "conio")) return conio_install(kk);
+        if(!strcasecmp(var, "conio")) return conio_install(dp);
 #endif
 #if defined(USE_X11)
-        if(!strcasecmp(var, "x11")) return x11_install(kk);
+        if(!strcasecmp(var, "x11")) return x11_install(dp);
 #endif
 #if defined(USE_GL)
-        if(!strcasecmp(var, "gl")) return gl_install(kk);
+        if(!strcasecmp(var, "gl")) return gl_install(dp);
 #endif
-        if(!strcasecmp(var, "raw")) return raw_install(kk);
+        if(!strcasecmp(var, "raw")) return raw_install(dp);
 #if defined(USE_SLANG)
-        if(!strcasecmp(var, "slang")) return slang_install(kk);
+        if(!strcasecmp(var, "slang")) return slang_install(dp);
 #endif
 #if defined(USE_NCURSES)
-        if(!strcasecmp(var, "ncurses")) return ncurses_install(kk);
+        if(!strcasecmp(var, "ncurses")) return ncurses_install(dp);
 #endif
 #if defined(USE_VGA)
-        if(!strcasecmp(var, "vga")) return vga_install(kk);
+        if(!strcasecmp(var, "vga")) return vga_install(dp);
 #endif
         return -1;
     }
 #endif
 
 #if defined(USE_WIN32)
-    if(win32_install(kk) == 0) return 0;
+    if(win32_install(dp) == 0) return 0;
 #endif
 #if defined(USE_CONIO)
-    if(conio_install(kk) == 0) return 0;
+    if(conio_install(dp) == 0) return 0;
 #endif
 #if defined(USE_VGA)
-    if(vga_install(kk) == 0) return 0;
+    if(vga_install(dp) == 0) return 0;
 #endif
 #if defined(USE_X11)
-    if(x11_install(kk) == 0) return 0;
+    if(x11_install(dp) == 0) return 0;
 #endif
 #if defined(USE_GL)
-    if(gl_install(kk) == 0) return 0;
+    if(gl_install(dp) == 0) return 0;
 #endif
 #if defined(USE_SLANG)
-    if(slang_install(kk) == 0) return 0;
+    if(slang_install(dp) == 0) return 0;
 #endif
 #if defined(USE_NCURSES)
-    if(ncurses_install(kk) == 0) return 0;
+    if(ncurses_install(dp) == 0) return 0;
 #endif
 
     return -1;

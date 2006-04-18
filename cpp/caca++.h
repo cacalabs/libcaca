@@ -72,7 +72,7 @@ class Caca {
 
     
     private:
-    caca_t *kk;
+    caca_display_t *dp;
 };
 
 

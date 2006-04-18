@@ -27,13 +27,13 @@ typedef unsigned int uint32_t;
 int main(void)
 {
     caca_event_t ev;
-    cucul_canvas_t *c;
-    caca_t *kk;
+    cucul_canvas_t *cv;
+    caca_display_t *dp;
 
     int x, y;
 
-    c = cucul_create(32, 16);
-    kk = caca_attach(c);
+    cv = cucul_create(32, 16);
+    dp = caca_attach(cv);
 
     for(y = 0; y < 16; y++)
         for(x = 0; x < 16; x++)
@@ -41,19 +41,19 @@ int main(void)
         uint16_t bgcolor = 0xff00 | (y << 4) | x;
         uint16_t fgcolor = 0xf000 | ((15 - y) << 4) | ((15 - x) << 8);
 
-        cucul_set_truecolor(c, fgcolor, bgcolor);
-        cucul_putstr(c, x * 2, y, "CA");
+        cucul_set_truecolor(cv, fgcolor, bgcolor);
+        cucul_putstr(cv, x * 2, y, "CA");
     }
 
-    cucul_set_color(c, CUCUL_COLOR_WHITE, CUCUL_COLOR_LIGHTBLUE);
-    cucul_putstr(c, 2, 1, " truecolor libcaca ");
+    cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_LIGHTBLUE);
+    cucul_putstr(cv, 2, 1, " truecolor libcaca ");
 
-    caca_display(kk);
+    caca_display(dp);
 
-    caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev, -1);
+    caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
 
-    caca_detach(kk);
-    cucul_free(c);
+    caca_detach(dp);
+    cucul_free(cv);
 
     return 0;
 }

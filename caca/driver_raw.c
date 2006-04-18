@@ -26,52 +26,52 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
-static int raw_init_graphics(caca_t *kk)
+static int raw_init_graphics(caca_display_t *dp)
 {
     return 0;
 }
 
-static int raw_end_graphics(caca_t *kk)
+static int raw_end_graphics(caca_display_t *dp)
 {
     return 0;
 }
 
-static int raw_set_window_title(caca_t *kk, char const *title)
+static int raw_set_window_title(caca_display_t *dp, char const *title)
 {
     return 0;
 }
 
-static unsigned int raw_get_window_width(caca_t *kk)
+static unsigned int raw_get_window_width(caca_display_t *dp)
 {
     return 0;
 }
 
-static unsigned int raw_get_window_height(caca_t *kk)
+static unsigned int raw_get_window_height(caca_display_t *dp)
 {
     return 0;
 }
 
-static void raw_display(caca_t *kk)
+static void raw_display(caca_display_t *dp)
 {
-    uint32_t *attr = kk->c->attr;
-    uint32_t *chars = kk->c->chars;
+    uint32_t *attr = dp->cv->attr;
+    uint32_t *chars = dp->cv->chars;
     uint32_t w, h;
     unsigned int n;
 
-    w = kk->c->width;
-    h = kk->c->height;
+    w = dp->cv->width;
+    h = dp->cv->height;
 
     fprintf(stdout, "CACA%c%c%c%c%c%c%c%c",
                     (w >> 24), (w >> 16) & 0xff, (w >> 8) & 0xff, w & 0xff,
                     (h >> 24), (h >> 16) & 0xff, (h >> 8) & 0xff, h & 0xff);
 
-    for(n = kk->c->height * kk->c->width; n--; )
+    for(n = dp->cv->height * dp->cv->width; n--; )
     {
-        uint32_t c = *chars++;
+        uint32_t ch = *chars++;
         uint32_t a = *attr++;
 
         fprintf(stdout, "%c%c%c%c%c%c%c%c",
-                (c >> 24), (c >> 16) & 0xff, (c >> 8) & 0xff, c & 0xff,
+                (ch >> 24), (ch >> 16) & 0xff, (ch >> 8) & 0xff, ch & 0xff,
                 (a >> 24), (a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff);
     }
 
@@ -79,12 +79,12 @@ static void raw_display(caca_t *kk)
     fflush(stdout);
 }
 
-static void raw_handle_resize(caca_t *kk)
+static void raw_handle_resize(caca_display_t *dp)
 {
     ;
 }
 
-static int raw_get_event(caca_t *kk, caca_event_t *ev)
+static int raw_get_event(caca_display_t *dp, caca_event_t *ev)
 {
     ev->type = CACA_EVENT_NONE;
     return 0;
@@ -94,19 +94,19 @@ static int raw_get_event(caca_t *kk, caca_event_t *ev)
  * Driver initialisation
  */
 
-int raw_install(caca_t *kk)
+int raw_install(caca_display_t *dp)
 {
-    kk->drv.driver = CACA_DRIVER_RAW;
+    dp->drv.driver = CACA_DRIVER_RAW;
 
-    kk->drv.init_graphics = raw_init_graphics;
-    kk->drv.end_graphics = raw_end_graphics;
-    kk->drv.set_window_title = raw_set_window_title;
-    kk->drv.get_window_width = raw_get_window_width;
-    kk->drv.get_window_height = raw_get_window_height;
-    kk->drv.display = raw_display;
-    kk->drv.handle_resize = raw_handle_resize;
-    kk->drv.get_event = raw_get_event;
-    kk->drv.set_mouse = NULL;
+    dp->drv.init_graphics = raw_init_graphics;
+    dp->drv.end_graphics = raw_end_graphics;
+    dp->drv.set_window_title = raw_set_window_title;
+    dp->drv.get_window_width = raw_get_window_width;
+    dp->drv.get_window_height = raw_get_window_height;
+    dp->drv.display = raw_display;
+    dp->drv.handle_resize = raw_handle_resize;
+    dp->drv.get_event = raw_get_event;
+    dp->drv.set_mouse = NULL;
 
     return 0;
 }

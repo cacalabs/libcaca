@@ -80,171 +80,171 @@ struct driver_private
     CONSOLE_CURSOR_INFO cci;
 };
 
-static int win32_init_graphics(caca_t *kk)
+static int win32_init_graphics(caca_display_t *dp)
 {
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     SMALL_RECT rect;
     COORD size;
 
-    kk->drv.p = malloc(sizeof(struct driver_private));
+    dp->drv.p = malloc(sizeof(struct driver_private));
 
     /* This call is allowed to fail in case we already have a console */
     AllocConsole();
 
-    kk->drv.p->hin = GetStdHandle(STD_INPUT_HANDLE);
-    kk->drv.p->hout = CreateFile("CONOUT$", GENERIC_READ | GENERIC_WRITE,
+    dp->drv.p->hin = GetStdHandle(STD_INPUT_HANDLE);
+    dp->drv.p->hout = CreateFile("CONOUT$", GENERIC_READ | GENERIC_WRITE,
                                  FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
                                  OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-    if(kk->drv.p->hout == INVALID_HANDLE_VALUE)
+    if(dp->drv.p->hout == INVALID_HANDLE_VALUE)
         return -1;
 
-    GetConsoleCursorInfo(kk->drv.p->hout, &kk->drv.p->cci);
-    kk->drv.p->cci.bVisible = FALSE;
-    SetConsoleCursorInfo(kk->drv.p->hout, &kk->drv.p->cci);
+    GetConsoleCursorInfo(dp->drv.p->hout, &dp->drv.p->cci);
+    dp->drv.p->cci.bVisible = FALSE;
+    SetConsoleCursorInfo(dp->drv.p->hout, &dp->drv.p->cci);
 
-    SetConsoleMode(kk->drv.p->hout, ENABLE_MOUSE_INPUT);
+    SetConsoleMode(dp->drv.p->hout, ENABLE_MOUSE_INPUT);
 
-    kk->drv.p->screen =
+    dp->drv.p->screen =
         CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE,
                                   0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
-    if(!kk->drv.p->screen || kk->drv.p->screen == INVALID_HANDLE_VALUE)
+    if(!dp->drv.p->screen || dp->drv.p->screen == INVALID_HANDLE_VALUE)
         return -1;
 
     /* Set the new console size */
-    size.X = kk->c->width;
-    size.Y = kk->c->height;
-    SetConsoleScreenBufferSize(kk->drv.p->screen, size);
+    size.X = dp->cv->width;
+    size.Y = dp->cv->height;
+    SetConsoleScreenBufferSize(dp->drv.p->screen, size);
 
     rect.Left = rect.Top = 0;
-    rect.Right = kk->c->width - 1;
-    rect.Bottom = kk->c->height - 1;
-    SetConsoleWindowInfo(kk->drv.p->screen, TRUE, &rect);
+    rect.Right = dp->cv->width - 1;
+    rect.Bottom = dp->cv->height - 1;
+    SetConsoleWindowInfo(dp->drv.p->screen, TRUE, &rect);
 
     /* Report our new size to libcucul */
-    if(!GetConsoleScreenBufferInfo(kk->drv.p->screen, &csbi))
+    if(!GetConsoleScreenBufferInfo(dp->drv.p->screen, &csbi))
         return -1;
 
-    _cucul_set_size(kk->c, csbi.srWindow.Right - csbi.srWindow.Left + 1,
-                           csbi.srWindow.Bottom - csbi.srWindow.Top + 1);
+    _cucul_set_size(dp->cv, csbi.srWindow.Right - csbi.srWindow.Left + 1,
+                            csbi.srWindow.Bottom - csbi.srWindow.Top + 1);
 
-    SetConsoleMode(kk->drv.p->screen, 0);
+    SetConsoleMode(dp->drv.p->screen, 0);
 
-    GetConsoleCursorInfo(kk->drv.p->screen, &kk->drv.p->cci);
-    kk->drv.p->cci.dwSize = 0;
-    kk->drv.p->cci.bVisible = FALSE;
-    SetConsoleCursorInfo(kk->drv.p->screen, &kk->drv.p->cci);
+    GetConsoleCursorInfo(dp->drv.p->screen, &dp->drv.p->cci);
+    dp->drv.p->cci.dwSize = 0;
+    dp->drv.p->cci.bVisible = FALSE;
+    SetConsoleCursorInfo(dp->drv.p->screen, &dp->drv.p->cci);
 
-    SetConsoleActiveScreenBuffer(kk->drv.p->screen);
+    SetConsoleActiveScreenBuffer(dp->drv.p->screen);
 
-    kk->drv.p->buffer = malloc(kk->c->width * kk->c->height
+    dp->drv.p->buffer = malloc(dp->cv->width * dp->cv->height
                                * sizeof(CHAR_INFO));
-    if(kk->drv.p->buffer == NULL)
+    if(dp->drv.p->buffer == NULL)
         return -1;
 
     return 0;
 }
 
-static int win32_end_graphics(caca_t *kk)
+static int win32_end_graphics(caca_display_t *dp)
 {
-    SetConsoleActiveScreenBuffer(kk->drv.p->hout);
-    CloseHandle(kk->drv.p->screen);
+    SetConsoleActiveScreenBuffer(dp->drv.p->hout);
+    CloseHandle(dp->drv.p->screen);
 
-    SetConsoleTextAttribute(kk->drv.p->hout, FOREGROUND_INTENSITY
+    SetConsoleTextAttribute(dp->drv.p->hout, FOREGROUND_INTENSITY
                                              | FOREGROUND_RED
                                              | FOREGROUND_GREEN
                                              | FOREGROUND_BLUE);
-    kk->drv.p->cci.bVisible = TRUE;
-    SetConsoleCursorInfo(kk->drv.p->hout, &kk->drv.p->cci);
-    CloseHandle(kk->drv.p->hout);
+    dp->drv.p->cci.bVisible = TRUE;
+    SetConsoleCursorInfo(dp->drv.p->hout, &dp->drv.p->cci);
+    CloseHandle(dp->drv.p->hout);
 
-    free(kk->drv.p);
+    free(dp->drv.p);
 
     return 0;
 }
 
-static int win32_set_window_title(caca_t *kk, char const *title)
+static int win32_set_window_title(caca_display_t *dp, char const *title)
 {
     SetConsoleTitle(title);
     return 0;
 }
 
-static unsigned int win32_get_window_width(caca_t *kk)
+static unsigned int win32_get_window_width(caca_display_t *dp)
 {
     /* FIXME */
 
     /* Fallback to a 6x10 font */
-    return kk->c->width * 6;
+    return dp->cv->width * 6;
 }
 
-static unsigned int win32_get_window_height(caca_t *kk)
+static unsigned int win32_get_window_height(caca_display_t *dp)
 {
     /* FIXME */
 
     /* Fallback to a 6x10 font */
-    return kk->c->height * 10;
+    return dp->cv->height * 10;
 }
 
-static void win32_display(caca_t *kk)
+static void win32_display(caca_display_t *dp)
 {
     COORD size, pos;
     SMALL_RECT rect;
     unsigned int i;
 
     /* Render everything to our screen buffer */
-    for(i = 0; i < kk->c->width * kk->c->height; i++)
+    for(i = 0; i < dp->cv->width * dp->cv->height; i++)
     {
-        uint32_t c = kk->c->chars[i];
+        uint32_t ch = dp->cv->chars[i];
 
 #if 0
-        if(c > 0x00000020 && c < 0x00000080)
-            kk->drv.p->buffer[i].Char.AsciiChar = (uint8_t)c;
+        if(ch > 0x00000020 && ch < 0x00000080)
+            dp->drv.p->buffer[i].Char.AsciiChar = (uint8_t)ch;
         else
-            kk->drv.p->buffer[i].Char.AsciiChar = ' ';
+            dp->drv.p->buffer[i].Char.AsciiChar = ' ';
 #else
-        if(c > 0x00000020 && c < 0x00010000)
-            kk->drv.p->buffer[i].Char.UnicodeChar = (uint16_t)c;
+        if(ch > 0x00000020 && ch < 0x00010000)
+            dp->drv.p->buffer[i].Char.UnicodeChar = (uint16_t)ch;
         else
-            kk->drv.p->buffer[i].Char.UnicodeChar = (uint16_t)' ';
+            dp->drv.p->buffer[i].Char.UnicodeChar = (uint16_t)' ';
 #endif
 
-        kk->drv.p->buffer[i].Attributes =
-                win32_fg_palette[_cucul_argb32_to_ansi4fg(kk->c->attr[i])]
-                 | win32_bg_palette[_cucul_argb32_to_ansi4bg(kk->c->attr[i])];
+        dp->drv.p->buffer[i].Attributes =
+                win32_fg_palette[_cucul_argb32_to_ansi4fg(dp->cv->attr[i])]
+                 | win32_bg_palette[_cucul_argb32_to_ansi4bg(dp->cv->attr[i])];
     }
 
     /* Blit the screen buffer */
-    size.X = kk->c->width;
-    size.Y = kk->c->height;
+    size.X = dp->cv->width;
+    size.Y = dp->cv->height;
     pos.X = pos.Y = 0;
     rect.Left = rect.Top = 0;
-    rect.Right = kk->c->width - 1;
-    rect.Bottom = kk->c->height - 1;
+    rect.Right = dp->cv->width - 1;
+    rect.Bottom = dp->cv->height - 1;
 #if 0
-    WriteConsoleOutput(kk->drv.p->screen, kk->drv.p->buffer, size, pos, &rect);
+    WriteConsoleOutput(dp->drv.p->screen, dp->drv.p->buffer, size, pos, &rect);
 #else
-    WriteConsoleOutputW(kk->drv.p->screen, kk->drv.p->buffer, size, pos, &rect);
+    WriteConsoleOutputW(dp->drv.p->screen, dp->drv.p->buffer, size, pos, &rect);
 #endif
 }
 
-static void win32_handle_resize(caca_t *kk)
+static void win32_handle_resize(caca_display_t *dp)
 {
     /* FIXME: I don't know what to do here. */
-    kk->resize.w = kk->c->width;
-    kk->resize.h = kk->c->height;
+    dp->resize.w = dp->cv->width;
+    dp->resize.h = dp->cv->height;
 }
 
-static int win32_get_event(caca_t *kk, caca_event_t *ev)
+static int win32_get_event(caca_display_t *dp, caca_event_t *ev)
 {
     INPUT_RECORD rec;
     DWORD num;
 
     for( ; ; )
     {
-        GetNumberOfConsoleInputEvents(kk->drv.p->hin, &num);
+        GetNumberOfConsoleInputEvents(dp->drv.p->hin, &num);
         if(num == 0)
             break;
 
-        ReadConsoleInput(kk->drv.p->hin, &rec, 1, &num);
+        ReadConsoleInput(dp->drv.p->hin, &rec, 1, &num);
         if(rec.EventType == KEY_EVENT)
         {
             unsigned int event;
@@ -287,16 +287,16 @@ static int win32_get_event(caca_t *kk, caca_event_t *ev)
             {
                 COORD pos = rec.Event.MouseEvent.dwMousePosition;
 
-                if(kk->mouse.x == (unsigned int)pos.X &&
-                   kk->mouse.y == (unsigned int)pos.Y)
+                if(dp->mouse.x == (unsigned int)pos.X &&
+                   dp->mouse.y == (unsigned int)pos.Y)
                     continue;
 
-                kk->mouse.x = pos.X;
-                kk->mouse.y = pos.Y;
+                dp->mouse.x = pos.X;
+                dp->mouse.y = pos.Y;
 
                 ev->type = CACA_EVENT_MOUSE_MOTION;
-                ev->data.mouse.x = kk->mouse.x;
-                ev->data.mouse.y = kk->mouse.y;
+                ev->data.mouse.x = dp->mouse.x;
+                ev->data.mouse.y = dp->mouse.y;
                 return 1;
             }
 #if 0
@@ -331,19 +331,19 @@ static int win32_get_event(caca_t *kk, caca_event_t *ev)
  * Driver initialisation
  */
 
-int win32_install(caca_t *kk)
+int win32_install(caca_display_t *dp)
 {
-    kk->drv.driver = CACA_DRIVER_WIN32;
+    dp->drv.driver = CACA_DRIVER_WIN32;
 
-    kk->drv.init_graphics = win32_init_graphics;
-    kk->drv.end_graphics = win32_end_graphics;
-    kk->drv.set_window_title = win32_set_window_title;
-    kk->drv.get_window_width = win32_get_window_width;
-    kk->drv.get_window_height = win32_get_window_height;
-    kk->drv.display = win32_display;
-    kk->drv.handle_resize = win32_handle_resize;
-    kk->drv.get_event = win32_get_event;
-    kk->drv.set_mouse = NULL;
+    dp->drv.init_graphics = win32_init_graphics;
+    dp->drv.end_graphics = win32_end_graphics;
+    dp->drv.set_window_title = win32_set_window_title;
+    dp->drv.get_window_width = win32_get_window_width;
+    dp->drv.get_window_height = win32_get_window_height;
+    dp->drv.display = win32_display;
+    dp->drv.handle_resize = win32_handle_resize;
+    dp->drv.get_event = win32_get_event;
+    dp->drv.set_mouse = NULL;
 
     return 0;
 }

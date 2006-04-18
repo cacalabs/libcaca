@@ -29,14 +29,14 @@ uint32_t buffer[256*256];
 int main(void)
 {
     caca_event_t ev;
-    cucul_canvas_t *c;
-    caca_t *kk;
+    cucul_canvas_t *cv;
+    caca_display_t *dp;
 
     cucul_dither_t *dither;
     int x, y;
 
-    c = cucul_create(0, 0);
-    kk = caca_attach(c);
+    cv = cucul_create(0, 0);
+    dp = caca_attach(cv);
 
     for(y = 0; y < 256; y++)
         for(x = 0; x < 256; x++)
@@ -46,17 +46,17 @@ int main(void)
 
     dither = cucul_create_dither(32, 256, 256, 4 * 256,
                                  0x00ff0000, 0x0000ff00, 0x000000ff, 0x0);
-    cucul_dither_bitmap(c, 0, 0,
-                        cucul_get_width(c) - 1, cucul_get_height(c) - 1,
+    cucul_dither_bitmap(cv, 0, 0,
+                        cucul_get_width(cv) - 1, cucul_get_height(cv) - 1,
                         dither, buffer);
     cucul_free_dither(dither);
 
-    caca_display(kk);
+    caca_display(dp);
 
-    caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev, -1);
+    caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
 
-    caca_detach(kk);
-    cucul_free(c);
+    caca_detach(dp);
+    cucul_free(cv);
 
     return 0;
 }

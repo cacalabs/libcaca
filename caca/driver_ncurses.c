@@ -50,7 +50,7 @@
 
 #if defined(HAVE_SIGNAL)
 static RETSIGTYPE sigwinch_handler(int);
-static caca_t *sigwinch_kk; /* FIXME: we ought to get rid of this */
+static caca_display_t *sigwinch_d; /* FIXME: we ought to get rid of this */
 #endif
 #if defined(HAVE_GETENV) && defined(HAVE_PUTENV)
 static void ncurses_check_terminal(void);
@@ -63,7 +63,7 @@ struct driver_private
     mmask_t oldmask;
 };
 
-static int ncurses_init_graphics(caca_t *kk)
+static int ncurses_init_graphics(caca_display_t *dp)
 {
     static int curses_colors[] =
     {
@@ -90,14 +90,14 @@ static int ncurses_init_graphics(caca_t *kk)
     mmask_t newmask;
     int fg, bg, max;
 
-    kk->drv.p = malloc(sizeof(struct driver_private));
+    dp->drv.p = malloc(sizeof(struct driver_private));
 
 #if defined(HAVE_GETENV) && defined(HAVE_PUTENV)
     ncurses_check_terminal();
 #endif
 
 #if defined(HAVE_SIGNAL)
-    sigwinch_kk = kk;
+    sigwinch_d = dp;
     signal(SIGWINCH, sigwinch_handler);
 #endif
 
@@ -111,7 +111,7 @@ static int ncurses_init_graphics(caca_t *kk)
 
     /* Activate mouse */
     newmask = REPORT_MOUSE_POSITION | ALL_MOUSE_EVENTS;
-    mousemask(newmask, &kk->drv.p->oldmask);
+    mousemask(newmask, &dp->drv.p->oldmask);
     mouseinterval(-1); /* No click emulation */
 
     /* Set the escape delay to a ridiculously low value */
@@ -136,95 +136,95 @@ static int ncurses_init_graphics(caca_t *kk)
              * colour pair to be redefined. */
             int col = ((max + 7 - fg) % max) + max * bg;
             init_pair(col, curses_colors[fg], curses_colors[bg]);
-            kk->drv.p->attr[fg + 16 * bg] = COLOR_PAIR(col);
+            dp->drv.p->attr[fg + 16 * bg] = COLOR_PAIR(col);
 
             if(max == 8)
             {
                 /* Bright fg on simple bg */
-                kk->drv.p->attr[fg + 8 + 16 * bg] = A_BOLD | COLOR_PAIR(col);
+                dp->drv.p->attr[fg + 8 + 16 * bg] = A_BOLD | COLOR_PAIR(col);
                 /* Simple fg on bright bg */
-                kk->drv.p->attr[fg + 16 * (bg + 8)] = A_BLINK
+                dp->drv.p->attr[fg + 16 * (bg + 8)] = A_BLINK
                                                     | COLOR_PAIR(col);
                 /* Bright fg on bright bg */
-                kk->drv.p->attr[fg + 8 + 16 * (bg + 8)] = A_BLINK | A_BOLD
+                dp->drv.p->attr[fg + 8 + 16 * (bg + 8)] = A_BLINK | A_BOLD
                                                         | COLOR_PAIR(col);
             }
         }
 
-    _cucul_set_size(kk->c, COLS, LINES);
+    _cucul_set_size(dp->cv, COLS, LINES);
 
     return 0;
 }
 
-static int ncurses_end_graphics(caca_t *kk)
+static int ncurses_end_graphics(caca_display_t *dp)
 {
-    mousemask(kk->drv.p->oldmask, NULL);
+    mousemask(dp->drv.p->oldmask, NULL);
     curs_set(1);
     noraw();
     endwin();
 
-    free(kk->drv.p);
+    free(dp->drv.p);
 
     return 0;
 }
 
-static int ncurses_set_window_title(caca_t *kk, char const *title)
+static int ncurses_set_window_title(caca_display_t *dp, char const *title)
 {
     return 0;
 }
 
-static unsigned int ncurses_get_window_width(caca_t *kk)
+static unsigned int ncurses_get_window_width(caca_display_t *dp)
 {
     /* Fallback to a 6x10 font */
-    return kk->c->width * 6;
+    return dp->cv->width * 6;
 }
 
-static unsigned int ncurses_get_window_height(caca_t *kk)
+static unsigned int ncurses_get_window_height(caca_display_t *dp)
 {
     /* Fallback to a 6x10 font */
-    return kk->c->height * 10;
+    return dp->cv->height * 10;
 }
 
-static void ncurses_display(caca_t *kk)
+static void ncurses_display(caca_display_t *dp)
 {
     int x, y;
-    uint32_t *attr = kk->c->attr;
-    uint32_t *chars = kk->c->chars;
-    for(y = 0; y < (int)kk->c->height; y++)
+    uint32_t *attr = dp->cv->attr;
+    uint32_t *chars = dp->cv->chars;
+    for(y = 0; y < (int)dp->cv->height; y++)
     {
         move(y, 0);
-        for(x = kk->c->width; x--; )
+        for(x = dp->cv->width; x--; )
         {
-            attrset(kk->drv.p->attr[_cucul_argb32_to_ansi8(*attr++)]);
+            attrset(dp->drv.p->attr[_cucul_argb32_to_ansi8(*attr++)]);
             ncurses_write_utf32(*chars++);
         }
     }
     refresh();
 }
 
-static void ncurses_handle_resize(caca_t *kk)
+static void ncurses_handle_resize(caca_display_t *dp)
 {
     struct winsize size;
 
     if(ioctl(fileno(stdout), TIOCGWINSZ, &size) == 0)
     {
-        kk->resize.w = size.ws_col;
-        kk->resize.h = size.ws_row;
+        dp->resize.w = size.ws_col;
+        dp->resize.h = size.ws_row;
 #if defined(HAVE_RESIZE_TERM)
-        resize_term(kk->resize.h, kk->resize.w);
+        resize_term(dp->resize.h, dp->resize.w);
 #else
-        resizeterm(*kk->resize.h, *kk->resize.w);
+        resizeterm(*dp->resize.h, *dp->resize.w);
 #endif
         wrefresh(curscr);
         return;
     }
 
     /* Fallback */
-    kk->resize.w = kk->c->width;
-    kk->resize.h = kk->c->height;
+    dp->resize.w = dp->cv->width;
+    dp->resize.h = dp->cv->height;
 }
 
-static int ncurses_get_event(caca_t *kk, caca_event_t *ev)
+static int ncurses_get_event(caca_display_t *dp, caca_event_t *ev)
 {
     int intkey;
 
@@ -251,128 +251,128 @@ static int ncurses_get_event(caca_t *kk, caca_event_t *ev)
         {
             case BUTTON1_PRESSED:
                 ev->data.mouse.button = 1;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(kk, ev);
+                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
                 break;
             case BUTTON1_RELEASED:
                 ev->data.mouse.button = 1;
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(kk, ev);
+                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
                 break;
             case BUTTON1_CLICKED:
                 ev->data.mouse.button = 1;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(kk, ev);
+                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
                 break;
             case BUTTON1_DOUBLE_CLICKED:
                 ev->data.mouse.button = 1;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(kk, ev);
+                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
                 break;
             case BUTTON1_TRIPLE_CLICKED:
                 ev->data.mouse.button = 1;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(kk, ev);
+                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
                 break;
             case BUTTON1_RESERVED_EVENT:
                 break;
 
             case BUTTON2_PRESSED:
                 ev->data.mouse.button = 2;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(kk, ev);
+                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
                 break;
             case BUTTON2_RELEASED:
                 ev->data.mouse.button = 2;
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(kk, ev);
+                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
                 break;
             case BUTTON2_CLICKED:
                 ev->data.mouse.button = 2;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(kk, ev);
+                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
                 break;
             case BUTTON2_DOUBLE_CLICKED:
                 ev->data.mouse.button = 2;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(kk, ev);
+                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
                 break;
             case BUTTON2_TRIPLE_CLICKED:
                 ev->data.mouse.button = 2;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(kk, ev);
+                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
                 break;
             case BUTTON2_RESERVED_EVENT:
                 break;
 
             case BUTTON3_PRESSED:
                 ev->data.mouse.button = 3;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(kk, ev);
+                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
                 break;
             case BUTTON3_RELEASED:
                 ev->data.mouse.button = 3;
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(kk, ev);
+                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
                 break;
             case BUTTON3_CLICKED:
                 ev->data.mouse.button = 3;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(kk, ev);
+                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
                 break;
             case BUTTON3_DOUBLE_CLICKED:
                 ev->data.mouse.button = 3;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(kk, ev);
+                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
                 break;
             case BUTTON3_TRIPLE_CLICKED:
                 ev->data.mouse.button = 3;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(kk, ev);
+                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
                 break;
             case BUTTON3_RESERVED_EVENT:
                 break;
 
             case BUTTON4_PRESSED:
                 ev->data.mouse.button = 4;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(kk, ev);
+                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
                 break;
             case BUTTON4_RELEASED:
                 ev->data.mouse.button = 4;
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(kk, ev);
+                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
                 break;
             case BUTTON4_CLICKED:
                 ev->data.mouse.button = 4;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(kk, ev);
+                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
                 break;
             case BUTTON4_DOUBLE_CLICKED:
                 ev->data.mouse.button = 4;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(kk, ev);
+                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
                 break;
             case BUTTON4_TRIPLE_CLICKED:
                 ev->data.mouse.button = 4;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(kk, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(kk, ev);
+                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
+                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
                 break;
             case BUTTON4_RESERVED_EVENT:
                 break;
@@ -381,16 +381,16 @@ static int ncurses_get_event(caca_t *kk, caca_event_t *ev)
                 break;
         }
 
-        if(kk->mouse.x == (unsigned int)mevent.x &&
-           kk->mouse.y == (unsigned int)mevent.y)
-            return _pop_event(kk, ev);
+        if(dp->mouse.x == (unsigned int)mevent.x &&
+           dp->mouse.y == (unsigned int)mevent.y)
+            return _pop_event(dp, ev);
 
-        kk->mouse.x = mevent.x;
-        kk->mouse.y = mevent.y;
+        dp->mouse.x = mevent.x;
+        dp->mouse.y = mevent.y;
 
         ev->type = CACA_EVENT_MOUSE_MOTION;
-        ev->data.mouse.x = kk->mouse.x;
-        ev->data.mouse.y = kk->mouse.y;
+        ev->data.mouse.x = dp->mouse.x;
+        ev->data.mouse.y = dp->mouse.y;
         return 1;
     }
 
@@ -437,7 +437,7 @@ static int ncurses_get_event(caca_t *kk, caca_event_t *ev)
 #if defined(HAVE_SIGNAL)
 static RETSIGTYPE sigwinch_handler(int sig)
 {
-    sigwinch_kk->resize.resized = 1;
+    sigwinch_d->resize.resized = 1;
 
     signal(SIGWINCH, sigwinch_handler);
 }
@@ -481,7 +481,7 @@ static void ncurses_check_terminal(void)
 }
 #endif
 
-static void ncurses_write_utf32(uint32_t c)
+static void ncurses_write_utf32(uint32_t ch)
 {
 #if defined(HAVE_NCURSESW_NCURSES_H)
     static const uint8_t mark[7] =
@@ -493,30 +493,30 @@ static void ncurses_write_utf32(uint32_t c)
     int bytes;
 #endif
 
-    if(c < 0x80)
+    if(ch < 0x80)
     {
-        addch(c);
+        addch(ch);
         return;
     }
 
 #if defined(HAVE_NCURSESW_NCURSES_H)
-    if(c < 0x10000)
+    if(ch < 0x10000)
     {
-        addch(c); /* FIXME: doesn't work either */
+        addch(ch); /* FIXME: doesn't work either */
         return;
     }
 
-    bytes = (c < 0x800) ? 2 : (c < 0x10000) ? 3 : 4;
+    bytes = (ch < 0x800) ? 2 : (ch < 0x10000) ? 3 : 4;
     buf[bytes] = '\0';
     parser = buf + bytes;
 
     switch(bytes)
     {
-        case 4: *--parser = (c | 0x80) & 0xbf; c >>= 6;
-        case 3: *--parser = (c | 0x80) & 0xbf; c >>= 6;
-        case 2: *--parser = (c | 0x80) & 0xbf; c >>= 6;
+        case 4: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
+        case 3: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
+        case 2: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
     }
-    *--parser = c | mark[bytes];
+    *--parser = ch | mark[bytes];
 
     addstr(buf);
 #else
@@ -528,19 +528,19 @@ static void ncurses_write_utf32(uint32_t c)
  * Driver initialisation
  */
 
-int ncurses_install(caca_t *kk)
+int ncurses_install(caca_display_t *dp)
 {
-    kk->drv.driver = CACA_DRIVER_NCURSES;
+    dp->drv.driver = CACA_DRIVER_NCURSES;
 
-    kk->drv.init_graphics = ncurses_init_graphics;
-    kk->drv.end_graphics = ncurses_end_graphics;
-    kk->drv.set_window_title = ncurses_set_window_title;
-    kk->drv.get_window_width = ncurses_get_window_width;
-    kk->drv.get_window_height = ncurses_get_window_height;
-    kk->drv.display = ncurses_display;
-    kk->drv.handle_resize = ncurses_handle_resize;
-    kk->drv.get_event = ncurses_get_event;
-    kk->drv.set_mouse = NULL;
+    dp->drv.init_graphics = ncurses_init_graphics;
+    dp->drv.end_graphics = ncurses_end_graphics;
+    dp->drv.set_window_title = ncurses_set_window_title;
+    dp->drv.get_window_width = ncurses_get_window_width;
+    dp->drv.get_window_height = ncurses_get_window_height;
+    dp->drv.display = ncurses_display;
+    dp->drv.handle_resize = ncurses_handle_resize;
+    dp->drv.get_event = ncurses_get_event;
+    dp->drv.set_mouse = NULL;
 
     return 0;
 }

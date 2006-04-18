@@ -88,7 +88,7 @@ extern "C"
 #endif
 
 /** \e libcaca context */
-typedef struct caca caca_t;
+typedef struct caca_display caca_display_t;
 /** event structure */
 typedef struct caca_event caca_event_t;
 
@@ -203,14 +203,14 @@ enum caca_key
  *  initialisation, system information retrieval and configuration.
  *
  *  @{ */
-caca_t * caca_attach(cucul_canvas_t *);
-void caca_detach(caca_t *);
-void caca_set_delay(caca_t *, unsigned int);
-void caca_display(caca_t *);
-unsigned int caca_get_rendertime(caca_t *);
-unsigned int caca_get_window_width(caca_t *);
-unsigned int caca_get_window_height(caca_t *);
-int caca_set_window_title(caca_t *, char const *);
+caca_display_t * caca_attach(cucul_canvas_t *);
+void caca_detach(caca_display_t *);
+void caca_set_delay(caca_display_t *, unsigned int);
+void caca_display(caca_display_t *);
+unsigned int caca_get_rendertime(caca_display_t *);
+unsigned int caca_get_window_width(caca_display_t *);
+unsigned int caca_get_window_height(caca_display_t *);
+int caca_set_window_title(caca_display_t *, char const *);
 /*  @} */
 
 /** \defgroup event Event handling
@@ -219,10 +219,10 @@ int caca_set_window_title(caca_t *, char const *);
  *  clicks.
  *
  *  @{ */
-int caca_get_event(caca_t *, unsigned int, caca_event_t *, int);
-unsigned int caca_get_mouse_x(caca_t *);
-unsigned int caca_get_mouse_y(caca_t *);
-void caca_set_mouse(caca_t *, int);
+int caca_get_event(caca_display_t *, unsigned int, caca_event_t *, int);
+unsigned int caca_get_mouse_x(caca_display_t *);
+unsigned int caca_get_mouse_y(caca_display_t *);
+void caca_set_mouse(caca_display_t *, int);
 /*  @} */
 
 #ifdef __cplusplus

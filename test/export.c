@@ -34,7 +34,7 @@ uint32_t pixels[256*256];
 
 int main(int argc, char *argv[])
 {
-    cucul_canvas_t *c;
+    cucul_canvas_t *cv;
     cucul_dither_t *dither;
     cucul_buffer_t *buffer;
     char const * const * exports, * const * p;
@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
         exit(-1);
     }
 
-    c = cucul_create(WIDTH, HEIGHT);
+    cv = cucul_create(WIDTH, HEIGHT);
 
     for(y = 0; y < 256; y++)
     {
@@ -80,34 +80,34 @@ int main(int argc, char *argv[])
 
     dither = cucul_create_dither(32, 256, 256, 4 * 256,
                                  0x00ff0000, 0x0000ff00, 0x000000ff, 0x0);
-    cucul_dither_bitmap(c, 0, 0,
-                        cucul_get_width(c) - 1, cucul_get_height(c) - 1,
+    cucul_dither_bitmap(cv, 0, 0,
+                        cucul_get_width(cv) - 1, cucul_get_height(cv) - 1,
                         dither, pixels);
     cucul_free_dither(dither);
 
-    cucul_set_color(c, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLACK);
-    cucul_draw_thin_box(c, 0, 0, WIDTH - 1, HEIGHT - 1);
+    cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLACK);
+    cucul_draw_thin_box(cv, 0, 0, WIDTH - 1, HEIGHT - 1);
 
-    cucul_set_color(c, CUCUL_COLOR_BLACK, CUCUL_COLOR_WHITE);
-    cucul_fill_ellipse(c, WIDTH / 2, HEIGHT / 2, WIDTH / 4, HEIGHT / 4, " ");
-    cucul_putstr(c, WIDTH / 2 - 5, HEIGHT / 2 - 2, "(\") \\o/ <&>");
-    cucul_putstr(c, WIDTH / 2 - 7, HEIGHT / 2 + 2, "äβç ░▒▓█▓▒░ ΔЗҒ");
+    cucul_set_color(cv, CUCUL_COLOR_BLACK, CUCUL_COLOR_WHITE);
+    cucul_fill_ellipse(cv, WIDTH / 2, HEIGHT / 2, WIDTH / 4, HEIGHT / 4, " ");
+    cucul_putstr(cv, WIDTH / 2 - 5, HEIGHT / 2 - 2, "(\") \\o/ <&>");
+    cucul_putstr(cv, WIDTH / 2 - 7, HEIGHT / 2 + 2, "äβç ░▒▓█▓▒░ ΔЗҒ");
 
-    cucul_set_color(c, CUCUL_COLOR_WHITE, CUCUL_COLOR_LIGHTBLUE);
-    cucul_putstr(c, WIDTH / 2 - 7, HEIGHT / 2, "    LIBCACA    ");
+    cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_LIGHTBLUE);
+    cucul_putstr(cv, WIDTH / 2 - 7, HEIGHT / 2, "    LIBCACA    ");
 
     for(x = 0; x < 16; x++)
     {
-        cucul_set_truecolor(c, 0xff00 | x, 0xf00f | (x << 4));
-        cucul_putstr(c, WIDTH / 2 - 7 + x, HEIGHT / 2 + 5, "#");
+        cucul_set_truecolor(cv, 0xff00 | x, 0xf00f | (x << 4));
+        cucul_putstr(cv, WIDTH / 2 - 7 + x, HEIGHT / 2 + 5, "#");
     }
 
-    buffer = cucul_create_export(c, argv[1]);
+    buffer = cucul_create_export(cv, argv[1]);
     fwrite(cucul_get_buffer_data(buffer),
            cucul_get_buffer_size(buffer), 1, stdout);
     cucul_free_buffer(buffer);
 
-    cucul_free(c);
+    cucul_free(cv);
 
     return 0;
 }

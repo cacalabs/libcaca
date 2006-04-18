@@ -36,17 +36,17 @@ static const uint16_t ansitab[16] =
  *  Color values are those defined in \e cucul.h, such as CUCUL_COLOR_RED
  *  or CUCUL_COLOR_TRANSPARENT.
  *
- *  \param c A handle to the libcucul canvas.
+ *  \param cv A handle to the libcucul canvas.
  *  \param fg The requested foreground colour.
  *  \param bg The requested background colour.
  */
-void cucul_set_color(cucul_canvas_t *c, unsigned char fg, unsigned char bg)
+void cucul_set_color(cucul_canvas_t *cv, unsigned char fg, unsigned char bg)
 {
     if(fg > 0x20 || bg > 0x20)
         return;
 
-    c->fgcolor = fg;
-    c->bgcolor = bg;
+    cv->fgcolor = fg;
+    cv->bgcolor = bg;
 }
 
 /** \brief Set the default colour pair (truecolor version).
@@ -59,11 +59,11 @@ void cucul_set_color(cucul_canvas_t *c, unsigned char fg, unsigned char bg)
  *  instance, 0xf088 is solid dark cyan (A=15 R=0 G=8 B=8), and 0x8fff is
  *  white with 50% alpha (A=8 R=15 G=15 B=15).
  *
- *  \param c A handle to the libcucul canvas.
+ *  \param cv A handle to the libcucul canvas.
  *  \param fg The requested foreground colour.
  *  \param bg The requested background colour.
  */
-void cucul_set_truecolor(cucul_canvas_t *c, unsigned int fg, unsigned int bg)
+void cucul_set_truecolor(cucul_canvas_t *cv, unsigned int fg, unsigned int bg)
 {
     if(fg > 0xffff || bg > 0xffff)
         return;
@@ -74,8 +74,8 @@ void cucul_set_truecolor(cucul_canvas_t *c, unsigned int fg, unsigned int bg)
     if(bg < 0x100)
         bg += 0x100;
 
-    c->fgcolor = fg;
-    c->bgcolor = bg;
+    cv->fgcolor = fg;
+    cv->bgcolor = bg;
 }
 
 /*

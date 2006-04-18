@@ -22,38 +22,38 @@
 
 int main(int argc, char **argv)
 {
-    cucul_canvas_t *c;
-    caca_t *kk;
+    cucul_canvas_t *cv;
+    caca_display_t *dp;
     caca_event_t ev;
     int i, j;
 
-    c = cucul_create(0, 0);
-    if(!c)
+    cv = cucul_create(0, 0);
+    if(!cv)
         return 1;
 
-    kk = caca_attach(c);
-    if(!kk)
+    dp = caca_attach(cv);
+    if(!dp)
         return 1;
 
-    cucul_clear(c);
+    cucul_clear(cv);
     for(i = 0; i < 16; i++)
     {
-        cucul_set_color(c, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
-        cucul_printf(c, 4, i + (i >= 8 ? 4 : 3), "'%c': %i (%s)",
+        cucul_set_color(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
+        cucul_printf(cv, 4, i + (i >= 8 ? 4 : 3), "'%cv': %i (%s)",
                      'a' + i, i, cucul_get_color_name(i));
         for(j = 0; j < 16; j++)
         {
-            cucul_set_color(c, i, j);
-            cucul_putstr(c, (j >= 8 ? 41 : 40) + j * 2, i + (i >= 8 ? 4 : 3),
+            cucul_set_color(cv, i, j);
+            cucul_putstr(cv, (j >= 8 ? 41 : 40) + j * 2, i + (i >= 8 ? 4 : 3),
                          "# ");
         }
     }
 
-    caca_display(kk);
-    caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev, -1);
+    caca_display(dp);
+    caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
 
-    caca_detach(kk);
-    cucul_free(c);
+    caca_detach(dp);
+    cucul_free(cv);
 
     return 0;
 }

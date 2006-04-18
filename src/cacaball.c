@@ -42,9 +42,9 @@ static unsigned char metaball[METASIZE * METASIZE];
 
 int main(int argc, char **argv)
 {
-    cucul_canvas_t *c; caca_t *kk;
+    cucul_canvas_t *cv; caca_display_t *dp;
     unsigned int r[256], g[256], b[256], a[256];
-    float d[METABALLS], di[METABALLS], dj[METABALLS], dk[METABALLS];
+    float dd[METABALLS], di[METABALLS], dj[METABALLS], dk[METABALLS];
     unsigned int x[METABALLS], y[METABALLS];
     cucul_dither_t *cucul_dither;
     float i = 10.0, j = 17.0, k = 11.0;
@@ -53,14 +53,14 @@ int main(int argc, char **argv)
     double frameOffset40[360];
     double frameOffset80[360];
 
-    c = cucul_create(0, 0);
-    if(!c)
+    cv = cucul_create(0, 0);
+    if(!cv)
         return 1;
-    kk = caca_attach(c);
-    if(!kk)
+    dp = caca_attach(cv);
+    if(!dp)
         return 1;
 
-    caca_set_delay(kk, 20000);
+    caca_set_delay(dp, 20000);
 
     /* Make the palette eatable by libcaca */
     for(p = 0; p < 256; p++)
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 
     for(p = 0; p < METABALLS; p++)
     {
-        d[p] = cucul_rand(0, 100);
+        dd[p] = cucul_rand(0, 100);
         di[p] = (float)cucul_rand(500, 4000) / 6000.0;
         dj[p] = (float)cucul_rand(500, 4000) / 6000.0;
         dk[p] = (float)cucul_rand(500, 4000) / 6000.0;
@@ -93,7 +93,7 @@ int main(int argc, char **argv)
     for(;;)
     {
         caca_event_t ev;
-        if(caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev, 0))
+        if(caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, 0))
         {
             switch(ev.data.key.ch)
             {
@@ -133,7 +133,7 @@ int main(int argc, char **argv)
         for(p = 0; p < METABALLS; p++)
         {
             float u = di[p] * i + dj[p] * j + dk[p] * sin(di[p] * k);
-            float v = d[p] + di[p] * j + dj[p] * k + dk[p] * sin(dk[p] * i);
+            float v = dd[p] + di[p] * j + dj[p] * k + dk[p] * sin(dk[p] * i);
             u = sin(i + u * 2.1) * (1.0 + sin(u));
             v = sin(j + v * 1.9) * (1.0 + sin(v));
             x[p] = (XSIZ - METASIZE) / 2 + u * (XSIZ - METASIZE) / 4;
@@ -153,21 +153,21 @@ int main(int argc, char **argv)
 
 paused:
         /* Draw our virtual buffer to screen, letting libcucul resize it */
-        cucul_dither_bitmap(c, 0, 0,
-                          cucul_get_width(c) - 1, cucul_get_height(c) - 1,
+        cucul_dither_bitmap(cv, 0, 0,
+                          cucul_get_width(cv) - 1, cucul_get_height(cv) - 1,
                           cucul_dither, pixels + (METASIZE / 2) * (1 + XSIZ));
-        cucul_set_color(c, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
-        cucul_putstr(c, cucul_get_width(c) - 30, cucul_get_height(c) - 2,
+        cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
+        cucul_putstr(cv, cucul_get_width(cv) - 30, cucul_get_height(cv) - 2,
                      " -=[ Powered by libcaca ]=- ");
 
-        caca_display(kk);
+        caca_display(dp);
     }
 
     /* End, bye folks */
 end:
     cucul_free_dither(cucul_dither);
-    caca_detach(kk);
-    cucul_free(c);
+    caca_detach(dp);
+    cucul_free(cv);
 
     return 0;
 }

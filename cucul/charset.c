@@ -145,37 +145,37 @@ static uint32_t const cp437_lookup2[] =
     0xb0, 0x2219, 0xb7, 0x221a, 0x207f, 0xb2, 0x25a0, 0xa0
 };
 
-uint8_t _cucul_utf32_to_cp437(uint32_t c)
+uint8_t _cucul_utf32_to_cp437(uint32_t ch)
 {
     unsigned int i;
 
-    if(c < 0x00000020)
+    if(ch < 0x00000020)
         return '?';
 
-    if(c < 0x00000080)
-        return c;
+    if(ch < 0x00000080)
+        return ch;
 
     for(i = 0; i < sizeof(cp437_lookup1) / sizeof(*cp437_lookup1); i++)
-        if(cp437_lookup1[i] == c)
+        if(cp437_lookup1[i] == ch)
             return 0x01 + i;
 
     for(i = 0; i < sizeof(cp437_lookup2) / sizeof(*cp437_lookup2); i++)
-        if(cp437_lookup2[i] == c)
+        if(cp437_lookup2[i] == ch)
             return 0x7f + i;
 
     return '?';
 }
 
-uint32_t _cucul_cp437_to_utf32(uint8_t c)
+uint32_t _cucul_cp437_to_utf32(uint8_t ch)
 {
-    if(c > 0x7f)
-        return cp437_lookup2[c - 0x7f];
+    if(ch > 0x7f)
+        return cp437_lookup2[ch - 0x7f];
 
-    if(c >= 0x20)
-        return (uint32_t)c;
+    if(ch >= 0x20)
+        return (uint32_t)ch;
 
-    if(c > 0)
-        return cp437_lookup1[c - 0x01];
+    if(ch > 0)
+        return cp437_lookup1[ch - 0x01];
 
     return 0x00000000;
 }

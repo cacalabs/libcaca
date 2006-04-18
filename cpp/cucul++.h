@@ -65,7 +65,7 @@ class Cucul {
     void set_color(unsigned int f, unsigned int b);
     char const * get_color_name (unsigned int color);
     void 	printf ( int x , int y , char const * format,...);
-    void putchar (int x, int y, char c);
+    void putchar (int x, int y, char ch);
     void putstr (int x, int y, char *str);
     void 	clear ();
     void 	blit ( int, int, Cucul* c1, Cucul* c2);
@@ -126,7 +126,7 @@ class Cucul {
     cucul_canvas_t *get_cucul_canvas_t();
 
  private:
-    cucul_canvas_t *c;
+    cucul_canvas_t *cv;
 
 
 };

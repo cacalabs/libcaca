@@ -35,13 +35,13 @@ char density[] = " ',+:;o&%w$W@#";
 int main(void)
 {
     caca_event_t ev;
-    cucul_canvas_t *c;
-    caca_t *kk;
+    cucul_canvas_t *cv;
+    caca_display_t *dp;
     int neara, dista, nearb, distb, dist;
     int x, y;
 
-    c = cucul_create(0, 0);
-    kk = caca_attach(c);
+    cv = cucul_create(0, 0);
+    dp = caca_attach(cv);
 
     for(x = 0; x < 100; x++)
         for(y = 0; y < 100; y++)
@@ -116,18 +116,18 @@ int main(void)
             ch = density[distb * 2 * 13 / (dista + distb)];
         else
             ch = density[dista * 2 * 13 / (dista + distb)];
-        cucul_set_color(c, points[nearb], points[neara]);
+        cucul_set_color(cv, points[nearb], points[neara]);
 
-        cucul_putchar(c, x * cucul_get_width(c) / 100,
-                          (100 - y) * cucul_get_height(c) / 100, ch);
+        cucul_putchar(cv, x * cucul_get_width(cv) / 100,
+                          (100 - y) * cucul_get_height(cv) / 100, ch);
     }
 
-    caca_display(kk);
+    caca_display(dp);
 
-    caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev, -1);
+    caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
 
-    caca_detach(kk);
-    cucul_free(c);
+    caca_detach(dp);
+    cucul_free(cv);
 
     return 0;
 }

@@ -106,20 +106,20 @@ static void slang_write_utf32(uint32_t);
 
 #if defined(HAVE_SIGNAL)
 static RETSIGTYPE sigwinch_handler(int);
-static caca_t *sigwinch_kk; /* FIXME: we ought to get rid of this */
+static caca_display_t *sigwinch_d; /* FIXME: we ought to get rid of this */
 #endif
 #if defined(HAVE_GETENV) && defined(HAVE_PUTENV)
 static void slang_check_terminal(void);
 #endif
 
-static int slang_init_graphics(caca_t *kk)
+static int slang_init_graphics(caca_display_t *dp)
 {
 #if defined(HAVE_GETENV) && defined(HAVE_PUTENV)
     slang_check_terminal();
 #endif
 
 #if defined(HAVE_SIGNAL)
-    sigwinch_kk = kk;
+    sigwinch_d = dp;
     signal(SIGWINCH, sigwinch_handler);
 #endif
 
@@ -164,12 +164,12 @@ static int slang_init_graphics(caca_t *kk)
     SLtt_utf8_enable(1);
 #endif
 
-    _cucul_set_size(kk->c, SLtt_Screen_Cols, SLtt_Screen_Rows);
+    _cucul_set_size(dp->cv, SLtt_Screen_Cols, SLtt_Screen_Rows);
 
     return 0;
 }
 
-static int slang_end_graphics(caca_t *kk)
+static int slang_end_graphics(caca_display_t *dp)
 {
     SLtt_set_mouse_mode(0, 0);
     SLtt_set_cursor_visibility(1);
@@ -179,35 +179,35 @@ static int slang_end_graphics(caca_t *kk)
     return 0;
 }
 
-static int slang_set_window_title(caca_t *kk, char const *title)
+static int slang_set_window_title(caca_display_t *dp, char const *title)
 {
     /* FIXME */
     return 0;
 }
 
-static unsigned int slang_get_window_width(caca_t *kk)
+static unsigned int slang_get_window_width(caca_display_t *dp)
 {
     /* Fallback to a 6x10 font */
-    return kk->c->width * 6;
+    return dp->cv->width * 6;
 }
 
-static unsigned int slang_get_window_height(caca_t *kk)
+static unsigned int slang_get_window_height(caca_display_t *dp)
 {
     /* Fallback to a 6x10 font */
-    return kk->c->height * 10;
+    return dp->cv->height * 10;
 }
 
-static void slang_display(caca_t *kk)
+static void slang_display(caca_display_t *dp)
 {
     int x, y;
-    uint32_t *attr = kk->c->attr;
-    uint32_t *chars = kk->c->chars;
-    for(y = 0; y < (int)kk->c->height; y++)
+    uint32_t *attr = dp->cv->attr;
+    uint32_t *chars = dp->cv->chars;
+    for(y = 0; y < (int)dp->cv->height; y++)
     {
         SLsmg_gotorc(y, 0);
-        for(x = kk->c->width; x--; )
+        for(x = dp->cv->width; x--; )
         {
-            uint32_t c = *chars++;
+            uint32_t ch = *chars++;
 
 #if defined(OPTIMISE_SLANG_PALETTE)
             uint8_t fgcolor = _cucul_argb32_to_ansi4fg(*attr);
@@ -218,7 +218,7 @@ static void slang_display(caca_t *kk)
             if(fgcolor != bgcolor)
             {
                 SLsmg_set_color(slang_assoc[_cucul_argb32_to_ansi8(*attr++)]);
-                slang_write_utf32(c);
+                slang_write_utf32(ch);
             }
             else
             {
@@ -235,24 +235,24 @@ static void slang_display(caca_t *kk)
             }
 #else
             SLsmg_set_color(_cucul_argb32_to_ansi8(*attr++));
-            slang_write_utf32(c);
+            slang_write_utf32(ch);
 #endif
         }
     }
     SLsmg_refresh();
 }
 
-static void slang_handle_resize(caca_t *kk)
+static void slang_handle_resize(caca_display_t *dp)
 {
     SLtt_get_screen_size();
-    kk->resize.w = SLtt_Screen_Cols;
-    kk->resize.h = SLtt_Screen_Rows;
+    dp->resize.w = SLtt_Screen_Cols;
+    dp->resize.h = SLtt_Screen_Rows;
 
-    if(kk->resize.w != kk->c->width || kk->resize.h != kk->c->height)
+    if(dp->resize.w != dp->cv->width || dp->resize.h != dp->cv->height)
         SLsmg_reinit_smg();
 }
 
-static int slang_get_event(caca_t *kk, caca_event_t *ev)
+static int slang_get_event(caca_display_t *dp, caca_event_t *ev)
 {
     int intkey;
 
@@ -289,19 +289,19 @@ static int slang_get_event(caca_t *kk, caca_event_t *ev)
 
         ev->data.mouse.button = button;
         ev->type = CACA_EVENT_MOUSE_PRESS;
-        _push_event(kk, ev);
+        _push_event(dp, ev);
         ev->type = CACA_EVENT_MOUSE_RELEASE;
-        _push_event(kk, ev);
+        _push_event(dp, ev);
 
-        if(kk->mouse.x == x && kk->mouse.y == y)
-            return _pop_event(kk, ev);
+        if(dp->mouse.x == x && dp->mouse.y == y)
+            return _pop_event(dp, ev);
 
-        kk->mouse.x = x;
-        kk->mouse.y = y;
+        dp->mouse.x = x;
+        dp->mouse.y = y;
 
         ev->type = CACA_EVENT_MOUSE_MOTION;
-        ev->data.mouse.x = kk->mouse.x;
-        ev->data.mouse.y = kk->mouse.y;
+        ev->data.mouse.x = dp->mouse.x;
+        ev->data.mouse.y = dp->mouse.y;
         return 1;
     }
 
@@ -388,7 +388,7 @@ static void slang_init_palette(void)
 #endif
 }
 
-static void slang_write_utf32(uint32_t c)
+static void slang_write_utf32(uint32_t ch)
 {
 #ifdef HAVE_SLSMG_UTF8_ENABLE
     static const uint8_t mark[7] =
@@ -400,24 +400,24 @@ static void slang_write_utf32(uint32_t c)
     int bytes;
 #endif
 
-    if(c < 0x80)
+    if(ch < 0x80)
     {
-        SLsmg_write_char(c);
+        SLsmg_write_char(ch);
         return;
     }
 
 #ifdef HAVE_SLSMG_UTF8_ENABLE
-    bytes = (c < 0x800) ? 2 : (c < 0x10000) ? 3 : 4;
+    bytes = (ch < 0x800) ? 2 : (ch < 0x10000) ? 3 : 4;
     buf[bytes] = '\0';
     parser = buf + bytes;
 
     switch(bytes)
     {
-        case 4: *--parser = (c | 0x80) & 0xbf; c >>= 6;
-        case 3: *--parser = (c | 0x80) & 0xbf; c >>= 6;
-        case 2: *--parser = (c | 0x80) & 0xbf; c >>= 6;
+        case 4: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
+        case 3: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
+        case 2: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
     }
-    *--parser = c | mark[bytes];
+    *--parser = ch | mark[bytes];
 
     SLsmg_write_string(buf);
 #else
@@ -428,7 +428,7 @@ static void slang_write_utf32(uint32_t c)
 #if defined(HAVE_SIGNAL)
 static RETSIGTYPE sigwinch_handler(int sig)
 {
-    sigwinch_kk->resize.resized = 1;
+    sigwinch_d->resize.resized = 1;
 
     signal(SIGWINCH, sigwinch_handler);
 }
@@ -466,19 +466,19 @@ static void slang_check_terminal(void)
  * Driver initialisation
  */
 
-int slang_install(caca_t *kk)
+int slang_install(caca_display_t *dp)
 {
-    kk->drv.driver = CACA_DRIVER_SLANG;
+    dp->drv.driver = CACA_DRIVER_SLANG;
 
-    kk->drv.init_graphics = slang_init_graphics;
-    kk->drv.end_graphics = slang_end_graphics;
-    kk->drv.set_window_title = slang_set_window_title;
-    kk->drv.get_window_width = slang_get_window_width;
-    kk->drv.get_window_height = slang_get_window_height;
-    kk->drv.display = slang_display;
-    kk->drv.handle_resize = slang_handle_resize;
-    kk->drv.get_event = slang_get_event;
-    kk->drv.set_mouse = NULL;
+    dp->drv.init_graphics = slang_init_graphics;
+    dp->drv.end_graphics = slang_end_graphics;
+    dp->drv.set_window_title = slang_set_window_title;
+    dp->drv.get_window_width = slang_get_window_width;
+    dp->drv.get_window_height = slang_get_window_height;
+    dp->drv.display = slang_display;
+    dp->drv.handle_resize = slang_handle_resize;
+    dp->drv.get_event = slang_get_event;
+    dp->drv.set_mouse = NULL;
 
     return 0;
 }

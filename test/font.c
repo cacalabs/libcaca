@@ -34,8 +34,8 @@ typedef unsigned int uint32_t;
 
 int main(int argc, char *argv[])
 {
-    cucul_canvas_t *c;
-    caca_t *kk;
+    cucul_canvas_t *cv;
+    caca_display_t *dp;
     cucul_font_t *f;
     cucul_dither_t *d;
     caca_event_t ev;
@@ -44,15 +44,15 @@ int main(int argc, char *argv[])
     char const * const * fonts;
 
     /* Create a canvas */
-    c = cucul_create(8, 2);
+    cv = cucul_create(8, 2);
 
     /* Draw stuff on our canvas */
-    cucul_set_color(c, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLACK);
-    cucul_putstr(c, 0, 0, "ABcde");
-    cucul_set_color(c, CUCUL_COLOR_LIGHTRED, CUCUL_COLOR_BLACK);
-    cucul_putstr(c, 5, 0, "\\o/");
-    cucul_set_color(c, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
-    cucul_putstr(c, 0, 1, "&$âøÿØ?!");
+    cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLACK);
+    cucul_putstr(cv, 0, 0, "ABcde");
+    cucul_set_color(cv, CUCUL_COLOR_LIGHTRED, CUCUL_COLOR_BLACK);
+    cucul_putstr(cv, 5, 0, "\\o/");
+    cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
+    cucul_putstr(cv, 0, 1, "&$âøÿØ?!");
 
     /* Load a libcucul internal font */
     fonts = cucul_get_font_list();
@@ -69,16 +69,16 @@ int main(int argc, char *argv[])
     }
 
     /* Create our bitmap buffer (32-bit ARGB) */
-    w = cucul_get_width(c) * cucul_get_font_width(f);
-    h = cucul_get_height(c) * cucul_get_font_height(f);
+    w = cucul_get_width(cv) * cucul_get_font_width(f);
+    h = cucul_get_height(cv) * cucul_get_font_height(f);
     buf = malloc(4 * w * h);
 
     /* Render the canvas onto our image buffer */
-    cucul_render_canvas(c, f, buf, w, h, 4 * w);
+    cucul_render_canvas(cv, f, buf, w, h, 4 * w);
 
     /* Just for fun, render the image using libcaca */
-    cucul_set_size(c, 80, 32);
-    kk = caca_attach(c);
+    cucul_set_size(cv, 80, 32);
+    dp = caca_attach(cv);
 
 #if defined(HAVE_ENDIAN_H)
     if(__BYTE_ORDER == __BIG_ENDIAN)
@@ -93,18 +93,18 @@ int main(int argc, char *argv[])
         d = cucul_create_dither(32, w, h, 4 * w,
                                 0x0000ff00, 0x00ff0000, 0xff000000, 0x000000ff);
 
-    cucul_dither_bitmap(c, 0, 0, cucul_get_width(c) - 1,
-                                  cucul_get_height(c) - 1, d, buf);
-    caca_display(kk);
+    cucul_dither_bitmap(cv, 0, 0, cucul_get_width(cv) - 1,
+                                  cucul_get_height(cv) - 1, d, buf);
+    caca_display(dp);
 
-    caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev, -1);
+    caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
 
     /* Free everything */
-    caca_detach(kk);
+    caca_detach(dp);
     free(buf);
     cucul_free_dither(d);
     cucul_free_font(f);
-    cucul_free(c);
+    cucul_free(cv);
 
     return 0;
 }

@@ -34,17 +34,17 @@ uint32_t buffer[256 * 4];
 int main(void)
 {
     caca_event_t ev;
-    cucul_canvas_t *c, *gg, *mask;
-    caca_t *kk;
+    cucul_canvas_t *cv, *cw, *mask;
+    caca_display_t *dp;
     cucul_dither_t *left, *right;
     float gam = 1.0;
     int x;
 
-    c = cucul_create(0, 0);
-    kk = caca_attach(c);
+    cv = cucul_create(0, 0);
+    dp = caca_attach(cv);
 
-    gg = cucul_create(cucul_get_width(c), cucul_get_height(c));
-    mask = cucul_create(cucul_get_width(c), cucul_get_height(c));
+    cw = cucul_create(cucul_get_width(cv), cucul_get_height(cv));
+    mask = cucul_create(cucul_get_width(cv), cucul_get_height(cv));
 
     for(x = 0; x < 256; x++)
     {
@@ -58,11 +58,11 @@ int main(void)
                                0x00ff0000, 0x0000ff00, 0x000000ff, 0x0);
     right = cucul_create_dither(32, 256, 4, 4 * 256,
                                 0x00ff0000, 0x0000ff00, 0x000000ff, 0x0);
-    caca_set_delay(kk, 20000);
+    caca_set_delay(dp, 20000);
 
     for(x = 0; ; x++)
     {
-        int ret = caca_get_event(kk, CACA_EVENT_KEY_PRESS, &ev, 0);
+        int ret = caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, 0);
 
         if(ret)
         {
@@ -77,18 +77,18 @@ int main(void)
         }
 
         /* Resize the spare canvas, just in case the main one changed */
-        cucul_set_size(gg, cucul_get_width(c), cucul_get_height(c));
-        cucul_set_size(mask, cucul_get_width(c), cucul_get_height(c));
+        cucul_set_size(cw, cucul_get_width(cv), cucul_get_height(cv));
+        cucul_set_size(mask, cucul_get_width(cv), cucul_get_height(cv));
 
         /* Draw the regular dither on the main canvas */
-        cucul_dither_bitmap(c, 0, 0,
-                            cucul_get_width(c) - 1, cucul_get_height(c) - 1,
+        cucul_dither_bitmap(cv, 0, 0,
+                            cucul_get_width(cv) - 1, cucul_get_height(cv) - 1,
                             left, buffer);
 
         /* Draw the gamma-modified dither on the spare canvas */
         cucul_set_dither_gamma(right, gam);
-        cucul_dither_bitmap(gg, 0, 0,
-                            cucul_get_width(gg) - 1, cucul_get_height(gg) - 1,
+        cucul_dither_bitmap(cw, 0, 0,
+                            cucul_get_width(cw) - 1, cucul_get_height(cw) - 1,
                             right, buffer);
 
         /* Draw something on the mask */
@@ -102,20 +102,20 @@ int main(void)
                                  cucul_get_height(mask) / 2, "#");
 
         /* Blit the spare canvas onto the first one */
-        cucul_blit(c, 0, 0, gg, mask);
+        cucul_blit(cv, 0, 0, cw, mask);
 
-        cucul_set_color(c, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
-        cucul_printf(c, 2, 1,
+        cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
+        cucul_printf(cv, 2, 1,
                      "gamma=%g - use arrows to change, Esc to quit", gam);
 
-        caca_display(kk);
+        caca_display(dp);
     }
 
     cucul_free_dither(left);
     cucul_free_dither(right);
 
-    caca_detach(kk);
-    cucul_free(c);
+    caca_detach(dp);
+    cucul_free(cv);
 
     return 0;
 }

@@ -25,61 +25,61 @@ Caca::Caca(void)
 {
 
 }
-Caca::Caca(Cucul *c) 
+Caca::Caca(Cucul *cv) 
 {
-    kk = caca_attach(c->get_cucul_canvas_t());
-    if(!kk) throw -1;
+    dp = caca_attach(cv->get_cucul_canvas_t());
+    if(!dp) throw -1;
 }
 Caca::~Caca() 
 {
-    caca_detach(kk);
+    caca_detach(dp);
 }
-void Caca::attach(Cucul *c)
+void Caca::attach(Cucul *cv)
 {
-    kk = caca_attach(c->get_cucul_canvas_t());
-    if(!kk) throw -1;
+    dp = caca_attach(cv->get_cucul_canvas_t());
+    if(!dp) throw -1;
 }
 void 	Caca::detach ()
 {
-    caca_detach(kk);
+    caca_detach(dp);
 }
 void 	Caca::set_delay (unsigned int d)
 {
-    caca_set_delay(kk, d);
+    caca_set_delay(dp, d);
 }
 void 	Caca::display ()
 {
-    caca_display(kk);
+    caca_display(dp);
 }
 unsigned int 	Caca::get_rendertime ()
 {
-    return caca_get_rendertime(kk);
+    return caca_get_rendertime(dp);
 }
 unsigned int 	Caca::get_window_width ()
 {
-    return caca_get_window_width(kk);
+    return caca_get_window_width(dp);
 }
 unsigned int 	Caca::get_window_height ()
 {
-    return caca_get_window_height(kk);
+    return caca_get_window_height(dp);
 }
 int 	Caca::set_window_title (char const *s)
 {
-    return caca_set_window_title(kk, s);
+    return caca_set_window_title(dp, s);
 }
 int 	Caca::get_event (unsigned int g, Event *n, int aa)
 {
-    return caca_get_event(kk, g, n->e, aa);
+    return caca_get_event(dp, g, n->e, aa);
 }
 unsigned int 	Caca::get_mouse_x ()
 {
-    return caca_get_mouse_x(kk);
+    return caca_get_mouse_x(dp);
 }
 unsigned int 	Caca::get_mouse_y ()
 {
-    return caca_get_mouse_x(kk);
+    return caca_get_mouse_x(dp);
 }
 void 	Caca::set_mouse (int v)
 {
-     caca_set_mouse(kk, v);
+     caca_set_mouse(dp, v);
 }

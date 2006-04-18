@@ -246,14 +246,15 @@ int cucul_get_sprite_dy(cucul_sprite_t const *sprite, int f)
 /** \brief Draw a sprite's specific frame at the given coordinates. If the
  *         frame does not exist, nothing is displayed.
  *
- *  \param c A libcucul canvas
+ *  \param cv A libcucul canvas
  *  \param x The X coordinate.
  *  \param y The Y coordinate.
  *  \param sprite The sprite.
  *  \param f The frame index.
  *  \return void
  */
-void cucul_draw_sprite(cucul_canvas_t *c, int x, int y, cucul_sprite_t const *sprite, int f)
+void cucul_draw_sprite(cucul_canvas_t *cv, int x, int y,
+                       cucul_sprite_t const *sprite, int f)
 {
     int i, j;
     unsigned int oldfg, oldbg;
@@ -267,8 +268,8 @@ void cucul_draw_sprite(cucul_canvas_t *c, int x, int y, cucul_sprite_t const *sp
 
     frame = &sprite->frames[f];
 
-    oldfg = c->fgcolor;
-    oldbg = c->bgcolor;
+    oldfg = cv->fgcolor;
+    oldbg = cv->bgcolor;
 
     for(j = 0; j < frame->h; j++)
     {
@@ -277,14 +278,14 @@ void cucul_draw_sprite(cucul_canvas_t *c, int x, int y, cucul_sprite_t const *sp
             int col = frame->color[frame->w * j + i];
             if(col >= 0)
             {
-                cucul_set_color(c, col, CUCUL_COLOR_BLACK);
-                cucul_putchar(c, x + i - frame->dx, y + j - frame->dy,
+                cucul_set_color(cv, col, CUCUL_COLOR_BLACK);
+                cucul_putchar(cv, x + i - frame->dx, y + j - frame->dy,
                               frame->chars[frame->w * j + i]);
             }
         }
     }
 
-    cucul_set_color(c, oldfg, oldbg);
+    cucul_set_color(cv, oldfg, oldbg);
 }
 
 /** \brief Free the memory associated with a sprite.
