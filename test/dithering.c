@@ -40,7 +40,7 @@ int main(void)
     int neara, dista, nearb, distb, dist;
     int x, y;
 
-    cv = cucul_create(0, 0);
+    cv = cucul_create_canvas(0, 0);
     dp = caca_attach(cv);
 
     for(x = 0; x < 100; x++)
@@ -118,8 +118,8 @@ int main(void)
             ch = density[dista * 2 * 13 / (dista + distb)];
         cucul_set_color(cv, points[nearb], points[neara]);
 
-        cucul_putchar(cv, x * cucul_get_width(cv) / 100,
-                          (100 - y) * cucul_get_height(cv) / 100, ch);
+        cucul_putchar(cv, x * cucul_get_canvas_width(cv) / 100,
+                          (100 - y) * cucul_get_canvas_height(cv) / 100, ch);
     }
 
     caca_display(dp);
@@ -127,7 +127,7 @@ int main(void)
     caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
 
     caca_detach(dp);
-    cucul_free(cv);
+    cucul_free_canvas(cv);
 
     return 0;
 }

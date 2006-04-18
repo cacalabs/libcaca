@@ -224,9 +224,9 @@ int main(void)
 
         /* Free the previous canvas, if any */
         if(server->canvas)
-            cucul_free(server->canvas);
+            cucul_free_canvas(server->canvas);
 
-        server->canvas = cucul_load(buf, size);
+        server->canvas = cucul_load_canvas(buf, size);
 
         if(!server->canvas)
             continue; /* Load error */

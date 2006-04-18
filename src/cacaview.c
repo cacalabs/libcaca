@@ -68,7 +68,7 @@ int main(int argc, char **argv)
     int i;
 
     /* Initialise libcucul */
-    cv = cucul_create(0, 0);
+    cv = cucul_create_canvas(0, 0);
     if(!cv)
     {
         fprintf(stderr, "%s: unable to initialise libcucul\n", argv[0]);
@@ -85,8 +85,8 @@ int main(int argc, char **argv)
     /* Set the window title */
     caca_set_window_title(dp, "cacaview");
 
-    ww = cucul_get_width(cv);
-    wh = cucul_get_height(cv);
+    ww = cucul_get_canvas_width(cv);
+    wh = cucul_get_canvas_height(cv);
 
     /* Fill the zoom table */
     zoomtab[0] = 1.0;
@@ -304,8 +304,8 @@ int main(int argc, char **argv)
             cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
             cucul_putstr(cv, (ww - strlen(buffer)) / 2, wh / 2, buffer);
             caca_display(dp);
-            ww = cucul_get_width(cv);
-            wh = cucul_get_height(cv);
+            ww = cucul_get_canvas_width(cv);
+            wh = cucul_get_canvas_height(cv);
 
             if(im)
                 unload_image(im);
@@ -409,7 +409,7 @@ int main(int argc, char **argv)
     if(im)
         unload_image(im);
     caca_detach(dp);
-    cucul_free(cv);
+    cucul_free_canvas(cv);
 
     return 0;
 }
@@ -472,12 +472,12 @@ static void set_zoom(int new_zoom)
     if(zoom > ZOOM_MAX) zoom = ZOOM_MAX;
     if(zoom < -ZOOM_MAX) zoom = -ZOOM_MAX;
 
-    ww = cucul_get_width(cv);
+    ww = cucul_get_canvas_width(cv);
     height = fullscreen ? wh : wh - 3;
 
     xfactor = (zoom < 0) ? 1.0 / zoomtab[-zoom] : zoomtab[zoom];
     yfactor = xfactor * ww / height * im->h / im->w
-               * cucul_get_height(cv) / cucul_get_width(cv)
+               * cucul_get_canvas_height(cv) / cucul_get_canvas_width(cv)
                * caca_get_window_width(dp) / caca_get_window_height(dp);
 
     if(yfactor > xfactor)
@@ -506,8 +506,10 @@ static void draw_checkers(int x1, int y1, int x2, int y2)
 {
     int xn, yn;
 
-    if(x2 + 1 > (int)cucul_get_width(cv)) x2 = cucul_get_width(cv) - 1;
-    if(y2 + 1 > (int)cucul_get_height(cv)) y2 = cucul_get_height(cv) - 1;
+    if(x2 + 1 > (int)cucul_get_canvas_width(cv))
+        x2 = cucul_get_canvas_width(cv) - 1;
+    if(y2 + 1 > (int)cucul_get_canvas_height(cv))
+        y2 = cucul_get_canvas_height(cv) - 1;
 
     for(yn = y1 > 0 ? y1 : 0; yn <= y2; yn++)
         for(xn = x1 > 0 ? x1 : 0; xn <= x2; xn++)

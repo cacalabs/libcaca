@@ -30,7 +30,7 @@ int main(void)
     cucul_canvas_t *cv;
     caca_display_t *dp;
 
-    cv = cucul_create(0, 0);
+    cv = cucul_create_canvas(0, 0);
     dp = caca_attach(cv);
 
     cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
@@ -90,7 +90,7 @@ int main(void)
     caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
 
     caca_detach(dp);
-    cucul_free(cv);
+    cucul_free_canvas(cv);
 
     return 0;
 }

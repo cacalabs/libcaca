@@ -259,9 +259,10 @@ void cucul_free_font(cucul_font_t *f)
  *  This function renders the given canvas on an image buffer using a specific
  *  font. The pixel format is fixed (32-bit ARGB, 8 bits for each component).
  *
- *  The required image width can be computed using \e cucul_get_width(cv) and
- *  \e cucul_get_font_width(f). The required height can be computed using
- *  \e cucul_get_height(cv) and \e cucul_get_font_height(f).
+ *  The required image width can be computed using
+ *  \e cucul_get_canvas_width(cv) and \e cucul_get_font_width(f). The required
+ *  height can be computed using \e cucul_get_canvas_height(cv) and
+ *  \e cucul_get_font_height(f).
  *
  *  Glyphs that do not fit in the image buffer are currently not rendered at
  *  all. They may be cropped instead in future versions.

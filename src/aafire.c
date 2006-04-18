@@ -100,7 +100,7 @@ initialize (void)
 #endif
 
 #ifdef LIBCACA
-  cv = cucul_create(80, 32);
+  cv = cucul_create_canvas(80, 32);
   if (!cv)
     {
       printf ("Failed to initialize libcucul\n");
@@ -113,8 +113,8 @@ initialize (void)
       exit (1);
     }
   caca_set_delay(dp, 10000);
-  XSIZ = cucul_get_width(cv) * 2;
-  YSIZ = cucul_get_height(cv) * 2 - 4;
+  XSIZ = cucul_get_canvas_width(cv) * 2;
+  YSIZ = cucul_get_canvas_height(cv) * 2 - 4;
 #else
   context = aa_autoinit (&aa_defparams);
   if (context == NULL)
@@ -142,8 +142,10 @@ initialize (void)
 #ifdef LIBCACA
   cucul_dither = cucul_create_dither(8, XSIZ, YSIZ - 2, XSIZ, 0, 0, 0, 0);
   cucul_set_dither_palette(cucul_dither, r, g, b, a);
-  bitmap = malloc(4 * cucul_get_width(cv) * cucul_get_height(cv) * sizeof(char));
-  memset(bitmap, 0, 4 * cucul_get_width(cv) * cucul_get_height(cv));
+  bitmap = malloc(4 * cucul_get_canvas_width(cv)
+                    * cucul_get_canvas_height(cv));
+  memset(bitmap, 0, 4 * cucul_get_canvas_width(cv)
+                      * cucul_get_canvas_height(cv));
 #else
   aa_hidecursor (context);
 #endif
@@ -153,7 +155,7 @@ uninitialize (void)
 {
 #ifdef LIBCACA
   caca_detach(dp);
-  cucul_free(cv);
+  cucul_free_canvas(cv);
 #else
   aa_close (context);
 #endif
@@ -235,12 +237,11 @@ drawfire (void)
   firemain ();
 #ifdef LIBCACA
 paused:
-  cucul_dither_bitmap(cv, 0, 0,
-                      cucul_get_width(cv) - 1, cucul_get_height(cv) - 1,
-                      cucul_dither, bitmap);
+  cucul_dither_bitmap(cv, 0, 0, cucul_get_canvas_width(cv) - 1,
+                      cucul_get_canvas_height(cv) - 1, cucul_dither, bitmap);
   cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
-  cucul_putstr(cv, cucul_get_width(cv) - 30, cucul_get_height(cv) - 2,
-               " -=[ Powered by libcaca ]=- ");
+  cucul_putstr(cv, cucul_get_canvas_width(cv) - 30,
+               cucul_get_canvas_height(cv) - 2, " -=[ Powered by libcaca ]=- ");
   
   caca_display(dp);
   /*XSIZ = caca_get_width() * 2;

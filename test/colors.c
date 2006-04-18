@@ -27,7 +27,7 @@ int main(int argc, char **argv)
     caca_event_t ev;
     int i, j;
 
-    cv = cucul_create(0, 0);
+    cv = cucul_create_canvas(0, 0);
     if(!cv)
         return 1;
 
@@ -53,7 +53,7 @@ int main(int argc, char **argv)
     caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
 
     caca_detach(dp);
-    cucul_free(cv);
+    cucul_free_canvas(cv);
 
     return 0;
 }

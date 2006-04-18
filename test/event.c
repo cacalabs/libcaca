@@ -30,19 +30,19 @@ int main(int argc, char **argv)
     caca_event_t *events;
     int i, h, quit;
 
-    cv = cucul_create(0, 0);
+    cv = cucul_create_canvas(0, 0);
     if(!cv)
         return 1;
     dp = caca_attach(cv);
     if(!dp)
         return 1;
 
-    h = cucul_get_height(cv) - 1;
+    h = cucul_get_canvas_height(cv) - 1;
 
     cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
-    cucul_draw_line(cv, 0, 0, cucul_get_width(cv) - 1, 0, " ");
+    cucul_draw_line(cv, 0, 0, cucul_get_canvas_width(cv) - 1, 0, " ");
 
-    cucul_draw_line(cv, 0, h, cucul_get_width(cv) - 1, h, " ");
+    cucul_draw_line(cv, 0, h, cucul_get_canvas_width(cv) - 1, h, " ");
     cucul_putstr(cv, 0, h, "type \"quit\" to exit");
 
     caca_display(dp);
@@ -85,10 +85,10 @@ int main(int argc, char **argv)
 
         /* Print current event */
         cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
-        cucul_draw_line(cv, 0, 0, cucul_get_width(cv) - 1, 0, " ");
+        cucul_draw_line(cv, 0, 0, cucul_get_canvas_width(cv) - 1, 0, " ");
         print_event(0, 0, events);
 
-        cucul_draw_line(cv, 0, h, cucul_get_width(cv) - 1, h, " ");
+        cucul_draw_line(cv, 0, h, cucul_get_canvas_width(cv) - 1, h, " ");
         cucul_printf(cv, 0, h, "type \"quit\" to exit: %s", quit_string[quit]);
 
         /* Print previous events */
@@ -101,7 +101,7 @@ int main(int argc, char **argv)
 
     /* Clean up */
     caca_detach(dp);
-    cucul_free(cv);
+    cucul_free_canvas(cv);
 
     return 0;
 }

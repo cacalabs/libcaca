@@ -614,8 +614,8 @@ static void export_tga(cucul_canvas_t *cv, cucul_buffer_t *ex)
 
     f = cucul_load_font(fontlist[0], 0);
 
-    w = cucul_get_width(cv) * cucul_get_font_width(f);
-    h = cucul_get_height(cv) * cucul_get_font_height(f);
+    w = cucul_get_canvas_width(cv) * cucul_get_font_width(f);
+    h = cucul_get_canvas_height(cv) * cucul_get_font_height(f);
 
     ex->size = w * h * 4 + 18; /* 32 bpp + 18 bytes for the header */
     ex->data = malloc(ex->size);

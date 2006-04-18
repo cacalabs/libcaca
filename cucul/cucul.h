@@ -73,12 +73,12 @@ typedef struct cucul_font cucul_font_t;
  *  initialisation, system information retrieval and configuration.
  *
  *  @{ */
-cucul_canvas_t * cucul_create(unsigned int, unsigned int);
-cucul_canvas_t * cucul_load(void *, unsigned int);
-void cucul_set_size(cucul_canvas_t *, unsigned int, unsigned int);
-unsigned int cucul_get_width(cucul_canvas_t *);
-unsigned int cucul_get_height(cucul_canvas_t *);
-void cucul_free(cucul_canvas_t *);
+cucul_canvas_t * cucul_create_canvas(unsigned int, unsigned int);
+cucul_canvas_t * cucul_load_canvas(void *, unsigned int);
+void cucul_set_canvas_size(cucul_canvas_t *, unsigned int, unsigned int);
+unsigned int cucul_get_canvas_width(cucul_canvas_t *);
+unsigned int cucul_get_canvas_height(cucul_canvas_t *);
+void cucul_free_canvas(cucul_canvas_t *);
 int cucul_rand(int, int);
 /*  @} */
 

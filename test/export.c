@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
         exit(-1);
     }
 
-    cv = cucul_create(WIDTH, HEIGHT);
+    cv = cucul_create_canvas(WIDTH, HEIGHT);
 
     for(y = 0; y < 256; y++)
     {
@@ -80,9 +80,8 @@ int main(int argc, char *argv[])
 
     dither = cucul_create_dither(32, 256, 256, 4 * 256,
                                  0x00ff0000, 0x0000ff00, 0x000000ff, 0x0);
-    cucul_dither_bitmap(cv, 0, 0,
-                        cucul_get_width(cv) - 1, cucul_get_height(cv) - 1,
-                        dither, pixels);
+    cucul_dither_bitmap(cv, 0, 0, cucul_get_canvas_width(cv) - 1,
+                        cucul_get_canvas_height(cv) - 1, dither, pixels);
     cucul_free_dither(dither);
 
     cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLACK);
@@ -107,7 +106,7 @@ int main(int argc, char *argv[])
            cucul_get_buffer_size(buffer), 1, stdout);
     cucul_free_buffer(buffer);
 
-    cucul_free(cv);
+    cucul_free_canvas(cv);
 
     return 0;
 }

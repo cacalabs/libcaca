@@ -34,7 +34,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    cv = cucul_create(0, 0);
+    cv = cucul_create_canvas(0, 0);
     if(!cv)
     {
         fprintf(stderr, "%s: unable to initialise libcucul\n", argv[0]);
@@ -45,14 +45,14 @@ int main(int argc, char **argv)
     if(!i)
     {
         fprintf(stderr, "%s: unable to load %s\n", argv[0], argv[1]);
-        cucul_free(cv);
+        cucul_free_canvas(cv);
         return 1;
     }
 
     /* Assume a 6×10 font */
     lines = cols * i->h * 6 / i->w / 10;
 
-    cucul_set_size(cv, cols, lines);
+    cucul_set_canvas_size(cv, cols, lines);
     cucul_clear(cv);
     cucul_dither_bitmap(cv, 0, 0, cols - 1, lines - 1, i->dither, i->pixels);
 
@@ -63,7 +63,7 @@ int main(int argc, char **argv)
            cucul_get_buffer_size(export), 1, stdout);
     cucul_free_buffer(export);
 
-    cucul_free(cv);
+    cucul_free_canvas(cv);
 
     return 0;
 }

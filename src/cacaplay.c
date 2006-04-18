@@ -53,7 +53,7 @@ int main(int argc, char **argv)
 
     buffer = malloc(statbuf.st_size);
     read(fd, buffer, statbuf.st_size);
-    cv = cucul_load(buffer, statbuf.st_size);
+    cv = cucul_load_canvas(buffer, statbuf.st_size);
     free(buffer);
 
     if(!cv)
@@ -74,7 +74,7 @@ int main(int argc, char **argv)
 
     /* Clean up */
     caca_detach(dp);
-    cucul_free(cv);
+    cucul_free_canvas(cv);
 
     return 0;
 }

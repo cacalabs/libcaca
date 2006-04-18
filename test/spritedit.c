@@ -37,7 +37,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    cv = cucul_create(0, 0);
+    cv = cucul_create_canvas(0, 0);
     if(!cv)
         return 1;
     dp = caca_attach(cv);
@@ -49,7 +49,7 @@ int main(int argc, char **argv)
     if(!sprite)
     {
         caca_detach(dp);
-        cucul_free(cv);
+        cucul_free_canvas(cv);
         fprintf(stderr, "%s: could not open `%s'.\n", argv[0], argv[1]);
         return 1;
     }
@@ -103,7 +103,8 @@ int main(int argc, char **argv)
         cucul_clear(cv);
 
         cucul_set_color(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
-        cucul_draw_thin_box(cv, 0, 0, cucul_get_width(cv) - 1, cucul_get_height(cv) - 1);
+        cucul_draw_thin_box(cv, 0, 0, cucul_get_canvas_width(cv) - 1,
+                            cucul_get_canvas_height(cv) - 1);
 
         cucul_putstr(cv, 3, 0, "[ Sprite editor for libcaca ]");
 
@@ -136,7 +137,7 @@ int main(int argc, char **argv)
 
     /* Clean up */
     caca_detach(dp);
-    cucul_free(cv);
+    cucul_free_canvas(cv);
 
     return 0;
 }

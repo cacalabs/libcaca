@@ -96,7 +96,7 @@ static int gl_init_graphics(caca_display_t *dp)
 #endif
 
     if(width && height)
-        _cucul_set_size(dp->cv, width, height);
+        _cucul_set_canvas_size(dp->cv, width, height);
 
     dp->drv.p->font_width = 9;
     dp->drv.p->font_height = 15;

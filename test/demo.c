@@ -45,7 +45,7 @@ int main(int argc, char **argv)
     void (*demo)(void) = NULL;
     int quit = 0;
 
-    cv = cucul_create(0, 0);
+    cv = cucul_create_canvas(0, 0);
     if(!cv)
         return 1;
     dp = caca_attach(cv);
@@ -174,7 +174,8 @@ int main(int argc, char **argv)
             demo();
 
             cucul_set_color(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
-            cucul_draw_thin_box(cv, 1, 1, cucul_get_width(cv) - 2, cucul_get_height(cv) - 2);
+            cucul_draw_thin_box(cv, 1, 1, cucul_get_canvas_width(cv) - 2,
+                                          cucul_get_canvas_height(cv) - 2);
             cucul_printf(cv, 4, 1, "[%i.%i fps]----",
                          1000000 / caca_get_rendertime(dp),
                          (10000000 / caca_get_rendertime(dp)) % 10);
@@ -185,15 +186,15 @@ int main(int argc, char **argv)
     /* Clean up */
     cucul_free_sprite(sprite);
     caca_detach(dp);
-    cucul_free(cv);
+    cucul_free_canvas(cv);
 
     return 0;
 }
 
 static void display_menu(void)
 {
-    int xo = cucul_get_width(cv) - 2;
-    int yo = cucul_get_height(cv) - 2;
+    int xo = cucul_get_canvas_width(cv) - 2;
+    int yo = cucul_get_canvas_height(cv) - 2;
 
     cucul_clear(cv);
     cucul_set_color(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
@@ -239,8 +240,8 @@ static void demo_all(void)
 
     /* Draw the sun */
     cucul_set_color(cv, CUCUL_COLOR_YELLOW, CUCUL_COLOR_BLACK);
-    xo = cucul_get_width(cv) / 4;
-    yo = cucul_get_height(cv) / 4 + 5 * sin(0.03*i);
+    xo = cucul_get_canvas_width(cv) / 4;
+    yo = cucul_get_canvas_height(cv) / 4 + 5 * sin(0.03*i);
 
     for(j = 0; j < 16; j++)
     {
@@ -256,17 +257,17 @@ static void demo_all(void)
     cucul_draw_ellipse(cv, xo, yo, j, j / 2, "#");
 
     /* Draw the pyramid */
-    xo = cucul_get_width(cv) * 5 / 8;
+    xo = cucul_get_canvas_width(cv) * 5 / 8;
     yo = 2;
 
-    xa = cucul_get_width(cv) / 8 + sin(0.03*i) * 5;
-    ya = cucul_get_height(cv) / 2 + cos(0.03*i) * 5;
+    xa = cucul_get_canvas_width(cv) / 8 + sin(0.03*i) * 5;
+    ya = cucul_get_canvas_height(cv) / 2 + cos(0.03*i) * 5;
 
-    xb = cucul_get_width(cv) - 10 - cos(0.02*i) * 10;
-    yb = cucul_get_height(cv) * 3 / 4 - 5 + sin(0.02*i) * 5;
+    xb = cucul_get_canvas_width(cv) - 10 - cos(0.02*i) * 10;
+    yb = cucul_get_canvas_height(cv) * 3 / 4 - 5 + sin(0.02*i) * 5;
 
-    xc = cucul_get_width(cv) / 4 - sin(0.02*i) * 5;
-    yc = cucul_get_height(cv) * 3 / 4 + cos(0.02*i) * 5;
+    xc = cucul_get_canvas_width(cv) / 4 - sin(0.02*i) * 5;
+    yc = cucul_get_canvas_height(cv) * 3 / 4 + cos(0.02*i) * 5;
 
     cucul_set_color(cv, CUCUL_COLOR_GREEN, CUCUL_COLOR_BLACK);
     cucul_fill_triangle(cv, xo, yo, xb, yb, xa, ya, "%");
@@ -287,17 +288,17 @@ static void demo_all(void)
     xa = 2;
     ya = 2;
 
-    xb = cucul_get_width(cv) - 3;
-    yb = cucul_get_height(cv) / 2;
+    xb = cucul_get_canvas_width(cv) - 3;
+    yb = cucul_get_canvas_height(cv) / 2;
 
-    xc = cucul_get_width(cv) / 3;
-    yc = cucul_get_height(cv) - 3;
+    xc = cucul_get_canvas_width(cv) / 3;
+    yc = cucul_get_canvas_height(cv) - 3;
 
     cucul_set_color(cv, CUCUL_COLOR_CYAN, CUCUL_COLOR_BLACK);
     cucul_draw_thin_triangle(cv, xa, ya, xb, yb, xc, yc);
 
-    xo = cucul_get_width(cv) / 2 + cos(0.027*i) * cucul_get_width(cv) / 3;
-    yo = cucul_get_height(cv) / 2 - sin(0.027*i) * cucul_get_height(cv) / 2;
+    xo = cucul_get_canvas_width(cv) / 2 + cos(0.027*i) * cucul_get_canvas_width(cv) / 3;
+    yo = cucul_get_canvas_height(cv) / 2 - sin(0.027*i) * cucul_get_canvas_height(cv) / 2;
 
     cucul_draw_thin_line(cv, xa, ya, xo, yo);
     cucul_draw_thin_line(cv, xb, yb, xo, yo);
@@ -311,23 +312,23 @@ static void demo_all(void)
     {
         int delta = cucul_rand(-5, 5);
         cucul_set_color(cv, cucul_rand(0, 15), cucul_rand(0, 15));
-        cucul_putchar(cv, cucul_get_width(cv) / 2
-                    + cos(0.02*j) * (delta + cucul_get_width(cv) / 4),
-                   cucul_get_height(cv) / 2
-                    + sin(0.02*j) * (delta + cucul_get_height(cv) / 3),
+        cucul_putchar(cv, cucul_get_canvas_width(cv) / 2
+                    + cos(0.02*j) * (delta + cucul_get_canvas_width(cv) / 4),
+                   cucul_get_canvas_height(cv) / 2
+                    + sin(0.02*j) * (delta + cucul_get_canvas_height(cv) / 3),
                    '#');
     }
 
     /* Draw foreground sprite */
-    cucul_draw_sprite(cv, cucul_get_width(cv) / 2 + cos(0.02*i) * cucul_get_width(cv) / 4,
-                   cucul_get_height(cv) / 2 + sin(0.02*i) * cucul_get_height(cv) / 3,
+    cucul_draw_sprite(cv, cucul_get_canvas_width(cv) / 2 + cos(0.02*i) * cucul_get_canvas_width(cv) / 4,
+                   cucul_get_canvas_height(cv) / 2 + sin(0.02*i) * cucul_get_canvas_height(cv) / 3,
                    sprite, 0);
 }
 
 static void demo_dots(void)
 {
-    int xmax = cucul_get_width(cv) - 1;
-    int ymax = cucul_get_height(cv) - 1;
+    int xmax = cucul_get_canvas_width(cv) - 1;
+    int ymax = cucul_get_canvas_height(cv) - 1;
     int i;
     static char chars[10] =
     {
@@ -364,8 +365,8 @@ static void demo_color(void)
 
 static void demo_lines(void)
 {
-    int w = cucul_get_width(cv);
-    int h = cucul_get_height(cv);
+    int w = cucul_get_canvas_width(cv);
+    int h = cucul_get_canvas_height(cv);
     int xa, ya, xb, yb;
 
     if(bounds)
@@ -388,8 +389,8 @@ static void demo_lines(void)
 
 static void demo_boxes(void)
 {
-    int w = cucul_get_width(cv);
-    int h = cucul_get_height(cv);
+    int w = cucul_get_canvas_width(cv);
+    int h = cucul_get_canvas_height(cv);
     int xa, ya, xb, yb;
 
     if(bounds)
@@ -415,8 +416,8 @@ static void demo_boxes(void)
 
 static void demo_ellipses(void)
 {
-    int w = cucul_get_width(cv);
-    int h = cucul_get_height(cv);
+    int w = cucul_get_canvas_width(cv);
+    int h = cucul_get_canvas_height(cv);
     int x, y, a, b;
 
     if(bounds)
@@ -446,8 +447,8 @@ static void demo_ellipses(void)
 
 static void demo_triangles(void)
 {
-    int w = cucul_get_width(cv);
-    int h = cucul_get_height(cv);
+    int w = cucul_get_canvas_width(cv);
+    int h = cucul_get_canvas_height(cv);
     int xa, ya, xb, yb, xc, yc;
 
     if(bounds)
@@ -476,8 +477,8 @@ static void demo_triangles(void)
 
 static void demo_sprites(void)
 {
-    cucul_draw_sprite(cv, cucul_rand(0, cucul_get_width(cv) - 1),
-                   cucul_rand(0, cucul_get_height(cv) - 1), sprite, 0);
+    cucul_draw_sprite(cv, cucul_rand(0, cucul_get_canvas_width(cv) - 1),
+                   cucul_rand(0, cucul_get_canvas_height(cv) - 1), sprite, 0);
 }
 
 #if 0
@@ -503,7 +504,7 @@ static void demo_render(void)
     cucul_set_dither_invert(dither, 1);
     //dither = cucul_create_dither(16, 256, 256, 2 * 256, 0xf800, 0x07e0, 0x001f, 0x0000);
     dither = cucul_create_dither(32, 256, 256, 4 * 256, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
-    cucul_dither_bitmap(cv, 0, 0, cucul_get_width(cv) - 1, cucul_get_height(cv) - 1,
+    cucul_dither_bitmap(cv, 0, 0, cucul_get_canvas_width(cv) - 1, cucul_get_canvas_height(cv) - 1,
                      dither, buffer);
     cucul_free_dither(dither);
 }
@@ -548,7 +549,7 @@ static void demo_render(void)
 
     dither = cucul_create_dither(32, 256, 256, 4 * 256, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
  cucul_set_dither_invert(dither, 1);
-    cucul_dither_bitmap(cv, 0, 0, cucul_get_width(cv) - 1, cucul_get_height(cv) - 1, dither, (char *)buffer);
+    cucul_dither_bitmap(cv, 0, 0, cucul_get_canvas_width(cv) - 1, cucul_get_canvas_height(cv) - 1, dither, (char *)buffer);
     cucul_free_dither(dither);
 }
 

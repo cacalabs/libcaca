@@ -32,7 +32,7 @@ int main(void)
 
     int x, y;
 
-    cv = cucul_create(32, 16);
+    cv = cucul_create_canvas(32, 16);
     dp = caca_attach(cv);
 
     for(y = 0; y < 16; y++)
@@ -53,7 +53,7 @@ int main(void)
     caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
 
     caca_detach(dp);
-    cucul_free(cv);
+    cucul_free_canvas(cv);
 
     return 0;
 }

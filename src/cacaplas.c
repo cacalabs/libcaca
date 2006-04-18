@@ -46,7 +46,7 @@ int main (int argc, char **argv)
     cucul_dither_t *dither;
     int i, x, y, frame = 0, pause = 0;
 
-    cv = cucul_create(0, 0);
+    cv = cucul_create_canvas(0, 0);
     if(!cv)
         return 1;
     dp = caca_attach(cv);
@@ -55,8 +55,10 @@ int main (int argc, char **argv)
 
     caca_set_delay(dp, 20000);
 
-    c2 = cucul_create(cucul_get_width(cv), cucul_get_height(cv));
-    mask = cucul_create(cucul_get_width(cv), cucul_get_height(cv));
+    c2 = cucul_create_canvas(cucul_get_canvas_width(cv),
+                             cucul_get_canvas_height(cv));
+    mask = cucul_create_canvas(cucul_get_canvas_width(cv),
+                               cucul_get_canvas_height(cv));
 
     /* Fill various tables */
     for(i = 0 ; i < 256; i++)
@@ -120,7 +122,8 @@ int main (int argc, char **argv)
 
 paused:
         cucul_dither_bitmap(cv, 0, 0,
-                            cucul_get_width(cv) - 1, cucul_get_height(cv) - 1,
+                            cucul_get_canvas_width(cv) - 1,
+                            cucul_get_canvas_height(cv) - 1,
                             dither, screen);
 
         cucul_blit(c2, 0, 0, cv, NULL);
@@ -130,15 +133,16 @@ paused:
         cucul_blit(cv, 0, 0, c2, mask);
 
         cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
-        cucul_putstr(cv, cucul_get_width(cv) - 30, cucul_get_height(cv) - 2,
-                     " -=[ Powered by libcaca ]=- ");
+        cucul_putstr(cv, cucul_get_canvas_width(cv) - 30,
+                         cucul_get_canvas_height(cv) - 2,
+                         " -=[ Powered by libcaca ]=- ");
         caca_display(dp);
     }
 
 end:
     cucul_free_dither(dither);
     caca_detach(dp);
-    cucul_free(cv);
+    cucul_free_canvas(cv);
 
     return 0;
 }

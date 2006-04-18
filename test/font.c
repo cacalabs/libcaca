@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
     char const * const * fonts;
 
     /* Create a canvas */
-    cv = cucul_create(8, 2);
+    cv = cucul_create_canvas(8, 2);
 
     /* Draw stuff on our canvas */
     cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLACK);
@@ -69,15 +69,15 @@ int main(int argc, char *argv[])
     }
 
     /* Create our bitmap buffer (32-bit ARGB) */
-    w = cucul_get_width(cv) * cucul_get_font_width(f);
-    h = cucul_get_height(cv) * cucul_get_font_height(f);
+    w = cucul_get_canvas_width(cv) * cucul_get_font_width(f);
+    h = cucul_get_canvas_height(cv) * cucul_get_font_height(f);
     buf = malloc(4 * w * h);
 
     /* Render the canvas onto our image buffer */
     cucul_render_canvas(cv, f, buf, w, h, 4 * w);
 
     /* Just for fun, render the image using libcaca */
-    cucul_set_size(cv, 80, 32);
+    cucul_set_canvas_size(cv, 80, 32);
     dp = caca_attach(cv);
 
 #if defined(HAVE_ENDIAN_H)
@@ -93,8 +93,8 @@ int main(int argc, char *argv[])
         d = cucul_create_dither(32, w, h, 4 * w,
                                 0x0000ff00, 0x00ff0000, 0xff000000, 0x000000ff);
 
-    cucul_dither_bitmap(cv, 0, 0, cucul_get_width(cv) - 1,
-                                  cucul_get_height(cv) - 1, d, buf);
+    cucul_dither_bitmap(cv, 0, 0, cucul_get_canvas_width(cv) - 1,
+                                  cucul_get_canvas_height(cv) - 1, d, buf);
     caca_display(dp);
 
     caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
     free(buf);
     cucul_free_dither(d);
     cucul_free_font(f);
-    cucul_free(cv);
+    cucul_free_canvas(cv);
 
     return 0;
 }

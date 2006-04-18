@@ -31,8 +31,8 @@
  *
  *  This function initialises internal \e libcucul structures and the backend
  *  that will be used for subsequent graphical operations. It must be the
- *  first \e libcucul function to be called in a function. cucul_free() should
- *  be called at the end of the program to free all allocated resources.
+ *  first \e libcucul function to be called in a function. cucul_free_canvas()
+ *  should be called at the end of the program to free all allocated resources.
  *
  *  If one of the desired canvas coordinates is zero, a default canvas size
  *  of 80x32 is used instead.
@@ -41,7 +41,7 @@
  *  \param height The desired canvas height
  *  \return A libcucul canvas handle upon success, NULL if an error occurred.
  */
-cucul_canvas_t * cucul_create(unsigned int width, unsigned int height)
+cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
 {
     cucul_canvas_t *cv = malloc(sizeof(cucul_canvas_t));
 
@@ -59,9 +59,9 @@ cucul_canvas_t * cucul_create(unsigned int width, unsigned int height)
      * default X11 window. When a graphic driver attaches to us, it can set
      * a different size. */
     if(width && height)
-        _cucul_set_size(cv, width, height);
+        _cucul_set_canvas_size(cv, width, height);
     else
-        _cucul_set_size(cv, 80, 32);
+        _cucul_set_canvas_size(cv, 80, 32);
 
     if(_cucul_init_dither())
     {
@@ -81,7 +81,7 @@ cucul_canvas_t * cucul_create(unsigned int width, unsigned int height)
  *  \param size The length of the memory area.
  *  \return A libcucul canvas, or NULL in case of error.
  */
-cucul_canvas_t *cucul_load(void *data, unsigned int size)
+cucul_canvas_t *cucul_load_canvas(void *data, unsigned int size)
 {
     cucul_canvas_t *cv;
     uint8_t *buf = (uint8_t *)data;
@@ -108,7 +108,7 @@ cucul_canvas_t *cucul_load(void *data, unsigned int size)
         || buf[size - 2] != 'A' || buf[size - 1] != 'C')
         return NULL;
 
-    cv = cucul_create(width, height);
+    cv = cucul_create_canvas(width, height);
 
     if(!cv)
         return NULL;
@@ -147,12 +147,13 @@ cucul_canvas_t *cucul_load(void *data, unsigned int size)
  *  \param width The desired canvas width
  *  \param height The desired canvas height
  */
-void cucul_set_size(cucul_canvas_t *cv, unsigned int width, unsigned int height)
+void cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
+                                               unsigned int height)
 {
     if(cv->refcount)
         return;
 
-    _cucul_set_size(cv, width, height);
+    _cucul_set_canvas_size(cv, width, height);
 }
 
 /** \brief Get the canvas width.
@@ -162,7 +163,7 @@ void cucul_set_size(cucul_canvas_t *cv, unsigned int width, unsigned int height)
  *  \param cv A libcucul canvas
  *  \return The canvas width.
  */
-unsigned int cucul_get_width(cucul_canvas_t *cv)
+unsigned int cucul_get_canvas_width(cucul_canvas_t *cv)
 {
     return cv->width;
 }
@@ -174,7 +175,7 @@ unsigned int cucul_get_width(cucul_canvas_t *cv)
  *  \param cv A libcucul canvas
  *  \return The canvas height.
  */
-unsigned int cucul_get_height(cucul_canvas_t *cv)
+unsigned int cucul_get_canvas_height(cucul_canvas_t *cv)
 {
     return cv->height;
 }
@@ -217,13 +218,13 @@ char const *cucul_get_color_name(unsigned int color)
 
 /** \brief Uninitialise \e libcucul.
  *
- *  This function frees all resources allocated by cucul_create(). After
- *  cucul_free() has been called, no other \e libcucul functions may be used
- *  unless a new call to cucul_create() is done.
+ *  This function frees all resources allocated by cucul_create_canvas(). After
+ *  cucul_free_canvas() has been called, no other \e libcucul functions may be
+ *  used unless a new call to cucul_create_canvas() is done.
  *
  *  \param cv A libcucul canvas
  */
-void cucul_free(cucul_canvas_t *cv)
+void cucul_free_canvas(cucul_canvas_t *cv)
 {
     _cucul_end_dither();
 
@@ -247,51 +248,12 @@ int cucul_rand(int min, int max)
     return min + (int)((1.0*(max-min+1)) * rand() / (RAND_MAX+1.0));
 }
 
-/** \brief Get the buffer size.
- *
- *  This function returns the length (in bytes) of the memory area stored
- *  in the given \e libcucul buffer.
- *
- *  \param buf A \e libcucul buffer
- *  \return The buffer data length.
- */
-unsigned long int cucul_get_buffer_size(cucul_buffer_t *buf)
-{
-    return buf->size;
-}
-
-/** \brief Get the buffer data.
- *
- *  This function returns a pointer to the memory area stored in the given
- *  \e libcucul buffer.
- *
- *  \param buf A \e libcucul buffer
- *  \return A pointer to the buffer memory area.
- */
-void * cucul_get_buffer_data(cucul_buffer_t *buf)
-{
-    return buf->data;
-}
-
-/** \brief Free a buffer.
- *
- *  This function frees the structures associated with the given
- *  \e libcucul buffer.
- *
- *  \param buf A \e libcucul buffer
- */
-void cucul_free_buffer(cucul_buffer_t *buf)
-{
-    free(buf->data);
-    free(buf);
-}
-
 /*
  * XXX: The following functions are local.
  */
 
-void _cucul_set_size(cucul_canvas_t *cv, unsigned int width,
-                                         unsigned int height)
+void _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
+                                                unsigned int height)
 {
     unsigned int x, y, old_width, old_height, new_size, old_size;
 

@@ -40,11 +40,11 @@ int main(void)
     float gam = 1.0;
     int x;
 
-    cv = cucul_create(0, 0);
+    cv = cucul_create_canvas(0, 0);
     dp = caca_attach(cv);
 
-    cw = cucul_create(cucul_get_width(cv), cucul_get_height(cv));
-    mask = cucul_create(cucul_get_width(cv), cucul_get_height(cv));
+    cw = cucul_create_canvas(cucul_get_canvas_width(cv), cucul_get_canvas_height(cv));
+    mask = cucul_create_canvas(cucul_get_canvas_width(cv), cucul_get_canvas_height(cv));
 
     for(x = 0; x < 256; x++)
     {
@@ -77,29 +77,27 @@ int main(void)
         }
 
         /* Resize the spare canvas, just in case the main one changed */
-        cucul_set_size(cw, cucul_get_width(cv), cucul_get_height(cv));
-        cucul_set_size(mask, cucul_get_width(cv), cucul_get_height(cv));
+        cucul_set_canvas_size(cw, cucul_get_canvas_width(cv), cucul_get_canvas_height(cv));
+        cucul_set_canvas_size(mask, cucul_get_canvas_width(cv), cucul_get_canvas_height(cv));
 
         /* Draw the regular dither on the main canvas */
-        cucul_dither_bitmap(cv, 0, 0,
-                            cucul_get_width(cv) - 1, cucul_get_height(cv) - 1,
-                            left, buffer);
+        cucul_dither_bitmap(cv, 0, 0, cucul_get_canvas_width(cv) - 1,
+                            cucul_get_canvas_height(cv) - 1, left, buffer);
 
         /* Draw the gamma-modified dither on the spare canvas */
         cucul_set_dither_gamma(right, gam);
-        cucul_dither_bitmap(cw, 0, 0,
-                            cucul_get_width(cw) - 1, cucul_get_height(cw) - 1,
-                            right, buffer);
+        cucul_dither_bitmap(cw, 0, 0, cucul_get_canvas_width(cw) - 1,
+                            cucul_get_canvas_height(cw) - 1, right, buffer);
 
         /* Draw something on the mask */
         cucul_clear(mask);
         cucul_set_color(mask, CUCUL_COLOR_WHITE, CUCUL_COLOR_WHITE);
         cucul_fill_ellipse(mask, (1.0 + sin(0.05 * (float)x))
-                                   * 0.5 * cucul_get_width(mask),
+                                   * 0.5 * cucul_get_canvas_width(mask),
                                  (1.0 + cos(0.05 * (float)x))
-                                   * 0.5 * cucul_get_height(mask),
-                                 cucul_get_width(mask) / 2,
-                                 cucul_get_height(mask) / 2, "#");
+                                   * 0.5 * cucul_get_canvas_height(mask),
+                                 cucul_get_canvas_width(mask) / 2,
+                                 cucul_get_canvas_height(mask) / 2, "#");
 
         /* Blit the spare canvas onto the first one */
         cucul_blit(cv, 0, 0, cw, mask);
@@ -115,7 +113,7 @@ int main(void)
     cucul_free_dither(right);
 
     caca_detach(dp);
-    cucul_free(cv);
+    cucul_free_canvas(cv);
 
     return 0;
 }

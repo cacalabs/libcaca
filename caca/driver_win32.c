@@ -124,8 +124,8 @@ static int win32_init_graphics(caca_display_t *dp)
     if(!GetConsoleScreenBufferInfo(dp->drv.p->screen, &csbi))
         return -1;
 
-    _cucul_set_size(dp->cv, csbi.srWindow.Right - csbi.srWindow.Left + 1,
-                            csbi.srWindow.Bottom - csbi.srWindow.Top + 1);
+    _cucul_set_canvas_size(dp->cv, csbi.srWindow.Right - csbi.srWindow.Left + 1,
+                           csbi.srWindow.Bottom - csbi.srWindow.Top + 1);
 
     SetConsoleMode(dp->drv.p->screen, 0);
 

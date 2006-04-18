@@ -20,18 +20,18 @@
 
 Cucul::Cucul() 
 {
-    cv = cucul_create(0,0);
+    cv = cucul_create_canvas(0,0);
     if(!cv) throw -1;
 }
 Cucul::Cucul(int width, int height) 
 {
-    cv = cucul_create(width, height);
+    cv = cucul_create_canvas(width, height);
     if(!cv) throw -1;
 }
 Cucul::~Cucul() 
 {
     if(cv) {
-        cucul_free(cv);
+        cucul_free_canvas(cv);
     }
 }
 
@@ -44,15 +44,15 @@ cucul_canvas_t *Cucul::get_cucul_canvas_t()
 
 void Cucul::set_size(unsigned int width, unsigned int height) 
 {
-    cucul_set_size (cv, width, height);
+    cucul_set_canvas_size (cv, width, height);
 }
 unsigned int Cucul::get_width(void) 
 {
-    return cucul_get_width (cv);
+    return cucul_get_canvas_width (cv);
 }
 unsigned int Cucul::get_height(void) 
 {
-    return cucul_get_height (cv);
+    return cucul_get_canvas_height (cv);
 }
 void Cucul::set_color(unsigned int f, unsigned int b) 
 {

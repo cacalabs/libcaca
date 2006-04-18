@@ -173,6 +173,6 @@ void _caca_handle_resize(caca_display_t *dp)
 
     /* Tell libcucul we changed size */
     if(dp->resize.w != dp->cv->width || dp->resize.h != dp->cv->height)
-        _cucul_set_size(dp->cv, dp->resize.w, dp->resize.h);
+        _cucul_set_canvas_size(dp->cv, dp->resize.w, dp->resize.h);
 }
 
