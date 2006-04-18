@@ -1,5 +1,7 @@
 # $Id: Makefile.am 552 2006-04-13 16:10:16Z jylam $
 
+AM_CPPFLAGS = -I$(top_srcdir)/cucul -I$(top_srcdir)/caca
+
 include_HEADERS = cucul++.h caca++.h
 lib_LTLIBRARIES = libcucul++.la libcaca++.la
 
