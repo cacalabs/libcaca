@@ -284,23 +284,23 @@ static int printf_hex(char const *fmt, uint8_t *data, int bytes)
 
     while(bytes--)
     {
-        uint8_t c = *data++;
-        if(c == '\\' || c == '"')
+        uint8_t ch = *data++;
+        if(ch == '\\' || ch == '"')
         {
             parser -= rewind;
-            parser += sprintf(parser, "\\%c", c);
+            parser += sprintf(parser, "\\%c", ch);
             rewind = 0;
         }
-        else if(c >= 0x20 && c < 0x7f)
+        else if(ch >= 0x20 && ch < 0x7f)
         {
-            parser += sprintf(parser, "%c", c);
+            parser += sprintf(parser, "%c", ch);
             rewind = 0;
         }
         else
         {
             parser -= rewind;
-            parser += sprintf(parser, "\\%.03o", c);
-            rewind = c ? 0 : 2;
+            parser += sprintf(parser, "\\%.03o", ch);
+            rewind = ch ? 0 : 2;
         }
     }
 
