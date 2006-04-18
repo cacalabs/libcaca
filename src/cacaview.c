@@ -362,14 +362,12 @@ int main(int argc, char **argv)
 
             draw_checkers(ww * (1.0 - xfactor) / 2,
                           y + height * (1.0 - yfactor) / 2,
-                          ww * (1.0 + xfactor) / 2,
-                          y + height * (1.0 + yfactor) / 2);
+                          ww * xfactor, height * yfactor);
 
             cucul_dither_bitmap(cv, ww * (1.0 - xfactor) * xdelta,
-                              y + height * (1.0 - yfactor) * ydelta,
-                              ww * (xdelta + (1.0 - xdelta) * xfactor),
-                              y + height * (ydelta + (1.0 - ydelta) * yfactor),
-                              im->dither, im->pixels);
+                            y + height * (1.0 - yfactor) * ydelta,
+                            ww * xfactor + 1, height * yfactor + 1,
+                            im->dither, im->pixels);
         }
 
         if(!fullscreen)
@@ -502,19 +500,19 @@ static void set_gamma(int new_gamma)
                            (g < 0) ? 1.0 / gammatab[-g] : gammatab[g]);
 }
 
-static void draw_checkers(int x1, int y1, int x2, int y2)
+static void draw_checkers(int x, int y, int w, int h)
 {
     int xn, yn;
 
-    if(x2 + 1 > (int)cucul_get_canvas_width(cv))
-        x2 = cucul_get_canvas_width(cv) - 1;
-    if(y2 + 1 > (int)cucul_get_canvas_height(cv))
-        y2 = cucul_get_canvas_height(cv) - 1;
+    if(x + w > (int)cucul_get_canvas_width(cv))
+        w = cucul_get_canvas_width(cv) - x;
+    if(y + h > (int)cucul_get_canvas_height(cv))
+        h = cucul_get_canvas_height(cv) - y;
 
-    for(yn = y1 > 0 ? y1 : 0; yn <= y2; yn++)
-        for(xn = x1 > 0 ? x1 : 0; xn <= x2; xn++)
+    for(yn = y > 0 ? y : 0; yn < y + h; yn++)
+        for(xn = x > 0 ? x : 0; xn < x + w; xn++)
     {
-        if((((xn - x1) / 5) ^ ((yn - y1) / 3)) & 1)
+        if((((xn - x) / 5) ^ ((yn - y) / 3)) & 1)
             cucul_set_color(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_DARKGRAY);
         else
             cucul_set_color(cv, CUCUL_COLOR_DARKGRAY, CUCUL_COLOR_LIGHTGRAY);

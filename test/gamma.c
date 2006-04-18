@@ -81,13 +81,13 @@ int main(void)
         cucul_set_canvas_size(mask, cucul_get_canvas_width(cv), cucul_get_canvas_height(cv));
 
         /* Draw the regular dither on the main canvas */
-        cucul_dither_bitmap(cv, 0, 0, cucul_get_canvas_width(cv) - 1,
-                            cucul_get_canvas_height(cv) - 1, left, buffer);
+        cucul_dither_bitmap(cv, 0, 0, cucul_get_canvas_width(cv),
+                            cucul_get_canvas_height(cv), left, buffer);
 
         /* Draw the gamma-modified dither on the spare canvas */
         cucul_set_dither_gamma(right, gam);
-        cucul_dither_bitmap(cw, 0, 0, cucul_get_canvas_width(cw) - 1,
-                            cucul_get_canvas_height(cw) - 1, right, buffer);
+        cucul_dither_bitmap(cw, 0, 0, cucul_get_canvas_width(cw),
+                            cucul_get_canvas_height(cw), right, buffer);
 
         /* Draw something on the mask */
         cucul_clear_canvas(mask, CUCUL_COLOR_BLACK);

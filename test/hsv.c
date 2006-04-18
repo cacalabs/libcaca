@@ -46,8 +46,8 @@ int main(void)
 
     dither = cucul_create_dither(32, 256, 256, 4 * 256,
                                  0x00ff0000, 0x0000ff00, 0x000000ff, 0x0);
-    cucul_dither_bitmap(cv, 0, 0, cucul_get_canvas_width(cv) - 1,
-                        cucul_get_canvas_height(cv) - 1, dither, buffer);
+    cucul_dither_bitmap(cv, 0, 0, cucul_get_canvas_width(cv),
+                        cucul_get_canvas_height(cv), dither, buffer);
     cucul_free_dither(dither);
 
     caca_display(dp);

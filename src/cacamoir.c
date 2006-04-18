@@ -107,8 +107,8 @@ int main (int argc, char **argv)
 
 paused:
         cucul_dither_bitmap(cv, 0, 0,
-                            cucul_get_canvas_width(cv) - 1,
-                            cucul_get_canvas_height(cv) - 1,
+                            cucul_get_canvas_width(cv),
+                            cucul_get_canvas_height(cv),
                             dither, screen);
         cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
         cucul_putstr(cv, cucul_get_canvas_width(cv) - 30,

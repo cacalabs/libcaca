@@ -694,37 +694,31 @@ char const * const * cucul_get_dither_mode_list(cucul_dither_t const *d)
  *  and will be stretched to the text area.
  *
  *  \param cv A handle to the libcucul canvas.
- *  \param x1 X coordinate of the upper-left corner of the drawing area.
- *  \param y1 Y coordinate of the upper-left corner of the drawing area.
- *  \param x2 X coordinate of the lower-right corner of the drawing area.
- *  \param y2 Y coordinate of the lower-right corner of the drawing area.
+ *  \param x X coordinate of the upper-left corner of the drawing area.
+ *  \param y Y coordinate of the upper-left corner of the drawing area.
+ *  \param w Width of the drawing area.
+ *  \param h Height of the drawing area.
  *  \param d Dither object to be drawn.
  *  \param pixels Bitmap's pixels.
  */
-void cucul_dither_bitmap(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
+void cucul_dither_bitmap(cucul_canvas_t *cv, int x, int y, int w, int h,
                          cucul_dither_t const *d, void *pixels)
 {
     int *floyd_steinberg, *fs_r, *fs_g, *fs_b;
     int fs_length;
-    int x, y, w, h, pitch, deltax, deltay;
+    int x1, y1, x2, y2, pitch, deltax, deltay;
     unsigned int dchmax;
 
     if(!d || !pixels)
         return;
 
+    x1 = x; x2 = x + w - 1;
+    y1 = y; y2 = y + h - 1;
+
+    /* FIXME: do not overwrite arguments */
     w = d->w;
     h = d->h;
     pitch = d->pitch;
-
-    if(x1 > x2)
-    {
-        int tmp = x2; x2 = x1; x1 = tmp;
-    }
-
-    if(y1 > y2)
-    {
-        int tmp = y2; y2 = y1; y1 = tmp;
-    }
 
     deltax = x2 - x1 + 1;
     deltay = y2 - y1 + 1;

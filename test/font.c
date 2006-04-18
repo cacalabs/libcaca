@@ -93,8 +93,8 @@ int main(int argc, char *argv[])
         d = cucul_create_dither(32, w, h, 4 * w,
                                 0x0000ff00, 0x00ff0000, 0xff000000, 0x000000ff);
 
-    cucul_dither_bitmap(cv, 0, 0, cucul_get_canvas_width(cv) - 1,
-                                  cucul_get_canvas_height(cv) - 1, d, buf);
+    cucul_dither_bitmap(cv, 0, 0, cucul_get_canvas_width(cv),
+                                  cucul_get_canvas_height(cv), d, buf);
     caca_display(dp);
 
     caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);

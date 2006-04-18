@@ -80,8 +80,8 @@ int main(int argc, char *argv[])
 
     dither = cucul_create_dither(32, 256, 256, 4 * 256,
                                  0x00ff0000, 0x0000ff00, 0x000000ff, 0x0);
-    cucul_dither_bitmap(cv, 0, 0, cucul_get_canvas_width(cv) - 1,
-                        cucul_get_canvas_height(cv) - 1, dither, pixels);
+    cucul_dither_bitmap(cv, 0, 0, cucul_get_canvas_width(cv),
+                        cucul_get_canvas_height(cv), dither, pixels);
     cucul_free_dither(dither);
 
     cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLACK);

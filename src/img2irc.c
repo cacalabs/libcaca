@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 
     cucul_set_canvas_size(cv, cols, lines);
     cucul_clear_canvas(cv, CUCUL_COLOR_TRANSPARENT);
-    cucul_dither_bitmap(cv, 0, 0, cols - 1, lines - 1, i->dither, i->pixels);
+    cucul_dither_bitmap(cv, 0, 0, cols, lines, i->dither, i->pixels);
 
     unload_image(i);
 

@@ -504,7 +504,7 @@ static void demo_render(void)
     cucul_set_dither_invert(dither, 1);
     //dither = cucul_create_dither(16, 256, 256, 2 * 256, 0xf800, 0x07e0, 0x001f, 0x0000);
     dither = cucul_create_dither(32, 256, 256, 4 * 256, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
-    cucul_dither_bitmap(cv, 0, 0, cucul_get_canvas_width(cv) - 1, cucul_get_canvas_height(cv) - 1,
+    cucul_dither_bitmap(cv, 0, 0, cucul_get_canvas_width(cv), cucul_get_canvas_height(cv),
                      dither, buffer);
     cucul_free_dither(dither);
 }
@@ -549,7 +549,7 @@ static void demo_render(void)
 
     dither = cucul_create_dither(32, 256, 256, 4 * 256, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
  cucul_set_dither_invert(dither, 1);
-    cucul_dither_bitmap(cv, 0, 0, cucul_get_canvas_width(cv) - 1, cucul_get_canvas_height(cv) - 1, dither, (char *)buffer);
+    cucul_dither_bitmap(cv, 0, 0, cucul_get_canvas_width(cv), cucul_get_canvas_height(cv), dither, (char *)buffer);
     cucul_free_dither(dither);
 }
 
