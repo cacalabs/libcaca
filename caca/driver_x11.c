@@ -155,7 +155,7 @@ static int x11_init_graphics(caca_t *kk)
     kk->drv.p->wm_delete_window =
         XInternAtom(kk->drv.p->dpy, "WM_DELETE_WINDOW", True);
 
-    if(p_win->wm_protocols != None && p_win->wm_delete_window != None)
+    if(kk->drv.p->wm_protocols != None && kk->drv.p->wm_delete_window != None)
         XSetWMProtocols(kk->drv.p->dpy, kk->drv.p->window,
                         &kk->drv.p->wm_delete_window, 1);
 
