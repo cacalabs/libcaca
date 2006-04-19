@@ -202,18 +202,18 @@ static int gl_end_graphics(caca_display_t *dp)
     return 0;
 }
 
-static int gl_set_window_title(caca_display_t *dp, char const *title)
+static int gl_set_display_title(caca_display_t *dp, char const *title)
 {
     glutSetWindowTitle(title);
     return 0;
 }
 
-static unsigned int gl_get_window_width(caca_display_t *dp)
+static unsigned int gl_get_display_width(caca_display_t *dp)
 {
     return dp->drv.p->width;
 }
 
-static unsigned int gl_get_window_height(caca_display_t *dp)
+static unsigned int gl_get_display_height(caca_display_t *dp)
 {
     return dp->drv.p->height;
 }
@@ -501,9 +501,9 @@ int gl_install(caca_display_t *dp)
 
     dp->drv.init_graphics = gl_init_graphics;
     dp->drv.end_graphics = gl_end_graphics;
-    dp->drv.set_window_title = gl_set_window_title;
-    dp->drv.get_window_width = gl_get_window_width;
-    dp->drv.get_window_height = gl_get_window_height;
+    dp->drv.set_display_title = gl_set_display_title;
+    dp->drv.get_display_width = gl_get_display_width;
+    dp->drv.get_display_height = gl_get_display_height;
     dp->drv.display = gl_display;
     dp->drv.handle_resize = gl_handle_resize;
     dp->drv.get_event = gl_get_event;

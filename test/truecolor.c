@@ -33,7 +33,7 @@ int main(void)
     int x, y;
 
     cv = cucul_create_canvas(32, 16);
-    dp = caca_attach(cv);
+    dp = caca_create_display(cv);
 
     for(y = 0; y < 16; y++)
         for(x = 0; x < 16; x++)
@@ -48,11 +48,11 @@ int main(void)
     cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_LIGHTBLUE);
     cucul_putstr(cv, 2, 1, " truecolor libcaca ");
 
-    caca_display(dp);
+    caca_refresh_display(dp);
 
     caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
 
-    caca_detach(dp);
+    caca_free_display(dp);
     cucul_free_canvas(cv);
 
     return 0;

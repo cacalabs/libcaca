@@ -40,7 +40,7 @@ int main(int argc, char **argv)
     cv = cucul_create_canvas(0, 0);
     if(!cv)
         return 1;
-    dp = caca_attach(cv);
+    dp = caca_create_display(cv);
     if(!dp)
         return 1;
 
@@ -48,7 +48,7 @@ int main(int argc, char **argv)
 
     if(!sprite)
     {
-        caca_detach(dp);
+        caca_free_display(dp);
         cucul_free_canvas(cv);
         fprintf(stderr, "%s: could not open `%s'.\n", argv[0], argv[1]);
         return 1;
@@ -132,11 +132,11 @@ int main(int argc, char **argv)
         /* Free sprite */
         cucul_draw_sprite(cv, 20, 10, sprite, frame);
 
-        caca_display(dp);
+        caca_refresh_display(dp);
     }
 
     /* Clean up */
-    caca_detach(dp);
+    caca_free_display(dp);
     cucul_free_canvas(cv);
 
     return 0;

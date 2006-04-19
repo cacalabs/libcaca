@@ -41,7 +41,7 @@ int main(void)
     int x;
 
     cv = cucul_create_canvas(0, 0);
-    dp = caca_attach(cv);
+    dp = caca_create_display(cv);
 
     cw = cucul_create_canvas(cucul_get_canvas_width(cv), cucul_get_canvas_height(cv));
     mask = cucul_create_canvas(cucul_get_canvas_width(cv), cucul_get_canvas_height(cv));
@@ -106,13 +106,13 @@ int main(void)
         cucul_printf(cv, 2, 1,
                      "gamma=%g - use arrows to change, Esc to quit", gam);
 
-        caca_display(dp);
+        caca_refresh_display(dp);
     }
 
     cucul_free_dither(left);
     cucul_free_dither(right);
 
-    caca_detach(dp);
+    caca_free_display(dp);
     cucul_free_canvas(cv);
 
     return 0;

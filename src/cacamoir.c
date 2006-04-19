@@ -45,7 +45,7 @@ int main (int argc, char **argv)
     cv = cucul_create_canvas(0, 0);
     if(!cv)
         return 1;
-    dp = caca_attach(cv);
+    dp = caca_create_display(cv);
     if(!dp)
         return 1;
 
@@ -114,12 +114,12 @@ paused:
         cucul_putstr(cv, cucul_get_canvas_width(cv) - 30,
                          cucul_get_canvas_height(cv) - 2,
                          " -=[ Powered by libcaca ]=- ");
-        caca_display(dp);
+        caca_refresh_display(dp);
     }
 
 end:
     cucul_free_dither(dither);
-    caca_detach(dp);
+    caca_free_display(dp);
     cucul_free_canvas(cv);
 
     return 0;

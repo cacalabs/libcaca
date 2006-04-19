@@ -75,7 +75,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    dp = caca_attach(cv);
+    dp = caca_create_display(cv);
     if(!dp)
     {
         fprintf(stderr, "%s: unable to initialise libcaca\n", argv[0]);
@@ -83,7 +83,7 @@ int main(int argc, char **argv)
     }
 
     /* Set the window title */
-    caca_set_window_title(dp, "cacaview");
+    caca_set_display_title(dp, "cacaview");
 
     ww = cucul_get_canvas_width(cv);
     wh = cucul_get_canvas_height(cv);
@@ -273,7 +273,7 @@ int main(int argc, char **argv)
             }
             else if(ev.type == CACA_EVENT_RESIZE)
             {
-                caca_display(dp);
+                caca_refresh_display(dp);
                 ww = ev.data.resize.w;
                 wh = ev.data.resize.h;
                 update = 1;
@@ -303,7 +303,7 @@ int main(int argc, char **argv)
             buffer[ww] = '\0';
             cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
             cucul_putstr(cv, (ww - strlen(buffer)) / 2, wh / 2, buffer);
-            caca_display(dp);
+            caca_refresh_display(dp);
             ww = cucul_get_canvas_width(cv);
             wh = cucul_get_canvas_height(cv);
 
@@ -399,14 +399,14 @@ int main(int argc, char **argv)
             print_help(ww - 26, 2);
         }
 
-        caca_display(dp);
+        caca_refresh_display(dp);
         update = 0;
     }
 
     /* Clean up */
     if(im)
         unload_image(im);
-    caca_detach(dp);
+    caca_free_display(dp);
     cucul_free_canvas(cv);
 
     return 0;
@@ -476,7 +476,7 @@ static void set_zoom(int new_zoom)
     xfactor = (zoom < 0) ? 1.0 / zoomtab[-zoom] : zoomtab[zoom];
     yfactor = xfactor * ww / height * im->h / im->w
                * cucul_get_canvas_height(cv) / cucul_get_canvas_width(cv)
-               * caca_get_window_width(dp) / caca_get_window_height(dp);
+               * caca_get_display_width(dp) / caca_get_display_height(dp);
 
     if(yfactor > xfactor)
     {

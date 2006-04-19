@@ -220,18 +220,18 @@ static int x11_end_graphics(caca_display_t *dp)
     return 0;
 }
 
-static int x11_set_window_title(caca_display_t *dp, char const *title)
+static int x11_set_display_title(caca_display_t *dp, char const *title)
 {
     XStoreName(dp->drv.p->dpy, dp->drv.p->window, title);
     return 0;
 }
 
-static unsigned int x11_get_window_width(caca_display_t *dp)
+static unsigned int x11_get_display_width(caca_display_t *dp)
 {
     return dp->cv->width * dp->drv.p->font_width;
 }
 
-static unsigned int x11_get_window_height(caca_display_t *dp)
+static unsigned int x11_get_display_height(caca_display_t *dp)
 {
     return dp->cv->height * dp->drv.p->font_height;
 }
@@ -592,9 +592,9 @@ int x11_install(caca_display_t *dp)
 
     dp->drv.init_graphics = x11_init_graphics;
     dp->drv.end_graphics = x11_end_graphics;
-    dp->drv.set_window_title = x11_set_window_title;
-    dp->drv.get_window_width = x11_get_window_width;
-    dp->drv.get_window_height = x11_get_window_height;
+    dp->drv.set_display_title = x11_set_display_title;
+    dp->drv.get_display_width = x11_get_display_width;
+    dp->drv.get_display_height = x11_get_display_height;
     dp->drv.display = x11_display;
     dp->drv.handle_resize = x11_handle_resize;
     dp->drv.get_event = x11_get_event;

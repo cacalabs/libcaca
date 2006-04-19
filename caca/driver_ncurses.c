@@ -168,18 +168,18 @@ static int ncurses_end_graphics(caca_display_t *dp)
     return 0;
 }
 
-static int ncurses_set_window_title(caca_display_t *dp, char const *title)
+static int ncurses_set_display_title(caca_display_t *dp, char const *title)
 {
     return 0;
 }
 
-static unsigned int ncurses_get_window_width(caca_display_t *dp)
+static unsigned int ncurses_get_display_width(caca_display_t *dp)
 {
     /* Fallback to a 6x10 font */
     return dp->cv->width * 6;
 }
 
-static unsigned int ncurses_get_window_height(caca_display_t *dp)
+static unsigned int ncurses_get_display_height(caca_display_t *dp)
 {
     /* Fallback to a 6x10 font */
     return dp->cv->height * 10;
@@ -534,9 +534,9 @@ int ncurses_install(caca_display_t *dp)
 
     dp->drv.init_graphics = ncurses_init_graphics;
     dp->drv.end_graphics = ncurses_end_graphics;
-    dp->drv.set_window_title = ncurses_set_window_title;
-    dp->drv.get_window_width = ncurses_get_window_width;
-    dp->drv.get_window_height = ncurses_get_window_height;
+    dp->drv.set_display_title = ncurses_set_display_title;
+    dp->drv.get_display_width = ncurses_get_display_width;
+    dp->drv.get_display_height = ncurses_get_display_height;
     dp->drv.display = ncurses_display;
     dp->drv.handle_resize = ncurses_handle_resize;
     dp->drv.get_event = ncurses_get_event;

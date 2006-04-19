@@ -38,11 +38,11 @@ pycaca_set_width(PyObject *self, PyObject *args);
 static PyObject *
 pycaca_set_height(PyObject *self, PyObject *args);
 static PyObject *
-pycaca_set_window_title(PyObject *self, PyObject *args);
+pycaca_set_display_title(PyObject *self, PyObject *args);
 static PyObject *
-pycaca_get_window_width(PyObject *self, PyObject *args);
+pycaca_get_display_width(PyObject *self, PyObject *args);
 static PyObject *
-pycaca_get_window_height(PyObject *self, PyObject *args);
+pycaca_get_display_height(PyObject *self, PyObject *args);
 static PyObject *
 pycaca_refresh(PyObject *self, PyObject *args);
 static PyObject *

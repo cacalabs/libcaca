@@ -136,10 +136,10 @@ cucul_canvas_t *cucul_load_canvas(void *data, unsigned int size)
  *  the bottom of the canvas are filled with spaces.
  *
  *  It is an error to try to resize the canvas if an output driver has
- *  been attached to the canvas using caca_attach(). You need to remove
- *  the output driver using caca_detach() before you can change the
- *  canvas size again. However, the caca output driver can cause a canvas
- *  resize through user interaction. See the caca_event() documentation
+ *  been attached to the canvas using caca_create_display(). You need to
+ *  remove the output driver using caca_free_display() before you can change
+ *  the  canvas size again. However, the caca output driver can cause a
+ *  canvas resize through user interaction. See the caca_event() documentation
  *  for more about this.
  *
  *  \param cv A libcucul canvas

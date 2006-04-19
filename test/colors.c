@@ -31,7 +31,7 @@ int main(int argc, char **argv)
     if(!cv)
         return 1;
 
-    dp = caca_attach(cv);
+    dp = caca_create_display(cv);
     if(!dp)
         return 1;
 
@@ -49,10 +49,10 @@ int main(int argc, char **argv)
         }
     }
 
-    caca_display(dp);
+    caca_refresh_display(dp);
     caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
 
-    caca_detach(dp);
+    caca_free_display(dp);
     cucul_free_canvas(cv);
 
     return 0;

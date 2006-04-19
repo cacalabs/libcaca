@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
 
     /* Just for fun, render the image using libcaca */
     cucul_set_canvas_size(cv, 80, 32);
-    dp = caca_attach(cv);
+    dp = caca_create_display(cv);
 
 #if defined(HAVE_ENDIAN_H)
     if(__BYTE_ORDER == __BIG_ENDIAN)
@@ -95,12 +95,12 @@ int main(int argc, char *argv[])
 
     cucul_dither_bitmap(cv, 0, 0, cucul_get_canvas_width(cv),
                                   cucul_get_canvas_height(cv), d, buf);
-    caca_display(dp);
+    caca_refresh_display(dp);
 
     caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
 
     /* Free everything */
-    caca_detach(dp);
+    caca_free_display(dp);
     free(buf);
     cucul_free_dither(d);
     cucul_free_font(f);

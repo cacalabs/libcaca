@@ -31,7 +31,7 @@ int main(void)
     caca_display_t *dp;
 
     cv = cucul_create_canvas(0, 0);
-    dp = caca_attach(cv);
+    dp = caca_create_display(cv);
 
     cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
     cucul_putstr(cv, 1, 1, "Basic Unicode support");
@@ -85,11 +85,11 @@ int main(void)
     cucul_putstr(cv, 1, 21, "more CP437: α ß Γ π Σ σ µ τ Φ Θ Ω δ ∞ φ ε ∩ ≡ ± ≥ ≤ ⌠ ⌡ ÷ ≈ ° ∙ · √ ⁿ ² ■");
     cucul_putstr(cv, 1, 22, "drawing blocks: ███ ▓▓▓ ▒▒▒ ░░░ ▀ ▄ ▌ ▐ █ ▖ ▗ ▘ ▝ ▚ ▞ ▙ ▛ ▜ ▟");
 
-    caca_display(dp);
+    caca_refresh_display(dp);
 
     caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
 
-    caca_detach(dp);
+    caca_free_display(dp);
     cucul_free_canvas(cv);
 
     return 0;

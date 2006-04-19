@@ -203,14 +203,14 @@ enum caca_key
  *  initialisation, system information retrieval and configuration.
  *
  *  @{ */
-caca_display_t * caca_attach(cucul_canvas_t *);
-void caca_detach(caca_display_t *);
+caca_display_t * caca_create_display(cucul_canvas_t *);
+void caca_free_display(caca_display_t *);
 void caca_set_delay(caca_display_t *, unsigned int);
-void caca_display(caca_display_t *);
+void caca_refresh_display(caca_display_t *);
 unsigned int caca_get_rendertime(caca_display_t *);
-unsigned int caca_get_window_width(caca_display_t *);
-unsigned int caca_get_window_height(caca_display_t *);
-int caca_set_window_title(caca_display_t *, char const *);
+unsigned int caca_get_display_width(caca_display_t *);
+unsigned int caca_get_display_height(caca_display_t *);
+int caca_set_display_title(caca_display_t *, char const *);
 /*  @} */
 
 /** \defgroup event Event handling

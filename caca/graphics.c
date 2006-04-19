@@ -22,21 +22,21 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
-/** \brief Set the window title.
+/** \brief Set the display title.
  *
  *  If libcaca runs in a window, try to change its title. This works with
  *  the X11 and Win32 drivers.
  *
  *  \param dp The libcaca graphical context.
- *  \param title The desired window title.
+ *  \param title The desired display title.
  *  \return 0 upon success, a non-zero value if an error occurs.
  */
-int caca_set_window_title(caca_display_t *dp, char const *title)
+int caca_set_display_title(caca_display_t *dp, char const *title)
 {
-    return dp->drv.set_window_title(dp, title);
+    return dp->drv.set_display_title(dp, title);
 }
 
-/** \brief Get the window width.
+/** \brief Get the display width.
  *
  *  If libcaca runs in a window, get the usable window width. This value can
  *  be used for aspect ratio calculation. If libcaca does not run in a window
@@ -44,14 +44,14 @@ int caca_set_window_title(caca_display_t *dp, char const *title)
  *  6x10 font is being used. Note that the units are not necessarily pixels.
  *
  *  \param dp The libcaca graphical context.
- *  \return The window width.
+ *  \return The display width.
  */
-unsigned int caca_get_window_width(caca_display_t *dp)
+unsigned int caca_get_display_width(caca_display_t *dp)
 {
-    return dp->drv.get_window_width(dp);
+    return dp->drv.get_display_width(dp);
 }
 
-/** \brief Get the window height.
+/** \brief Get the display height.
  *
  *  If libcaca runs in a window, get the usable window height. This value can
  *  be used for aspect ratio calculation. If libcaca does not run in a window
@@ -59,18 +59,18 @@ unsigned int caca_get_window_width(caca_display_t *dp)
  *  used. Note that the units are not necessarily pixels.
  *
  *  \param dp The libcaca graphical context.
- *  \return The window height.
+ *  \return The display height.
  */
-unsigned int caca_get_window_height(caca_display_t *dp)
+unsigned int caca_get_display_height(caca_display_t *dp)
 {
-    return dp->drv.get_window_height(dp);
+    return dp->drv.get_display_height(dp);
 }
 
 /** \brief Set the refresh delay.
  *
  *  This function sets the refresh delay in microseconds. The refresh delay
- *  is used by caca_display() to achieve constant framerate. See the
- *  caca_display() documentation for more details.
+ *  is used by caca_refresh_display() to achieve constant framerate. See the
+ *  caca_refresh_display() documentation for more details.
  *
  *  If the argument is zero, constant framerate is disabled. This is the
  *  default behaviour.
@@ -86,7 +86,7 @@ void caca_set_delay(caca_display_t *dp, unsigned int usec)
 /** \brief Get the average rendering time.
  *
  *  This function returns the average rendering time, which is the average
- *  measured time between two caca_display() calls, in microseconds. If
+ *  measured time between two caca_refresh_display() calls, in microseconds. If
  *  constant framerate was activated by calling caca_set_delay(), the average
  *  rendering time will not be considerably shorter than the requested delay
  *  even if the real rendering time was shorter.
@@ -102,18 +102,18 @@ unsigned int caca_get_rendertime(caca_display_t *dp)
 /** \brief Flush pending changes and redraw the screen.
  *
  *  This function flushes all graphical operations and prints them to the
- *  screen. Nothing will show on the screen until caca_display() is
+ *  screen. Nothing will show on the screen until caca_refresh_display() is
  *  called.
  *
- *  If caca_set_delay() was called with a non-zero value, caca_display()
- *  will use that value to achieve constant framerate: if two consecutive
- *  calls to caca_display() are within a time range shorter than the value
- *  set with caca_set_delay(), the second call will wait a bit before
- *  performing the screen refresh.
+ *  If caca_set_delay() was called with a non-zero value,
+ *  caca_refresh_display() will use that value to achieve constant
+ *  framerate: if two consecutive calls to caca_refresh_display() are
+ *  within a time range shorter than the value set with caca_set_delay(),
+ *  the second call will be delayed before performing the screen refresh.
  *
  *  \param dp The libcaca graphical context.
  */
-void caca_display(caca_display_t *dp)
+void caca_refresh_display(caca_display_t *dp)
 {
 #if !defined(_DOXYGEN_SKIP_ME)
 #define IDLE_USEC 10000

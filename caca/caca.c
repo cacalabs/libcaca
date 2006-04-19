@@ -41,7 +41,7 @@ static int caca_init_driver(caca_display_t *dp);
  *  \param cv The cucul cavas.
  *  \return The caca graphical context or NULL if an error occurred.
  */
-caca_display_t * caca_attach(cucul_canvas_t * cv)
+caca_display_t * caca_create_display(cucul_canvas_t * cv)
 {
     caca_display_t *dp = malloc(sizeof(caca_display_t));
 
@@ -100,7 +100,7 @@ caca_display_t * caca_attach(cucul_canvas_t * cv)
  *
  *  \param dp The libcaca graphical context.
  */
-void caca_detach(caca_display_t *dp)
+void caca_free_display(caca_display_t *dp)
 {
     dp->drv.end_graphics(dp);
     dp->cv->refcount--;

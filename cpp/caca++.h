@@ -61,9 +61,9 @@ class Caca {
     void 	set_delay (unsigned int);
     void 	display ();
     unsigned int 	get_rendertime ();
-    unsigned int 	get_window_width ();
-    unsigned int 	get_window_height ();
-    int 	set_window_title (char const *);
+    unsigned int 	get_display_width ();
+    unsigned int 	get_display_height ();
+    int 	set_display_title (char const *);
     int 	get_event (unsigned int, Event*, int);
     unsigned int 	get_mouse_x ();
     unsigned int 	get_mouse_y ();

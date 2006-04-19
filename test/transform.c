@@ -55,7 +55,7 @@ int main(void)
     int i;
 
     cv = cucul_create_canvas(0, 0);
-    dp = caca_attach(cv);
+    dp = caca_create_display(cv);
 
     normal = cucul_create_canvas(70, 6);
     flip = cucul_create_canvas(70, 6);
@@ -106,11 +106,11 @@ int main(void)
     cucul_putstr(cv, 0, 18, "rotate");
     cucul_blit(cv, 10, 18, rotate, NULL);
 
-    caca_display(dp);
+    caca_refresh_display(dp);
 
     caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
 
-    caca_detach(dp);
+    caca_free_display(dp);
     cucul_free_canvas(rotate);
     cucul_free_canvas(flop);
     cucul_free_canvas(flip);

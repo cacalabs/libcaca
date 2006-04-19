@@ -48,7 +48,7 @@ int main(int argc, char **argv)
     cv = cucul_create_canvas(0, 0);
     if(!cv)
         return 1;
-    dp = caca_attach(cv);
+    dp = caca_create_display(cv);
     if(!dp)
         return 1;
 
@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 
     /* Main menu */
     display_menu();
-    caca_display(dp);
+    caca_refresh_display(dp);
 
     /* Go ! */
     while(!quit)
@@ -165,7 +165,7 @@ int main(int argc, char **argv)
                 cucul_putstr(cv, xmouse, ymouse,     ".");
                 cucul_putstr(cv, xmouse, ymouse + 1, "|\\");
             }
-            caca_display(dp);
+            caca_refresh_display(dp);
             mouse = menu = 0;
         }
 
@@ -179,13 +179,13 @@ int main(int argc, char **argv)
             cucul_printf(cv, 4, 1, "[%i.%i fps]----",
                          1000000 / caca_get_rendertime(dp),
                          (10000000 / caca_get_rendertime(dp)) % 10);
-            caca_display(dp);
+            caca_refresh_display(dp);
         }
     }
 
     /* Clean up */
     cucul_free_sprite(sprite);
-    caca_detach(dp);
+    caca_free_display(dp);
     cucul_free_canvas(cv);
 
     return 0;
@@ -225,7 +225,7 @@ static void display_menu(void)
 
     cucul_putstr(cv, 4, yo - 2, "'q': quit");
 
-    caca_display(dp);
+    caca_refresh_display(dp);
 }
 
 static void demo_all(void)

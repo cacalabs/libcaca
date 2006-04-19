@@ -33,7 +33,7 @@ int main(int argc, char **argv)
     cv = cucul_create_canvas(0, 0);
     if(!cv)
         return 1;
-    dp = caca_attach(cv);
+    dp = caca_create_display(cv);
     if(!dp)
         return 1;
 
@@ -45,7 +45,7 @@ int main(int argc, char **argv)
     cucul_draw_line(cv, 0, h, cucul_get_canvas_width(cv) - 1, h, " ");
     cucul_putstr(cv, 0, h, "type \"quit\" to exit");
 
-    caca_display(dp);
+    caca_refresh_display(dp);
 
     events = malloc(h * sizeof(caca_event_t));
     memset(events, 0, h * sizeof(caca_event_t));
@@ -96,11 +96,11 @@ int main(int argc, char **argv)
         for(i = 1; i < h && events[i].type; i++)
             print_event(0, i, events + i);
 
-        caca_display(dp);
+        caca_refresh_display(dp);
     }
 
     /* Clean up */
-    caca_detach(dp);
+    caca_free_display(dp);
     cucul_free_canvas(cv);
 
     return 0;

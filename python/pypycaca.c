@@ -22,9 +22,9 @@ static PyMethodDef CacaMethods[] = {
     {"set_size", pycaca_set_size, METH_VARARGS, "Set size"},
     {"set_width", pycaca_set_width, METH_VARARGS, "Set width"},
     {"set_height", pycaca_set_height, METH_VARARGS, "Set height"},
-    {"set_window_title", pycaca_set_window_title, METH_VARARGS, "Set window titl"},
-    {"get_window_width", pycaca_get_window_width, METH_NOARGS, "Get window width"},
-    {"get_window_height", pycaca_get_window_height, METH_NOARGS, "Get Window height"},
+    {"set_display_title", pycaca_set_display_title, METH_VARARGS, "Set window titl"},
+    {"get_display_width", pycaca_get_display_width, METH_NOARGS, "Get window width"},
+    {"get_display_height", pycaca_get_display_height, METH_NOARGS, "Get Window height"},
     {"refresh", pycaca_refresh, METH_NOARGS, "Refresh window"},
     {"end", pycaca_end, METH_NOARGS, "End libcaca"},
     {"get_feature", pycaca_get_feature, METH_VARARGS, "Get feature"},
@@ -255,26 +255,26 @@ pycaca_set_height(PyObject *self, PyObject *args)
 }
 
 static PyObject *
-pycaca_set_window_title(PyObject *self, PyObject *args)
+pycaca_set_display_title(PyObject *self, PyObject *args)
 {
   int ret;
   const char *str;
   if (!PyArg_ParseTuple(args, "s", &str));
-  ret = caca_set_window_title(str);
+  ret = caca_set_display_title(str);
   return Py_BuildValue("i", ret);  /* FIXME */
 }
 
 static PyObject *
-pycaca_get_window_width(PyObject *self, PyObject *args)
+pycaca_get_display_width(PyObject *self, PyObject *args)
 {
-  int ret = caca_get_window_width();
+  int ret = caca_get_display_width();
   return Py_BuildValue("i", ret);
 }
 
 static PyObject *
-pycaca_get_window_height(PyObject *self, PyObject *args)
+pycaca_get_display_height(PyObject *self, PyObject *args)
 {
-  int ret = caca_get_window_height();
+  int ret = caca_get_display_height();
   return Py_BuildValue("i", ret);
 }
 

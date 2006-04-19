@@ -36,17 +36,17 @@ static int raw_end_graphics(caca_display_t *dp)
     return 0;
 }
 
-static int raw_set_window_title(caca_display_t *dp, char const *title)
+static int raw_set_display_title(caca_display_t *dp, char const *title)
 {
     return 0;
 }
 
-static unsigned int raw_get_window_width(caca_display_t *dp)
+static unsigned int raw_get_display_width(caca_display_t *dp)
 {
     return 0;
 }
 
-static unsigned int raw_get_window_height(caca_display_t *dp)
+static unsigned int raw_get_display_height(caca_display_t *dp)
 {
     return 0;
 }
@@ -83,9 +83,9 @@ int raw_install(caca_display_t *dp)
 
     dp->drv.init_graphics = raw_init_graphics;
     dp->drv.end_graphics = raw_end_graphics;
-    dp->drv.set_window_title = raw_set_window_title;
-    dp->drv.get_window_width = raw_get_window_width;
-    dp->drv.get_window_height = raw_get_window_height;
+    dp->drv.set_display_title = raw_set_display_title;
+    dp->drv.get_display_width = raw_get_display_width;
+    dp->drv.get_display_height = raw_get_display_height;
     dp->drv.display = raw_display;
     dp->drv.handle_resize = raw_handle_resize;
     dp->drv.get_event = raw_get_event;

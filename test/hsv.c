@@ -36,7 +36,7 @@ int main(void)
     int x, y;
 
     cv = cucul_create_canvas(0, 0);
-    dp = caca_attach(cv);
+    dp = caca_create_display(cv);
 
     for(y = 0; y < 256; y++)
         for(x = 0; x < 256; x++)
@@ -50,11 +50,11 @@ int main(void)
                         cucul_get_canvas_height(cv), dither, buffer);
     cucul_free_dither(dither);
 
-    caca_display(dp);
+    caca_refresh_display(dp);
 
     caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
 
-    caca_detach(dp);
+    caca_free_display(dp);
     cucul_free_canvas(cv);
 
     return 0;

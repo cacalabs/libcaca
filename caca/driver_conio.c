@@ -76,18 +76,18 @@ static int conio_end_graphics(caca_display_t *dp)
     return 0;
 }
 
-static int conio_set_window_title(caca_display_t *dp, char const *title)
+static int conio_set_display_title(caca_display_t *dp, char const *title)
 {
     return 0;
 }
 
-static unsigned int conio_get_window_width(caca_display_t *dp)
+static unsigned int conio_get_display_width(caca_display_t *dp)
 {
     /* Fallback to a 6x10 font */
     return dp->cv->width * 6;
 }
 
-static unsigned int conio_get_window_height(caca_display_t *dp)
+static unsigned int conio_get_display_height(caca_display_t *dp)
 {
     /* Fallback to a 6x10 font */
     return dp->cv->height * 10;
@@ -155,9 +155,9 @@ int conio_install(caca_display_t *dp)
 
     dp->drv.init_graphics = conio_init_graphics;
     dp->drv.end_graphics = conio_end_graphics;
-    dp->drv.set_window_title = conio_set_window_title;
-    dp->drv.get_window_width = conio_get_window_width;
-    dp->drv.get_window_height = conio_get_window_height;
+    dp->drv.set_display_title = conio_set_display_title;
+    dp->drv.get_display_width = conio_get_display_width;
+    dp->drv.get_display_height = conio_get_display_height;
     dp->drv.display = conio_display;
     dp->drv.handle_resize = conio_handle_resize;
     dp->drv.get_event = conio_get_event;

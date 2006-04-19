@@ -93,19 +93,19 @@ static int vga_end_graphics(caca_display_t *dp)
     return 0;
 }
 
-static int vga_set_window_title(caca_display_t *dp, char const *title)
+static int vga_set_display_title(caca_display_t *dp, char const *title)
 {
     /* Unsupported, of course. */
     return 0;
 }
 
-static unsigned int vga_get_window_width(caca_display_t *dp)
+static unsigned int vga_get_display_width(caca_display_t *dp)
 {
     /* Fallback to a 320x200 screen */
     return 320;
 }
 
-static unsigned int vga_get_window_height(caca_display_t *dp)
+static unsigned int vga_get_display_height(caca_display_t *dp)
 {
     /* Fallback to a 320x200 screen */
     return 200;
@@ -149,9 +149,9 @@ int vga_install(caca_display_t *dp)
 
     dp->drv.init_graphics = vga_init_graphics;
     dp->drv.end_graphics = vga_end_graphics;
-    dp->drv.set_window_title = vga_set_window_title;
-    dp->drv.get_window_width = vga_get_window_width;
-    dp->drv.get_window_height = vga_get_window_height;
+    dp->drv.set_display_title = vga_set_display_title;
+    dp->drv.get_display_width = vga_get_display_width;
+    dp->drv.get_display_height = vga_get_display_height;
     dp->drv.display = vga_display;
     dp->drv.handle_resize = vga_handle_resize;
     dp->drv.get_event = vga_get_event;

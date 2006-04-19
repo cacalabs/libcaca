@@ -106,7 +106,7 @@ initialize (void)
       printf ("Failed to initialize libcucul\n");
       exit (1);
     }
-  dp = caca_attach(cv);
+  dp = caca_create_display(cv);
   if (!dp)
     {
       printf ("Failed to initialize libcaca\n");
@@ -154,7 +154,7 @@ static void
 uninitialize (void)
 {
 #ifdef LIBCACA
-  caca_detach(dp);
+  caca_free_display(dp);
   cucul_free_canvas(cv);
 #else
   aa_close (context);
@@ -243,7 +243,7 @@ paused:
   cucul_putstr(cv, cucul_get_canvas_width(cv) - 30,
                cucul_get_canvas_height(cv) - 2, " -=[ Powered by libcaca ]=- ");
   
-  caca_display(dp);
+  caca_refresh_display(dp);
   /*XSIZ = caca_get_width() * 2;
   YSIZ = caca_get_height() * 2 - 4;*/
 #else

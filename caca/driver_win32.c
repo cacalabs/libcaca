@@ -162,13 +162,13 @@ static int win32_end_graphics(caca_display_t *dp)
     return 0;
 }
 
-static int win32_set_window_title(caca_display_t *dp, char const *title)
+static int win32_set_display_title(caca_display_t *dp, char const *title)
 {
     SetConsoleTitle(title);
     return 0;
 }
 
-static unsigned int win32_get_window_width(caca_display_t *dp)
+static unsigned int win32_get_display_width(caca_display_t *dp)
 {
     /* FIXME */
 
@@ -176,7 +176,7 @@ static unsigned int win32_get_window_width(caca_display_t *dp)
     return dp->cv->width * 6;
 }
 
-static unsigned int win32_get_window_height(caca_display_t *dp)
+static unsigned int win32_get_display_height(caca_display_t *dp)
 {
     /* FIXME */
 
@@ -337,9 +337,9 @@ int win32_install(caca_display_t *dp)
 
     dp->drv.init_graphics = win32_init_graphics;
     dp->drv.end_graphics = win32_end_graphics;
-    dp->drv.set_window_title = win32_set_window_title;
-    dp->drv.get_window_width = win32_get_window_width;
-    dp->drv.get_window_height = win32_get_window_height;
+    dp->drv.set_display_title = win32_set_display_title;
+    dp->drv.get_display_width = win32_get_display_width;
+    dp->drv.get_display_height = win32_get_display_height;
     dp->drv.display = win32_display;
     dp->drv.handle_resize = win32_handle_resize;
     dp->drv.get_event = win32_get_event;
