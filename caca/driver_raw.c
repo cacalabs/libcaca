@@ -53,30 +53,13 @@ static unsigned int raw_get_window_height(caca_display_t *dp)
 
 static void raw_display(caca_display_t *dp)
 {
-    uint32_t *attr = dp->cv->attr;
-    uint32_t *chars = dp->cv->chars;
-    uint32_t w, h;
-    unsigned int n;
+    cucul_buffer_t *buffer;
 
-    w = dp->cv->width;
-    h = dp->cv->height;
-
-    fprintf(stdout, "CACA%c%c%c%c%c%c%c%c",
-                    (w >> 24), (w >> 16) & 0xff, (w >> 8) & 0xff, w & 0xff,
-                    (h >> 24), (h >> 16) & 0xff, (h >> 8) & 0xff, h & 0xff);
-
-    for(n = dp->cv->height * dp->cv->width; n--; )
-    {
-        uint32_t ch = *chars++;
-        uint32_t a = *attr++;
-
-        fprintf(stdout, "%c%c%c%c%c%c%c%c",
-                (ch >> 24), (ch >> 16) & 0xff, (ch >> 8) & 0xff, ch & 0xff,
-                (a >> 24), (a >> 16) & 0xff, (a >> 8) & 0xff, a & 0xff);
-    }
-
-    fprintf(stdout, "ACAC");
+    buffer = cucul_create_export(dp->cv, "caca");
+    fwrite(cucul_get_buffer_data(buffer),
+           cucul_get_buffer_size(buffer), 1, stdout);
     fflush(stdout);
+    cucul_free_buffer(buffer);
 }
 
 static void raw_handle_resize(caca_display_t *dp)

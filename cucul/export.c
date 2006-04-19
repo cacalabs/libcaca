@@ -27,6 +27,7 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
+static void export_caca(cucul_canvas_t *, cucul_buffer_t *);
 static void export_ansi(cucul_canvas_t *, cucul_buffer_t *);
 static void export_html(cucul_canvas_t *, cucul_buffer_t *);
 static void export_html3(cucul_canvas_t *, cucul_buffer_t *);
@@ -43,6 +44,8 @@ static void export_tga(cucul_canvas_t *, cucul_buffer_t *);
  *  data is valid until cucul_free_buffer() is called.
  *
  *  Valid values for \e format are:
+ *
+ *  \li \e "caca": export native libcaca files.
  *
  *  \li \e "ansi": export ANSI art (CP437 charset with ANSI colour codes).
  *
@@ -70,7 +73,9 @@ cucul_buffer_t * cucul_create_export(cucul_canvas_t *cv, char const *format)
     ex->size = 0;
     ex->data = NULL;
 
-    if(!strcasecmp("ansi", format))
+    if(!strcasecmp("caca", format))
+        export_caca(cv, ex);
+    else if(!strcasecmp("ansi", format))
         export_ansi(cv, ex);
     else if(!strcasecmp("html", format))
         export_html(cv, ex);
@@ -107,6 +112,7 @@ char const * const * cucul_get_export_list(void)
 {
     static char const * const list[] =
     {
+        "caca", "native libcaca format",
         "ansi", "ANSI",
         "html", "HTML",
         "html3", "backwards-compatible HTML",
@@ -123,6 +129,45 @@ char const * const * cucul_get_export_list(void)
 /*
  * XXX: the following functions are local.
  */
+
+/* Generate a native libcaca canvas file. */
+static void export_caca(cucul_canvas_t *cv, cucul_buffer_t *ex)
+{
+    uint32_t *attr = cv->attr;
+    uint32_t *chars = cv->chars;
+    char *cur;
+    uint32_t w, h;
+    unsigned int n;
+
+    /* 16 bytes for the canvas, 8 bytes for each character cell. */
+    ex->size = 16 + 8 * cv->width * cv->height;
+    ex->data = malloc(ex->size);
+
+    cur = ex->data;
+
+    w = cv->width;
+    h = cv->height;
+
+    cur += sprintf(cur, "CACACANV%c%c%c%c%c%c%c%c",
+                   (w >> 24), (w >> 16) & 0xff, (w >> 8) & 0xff, w & 0xff,
+                   (h >> 24), (h >> 16) & 0xff, (h >> 8) & 0xff, h & 0xff);
+
+    for(n = cv->height * cv->width; n--; )
+    {
+        uint32_t ch = *chars++;
+        uint32_t a = *attr++;
+
+        *cur++ = ch >> 24;
+        *cur++ = (ch >> 16) & 0xff;
+        *cur++ = (ch >> 8) & 0xff;
+        *cur++ = ch & 0xff;
+
+        *cur++ = a >> 24;
+        *cur++ = (a >> 16) & 0xff;
+        *cur++ = (a >> 8) & 0xff;
+        *cur++ = a & 0xff;
+    }
+}
 
 /* Generate ANSI representation of current canvas. */
 static void export_ansi(cucul_canvas_t *cv, cucul_buffer_t *ex)
