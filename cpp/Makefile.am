@@ -22,5 +22,5 @@ libcaca___la_LIBADD = ../caca/libcaca.la
 noinst_PROGRAMS = cpptest
 
 cpptest_SOURCES = cpptest.cpp
-cpptest_LDADD = libcaca++.la libcucul++.la @CACA_LIBS@
+cpptest_LDADD = libcaca++.la libcucul++.la ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
 
