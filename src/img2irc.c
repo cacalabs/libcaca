@@ -58,7 +58,7 @@ int main(int argc, char **argv)
 
     unload_image(i);
 
-    export = cucul_create_export(cv, "irc");
+    export = cucul_export_canvas(cv, "irc");
     fwrite(cucul_get_buffer_data(export),
            cucul_get_buffer_size(export), 1, stdout);
     cucul_free_buffer(export);

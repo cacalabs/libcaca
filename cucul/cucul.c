@@ -72,61 +72,6 @@ cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
     return cv;
 }
 
-/** \brief Load a memory area into a canvas.
- *
- *  This function loads a memory area containing an exported canvas into
- *  a new \e libcucul canvas.
- *
- *  \param data The memory area to be loaded into a canvas.
- *  \param size The length of the memory area.
- *  \return A libcucul canvas, or NULL in case of error.
- */
-cucul_canvas_t *cucul_load_canvas(void *data, unsigned int size)
-{
-    cucul_canvas_t *cv;
-    uint8_t *buf = (uint8_t *)data;
-    unsigned int width, height, n;
-
-    if(size < 16)
-        return NULL;
-
-    if(buf[0] != 'C' || buf[1] != 'A' || buf[2] != 'C' || buf[3] != 'A')
-        return NULL;
-
-    if(buf[4] != 'C' || buf[5] != 'A' || buf[6] != 'N' || buf[7] != 'V')
-        return NULL;
-
-    width = ((uint32_t)buf[8] << 24) | ((uint32_t)buf[9] << 16)
-           | ((uint32_t)buf[10] << 8) | (uint32_t)buf[11];
-    height = ((uint32_t)buf[12] << 24) | ((uint32_t)buf[13] << 16)
-            | ((uint32_t)buf[14] << 8) | (uint32_t)buf[15];
-
-    if(!width || !height)
-        return NULL;
-
-    if(size != 16 + width * height * 8)
-        return NULL;
-
-    cv = cucul_create_canvas(width, height);
-
-    if(!cv)
-        return NULL;
-
-    for(n = height * width; n--; )
-    {
-        cv->chars[n] = ((uint32_t)buf[16 + 0 + 8 * n] << 24)
-                     | ((uint32_t)buf[16 + 1 + 8 * n] << 16)
-                     | ((uint32_t)buf[16 + 2 + 8 * n] << 8)
-                     | (uint32_t)buf[16 + 3 + 8 * n];
-        cv->attr[n] = ((uint32_t)buf[16 + 4 + 8 * n] << 24)
-                    | ((uint32_t)buf[16 + 5 + 8 * n] << 16)
-                    | ((uint32_t)buf[16 + 6 + 8 * n] << 8)
-                    | (uint32_t)buf[16 + 7 + 8 * n];
-    }
-
-    return cv;
-}
-
 /** \brief Resize a canvas.
  *
  *  This function sets the canvas width and height, in character cells.

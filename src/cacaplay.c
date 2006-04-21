@@ -53,7 +53,7 @@ int main(int argc, char **argv)
 
     buffer = malloc(statbuf.st_size);
     read(fd, buffer, statbuf.st_size);
-    cv = cucul_load_canvas(buffer, statbuf.st_size);
+    cv = cucul_import_canvas(buffer, statbuf.st_size, "caca");
     free(buffer);
 
     if(!cv)

@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
         cucul_putstr(cv, WIDTH / 2 - 7 + x, HEIGHT / 2 + 5, "#");
     }
 
-    buffer = cucul_create_export(cv, argv[1]);
+    buffer = cucul_export_canvas(cv, argv[1]);
     fwrite(cucul_get_buffer_data(buffer),
            cucul_get_buffer_size(buffer), 1, stdout);
     cucul_free_buffer(buffer);

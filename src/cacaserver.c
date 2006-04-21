@@ -226,7 +226,7 @@ int main(void)
         if(server->canvas)
             cucul_free_canvas(server->canvas);
 
-        server->canvas = cucul_load_canvas(buf, size);
+        server->canvas = cucul_import_canvas(buf, size, "caca");
 
         if(!server->canvas)
             continue; /* Load error */
@@ -240,7 +240,7 @@ int main(void)
 
         /* Get ANSI representation of the image and skip the end-of buffer
          * linefeed ("\r\n", 2 bytes) */
-        server->buffer = cucul_create_export(server->canvas, "ansi");
+        server->buffer = cucul_export_canvas(server->canvas, "ansi");
         server->bufdata = cucul_get_buffer_data(server->buffer);
         server->buflen = cucul_get_buffer_size(server->buffer);
         server->buflen -= 2;

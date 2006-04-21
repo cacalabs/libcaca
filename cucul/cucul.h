@@ -74,7 +74,6 @@ typedef struct cucul_font cucul_font_t;
  *
  *  @{ */
 cucul_canvas_t * cucul_create_canvas(unsigned int, unsigned int);
-cucul_canvas_t * cucul_load_canvas(void *, unsigned int);
 void cucul_set_canvas_size(cucul_canvas_t *, unsigned int, unsigned int);
 unsigned int cucul_get_canvas_width(cucul_canvas_t *);
 unsigned int cucul_get_canvas_height(cucul_canvas_t *);
@@ -205,14 +204,16 @@ void cucul_render_canvas(cucul_canvas_t *, cucul_font_t *, void *,
 void cucul_free_font(cucul_font_t *);
 /*  @} */
 
-/** \defgroup exporter libcucul exporters to various formats
+/** \defgroup importexport libcucul importers/exporters from/to various formats
  *
- *  These functions export the current canvas to various text formats. It
- *  is necessary to call cucul_free_buffer() to dispose of the data.
+ *  These functions import various file formats into a new canvas, or export
+ *  the current canvas to various text formats.
  *
  *  @{ */
-cucul_buffer_t * cucul_create_export(cucul_canvas_t *, char const *);
+cucul_buffer_t * cucul_export_canvas(cucul_canvas_t *, char const *);
 char const * const * cucul_get_export_list(void);
+cucul_canvas_t * cucul_import_canvas(void const *, unsigned int, char const *);
+char const * const * cucul_get_import_list(void);
 /*  @} */
 
 #ifdef __cplusplus

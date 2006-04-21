@@ -350,10 +350,10 @@ void 	Cucul::free_font ( Cucul::Font *f)
     cucul_free_font(f->font);
 }
 
-Cucul::Buffer * 	Cucul::create_export (char const *buf)
+Cucul::Buffer * 	Cucul::export_canvas (char const *buf)
 {
     Cucul::Buffer *b = new Cucul::Buffer();
-    b->buffer = cucul_create_export(cv, buf);
+    b->buffer = cucul_export_canvas(cv, buf);
     return b;
 }
 

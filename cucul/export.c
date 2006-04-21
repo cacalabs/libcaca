@@ -65,7 +65,7 @@ static void export_tga(cucul_canvas_t *, cucul_buffer_t *);
  *  \param cv A libcucul canvas
  *  \param format A string describing the requested output format.
  */
-cucul_buffer_t * cucul_create_export(cucul_canvas_t *cv, char const *format)
+cucul_buffer_t * cucul_export_canvas(cucul_canvas_t *cv, char const *format)
 {
     cucul_buffer_t *ex;
 
@@ -103,7 +103,7 @@ cucul_buffer_t * cucul_create_export(cucul_canvas_t *cv, char const *format)
  *
  *  Return a list of available export formats. The list is a NULL-terminated
  *  array of strings, interleaving a string containing the internal value for
- *  the export format, to be used with cucul_create_export(), and a string
+ *  the export format, to be used with cucul_export_canvas(), and a string
  *  containing the natural language description for that export format.
  *
  *  \return An array of strings.

@@ -28,6 +28,7 @@ libcucul_la_SOURCES = \
 	font.c \
 	font_mono9.h \
 	font_monobold12.h \
+	import.c \
 	export.c \
 	$(NULL)
 libcucul_la_LDFLAGS = -no-undefined

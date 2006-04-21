@@ -118,7 +118,7 @@ class Cucul {
     unsigned int 	get_font_height (Font *);
     void 	render_canvas ( Font *, unsigned char *, unsigned int, unsigned int, unsigned int);
     void 	free_font (Font *);
-    Buffer * 	create_export ( char const *);
+    Buffer * 	export_canvas ( char const *);
     char const *const * 	get_export_list (void);
 
 

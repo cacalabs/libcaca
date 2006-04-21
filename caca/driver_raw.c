@@ -55,7 +55,7 @@ static void raw_display(caca_display_t *dp)
 {
     cucul_buffer_t *buffer;
 
-    buffer = cucul_create_export(dp->cv, "caca");
+    buffer = cucul_export_canvas(dp->cv, "caca");
     fwrite(cucul_get_buffer_data(buffer),
            cucul_get_buffer_size(buffer), 1, stdout);
     fflush(stdout);
