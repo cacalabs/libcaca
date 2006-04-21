@@ -31,6 +31,6 @@ libcucul_la_SOURCES = \
 	import.c \
 	export.c \
 	$(NULL)
-libcucul_la_LDFLAGS = -no-undefined
+libcucul_la_LDFLAGS = -no-undefined -version-info @LT_VERSION@
 libcucul_la_LIBADD = @CUCUL_LIBS@
 

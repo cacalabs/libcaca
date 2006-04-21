@@ -27,6 +27,6 @@ libcaca_la_SOURCES = \
 	driver_x11.c \
 	$(NULL)
 AM_CPPFLAGS = -I$(top_srcdir)/cucul
-libcaca_la_LDFLAGS = -no-undefined
+libcaca_la_LDFLAGS = -no-undefined -version-info @LT_VERSION@
 libcaca_la_LIBADD = ../cucul/libcucul.la @CACA_LIBS@
 
