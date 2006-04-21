@@ -100,9 +100,9 @@ void Cucul::printf(int x, int y, char const * format,...)
     putstr(x, y, buf);
 }
 
-void Cucul::clear(unsigned char bg )
+void Cucul::clear(void)
 {
-    cucul_clear_canvas(cv, bg);
+    cucul_clear_canvas(cv);
 }
 
 void Cucul::blit(int x, int y, Cucul* c1, Cucul* c2)

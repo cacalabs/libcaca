@@ -70,7 +70,7 @@ class Cucul
     void printf(int x , int y , char const * format,...);
     void putchar(int x, int y, char ch);
     void putstr(int x, int y, char *str);
-    void clear(unsigned char bg);
+    void clear(void);
     void blit(int, int, Cucul* c1, Cucul* c2);
     void invert();
     void flip();

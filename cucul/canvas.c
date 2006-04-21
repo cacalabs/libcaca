@@ -154,25 +154,21 @@ void cucul_printf(cucul_canvas_t *cv, int x, int y, char const *format, ...)
 
 /** \brief Clear the canvas.
  *
- *  This function clears the canvas using the given background colour.
+ *  This function clears the canvas using the current background colour.
  *
  *  \param cv The canvas to clear.
- *  \param bg The background colour to use.
  */
-void cucul_clear_canvas(cucul_canvas_t *cv, unsigned char bg)
+void cucul_clear_canvas(cucul_canvas_t *cv)
 {
-    uint16_t oldfg = cv->fgcolor;
-    uint16_t oldbg = cv->bgcolor;
-    int y = cv->height;
-
-    cucul_set_color(cv, CUCUL_COLOR_DEFAULT, bg);
+    uint32_t color = (cv->bgcolor << 16) | cv->fgcolor;
+    unsigned int n;
 
     /* We could use SLsmg_cls() etc., but drawing empty lines is much faster */
-    while(y--)
-        cucul_putstr(cv, 0, y, cv->empty_line);
-
-    cv->fgcolor = oldfg;
-    cv->bgcolor = oldbg;
+    for(n = cv->width * cv->height; n--; )
+    {
+        cv->chars[n] = (uint32_t)' ';
+        cv->attr[n] = color;
+    }
 }
 
 /** \brief Blit a canvas onto another one.

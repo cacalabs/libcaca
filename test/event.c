@@ -81,7 +81,8 @@ int main(int argc, char **argv)
         }
         while(ret);
 
-        cucul_clear_canvas(cv, CUCUL_COLOR_BLACK);
+        cucul_set_color(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
+        cucul_clear_canvas(cv);
 
         /* Print current event */
         cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);

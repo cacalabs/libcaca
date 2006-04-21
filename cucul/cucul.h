@@ -103,7 +103,7 @@ char const *cucul_get_color_name(unsigned int);
 void cucul_putchar(cucul_canvas_t *, int, int, char);
 void cucul_putstr(cucul_canvas_t *, int, int, char const *);
 void cucul_printf(cucul_canvas_t *, int, int, char const *, ...);
-void cucul_clear_canvas(cucul_canvas_t *, unsigned char);
+void cucul_clear_canvas(cucul_canvas_t *);
 void cucul_blit(cucul_canvas_t *, int, int, cucul_canvas_t const *, cucul_canvas_t const *);
 /*  @} */
 

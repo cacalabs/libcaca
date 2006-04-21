@@ -321,7 +321,8 @@ int main(int argc, char **argv)
             free(buffer);
         }
 
-        cucul_clear_canvas(cv, CUCUL_COLOR_BLACK);
+        cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLACK);
+        cucul_clear_canvas(cv);
 
         if(!items)
         {

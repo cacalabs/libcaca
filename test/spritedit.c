@@ -100,9 +100,9 @@ int main(int argc, char **argv)
 	}
 
 
-        cucul_clear_canvas(cv, CUCUL_COLOR_BLACK);
-
         cucul_set_color(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
+        cucul_clear_canvas(cv);
+
         cucul_draw_thin_box(cv, 0, 0, cucul_get_canvas_width(cv) - 1,
                             cucul_get_canvas_height(cv) - 1);
 

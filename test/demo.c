@@ -142,7 +142,10 @@ int main(int argc, char **argv)
                 }
 
                 if(demo)
-                    cucul_clear_canvas(cv, CUCUL_COLOR_BLACK);
+                {
+                    cucul_set_color(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
+                    cucul_clear_canvas(cv);
+                }
             }
             else if(ev.type & CACA_EVENT_MOUSE_MOTION)
             {
@@ -196,8 +199,8 @@ static void display_menu(void)
     int xo = cucul_get_canvas_width(cv) - 2;
     int yo = cucul_get_canvas_height(cv) - 2;
 
-    cucul_clear_canvas(cv, CUCUL_COLOR_BLACK);
     cucul_set_color(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
+    cucul_clear_canvas(cv);
     cucul_draw_thin_box(cv, 1, 1, xo, yo);
 
     cucul_putstr(cv, (xo - strlen("libcaca demo")) / 2, 3, "libcaca demo");
@@ -236,7 +239,8 @@ static void demo_all(void)
 
     i++;
 
-    cucul_clear_canvas(cv, CUCUL_COLOR_BLACK);
+    cucul_set_color(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
+    cucul_clear_canvas(cv);
 
     /* Draw the sun */
     cucul_set_color(cv, CUCUL_COLOR_YELLOW, CUCUL_COLOR_BLACK);
@@ -349,7 +353,8 @@ static void demo_color(void)
     int i, j;
     char buf[BUFSIZ];
 
-    cucul_clear_canvas(cv, CUCUL_COLOR_BLACK);
+    cucul_set_color(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
+    cucul_clear_canvas(cv);
     for(i = 0; i < 16; i++)
     {
         sprintf(buf, "'%c': %i (%s)", 'a' + i, i, cucul_get_color_name(i));
