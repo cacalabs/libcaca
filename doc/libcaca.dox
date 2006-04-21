@@ -35,6 +35,10 @@
  - \subpage tutorial
  - \subpage migrating
 
+ There is also information specially targeted at \e libcaca developers:
+
+ - \subpage style
+
  \section user User's documentation
 
  - \subpage env

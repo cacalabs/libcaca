@@ -1,0 +1,35 @@
+/* $Id$ */
+
+/** \page tutorial A libcucul and libcaca tutorial
+
+ Super short example:
+
+\code
+#include <cucul.h>
+#include <caca.h>
+
+int main(void)
+{
+    /* Initialise libcaca */
+    cucul_canvas_t *cv; caca_display_t *dp; caca_event_t ev;
+    cv = cucul_create_canvas(0, 0);
+    dp = caca_create_display(cv);
+    /* Set window title */
+    caca_set_display_title(dp, "Hello!");
+    /* Choose drawing colours */
+    cucul_set_color(cv, CUCUL_COLOR_BLACK, CUCUL_COLOR_WHITE);
+    /* Draw a string at coordinates (0, 0) */
+    cucul_putstr(cv, 0, 0, "This is a message");
+    /* Refresh display */
+    caca_refresh_display();
+    /* Wait for a key press event */
+    caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
+    /* Clean up library */
+    caca_free_display(dp);
+    cucul_free_canvas(cv);
+
+    return 0;
+}
+\endcode
+
+*/
