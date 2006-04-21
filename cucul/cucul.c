@@ -53,7 +53,6 @@ cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
     cv->width = cv->height = 0;
     cv->chars = NULL;
     cv->attr = NULL;
-    cv->empty_line = cv->scratch_line = NULL;
 
     /* Initialise to a default size. 80x32 is arbitrary but matches AAlib's
      * default X11 window. When a graphic driver attaches to us, it can set
@@ -172,7 +171,6 @@ void cucul_free_canvas(cucul_canvas_t *cv)
 {
     _cucul_end_dither();
 
-    free(cv->empty_line);
     free(cv->scratch_line);
 
     free(cv->chars);
@@ -278,12 +276,6 @@ void _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
 
     /* Recompute the scratch line and the empty line */
     if(width != old_width)
-    {
-        cv->empty_line = realloc(cv->empty_line, width + 1);
-        memset(cv->empty_line, ' ', width);
-        cv->empty_line[width] = '\0';
-
         cv->scratch_line = realloc(cv->scratch_line, width + 1);
-    }
 }
 
