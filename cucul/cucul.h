@@ -42,7 +42,7 @@ typedef struct cucul_buffer cucul_buffer_t;
 /** font structure */
 typedef struct cucul_font cucul_font_t;
 
-/** \defgroup colour Colour definitions
+/** \defgroup colour libcucul colour definitions
  *
  *  Colours that can be used with cucul_set_color().
  *
@@ -67,7 +67,7 @@ typedef struct cucul_font cucul_font_t;
 #define CUCUL_COLOR_TRANSPARENT 0x20 /**< The transparent colour. */
 /*  @} */
 
-/** \defgroup cucul Basic libcucul functions
+/** \defgroup cucul libcucul basic functions
  *
  *  These functions provide the basic \e libcaca routines for library
  *  initialisation, system information retrieval and configuration.
@@ -82,7 +82,7 @@ void cucul_free_canvas(cucul_canvas_t *);
 int cucul_rand(int, int);
 /*  @} */
 
-/** \defgroup buffer Buffer handling
+/** \defgroup buffer libcucul buffer handling
  *
  *  These functions provide methods to handle libcucul buffers.
  *
@@ -92,7 +92,7 @@ void * cucul_get_buffer_data(cucul_buffer_t *);
 void cucul_free_buffer(cucul_buffer_t *);
 /*  @} */
 
-/** \defgroup canvas Canvas drawing
+/** \defgroup canvas libcucul canvas drawing
  *
  *  These functions provide low-level character printing routines and
  *  higher level graphics functions.
@@ -108,7 +108,7 @@ void cucul_clear_canvas(cucul_canvas_t *, unsigned char);
 void cucul_blit(cucul_canvas_t *, int, int, cucul_canvas_t const *, cucul_canvas_t const *);
 /*  @} */
 
-/** \defgroup transform Canvas transformation
+/** \defgroup transform libcucul canvas transformation
  *
  *  These functions perform horizontal and vertical canvas flipping.
  *
@@ -119,7 +119,7 @@ void cucul_flop(cucul_canvas_t *);
 void cucul_rotate(cucul_canvas_t *);
 /*  @} */
 
-/** \defgroup prim Primitives drawing
+/** \defgroup prim libcucul primitives drawing
  *
  *  These functions provide routines for primitive drawing, such as lines,
  *  boxes, triangles and ellipses.
@@ -144,7 +144,7 @@ void cucul_draw_thin_triangle(cucul_canvas_t *, int, int, int, int, int, int);
 void cucul_fill_triangle(cucul_canvas_t *, int, int, int, int, int, int, char const *);
 /*  @} */
 
-/** \defgroup sprite Sprite handling
+/** \defgroup sprite libcucul sprite handling
  *
  *  These functions provide high level routines for sprite loading, animation
  *  and rendering.
@@ -160,7 +160,7 @@ void cucul_draw_sprite(cucul_canvas_t *, int, int, cucul_sprite_t const *, int);
 void cucul_free_sprite(cucul_sprite_t *);
 /*  @} */
 
-/** \defgroup dither Bitmap dithering
+/** \defgroup dither libcucul bitmap dithering
  *
  *  These functions provide high level routines for dither allocation and
  *  rendering.
@@ -190,7 +190,7 @@ void cucul_dither_bitmap(cucul_canvas_t *, int, int, int, int,
 void cucul_free_dither(cucul_dither_t *);
 /*  @} */
 
-/** \defgroup font Font handling
+/** \defgroup font libcucul font handling
  *
  *  These functions provide font handling routines and high quality
  *  canvas to bitmap rendering.
@@ -205,7 +205,7 @@ void cucul_render_canvas(cucul_canvas_t *, cucul_font_t *, void *,
 void cucul_free_font(cucul_font_t *);
 /*  @} */
 
-/** \defgroup exporter Exporters to various formats
+/** \defgroup exporter libcucul exporters to various formats
  *
  *  These functions export the current canvas to various text formats. It
  *  is necessary to call cucul_free_buffer() to dispose of the data.

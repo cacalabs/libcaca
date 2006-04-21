@@ -21,7 +21,7 @@
  software. It used to be licensed under the GNU Lesser General Public
  License, but that was not free enough.
 
- \section api The libcaca API
+ \section devel Developer's documentation
 
  \e libcaca relies on a low-level, device independent library, called
  \e libcucul. \e libcucul can be used alone as a simple ASCII and/or
@@ -30,34 +30,26 @@
  The complete \e libcucul and \e libcaca programming interface is
  available from the cucul.h and caca.h headers.
 
- \section env Environment variables
+ Some other topics are covered by specific sections:
 
- Some environment variables can be used to change the behaviour of
- \e libcaca without having to modify the program which uses them. These
- variables are:
+ - \subpage tutorial
+ - \subpage migrating
 
- \li \b CACA_DRIVER: set the backend video driver. In order of preference:
-     - \c conio uses the DOS conio.h interface.
-     - \c ncurses uses the ncurses library.
-     - \c slang uses the S-Lang library.
-     - \c x11 uses the native X11 driver.
-     - \c gl uses freeglut and opengl libraries.
-     - \c raw outputs to the standard output instead of rendering the
-       canvas. This is can be used together with cacaserver.
+ \section user User's documentation
 
- \li \b CACA_GEOMETRY: set the video display size. The format of this
-     variable must be XxY, with X and Y being integer values. This option
-     currently works with the network, X11 and GL drivers.
+ - \subpage env
 
- \li \b CACA_FONT: set the rendered font. The format of this variable is
-     implementation dependent, but since it currently only works with the
-     X11 driver, an X11 font name such as "fixed" or "5x7" is expected.
-
- \section Misc
+ \section misc Misc
 
  - \subpage news
  - \subpage authors
  - \subpage thanks
  - \subpage todo
+
+ \section license License
+
+ Permission is granted to copy, distribute and/or modify this document
+ under the terms of the Do What The Fuck You Want To Public License, version
+ 2 as published by Sam Hocevar. For details see http://sam.zoy.org/wtfpl/ .
 
 */

@@ -1,0 +1,165 @@
+/* $Id$ */
+
+/** \page migrating Migrating from libcaca 0.9 to the 1.0 API
+
+ This section will guide you through the migration of a \e libcaca 0.9
+ application to the latest API version.
+
+ \section foo1 Overview
+
+ The most important changes in the 1.0 API of \e libcaca are the
+ \e libcaca / \e libcucul split and the object-oriented design. Where
+ you used to do:
+
+\code
+#include <caca.h>
+
+int main(void)
+{
+    /* Initialise libcaca */
+    caca_init();
+    /* Set window title */
+    caca_set_window_title("Hello!");
+    /* Choose drawing colours */
+    caca_set_color(CACA_COLOR_BLACK, CACA_COLOR_WHITE);
+    /* Draw a string at coordinates (0, 0) */
+    caca_putstr(0, 0, "This is a message");
+    /* Refresh display */
+    caca_refresh();
+    /* Wait for a key press event */
+    caca_wait_event(CACA_EVENT_KEY_PRESS);
+    /* Clean up library */
+    caca_end();
+
+    return 0;
+}
+\endcode
+
+ You now do:
+
+\code
+#include <cucul.h>
+#include <caca.h>
+
+int main(void)
+{
+    /* Initialise libcaca */
+    cucul_canvas_t *cv; caca_display_t *dp; caca_event_t ev;
+    cv = cucul_create_canvas(0, 0);
+    dp = caca_create_display(cv);
+    /* Set window title */
+    caca_set_display_title(dp, "Hello!");
+    /* Choose drawing colours */
+    cucul_set_color(cv, CUCUL_COLOR_BLACK, CUCUL_COLOR_WHITE);
+    /* Draw a string at coordinates (0, 0) */
+    cucul_putstr(cv, 0, 0, "This is a message");
+    /* Refresh display */
+    caca_refresh_display();
+    /* Wait for a key press event */
+    caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
+    /* Clean up library */
+    caca_free_display(dp);
+    cucul_free_canvas(cv);
+
+    return 0;
+}
+\endcode
+
+ Note the following important things:
+
+ - Functions now take an object handle as their first argument.
+ - All input/output functions start with \b caca_ and all
+   drawing and text handling functions start with \b cucul_ .
+
+ \section foo2 Function equivalence list
+
+ \subsection bar1 Basic functions
+
+ - \b caca_init(): use cucul_create_canvas() to create a \e libcucul canvas,
+   followed by caca_create_display() to attach a \e libcaca display to it.
+ - \b caca_set_delay(): unchanged.
+ - \b caca_get_feature(): deprecated.
+ - \b caca_set_feature(): deprecated, see cucul_set_dither_antialias(),
+   cucul_set_dither_color() and cucul_set_dither_mode() instead.
+ - \b caca_get_feature_name(): deprecated, see cucul_get_dither_mode_list(),
+   cucul_get_dither_antialias_list() and cucul_get_dither_color_list()
+   instead.
+ - \b caca_get_rendertime(): unchanged.
+ - \b caca_get_width(): use cucul_get_canvas_width().
+ - \b caca_get_height(): use cucul_get_canvas_height().
+ - \b caca_set_window_title(): use caca_set_display_title().
+ - \b caca_get_window_width(): use caca_get_display_width().
+ - \b caca_get_window_height(): use caca_get_display_height().
+ - \b caca_refresh(): use caca_refresh_display().
+ - \b caca_end(): use caca_free_display() to detach the \e libcaca display,
+   followed by cucul_free_canvas() to free the underlying \e libcucul canvas.
+
+ \subsection bar2 Event handling
+
+ - \b caca_get_event(): unchanged.
+ - \b caca_wait_event(): use caca_get_event() with a \c timeout argument
+   of \b -1.
+ - \b caca_get_mouse_x(): unchanged.
+ - \b caca_get_mouse_y(): unchanged.
+
+ \subsection bar3 Character printing
+
+ - \b caca_set_color(): use cucul_set_color() or cucul_set_truecolor().
+ - \b caca_get_fg_color(): deprecated.
+ - \b caca_get_bg_color(): deprecated.
+ - \b caca_get_color_name(): use cucul_get_color_name().
+ - \b caca_putchar(): use cucul_putchar().
+ - \b caca_putstr(): use cucul_putstr().
+ - \b caca_printf(): use cucul_printf().
+ - \b caca_clear(): use cucul_clear_canvas().
+
+ \subsection bar4 Primitives drawing
+
+ - \b caca_draw_line(): use cucul_draw_line().
+ - \b caca_draw_polyline(): use cucul_draw_polyline().
+ - \b caca_draw_thin_line(): use cucul_draw_thin_line().
+ - \b caca_draw_thin_polyline(): use cucul_draw_thin_polyline().
+
+ - \b caca_draw_circle(): use cucul_draw_circle().
+ - \b caca_draw_ellipse(): use cucul_draw_ellipse().
+ - \b caca_draw_thin_ellipse(): use cucul_draw_thin_ellipse().
+ - \b caca_fill_ellipse(): use cucul_fill_ellipse().
+
+ - \b caca_draw_box(): use cucul_draw_box().
+ - \b caca_draw_thin_box(): use cucul_draw_thin_box().
+ - \b caca_fill_box(): use cucul_fill_box().
+
+ - \b caca_draw_triangle(): use cucul_draw_triangle().
+ - \b caca_draw_thin_triangle(): use cucul_draw_thin_triangle().
+ - \b caca_fill_triangle(): use cucul_fill_triangle().
+
+ \subsection bar5 Mathematical functions
+
+ - \b caca_rand(): use cucul_rand()
+ - \b caca_sqrt(): this function is now deprecated
+
+ \subsection bar6 Sprite handling
+
+ The sprite handling functions are currently being reworked.
+
+ \subsection bar7 Bitmap handling
+
+ - \b caca_create_bitmap(): use cucul_create_dither().
+ - \b caca_set_bitmap_palette(): use cucul_set_dither_palette().
+ - \b caca_draw_bitmap(): use cucul_dither_bitmap().
+ - \b caca_free_bitmap(): use cucul_free_dither().
+
+ \section foo3 Compilation
+
+ The \c caca-config utility is deprecated in favour of the standard
+ \c pkg-config interface:
+
+\code
+gcc -c foobar.c -o foobar.o `pkg-config --cflags caca`
+gcc foobar.o -o foobar `pkg-config --libs caca`
+\endcode
+
+ \c caca-config is still provided as a convenience tool but will be removed
+ in the future.
+
+*/

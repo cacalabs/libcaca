@@ -7,39 +7,27 @@
   - all the sprite stuff (loading, saving, blitting, transparency
      support, background colour support, thinking of a storage format,
      etc.)
-
   - Or maybe, instead of doing shit with the sprites, just allow canvases
      to have several buffers, allow to change the active buffer, and treat
      sprites like that.
-
   - ASCII/ANSI art loading functions (maybe load them as sprites)
-
 
   \subsection indep API-independent stuff
 
   - support for transparency (CUCUL_COLOR_TRANSPARENT)
-
   - Brightness, contrast support for bitmaps (the functions are here, we
      just need to fill them)
-
   - Error distribution dithering
-
   - Add a random factor to the random ditherer. No need to change the API
      for that, we can just pass "random:10" instead of "random" to the
      cucul_set_bitmap_dithering() function.
-
   - Implement the colour modes set in cucul_set_bitmap_color(). For the
      moment only "full16" and "16" are implemented.
-
   - Fix the thin ellipse rendering (currently it's only |s and -s, we
      could make them smoother by using ' ` , etc).
-
   - support for double width glyphs (also needs some libcaca changes)
-
   - better mask support in cucul_blit()
-
   - factor internal Unicode character conversions, especially UCS4 -> UTF-8
-
   - optimise exporters so that they do not allocate huge blocks of memory
      when they only need half of it.
 
@@ -51,20 +39,14 @@
   - text edit widget with cursor support (I'm unsure about this, it
      seems pretty difficult)
 
-
   \subsection indep API-independent stuff
 
   - Write a Linux console output
-
   - Better keyboard driver in an X terminal, see
      http://groups.yahoo.com/group/zepp/message/381
-
   - Unicode support for X11 (maybe through Xft)
-
   - fix Unicode support for ncurses
-
   - Unicode support for GL
-
   - and Jylam wants a framebuffer output
 
 
@@ -73,35 +55,27 @@
   \subsection needed Needed
 
   - Fix Python
-
   - Fix Perl
-
   - C# (it's the next big thing, believe me)
-
   - PHP (together with the HTML output it would allow for nice web
      applications)
-
 
   \subsection notimp Not that important
 
   - Ruby
-
   - Java
 
 
 \section kernel Kernel mode
 
   - keyboard support
-
   - printf/fprintf are missing
-
   - Improve malloc/free so that we can reuse freed memory
 
 
 \section doc Documentation
 
   - Write a tutorial.
-
   - Draw a nicer logo
 
 
@@ -110,25 +84,19 @@
   \section cacaview cacaview
 
   - File browser
-
   - open ANSI files
-
   - save in different formats
-
 
   \section cacadraw cacadraw
 
   - Does not exist yet, but I want it. A modern ANSI editor that can also
      do Unicode.
 
-
   \section cuculet CUCUlet
 
   - Does not exist yet, but I want it. A replacement for FIGlet that can
      also do Unicode
-
   - Colour support, of course: outputs to IRC, ANSI, HTML...
-
   - Can open FIGlet fonts
 
 */
