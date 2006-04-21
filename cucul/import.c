@@ -84,7 +84,7 @@ char const * const * cucul_get_import_list(void)
 static cucul_canvas_t *import_caca(void const *data, unsigned int size)
 {
     cucul_canvas_t *cv;
-    uint8_t *buf = (uint8_t *)data;
+    uint8_t const *buf = (uint8_t const *)data;
     unsigned int width, height, n;
 
     if(size < 16)
