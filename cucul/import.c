@@ -34,6 +34,8 @@ static cucul_canvas_t *import_caca(void const *, unsigned int);
  *
  *  Valid values for \c format are:
  *
+ *  \li \c "": attempt to autodetect the file format.
+ *
  *  \li \c "caca": import native libcaca files.
  *
  *  \param data The memory area to be loaded into a canvas.
