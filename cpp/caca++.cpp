@@ -81,7 +81,7 @@ int Caca::set_display_title(char const *s)
 
 int Caca::get_event(unsigned int g, Event *n, int aa)
 {
-    return caca_get_event(dp, g, n->e, aa);
+    return caca_get_event(dp, g, &n->e, aa);
 }
 
 unsigned int Caca::get_mouse_x()
