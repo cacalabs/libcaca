@@ -20,66 +20,82 @@
 
 #include "caca++.h"
 
-
 Caca::Caca(void) 
 {
 
 }
+
 Caca::Caca(Cucul *cv) 
 {
     dp = caca_create_display(cv->get_cucul_canvas_t());
-    if(!dp) throw -1;
+    if(!dp)
+        throw -1;
 }
+
 Caca::~Caca() 
 {
     caca_free_display(dp);
 }
+
 void Caca::attach(Cucul *cv)
 {
     dp = caca_create_display(cv->get_cucul_canvas_t());
-    if(!dp) throw -1;
+    if(!dp)
+        throw -1;
 }
-void 	Caca::detach ()
+
+void Caca::detach()
 {
     caca_free_display(dp);
 }
-void 	Caca::set_delay (unsigned int d)
+
+void Caca::set_delay(unsigned int d)
 {
     caca_set_delay(dp, d);
 }
-void 	Caca::display ()
+
+void Caca::display()
 {
     caca_refresh_display(dp);
 }
-unsigned int 	Caca::get_rendertime ()
+
+unsigned int Caca::get_rendertime()
 {
     return caca_get_rendertime(dp);
 }
-unsigned int 	Caca::get_display_width ()
+
+unsigned int Caca::get_display_width()
 {
     return caca_get_display_width(dp);
 }
-unsigned int 	Caca::get_display_height ()
+
+unsigned int Caca::get_display_height()
 {
     return caca_get_display_height(dp);
 }
-int 	Caca::set_display_title (char const *s)
+
+int Caca::set_display_title(char const *s)
 {
     return caca_set_display_title(dp, s);
 }
-int 	Caca::get_event (unsigned int g, Event *n, int aa)
+
+int Caca::get_event(unsigned int g, Event *n, int aa)
 {
     return caca_get_event(dp, g, n->e, aa);
 }
-unsigned int 	Caca::get_mouse_x ()
+
+unsigned int Caca::get_mouse_x()
 {
     return caca_get_mouse_x(dp);
 }
-unsigned int 	Caca::get_mouse_y ()
+
+unsigned int Caca::get_mouse_y()
 {
     return caca_get_mouse_x(dp);
 }
-void 	Caca::set_mouse (int v)
+
+void Caca::set_mouse(int v)
 {
      caca_set_mouse(dp, v);
 }
+

@@ -22,16 +22,15 @@
 #ifndef _CACA_PP_H
 #define _CACA_PP_H
 
+#include <cucul.h>
+#include <caca.h>
 
-#include "cucul.h"
-#include "caca.h"
+#include <cucul++.h>
 
-#include "cucul++.h"
-
-
-class Event {
+class Event
+{
     friend class Caca;
- public:
+  public:
     enum caca_event_type
     {
         CACA_EVENT_NONE =          0x0000, /**< No event. */
@@ -46,34 +45,32 @@ class Event {
         CACA_EVENT_ANY =           0xffff  /**< Bitmask for any event. */
     } type;
 
- protected:
+  protected:
     caca_event *e;
 };
 
-class Caca {
- public:
+class Caca
+{
+  public:
     Caca();
     Caca(Cucul *qq);
     ~Caca();
 
-    void    attach (Cucul *qq);
-    void 	detach ();
-    void 	set_delay (unsigned int);
-    void 	display ();
-    unsigned int 	get_rendertime ();
-    unsigned int 	get_display_width ();
-    unsigned int 	get_display_height ();
-    int 	set_display_title (char const *);
-    int 	get_event (unsigned int, Event*, int);
-    unsigned int 	get_mouse_x ();
-    unsigned int 	get_mouse_y ();
-    void 	set_mouse (int);
+    void attach(Cucul *qq);
+    void detach();
+    void set_delay(unsigned int);
+    void display();
+    unsigned int get_rendertime();
+    unsigned int get_display_width();
+    unsigned int get_display_height();
+    int set_display_title(char const *);
+    int get_event(unsigned int, Event*, int);
+    unsigned int get_mouse_x();
+    unsigned int get_mouse_y();
+    void set_mouse(int);
 
-
-    
-    private:
+  private:
     caca_display_t *dp;
 };
-
 
 #endif /* _CACA_PP_H */

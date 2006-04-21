@@ -11,6 +11,8 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
+#include "config.h"
+
 #include <iostream>
 
 #include <cucul++.h>
