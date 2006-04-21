@@ -206,6 +206,7 @@ static void ncurses_handle_resize(caca_display_t *dp)
 {
     struct winsize size;
 
+#if defined(HAVE_SYS_IOCTL_H)
     if(ioctl(fileno(stdout), TIOCGWINSZ, &size) == 0)
     {
         dp->resize.w = size.ws_col;
@@ -218,6 +219,7 @@ static void ncurses_handle_resize(caca_display_t *dp)
         wrefresh(curscr);
         return;
     }
+#endif
 
     /* Fallback */
     dp->resize.w = dp->cv->width;
