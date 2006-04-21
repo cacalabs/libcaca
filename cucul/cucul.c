@@ -171,8 +171,6 @@ void cucul_free_canvas(cucul_canvas_t *cv)
 {
     _cucul_end_dither();
 
-    free(cv->scratch_line);
-
     free(cv->chars);
     free(cv->attr);
 
@@ -273,9 +271,5 @@ void _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
         cv->chars = realloc(cv->chars, new_size * sizeof(uint32_t));
         cv->attr = realloc(cv->attr, new_size * sizeof(uint32_t));
     }
-
-    /* Recompute the scratch line and the empty line */
-    if(width != old_width)
-        cv->scratch_line = realloc(cv->scratch_line, width + 1);
 }
 

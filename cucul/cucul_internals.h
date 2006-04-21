@@ -32,7 +32,6 @@ struct cucul_canvas
 
     uint32_t *chars;
     uint32_t *attr;
-    char *scratch_line;
 
     uint16_t fgcolor;
     uint16_t bgcolor;
