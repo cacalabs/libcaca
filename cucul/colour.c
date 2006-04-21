@@ -33,7 +33,7 @@ static const uint16_t ansitab[16] =
  *  caca_printf() and graphical primitive functions such as caca_draw_line()
  *  will use these colours.
  *
- *  Color values are those defined in \e cucul.h, such as CUCUL_COLOR_RED
+ *  Color values are those defined in cucul.h, such as CUCUL_COLOR_RED
  *  or CUCUL_COLOR_TRANSPARENT.
  *
  *  \param cv A handle to the libcucul canvas.

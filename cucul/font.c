@@ -92,15 +92,15 @@ DECLARE_UNPACKGLYPH(1)
 /** \brief Load a font from memory for future use.
  *
  *  This function loads a font and returns a handle to its internal
- *  structure. The handle can then be used with \e cucul_render_canvas()
+ *  structure. The handle can then be used with cucul_render_canvas()
  *  for bitmap output.
  *
- *  Internal fonts can also be loaded: if \e size is set to 0, \e data must
+ *  Internal fonts can also be loaded: if \c size is set to 0, \c data must
  *  be a string containing the internal font name.
  *
- *  If \e size is non-zero, the \e size bytes of memory at address \e data
+ *  If \c size is non-zero, the \c size bytes of memory at address \c data
  *  are loaded as a font. This memory are must not be freed by the calling
- *  program until the font handle has been freed with \e cucul_free_font().
+ *  program until the font handle has been freed with cucul_free_font().
  *
  *  \param data The memory area containing the font or its name.
  *  \param size The size of the memory area, or 0 if the font name is given.
@@ -218,7 +218,7 @@ char const * const * cucul_get_font_list(void)
  *
  *  This function returns the maximum value for the current font's glyphs
  *
- *  \param f The font, as returned by \e cucul_load_font()
+ *  \param f The font, as returned by cucul_load_font()
  *  \return The maximum glyph width.
  */
 unsigned int cucul_get_font_width(cucul_font_t *f)
@@ -230,7 +230,7 @@ unsigned int cucul_get_font_width(cucul_font_t *f)
  *
  *  This function returns the maximum value for the current font's glyphs
  *
- *  \param f The font, as returned by \e cucul_load_font()
+ *  \param f The font, as returned by cucul_load_font()
  *  \return The maximum glyph height.
  */
 unsigned int cucul_get_font_height(cucul_font_t *f)
@@ -240,12 +240,12 @@ unsigned int cucul_get_font_height(cucul_font_t *f)
 
 /** \brief Free a font structure.
  *
- *  This function frees all data allocated by \e cucul_load_font(). The
+ *  This function frees all data allocated by cucul_load_font(). The
  *  font structure is no longer usable by other libcucul functions. Once
  *  this function has returned, the memory area that was given to
- *  \e cucul_load_font() can be freed.
+ *  cucul_load_font() can be freed.
  *
- *  \param f The font, as returned by \e cucul_load_font()
+ *  \param f The font, as returned by cucul_load_font()
  */
 void cucul_free_font(cucul_font_t *f)
 {
@@ -260,15 +260,15 @@ void cucul_free_font(cucul_font_t *f)
  *  font. The pixel format is fixed (32-bit ARGB, 8 bits for each component).
  *
  *  The required image width can be computed using
- *  \e cucul_get_canvas_width(cv) and \e cucul_get_font_width(f). The required
- *  height can be computed using \e cucul_get_canvas_height(cv) and
- *  \e cucul_get_font_height(f).
+ *  cucul_get_canvas_width() and cucul_get_font_width(). The required
+ *  height can be computed using cucul_get_canvas_height() and
+ *  cucul_get_font_height().
  *
  *  Glyphs that do not fit in the image buffer are currently not rendered at
  *  all. They may be cropped instead in future versions.
  *
  *  \param cv The canvas to render
- *  \param f The font, as returned by \e cucul_load_font()
+ *  \param f The font, as returned by cucul_load_font()
  *  \param buf The image buffer
  *  \param width The width (in pixels) of the image buffer
  *  \param height The height (in pixels) of the image buffer

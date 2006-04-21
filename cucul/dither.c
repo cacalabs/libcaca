@@ -421,12 +421,12 @@ void cucul_set_dither_contrast(cucul_dither_t *d, float contrast)
 
 /** \brief Set dither antialiasing
  *
- *  Tell the renderer whether to antialias the dither. Antialiasing smoothen
+ *  Tell the renderer whether to antialias the dither. Antialiasing smoothens
  *  the rendered image and avoids the commonly seen staircase effect.
  *
- *  \li \e "none": no antialiasing.
+ *  \li \c "none": no antialiasing.
  *
- *  \li \e "prefilter": simple prefilter antialiasing. This is the default
+ *  \li \c "prefilter": simple prefilter antialiasing. This is the default
  *      value.
  *
  *  \param d Dither object.
@@ -446,7 +446,7 @@ void cucul_set_dither_antialias(cucul_dither_t *d, char const *str)
  *  Return a list of available antialiasing methods for a given dither. The
  *  list is a NULL-terminated array of strings, interleaving a string
  *  containing the internal value for the antialiasing method to be used with
- *  \e cucul_set_dither_antialias(), and a string containing the natural
+ *  cucul_set_dither_antialias(), and a string containing the natural
  *  language description for that antialiasing method.
  *
  *  \param d Dither object.
@@ -468,23 +468,23 @@ char const * const *
 /** \brief Choose colours used for dithering
  *
  *  Tell the renderer which colours should be used to render the
- *  bitmap. Valid values for \e str are:
+ *  bitmap. Valid values for \c str are:
  *
- *  \li \e "mono": use light gray on a black background.
+ *  \li \c "mono": use light gray on a black background.
  *
- *  \li \e "gray": use white and two shades of gray on a black background.
+ *  \li \c "gray": use white and two shades of gray on a black background.
  *
- *  \li \e "8": use the 8 ANSI colours on a black background.
+ *  \li \c "8": use the 8 ANSI colours on a black background.
  *
- *  \li \e "16": use the 16 ANSI colours on a black background.
+ *  \li \c "16": use the 16 ANSI colours on a black background.
  *
- *  \li \e "fullgray": use black, white and two shades of gray for both the
+ *  \li \c "fullgray": use black, white and two shades of gray for both the
  *      characters and the background.
  *
- *  \li \e "full8": use the 8 ANSI colours for both the characters and the
+ *  \li \c "full8": use the 8 ANSI colours for both the characters and the
  *      background.
  *
- *  \li \e "full16": use the 16 ANSI colours for both the characters and the
+ *  \li \c "full16": use the 16 ANSI colours for both the characters and the
  *      background. This is the default value.
  *
  *  \param d Dither object.
@@ -514,7 +514,7 @@ void cucul_set_dither_color(cucul_dither_t *d, char const *str)
  *  Return a list of available colour modes for a given dither. The list
  *  is a NULL-terminated array of strings, interleaving a string containing
  *  the internal value for the colour mode, to be used with
- *  \e cucul_set_dither_color(), and a string containing the natural
+ *  cucul_set_dither_color(), and a string containing the natural
  *  language description for that colour mode.
  *
  *  \param d Dither object.
@@ -541,15 +541,15 @@ char const * const *
 /** \brief Choose characters used for dithering
  *
  *  Tell the renderer which characters should be used to render the
- *  dither. Valid values for \e str are:
+ *  dither. Valid values for \c str are:
  *
- *  \li \e "ascii": use only ASCII characters. This is the default value.
+ *  \li \c "ascii": use only ASCII characters. This is the default value.
  *
- *  \li \e "shades": use Unicode characters "U+2591 LIGHT SHADE", "U+2592
+ *  \li \c "shades": use Unicode characters "U+2591 LIGHT SHADE", "U+2592
  *      MEDIUM SHADE" and "U+2593 DARK SHADE". These characters are also
  *      present in the CP437 codepage available on DOS and VGA.
  *
- *  \li \e "blocks": use Unicode quarter-cell block combinations. These
+ *  \li \c "blocks": use Unicode quarter-cell block combinations. These
  *      characters are only found in the Unicode set.
  *
  *  \param d Dither object.
@@ -580,7 +580,7 @@ void cucul_set_dither_charset(cucul_dither_t *d, char const *str)
  *  Return a list of available character sets for a given dither. The list
  *  is a NULL-terminated array of strings, interleaving a string containing
  *  the internal value for the character set, to be used with
- *  \e cucul_set_dither_charset(), and a string containing the natural
+ *  cucul_set_dither_charset(), and a string containing the natural
  *  language description for that character set.
  *
  *  \param d Dither object.
@@ -603,19 +603,19 @@ char const * const * cucul_get_dither_charset_list(cucul_dither_t const *d)
  *
  *  Tell the renderer which dithering method should be used. Dithering is
  *  necessary because the picture being rendered has usually far more colours
- *  than the available palette. Valid values for \e str are:
+ *  than the available palette. Valid values for \c str are:
  *
- *  \li \e "none": no dithering is used, the nearest matching colour is used.
+ *  \li \c "none": no dithering is used, the nearest matching colour is used.
  *
- *  \li \e "ordered2": use a 2x2 Bayer matrix for dithering.
+ *  \li \c "ordered2": use a 2x2 Bayer matrix for dithering.
  *
- *  \li \e "ordered4": use a 4x4 Bayer matrix for dithering.
+ *  \li \c "ordered4": use a 4x4 Bayer matrix for dithering.
  *
- *  \li \e "ordered8": use a 8x8 Bayer matrix for dithering.
+ *  \li \c "ordered8": use a 8x8 Bayer matrix for dithering.
  *
- *  \li \e "random": use random dithering.
+ *  \li \c "random": use random dithering.
  *
- *  \li \e "fstein": use Floyd-Steinberg dithering. This is the default value.
+ *  \li \c "fstein": use Floyd-Steinberg dithering. This is the default value.
  *
  *  \param d Dither object.
  *  \param str A string describing the method that needs to be used
@@ -666,7 +666,7 @@ void cucul_set_dither_mode(cucul_dither_t *d, char const *str)
  *  Return a list of available dithering methods for a given dither. The list
  *  is a NULL-terminated array of strings, interleaving a string containing
  *  the internal value for the dithering method, to be used with
- *  \e cucul_set_dither_dithering(), and a string containing the natural
+ *  cucul_set_dither_dithering(), and a string containing the natural
  *  language description for that dithering method.
  *
  *  \param d Dither object.

@@ -43,24 +43,24 @@ static void export_tga(cucul_canvas_t *, cucul_buffer_t *);
  *  and cucul_get_buffer_size() to access the buffer contents. The allocated
  *  data is valid until cucul_free_buffer() is called.
  *
- *  Valid values for \e format are:
+ *  Valid values for \c format are:
  *
- *  \li \e "caca": export native libcaca files.
+ *  \li \c "caca": export native libcaca files.
  *
- *  \li \e "ansi": export ANSI art (CP437 charset with ANSI colour codes).
+ *  \li \c "ansi": export ANSI art (CP437 charset with ANSI colour codes).
  *
- *  \li \e "html": export an HTML page with CSS information.
+ *  \li \c "html": export an HTML page with CSS information.
  *
- *  \li \e "html3": export an HTML table that should be compatible with
+ *  \li \c "html3": export an HTML table that should be compatible with
  *      most navigators, including textmode ones.
  *
- *  \li \e "irc": export UTF-8 text with mIRC colour codes.
+ *  \li \c "irc": export UTF-8 text with mIRC colour codes.
  *
- *  \li \e "ps": export a PostScript document.
+ *  \li \c "ps": export a PostScript document.
  *
- *  \li \e "svg": export an SVG vector image.
+ *  \li \c "svg": export an SVG vector image.
  *
- *  \li \e "tga": export a TGA image.
+ *  \li \c "tga": export a TGA image.
  *
  *  \param cv A libcucul canvas
  *  \param format A string describing the requested output format.
@@ -103,7 +103,7 @@ cucul_buffer_t * cucul_create_export(cucul_canvas_t *cv, char const *format)
  *
  *  Return a list of available export formats. The list is a NULL-terminated
  *  array of strings, interleaving a string containing the internal value for
- *  the export format, to be used with \e cucul_create_export(), and a string
+ *  the export format, to be used with cucul_create_export(), and a string
  *  containing the natural language description for that export format.
  *
  *  \return An array of strings.
