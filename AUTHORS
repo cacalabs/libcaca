@@ -1,15 +1,16 @@
-$Id$
+/* $Id$ */ /** \page authors Authors
 
 Sam Hocevar <sam@zoy.org>
- o main programmer
+ - main programmer
 
 Jean-Yves Lamoureux <jylam@lnxscene.org>
- o cacaball
- o OpenGL driver
- o Pypycaca Python wrapper
- o exporters
- o network driver
+ - cacaball
+ - OpenGL driver
+ - Pypycaca Python wrapper
+ - exporters
+ - network driver
 
 John Beppu <beppu@lbox.org>
- o Term::Caca Perl wrapper
+ - Term::Caca Perl wrapper
 
+*/

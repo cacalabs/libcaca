@@ -1,6 +1,6 @@
 # $Id$
 
-EXTRA_DIST = doxygen.cfg.in footer.html header.html $(man_MANS)
+EXTRA_DIST = doxygen.cfg.in footer.html header.html libcaca.dox $(man_MANS)
 
 man_MANS = caca-config.1 cacafire.1 cacaview.1
 

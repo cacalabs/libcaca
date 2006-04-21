@@ -1,21 +1,23 @@
-$Id$
+/* $Id$ */ /** \page thanks Thanks
 
-Bugfixes and improvements
-=========================
-Gildas Bazin <gbazin@netcourrier.com> - win32 driver improvements
-Jari Komppa <jari.komppa at gmail> - win32 speed improvements
+\section thanks1 Bugfixes and improvements
 
-Reused code
-===========
-Jan Hubicka <hubicka@freesoft.cz> - aafire
-Michele Bini <mibin@tin.it> - original SDL plasma
-Free Software Foundation, Inc. - multiboot.S
+- Gildas Bazin <gbazin@netcourrier.com> - win32 driver improvements
+- Jari Komppa <jari.komppa at gmail> - win32 speed improvements
 
-Porters and packagers
-=====================
-Derk-Jan Hartman <thedj@users.sourceforge.net> - Gentoo ebuild file
-Ladislav Hagara <hgr@vabo.cz> - Source Mage spell
-Philip Balinov - Slackware package
-Richard Zidlicky <rz@linux-m68k.org> - rpm specfile
-Thomas Klausner <wiz@NetBSD.org> - NetBSD port maintainer
-Vincent Tantardini <vinc@FreeBSD-fr.org> - FreeBSD port maintainer
+\section thanks2 Reused code
+
+- Jan Hubicka <hubicka@freesoft.cz> - aafire
+- Michele Bini <mibin@tin.it> - original SDL plasma
+- Free Software Foundation, Inc. - multiboot.S
+
+\section thanks3 Porters and packagers
+
+- Derk-Jan Hartman <thedj@users.sourceforge.net> - Gentoo ebuild file
+- Ladislav Hagara <hgr@vabo.cz> - Source Mage spell
+- Philip Balinov - Slackware package
+- Richard Zidlicky <rz@linux-m68k.org> - rpm specfile
+- Thomas Klausner <wiz@NetBSD.org> - NetBSD port maintainer
+- Vincent Tantardini <vinc@FreeBSD-fr.org> - FreeBSD port maintainer
+
+*/

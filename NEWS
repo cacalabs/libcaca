@@ -1,79 +1,71 @@
-$Id$
+/* $Id$ */ /** \page news News
 
-Changes between 0.8 and 0.9:
-----------------------------
+\section news0_9 Changes between 0.8 and 0.9
 
-  * fix for a buffer overflow in the line rendering
-  * fixed resizing in the ncurses and slang drivers
-  * aspect ratio and finer zoom support in cacaview
-  * minor compilation fixes
+ - fix for a buffer overflow in the line rendering
+ - fixed resizing in the ncurses and slang drivers
+ - aspect ratio and finer zoom support in cacaview
+ - minor compilation fixes
 
-Changes between 0.7 and 0.8:
-----------------------------
+\section news0_8 Changes between 0.7 and 0.8
 
-  * window resizing support
-  * native Win32 port
-  * autorepeat emulation in the ncurses and slang drivers
-  * support for more keycodes in the ncurses and slang drivers
-  * cacaplas, a plasma animation example
-  * cacamoir, a moiré circles animation example
-  * MSVC project file
+ - window resizing support
+ - native Win32 port
+ - autorepeat emulation in the ncurses and slang drivers
+ - support for more keycodes in the ncurses and slang drivers
+ - cacaplas, a plasma animation example
+ - cacamoir, a moiré circles animation example
+ - MSVC project file
 
-Changes between 0.6 and 0.7:
-----------------------------
+\section news0_7 Changes between 0.6 and 0.7
 
-  * many bugfixes in the event handling
-  * cacaball, a metaball animation example
+ - many bugfixes in the event handling
+ - cacaball, a metaball animation example
 
-Changes between 0.5 and 0.6:
-----------------------------
+\section news0_6 Changes between 0.5 and 0.6
 
-  * 30% speed increase in the bitmap rendering routine
-  * mouse support and various speed optimisations in the X11 driver
-  * X11 is now the preferred driver
-  * improved documentation
-  * minor bugfixes
+ - 30% speed increase in the bitmap rendering routine
+ - mouse support and various speed optimisations in the X11 driver
+ - X11 is now the preferred driver
+ - improved documentation
+ - minor bugfixes
 
-Changes between 0.4 and 0.5:
-----------------------------
+\section news0_5 Changes between 0.4 and 0.5
 
-  * palette optimisation for the S-Lang driver to work around the colour pair
+ - palette optimisation for the S-Lang driver to work around the colour pair
     shortage bug
-  * minor compilation fix
+ - minor compilation fix
 
-Changes between 0.3 and 0.4:
-----------------------------
+\section news0_4 Changes between 0.3 and 0.4
 
-  * preliminary X11 graphics driver
-  * support for simultaneously compiled-in drivers
-  * honour the CACA_DRIVER, CACA_GEOMETRY and CACA_FONT environment variables
-  * more documentation
+ - preliminary X11 graphics driver
+ - support for simultaneously compiled-in drivers
+ - honour the CACA_DRIVER, CACA_GEOMETRY and CACA_FONT environment variables
+ - more documentation
 
-Changes between 0.2 and 0.3:
-----------------------------
+\section news0_3 Changes between 0.2 and 0.3
 
-  * antialiasing support
-  * dithering, antialiasing and background mode can now be selected at
+ - antialiasing support
+ - dithering, antialiasing and background mode can now be selected at
     runtime or in the environment using the CACA_BACKGROUND, CACA_DITHERING
     and CACA_ANTIALIASING variables
-  * alpha channel support in cacaview
-  * BMP loading support in cacaview even if Imlib2 is not present
-  * cacafire, a libcaca port of aafire
+ - alpha channel support in cacaview
+ - BMP loading support in cacaview even if Imlib2 is not present
+ - cacafire, a libcaca port of aafire
 
-Changes between 0.1 and 0.2:
-----------------------------
+\section news0_2 Changes between 0.1 and 0.2
 
-  * rendering now uses 256 colour pairs instead of 16
-  * mouse support for ncurses
-  * ncurses is now the preferred backend
-  * arbitrary color depth and bitmasks in the bitmap renderer
-  * cacaview, an image viewer based on libcaca
+ - rendering now uses 256 colour pairs instead of 16
+ - mouse support for ncurses
+ - ncurses is now the preferred backend
+ - arbitrary color depth and bitmasks in the bitmap renderer
+ - cacaview, an image viewer based on libcaca
 
-New in 0.1
-----------
+\section news_0_1 New in 0.1
 
-  * initial release
-  * slang, ncurses and conio drivers
-  * basic line, box, ellipse and triangle primitives
-  * colour bitmap blitting
+ - initial release
+ - slang, ncurses and conio drivers
+ - basic line, box, ellipse and triangle primitives
+ - colour bitmap blitting
 
+*/

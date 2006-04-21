@@ -1,0 +1,63 @@
+/* $Id$ */
+
+/** \mainpage libcaca Developer Documentation
+
+ \section intro Introduction
+
+ \e libcaca is a graphics library that outputs text instead of pixels,
+ so that it can work on older video cards or text terminals. It is not
+ unlike the famous AAlib library. \e libcaca can use almost any virtual
+ terminal to work, thus it should work on all Unix systems (including
+ Mac OS X) using either the slang library or the ncurses library, on DOS
+ using the conio library, and on Windows systems using either slang or
+ ncurses (through Cygwin emulation) or conio. There is also a native X11
+ driver, and an OpenGL driver (through freeglut) that does not require a
+ text terminal. For machines without a screen, the raw driver can be used
+ to send the output to another machine, using for instance cacaserver.
+
+ \e libcaca is free software, released under the Do What The Fuck You
+ Want To Public License. This ensures that no one, not even the \e libcaca
+ developers, will ever have anything to say about what you do with the
+ software. It used to be licensed under the GNU Lesser General Public
+ License, but that was not free enough.
+
+ \section api The libcaca API
+
+ \e libcaca relies on a low-level, device independent library, called
+ \e libcucul. \e libcucul can be used alone as a simple ASCII and/or
+ Unicode compositing canvas.
+
+ The complete \e libcucul and \e libcaca programming interface is
+ available from the cucul.h and caca.h headers.
+
+ \section env Environment variables
+
+ Some environment variables can be used to change the behaviour of
+ \e libcaca without having to modify the program which uses them. These
+ variables are:
+
+ \li \b CACA_DRIVER: set the backend video driver. In order of preference:
+     - \c conio uses the DOS conio.h interface.
+     - \c ncurses uses the ncurses library.
+     - \c slang uses the S-Lang library.
+     - \c x11 uses the native X11 driver.
+     - \c gl uses freeglut and opengl libraries.
+     - \c raw outputs to the standard output instead of rendering the
+       canvas. This is can be used together with cacaserver.
+
+ \li \b CACA_GEOMETRY: set the video display size. The format of this
+     variable must be XxY, with X and Y being integer values. This option
+     currently works with the network, X11 and GL drivers.
+
+ \li \b CACA_FONT: set the rendered font. The format of this variable is
+     implementation dependent, but since it currently only works with the
+     X11 driver, an X11 font name such as "fixed" or "5x7" is expected.
+
+ \section Misc
+
+ - \subpage news
+ - \subpage authors
+ - \subpage thanks
+ - \subpage todo
+
+*/
