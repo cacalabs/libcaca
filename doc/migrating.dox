@@ -47,7 +47,7 @@ int main(void)
 {
     /* Initialise libcaca */
     cucul_canvas_t *cv;
-    caca_display_t *dp; caca_event_t ev;
+    caca_display_t *dp;
     cv = cucul_create_canvas(0, 0);
     dp = caca_create_display(cv);
     /* Set window title */
@@ -61,7 +61,7 @@ int main(void)
     caca_refresh_display();
     /* Wait for a key press event */
     caca_get_event(dp, CACA_EVENT_KEY_PRESS,
-                   &ev, -1);
+                   NULL, -1);
     /* Clean up library */
     caca_free_display(dp);
     cucul_free_canvas(cv);

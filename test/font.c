@@ -38,7 +38,6 @@ int main(int argc, char *argv[])
     caca_display_t *dp;
     cucul_font_t *f;
     cucul_dither_t *d;
-    caca_event_t ev;
     unsigned char *buf;
     unsigned int w, h;
     char const * const * fonts;
@@ -97,7 +96,7 @@ int main(int argc, char *argv[])
                                   cucul_get_canvas_height(cv), d, buf);
     caca_refresh_display(dp);
 
-    caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
+    caca_get_event(dp, CACA_EVENT_KEY_PRESS, NULL, -1);
 
     /* Free everything */
     caca_free_display(dp);

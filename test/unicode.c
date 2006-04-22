@@ -21,12 +21,13 @@ typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
 #endif
 
+#include <stdio.h>
+
 #include "cucul.h"
 #include "caca.h"
 
 int main(void)
 {
-    caca_event_t ev;
     cucul_canvas_t *cv;
     caca_display_t *dp;
 
@@ -87,7 +88,7 @@ int main(void)
 
     caca_refresh_display(dp);
 
-    caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
+    caca_get_event(dp, CACA_EVENT_KEY_PRESS, NULL, -1);
 
     caca_free_display(dp);
     cucul_free_canvas(cv);

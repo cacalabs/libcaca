@@ -13,6 +13,8 @@
 
 #include "config.h"
 
+#include <stdio.h>
+
 #include "cucul.h"
 #include "caca.h"
 
@@ -34,7 +36,6 @@ char density[] = " ',+:;o&%w$W@#";
 
 int main(void)
 {
-    caca_event_t ev;
     cucul_canvas_t *cv;
     caca_display_t *dp;
     int neara, dista, nearb, distb, dist;
@@ -124,7 +125,7 @@ int main(void)
 
     caca_refresh_display(dp);
 
-    caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
+    caca_get_event(dp, CACA_EVENT_KEY_PRESS, NULL, -1);
 
     caca_free_display(dp);
     cucul_free_canvas(cv);

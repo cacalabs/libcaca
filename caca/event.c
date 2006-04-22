@@ -50,15 +50,20 @@ static int _lowlevel_event(caca_display_t *, caca_event_t *);
  *  if no more events are pending in the queue. A negative value causes the
  *  function to wait indefinitely until a matching event is received.
  *
+ *  If not null, \c ev will be filled with information about the event
+ *  received. If null, the function will return but no information about
+ *  the event will be sent.
+ *
  *  \param dp The libcaca graphical context.
  *  \param event_mask Bitmask of requested events.
  *  \param timeout A timeout value in microseconds
- *  \param ev A pointer to a caca_event structure.
- *  \return The next matching event in the queue, or 0 if no event is pending.
+ *  \param ev A pointer to a caca_event structure, or NULL.
+ *  \return 1 if a matching event was received, or 0 if the wait timeouted.
  */
 int caca_get_event(caca_display_t *dp, unsigned int event_mask,
                    caca_event_t *ev, int timeout)
 {
+    caca_event_t dummy_event;
     caca_timer_t timer;
     int usec = 0;
 
@@ -67,6 +72,9 @@ int caca_get_event(caca_display_t *dp, unsigned int event_mask,
 
     if(timeout > 0)
         _caca_getticks(&timer);
+
+    if(ev == NULL)
+        ev = &dummy_event;
 
     for( ; ; )
     {
