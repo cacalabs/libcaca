@@ -1,8 +1,8 @@
 # $Id$
 
-EXTRA_DIST = doxygen.cfg.in footer.html header.html $(man_MANS) \
-             libcaca.dox user.dox migrating.dox tutorial.dox style.dox
+EXTRA_DIST = doxygen.cfg.in footer.html header.html $(man_MANS) $(doxygen_DOX)
 
+doxygen_DOX = libcaca.dox user.dox migrating.dox tutorial.dox style.dox
 man_MANS = caca-config.1 cacafire.1 cacaview.1
 
 if BUILD_DOCUMENTATION
@@ -17,7 +17,7 @@ endif
 html/doxygen.css html/doxygen.png: stamp-doxygen
 latex/libcaca.pdf: stamp-latex
 
-stamp-doxygen:
+stamp-doxygen: $(doxygen_DOX)
 if BUILD_DOCUMENTATION
 	doxygen doxygen.cfg
 	touch stamp-doxygen
