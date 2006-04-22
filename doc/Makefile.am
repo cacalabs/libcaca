@@ -7,10 +7,10 @@ man_MANS = caca-config.1 cacafire.1 cacaview.1
 
 if BUILD_DOCUMENTATION
 htmldoc_DATA = html/doxygen.css
-htmldocdir = $(datadir)/doc/libcaca-dev/html
+htmldocdir = $(datadir)/doc/libcucul-dev/html
 if USE_LATEX
 pdfdoc_DATA = latex/libcaca.pdf
-pdfdocdir = $(datadir)/doc/libcaca-dev/pdf
+pdfdocdir = $(datadir)/doc/libcucul-dev/pdf
 endif
 endif
 
@@ -42,9 +42,9 @@ clean-local:
 
 install-data-local:
 if BUILD_DOCUMENTATION
-	$(mkinstalldirs) $(DESTDIR)$(datadir)/doc/libcaca-dev/html
+	$(mkinstalldirs) $(DESTDIR)$(datadir)/doc/libcucul-dev/html
 	cp `find html -name '*.html' -o -name '*.gif' -o -name '*.png'` \
-	  $(DESTDIR)$(datadir)/doc/libcaca-dev/html
+	  $(DESTDIR)$(datadir)/doc/libcucul-dev/html
 	$(mkinstalldirs) $(DESTDIR)$(mandir)/man3
 	cp `find man -name '*.3caca'` $(DESTDIR)$(mandir)/man3
 	$(mkinstalldirs) $(DESTDIR)$(mandir)/man1
