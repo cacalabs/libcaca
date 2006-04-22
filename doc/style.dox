@@ -2,6 +2,94 @@
 
 /** \page style Coding style
 
- Code qui fait des warnings == code de porc == deux baffes dans ta gueule
+ \section sty1 General guidelines
+
+ A pretty safe rule of thumb is: look at what has already been done and
+ try to do the same.
+
+ - Tabulations should be avoided and replaced with \e eight spaces.
+ - Indentation is generally 4 spaces.
+ - Lines should wrap at most at 79 characters.
+ - Do not leave whitespace at the end of lines.
+ - Do not use multiple spaces for anything else than indentation.
+ - Code qui fait des warnings == code de porc == deux baffes dans ta gueule
+
+ \section sty2 C coding style
+
+ Try to use short names whenever possible (\c i for indices, \c w for width,
+ \c cv for canvas...). Macros are always uppercase, variable and function
+ names are always lowercase. Use the underscore to separate words within
+ names:
+
+ \code
+#define BROKEN 0
+#define MAX(x, y) ((x > y) ? (x) : (y))
+
+unsigned int x, y, w, h;
+char *font_name;
+void frobulate_every_three_seconds(void);
+ \endcode
+
+ \c const is a \e suffix. It's \c char \c const \c *foo, not \c const \c char
+ \c *foo.
+
+ Use spaces after commas and between operators. Do not use spaces after an
+ opening parenthesis or before a closing one:
+
+ \code
+a += 2;
+b = (a * (c + d));
+x = min(x1, x2, x3);
+ \endcode
+
+ Do not put a space between functions and the corresponding opening
+ parenthesis:
+
+ \code
+int function(int);
+
+if(a == b)
+    return;
+ \endcode
+
+ Do not put parentheses around return values:
+
+ \code
+return a + (b & x) + d[10];
+ \endcode
+
+ Opening braces should be on a line of their own, aligned with the
+ current block. Braces are optional for one-liners:
+
+ \code
+int function(int a)
+{
+    if(a & 0x84)
+        return;
+
+    if(a < 0)
+    {
+        return -a;
+    }
+    else
+    {
+        a /= 2;
+
+        switch(a)
+        {
+            case 0:
+            case 1:
+                return -1;
+                break;
+            default:
+                return a;
+        }
+    }
+}
+ \endcode
+
+ \section sty3 C++ coding style
+
+ Nothing here yet.
 
 */
