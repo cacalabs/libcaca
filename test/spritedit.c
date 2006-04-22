@@ -22,6 +22,7 @@
 
 int main(int argc, char **argv)
 {
+#if 0
     cucul_canvas_t *cv;
     caca_display_t *dp;
 
@@ -138,6 +139,7 @@ int main(int argc, char **argv)
     /* Clean up */
     caca_free_display(dp);
     cucul_free_canvas(cv);
+#endif
 
     return 0;
 }

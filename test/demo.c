@@ -35,7 +35,9 @@ static void demo_render(void);
 int bounds = 0;
 int outline = 0;
 int dithering = 0;
+#if 0
 cucul_sprite_t *sprite = NULL;
+#endif
 
 cucul_canvas_t *cv;
 caca_display_t *dp;
@@ -55,11 +57,13 @@ int main(int argc, char **argv)
     caca_set_delay(dp, 40000);
 
     /* Initialize data */
+#if 0
     sprite = cucul_load_sprite(DATADIR "/caca.txt");
     if(!sprite)
         sprite = cucul_load_sprite("caca.txt");
     if(!sprite)
         sprite = cucul_load_sprite("examples/caca.txt");
+#endif
 
     /* Disable cursor */
     caca_set_mouse(dp, 0);
@@ -130,11 +134,13 @@ int main(int argc, char **argv)
                 case '5':
                     demo = demo_ellipses;
                     break;
+#if 0
                 case 's':
                 case 'S':
                     if(sprite)
                         demo = demo_sprites;
                     break;
+#endif
                 case 'r':
                 case 'R':
                     demo = demo_render;
@@ -187,7 +193,9 @@ int main(int argc, char **argv)
     }
 
     /* Clean up */
+#if 0
     cucul_free_sprite(sprite);
+#endif
     caca_free_display(dp);
     cucul_free_canvas(cv);
 
@@ -215,8 +223,10 @@ static void display_menu(void)
     cucul_putstr(cv, 4, 12, "'5': ellipses");
     cucul_putstr(cv, 4, 13, "'c': colour");
     cucul_putstr(cv, 4, 14, "'r': render");
+#if 0
     if(sprite)
         cucul_putstr(cv, 4, 15, "'s': sprites");
+#endif
 
     cucul_putstr(cv, 4, 16, "settings:");
     cucul_printf(cv, 4, 17, "'o': outline: %s",
@@ -309,7 +319,9 @@ static void demo_all(void)
     cucul_draw_thin_line(cv, xc, yc, xo, yo);
 
     /* Draw a sprite on the pyramid */
+#if 0
     cucul_draw_sprite(cv, xo, yo, sprite, 0);
+#endif
 
     /* Draw a trail behind the foreground sprite */
     for(j = i - 60; j < i; j++)
@@ -324,9 +336,11 @@ static void demo_all(void)
     }
 
     /* Draw foreground sprite */
+#if 0
     cucul_draw_sprite(cv, cucul_get_canvas_width(cv) / 2 + cos(0.02*i) * cucul_get_canvas_width(cv) / 4,
                    cucul_get_canvas_height(cv) / 2 + sin(0.02*i) * cucul_get_canvas_height(cv) / 3,
                    sprite, 0);
+#endif
 }
 
 static void demo_dots(void)
@@ -482,8 +496,10 @@ static void demo_triangles(void)
 
 static void demo_sprites(void)
 {
+#if 0
     cucul_draw_sprite(cv, cucul_rand(0, cucul_get_canvas_width(cv)),
                       cucul_rand(0, cucul_get_canvas_height(cv)), sprite, 0);
+#endif
 }
 
 #if 0
