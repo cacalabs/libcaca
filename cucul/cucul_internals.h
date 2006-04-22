@@ -27,12 +27,19 @@ typedef long unsigned int uintptr_t;
 
 struct cucul_canvas
 {
-    /* Context size */
+    /* Canvas size */
     unsigned int width, height;
 
+    /* Shortcut to the active frame */
     uint32_t *chars;
     uint32_t *attr;
 
+    /* Frame information */
+    unsigned int frame, framecount;
+    uint32_t **allchars;
+    uint32_t **allattr;
+
+    /* Painting context */
     uint16_t fgcolor;
     uint16_t bgcolor;
 

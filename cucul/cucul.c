@@ -54,6 +54,13 @@ cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
     cv->chars = NULL;
     cv->attr = NULL;
 
+    cv->frame = 0;
+    cv->framecount = 1;
+    cv->allchars = malloc(sizeof(uint32_t *));
+    cv->allattr = malloc(sizeof(uint32_t *));
+    cv->allchars[0] = NULL;
+    cv->allattr[0] = NULL;
+
     /* Initialise to a default size. 80x32 is arbitrary but matches AAlib's
      * default X11 window. When a graphic driver attaches to us, it can set
      * a different size. */
@@ -169,10 +176,15 @@ char const *cucul_get_color_name(unsigned int color)
  */
 void cucul_free_canvas(cucul_canvas_t *cv)
 {
+    unsigned int f;
+
     _cucul_end_dither();
 
-    free(cv->chars);
-    free(cv->attr);
+    for(f = 0; f < cv->framecount; f++)
+    {
+        free(cv->allchars[f]);
+        free(cv->allattr[f]);
+    }
 
     free(cv);
 }
@@ -196,7 +208,7 @@ int cucul_rand(int min, int max)
 void _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
                                                 unsigned int height)
 {
-    unsigned int x, y, old_width, old_height, new_size, old_size;
+    unsigned int x, y, f, old_width, old_height, new_size, old_size;
 
     old_width = cv->width;
     old_height = cv->height;
@@ -209,8 +221,13 @@ void _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
     /* Step 1: if new area is bigger, resize the memory area now. */
     if(new_size > old_size)
     {
-        cv->chars = realloc(cv->chars, new_size * sizeof(uint32_t));
-        cv->attr = realloc(cv->attr, new_size * sizeof(uint32_t));
+        for(f = 0; f < cv->framecount; f++)
+        {
+            cv->allchars[f] = realloc(cv->allchars[f],
+                                      new_size * sizeof(uint32_t));
+            cv->allattr[f] = realloc(cv->allattr[f],
+                                     new_size * sizeof(uint32_t));
+        }
     }
 
     /* Step 2: move line data if necessary. */
@@ -224,19 +241,25 @@ void _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
         /* New width is bigger than old width, which means we need to
          * copy lines starting from the bottom of the screen otherwise
          * we will overwrite information. */
-        for(y = height < old_height ? height : old_height; y--; )
+        for(f = 0; f < cv->framecount; f++)
         {
-            for(x = old_width; x--; )
-            {
-                cv->chars[y * width + x] = cv->chars[y * old_width + x];
-                cv->attr[y * width + x] = cv->attr[y * old_width + x];
-            }
+            uint32_t *chars = cv->allchars[f];
+            uint32_t *attr = cv->allattr[f];
 
-            /* Zero the end of the line */
-            for(x = width - old_width; x--; )
-                cv->chars[y * width + old_width + x] = (uint32_t)' ';
-            memset(cv->attr + y * width + old_width, 0,
-                   (width - old_width) * 4);
+            for(y = height < old_height ? height : old_height; y--; )
+            {
+                for(x = old_width; x--; )
+                {
+                    chars[y * width + x] = chars[y * old_width + x];
+                    attr[y * width + x] = attr[y * old_width + x];
+                }
+
+                /* Zero the end of the line */
+                for(x = width - old_width; x--; )
+                    chars[y * width + old_width + x] = (uint32_t)' ';
+                memset(attr + y * width + old_width, 0,
+                       (width - old_width) * 4);
+            }
         }
     }
     else
@@ -245,12 +268,18 @@ void _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
          * the first line, it is already in place. */
         unsigned int lines = height < old_height ? height : old_height;
 
-        for(y = 1; y < lines; y++)
+        for(f = 0; f < cv->framecount; f++)
         {
-            for(x = 0; x < width; x++)
+            uint32_t *chars = cv->allchars[f];
+            uint32_t *attr = cv->allattr[f];
+
+            for(y = 1; y < lines; y++)
             {
-                cv->chars[y * width + x] = cv->chars[y * old_width + x];
-                cv->attr[y * width + x] = cv->attr[y * old_width + x];
+                for(x = 0; x < width; x++)
+                {
+                    chars[y * width + x] = chars[y * old_width + x];
+                    attr[y * width + x] = attr[y * old_width + x];
+                }
             }
         }
     }
@@ -258,18 +287,33 @@ void _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
     /* Step 3: fill the bottom of the new screen if necessary. */
     if(height > old_height)
     {
-        /* Zero the bottom of the screen */
-        for(x = (height - old_height) * width; x--; )
-            cv->chars[old_height * width + x] = (uint32_t)' ';
-        memset(cv->attr + old_height * width, 0,
-               (height - old_height) * width * 4);
+        for(f = 0; f < cv->framecount; f++)
+        {
+            uint32_t *chars = cv->allchars[f];
+            uint32_t *attr = cv->allattr[f];
+
+            /* Zero the bottom of the screen */
+            for(x = (height - old_height) * width; x--; )
+                chars[old_height * width + x] = (uint32_t)' ';
+            memset(attr + old_height * width, 0,
+                   (height - old_height) * width * 4);
+        }
     }
 
     /* Step 4: if new area is smaller, resize memory area now. */
     if(new_size <= old_size)
     {
-        cv->chars = realloc(cv->chars, new_size * sizeof(uint32_t));
-        cv->attr = realloc(cv->attr, new_size * sizeof(uint32_t));
+        for(f = 0; f < cv->framecount; f++)
+        {
+            cv->allchars[f] = realloc(cv->allchars[f],
+                                      new_size * sizeof(uint32_t));
+            cv->allattr[f] = realloc(cv->allattr[f],
+                                     new_size * sizeof(uint32_t));
+        }
     }
+
+    /* Reset the current frame shortcut */
+    cv->chars = cv->allchars[cv->frame];
+    cv->attr = cv->allattr[cv->frame];
 }
 

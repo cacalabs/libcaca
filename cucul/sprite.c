@@ -12,7 +12,7 @@
  */
 
 /*
- *  This file contains a small framework for sprite loading and blitting.
+ *  This file contains a small framework for canvas frame management.
  */
 
 #include "config.h"
@@ -26,288 +26,134 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
-#if !defined(_DOXYGEN_SKIP_ME)
-struct cucul_frame
-{
-    int w, h;
-    int dx, dy;
-    char *chars;
-    int *color;
-};
-
-struct cucul_sprite
-{
-    int nf;
-    struct cucul_frame *frames;
-};
-#endif
-
-/** \brief Allocate a sprite loaded from a file.
+/** \brief Get the number of frames in a canvas.
  *
- *  \param file The filename.
- *  \return The sprite, or NULL if an error occured.
- */
-cucul_sprite_t *cucul_load_sprite(char const *file)
-{
-    char buf[BUFSIZ];
-    cucul_sprite_t *sprite;
-    FILE *fd;
-
-    fd = fopen(file, "r");
-    if(fd == NULL)
-        return NULL;
-
-    sprite = malloc(sizeof(cucul_sprite_t));
-    if(sprite == NULL)
-        goto sprite_alloc_failed;
-
-    sprite->nf = 0;
-    sprite->frames = NULL;
-
-    while(!feof(fd))
-    {
-        int x, y;
-        int w = 0, h = 0, dx = 0, dy = 0;
-        struct cucul_frame *frame;
-
-        /* Get width and height */
-        if(!fgets(buf, BUFSIZ, fd))
-            break;
-
-        sscanf(buf, "%i %i %i %i", &w, &h, &dx, &dy);
-        if(w <= 0 || h <= 0 || w > BUFSIZ / 2)
-            break;
-
-        if(sprite->nf)
-        {
-            void *tmp = realloc(sprite->frames,
-                                (sprite->nf + 1) * sizeof(struct cucul_frame));
-            if(tmp == NULL)
-                goto frame_failed;
-            sprite->frames = tmp;
-            sprite->nf++;
-        }
-        else
-        {
-            sprite->frames = malloc((sprite->nf + 1) * sizeof(struct cucul_frame));
-            if(sprite->frames == NULL)
-                goto sprite_failed;
-            sprite->nf++;
-        }
-
-        frame = &sprite->frames[sprite->nf - 1];
-
-        frame->w = w;
-        frame->h = h;
-        frame->dx = dx;
-        frame->dy = dy;
-        frame->chars = malloc(w * h * sizeof(char));
-        if(frame->chars == NULL)
-        {
-            sprite->nf--;
-            goto frame_failed;
-        }
-        frame->color = malloc(w * h * sizeof(int));
-        if(frame->color == NULL)
-        {
-            free(frame->chars);
-            sprite->nf--;
-            goto frame_failed;
-        }
-
-        for(y = 0; y < h; y++)
-        {
-            if(!fgets(buf, BUFSIZ, fd))
-                goto frame_failed;
-
-            for(x = 0; x < w && buf[x] && buf[x] != '\r' && buf[x] != '\n'; x++)
-                frame->chars[w * y + x] = buf[x];
-
-            for(; x < w; x++)
-                frame->chars[w * y + x] = ' ';
-        }
-
-        for(y = 0; y < h; y++)
-        {
-            if(!fgets(buf, BUFSIZ, fd))
-                goto frame_failed;
-
-            for(x = 0; x < w && buf[x] && buf[x] != '\r' && buf[x] != '\n'; x++)
-                frame->color[w * y + x] = buf[x] - 'a';
-
-            for(; x < w; x++)
-                frame->color[w * y + x] = ' ' - 'a';
-        }
-
-        continue;
-    }
-
-    if(sprite->nf == 0)
-        goto sprite_failed;
-
-    fclose(fd);
-    return sprite;
-
-frame_failed:
-    while(sprite->nf)
-    {
-        free(sprite->frames[sprite->nf - 1].color);
-        free(sprite->frames[sprite->nf - 1].chars);
-        sprite->nf--;
-    }
-sprite_failed:
-    free(sprite);
-sprite_alloc_failed:
-    fclose(fd);
-    return NULL;
-}
-
-/** \brief Return the number of frames in a sprite.
- *
- *  \param sprite The sprite.
- *  \return The number of frames.
- */
-int cucul_get_sprite_frames(cucul_sprite_t const *sprite)
-{
-    if(sprite == NULL)
-        return 0;
-
-    return sprite->nf;
-}
-
-/** \brief Return the width of a sprite.
- *
- *  \param sprite The sprite.
- *  \param f The frame index.
- *  \return The width of the given frame of the sprite.
- */
-int cucul_get_sprite_width(cucul_sprite_t const *sprite, int f)
-{
-    if(sprite == NULL)
-        return 0;
-
-    if(f < 0 || f >= sprite->nf)
-        return 0;
-
-    return sprite->frames[f].w;
-}
-
-/** \brief Return the height of a sprite.
- *
- *  \param sprite The sprite.
- *  \param f The frame index.
- *  \return The height of the given frame of the sprite.
- */
-int cucul_get_sprite_height(cucul_sprite_t const *sprite, int f)
-{
-    if(sprite == NULL)
-        return 0;
-
-    if(f < 0 || f >= sprite->nf)
-        return 0;
-
-    return sprite->frames[f].h;
-}
-
-/** \brief Return the X coordinate of a sprite's handle.
- *
- *  \param sprite The sprite.
- *  \param f The frame index.
- *  \return The X coordinate of the given frame's handle.
- */
-int cucul_get_sprite_dx(cucul_sprite_t const *sprite, int f)
-{
-    if(sprite == NULL)
-        return 0;
-
-    if(f < 0 || f >= sprite->nf)
-        return 0;
-
-    return sprite->frames[f].dx;
-}
-
-/** \brief Return the Y coordinate of a sprite's handle.
- *
- *  \param sprite The sprite.
- *  \param f The frame index.
- *  \return The Y coordinate of the given frame's handle.
- */
-int cucul_get_sprite_dy(cucul_sprite_t const *sprite, int f)
-{
-    if(sprite == NULL)
-        return 0;
-
-    if(f < 0 || f >= sprite->nf)
-        return 0;
-
-    return sprite->frames[f].dy;
-}
-
-/** \brief Draw a sprite's specific frame at the given coordinates. If the
- *         frame does not exist, nothing is displayed.
+ *  This function returns the current canvas frame count.
  *
  *  \param cv A libcucul canvas
- *  \param x The X coordinate.
- *  \param y The Y coordinate.
- *  \param sprite The sprite.
- *  \param f The frame index.
- *  \return void
+ *  \return The frame count
  */
-void cucul_draw_sprite(cucul_canvas_t *cv, int x, int y,
-                       cucul_sprite_t const *sprite, int f)
+unsigned int cucul_get_canvas_frame_count(cucul_canvas_t *cv)
 {
-    int i, j;
-    unsigned int oldfg, oldbg;
-    struct cucul_frame *frame;
-
-    if(sprite == NULL)
-        return;
-
-    if(f < 0 || f >= sprite->nf)
-        return;
-
-    frame = &sprite->frames[f];
-
-    oldfg = cv->fgcolor;
-    oldbg = cv->bgcolor;
-
-    for(j = 0; j < frame->h; j++)
-    {
-        for(i = 0; i < frame->w; i++)
-        {
-            int col = frame->color[frame->w * j + i];
-            if(col >= 0)
-            {
-                cucul_set_color(cv, col, CUCUL_COLOR_BLACK);
-                cucul_putchar(cv, x + i - frame->dx, y + j - frame->dy,
-                              frame->chars[frame->w * j + i]);
-            }
-        }
-    }
-
-    cucul_set_color(cv, oldfg, oldbg);
+    return cv->framecount;
 }
 
-/** \brief Free the memory associated with a sprite.
+/** \brief Activate a given canvas frame.
  *
- *  \param sprite The sprite to be freed.
- *  \return void
+ *  This function sets the active canvas frame. All subsequent drawing
+ *  operations will be performed on that frame. The current painting
+ *  context set by cucul_set_color() or cucul_set_truecolor() is inherited.
+ *
+ *  If the frame index is outside the canvas' frame range, nothing happens.
+ *
+ *  \param cv A libcucul canvas
+ *  \param frame The canvas frame to activate
  */
-void cucul_free_sprite(cucul_sprite_t *sprite)
+void cucul_set_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
 {
-    int i;
-
-    if(sprite == NULL)
+    if(frame >= cv->framecount)
         return;
 
-    for(i = sprite->nf; i--;)
+    cv->frame = frame;
+
+    cv->chars = cv->allchars[cv->frame];
+    cv->attr = cv->allattr[cv->frame];
+}
+
+/** \brief Add a frame to a canvas.
+ *
+ *  This function creates a new frame within the given canvas. Its contents
+ *  are copied from the currently active frame.
+ *
+ *  The frame index indicates where the frame should be inserted. Valid
+ *  values range from 0 to the current canvas frame count. If the frame
+ *  index is greater the or equals the current canvas frame count, the new
+ *  frame is appended at the end of the canvas.
+ *
+ *  The active frame does not change, but its index may be renumbered due
+ *  to the insertion.
+ *
+ *  \param cv A libcucul canvas
+ *  \param frame The index where to insert the new frame
+ */
+void cucul_create_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
+{
+    unsigned int size = cv->width * cv->height * sizeof(uint32_t);
+    unsigned int f;
+
+    if(frame > cv->framecount)
+        frame = cv->framecount;
+
+    cv->framecount++;
+    cv->allchars = realloc(cv->allchars, sizeof(uint32_t *) * cv->framecount);
+    cv->allattr = realloc(cv->allattr, sizeof(uint32_t *) * cv->framecount);
+
+    for(f = cv->framecount - 1; f > frame; f--)
     {
-        struct cucul_frame *frame = &sprite->frames[i];
-        free(frame->chars);
-        free(frame->color);
+        cv->allchars[f] = cv->allchars[f - 1];
+        cv->allattr[f] = cv->allattr[f - 1];
     }
 
-    free(sprite->frames);
-    free(sprite);
+    cv->allchars[frame] = malloc(size);
+    memcpy(cv->allchars[frame], cv->chars, size);
+    cv->allattr[frame] = malloc(size);
+    memcpy(cv->allattr[frame], cv->attr, size);
+
+    if(cv->frame >= frame)
+        cv->frame++;
+
+    cv->chars = cv->allchars[cv->frame];
+    cv->attr = cv->allattr[cv->frame];
+}
+
+/** \brief Remove a frame from a canvas.
+ *
+ *  This function deletes a frame from a given canvas.
+ *
+ *  It is not legal to remove the last frame from a canvas. Such a request
+ *  will be ignored by cucul_free_canvas_frame().
+ *
+ *  The frame index indicates the frame to delete. Valid values range from
+ *  0 to the current canvas frame count minus 1. If the frame index is
+ *  greater the or equals the current canvas frame count, the last frame
+ *  is deleted.
+ *
+ *  If the active frame is deleted, frame 0 becomes the new active frame.
+ *  Otherwise, the active frame does not change, but its index may be
+ *  renumbered due to the deletion.
+ *
+ *  \param cv A libcucul canvas
+ *  \param frame The index of the frame to delete
+ */
+void cucul_free_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
+{
+    unsigned int f;
+
+    if(frame >= cv->framecount)
+        return;
+
+    if(cv->framecount == 1)
+        return;
+
+    free(cv->allchars[frame]);
+    free(cv->allattr[frame]);
+
+    for(f = frame + 1; f < cv->framecount; f++)
+    {
+        cv->allchars[f - 1] = cv->allchars[f];
+        cv->allattr[f - 1] = cv->allattr[f];
+    }
+
+    cv->framecount--;
+    cv->allchars = realloc(cv->allchars, sizeof(uint32_t *) * cv->framecount);
+    cv->allattr = realloc(cv->allattr, sizeof(uint32_t *) * cv->framecount);
+
+    if(cv->frame > frame)
+        cv->frame--;
+    else if(cv->frame == frame)
+        cv->frame = 0;
+
+    cv->chars = cv->allchars[cv->frame];
+    cv->attr = cv->allattr[cv->frame];
 }
 

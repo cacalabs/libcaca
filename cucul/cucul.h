@@ -33,8 +33,6 @@ extern "C"
 
 /** \e libcucul context */
 typedef struct cucul_canvas cucul_canvas_t;
-/** sprite structure */
-typedef struct cucul_sprite cucul_sprite_t;
 /** dither structure */
 typedef struct cucul_dither cucul_dither_t;
 /** data buffer structure */
@@ -143,20 +141,16 @@ void cucul_draw_thin_triangle(cucul_canvas_t *, int, int, int, int, int, int);
 void cucul_fill_triangle(cucul_canvas_t *, int, int, int, int, int, int, char const *);
 /*  @} */
 
-/** \defgroup sprite libcucul sprite handling
+/** \defgroup frame libcucul canvas frame handling
  *
- *  These functions provide high level routines for sprite loading, animation
- *  and rendering.
+ *  These functions provide high level routines for canvas frame insertion,
+ *  removal, copying etc.
  *
  *  @{ */
-cucul_sprite_t * cucul_load_sprite(char const *);
-int cucul_get_sprite_frames(cucul_sprite_t const *);
-int cucul_get_sprite_width(cucul_sprite_t const *, int);
-int cucul_get_sprite_height(cucul_sprite_t const *, int);
-int cucul_get_sprite_dx(cucul_sprite_t const *, int);
-int cucul_get_sprite_dy(cucul_sprite_t const *, int);
-void cucul_draw_sprite(cucul_canvas_t *, int, int, cucul_sprite_t const *, int);
-void cucul_free_sprite(cucul_sprite_t *);
+unsigned int cucul_get_canvas_frame_count(cucul_canvas_t *);
+void cucul_set_canvas_frame(cucul_canvas_t *, unsigned int);
+void cucul_create_canvas_frame(cucul_canvas_t *, unsigned int);
+void cucul_free_canvas_frame(cucul_canvas_t *, unsigned int);
 /*  @} */
 
 /** \defgroup dither libcucul bitmap dithering
@@ -166,9 +160,9 @@ void cucul_free_sprite(cucul_sprite_t *);
  *
  *  @{ */
 cucul_dither_t *cucul_create_dither(unsigned int, unsigned int,
-                                         unsigned int, unsigned int,
-                                         unsigned int, unsigned int,
-                                         unsigned int, unsigned int);
+                                    unsigned int, unsigned int,
+                                    unsigned int, unsigned int,
+                                    unsigned int, unsigned int);
 void cucul_set_dither_palette(cucul_dither_t *,
                               unsigned int r[], unsigned int g[],
                               unsigned int b[], unsigned int a[]);
