@@ -205,48 +205,6 @@ int Cucul::rand(int min, int max)
     return cucul_rand(min, max);
 }
 
-Cucul::Sprite * Cucul::load_sprite(char const *f)
-{
-    Cucul::Sprite *s = new Cucul::Sprite();
-    s->sprite = cucul_load_sprite(f);
-    return s;
-}
-
-int Cucul::get_sprite_frames(Cucul::Sprite const *s)
-{
-    return cucul_get_sprite_frames(s->sprite);
-}
-
-int Cucul::get_sprite_width(Cucul::Sprite const *s, int v)
-{
-    return cucul_get_sprite_width(s->sprite, v);
-}
-
-int Cucul::get_sprite_height(Cucul::Sprite const *s, int v)
-{
-    return cucul_get_sprite_height(s->sprite, v);
-}
-
-int Cucul::get_sprite_dx(Cucul::Sprite const *s, int v)
-{
-    return cucul_get_sprite_dx(s->sprite, v);
-}
-
-int Cucul::get_sprite_dy(Cucul::Sprite const *s, int v)
-{
-    return cucul_get_sprite_dy(s->sprite, v);
-}
-
-void Cucul::draw_sprite(int x, int y, Cucul::Sprite const *s, int v)
-{
-    cucul_draw_sprite(cv, x, y, s->sprite, v);
-}
-
-void Cucul::free_sprite(Cucul::Sprite *s)
-{
-    cucul_free_sprite(s->sprite);
-}
-
 Cucul::Dither * Cucul::create_dither(unsigned int v1, unsigned int v2, unsigned int v3, unsigned int v4, unsigned int v5, unsigned int v6, unsigned int v7, unsigned int v8)
 {
     Cucul::Dither *d = new Dither();

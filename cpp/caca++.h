@@ -53,10 +53,10 @@ class Caca
 {
   public:
     Caca();
-    Caca(Cucul *qq);
+    Caca(Cucul *cv);
     ~Caca();
 
-    void attach(Cucul *qq);
+    void attach(Cucul *cv);
     void detach();
     void set_delay(unsigned int);
     void display();

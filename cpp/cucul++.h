@@ -41,13 +41,6 @@ class Cucul
         cucul_font *font;
     };
 
-    class Sprite
-    {
-        friend class Cucul;
-      protected:
-        cucul_sprite *sprite;
-    };
-
     class Dither
     {
         friend class Cucul;
@@ -91,14 +84,6 @@ class Cucul
     void draw_thin_triangle(int, int, int, int, int, int);
     void fill_triangle(int, int, int, int, int, int, char const *);
     int rand(int, int);
-    Sprite * load_sprite(char const *);
-    int get_sprite_frames(Cucul::Sprite const *);
-    int get_sprite_width(Cucul::Sprite const *, int);
-    int get_sprite_height(Cucul::Sprite const *, int);
-    int get_sprite_dx(Cucul::Sprite const *, int);
-    int get_sprite_dy(Cucul::Sprite const *, int);
-    void draw_sprite(int, int, Cucul::Sprite const *, int);
-    void free_sprite(Cucul::Sprite*);
     Dither * create_dither(unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);
     void set_dither_palette(Cucul::Dither *, unsigned int r[], unsigned int g[], unsigned int b[], unsigned int a[]);
     void set_dither_brightness(Cucul::Dither *, float);
