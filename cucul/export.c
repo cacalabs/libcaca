@@ -407,6 +407,7 @@ static void export_irc(cucul_canvas_t *cv, cucul_buffer_t *ex)
             uint8_t bg = palette[_cucul_argb32_to_ansi4bg(lineattr[x])];
             uint32_t ch = linechar[x];
 
+#if 0
             if(bg == prevbg)
             {
                 if(fg == prevfg)
@@ -430,6 +431,14 @@ static void export_irc(cucul_canvas_t *cv, cucul_buffer_t *ex)
                 if(ch >= (uint32_t)'0' && ch <= (uint32_t)'9')
                     cur += sprintf(cur, "\x02\x02");
             }
+#else
+            if(bg != prevbg || fg != prevfg)
+            {
+                cur += sprintf(cur, "\x03%d,%d", fg, bg);
+                if(ch >= (uint32_t)'0' && ch <= (uint32_t)'9')
+                    cur += sprintf(cur, "\x02\x02");
+            }
+#endif
             *cur++ = ch & 0x7f;
             prevfg = fg;
             prevbg = bg;
