@@ -8,13 +8,14 @@
  \section foo1 Overview
 
  The most important changes in the 1.0 API of \e libcaca are the
- \e libcaca / \e libcucul split and the object-oriented design. Where
- you used to do:
+ \e libcaca / \e libcucul split and the object-oriented design. See these
+ two examples for a rough idea of what changed:
 
 <table border="0"><tr><td valign="top">
 \code
 #include <caca.h>
 
+/* libcaca program - 0.x API */
 int main(void)
 {
     /* Initialise libcaca */
@@ -41,6 +42,7 @@ int main(void)
 #include <cucul.h>
 #include <caca.h>
 
+/* libcaca program - 1.0 API */
 int main(void)
 {
     /* Initialise libcaca */
