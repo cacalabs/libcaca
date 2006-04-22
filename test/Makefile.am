@@ -17,7 +17,7 @@ event_SOURCES = event.c
 event_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
 
 export_SOURCES = export.c
-export_LDADD = ../cucul/libcucul.la @CUCUL_LIBS@
+export_LDADD = ../cucul/libcucul.la
 
 font_SOURCES = font.c
 font_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@

@@ -234,7 +234,6 @@ fi
 
 AC_SUBST(MATH_LIBS)
 AC_SUBST(CACA_LIBS)
-AC_SUBST(CUCUL_LIBS)
 
 # Optimizations
 CFLAGS="${CFLAGS} -g -O2 -fno-strength-reduce -fomit-frame-pointer"
