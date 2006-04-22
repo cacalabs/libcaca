@@ -27,6 +27,7 @@
 #include "cucul_internals.h"
 
 static cucul_canvas_t *import_caca(void const *, unsigned int);
+static cucul_canvas_t *import_text(void const *, unsigned int);
 
 /** \brief Import a buffer into a canvas
  *
@@ -48,6 +49,8 @@ cucul_canvas_t * cucul_import_canvas(void const *data, unsigned int size,
 {
     if(!strcasecmp("caca", format))
         return import_caca(data, size);
+    if(!strcasecmp("text", format))
+        return import_text(data, size);
 
     /* FIXME: Try to autodetect */
     if(!strcasecmp("", format))
@@ -70,6 +73,7 @@ char const * const * cucul_get_import_list(void)
     static char const * const list[] =
     {
         "", "autodetect",
+        "text", "plain text",
         "caca", "native libcaca format",
         NULL, NULL
     };
@@ -122,6 +126,48 @@ static cucul_canvas_t *import_caca(void const *data, unsigned int size)
                     | ((uint32_t)buf[16 + 5 + 8 * n] << 16)
                     | ((uint32_t)buf[16 + 6 + 8 * n] << 8)
                     | (uint32_t)buf[16 + 7 + 8 * n];
+    }
+
+    return cv;
+}
+
+static cucul_canvas_t *import_text(void const *data, unsigned int size)
+{
+    cucul_canvas_t *cv;
+    char const *text = (char const *)data;
+    unsigned int width = 1, height = 1, x = 0, y = 0, i;
+
+    cv = cucul_create_canvas(width, height);
+    cucul_set_color(cv, CUCUL_COLOR_DEFAULT, CUCUL_COLOR_TRANSPARENT);
+
+    for(i = 0; i < size; i++)
+    {
+        unsigned char ch = *text++;
+
+        if(ch == '\r')
+            continue;
+
+        if(ch == '\n')
+        {
+            x = 0;
+            y++;
+            continue;
+        }
+
+        while(x >= width)
+        {
+            width++;
+            cucul_set_canvas_size(cv, width, height);
+        }
+
+        while(y >= height)
+        {
+            height++;
+            cucul_set_canvas_size(cv, width, height);
+        }
+
+        cucul_putchar(cv, x, y, ch);
+        x++;
     }
 
     return cv;
