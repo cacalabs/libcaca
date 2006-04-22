@@ -2,8 +2,10 @@
 
 AM_CPPFLAGS = -I$(top_srcdir)/cucul -I$(top_srcdir)/caca
 
+if USE_CPP
 include_HEADERS = cucul++.h caca++.h
 lib_LTLIBRARIES = libcucul++.la libcaca++.la
+endif
 
 libcucul___la_SOURCES = cucul++.cpp cucul++.h
 libcucul___la_LDFLAGS = -no-undefined -version-info @LT_VERSION@
@@ -13,7 +15,9 @@ libcaca___la_SOURCES = caca++.cpp caca++.h
 libcaca___la_LDFLAGS = -no-undefined -version-info @LT_VERSION@
 libcaca___la_LIBADD = ../caca/libcaca.la
 
+if USE_CPP
 noinst_PROGRAMS = cpptest
+endif
 
 cpptest_SOURCES = cpptest.cpp
 cpptest_LDADD = libcaca++.la libcucul++.la ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@

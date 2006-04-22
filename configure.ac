@@ -51,7 +51,7 @@ AC_ARG_ENABLE(vga,
 
 dnl language bindings
 AC_ARG_ENABLE(cpp,
-  [  --enable-cpp            C++ bindings (autodetected)])
+  [  --enable-cpp            C++ bindings (default disabled)])
 
 dnl example programs features
 AC_ARG_ENABLE(imlib2,
@@ -84,13 +84,6 @@ AC_TRY_COMPILE([],[asm("fldln2; fldln2; fxch; fyl2x");],
  [AC_MSG_RESULT(no)])
 
 AC_CHECK_LIB(m, sin, MATH_LIBS="${MATH_LIBS} -lm")
-
-
-if test "${enable_cpp}" != "no"; then
-  ac_cv_my_have_cpp="yes"
-  AC_DEFINE(USE_CPP, 1,
-                Define to 1 to enable C++ bindigs)
-fi
 
 CACA_DRIVERS="" 
 
@@ -250,16 +243,12 @@ CFLAGS="${CFLAGS} -g -O2 -fno-strength-reduce -fomit-frame-pointer"
 # (Comme quoi on est pas les seuls porcs)
 CFLAGS="${CFLAGS} -Wall -Wpointer-arith -Wcast-align -Wcast-qual -Wstrict-prototypes -Waggregate-return -Wmissing-prototypes -Wnested-externs -Wsign-compare"
 
-# Build the PIC library?
-case "${target_os}" in
-  *mingw32* | *cygwin* | *djgpp*)
-    NEED_PIC=false
-    ;;
-  *)
-    NEED_PIC=:
-    ;;
-esac
-AM_CONDITIONAL(NEED_PIC, ${NEED_PIC})
+# Build the C++ bindings?
+ac_cv_my_have_cpp="no"
+if test "${enable_cpp}" = "yes"; then
+  ac_cv_my_have_cpp="yes"
+fi
+AM_CONDITIONAL(USE_CPP, test "${ac_cv_my_have_cpp}" = "yes")
 
 # Use Imlib2?
 ac_cv_my_have_imlib2="no"
