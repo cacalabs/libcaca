@@ -2,16 +2,18 @@
 
 \section news0_99 Changes between 0.9 and 0.99
 
+ - license switched to WTFPL
  - libcaca was split into libcucul, a standalone text manipulation backend,
     and libcaca, the display and user input frontend
  - Unicode support
- - TrueColor support
+ - TrueColor (more than 16 colours) support
  - Floyd-Steinberg dithering
  - gamma correction
- - import/export functions for many text formats
+ - export functions for HTML, IRC, ANSI, SVG, PostScript, TGA...
  - builtin fonts for device-independent bitmap output
  - various text transformation routines (rotation, horizontal flip...)
  - OpenGL renderer
+ - kernel mode to build libcaca programs into a bootable x86 kernel
  - cacaserver, a telnet server that can be hooked to libcaca applications
  - img2irc, an image to IRC conversion utility
 

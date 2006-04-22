@@ -4,7 +4,7 @@
 
   \subsection dep API-dependent stuff
 
-  - nothing!
+  - support for multi-frame canvases in the caca exporter
 
   \subsection indep API-independent stuff
 

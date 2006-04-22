@@ -1,4 +1,70 @@
 ------------------------------------------------------------------------
+r640 | sam | 2006-04-22 23:36:11 +0200 (Sat, 22 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/cucul/Makefile.am
+   M /trunk/test/Makefile.am
+
+  * Got rid of CUCUL_LIBS. It's unused.
+
+------------------------------------------------------------------------
+r639 | sam | 2006-04-22 23:31:42 +0200 (Sat, 22 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/Makefile.am
+   M /trunk/debian
+   M /trunk/debian/Makefile.am
+   A /trunk/debian/caca-utils.install
+   M /trunk/debian/changelog
+   M /trunk/debian/control
+   A /trunk/debian/libcaca-dev.install
+   A /trunk/debian/libcaca0.install
+   A /trunk/debian/libcucul-dev.install
+   A /trunk/debian/libcucul0.install
+   M /trunk/debian/rules
+   M /trunk/doc/Makefile.am
+
+  * Updated Debian build rules.
+
+------------------------------------------------------------------------
+r638 | sam | 2006-04-22 21:46:43 +0200 (Sat, 22 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/event.c
+   M /trunk/doc/migrating.dox
+   M /trunk/test/colors.c
+   M /trunk/test/dithering.c
+   M /trunk/test/font.c
+   M /trunk/test/frames.c
+   M /trunk/test/hsv.c
+   M /trunk/test/transform.c
+   M /trunk/test/truecolor.c
+   M /trunk/test/unicode.c
+
+  * Allow the caca_event_t *ev argument for caca_get_event() to be NULL.
+
+------------------------------------------------------------------------
+r637 | sam | 2006-04-22 21:35:43 +0200 (Sat, 22 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/doc/migrating.dox
+
+  * Minor updates to the migration documentation.
+
+------------------------------------------------------------------------
+r636 | sam | 2006-04-22 21:22:14 +0200 (Sat, 22 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/doc/Makefile.am
+
+  * Slightly improved the documentation build rules dependencies.
+
+------------------------------------------------------------------------
+r635 | sam | 2006-04-22 21:17:38 +0200 (Sat, 22 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/NEWS
+   M /trunk/TODO
+
+  * Updated ChangeLog, NEWS and TODO.
+
+------------------------------------------------------------------------
 r634 | sam | 2006-04-22 21:14:49 +0200 (Sat, 22 Apr 2006) | 2 lines
 Changed paths:
    M /trunk/doc/libcaca.dox
