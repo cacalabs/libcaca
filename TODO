@@ -4,13 +4,7 @@
 
   \subsection dep API-dependent stuff
 
-  - all the sprite stuff (loading, saving, blitting, transparency
-     support, background colour support, thinking of a storage format,
-     etc.)
-  - Or maybe, instead of doing shit with the sprites, just allow canvases
-     to have several buffers, allow to change the active buffer, and treat
-     sprites like that.
-  - ASCII/ANSI art loading functions (maybe load them as sprites)
+  - nothing!
 
   \subsection indep API-independent stuff
 
@@ -30,6 +24,7 @@
   - factor internal Unicode character conversions, especially UCS4 -> UTF-8
   - optimise exporters so that they do not allocate huge blocks of memory
      when they only need half of it.
+  - ASCII/ANSI art loading functions (maybe load them as sprites)
 
 
 \section libcaca libcaca
@@ -38,6 +33,7 @@
 
   - text edit widget with cursor support (I'm unsure about this, it
      seems pretty difficult)
+  - rename caca_set_delay into something like caca_set_rendertime.
 
   \subsection indep API-independent stuff
 

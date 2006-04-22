@@ -1,5 +1,20 @@
 /* $Id$ */ /** \page news News
 
+\section news0_99 Changes between 0.9 and 0.99
+
+ - libcaca was split into libcucul, a standalone text manipulation backend,
+    and libcaca, the display and user input frontend
+ - Unicode support
+ - TrueColor support
+ - Floyd-Steinberg dithering
+ - gamma correction
+ - import/export functions for many text formats
+ - builtin fonts for device-independent bitmap output
+ - various text transformation routines (rotation, horizontal flip...)
+ - OpenGL renderer
+ - cacaserver, a telnet server that can be hooked to libcaca applications
+ - img2irc, an image to IRC conversion utility
+
 \section news0_9 Changes between 0.8 and 0.9
 
  - fix for a buffer overflow in the line rendering
