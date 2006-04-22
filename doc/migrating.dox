@@ -11,6 +11,7 @@
  \e libcaca / \e libcucul split and the object-oriented design. Where
  you used to do:
 
+<table border="0"><tr><td valign="top">
 \code
 #include <caca.h>
 
@@ -19,11 +20,12 @@ int main(void)
     /* Initialise libcaca */
     caca_init();
     /* Set window title */
-    caca_set_window_title("Hello!");
+    caca_set_window_title("Window");
     /* Choose drawing colours */
-    caca_set_color(CACA_COLOR_BLACK, CACA_COLOR_WHITE);
-    /* Draw a string at coordinates (0, 0) */
-    caca_putstr(0, 0, "This is a message");
+    caca_set_color(CACA_COLOR_BLACK,
+                   CACA_COLOR_WHITE);
+    /* Draw a string at (0, 0) */
+    caca_putstr(0, 0, "Hello world!");
     /* Refresh display */
     caca_refresh();
     /* Wait for a key press event */
@@ -34,9 +36,7 @@ int main(void)
     return 0;
 }
 \endcode
-
- You now do:
-
+</td><td>
 \code
 #include <cucul.h>
 #include <caca.h>
@@ -44,19 +44,22 @@ int main(void)
 int main(void)
 {
     /* Initialise libcaca */
-    cucul_canvas_t *cv; caca_display_t *dp; caca_event_t ev;
+    cucul_canvas_t *cv;
+    caca_display_t *dp; caca_event_t ev;
     cv = cucul_create_canvas(0, 0);
     dp = caca_create_display(cv);
     /* Set window title */
-    caca_set_display_title(dp, "Hello!");
+    caca_set_display_title(dp, "Window");
     /* Choose drawing colours */
-    cucul_set_color(cv, CUCUL_COLOR_BLACK, CUCUL_COLOR_WHITE);
-    /* Draw a string at coordinates (0, 0) */
-    cucul_putstr(cv, 0, 0, "This is a message");
+    cucul_set_color(cv, CUCUL_COLOR_BLACK,
+                        CUCUL_COLOR_WHITE);
+    /* Draw a string at (0, 0) */
+    cucul_putstr(cv, 0, 0, "Hello world!");
     /* Refresh display */
     caca_refresh_display();
     /* Wait for a key press event */
-    caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
+    caca_get_event(dp, CACA_EVENT_KEY_PRESS,
+                   &ev, -1);
     /* Clean up library */
     caca_free_display(dp);
     cucul_free_canvas(cv);
@@ -64,6 +67,7 @@ int main(void)
     return 0;
 }
 \endcode
+</td></tr></table>
 
  Note the following important things:
 
@@ -96,7 +100,8 @@ int main(void)
 
  \subsection bar2 Event handling
 
- - \b caca_get_event(): unchanged.
+ - \b caca_get_event(): unchanged, but the event information retrieval
+   changed a lot.
  - \b caca_wait_event(): use caca_get_event() with a \c timeout argument
    of \b -1.
  - \b caca_get_mouse_x(): unchanged.
@@ -114,6 +119,9 @@ int main(void)
  - \b caca_clear(): use cucul_clear_canvas().
 
  \subsection bar4 Primitives drawing
+
+ These functions are almost unchanged, except for Unicode support and the
+ fact that they now act on a given canvas.
 
  - \b caca_draw_line(): use cucul_draw_line().
  - \b caca_draw_polyline(): use cucul_draw_polyline().
@@ -135,14 +143,29 @@ int main(void)
 
  \subsection bar5 Mathematical functions
 
- - \b caca_rand(): use cucul_rand()
- - \b caca_sqrt(): this function is now deprecated
+ - \b caca_rand(): use cucul_rand(). The second argument is different, make
+   sure you take that into account.
+ - \b caca_sqrt(): this function is now deprecated, use your system's
+   \b sqrt() call instead.
 
  \subsection bar6 Sprite handling
 
- The sprite handling functions are currently being reworked.
+ The newly introduced canvases can have several frames. Sprites are hence
+ completely deprecated.
+
+ - \b caca_load_sprite(): use cucul_import_canvas().
+ - \b caca_get_sprite_frames(): use cucul_get_canvas_frame_count().
+ - \b caca_get_sprite_width(): use cucul_get_canvas_width().
+ - \b caca_get_sprite_height(): use cucul_get_canvas_height().
+ - \b caca_get_sprite_dx(): this function is now deprecated.
+ - \b caca_get_sprite_dy(): this function is now deprecated.
+ - \b caca_draw_sprite(): use cucul_set_canvas_frame() and cucul_blit().
+ - \b caca_free_sprite(): use cucul_free_canvas().
 
  \subsection bar7 Bitmap handling
+
+ Bitmaps have been renamed to dithers, because these objects do not in fact
+ store any pixels, they just have information on how bitmaps will be dithered.
 
  - \b caca_create_bitmap(): use cucul_create_dither().
  - \b caca_set_bitmap_palette(): use cucul_set_dither_palette().
