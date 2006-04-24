@@ -30,3 +30,37 @@ typedef long int intptr_t;
 typedef unsigned long int uintptr_t;
 #endif
 
+#if !defined(HAVE_HTONS) && !defined(HAVE_NETINET_IN_H)
+#   if defined(HAVE_ENDIAN_H)
+#       include <endian.h>
+#   endif
+static extern inline uint16_t htons(uint16_t x)
+{
+#if defined(HAVE_ENDIAN_H)
+    if(__BYTE_ORDER == __BIG_ENDIAN)
+#else
+    /* This is compile-time optimised with at least -O1 or -Os */
+    uint32_t const dummy = 0x12345678;
+    if(*(uint8_t const *)&dummy == 0x12)
+#endif
+        return x;
+    else
+        return (x >> 8) | (x << 8);
+}
+
+static extern inline uint32_t htonl(uint32_t x)
+{
+#if defined(HAVE_ENDIAN_H)
+    if(__BYTE_ORDER == __BIG_ENDIAN)
+#else
+    /* This is compile-time optimised with at least -O1 or -Os */
+    uint32_t const dummy = 0x12345678;
+    if(*(uint8_t const *)&dummy == 0x12)
+#endif
+        return x;
+    else
+        return (x >> 24) | ((x >> 8) & 0x0000ff00)
+                | ((x << 8) & 0x00ff0000) | (x << 24);
+}
+#endif
+
