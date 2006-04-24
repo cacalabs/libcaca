@@ -18,7 +18,6 @@
 #include "config.h"
 #include "common.h"
 
-#if !defined(USE_WIN32)
 #if !defined(__KERNEL__)
 #   if defined(HAVE_ENDIAN_H)
 #       include <endian.h>
@@ -37,8 +36,10 @@
 #include "cucul_internals.h"
 
 /* Internal fonts */
+#if !defined(USE_WIN32)
 #include "font_mono9.h"
 #include "font_monobold12.h"
+#endif
 
 /* Helper structures for font loading */
 #if !defined(_DOXYGEN_SKIP_ME)
@@ -118,10 +119,12 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
 
     if(size == 0)
     {
+#if !defined(USE_WIN32)
         if(!strcasecmp(data, "Monospace 9"))
             return cucul_load_font(mono9_data, mono9_size);
         if(!strcasecmp(data, "Monospace Bold 12"))
             return cucul_load_font(monobold12_data, monobold12_size);
+#endif
 
         return NULL;
     }
@@ -440,4 +443,3 @@ void cucul_render_canvas(cucul_canvas_t *cv, cucul_font_t *f,
  * };
  */
 
-#endif
