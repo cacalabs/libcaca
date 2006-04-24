@@ -65,7 +65,7 @@ return a + (b & x) + d[10];
 int function(int a)
 {
     if(a & 0x84)
-        return;
+        return a;
 
     if(a < 0)
     {
