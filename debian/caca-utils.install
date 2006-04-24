@@ -1,3 +1,9 @@
-usr/bin/*
+usr/bin/cacaball
+usr/bin/cacafire
+usr/bin/cacaserver
+usr/bin/cacaview
+usr/bin/cacamoir
+usr/bin/cacaplas
+usr/bin/img2irc
 usr/share/man/man1
 usr/share/libcaca

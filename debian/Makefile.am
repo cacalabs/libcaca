@@ -1,5 +1,6 @@
 # $Id$
 
+NULL =
 EXTRA_DIST = \
 	changelog \
 	compat \
