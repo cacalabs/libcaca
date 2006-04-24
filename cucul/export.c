@@ -222,7 +222,7 @@ static void export_ansi(cucul_canvas_t *cv, cucul_buffer_t *ex)
                                             fg - 8, bg - 8, fg - 8, bg - 8);
             }
 
-            *cur++ = ch & 0x7f;
+            *cur++ = (ch >= 0x20 && ch < 0x7f) ? ch : '?';
 
             prevfg = fg;
             prevbg = bg;
