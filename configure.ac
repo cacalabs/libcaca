@@ -30,6 +30,10 @@ dnl now otherwise it might be set in an obscure if statement. Same thing for
 dnl PKG_PROG_PKG_CONFIG which needs to be called first.
 AC_EGREP_CPP(yes, foo)
 PKG_PROG_PKG_CONFIG()
+m4_pattern_allow([^PKG_CONFIG_LIBDIR$])
+if test "$build" != "$host" -a "${PKG_CONFIG_LIBDIR}" = ""; then
+  export PKG_CONFIG_LIBDIR=/dev/null
+fi
 
 dnl output driver features
 AC_ARG_ENABLE(slang,
@@ -60,8 +64,6 @@ AC_ARG_ENABLE(imlib2,
 dnl conditional builds
 AC_ARG_ENABLE(doc,
   [  --enable-doc            build documentation (needs doxygen and LaTeX)])
-AC_ARG_ENABLE(pangoft2,
-  [  --enable-pangoft2       build font generator tool (autodetected)])
 
 AC_CHECK_HEADERS(stdio.h stdarg.h signal.h sys/ioctl.h sys/time.h inttypes.h endian.h unistd.h arpa/inet.h netinet/in.h winsock2.h)
 AC_CHECK_FUNCS(signal ioctl vsnprintf getenv putenv strcasecmp htons)
@@ -275,9 +277,7 @@ AM_CONDITIONAL(USE_IMLIB2, test "${ac_cv_my_have_imlib2}" = "yes")
 
 # Build development tools?
 PANGOFT2="no"
-if test "${enable_pangoft2}" != "no"; then
-  PKG_CHECK_MODULES(pangoft2, pangoft2, [PANGOFT2="yes"], [AC_MSG_RESULT(no)])
-fi
+PKG_CHECK_MODULES(pangoft2, pangoft2, [PANGOFT2="yes"], [AC_MSG_RESULT(no)])
 AM_CONDITIONAL(USE_PANGO, test "${PANGOFT2}" != "no")
 
 # Build documentation?
