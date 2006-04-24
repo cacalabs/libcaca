@@ -267,8 +267,7 @@ AM_CONDITIONAL(USE_IMLIB2, test "${ac_cv_my_have_imlib2}" = "yes")
 
 # Build development tools?
 PANGOFT2="no"
-  PKG_CHECK_MODULES(pangoft2, pangoft2,
-   [PANGOFT2="yes"])
+PKG_CHECK_MODULES(pangoft2, pangoft2, [PANGOFT2="yes"], [AC_MSG_RESULT(no)])
 AM_CONDITIONAL(USE_PANGO, test "${PANGO}" != "no")
 
 # Build documentation?
