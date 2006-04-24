@@ -5,7 +5,7 @@ pkgdata_DATA = caca.txt
 EXTRA_DIST = caca.txt
 AM_CPPFLAGS = -I$(top_srcdir)/cucul -I$(top_srcdir)/caca -DLIBCACA=1 -DX_DISPLAY_MISSING=1
 
-bin_PROGRAMS = cacafire cacaball cacaplas cacaserver cacamoir cacaplay cacaview img2irc
+bin_PROGRAMS = cacafire cacaball cacaplas cacamoir cacaplay cacaview img2irc $(fcntl_programs)
 
 cacafire_SOURCES = aafire.c
 cacafire_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
@@ -41,5 +41,11 @@ img_ldflags = `imlib2-config --libs`
 else
 img_cflags =
 img_ldflags =
+endif
+
+if USE_FCNTL
+fcntl_programs = cacaserver
+else
+fcntl_programs =
 endif
 

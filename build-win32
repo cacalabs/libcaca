@@ -14,12 +14,11 @@ rm -f "${DIRNAME}.zip"
 mkdir "${DIRNAME}"
 
 # Build for win32
-./configure --host=i586-mingw32msvc --prefix=/ --bindir=/bin --libdir=/lib --disable-imlib2 --disable-doc
+./configure --host=i586-mingw32msvc --prefix=/ --bindir=/bin --libdir=/lib --disable-imlib2 --disable-doc --disable-pangoft2
 make pkglibdir=/lib pkgdatadir=/data bindir=/bin
 
 # Install into our private directory
 make install DESTDIR="${DESTDIR}" pkglibdir=/lib/ pkgdatadir=/ bindir=/bin/
-cp COPYING COPYING.LGPL "${DESTDIR}/share/doc/libcaca-dev/"
 
 mv "${DESTDIR}/bin/"* "${DESTDIR}/"
 mv "${DESTDIR}/lib/"* "${DESTDIR}/"
@@ -29,8 +28,8 @@ rmdir "${DESTDIR}/bin"
 rmdir "${DESTDIR}/lib"
 
 mkdir "${DESTDIR}/doc"
-for f in `ls "${DESTDIR}/share/doc/libcaca-dev/"`; do
-   sed -e 's/$//' < "${DESTDIR}/share/doc/libcaca-dev/${f}" > "${DESTDIR}/doc/${f}.txt"
+for f in COPYING COPYING.LGPL COPYING.GPL README AUTHORS NEWS NOTES THANKS TODO; do
+   sed -e 's/$//' < "${f}" > "${DESTDIR}/doc/${f}.txt"
 done
 rm -Rf "${DESTDIR}/share"
 rm -Rf "${DESTDIR}/man"

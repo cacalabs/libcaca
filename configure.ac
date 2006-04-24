@@ -60,6 +60,8 @@ AC_ARG_ENABLE(imlib2,
 dnl conditional builds
 AC_ARG_ENABLE(doc,
   [  --enable-doc            build documentation (needs doxygen and LaTeX)])
+AC_ARG_ENABLE(pangoft2,
+  [  --enable-pangoft2       build font generator tool (autodetected)])
 
 AC_CHECK_HEADERS(stdio.h stdarg.h signal.h sys/ioctl.h sys/time.h inttypes.h endian.h unistd.h arpa/inet.h netinet/in.h winsock2.h)
 AC_CHECK_FUNCS(signal ioctl vsnprintf getenv putenv strcasecmp htons)
@@ -249,6 +251,12 @@ if test "${enable_cpp}" = "yes"; then
 fi
 AM_CONDITIONAL(USE_CPP, test "${ac_cv_my_have_cpp}" = "yes")
 
+# Build cacaserver?
+ac_cv_my_have_fcntl="no"
+AC_CHECK_FUNC(fcntl,
+ [ac_cv_my_have_fcntl="yes"])
+AM_CONDITIONAL(USE_FCNTL, test "${ac_cv_my_have_fcntl}" = "yes")
+
 # Use Imlib2?
 ac_cv_my_have_imlib2="no"
 save_CPPFLAGS="${CPPFLAGS}"
@@ -267,7 +275,9 @@ AM_CONDITIONAL(USE_IMLIB2, test "${ac_cv_my_have_imlib2}" = "yes")
 
 # Build development tools?
 PANGOFT2="no"
-PKG_CHECK_MODULES(pangoft2, pangoft2, [PANGOFT2="yes"], [AC_MSG_RESULT(no)])
+if test "${enable_pangoft2}" != "no"; then
+  PKG_CHECK_MODULES(pangoft2, pangoft2, [PANGOFT2="yes"], [AC_MSG_RESULT(no)])
+fi
 AM_CONDITIONAL(USE_PANGO, test "${PANGOFT2}" != "no")
 
 # Build documentation?
