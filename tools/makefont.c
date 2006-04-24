@@ -272,13 +272,13 @@ int main(int argc, char *argv[])
 
 static int printf_u32(char const *fmt, uint32_t i)
 {
-    uint32_t ni = htonl(i);
+    uint32_t ni = hton32(i);
     return printf_hex(fmt, (uint8_t *)&ni, 4);
 }
 
 static int printf_u16(char const *fmt, uint16_t i)
 {
-    uint16_t ni = htons(i);
+    uint16_t ni = hton16(i);
     return printf_hex(fmt, (uint8_t *)&ni, 2);
 }
 

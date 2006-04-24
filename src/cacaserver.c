@@ -18,9 +18,15 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#if defined(HAVE_ARPA_INET_H)
+#   include <arpa/inet.h>
+#elif defined(HAVE_NETINET_IN_H)
+#   include <netinet/in.h>
+#elif defined(HAVE_WINSOCK2_H)
+#   include <winsock2.h>
+#endif
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <arpa/inet.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <errno.h>

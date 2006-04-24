@@ -32,16 +32,19 @@ typedef long int intptr_t;
 typedef unsigned long int uintptr_t;
 #endif
 
-#if !defined(HAVE_HTONS) && !defined(HAVE_NETINET_IN_H)
+#if defined(HAVE_HTONS)
+#   define hton16 htons
+#   define hton32 htonl
+#else
 #   if defined(HAVE_ENDIAN_H)
 #       include <endian.h>
 #   endif
-static inline uint16_t htons(uint16_t x)
+static inline uint16_t hton16(uint16_t x)
 {
+    /* This is compile-time optimised with at least -O1 or -Os */
 #if defined(HAVE_ENDIAN_H)
     if(__BYTE_ORDER == __BIG_ENDIAN)
 #else
-    /* This is compile-time optimised with at least -O1 or -Os */
     uint32_t const dummy = 0x12345678;
     if(*(uint8_t const *)&dummy == 0x12)
 #endif
@@ -50,12 +53,12 @@ static inline uint16_t htons(uint16_t x)
         return (x >> 8) | (x << 8);
 }
 
-static inline uint32_t htonl(uint32_t x)
+static inline uint32_t hton32(uint32_t x)
 {
+    /* This is compile-time optimised with at least -O1 or -Os */
 #if defined(HAVE_ENDIAN_H)
     if(__BYTE_ORDER == __BIG_ENDIAN)
 #else
-    /* This is compile-time optimised with at least -O1 or -Os */
     uint32_t const dummy = 0x12345678;
     if(*(uint8_t const *)&dummy == 0x12)
 #endif

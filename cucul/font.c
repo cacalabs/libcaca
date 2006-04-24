@@ -136,15 +136,15 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
     f->private = (void *)(uintptr_t)data;
 
     memcpy(&f->header, f->private + 8, sizeof(struct font_header));
-    f->header.control_size = htonl(f->header.control_size);
-    f->header.data_size = htonl(f->header.data_size);
-    f->header.version = htons(f->header.version);
-    f->header.blocks = htons(f->header.blocks);
-    f->header.glyphs = htonl(f->header.glyphs);
-    f->header.bpp = htons(f->header.bpp);
-    f->header.width = htons(f->header.width);
-    f->header.height = htons(f->header.height);
-    f->header.flags = htons(f->header.flags);
+    f->header.control_size = hton32(f->header.control_size);
+    f->header.data_size = hton32(f->header.data_size);
+    f->header.version = hton16(f->header.version);
+    f->header.blocks = hton16(f->header.blocks);
+    f->header.glyphs = hton32(f->header.glyphs);
+    f->header.bpp = hton16(f->header.bpp);
+    f->header.width = hton16(f->header.width);
+    f->header.height = hton16(f->header.height);
+    f->header.flags = hton16(f->header.flags);
 
     if(size != 8 + f->header.control_size + f->header.data_size
         || (f->header.bpp != 8 && f->header.bpp != 4 &&
@@ -161,9 +161,9 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
            f->header.blocks * sizeof(struct block_info));
     for(i = 0; i < f->header.blocks; i++)
     {
-        f->block_list[i].start = htonl(f->block_list[i].start);
-        f->block_list[i].stop = htonl(f->block_list[i].stop);
-        f->block_list[i].index = htonl(f->block_list[i].index);
+        f->block_list[i].start = hton32(f->block_list[i].start);
+        f->block_list[i].stop = hton32(f->block_list[i].stop);
+        f->block_list[i].index = hton32(f->block_list[i].index);
 
         if(f->block_list[i].start > f->block_list[i].stop
             || (i > 0 && f->block_list[i].start < f->block_list[i - 1].stop)
@@ -182,9 +182,9 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
            f->header.glyphs * sizeof(struct glyph_info));
     for(i = 0; i < f->header.glyphs; i++)
     {
-        f->glyph_list[i].width = htons(f->glyph_list[i].width);
-        f->glyph_list[i].height = htons(f->glyph_list[i].height);
-        f->glyph_list[i].data_offset = htonl(f->glyph_list[i].data_offset);
+        f->glyph_list[i].width = hton16(f->glyph_list[i].width);
+        f->glyph_list[i].height = hton16(f->glyph_list[i].height);
+        f->glyph_list[i].data_offset = hton32(f->glyph_list[i].data_offset);
 
         if(f->glyph_list[i].data_offset >= f->header.data_size
             || f->glyph_list[i].data_offset
