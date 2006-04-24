@@ -248,8 +248,6 @@ static int win32_get_event(caca_display_t *dp, caca_event_t *ev)
         ReadConsoleInput(dp->drv.p->hin, &rec, 1, &num);
         if(rec.EventType == KEY_EVENT)
         {
-            unsigned int event;
-
             if(rec.Event.KeyEvent.bKeyDown)
                 ev->type = CACA_EVENT_KEY_PRESS;
             else
