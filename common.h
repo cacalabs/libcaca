@@ -17,7 +17,9 @@
  *  function prototypes that are sometimes missing.
  */
 
-#if !defined(HAVE_INTTYPES_H)
+#if defined(HAVE_INTTYPES_H)
+#   include <inttypes.h>
+#else
 typedef signed char int8_t;
 typedef signed short int16_t;
 typedef signed long int int32_t;
@@ -34,7 +36,7 @@ typedef unsigned long int uintptr_t;
 #   if defined(HAVE_ENDIAN_H)
 #       include <endian.h>
 #   endif
-static extern inline uint16_t htons(uint16_t x)
+static inline uint16_t htons(uint16_t x)
 {
 #if defined(HAVE_ENDIAN_H)
     if(__BYTE_ORDER == __BIG_ENDIAN)
@@ -48,7 +50,7 @@ static extern inline uint16_t htons(uint16_t x)
         return (x >> 8) | (x << 8);
 }
 
-static extern inline uint32_t htonl(uint32_t x)
+static inline uint32_t htonl(uint32_t x)
 {
 #if defined(HAVE_ENDIAN_H)
     if(__BYTE_ORDER == __BIG_ENDIAN)
