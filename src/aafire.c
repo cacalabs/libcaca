@@ -24,6 +24,7 @@
 
 #ifdef LIBCACA
 #include "config.h"
+#include "common.h"
 #if !defined(__KERNEL__)
 #   include <stdio.h>
 #   include <stdlib.h>

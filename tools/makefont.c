@@ -14,11 +14,16 @@
  *   makefont <prefix> <font> <dpi> <bpp>
  */
 
+#include "config.h"
+#include "common.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 
-#include <arpa/inet.h>
+#if defined(HAVE_ARPA_INET_H)
+#   include <arpa/inet.h>
+#endif
 
 #include <pango/pango.h>
 #include <pango/pangoft2.h>

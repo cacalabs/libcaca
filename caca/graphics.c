@@ -16,6 +16,7 @@
  */
 
 #include "config.h"
+#include "common.h"
 
 #include "caca.h"
 #include "caca_internals.h"

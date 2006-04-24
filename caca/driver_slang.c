@@ -16,6 +16,7 @@
  */
 
 #include "config.h"
+#include "common.h"
 
 #if defined(USE_SLANG)
 

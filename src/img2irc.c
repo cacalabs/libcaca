@@ -12,6 +12,7 @@
  */
 
 #include "config.h"
+#include "common.h"
 
 #include <stdio.h>
 #include <string.h>

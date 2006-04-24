@@ -16,13 +16,6 @@
 
 #if defined(HAVE_INTTYPES_H) && !defined(__KERNEL__)
 #   include <inttypes.h>
-#elif !defined(CUSTOM_INTTYPES) && !defined(_DOXYGEN_SKIP_ME)
-#   define CUSTOM_INTTYPES
-typedef unsigned char uint8_t;
-typedef unsigned short uint16_t;
-typedef unsigned long int uint32_t;
-typedef long int intptr_t;
-typedef long unsigned int uintptr_t;
 #endif
 
 struct cucul_canvas

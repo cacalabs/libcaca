@@ -18,6 +18,7 @@
  */
 
 #include "config.h"
+#include "common.h"
 
 #ifdef __KERNEL__
 

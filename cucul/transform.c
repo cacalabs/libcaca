@@ -16,6 +16,7 @@
  */
 
 #include "config.h"
+#include "common.h"
 
 #if !defined(__KERNEL__)
 #endif

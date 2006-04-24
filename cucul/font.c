@@ -16,16 +16,19 @@
  */
 
 #include "config.h"
+#include "common.h"
 
 #if !defined(USE_WIN32)
 #if !defined(__KERNEL__)
 #   if defined(HAVE_ENDIAN_H)
 #       include <endian.h>
 #   endif
+#   if defined(HAVE_ARPA_INET_H)
+#       include <arpa/inet.h>
+#   endif
 #   include <stdio.h>
 #   include <stdlib.h>
 #   include <string.h>
-#   include <arpa/inet.h>
 #endif
 
 #include "cucul.h"
