@@ -196,9 +196,10 @@ static cucul_canvas_t *import_text(void const *data, unsigned int size)
 }
 
 #define IS_ALPHA(x) (x>='A' && x<='z')
+#define END_TUP 0x1337
 unsigned char _get_ansi_command(unsigned char const *buffer, int size);
 int _parse_tuple(unsigned int *ret, unsigned char const *buffer, int size);
-void _manage_modifiers(char c, int *fg, int *bg, int *old_fg, int *old_bg);
+void _manage_modifiers(char c, int *fg, int *bg, int *save_fg, int *save_bg);
 
 static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
 {
@@ -211,10 +212,10 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
     int x = 0, y = 0, width = 80, height = 25;
     int save_x = 0, save_y = 0;
     unsigned int j, add = 0;
-    int fg, bg, old_fg, old_bg;
+    int fg, bg, save_fg, save_bg;
 
-    fg = old_fg = CUCUL_COLOR_LIGHTGRAY;
-    bg = old_bg = CUCUL_COLOR_BLACK;
+    fg = save_fg = CUCUL_COLOR_LIGHTGRAY;
+    bg = save_bg = CUCUL_COLOR_BLACK;
 
     cv = cucul_create_canvas(width, height);
 
@@ -229,50 +230,39 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
             add = _parse_tuple(tuple, &buffer[i], sent_size);
             count = 0;
 
-            while(tuple[count] != 0x1337)
+            while(tuple[count] != END_TUP)
                 count++;  /* Gruik */
 
             switch(c)
             {
             case 'f':
             case 'H':
-                if(tuple[0] != 0x1337)
+                if(tuple[0] != END_TUP)
                 {
-                    x = tuple[0];
-                    if(tuple[1] != 0x1337)
-                        y = tuple[1];
+                    y = tuple[0] - 1;
+                    x = tuple[1] == END_TUP ? 0 : tuple[1] - 1;
                 }
                 else
                 {
-                    x = 0;
                     y = 0;
+                    x = 0;
                 }
                 break;
             case 'A':
-                if(tuple[0] == 0x1337)
-                    y -= 1;
-                else
-                    y -= tuple[0];
-                if(y < 0) y = 0;
+                y -= tuple[0] == END_TUP ? 1 : tuple[0];
+                if(y < 0)
+                    y = 0;
                 break;
             case 'B':
-                if(tuple[0] == 0x1337)
-                    y++;
-                else
-                    y += tuple[0];
+                y += tuple[0] == END_TUP ? 1 : tuple[0];
                 break;
             case 'C':
-                if(tuple[0] == 0x1337)
-                    x++;
-                else
-                    x += tuple[0];
+                x += tuple[0] == END_TUP ? 1 : tuple[0];
                 break;
             case 'D':
-                if(tuple[0] == 0x1337)
-                    x--;
-                else
-                    x -= tuple[0];
-                if(x < 0) x = 0;
+                x -= tuple[0] == END_TUP ? 1 : tuple[0];
+                if(x < 0)
+                    x = 0;
                 break;
             case 's':
                 save_x = x;
@@ -294,7 +284,7 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
                 break;
             case 'm':
                 for(j = 0; j < count; j++)
-                    _manage_modifiers(tuple[j], &fg, &bg, &old_fg, &old_bg);
+                    _manage_modifiers(tuple[j], &fg, &bg, &save_fg, &save_bg);
                 cucul_set_color(cv, fg, bg);
                 break;
             default:
@@ -365,7 +355,7 @@ int _parse_tuple(unsigned int *ret, unsigned char const *buffer, int size)
     int t = 0;
     unsigned char nbr[1024];
 
-    ret[0] = 0x1337;
+    ret[0] = END_TUP;
 
     for(i = 0; i < size; i++)
     {
@@ -376,7 +366,7 @@ int _parse_tuple(unsigned int *ret, unsigned char const *buffer, int size)
                 ret[t] = atoi((char*)nbr);
                 t++;
             }
-            ret[t] = 0x1337;
+            ret[t] = END_TUP;
             j = 0;
             return i;
         }
@@ -391,7 +381,7 @@ int _parse_tuple(unsigned int *ret, unsigned char const *buffer, int size)
         {
             ret[t] = atoi((char*)nbr);
             t++;
-            ret[t] = 0x1337;
+            ret[t] = END_TUP;
             j = 0;
         }
     }
@@ -400,7 +390,7 @@ int _parse_tuple(unsigned int *ret, unsigned char const *buffer, int size)
 
 
 
-void _manage_modifiers(char c, int *fg, int *bg, int *old_fg, int *old_bg)
+void _manage_modifiers(char c, int *fg, int *bg, int *save_fg, int *save_bg)
 {
     switch(c)
     {
@@ -419,14 +409,14 @@ void _manage_modifiers(char c, int *fg, int *bg, int *old_fg, int *old_bg)
         *bg = 15 - *bg;
         break;
     case 8: // invisible
-        *old_fg = *fg;
-        *old_bg = *bg;
+        *save_fg = *fg;
+        *save_bg = *bg;
         *fg = CUCUL_COLOR_TRANSPARENT;
         *bg = CUCUL_COLOR_TRANSPARENT;
         break;
     case 28: // not invisible
-        *fg = *old_fg;
-        *bg = *old_bg;
+        *fg = *save_fg;
+        *bg = *save_bg;
         break;
     case 30: *fg = CUCUL_COLOR_BLACK; break;
     case 31: *fg = CUCUL_COLOR_RED; break;
