@@ -199,7 +199,7 @@ static cucul_canvas_t *import_text(void const *data, unsigned int size)
 #define END_TUP 0x1337
 unsigned char _get_ansi_command(unsigned char const *buffer, int size);
 int _parse_tuple(unsigned int *ret, unsigned char const *buffer, int size);
-void _manage_modifiers(char c, int *fg, int *bg, int *save_fg, int *save_bg);
+void _manage_modifiers(int i, int *fg, int *bg, int *save_fg, int *save_bg);
 
 static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
 {
@@ -390,15 +390,39 @@ int _parse_tuple(unsigned int *ret, unsigned char const *buffer, int size)
 
 
 
-void _manage_modifiers(char c, int *fg, int *bg, int *save_fg, int *save_bg)
+void _manage_modifiers(int i, int *fg, int *bg, int *save_fg, int *save_bg)
 {
-    switch(c)
+    static uint8_t const ansi2cucul[] =
+    {
+        CUCUL_COLOR_BLACK,
+        CUCUL_COLOR_RED,
+        CUCUL_COLOR_GREEN,
+        CUCUL_COLOR_BROWN,
+        CUCUL_COLOR_BLUE,
+        CUCUL_COLOR_MAGENTA,
+        CUCUL_COLOR_CYAN,
+        CUCUL_COLOR_LIGHTGRAY
+    };
+
+    if(i >= 30 && i <= 37)
+        *fg = ansi2cucul[i - 30];
+    else if(i == 39)
+        *fg = CUCUL_COLOR_DEFAULT;
+    else if(i >= 40 && i <= 47)
+        *bg = ansi2cucul[i - 40];
+    else if(i == 49)
+        *bg = CUCUL_COLOR_DEFAULT;
+    else if(i >= 90 && i <= 97)
+        *fg = ansi2cucul[i - 90] + 8;
+    else if(i >= 100 && i <= 107)
+        *bg = ansi2cucul[i - 100] + 8;
+    else switch(i)
     {
     case 0:
         *fg = CUCUL_COLOR_DEFAULT;
         *bg = CUCUL_COLOR_DEFAULT;
         break;
-    case 1: // BOLD
+    case 1: /* BOLD */
         if(*fg < 8)
             *fg += 8;
         if(*bg < 8)
@@ -422,42 +446,6 @@ void _manage_modifiers(char c, int *fg, int *bg, int *save_fg, int *save_bg)
         *fg = *save_fg;
         *bg = *save_bg;
         break;
-    case 30: *fg = CUCUL_COLOR_BLACK; break;
-    case 31: *fg = CUCUL_COLOR_RED; break;
-    case 32: *fg = CUCUL_COLOR_GREEN; break;
-    case 33: *fg = CUCUL_COLOR_BROWN; break;
-    case 34: *fg = CUCUL_COLOR_BLUE; break;
-    case 35: *fg = CUCUL_COLOR_MAGENTA; break;
-    case 36: *fg = CUCUL_COLOR_CYAN; break;
-    case 37: *fg = CUCUL_COLOR_WHITE; break;
-    case 39: *fg = CUCUL_COLOR_LIGHTGRAY; break;
-    case 40: *bg = CUCUL_COLOR_BLACK; break;
-    case 41: *bg = CUCUL_COLOR_RED; break;
-    case 42: *bg = CUCUL_COLOR_GREEN; break;
-    case 43: *bg = CUCUL_COLOR_BROWN; break;
-    case 44: *bg = CUCUL_COLOR_BLUE; break;
-    case 45: *bg = CUCUL_COLOR_MAGENTA; break;
-    case 46: *bg = CUCUL_COLOR_CYAN; break;
-    case 47: *bg = CUCUL_COLOR_WHITE; break;
-    case 49: *bg = CUCUL_COLOR_BLACK; break;
-
-    case 90: *fg = CUCUL_COLOR_DARKGRAY; break;
-    case 91: *fg = CUCUL_COLOR_LIGHTRED; break;
-    case 92: *fg = CUCUL_COLOR_LIGHTGREEN; break;
-    case 93: *fg = CUCUL_COLOR_YELLOW; break;
-    case 94: *fg = CUCUL_COLOR_LIGHTBLUE; break;
-    case 95: *fg = CUCUL_COLOR_LIGHTMAGENTA; break;
-    case 96: *fg = CUCUL_COLOR_LIGHTCYAN; break;
-    case 97: *fg = CUCUL_COLOR_WHITE; break;
-    case 100: *bg = CUCUL_COLOR_DARKGRAY; break;
-    case 101: *bg = CUCUL_COLOR_LIGHTRED; break;
-    case 102: *bg = CUCUL_COLOR_LIGHTGREEN; break;
-    case 103: *bg = CUCUL_COLOR_YELLOW; break;
-    case 104: *bg = CUCUL_COLOR_LIGHTBLUE; break;
-    case 105: *bg = CUCUL_COLOR_LIGHTMAGENTA; break;
-    case 106: *bg = CUCUL_COLOR_LIGHTCYAN; break;
-    case 107: *bg = CUCUL_COLOR_WHITE; break;
-
     default:
         /*   printf("Unknow option to 'm' %d (%c)\n", c, IS_ALPHA(c)?c:'.'); */
         break;
