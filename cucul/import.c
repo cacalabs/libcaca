@@ -39,6 +39,8 @@ static cucul_canvas_t *import_ansi(void const *, unsigned int);
  *
  *  \li \c "": attempt to autodetect the file format.
  *
+ *  \li \c "ansi": import ANSI files.
+ *
  *  \li \c "caca": import native libcaca files.
  *
  *  \param data The memory area to be loaded into a canvas.
@@ -175,15 +177,10 @@ static cucul_canvas_t *import_text(void const *data, unsigned int size)
             continue;
         }
 
-        while(x >= width)
+        if(x >= width || y >= height)
         {
-            width++;
-            cucul_set_canvas_size(cv, width, height);
-        }
-
-        while(y >= height)
-        {
-            height++;
+            width = x + 1;
+            height = y + 1;
             cucul_set_canvas_size(cv, width, height);
         }
 
