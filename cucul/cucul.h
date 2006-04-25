@@ -79,18 +79,6 @@ void cucul_free_canvas(cucul_canvas_t *);
 int cucul_rand(int, int);
 /*  @} */
 
-/** \defgroup error libcucul error management
- *
- *  These functions provide simple error management routines.
- *
- *  @{ */
-#define ECUCUL_NOMEM (100)
-#define ECUCUL_INVAL (101)
-#define ECUCUL_RANGE (102)
-int cucul_errno(void);
-char const *cucul_strerr(int);
-/*  @} */
-
 /** \defgroup buffer libcucul buffer handling
  *
  *  These functions provide methods to handle libcucul buffers.
