@@ -199,7 +199,7 @@ static cucul_canvas_t *import_text(void const *data, unsigned int size)
 #define END_TUP 0x1337
 unsigned char _get_ansi_command(unsigned char const *buffer, int size);
 int _parse_tuple(unsigned int *ret, unsigned char const *buffer, int size);
-void _manage_modifiers(int i, int *fg, int *bg, int *save_fg, int *save_bg);
+void _manage_modifiers(int i, int *fg, int *bg, int *save_fg, int *save_bg, int *bold);
 
 static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
 {
@@ -212,10 +212,11 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
     int x = 0, y = 0, width = 80, height = 25;
     int save_x = 0, save_y = 0;
     unsigned int j, add = 0;
-    int fg, bg, save_fg, save_bg;
+    int fg, bg, save_fg, save_bg, bold;
 
     fg = save_fg = CUCUL_COLOR_LIGHTGRAY;
     bg = save_bg = CUCUL_COLOR_BLACK;
+    bold = 0;
 
     cv = cucul_create_canvas(width, height);
 
@@ -284,7 +285,11 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
                 break;
             case 'm':
                 for(j = 0; j < count; j++)
-                    _manage_modifiers(tuple[j], &fg, &bg, &save_fg, &save_bg);
+                    _manage_modifiers(tuple[j], &fg, &bg, &save_fg, &save_bg, &bold);
+                if(bold && fg < 8)
+                    fg += 8;
+                if(bold && bg < 8)
+                    bg += 8;
                 cucul_set_color(cv, fg, bg);
                 break;
             default:
@@ -305,14 +310,7 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
             }
             else
             {
-                if((buffer[i] >= 0x20) || (buffer[i] <= 0x7E))
-                {
-                    _cucul_putchar32(cv, x, y,_cucul_cp437_to_utf32(buffer[i]));
-
-                    //  cucul_putchar(cv, x, y, buffer[i]);
-                }
-                else
-                    cucul_putchar(cv, x, y, '?');
+                _cucul_putchar32(cv, x, y,_cucul_cp437_to_utf32(buffer[i]));
                 x++;
             }
         }
@@ -390,7 +388,7 @@ int _parse_tuple(unsigned int *ret, unsigned char const *buffer, int size)
 
 
 
-void _manage_modifiers(int i, int *fg, int *bg, int *save_fg, int *save_bg)
+void _manage_modifiers(int i, int *fg, int *bg, int *save_fg, int *save_bg, int *bold)
 {
     static uint8_t const ansi2cucul[] =
     {
@@ -421,12 +419,10 @@ void _manage_modifiers(int i, int *fg, int *bg, int *save_fg, int *save_bg)
     case 0:
         *fg = CUCUL_COLOR_DEFAULT;
         *bg = CUCUL_COLOR_DEFAULT;
+        *bold = 0;
         break;
     case 1: /* BOLD */
-        if(*fg < 8)
-            *fg += 8;
-        if(*bg < 8)
-            *bg += 8;
+        *bold = 1;
         break;
     case 4: // Underline
         break;
