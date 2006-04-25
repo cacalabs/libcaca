@@ -16,6 +16,7 @@ libcucul_la_SOURCES = \
 	cucul_internals.h \
 	buffer.c \
 	canvas.c \
+	error.c \
 	transform.c \
 	charset.c \
 	colour.c \

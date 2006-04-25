@@ -31,7 +31,7 @@ extern "C"
 {
 #endif
 
-/** \e libcucul context */
+/** \e libcucul canvas */
 typedef struct cucul_canvas cucul_canvas_t;
 /** dither structure */
 typedef struct cucul_dither cucul_dither_t;
@@ -77,6 +77,18 @@ unsigned int cucul_get_canvas_width(cucul_canvas_t *);
 unsigned int cucul_get_canvas_height(cucul_canvas_t *);
 void cucul_free_canvas(cucul_canvas_t *);
 int cucul_rand(int, int);
+/*  @} */
+
+/** \defgroup error libcucul error management
+ *
+ *  These functions provide simple error management routines.
+ *
+ *  @{ */
+#define ECUCUL_NOMEM (100)
+#define ECUCUL_INVAL (101)
+#define ECUCUL_RANGE (102)
+int cucul_errno(void);
+char const *cucul_strerr(int);
 /*  @} */
 
 /** \defgroup buffer libcucul buffer handling
