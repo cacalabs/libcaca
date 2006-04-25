@@ -179,8 +179,12 @@ static cucul_canvas_t *import_text(void const *data, unsigned int size)
 
         if(x >= width || y >= height)
         {
-            width = x + 1;
-            height = y + 1;
+            if(x >= width)
+                width = x + 1;
+
+            if(y >= height)
+                height = y + 1;
+
             cucul_set_canvas_size(cv, width, height);
         }
 
