@@ -1,6 +1,6 @@
 /*
- *  import       libcaca importers test program
- *  Copyright (c) 2006 Sam Hocevar <sam@zoy.org>
+ *  import        libcaca importers test program
+ *  Copyright (c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                All Rights Reserved
  *
  *  $Id$
@@ -54,17 +54,16 @@ int main(int argc, char *argv[])
 	fprintf(stderr, "%s: Can't allocate memory (%d bytes)\n", argv[0], size);
         return 1;
     }
+
     if(!fread(buffer, size, 1, fp))
     {
 	fprintf(stderr, "%s: Can't read %s\n", argv[0], argv[1]);
         return 1;
     }
 
-
-
     cv = cucul_import_canvas(buffer, size, "");
 
-    if(cv==NULL)
+    if(cv == NULL)
     {
 	fprintf(stderr, "%s: Can't load %s, unknow reason.\n", argv[0], argv[1]);
         return 1;
@@ -78,7 +77,6 @@ int main(int argc, char *argv[])
 
     caca_free_display(dp);
     cucul_free_canvas(cv);
-
 
     return 0;
 }
