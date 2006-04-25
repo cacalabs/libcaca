@@ -30,15 +30,17 @@ static void ellipsepoints(cucul_canvas_t *, int, int, int, int, uint32_t);
 
 /** \brief Draw a circle on the canvas using the given character.
  *
+ *  This function never fails.
+ *
  *  \param cv The handle to the libcucul canvas.
  *  \param x Center X coordinate.
  *  \param y Center Y coordinate.
  *  \param r Circle radius.
  *  \param str UTF-8 string representing the character that should be used
  *         to draw the circle outline.
- *  \return void
+ *  \return This function always returns 0.
  */
-void cucul_draw_circle(cucul_canvas_t *cv, int x, int y, int r, char const *str)
+int cucul_draw_circle(cucul_canvas_t *cv, int x, int y, int r, char const *str)
 {
     int test, dx, dy;
     uint32_t ch = _cucul_utf8_to_utf32(str);
@@ -51,9 +53,13 @@ void cucul_draw_circle(cucul_canvas_t *cv, int x, int y, int r, char const *str)
 
         test += test > 0 ? dx - dy-- : dx;
     }
+
+    return 0;
 }
 
 /** \brief Fill an ellipse on the canvas using the given character.
+ *
+ *  This function never fails.
  *
  *  \param cv The handle to the libcucul canvas.
  *  \param xo Center X coordinate.
@@ -62,10 +68,10 @@ void cucul_draw_circle(cucul_canvas_t *cv, int x, int y, int r, char const *str)
  *  \param b Ellipse Y radius.
  *  \param str UTF-8 string representing the character that should be used
  *         to fill the ellipse.
- *  \return void
+ *  \return This function always returns 0.
  */
-void cucul_fill_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b,
-                        char const *str)
+int cucul_fill_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b,
+                       char const *str)
 {
     int d2;
     int x = 0;
@@ -108,9 +114,13 @@ void cucul_fill_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b,
         cucul_draw_line(cv, xo - x, yo - y, xo + x, yo - y, str);
         cucul_draw_line(cv, xo - x, yo + y, xo + x, yo + y, str);
     }
+
+    return 0;
 }
 
 /** \brief Draw an ellipse on the canvas using the given character.
+ *
+ *  This function never fails.
  *
  *  \param cv The handle to the libcucul canvas.
  *  \param xo Center X coordinate.
@@ -119,10 +129,10 @@ void cucul_fill_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b,
  *  \param b Ellipse Y radius.
  *  \param str UTF-8 string representing the character that should be used
  *         to draw the ellipse outline.
- *  \return void
+ *  \return This function always returns 0.
  */
-void cucul_draw_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b,
-                        char const *str)
+int cucul_draw_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b,
+                       char const *str)
 {
     int d2;
     int x = 0;
@@ -163,18 +173,22 @@ void cucul_draw_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b,
         y--;
         ellipsepoints(cv, xo, yo, x, y, ch);
     }
+
+    return 0;
 }
 
 /** \brief Draw a thin ellipse on the canvas.
+ *
+ *  This function never fails.
  *
  *  \param cv The handle to the libcucul canvas.
  *  \param xo Center X coordinate.
  *  \param yo Center Y coordinate.
  *  \param a Ellipse X radius.
  *  \param b Ellipse Y radius.
- *  \return void
+ *  \return This function always returns 0.
  */
-void cucul_draw_thin_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b)
+int cucul_draw_thin_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b)
 {
     /* FIXME: this is not correct */
     int d2;
@@ -215,6 +229,8 @@ void cucul_draw_thin_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b)
         y--;
         ellipsepoints(cv, xo, yo, x, y, '|');
     }
+
+    return 0;
 }
 
 static void ellipsepoints(cucul_canvas_t *cv, int xo, int yo, int x, int y,

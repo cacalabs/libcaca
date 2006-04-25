@@ -24,6 +24,9 @@
 #   include <string.h>
 #   include <stdlib.h>
 #   include <stdarg.h>
+#   if defined(HAVE_ERRNO_H)
+#       include <errno.h>
+#   endif
 #   if defined(HAVE_UNISTD_H)
 #       include <unistd.h>
 #   endif
@@ -47,10 +50,13 @@
  *  replaced with a space. To print a sequence of bytes forming an UTF-8
  *  character, use cucul_putstr() instead.
  *
+ *  This function never fails.
+ *
  *  \param cv A handle to the libcucul canvas.
  *  \param x X coordinate.
  *  \param y Y coordinate.
  *  \param ch The character to print.
+ *  \return This function always returns 0.
  */
 void cucul_putchar(cucul_canvas_t *cv, int x, int y, char ch)
 {
@@ -72,10 +78,13 @@ void cucul_putchar(cucul_canvas_t *cv, int x, int y, char ch)
  *  the canvas boundaries (eg. a negative Y coordinate) and the string will
  *  be cropped accordingly if it is too long.
  *
+ *  This function never fails.
+ *
  *  \param cv A handle to the libcucul canvas.
  *  \param x X coordinate.
  *  \param y Y coordinate.
  *  \param s The string to print.
+ *  \return This function always returns 0.
  */
 void cucul_putstr(cucul_canvas_t *cv, int x, int y, char const *s)
 {
@@ -120,11 +129,14 @@ void cucul_putstr(cucul_canvas_t *cv, int x, int y, char const *s)
  *  be cropped accordingly if it is too long. The syntax of the format
  *  string is the same as for the C printf() function.
  *
+ *  This function never fails.
+ *
  *  \param cv A handle to the libcucul canvas.
  *  \param x X coordinate.
  *  \param y Y coordinate.
  *  \param format The format string to print.
  *  \param ... Arguments to the format string.
+ *  \return This function always returns 0.
  */
 void cucul_printf(cucul_canvas_t *cv, int x, int y, char const *format, ...)
 {
@@ -157,7 +169,10 @@ void cucul_printf(cucul_canvas_t *cv, int x, int y, char const *format, ...)
  *
  *  This function clears the canvas using the current background colour.
  *
+ *  This function never fails.
+ *
  *  \param cv The canvas to clear.
+ *  \return This function always returns 0.
  */
 void cucul_clear_canvas(cucul_canvas_t *cv)
 {
@@ -182,14 +197,20 @@ void cucul_clear_canvas(cucul_canvas_t *cv)
  *  \param y Y coordinate.
  *  \param src The source canvas.
  *  \param mask The mask canvas.
+ *  \return 0 in case of success, -1 otherwise.
  */
-void cucul_blit(cucul_canvas_t *dst, int x, int y,
-                cucul_canvas_t const *src, cucul_canvas_t const *mask)
+int cucul_blit(cucul_canvas_t *dst, int x, int y,
+               cucul_canvas_t const *src, cucul_canvas_t const *mask)
 {
     int i, j, starti, startj, endi, endj;
 
     if(mask && (src->width != mask->width || src->height != mask->height))
-        return;
+    {
+#if defined(HAVE_ERRNO_H)
+        errno = EINVAL;
+#endif
+        return -1;
+    }
 
     starti = x < 0 ? -x : 0;
     startj = y < 0 ? -y : 0;
@@ -197,7 +218,7 @@ void cucul_blit(cucul_canvas_t *dst, int x, int y,
     endj = (y + src->height >= dst->height) ? dst->height - y : src->height;
 
     if(starti >= endi || startj >= endj)
-        return;
+        return 0;
 
     for(j = startj; j < endj; j++)
     {
@@ -224,6 +245,8 @@ void cucul_blit(cucul_canvas_t *dst, int x, int y,
                    (endi - starti) * 4);
         }
     }
+
+    return 0;
 }
 
 /*

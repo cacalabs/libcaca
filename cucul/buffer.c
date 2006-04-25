@@ -32,6 +32,8 @@
  *  This function returns the length (in bytes) of the memory area stored
  *  in the given \e libcucul buffer.
  *
+ *  This function never fails.
+ *
  *  \param buf A \e libcucul buffer
  *  \return The buffer data length.
  */
@@ -44,6 +46,8 @@ unsigned long int cucul_get_buffer_size(cucul_buffer_t *buf)
  *
  *  This function returns a pointer to the memory area stored in the given
  *  \e libcucul buffer.
+ *
+ *  This function never fails.
  *
  *  \param buf A \e libcucul buffer
  *  \return A pointer to the buffer memory area.
@@ -58,11 +62,16 @@ void * cucul_get_buffer_data(cucul_buffer_t *buf)
  *  This function frees the structures associated with the given
  *  \e libcucul buffer.
  *
+ *  This function never fails.
+ *
  *  \param buf A \e libcucul buffer
+ *  \return This function always returns 0.
  */
-void cucul_free_buffer(cucul_buffer_t *buf)
+int cucul_free_buffer(cucul_buffer_t *buf)
 {
     free(buf->data);
     free(buf);
+
+    return 0;
 }
 

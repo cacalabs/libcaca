@@ -86,7 +86,7 @@ int cucul_rand(int, int);
  *  @{ */
 unsigned long int cucul_get_buffer_size(cucul_buffer_t *);
 void * cucul_get_buffer_data(cucul_buffer_t *);
-void cucul_free_buffer(cucul_buffer_t *);
+int cucul_free_buffer(cucul_buffer_t *);
 /*  @} */
 
 /** \defgroup canvas libcucul canvas drawing
@@ -102,7 +102,7 @@ void cucul_putchar(cucul_canvas_t *, int, int, char);
 void cucul_putstr(cucul_canvas_t *, int, int, char const *);
 void cucul_printf(cucul_canvas_t *, int, int, char const *, ...);
 void cucul_clear_canvas(cucul_canvas_t *);
-void cucul_blit(cucul_canvas_t *, int, int, cucul_canvas_t const *, cucul_canvas_t const *);
+int cucul_blit(cucul_canvas_t *, int, int, cucul_canvas_t const *, cucul_canvas_t const *);
 /*  @} */
 
 /** \defgroup transform libcucul canvas transformation
@@ -122,23 +122,23 @@ void cucul_rotate(cucul_canvas_t *);
  *  boxes, triangles and ellipses.
  *
  *  @{ */
-void cucul_draw_line(cucul_canvas_t *, int, int, int, int, char const *);
-void cucul_draw_polyline(cucul_canvas_t *, int const x[], int const y[], int, char const *);
-void cucul_draw_thin_line(cucul_canvas_t *, int, int, int, int);
-void cucul_draw_thin_polyline(cucul_canvas_t *, int const x[], int const y[], int);
+int cucul_draw_line(cucul_canvas_t *, int, int, int, int, char const *);
+int cucul_draw_polyline(cucul_canvas_t *, int const x[], int const y[], int, char const *);
+int cucul_draw_thin_line(cucul_canvas_t *, int, int, int, int);
+int cucul_draw_thin_polyline(cucul_canvas_t *, int const x[], int const y[], int);
 
-void cucul_draw_circle(cucul_canvas_t *, int, int, int, char const *);
-void cucul_draw_ellipse(cucul_canvas_t *, int, int, int, int, char const *);
-void cucul_draw_thin_ellipse(cucul_canvas_t *, int, int, int, int);
-void cucul_fill_ellipse(cucul_canvas_t *, int, int, int, int, char const *);
+int cucul_draw_circle(cucul_canvas_t *, int, int, int, char const *);
+int cucul_draw_ellipse(cucul_canvas_t *, int, int, int, int, char const *);
+int cucul_draw_thin_ellipse(cucul_canvas_t *, int, int, int, int);
+int cucul_fill_ellipse(cucul_canvas_t *, int, int, int, int, char const *);
 
-void cucul_draw_box(cucul_canvas_t *, int, int, int, int, char const *);
-void cucul_draw_thin_box(cucul_canvas_t *, int, int, int, int);
-void cucul_fill_box(cucul_canvas_t *, int, int, int, int, char const *);
+int cucul_draw_box(cucul_canvas_t *, int, int, int, int, char const *);
+int cucul_draw_thin_box(cucul_canvas_t *, int, int, int, int);
+int cucul_fill_box(cucul_canvas_t *, int, int, int, int, char const *);
 
-void cucul_draw_triangle(cucul_canvas_t *, int, int, int, int, int, int, char const *);
-void cucul_draw_thin_triangle(cucul_canvas_t *, int, int, int, int, int, int);
-void cucul_fill_triangle(cucul_canvas_t *, int, int, int, int, int, int, char const *);
+int cucul_draw_triangle(cucul_canvas_t *, int, int, int, int, int, int, char const *);
+int cucul_draw_thin_triangle(cucul_canvas_t *, int, int, int, int, int, int);
+int cucul_fill_triangle(cucul_canvas_t *, int, int, int, int, int, int, char const *);
 /*  @} */
 
 /** \defgroup frame libcucul canvas frame handling

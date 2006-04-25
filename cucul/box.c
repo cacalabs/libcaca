@@ -27,33 +27,39 @@
 
 /** \brief Draw a box on the canvas using the given character.
  *
- *  \param cv The handle to the libcucul canvas.
- *  \param x1 X coordinate of the upper-left corner of the box.
- *  \param y1 Y coordinate of the upper-left corner of the box.
- *  \param x2 X coordinate of the lower-right corner of the box.
- *  \param y2 Y coordinate of the lower-right corner of the box.
- *  \param str UTF-8 string containing the character to use to draw the box.
- *  \return void
- */
-void cucul_draw_box(cucul_canvas_t *cv, int x1, int y1, int x2, int y2, 
-                    char const *str)
-{
-    cucul_draw_line(cv, x1, y1, x1, y2, str);
-    cucul_draw_line(cv, x1, y2, x2, y2, str);
-    cucul_draw_line(cv, x2, y2, x2, y1, str);
-    cucul_draw_line(cv, x2, y1, x1, y1, str);
-}
-
-/** \brief Draw a thin box on the canvas.
+ *  This function never fails.
  *
  *  \param cv The handle to the libcucul canvas.
  *  \param x1 X coordinate of the upper-left corner of the box.
  *  \param y1 Y coordinate of the upper-left corner of the box.
  *  \param x2 X coordinate of the lower-right corner of the box.
  *  \param y2 Y coordinate of the lower-right corner of the box.
- *  \return void
+ *  \param str UTF-8 string containing the character to use to draw the box.
+ *  \return This function always returns 0.
  */
-void cucul_draw_thin_box(cucul_canvas_t *cv, int x1, int y1, int x2, int y2)
+int cucul_draw_box(cucul_canvas_t *cv, int x1, int y1, int x2, int y2, 
+                   char const *str)
+{
+    cucul_draw_line(cv, x1, y1, x1, y2, str);
+    cucul_draw_line(cv, x1, y2, x2, y2, str);
+    cucul_draw_line(cv, x2, y2, x2, y1, str);
+    cucul_draw_line(cv, x2, y1, x1, y1, str);
+
+    return 0;
+}
+
+/** \brief Draw a thin box on the canvas.
+ *
+ *  This function never fails.
+ *
+ *  \param cv The handle to the libcucul canvas.
+ *  \param x1 X coordinate of the upper-left corner of the box.
+ *  \param y1 Y coordinate of the upper-left corner of the box.
+ *  \param x2 X coordinate of the lower-right corner of the box.
+ *  \param y2 Y coordinate of the lower-right corner of the box.
+ *  \return This function always returns 0.
+ */
+int cucul_draw_thin_box(cucul_canvas_t *cv, int x1, int y1, int x2, int y2)
 {
     int x, y, xmax, ymax;
 
@@ -73,7 +79,7 @@ void cucul_draw_thin_box(cucul_canvas_t *cv, int x1, int y1, int x2, int y2)
     ymax = cv->height - 1;
 
     if(x2 < 0 || y2 < 0 || x1 > xmax || y1 > ymax)
-        return;
+        return 0;
 
     /* Draw edges */
     if(y1 >= 0)
@@ -104,9 +110,13 @@ void cucul_draw_thin_box(cucul_canvas_t *cv, int x1, int y1, int x2, int y2)
 
     if(x2 <= xmax && y2 <= ymax)
         _cucul_putchar32(cv, x2, y2, (uint32_t)'\'');
+
+    return 0;
 }
 
 /** \brief Fill a box on the canvas using the given character.
+ *
+ *  This function never fails.
  *
  *  \param cv The handle to the libcucul canvas.
  *  \param x1 X coordinate of the upper-left corner of the box.
@@ -114,10 +124,10 @@ void cucul_draw_thin_box(cucul_canvas_t *cv, int x1, int y1, int x2, int y2)
  *  \param x2 X coordinate of the lower-right corner of the box.
  *  \param y2 Y coordinate of the lower-right corner of the box.
  *  \param str UTF-8 string containing the character to fill the box with.
- *  \return void
+ *  \return This function always returns 0.
  */
-void cucul_fill_box(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
-                    char const *str)
+int cucul_fill_box(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
+                   char const *str)
 {
     int x, y, xmax, ymax;
     uint32_t ch;
@@ -138,7 +148,7 @@ void cucul_fill_box(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
     ymax = cv->height - 1;
 
     if(x2 < 0 || y2 < 0 || x1 > xmax || y1 > ymax)
-        return;
+        return 0;
 
     if(x1 < 0) x1 = 0;
     if(y1 < 0) y1 = 0;
@@ -150,5 +160,7 @@ void cucul_fill_box(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
     for(y = y1; y <= y2; y++)
         for(x = x1; x <= x2; x++)
             _cucul_putchar32(cv, x, y, ch);
+
+    return 0;
 }
 
