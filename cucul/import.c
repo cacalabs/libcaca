@@ -399,6 +399,10 @@ void _manage_modifiers(char c, int *fg, int *bg, int *save_fg, int *save_bg)
         *bg = CUCUL_COLOR_DEFAULT;
         break;
     case 1: // BOLD
+        if(*fg < 8)
+            *fg += 8;
+        if(*bg < 8)
+            *bg += 8;
         break;
     case 4: // Underline
         break;
