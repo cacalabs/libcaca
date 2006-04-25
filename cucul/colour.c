@@ -19,6 +19,10 @@
 #include "config.h"
 #include "common.h"
 
+#if defined(HAVE_ERRNO_H)
+#   include <errno.h>
+#endif
+
 #include "cucul.h"
 #include "cucul_internals.h"
 
@@ -37,17 +41,28 @@ static const uint16_t ansitab[16] =
  *  Color values are those defined in cucul.h, such as CUCUL_COLOR_RED
  *  or CUCUL_COLOR_TRANSPARENT.
  *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c EINVAL At least one of the colour values is invalid.
+ *
  *  \param cv A handle to the libcucul canvas.
  *  \param fg The requested foreground colour.
  *  \param bg The requested background colour.
+ *  \return 0 in case of success, -1 if an error occurred.
  */
-void cucul_set_color(cucul_canvas_t *cv, unsigned char fg, unsigned char bg)
+int cucul_set_color(cucul_canvas_t *cv, unsigned char fg, unsigned char bg)
 {
     if(fg > 0x20 || bg > 0x20)
-        return;
+    {
+#if defined(HAVE_ERRNO_H)
+        errno = EINVAL;
+#endif
+        return -1;
+    }
 
     cv->fgcolor = fg;
     cv->bgcolor = bg;
+
+    return 0;
 }
 
 /** \brief Set the default colour pair (truecolor version).
@@ -60,14 +75,23 @@ void cucul_set_color(cucul_canvas_t *cv, unsigned char fg, unsigned char bg)
  *  instance, 0xf088 is solid dark cyan (A=15 R=0 G=8 B=8), and 0x8fff is
  *  white with 50% alpha (A=8 R=15 G=15 B=15).
  *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c EINVAL At least one of the colour values is invalid.
+ *
  *  \param cv A handle to the libcucul canvas.
  *  \param fg The requested foreground colour.
  *  \param bg The requested background colour.
+ *  \return 0 in case of success, -1 if an error occurred.
  */
-void cucul_set_truecolor(cucul_canvas_t *cv, unsigned int fg, unsigned int bg)
+int cucul_set_truecolor(cucul_canvas_t *cv, unsigned int fg, unsigned int bg)
 {
     if(fg > 0xffff || bg > 0xffff)
-        return;
+    {
+#if defined(HAVE_ERRNO_H)
+        errno = EINVAL;
+#endif
+        return -1;
+    }
 
     if(fg < 0x100)
         fg += 0x100;
@@ -77,6 +101,8 @@ void cucul_set_truecolor(cucul_canvas_t *cv, unsigned int fg, unsigned int bg)
 
     cv->fgcolor = fg;
     cv->bgcolor = bg;
+
+    return 0;
 }
 
 /*

@@ -23,6 +23,9 @@
 #   include <stdio.h>
 #   include <stdlib.h>
 #   include <string.h>
+#   if defined(HAVE_ERRNO_H)
+#       include <errno.h>
+#   endif
 #endif
 
 #include "cucul.h"
@@ -38,6 +41,9 @@
  *  If one of the desired canvas coordinates is zero, a default canvas size
  *  of 80x32 is used instead.
  *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c ENOMEM Not enough memory for the requested canvas size.
+ *
  *  \param width The desired canvas width
  *  \param height The desired canvas height
  *  \return A libcucul canvas handle upon success, NULL if an error occurred.
@@ -45,6 +51,10 @@
 cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
 {
     cucul_canvas_t *cv = malloc(sizeof(cucul_canvas_t));
+    int ret;
+
+    if(!cv)
+        goto nomem;
 
     cv->refcount = 0;
 
@@ -58,7 +68,18 @@ cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
     cv->frame = 0;
     cv->framecount = 1;
     cv->allchars = malloc(sizeof(uint32_t *));
+    if(!cv->allchars)
+    {
+        free(cv);
+        goto nomem;
+    }
     cv->allattr = malloc(sizeof(uint32_t *));
+    if(!cv->allattr)
+    {
+        free(cv->allchars);
+        free(cv);
+        goto nomem;
+    }
     cv->allchars[0] = NULL;
     cv->allattr[0] = NULL;
 
@@ -66,17 +87,34 @@ cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
      * default X11 window. When a graphic driver attaches to us, it can set
      * a different size. */
     if(width && height)
-        _cucul_set_canvas_size(cv, width, height);
+        ret = _cucul_set_canvas_size(cv, width, height);
     else
-        _cucul_set_canvas_size(cv, 80, 32);
+        ret = _cucul_set_canvas_size(cv, 80, 32);
 
-    if(_cucul_init_dither())
+    if(ret < 0)
     {
+#if defined(HAVE_ERRNO_H)
+        int saved_errno = errno;
+#endif
+        free(cv->allattr);
+        free(cv->allchars);
         free(cv);
+#if defined(HAVE_ERRNO_H)
+        errno = saved_errno;
+#endif
         return NULL;
     }
 
+    /* FIXME: this shouldn't happen here */
+    _cucul_init_dither();
+
     return cv;
+
+nomem:
+#if defined(HAVE_ERRNO_H)
+    errno = ENOMEM;
+#endif
+    return NULL;
 }
 
 /** \brief Resize a canvas.
@@ -94,22 +132,35 @@ cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
  *  canvas resize through user interaction. See the caca_event() documentation
  *  for more about this.
  *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c EBUSY The canvas is in use by a display driver and cannot be resized.
+ *  - \c ENOMEM Not enough memory for the requested canvas size. If this
+ *    happens, the canvas handle becomes invalid and should not be used.
+ *
  *  \param cv A libcucul canvas
  *  \param width The desired canvas width
  *  \param height The desired canvas height
+ *  \return 0 in case of success, -1 if an error occurred.
  */
-void cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
-                                               unsigned int height)
+int cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
+                                              unsigned int height)
 {
     if(cv->refcount)
-        return;
+    {
+#if defined(HAVE_ERRNO_H)
+        errno = EBUSY;
+#endif
+        return -1;
+    }
 
-    _cucul_set_canvas_size(cv, width, height);
+    return _cucul_set_canvas_size(cv, width, height);
 }
 
 /** \brief Get the canvas width.
  *
  *  This function returns the current canvas width, in character cells.
+ *
+ *  This function never fails.
  *
  *  \param cv A libcucul canvas
  *  \return The canvas width.
@@ -122,6 +173,8 @@ unsigned int cucul_get_canvas_width(cucul_canvas_t *cv)
 /** \brief Get the canvas height.
  *
  *  This function returns the current canvas height, in character cells.
+ *
+ *  This function never fails.
  *
  *  \param cv A libcucul canvas
  *  \return The canvas height.
@@ -136,8 +189,11 @@ unsigned int cucul_get_canvas_height(cucul_canvas_t *cv)
  *  This function translates a cucul_color enum into a human-readable
  *  description string of the associated colour.
  *
+ *  This function never fails.
+ *
  *  \param color The colour value.
- *  \return A static string containing the colour's name.
+ *  \return A static string containing the colour's name, or \c "unknown" if
+ *  the colour is unknown.
  */
 char const *cucul_get_color_name(unsigned int color)
 {
@@ -173,12 +229,25 @@ char const *cucul_get_color_name(unsigned int color)
  *  cucul_free_canvas() has been called, no other \e libcucul functions may be
  *  used unless a new call to cucul_create_canvas() is done.
  *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c EBUSY The canvas is in use by a display driver and cannot be freed.
+ *
  *  \param cv A libcucul canvas
+ *  \return 0 in case of success, -1 if an error occurred.
  */
-void cucul_free_canvas(cucul_canvas_t *cv)
+int cucul_free_canvas(cucul_canvas_t *cv)
 {
     unsigned int f;
 
+    if(cv->refcount)
+    {
+#if defined(HAVE_ERRNO_H)
+        errno = EBUSY;
+#endif
+        return -1;
+    }
+
+    /* FIXME: this shouldn't be here either (see above) */
     _cucul_end_dither();
 
     for(f = 0; f < cv->framecount; f++)
@@ -188,9 +257,13 @@ void cucul_free_canvas(cucul_canvas_t *cv)
     }
 
     free(cv);
+
+    return 0;
 }
 
 /** \brief Generate a random integer within a range.
+ *
+ *  This function never fails.
  *
  *  \param min The lower bound of the integer range.
  *  \param max The upper bound of the integer range.
@@ -206,8 +279,8 @@ int cucul_rand(int min, int max)
  * XXX: The following functions are local.
  */
 
-void _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
-                                                unsigned int height)
+int _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
+                                               unsigned int height)
 {
     unsigned int x, y, f, old_width, old_height, new_size, old_size;
 
@@ -228,6 +301,13 @@ void _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
                                       new_size * sizeof(uint32_t));
             cv->allattr[f] = realloc(cv->allattr[f],
                                      new_size * sizeof(uint32_t));
+            if(!cv->allchars[f] || !cv->allattr[f])
+            {
+#if defined(HAVE_ERRNO_H)
+                errno = ENOMEM;
+#endif
+                return -1;
+            }
         }
     }
 
@@ -310,11 +390,20 @@ void _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
                                       new_size * sizeof(uint32_t));
             cv->allattr[f] = realloc(cv->allattr[f],
                                      new_size * sizeof(uint32_t));
+            if(!cv->allchars[f] || !cv->allattr[f])
+            {
+#if defined(HAVE_ERRNO_H)
+                errno = ENOMEM;
+#endif
+                return -1;
+            }
         }
     }
 
     /* Reset the current frame shortcut */
     cv->chars = cv->allchars[cv->frame];
     cv->attr = cv->allattr[cv->frame];
+
+    return 0;
 }
 

@@ -72,10 +72,10 @@ typedef struct cucul_font cucul_font_t;
  *
  *  @{ */
 cucul_canvas_t * cucul_create_canvas(unsigned int, unsigned int);
-void cucul_set_canvas_size(cucul_canvas_t *, unsigned int, unsigned int);
+int cucul_set_canvas_size(cucul_canvas_t *, unsigned int, unsigned int);
 unsigned int cucul_get_canvas_width(cucul_canvas_t *);
 unsigned int cucul_get_canvas_height(cucul_canvas_t *);
-void cucul_free_canvas(cucul_canvas_t *);
+int cucul_free_canvas(cucul_canvas_t *);
 int cucul_rand(int, int);
 /*  @} */
 
@@ -95,13 +95,13 @@ int cucul_free_buffer(cucul_buffer_t *);
  *  higher level graphics functions.
  *
  *  @{ */
-void cucul_set_color(cucul_canvas_t *, unsigned char, unsigned char);
-void cucul_set_truecolor(cucul_canvas_t *, unsigned int, unsigned int);
+int cucul_set_color(cucul_canvas_t *, unsigned char, unsigned char);
+int cucul_set_truecolor(cucul_canvas_t *, unsigned int, unsigned int);
 char const *cucul_get_color_name(unsigned int);
-void cucul_putchar(cucul_canvas_t *, int, int, char);
-void cucul_putstr(cucul_canvas_t *, int, int, char const *);
-void cucul_printf(cucul_canvas_t *, int, int, char const *, ...);
-void cucul_clear_canvas(cucul_canvas_t *);
+int cucul_putchar(cucul_canvas_t *, int, int, char);
+int cucul_putstr(cucul_canvas_t *, int, int, char const *);
+int cucul_printf(cucul_canvas_t *, int, int, char const *, ...);
+int cucul_clear_canvas(cucul_canvas_t *);
 int cucul_blit(cucul_canvas_t *, int, int, cucul_canvas_t const *, cucul_canvas_t const *);
 /*  @} */
 

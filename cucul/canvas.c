@@ -58,17 +58,18 @@
  *  \param ch The character to print.
  *  \return This function always returns 0.
  */
-void cucul_putchar(cucul_canvas_t *cv, int x, int y, char ch)
+int cucul_putchar(cucul_canvas_t *cv, int x, int y, char ch)
 {
-    if(x < 0 || x >= (int)cv->width ||
-       y < 0 || y >= (int)cv->height)
-        return;
+    if(x < 0 || x >= (int)cv->width || y < 0 || y >= (int)cv->height)
+        return 0;
 
     if((unsigned char)ch < 0x20 || (unsigned char)ch > 0x7f)
         ch = 0x20;
 
     cv->chars[x + y * cv->width] = ch;
     cv->attr[x + y * cv->width] = (cv->bgcolor << 16) | cv->fgcolor;
+
+    return 0;
 }
 
 /** \brief Print a string.
@@ -86,20 +87,20 @@ void cucul_putchar(cucul_canvas_t *cv, int x, int y, char ch)
  *  \param s The string to print.
  *  \return This function always returns 0.
  */
-void cucul_putstr(cucul_canvas_t *cv, int x, int y, char const *s)
+int cucul_putstr(cucul_canvas_t *cv, int x, int y, char const *s)
 {
     uint32_t *chars, *attr;
     unsigned int len;
 
     if(y < 0 || y >= (int)cv->height || x >= (int)cv->width)
-        return;
+        return 0;
 
     len = _cucul_strlen_utf8(s);
 
     if(x < 0)
     {
         if(len < (unsigned int)-x)
-            return;
+            return 0;
         len -= -x;
         s = _cucul_skip_utf8(s, -x);
         x = 0;
@@ -119,6 +120,8 @@ void cucul_putstr(cucul_canvas_t *cv, int x, int y, char const *s)
         s = _cucul_skip_utf8(s, 1);
         len--;
     }
+
+    return 0;
 }
 
 /** \brief Print a formated string.
@@ -138,14 +141,14 @@ void cucul_putstr(cucul_canvas_t *cv, int x, int y, char const *s)
  *  \param ... Arguments to the format string.
  *  \return This function always returns 0.
  */
-void cucul_printf(cucul_canvas_t *cv, int x, int y, char const *format, ...)
+int cucul_printf(cucul_canvas_t *cv, int x, int y, char const *format, ...)
 {
     char tmp[BUFSIZ];
     char *buf = tmp;
     va_list args;
 
     if(y < 0 || y >= (int)cv->height || x >= (int)cv->width)
-        return;
+        return 0;
 
     if(cv->width - x + 1 > BUFSIZ)
         buf = malloc(cv->width - x + 1);
@@ -163,6 +166,8 @@ void cucul_printf(cucul_canvas_t *cv, int x, int y, char const *format, ...)
 
     if(buf != tmp)
         free(buf);
+
+    return 0;
 }
 
 /** \brief Clear the canvas.
@@ -174,7 +179,7 @@ void cucul_printf(cucul_canvas_t *cv, int x, int y, char const *format, ...)
  *  \param cv The canvas to clear.
  *  \return This function always returns 0.
  */
-void cucul_clear_canvas(cucul_canvas_t *cv)
+int cucul_clear_canvas(cucul_canvas_t *cv)
 {
     uint32_t color = (cv->bgcolor << 16) | cv->fgcolor;
     unsigned int n;
@@ -185,6 +190,8 @@ void cucul_clear_canvas(cucul_canvas_t *cv)
         cv->chars[n] = (uint32_t)' ';
         cv->attr[n] = color;
     }
+
+    return 0;
 }
 
 /** \brief Blit a canvas onto another one.
@@ -192,12 +199,16 @@ void cucul_clear_canvas(cucul_canvas_t *cv)
  *  This function blits a canvas onto another one at the given coordinates.
  *  An optional mask canvas can be used.
  *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c EINVAL A mask was specified but the mask size and source canvas
+ *    size do not match.
+ *
  *  \param dst The destination canvas.
  *  \param x X coordinate.
  *  \param y Y coordinate.
  *  \param src The source canvas.
  *  \param mask The mask canvas.
- *  \return 0 in case of success, -1 otherwise.
+ *  \return 0 in case of success, -1 if an error occurred.
  */
 int cucul_blit(cucul_canvas_t *dst, int x, int y,
                cucul_canvas_t const *src, cucul_canvas_t const *mask)
