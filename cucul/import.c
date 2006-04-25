@@ -196,10 +196,10 @@ static cucul_canvas_t *import_text(void const *data, unsigned int size)
 }
 
 #define IS_ALPHA(x) (x>='A' && x<='z')
-void updateCanvasSize(cucul_canvas_t *cv, int x, int y, int *max_x, int *max_y);
-unsigned char get_ansi_command(unsigned char const *buffer, int size);
-int parse_tuple(unsigned int *ret, unsigned char const *buffer, int size);
-void manage_modifiers(char c, int *fg, int *bg, int *old_fg, int *old_bg);
+void _update_canvas_size(cucul_canvas_t *cv, int x, int y, int *max_x, int *max_y);
+unsigned char _get_ansi_command(unsigned char const *buffer, int size);
+int _parse_tuple(unsigned int *ret, unsigned char const *buffer, int size);
+void _manage_modifiers(char c, int *fg, int *bg, int *old_fg, int *old_bg);
 
 static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
 {
@@ -226,8 +226,8 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
             i++; // ESC
             i++; // [
             sent_size = size - i;
-            c = get_ansi_command(&buffer[i], sent_size);
-            add = parse_tuple(tuple, &buffer[i], sent_size);
+            c = _get_ansi_command(&buffer[i], sent_size);
+            add = _parse_tuple(tuple, &buffer[i], sent_size);
             count = 0;
 
             while(tuple[count] != 0x1337)
@@ -248,7 +248,7 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
                     x = 0;
                     y = 0;
                 }
-                updateCanvasSize(cv, x, y, &max_x, &max_y);
+                _update_canvas_size(cv, x, y, &max_x, &max_y);
                 break;
             case 'A':
                 if(tuple[0] == 0x1337)
@@ -256,21 +256,21 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
                 else
                     y -= tuple[0];
                 if(y < 0) y = 0;
-                updateCanvasSize(cv, x, y, &max_x, &max_y);
+                _update_canvas_size(cv, x, y, &max_x, &max_y);
                 break;
             case 'B':
                 if(tuple[0] == 0x1337)
                     y++;
                 else
                     y += tuple[0];
-                updateCanvasSize(cv, x, y, &max_x, &max_y);
+                _update_canvas_size(cv, x, y, &max_x, &max_y);
                 break;
             case 'C':
                 if(tuple[0] == 0x1337)
                     x++;
                 else
                     x += tuple[0];
-                updateCanvasSize(cv, x, y, &max_x, &max_y);
+                _update_canvas_size(cv, x, y, &max_x, &max_y);
                 break;
             case 'D':
                 if(tuple[0] == 0x1337)
@@ -278,7 +278,7 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
                 else
                     x -= tuple[0];
                 if(x < 0) x = 0;
-                updateCanvasSize(cv, x, y, &max_x, &max_y);
+                _update_canvas_size(cv, x, y, &max_x, &max_y);
                 break;
             case 's':
                 save_x = x;
@@ -287,14 +287,14 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
             case 'u':
                 x = save_x;
                 y = save_y;
-                updateCanvasSize(cv, x, y, &max_x, &max_y);
+                _update_canvas_size(cv, x, y, &max_x, &max_y);
                 break;
             case 'J':
                 if(tuple[0] == 2)
                 {
                     x = 0;
                     y = 0;
-                    updateCanvasSize(cv, x, y, &max_x, &max_y);
+                    _update_canvas_size(cv, x, y, &max_x, &max_y);
                 }
                 break;
             case 'K':
@@ -302,7 +302,7 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
                 break;
             case 'm':
                 for(j = 0; j < count; j++)
-                    manage_modifiers(tuple[j], &fg, &bg, &old_fg, &old_bg);
+                    _manage_modifiers(tuple[j], &fg, &bg, &old_fg, &old_bg);
                 cucul_set_color(cv, fg, bg);
                 break;
             default:
@@ -316,7 +316,7 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
             {
                 x = 0;
                 y++;
-                updateCanvasSize(cv, x, y, &max_x, &max_y);
+                _update_canvas_size(cv, x, y, &max_x, &max_y);
             }
             else if(buffer[i] == '\r')
             {
@@ -333,7 +333,7 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
                 else
                     cucul_putchar(cv, x, y, '?');
                 x++;
-                updateCanvasSize(cv, x, y, &max_x, &max_y);
+                _update_canvas_size(cv, x, y, &max_x, &max_y);
             }
         }
 
@@ -346,7 +346,7 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
 
 /* XXX : ANSI loader helpers */
 
-unsigned char get_ansi_command(unsigned char const *buffer, int size)
+unsigned char _get_ansi_command(unsigned char const *buffer, int size)
 {
     int i;
 
@@ -357,7 +357,7 @@ unsigned char get_ansi_command(unsigned char const *buffer, int size)
     return 0;
 }
 
-int parse_tuple(unsigned int *ret, unsigned char const *buffer, int size)
+int _parse_tuple(unsigned int *ret, unsigned char const *buffer, int size)
 {
     int i = 0;
     int j = 0;
@@ -399,7 +399,7 @@ int parse_tuple(unsigned int *ret, unsigned char const *buffer, int size)
 
 
 
-void manage_modifiers(char c, int *fg, int *bg, int *old_fg, int *old_bg)
+void _manage_modifiers(char c, int *fg, int *bg, int *old_fg, int *old_bg)
 {
     switch(c)
     {
@@ -469,7 +469,7 @@ void manage_modifiers(char c, int *fg, int *bg, int *old_fg, int *old_bg)
     }
 }
 
-void updateCanvasSize(cucul_canvas_t *cv, int x, int y, int *max_x, int *max_y)
+void _update_canvas_size(cucul_canvas_t *cv, int x, int y, int *max_x, int *max_y)
 {
     if(x > *max_x)
         *max_x = x;
