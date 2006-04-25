@@ -66,15 +66,20 @@ cucul_canvas_t * cucul_import_canvas(void const *data, unsigned int size,
     /* Autodetection */
     if(!strcasecmp("", format))
     {
+        unsigned int i=0;
         /* if 4 first letters are CACA */
         if(size >= 4 &&
             buf[0] == 'C' && buf[1] == 'A' && buf[2] == 'C' && buf[3] != 'A')
             return import_caca(data, size);
 
-        /* If 2 first characters are ESC[ (not reliable at all) */
-        if(size >= 2 && buf[0] == 0x1b && buf[1] == '[')
-            return import_ansi(data, size);
-
+        /* If we find ESC[ tuple, we guess it's an ANSI file */
+        while(i<size-1) 
+        {
+            if((buf[i] == 0x1b) && (buf[i+1] == '['))
+                return import_ansi(data, size);
+            i++;
+        }
+        
         /* Otherwise, import it as text */
         return import_text(data, size);
     }
@@ -293,7 +298,6 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
                 cucul_set_color(cv, fg, bg);
                 break;
             default:
-                /*printf("Unknow command %c (%c)\n", c, IS_ALPHA(c)?c:'.');*/
                 break;
             }
         }
@@ -310,7 +314,9 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
             }
             else
             {
+
                 _cucul_putchar32(cv, x, y,_cucul_cp437_to_utf32(buffer[i]));
+
                 x++;
             }
         }
@@ -326,7 +332,7 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
             cucul_set_canvas_size(cv, width, height);
         }
 
-        i += add; // add is tuple char count, then +[ +command
+        i += add; // add is tuple char count
         add = 0;
     }
 
@@ -443,7 +449,6 @@ void _manage_modifiers(int i, int *fg, int *bg, int *save_fg, int *save_bg, int 
         *bg = *save_bg;
         break;
     default:
-        /*   printf("Unknow option to 'm' %d (%c)\n", c, IS_ALPHA(c)?c:'.'); */
         break;
     }
 }
