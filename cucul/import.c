@@ -200,21 +200,18 @@ static cucul_canvas_t *import_text(void const *data, unsigned int size)
     return cv;
 }
 
-#define IS_ALPHA(x) (x>='A' && x<='z')
-#define END_ARG 0x1337
-static int parse_tuple(unsigned int *, unsigned char const *, int);
-static void manage_modifiers(int, uint8_t *, uint8_t *, uint8_t *, uint8_t *, uint8_t *, uint8_t *);
+static void manage_modifiers(int, uint8_t *, uint8_t *, uint8_t *,
+                             uint8_t *, uint8_t *, uint8_t *);
 
 static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
 {
     cucul_canvas_t *cv;
     unsigned char const *buffer = (unsigned char const*)data;
-    unsigned int i;
+    unsigned int i, j;
     int x = 0, y = 0;
-    int width = 80, height = 25;
+    unsigned int width = 80, height = 25;
     int save_x = 0, save_y = 0;
     unsigned int skip;
-    int j;
     uint8_t fg, bg, save_fg, save_bg, bold, reverse;
 
     fg = save_fg = CUCUL_COLOR_LIGHTGRAY;
@@ -242,37 +239,60 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
             continue;
         }
 
-        if(buffer[i] == '\x1b' && buffer[i + 1] == '[')  /* ESC code */
+        /* Interpret escape commands, as per Standard ECMA-48 "Control
+         * Functions for Coded Character Sets", 5.4. Control sequences. */
+        if(buffer[i] == '\x1b' && buffer[i + 1] == '[')
         {
             unsigned int argv[1024]; /* Should be enough. Will it be? */
             unsigned int argc = 0;
-            unsigned char c = '\0';
+            unsigned int param, inter, final;
 
-            i++; // ESC
-            i++; // [
+            /* Offset to parameter bytes */
+            param = 2;
 
-            for(j = i; j < (int)size; j++)
-                if(IS_ALPHA(buffer[j]))
-                {
-                    c = buffer[j];
+            /* Offset to intermediate bytes: skip parameter bytes */
+            for(inter = param; i + inter < size; inter++)
+                if(buffer[i + inter] < 0x30 || buffer[i + inter] > 0x3f)
                     break;
+
+            /* Offset to final byte: skip intermediate bytes */
+            for(final = inter; i + final < size; final++)
+                if(buffer[i + final] < 0x20 || buffer[i + final] > 0x2f)
+                    break;
+
+            if(buffer[i + final] < 0x40 || buffer[i + final] > 0x7e)
+                break; /* Invalid Final Byte */
+
+            skip += final;
+
+            if(param < inter && buffer[i + param] >= 0x3c)
+            {
+                //fprintf(stderr, "private sequence \"^[[%.*s\"\n",
+                //                final - param + 1, buffer + i + param);
+                continue; /* Private sequence, skip it entirely */
+            }
+
+            /* Parse parameter bytes, if any */
+            if(param < inter)
+            {
+                argv[0] = 0;
+                for(j = param; j < inter; j++)
+                {
+                    if(buffer[i + j] == ';')
+                        argv[++argc] = 0;
+                    else if(buffer[i + j] >= '0' && buffer[i + j] <= '9')
+                        argv[argc] = 10 * argv[argc] + (buffer[i + j] - '0');
                 }
+                argc++;
+            }
 
-            skip += parse_tuple(argv, buffer + i, size - i);
-
-            while(argv[argc] != END_ARG)
-                argc++;  /* Gruik */
-
-            switch(c)
+            /* Interpret final byte */
+            switch(buffer[i + final])
             {
             case 'f':
             case 'H':
-                switch(argc)
-                {
-                    case 0: x = y = 0; break;
-                    case 1: y = argv[0] - 1; x = 0; break;
-                    case 2: y = argv[0] - 1; x = argv[1] - 1; break;
-                }
+                x = (argc > 1) ? argv[1] - 1 : 0;
+                y = (argc > 0) ? argv[0] - 1 : 0;
                 break;
             case 'A':
                 y -= argc ? argv[0] : 1;
@@ -309,7 +329,7 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
                 x = width;
                 break;
             case 'm':
-                for(j = 0; j < (int)argc; j++)
+                for(j = 0; j < argc; j++)
                     manage_modifiers(argv[j], &fg, &bg,
                                      &save_fg, &save_bg, &bold, &reverse);
                 if(bold && fg < 8)
@@ -330,13 +350,13 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
 
         /* We're going to paste a character. First make sure the canvas
          * is big enough. */
-        if(x >= width)
+        if((unsigned int)x >= width)
         {
             x = 0;
             y++;
         }
 
-        if(y >= height)
+        if((unsigned int)y >= height)
         {
             height = y + 1;
             cucul_set_canvas_size(cv, width, height);
@@ -350,47 +370,7 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
     return cv;
 }
 
-/* XXX : ANSI loader helpers */
-
-static int parse_tuple(unsigned int *ret, unsigned char const *buffer, int size)
-{
-    int i = 0;
-    int j = 0;
-    int t = 0;
-    unsigned char nbr[1024];
-
-    ret[0] = END_ARG;
-
-    for(i = 0; i < size; i++)
-    {
-        if(IS_ALPHA(buffer[i]))
-        {
-            if(j != 0)
-            {
-                ret[t] = atoi((char*)nbr);
-                t++;
-            }
-            ret[t] = END_ARG;
-            j = 0;
-            return i;
-        }
-
-        if(buffer[i] != ';')
-        {
-            nbr[j] = buffer[i];
-            nbr[j + 1] = 0;
-            j++;
-        }
-        else
-        {
-            ret[t] = atoi((char*)nbr);
-            t++;
-            ret[t] = END_ARG;
-            j = 0;
-        }
-    }
-    return size;
-}
+/* XXX : ANSI loader helper */
 
 static void manage_modifiers(int i, uint8_t *fg, uint8_t *bg, uint8_t *save_fg,
                              uint8_t *save_bg, uint8_t *bold, uint8_t *reverse)
