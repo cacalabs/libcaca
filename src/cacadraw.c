@@ -90,6 +90,8 @@ int main(int argc, char **argv)
                     case CACA_KEY_RIGHT: x += 2; refresh = 1; goto stopevents;
                     case CACA_KEY_UP: y--; refresh = 1; goto stopevents;
                     case CACA_KEY_DOWN: y++; refresh = 1; goto stopevents;
+		    case CACA_KEY_PAGEUP: y-=25; refresh = 1; goto stopevents;
+		    case CACA_KEY_PAGEDOWN: y+=25; refresh = 1; goto stopevents;
                     case CACA_KEY_ESCAPE:
                     case 'q':
                         goto quit;
