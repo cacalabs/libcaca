@@ -511,6 +511,10 @@ static int x11_get_event(caca_display_t *dp, caca_event_t *ev)
             case XK_Right: ev->data.key.ch = CACA_KEY_RIGHT; break;
             case XK_Up:    ev->data.key.ch = CACA_KEY_UP;    break;
             case XK_Down:  ev->data.key.ch = CACA_KEY_DOWN;  break;
+            case XK_Page_Up:      ev->data.key.ch = CACA_KEY_PAGEUP;   break;
+            case XK_Page_Down:    ev->data.key.ch = CACA_KEY_PAGEDOWN; break;
+            case XK_KP_Page_Up:   ev->data.key.ch = CACA_KEY_PAGEUP;   break;
+            case XK_KP_Page_Down: ev->data.key.ch = CACA_KEY_PAGEDOWN; break;
 
             default: ev->type = CACA_EVENT_NONE; return 0;
         }
