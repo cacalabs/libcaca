@@ -226,6 +226,13 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
     {
         skip = 1;
 
+        /* Wrap long lines */
+        if((unsigned int)x >= width)
+        {
+            x = 0;
+            y++;
+        }
+
         if(buffer[i] == '\x1a' && size - i >= 8
            && !memcmp(buffer + i + 1, "SAUCE00", 7))
             break; /* End before SAUCE data */
@@ -354,12 +361,6 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
 
         /* We're going to paste a character. First make sure the canvas
          * is big enough. */
-        if((unsigned int)x >= width)
-        {
-            x = 0;
-            y++;
-        }
-
         if((unsigned int)y >= height)
         {
             height = y + 1;
