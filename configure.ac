@@ -54,8 +54,8 @@ AC_ARG_ENABLE(vga,
   [  --enable-vga            VGA support (default disabled)])
 
 dnl language bindings
-AC_ARG_ENABLE(cpp,
-  [  --enable-cpp            C++ bindings (default disabled)])
+AC_ARG_ENABLE(cxx,
+  [  --enable-cxx            C++ bindings (default disabled)])
 
 dnl example programs features
 AC_ARG_ENABLE(imlib2,
@@ -247,11 +247,11 @@ CFLAGS="${CFLAGS} -g -O2 -fno-strength-reduce -fomit-frame-pointer"
 CFLAGS="${CFLAGS} -Wall -Wpointer-arith -Wcast-align -Wcast-qual -Wstrict-prototypes -Waggregate-return -Wmissing-prototypes -Wnested-externs -Wsign-compare"
 
 # Build the C++ bindings?
-ac_cv_my_have_cpp="no"
-if test "${enable_cpp}" = "yes"; then
-  ac_cv_my_have_cpp="yes"
+ac_cv_my_have_cxx="no"
+if test "${enable_cxx}" = "yes"; then
+  ac_cv_my_have_cxx="yes"
 fi
-AM_CONDITIONAL(USE_CPP, test "${ac_cv_my_have_cpp}" = "yes")
+AM_CONDITIONAL(USE_CXX, test "${ac_cv_my_have_cxx}" = "yes")
 
 # Build cacaserver?
 ac_cv_my_have_fcntl="no"
@@ -316,7 +316,7 @@ AC_CONFIG_FILES([
   src/Makefile
   test/Makefile
   tools/Makefile
-  cpp/Makefile
+  cxx/Makefile
   doc/Makefile
   autotools/Makefile
   debian/Makefile
