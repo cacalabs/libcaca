@@ -30,9 +30,11 @@
 #include <pango/pango.h>
 #include <pango/pangoft2.h>
 
+/* This list is built so that it includes all of ASCII, Latin-1, CP-437,
+ * and the UTF-8 glyphs necessary for canvas rotation and mirroring. */
 static int const blocklist[] =
 {
-    0x0000, 0x0080, /* Basic latin: A, B, C, a, img, c */
+    0x0000, 0x0080, /* Basic latin: A, B, C, a, b, c */
     0x0080, 0x0100, /* Latin-1 Supplement: Ä, Ç, å, ß */
     0x0100, 0x0180, /* Latin Extended-A: Ā č Ō œ */
     0x0180, 0x0250, /* Latin Extended-B: Ǝ Ƹ */
@@ -43,7 +45,8 @@ static int const blocklist[] =
 #if 0
     0x2100, 0x2150, /* Letterlike Symbols: Ⅎ */
 #endif
-    0x2300, 0x2400, /* Miscellaneous Technical: ⌂ */
+    0x2200, 0x2300, /* Mathematical Operators: √ ∞ ∙ */
+    0x2300, 0x2400, /* Miscellaneous Technical: ⌐ ⌂ ⌠ ⌡ */
     0x2500, 0x2580, /* Box Drawing: ═ ║ ╗ ╔ ╩ */
     0x2580, 0x25a0, /* Block Elements: ▛ ▞ ░ ▒ ▓ */
     0, 0
