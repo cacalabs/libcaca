@@ -181,7 +181,7 @@ uint16_t _cucul_argb32_to_rgb12fg(uint32_t ch)
         return ansitab[CUCUL_COLOR_LIGHTGRAY] & 0x0fff;
 
     if(fg == CUCUL_COLOR_TRANSPARENT)
-        return 0x0fff;
+        return ansitab[CUCUL_COLOR_LIGHTGRAY] & 0x0fff;
 
     return fg & 0x0fff;
 }
@@ -197,7 +197,7 @@ uint16_t _cucul_argb32_to_rgb12bg(uint32_t ch)
         return ansitab[CUCUL_COLOR_BLACK] & 0x0fff;
 
     if(bg == CUCUL_COLOR_TRANSPARENT)
-        return 0x0fff;
+        return ansitab[CUCUL_COLOR_BLACK] & 0x0fff;
 
     return bg & 0x0fff;
 }
