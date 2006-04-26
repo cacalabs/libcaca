@@ -30,7 +30,7 @@ static void demo_lines(void);
 static void demo_boxes(void);
 static void demo_ellipses(void);
 static void demo_triangles(void);
-static void demo_sprites(void);
+/*static void demo_sprites(void);*/
 static void demo_render(void);
 
 int bounds = 0;
@@ -494,15 +494,15 @@ static void demo_triangles(void)
     else if(outline == 1)
         cucul_draw_triangle(cv, xa, ya, xb, yb, xc, yc, "#");
 }
-
+#if 0
 static void demo_sprites(void)
 {
-#if 0
+
     cucul_draw_sprite(cv, cucul_rand(0, cucul_get_canvas_width(cv)),
                       cucul_rand(0, cucul_get_canvas_height(cv)), sprite, 0);
-#endif
-}
 
+}
+#endif
 #if 0
 static void demo_render(void)
 {

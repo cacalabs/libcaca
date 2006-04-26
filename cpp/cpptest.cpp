@@ -53,12 +53,12 @@ int main(int argc, char *argv[])
 
     try {
         qq = new Cucul();
-    } 
+    }
     catch (int e) {
         cerr << "Error while initializing cucul (" << e << ")" << endl;
         return -1;
     }
-    
+
     try {
         kk = new Caca(qq);
     }
@@ -70,26 +70,26 @@ int main(int argc, char *argv[])
     kk->set_delay(20000);
 
     while(!kk->get_event(ev.CACA_EVENT_KEY_PRESS, &ev, 0)) {
-        
+
         /* Draw pig */
-        qq->set_color(CUCUL_COLOR_LIGHTMAGENTA, CUCUL_COLOR_BLACK);
-        
+        qq->setColor(CUCUL_COLOR_LIGHTMAGENTA, CUCUL_COLOR_BLACK);
+
         for(int i = 0; pig[i]; i++)
-            qq->putstr(x, y+i, (char*)pig[i]);
-        
+            qq->putStr(x, y+i, (char*)pig[i]);
+
         /* printf works */
-        qq->set_color(CUCUL_COLOR_LIGHTBLUE, CUCUL_COLOR_BLACK);  
-        qq->printf(30,15, "Powered by libcaca %s", VERSION);
-        
+        qq->setColor(CUCUL_COLOR_LIGHTBLUE, CUCUL_COLOR_BLACK);
+        qq->Printf(30,15, "Powered by libcaca %s", VERSION);
+
         /* Blit */
         kk->display();
 
         x+=ix;
         y+=iy;
 
-        if(x>=(qq->get_width()-35)  || x<0 )
+        if(x>=(qq->getWidth()-35)  || x<0 )
             ix=-ix;
-        if(y>=(qq->get_height()-15)   || y<0 )
+        if(y>=(qq->getHeight()-15)   || y<0 )
             iy=-iy;
 
 

@@ -23,20 +23,20 @@
 
 #include "cucul++.h"
 
-Cucul::Cucul() 
+Cucul::Cucul()
 {
     cv = cucul_create_canvas(0, 0);
     if(!cv)
         throw -1;
 }
 
-Cucul::Cucul(int width, int height) 
+Cucul::Cucul(int width, int height)
 {
     cv = cucul_create_canvas(width, height);
     if(!cv) throw -1;
 }
 
-Cucul::~Cucul() 
+Cucul::~Cucul()
 {
     if(cv)
         cucul_free_canvas(cv);
@@ -47,42 +47,42 @@ cucul_canvas_t *Cucul::get_cucul_canvas_t()
     return cv;
 }
 
-void Cucul::set_size(unsigned int width, unsigned int height) 
+void Cucul::setSize(unsigned int width, unsigned int height)
 {
     cucul_set_canvas_size(cv, width, height);
 }
 
-unsigned int Cucul::get_width(void) 
+unsigned int Cucul::getWidth(void)
 {
     return cucul_get_canvas_width(cv);
 }
 
-unsigned int Cucul::get_height(void) 
+unsigned int Cucul::getHeight(void)
 {
     return cucul_get_canvas_height(cv);
 }
 
-void Cucul::set_color(unsigned int f, unsigned int b) 
+void Cucul::setColor(unsigned int f, unsigned int b)
 {
     cucul_set_color(cv, f, b);
 }
 
-char const * Cucul::get_color_name(unsigned int color) 
+char const * Cucul::getColorName(unsigned int color)
 {
     return cucul_get_color_name(color);
 }
 
-void Cucul::putchar(int x, int y, char ch)
+void Cucul::putChar(int x, int y, char ch)
 {
     cucul_putchar(cv, x, y, ch);
 }
 
-void Cucul::putstr(int x, int y, char *str) 
+void Cucul::putStr(int x, int y, char *str)
 {
     cucul_putstr(cv, x, y, str);
 }
 
-void Cucul::printf(int x, int y, char const * format,...)
+void Cucul::Printf(int x, int y, char const * format,...)
 {
     char tmp[BUFSIZ];
     char *buf = tmp;
@@ -90,243 +90,236 @@ void Cucul::printf(int x, int y, char const * format,...)
 
     va_start(args, format);
 #if defined(HAVE_VSNPRINTF)
-    vsnprintf(buf, get_width() - x + 1, format, args);
+    vsnprintf(buf, getWidth() - x + 1, format, args);
 #else
     vsprintf(buf, format, args);
 #endif
-    buf[get_width() - x] = '\0';
+    buf[getWidth() - x] = '\0';
     va_end(args);
 
-    putstr(x, y, buf);
+    putStr(x, y, buf);
 }
 
-void Cucul::clear(void)
+void Cucul::Clear(void)
 {
     cucul_clear_canvas(cv);
 }
 
-void Cucul::blit(int x, int y, Cucul* c1, Cucul* c2)
+void Cucul::Blit(int x, int y, Cucul* c1, Cucul* c2)
 {
     cucul_blit(cv, x, y, c1->get_cucul_canvas_t(), c2->get_cucul_canvas_t());
 }
 
-void Cucul::invert()
+void Cucul::Invert()
 {
     cucul_invert(cv);
 }
 
-void Cucul::flip()
+void Cucul::Flip()
 {
     cucul_flip(cv);
 }
 
-void Cucul::flop()
+void Cucul::Flop()
 {
     cucul_flop(cv);
 }
 
-void Cucul::rotate()
+void Cucul::Rotate()
 {
     cucul_rotate(cv);
 }
 
-void Cucul::draw_line(int x1, int y1, int x2, int y2, char const *ch)
+void Cucul::drawLine(int x1, int y1, int x2, int y2, char const *ch)
 {
     cucul_draw_line(cv, x1, y1, x2, y2, ch);
 }
- 
-void Cucul::draw_polyline(int const x[], int const y[], int f, char const *ch)
+
+void Cucul::drawPolyline(int const x[], int const y[], int f, char const *ch)
 {
     cucul_draw_polyline(cv, x, y, f, ch);
 }
- 
-void Cucul::draw_thin_line(int x1, int y1, int x2, int y2)
+
+void Cucul::drawThinLine(int x1, int y1, int x2, int y2)
 {
     cucul_draw_thin_line(cv, x1, y1, x2, y2);
 }
 
-void Cucul::draw_thin_polyline(int const x[], int const y[], int f)
+void Cucul::drawThinPolyline(int const x[], int const y[], int f)
 {
     cucul_draw_thin_polyline(cv, x, y, f);
 }
- 
-void Cucul::draw_circle(int x, int y, int d, char const *ch)
+
+void Cucul::drawCircle(int x, int y, int d, char const *ch)
 {
     cucul_draw_circle(cv, x, y, d, ch);
 }
 
-void Cucul::draw_ellipse(int x, int y, int d1, int d2, char const *ch)
+void Cucul::drawEllipse(int x, int y, int d1, int d2, char const *ch)
 {
     cucul_draw_ellipse(cv, x, y, d1, d2, ch);
 }
 
-void Cucul::draw_thin_ellipse(int x, int y, int d1, int d2)
+void Cucul::drawThinEllipse(int x, int y, int d1, int d2)
 {
     cucul_draw_thin_ellipse(cv, x, y, d1, d2);
 }
 
-void Cucul::fill_ellipse(int x, int y, int d1, int d2, char const *ch)
+void Cucul::fillEllipse(int x, int y, int d1, int d2, char const *ch)
 {
     cucul_fill_ellipse(cv, x, y, d1, d2, ch);
 }
 
-void Cucul::draw_box(int x, int y, int w, int h, char const *ch)
+void Cucul::drawBox(int x, int y, int w, int h, char const *ch)
 {
     cucul_draw_box(cv, x, y, w, h, ch);
 }
- 
-void Cucul::draw_thin_box(int x, int y, int w, int h)
+
+void Cucul::drawThinBox(int x, int y, int w, int h)
 {
     cucul_draw_thin_box(cv, x, y, w, h);
 }
 
-void Cucul::fill_box(int x, int y, int w, int h, char const *ch)
+void Cucul::fillBox(int x, int y, int w, int h, char const *ch)
 {
     cucul_fill_box(cv, x, y, w, h, ch);
 }
 
-void Cucul::draw_triangle(int x1, int y1, int x2, int y2, int x3, int y3, char const *ch)
+void Cucul::drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, char const *ch)
 {
     cucul_draw_triangle(cv, x1, y1, x2, y2, x3, y3, ch);
 }
 
-void Cucul::draw_thin_triangle(int x1, int y1, int x2, int y2, int x3, int y3)
+void Cucul::drawThinTriangle(int x1, int y1, int x2, int y2, int x3, int y3)
 {
     cucul_draw_thin_triangle(cv, x1, y1, x2, y2, x3, y3);
 }
 
-void Cucul::fill_triangle(int x1, int y1, int x2, int y2, int x3, int y3, const char *ch)
+void Cucul::fillTriangle(int x1, int y1, int x2, int y2, int x3, int y3, const char *ch)
 {
     cucul_fill_triangle(cv, x1, y1, x2, y2, x3, y3, ch);
 }
 
-int Cucul::rand(int min, int max)
+int Cucul::Rand(int min, int max)
 {
     return cucul_rand(min, max);
 }
 
-Cucul::Dither * Cucul::create_dither(unsigned int v1, unsigned int v2, unsigned int v3, unsigned int v4, unsigned int v5, unsigned int v6, unsigned int v7, unsigned int v8)
+Dither::Dither(unsigned int v1, unsigned int v2, unsigned int v3, unsigned int v4, unsigned int v5, unsigned int v6, unsigned int v7, unsigned int v8)
 {
-    Cucul::Dither *d = new Dither();
-    d->dither = cucul_create_dither(v1, v2, v3, v4, v5, v6, v7, v8);
-    return d;
+    dither = cucul_create_dither(v1, v2, v3, v4, v5, v6, v7, v8);
+}
+Dither::~Dither()
+{
+    cucul_free_dither(dither);
 }
 
-void Cucul::set_dither_palette(Cucul::Dither *d, unsigned int r[], unsigned int g[], unsigned int b[], unsigned int a[])
+void Dither::setPalette(unsigned int r[], unsigned int g[], unsigned int b[], unsigned int a[])
 {
-    cucul_set_dither_palette(d->dither, r, g, b, a);
+    cucul_set_dither_palette(dither, r, g, b, a);
 }
 
-void Cucul::set_dither_brightness(Cucul::Dither *d, float f)
+void Dither::setBrightness(float f)
 {
-    cucul_set_dither_brightness(d->dither, f);
+    cucul_set_dither_brightness(dither, f);
 }
 
-void Cucul::set_dither_gamma(Cucul::Dither *d, float f)
+void Dither::setGamma(float f)
 {
-    cucul_set_dither_gamma(d->dither, f);
+    cucul_set_dither_gamma(dither, f);
 }
 
-void Cucul::set_dither_contrast(Cucul::Dither *d, float f)
+void Dither::setContrast(float f)
 {
-    cucul_set_dither_contrast(d->dither, f);
+    cucul_set_dither_contrast(dither, f);
 }
 
-void Cucul::set_dither_invert(Cucul::Dither *d, int i)
+void Dither::setInvert(int i)
 {
-    cucul_set_dither_invert(d->dither, i);
+    cucul_set_dither_invert(dither, i);
 }
 
-void Cucul::set_dither_antialias(Cucul::Dither *d, char const *cv)
+void Dither::setAntialias(char const *cv)
 {
-    cucul_set_dither_antialias(d->dither, cv);
-}
- 
-char const *const * Cucul::get_dither_antialias_list(Cucul::Dither const *d)
-{
-    return cucul_get_dither_antialias_list(d->dither);
+    cucul_set_dither_antialias(dither, cv);
 }
 
-void Cucul::set_dither_color(Cucul::Dither *d, char const *cv)
+char const *const * Dither::getAntialiasList()
 {
-    cucul_set_dither_color(d->dither, cv);
+    return cucul_get_dither_antialias_list(dither);
 }
 
-char const *const * Cucul::get_dither_color_list(Cucul::Dither const *d)
+void Dither::setColor(char const *cv)
 {
-    return cucul_get_dither_color_list(d->dither);
-}
- 
-void Cucul::set_dither_charset(Cucul::Dither *d, char const *cv)
-{
-    cucul_set_dither_charset(d->dither, cv);
+    cucul_set_dither_color(dither, cv);
 }
 
-char const *const * Cucul::get_dither_charset_list(Cucul::Dither const *d)
+char const *const * Dither::getColorList()
 {
-    return cucul_get_dither_charset_list(d->dither);
-}
- 
-void Cucul::set_dither_mode(Cucul::Dither *d, char const *cv)
-{
-    cucul_set_dither_mode(d->dither, cv);
+    return cucul_get_dither_color_list(dither);
 }
 
-char const *const * Cucul::get_dither_mode_list(Cucul::Dither const *d)
+void Dither::setCharset(char const *cv)
 {
-    return cucul_get_dither_mode_list(d->dither);
+    cucul_set_dither_charset(dither, cv);
 }
 
-void Cucul::dither_bitmap(int x, int y, int w, int h,  Cucul::Dither const *d, void *v)
+char const *const * Dither::getCharsetList()
 {
-    cucul_dither_bitmap(cv, x, y, w, h, d->dither, v);
+    return cucul_get_dither_charset_list(dither);
 }
 
-void Cucul::free_dither(Cucul::Dither *d)
+void Dither::setMode(char const *cv)
 {
-    cucul_free_dither(d->dither);
+    cucul_set_dither_mode(dither, cv);
 }
 
-Cucul::Font * Cucul::load_font(void const *s, unsigned int v)
+char const *const * Dither::getModeList(void)
 {
-    Cucul::Font *f = new Cucul::Font();
-    f->font = cucul_load_font(s, v);
-    return f;
+    return cucul_get_dither_mode_list(dither);
 }
 
-char const *const * Cucul::get_font_list(void)
+void Dither::Bitmap(Cucul *cv, int x, int y, int w, int h, void *v)
+{
+    cucul_dither_bitmap(cv->get_cucul_canvas_t(), x, y, w, h, dither, v);
+}
+
+Font::Font(void const *s, unsigned int v)
+{
+    font = cucul_load_font(s, v);
+}
+
+char const *const * Font::getList(void)
 {
     return cucul_get_font_list();
 }
 
-unsigned int Cucul::get_font_width(Cucul::Font *f)
+unsigned int Font::getWidth()
 {
-    return cucul_get_font_width(f->font);
+    return cucul_get_font_width(font);
 }
 
-unsigned int Cucul::get_font_height(Cucul::Font *f)
+unsigned int Font::getHeight()
 {
-    return cucul_get_font_height(f->font);
+    return cucul_get_font_height(font);
 }
 
-void Cucul::render_canvas(Cucul::Font *f, unsigned char *buf, unsigned int x, unsigned int y, unsigned int w)
+void Font::renderCanvas(Cucul *cv, unsigned char *buf, unsigned int x, unsigned int y, unsigned int w)
 {
-    cucul_render_canvas(cv, f->font, buf, x, y, w);
+    cucul_render_canvas(cv->get_cucul_canvas_t(), font, buf, x, y, w);
 }
 
-void Cucul::free_font(Cucul::Font *f)
+Font::~Font()
 {
-    cucul_free_font(f->font);
+    cucul_free_font(font);
 }
 
-Cucul::Buffer * Cucul::export_canvas(char const *buf)
+Buffer::Buffer(Cucul *cv, char const *buf)
 {
-    Cucul::Buffer *b = new Cucul::Buffer();
-    b->buffer = cucul_export_canvas(cv, buf);
-    return b;
+    buffer = cucul_export_canvas(cv->get_cucul_canvas_t(), buf);
 }
 
-char const *const * Cucul::get_export_list(void)
+char const *const * Buffer::getExportList(void)
 {
     return cucul_get_export_list();
 }
