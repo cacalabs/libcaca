@@ -73,13 +73,13 @@ cucul_canvas_t * cucul_import_canvas(void const *data, unsigned int size,
             return import_caca(data, size);
 
         /* If we find ESC[ argv, we guess it's an ANSI file */
-        while(i<size-1) 
+        while(i<size-1)
         {
             if((buf[i] == 0x1b) && (buf[i+1] == '['))
                 return import_ansi(data, size);
             i++;
         }
-        
+
         /* Otherwise, import it as text */
         return import_text(data, size);
     }
@@ -211,9 +211,10 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
     unsigned char const *buffer = (unsigned char const*)data;
     unsigned int i;
     int x = 0, y = 0;
-    unsigned int width = 80, height = 25;
+    int width = 80, height = 25;
     int save_x = 0, save_y = 0;
-    unsigned int j, skip;
+    unsigned int skip;
+    int j;
     uint8_t fg, bg, save_fg, save_bg, bold, reverse;
 
     fg = save_fg = CUCUL_COLOR_LIGHTGRAY;
@@ -250,7 +251,7 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
             i++; // ESC
             i++; // [
 
-            for(j = i; j < size; j++)
+            for(j = i; j < (int)size; j++)
                 if(IS_ALPHA(buffer[j]))
                 {
                     c = buffer[j];
@@ -308,7 +309,7 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
                 x = width;
                 break;
             case 'm':
-                for(j = 0; j < argc; j++)
+                for(j = 0; j < (int)argc; j++)
                     manage_modifiers(argv[j], &fg, &bg,
                                      &save_fg, &save_bg, &bold, &reverse);
                 if(bold && fg < 8)
