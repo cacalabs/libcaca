@@ -285,6 +285,7 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
             /* ECMA-48 5.4.2: Parameter string format */
             if(param < inter)
             {
+                argc = 0;
                 argv[0] = 0;
                 for(j = param; j < inter; j++)
                 {
