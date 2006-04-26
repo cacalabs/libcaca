@@ -84,6 +84,8 @@ int cucul_rand(int, int);
  *  These functions provide methods to handle libcucul buffers.
  *
  *  @{ */
+cucul_buffer_t *cucul_load_memory(void *, unsigned long int);
+cucul_buffer_t *cucul_load_file(char const *);
 unsigned long int cucul_get_buffer_size(cucul_buffer_t *);
 void * cucul_get_buffer_data(cucul_buffer_t *);
 int cucul_free_buffer(cucul_buffer_t *);
@@ -206,7 +208,7 @@ void cucul_free_font(cucul_font_t *);
  *  @{ */
 cucul_buffer_t * cucul_export_canvas(cucul_canvas_t *, char const *);
 char const * const * cucul_get_export_list(void);
-cucul_canvas_t * cucul_import_canvas(void const *, unsigned int, char const *);
+cucul_canvas_t * cucul_import_canvas(cucul_buffer_t *, char const *);
 char const * const * cucul_get_import_list(void);
 /*  @} */
 

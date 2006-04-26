@@ -36,7 +36,9 @@ int main(void)
     cucul_canvas_t *cv;
     cucul_buffer_t *buffer;
 
-    cv = cucul_import_canvas(STRING, strlen(STRING), "text");
+    buffer = cucul_load_memory(STRING, strlen(STRING));
+    cv = cucul_import_canvas(buffer, "text");
+    cucul_free_buffer(buffer);
 
     buffer = cucul_export_canvas(cv, "ansi");
     fwrite(cucul_get_buffer_data(buffer),

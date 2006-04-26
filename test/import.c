@@ -27,10 +27,8 @@
 int main(int argc, char *argv[])
 {
     cucul_canvas_t *cv;
+    cucul_buffer_t *b;
     caca_display_t *dp;
-    FILE *fp;
-    unsigned char *buffer;
-    int size=0;
 
     if(argc < 2)
     {
@@ -38,36 +36,21 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    fp = fopen(argv[1], "rb");
-
-    if(!fp)
+    b = cucul_load_file(argv[1]);
+    if(!b)
     {
 	fprintf(stderr, "%s: could not open `%s'.\n", argv[0], argv[1]);
         return 1;
     }
-    fseek(fp, 0, SEEK_END);
-    size = ftell(fp);
-    fseek(fp, 0, SEEK_SET);
-    buffer = malloc(sizeof(unsigned char) * size);
-    if(!buffer)
-    {
-	fprintf(stderr, "%s: Can't allocate memory (%d bytes)\n", argv[0], size);
-        return 1;
-    }
 
-    if(!fread(buffer, size, 1, fp))
-    {
-	fprintf(stderr, "%s: Can't read %s\n", argv[0], argv[1]);
-        return 1;
-    }
-
-    cv = cucul_import_canvas(buffer, size, "");
-
-    if(cv == NULL)
+    cv = cucul_import_canvas(b, "");
+    if(!cv)
     {
 	fprintf(stderr, "%s: Can't load %s, unknow reason.\n", argv[0], argv[1]);
         return 1;
     }
+
+    cucul_free_buffer(b);
 
     dp = caca_create_display(cv);
 

@@ -43,45 +43,45 @@ static cucul_canvas_t *import_ansi(void const *, unsigned int);
  *
  *  \li \c "caca": import native libcaca files.
  *
- *  \param data The memory area to be loaded into a canvas.
+ *  \param buffer A \e libcucul buffer containing the data to be loaded
+ *         into a canvas.
  *  \param size The length of the memory area.
  *  \param format A string describing the input format.
  *  \return A libcucul canvas, or NULL in case of error.
  */
-cucul_canvas_t * cucul_import_canvas(void const *data, unsigned int size,
-                                     char const *format)
+cucul_canvas_t * cucul_import_canvas(cucul_buffer_t *b, char const *format)
 {
-    char const *buf = (char const*) data;
+    char const *buf = (char const*)b->data;
 
-    if(size==0 || data==NULL)
+    if(b->size == 0 || b->data == NULL)
         return NULL;
 
     if(!strcasecmp("caca", format))
-        return import_caca(data, size);
+        return import_caca(b->data, b->size);
     if(!strcasecmp("text", format))
-        return import_text(data, size);
+        return import_text(b->data, b->size);
     if(!strcasecmp("ansi", format))
-        return import_ansi(data, size);
+        return import_ansi(b->data, b->size);
 
     /* Autodetection */
     if(!strcasecmp("", format))
     {
         unsigned int i=0;
         /* if 4 first letters are CACA */
-        if(size >= 4 &&
+        if(b->size >= 4 &&
             buf[0] == 'C' && buf[1] == 'A' && buf[2] == 'C' && buf[3] != 'A')
-            return import_caca(data, size);
+            return import_caca(b->data, b->size);
 
         /* If we find ESC[ argv, we guess it's an ANSI file */
-        while(i<size-1)
+        while(i < b->size - 1)
         {
             if((buf[i] == 0x1b) && (buf[i+1] == '['))
-                return import_ansi(data, size);
+                return import_ansi(b->data, b->size);
             i++;
         }
 
         /* Otherwise, import it as text */
-        return import_text(data, size);
+        return import_text(b->data, b->size);
     }
     return NULL;
 }

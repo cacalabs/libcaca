@@ -27,6 +27,78 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
+/** \brief Load a memory area into a buffer.
+ *
+ *  This function creates a \e libcucul buffer that points to the given
+ *  memory area. The data is not duplicated and any changes made to the
+ *  original memory area appear in the buffer.
+ *
+ *  \param data The memory area to load.
+ *  \param size The size of the memory area.
+ *  \return A \e libcucul buffer pointing to the memory area, or NULL
+ *          if an error occurred.
+ */
+cucul_buffer_t *cucul_load_memory(void *data, unsigned long int size)
+{
+    cucul_buffer_t *buf;
+
+    buf = malloc(sizeof(cucul_buffer_t));
+    if(!buf)
+        return NULL;
+
+    buf->data = data;
+    buf->size = size;
+    buf->user_data = 1;
+
+    return buf;
+}
+
+/** \brief Load a file into a buffer.
+ *
+ *  This function loads a file into memory and returns a \e libcucul buffer
+ *  for use with other functions.
+ *
+ *  \param file The filename
+ *  \return A \e libcucul buffer containing the file's contents, or NULL
+ *          if an error occurred.
+ */
+cucul_buffer_t *cucul_load_file(char const *file)
+{
+    cucul_buffer_t *buf;
+    FILE *fp;
+    long int size;
+
+    fp = fopen(file, "rb");
+    if(!fp)
+        return NULL;
+
+    buf = malloc(sizeof(cucul_buffer_t));
+    if(!buf)
+    {
+        fclose(fp);
+        return NULL;
+    }
+
+    fseek(fp, 0, SEEK_END);
+    size = ftell(fp);
+
+    buf->data = malloc(size);
+    if(!buf->data)
+    {
+        free(buf);
+        fclose(fp);
+        return NULL;
+    }
+    buf->size = size;
+    buf->user_data = 0;
+
+    fseek(fp, 0, SEEK_SET);
+    fread(buf->data, buf->size, 1, fp);
+    fclose(fp);
+
+    return buf;
+}
+
 /** \brief Get the buffer size.
  *
  *  This function returns the length (in bytes) of the memory area stored
@@ -69,7 +141,9 @@ void * cucul_get_buffer_data(cucul_buffer_t *buf)
  */
 int cucul_free_buffer(cucul_buffer_t *buf)
 {
-    free(buf->data);
+    if(!buf->user_data)
+        free(buf->data);
+
     free(buf);
 
     return 0;

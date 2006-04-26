@@ -73,6 +73,7 @@ cucul_buffer_t * cucul_export_canvas(cucul_canvas_t *cv, char const *format)
     ex = malloc(sizeof(cucul_buffer_t));
     ex->size = 0;
     ex->data = NULL;
+    ex->user_data = 0;
 
     if(!strcasecmp("caca", format))
         export_caca(cv, ex);

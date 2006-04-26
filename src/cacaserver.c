@@ -204,6 +204,7 @@ int main(void)
     /* Main loop */
     for(;;)
     {
+        cucul_buffer_t *b;
         uint8_t *buf = server->input;
         uint32_t width, height;
         unsigned int size;
@@ -234,7 +235,9 @@ int main(void)
         if(server->canvas)
             cucul_free_canvas(server->canvas);
 
-        server->canvas = cucul_import_canvas(buf, size, "caca");
+        b = cucul_load_memory(buf, size);
+        server->canvas = cucul_import_canvas(b, "caca");
+        cucul_free_buffer(b);
 
         if(!server->canvas)
             continue; /* Load error */

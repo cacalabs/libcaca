@@ -15,10 +15,6 @@
 #include "common.h"
 
 #include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
 #include <stdlib.h>
 
 #include "cucul.h"
@@ -26,12 +22,10 @@
 
 int main(int argc, char **argv)
 {
-    struct stat statbuf;
     caca_event_t ev;
+    cucul_buffer_t *b;
     cucul_canvas_t *cv;
     caca_display_t *dp;
-    void *buffer;
-    int fd;
 
     if(argc < 2)
     {
@@ -39,29 +33,22 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    fd = open(argv[1], O_RDONLY);
-    if(!fd)
+    b = cucul_load_file(argv[1]);
+    if(!b)
     {
         fprintf(stderr, "%s: could not open %s.\n", argv[0], argv[1]);
         return 1;
     }
 
-    if(fstat(fd, &statbuf))
-    {
-        fprintf(stderr, "%s: could not stat %s.\n", argv[0], argv[1]);
-        return 1;
-    }
-
-    buffer = malloc(statbuf.st_size);
-    read(fd, buffer, statbuf.st_size);
-    cv = cucul_import_canvas(buffer, statbuf.st_size, "caca");
-    free(buffer);
-
+    cv = cucul_import_canvas(b, "caca");
     if(!cv)
     {
         fprintf(stderr, "%s: invalid caca file %s.\n", argv[0], argv[1]);
+        cucul_free_buffer(b);
         return 1;
     }
+
+    cucul_free_buffer(b);
 
     dp = caca_create_display(cv);
 

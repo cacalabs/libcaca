@@ -43,6 +43,7 @@ struct cucul_buffer
 {
     unsigned long int size;
     char *data;
+    int user_data;
 };
 
 /* Bitmap functions */
