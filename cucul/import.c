@@ -202,38 +202,62 @@ static cucul_canvas_t *import_text(void const *data, unsigned int size)
 
 #define IS_ALPHA(x) (x>='A' && x<='z')
 #define END_TUP 0x1337
-unsigned char _get_ansi_command(unsigned char const *buffer, int size);
-int _parse_tuple(unsigned int *ret, unsigned char const *buffer, int size);
-void _manage_modifiers(int i, int *fg, int *bg, int *save_fg, int *save_bg, int *bold);
+static int parse_tuple(unsigned int *, unsigned char const *, int);
+static void manage_modifiers(int, uint8_t *, uint8_t *, uint8_t *, uint8_t *, uint8_t *, uint8_t *);
 
 static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
 {
     cucul_canvas_t *cv;
     unsigned char const *buffer = (unsigned char const*)data;
-    unsigned int i, sent_size = 0;
-    unsigned char c;
+    unsigned int i;
     unsigned int count = 0;
     unsigned int tuple[1024]; /* Should be enough. Will it be ? */
-    int x = 0, y = 0, width = 80, height = 25;
+    int x = 0, y = 0;
+    unsigned int width = 80, height = 25;
     int save_x = 0, save_y = 0;
-    unsigned int j, add = 0;
-    int fg, bg, save_fg, save_bg, bold;
+    unsigned int j, skip;
+    uint8_t fg, bg, save_fg, save_bg, bold, reverse;
 
     fg = save_fg = CUCUL_COLOR_LIGHTGRAY;
     bg = save_bg = CUCUL_COLOR_BLACK;
-    bold = 0;
+    bold = reverse = 0;
 
     cv = cucul_create_canvas(width, height);
+    cucul_set_color(cv, fg, bg);
 
-    for(i = 0; i < size; i++)
+    for(i = 0; i < size; i += skip)
     {
-        if((buffer[i] == 0x1b) && (buffer[i + 1] == '['))  /* ESC code */
+        skip = 1;
+
+        if(buffer[i] == '\x1a' && size - i >= 8
+           && !memcmp(buffer + i + 1, "SAUCE00", 7))
+            break; /* End before SAUCE data */
+
+        if(buffer[i] == '\r')
+            continue; /* DOS sucks */
+
+        if(buffer[i] == '\n')
         {
+            x = 0;
+            y++;
+            continue;
+        }
+
+        if(buffer[i] == '\x1b' && buffer[i + 1] == '[')  /* ESC code */
+        {
+            unsigned char c = '\0';
+
             i++; // ESC
             i++; // [
-            sent_size = size - i;
-            c = _get_ansi_command(&buffer[i], sent_size);
-            add = _parse_tuple(tuple, &buffer[i], sent_size);
+
+            for(j = i; j < size; j++)
+                if(IS_ALPHA(buffer[j]))
+                {
+                    c = buffer[j];
+                    break;
+                }
+
+            skip += parse_tuple(tuple, buffer + i, size - i);
             count = 0;
 
             while(tuple[count] != END_TUP)
@@ -243,15 +267,12 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
             {
             case 'f':
             case 'H':
-                if(tuple[0] != END_TUP)
+                if(tuple[0] == END_TUP)
+                    x = y = 0;
+                else
                 {
                     y = tuple[0] - 1;
                     x = tuple[1] == END_TUP ? 0 : tuple[1] - 1;
-                }
-                else
-                {
-                    y = 0;
-                    x = 0;
                 }
                 break;
             case 'A':
@@ -280,60 +301,50 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
                 break;
             case 'J':
                 if(tuple[0] == 2)
-                {
-                    x = 0;
-                    y = 0;
-                }
+                    x = y = 0;
                 break;
             case 'K':
                 // CLEAR END OF LINE
+                for(j = x; j < width; j++)
+                    _cucul_putchar32(cv, j, y, (uint32_t)' ');
+                x = width;
                 break;
             case 'm':
                 for(j = 0; j < count; j++)
-                    _manage_modifiers(tuple[j], &fg, &bg, &save_fg, &save_bg, &bold);
+                    manage_modifiers(tuple[j], &fg, &bg, &save_fg, &save_bg, &bold, &reverse);
                 if(bold && fg < 8)
                     fg += 8;
                 if(bold && bg < 8)
                     bg += 8;
-                cucul_set_color(cv, fg, bg);
+                if(reverse)
+                    cucul_set_color(cv, bg, fg);
+                else
+                    cucul_set_color(cv, fg, bg);
                 break;
             default:
                 break;
             }
-        }
-        else
-        {
-            if(buffer[i] == '\n')
-            {
-                x = 0;
-                y++;
-            }
-            else if(buffer[i] == '\r')
-            {
-                    // DOS sucks.
-            }
-            else
-            {
 
-                _cucul_putchar32(cv, x, y,_cucul_cp437_to_utf32(buffer[i]));
-
-                x++;
-            }
+            continue;
         }
 
-        if(x >= width || y >= height)
+        /* We're going to paste a character. First make sure the canvas
+         * is big enough. */
+        if(x >= width)
         {
-            if(x >= width)
-                width = x + 1;
+            x = 0;
+            y++;
+        }
 
-            if(y >= height)
-                height = y + 1;
-
+        if(y >= height)
+        {
+            height = y + 1;
             cucul_set_canvas_size(cv, width, height);
         }
 
-        i += add; // add is tuple char count
-        add = 0;
+        /* Now paste our character */
+        _cucul_putchar32(cv, x, y,_cucul_cp437_to_utf32(buffer[i]));
+        x++;
     }
 
     return cv;
@@ -341,18 +352,7 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
 
 /* XXX : ANSI loader helpers */
 
-unsigned char _get_ansi_command(unsigned char const *buffer, int size)
-{
-    int i;
-
-    for(i = 0; i < size; i++)
-        if(IS_ALPHA(buffer[i]))
-            return buffer[i];
-
-    return 0;
-}
-
-int _parse_tuple(unsigned int *ret, unsigned char const *buffer, int size)
+static int parse_tuple(unsigned int *ret, unsigned char const *buffer, int size)
 {
     int i = 0;
     int j = 0;
@@ -392,9 +392,7 @@ int _parse_tuple(unsigned int *ret, unsigned char const *buffer, int size)
     return size;
 }
 
-
-
-void _manage_modifiers(int i, int *fg, int *bg, int *save_fg, int *save_bg, int *bold)
+static void manage_modifiers(int i, uint8_t *fg, uint8_t *bg, uint8_t *save_fg, uint8_t *save_bg, uint8_t *bold, uint8_t *reverse)
 {
     static uint8_t const ansi2cucul[] =
     {
@@ -410,12 +408,8 @@ void _manage_modifiers(int i, int *fg, int *bg, int *save_fg, int *save_bg, int 
 
     if(i >= 30 && i <= 37)
         *fg = ansi2cucul[i - 30];
-    else if(i == 39)
-        *fg = CUCUL_COLOR_DEFAULT;
     else if(i >= 40 && i <= 47)
         *bg = ansi2cucul[i - 40];
-    else if(i == 49)
-        *bg = CUCUL_COLOR_DEFAULT;
     else if(i >= 90 && i <= 97)
         *fg = ansi2cucul[i - 90] + 8;
     else if(i >= 100 && i <= 107)
@@ -426,6 +420,7 @@ void _manage_modifiers(int i, int *fg, int *bg, int *save_fg, int *save_bg, int 
         *fg = CUCUL_COLOR_DEFAULT;
         *bg = CUCUL_COLOR_DEFAULT;
         *bold = 0;
+        *reverse = 0;
         break;
     case 1: /* BOLD */
         *bold = 1;
@@ -435,8 +430,7 @@ void _manage_modifiers(int i, int *fg, int *bg, int *save_fg, int *save_bg, int 
     case 5: // blink
         break;
     case 7: // reverse
-        *fg = 15 - *fg;
-        *bg = 15 - *bg;
+        *reverse = 1;
         break;
     case 8: // invisible
         *save_fg = *fg;
@@ -447,6 +441,12 @@ void _manage_modifiers(int i, int *fg, int *bg, int *save_fg, int *save_bg, int 
     case 28: // not invisible
         *fg = *save_fg;
         *bg = *save_bg;
+        break;
+    case 39:
+        *fg = CUCUL_COLOR_DEFAULT;
+        break;
+    case 49:
+        *bg = CUCUL_COLOR_DEFAULT;
         break;
     default:
         break;
