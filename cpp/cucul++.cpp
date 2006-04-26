@@ -36,6 +36,12 @@ Cucul::Cucul(int width, int height)
     if(!cv) throw -1;
 }
 
+Cucul::Cucul(void const *data, unsigned int size, char const *format)
+{
+    cv = cucul_import_canvas(data, size, format);
+    if(!cv) throw -1;
+}
+
 Cucul::~Cucul()
 {
     if(cv)
@@ -287,6 +293,7 @@ void Dither::Bitmap(Cucul *cv, int x, int y, int w, int h, void *v)
 Font::Font(void const *s, unsigned int v)
 {
     font = cucul_load_font(s, v);
+    if(!font) throw -1;
 }
 
 char const *const * Font::getList(void)
@@ -317,6 +324,7 @@ Font::~Font()
 Buffer::Buffer(Cucul *cv, char const *buf)
 {
     buffer = cucul_export_canvas(cv->get_cucul_canvas_t(), buf);
+    if(!buffer) throw -1;
 }
 
 char const *const * Buffer::getExportList(void)

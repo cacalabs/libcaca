@@ -91,6 +91,7 @@ class Cucul
   public:
     Cucul();
     Cucul(int width, int height);
+    Cucul(void const *, unsigned int, char const *);
     ~Cucul();
 
     void setSize(unsigned int w, unsigned int h);

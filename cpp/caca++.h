@@ -56,18 +56,18 @@ class Caca
     Caca(Cucul *cv);
     ~Caca();
 
-    void attach(Cucul *cv);
-    void detach();
-    void set_delay(unsigned int);
-    void display();
-    unsigned int get_rendertime();
-    unsigned int get_display_width();
-    unsigned int get_display_height();
-    int set_display_title(char const *);
-    int get_event(unsigned int, Event*, int);
-    unsigned int get_mouse_x();
-    unsigned int get_mouse_y();
-    void set_mouse(int);
+    void Attach(Cucul *cv);
+    void Detach();
+    void setDelay(unsigned int);
+    void Display();
+    unsigned int getRendertime();
+    unsigned int getWidth();
+    unsigned int getHeight();
+    int setTitle(char const *);
+    int getEvent(unsigned int, Event*, int);
+    unsigned int getMouseX();
+    unsigned int getMouseY();
+    void setMouse(int);
 
   private:
     caca_display_t *dp;

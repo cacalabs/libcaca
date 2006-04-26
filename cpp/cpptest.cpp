@@ -67,9 +67,9 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    kk->set_delay(20000);
+    kk->setDelay(20000);
 
-    while(!kk->get_event(ev.CACA_EVENT_KEY_PRESS, &ev, 0)) {
+    while(!kk->getEvent(ev.CACA_EVENT_KEY_PRESS, &ev, 0)) {
 
         /* Draw pig */
         qq->setColor(CUCUL_COLOR_LIGHTMAGENTA, CUCUL_COLOR_BLACK);
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
         qq->Printf(30,15, "Powered by libcaca %s", VERSION);
 
         /* Blit */
-        kk->display();
+        kk->Display();
 
         x+=ix;
         y+=iy;
