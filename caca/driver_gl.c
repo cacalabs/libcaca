@@ -64,7 +64,8 @@ struct driver_private
     unsigned int new_width, new_height;
     float font_width, font_height;
     float incx, incy;
-    int id[128 - 32];
+    int id[(128 - 32)];
+    int id_uni[8]; /* Hack, fixme*/
     unsigned char close;
     unsigned char bit;
     unsigned char mouse_changed, mouse_clicked;
@@ -171,6 +172,16 @@ static int gl_init_graphics(caca_display_t *dp)
                      16, 16, 0, GL_RGB, GL_UNSIGNED_BYTE, empty_texture);
     }
 
+    for(i = 0; i < 8; i++)
+    {
+        glGenTextures(1, (GLuint*)&dp->drv.p->id_uni[i]);
+        glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[i]);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8,
+                     16, 16, 0, GL_RGB, GL_UNSIGNED_BYTE, empty_texture);
+    }
+
     for(i = 32; i < 128; i++)
     {
         glDisable(GL_TEXTURE_2D);
@@ -190,8 +201,80 @@ static int gl_init_graphics(caca_display_t *dp)
 #else
         glutMainLoopEvent();
 #endif
-        glutPostRedisplay();
+	glutSwapBuffers();
+
     }
+    /* CP437 hack */
+    for(i = 0; i < 8; i++)
+    {
+        glDisable(GL_TEXTURE_2D);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glColor3f(1, 1, 1);
+	glTranslatef(0.5,0.5,0);
+
+	if(i==0)                  /* 0x00002580*/
+	{
+	    glBegin(GL_QUADS);
+	    glVertex2f(0,0); glVertex2f(9,0); glVertex2f(9,7); glVertex2f(0,7);
+	    glEnd();
+	}
+	else if(i==1)             /* 0x00002584*/
+	{
+	    glBegin(GL_QUADS);
+	    glVertex2f(0,7); glVertex2f(9,7); glVertex2f(9,15); glVertex2f(0,15);
+	    glEnd();
+	}
+	else if(i==2)             /* 0x00002588*/
+	{
+	    glBegin(GL_QUADS);
+	    glVertex2f(0,0); glVertex2f(9,0); glVertex2f(9,15); glVertex2f(0,15);
+	    glEnd();
+	}
+	else if(i==3)             /* 0x0000258c*/
+	{
+	    glBegin(GL_QUADS);
+	    glVertex2f(0,0); glVertex2f(4,0); glVertex2f(4,15); glVertex2f(0,15);
+	    glEnd();
+	}
+	else if(i==4)             /* 0x00002590*/
+	{
+	    glBegin(GL_QUADS);
+	    glVertex2f(4,0); glVertex2f(9,0); glVertex2f(9,15); glVertex2f(4,15);
+	    glEnd();
+	}
+	else if(i>=5)             /* 0x00002591*/
+	{
+	    int a, j, k = i-5;
+	    for(j = dp->drv.p->font_height; j--; )
+		for(a = dp->drv.p->font_width; a--; )
+                {
+		    if(((a + 2 * (j & 1)) & 3) > k)
+			continue;
+
+		    glBegin(GL_POINTS);
+		    glVertex2f(a, j);
+		    glEnd();
+		}
+	}
+
+
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[i]);
+	glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+			 0, dp->drv.p->height - 16, 16, 16, 0);
+#ifdef HAVE_GLUTCHECKLOOP
+	glutCheckLoop();
+#else
+	glutMainLoopEvent();
+#endif
+	glutSwapBuffers();
+	glutPostRedisplay();
+
+
+    }
+
+
 
     return 0;
 }
@@ -282,6 +365,38 @@ static void gl_display(caca_display_t *dp)
                     glTexCoord2f(0, 0);
                     glVertex2f(x, y + dp->drv.p->font_height);
                 glEnd();
+            }
+	    else if(cv!=' ')
+            {
+		switch(cv)
+		{
+		    case 0x00002580: glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[0]); break;
+		    case 0x00002584: glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[1]); break;
+		    case 0x00002588: glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[2]); break;
+		    case 0x0000258c: glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[3]); break;
+		    case 0x00002590: glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[4]); break;
+		    case 0x00002591: glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[5]); break;
+		    case 0x00002592: glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[6]); break;
+		    case 0x00002593: glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[7]); break;
+		    default:         glBindTexture(GL_TEXTURE_2D, dp->drv.p->id['?' - 32]); break;
+		}
+
+		uint16_t fg = _cucul_argb32_to_rgb12fg(*attr);
+                glColor3b(((fg & 0xf00) >> 8) * 8,
+                          ((fg & 0x0f0) >> 4) * 8,
+                          (fg & 0x00f) * 8);
+                glBegin(GL_QUADS);
+		    glTexCoord2f(0, dp->drv.p->sh);
+		    glVertex2f(x, y);
+		    glTexCoord2f(dp->drv.p->sw, dp->drv.p->sh);
+		    glVertex2f(x + dp->drv.p->font_width, y);
+		    glTexCoord2f(dp->drv.p->sw, 0);
+		    glVertex2f(x + dp->drv.p->font_width,
+                               y + dp->drv.p->font_height);
+                    glTexCoord2f(0, 0);
+                    glVertex2f(x, y + dp->drv.p->font_height);
+                glEnd();
+
             }
 
             attr++;
