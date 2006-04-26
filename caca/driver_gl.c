@@ -388,6 +388,12 @@ static int gl_get_event(caca_display_t *dp, caca_event_t *ev)
             case GLUT_KEY_RIGHT: ev->data.key.ch = CACA_KEY_RIGHT; break;
             case GLUT_KEY_UP   : ev->data.key.ch = CACA_KEY_UP; break;
             case GLUT_KEY_DOWN : ev->data.key.ch = CACA_KEY_DOWN; break;
+	    case GLUT_KEY_PAGE_UP : ev->data.key.ch = CACA_KEY_PAGEUP; break;
+            case GLUT_KEY_PAGE_DOWN  : ev->data.key.ch = CACA_KEY_PAGEDOWN; break;
+	    case GLUT_KEY_HOME : ev->data.key.ch = CACA_KEY_HOME; break;
+	    case GLUT_KEY_END : ev->data.key.ch = CACA_KEY_END; break;
+	    case GLUT_KEY_INSERT : ev->data.key.ch = CACA_KEY_INSERT; break;
+
             default: ev->type = CACA_EVENT_NONE; return 0;
         }
 
