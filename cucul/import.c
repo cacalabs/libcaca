@@ -45,43 +45,42 @@ static cucul_canvas_t *import_ansi(void const *, unsigned int);
  *
  *  \param buffer A \e libcucul buffer containing the data to be loaded
  *         into a canvas.
- *  \param size The length of the memory area.
  *  \param format A string describing the input format.
  *  \return A libcucul canvas, or NULL in case of error.
  */
-cucul_canvas_t * cucul_import_canvas(cucul_buffer_t *b, char const *format)
+cucul_canvas_t * cucul_import_canvas(cucul_buffer_t *buffer, char const *format)
 {
-    char const *buf = (char const*)b->data;
+    char const *buf = (char const*)buffer->data;
 
-    if(b->size == 0 || b->data == NULL)
+    if(buffer->size == 0 || buffer->data == NULL)
         return NULL;
 
     if(!strcasecmp("caca", format))
-        return import_caca(b->data, b->size);
+        return import_caca(buffer->data, buffer->size);
     if(!strcasecmp("text", format))
-        return import_text(b->data, b->size);
+        return import_text(buffer->data, buffer->size);
     if(!strcasecmp("ansi", format))
-        return import_ansi(b->data, b->size);
+        return import_ansi(buffer->data, buffer->size);
 
     /* Autodetection */
     if(!strcasecmp("", format))
     {
         unsigned int i=0;
         /* if 4 first letters are CACA */
-        if(b->size >= 4 &&
+        if(buffer->size >= 4 &&
             buf[0] == 'C' && buf[1] == 'A' && buf[2] == 'C' && buf[3] != 'A')
-            return import_caca(b->data, b->size);
+            return import_caca(buffer->data, buffer->size);
 
         /* If we find ESC[ argv, we guess it's an ANSI file */
-        while(i < b->size - 1)
+        while(i < buffer->size - 1)
         {
             if((buf[i] == 0x1b) && (buf[i+1] == '['))
-                return import_ansi(b->data, b->size);
+                return import_ansi(buffer->data, buffer->size);
             i++;
         }
 
         /* Otherwise, import it as text */
-        return import_text(b->data, b->size);
+        return import_text(buffer->data, buffer->size);
     }
     return NULL;
 }
