@@ -75,24 +75,24 @@ cucul_canvas_t * cucul_import_canvas(cucul_buffer_t *buffer, char const *format)
 
     /* Autodetection */
     if(!strcasecmp("", format))
-    {
-        unsigned int i=0;
-        /* if 4 first letters are CACA */
-        if(buffer->size >= 4 &&
-            buf[0] == 'C' && buf[1] == 'A' && buf[2] == 'C' && buf[3] != 'A')
-            return import_caca(buffer->data, buffer->size);
-
-        /* If we find ESC[ argv, we guess it's an ANSI file */
-        while(i < buffer->size - 1)
         {
-            if((buf[i] == 0x1b) && (buf[i+1] == '['))
-                return import_ansi(buffer->data, buffer->size);
-            i++;
-        }
+            unsigned int i=0;
+            /* if 4 first letters are CACA */
+            if(buffer->size >= 4 &&
+               buf[0] == 'C' && buf[1] == 'A' && buf[2] == 'C' && buf[3] != 'A')
+                return import_caca(buffer->data, buffer->size);
 
-        /* Otherwise, import it as text */
-        return import_text(buffer->data, buffer->size);
-    }
+            /* If we find ESC[ argv, we guess it's an ANSI file */
+            while(i < buffer->size - 1)
+                {
+                    if((buf[i] == 0x1b) && (buf[i+1] == '['))
+                        return import_ansi(buffer->data, buffer->size);
+                    i++;
+                }
+
+            /* Otherwise, import it as text */
+            return import_text(buffer->data, buffer->size);
+        }
     return NULL;
 }
 
@@ -108,13 +108,13 @@ cucul_canvas_t * cucul_import_canvas(cucul_buffer_t *buffer, char const *format)
 char const * const * cucul_get_import_list(void)
 {
     static char const * const list[] =
-    {
-        "", "autodetect",
-        "text", "plain text",
-        "caca", "native libcaca format",
-        "ansi", "ANSI coloured text",
-        NULL, NULL
-    };
+        {
+            "", "autodetect",
+            "text", "plain text",
+            "caca", "native libcaca format",
+            "ansi", "ANSI coloured text",
+            NULL, NULL
+        };
 
     return list;
 }
@@ -139,9 +139,9 @@ static cucul_canvas_t *import_caca(void const *data, unsigned int size)
         return NULL;
 
     width = ((uint32_t)buf[8] << 24) | ((uint32_t)buf[9] << 16)
-           | ((uint32_t)buf[10] << 8) | (uint32_t)buf[11];
+        | ((uint32_t)buf[10] << 8) | (uint32_t)buf[11];
     height = ((uint32_t)buf[12] << 24) | ((uint32_t)buf[13] << 16)
-            | ((uint32_t)buf[14] << 8) | (uint32_t)buf[15];
+        | ((uint32_t)buf[14] << 8) | (uint32_t)buf[15];
 
     if(!width || !height)
         return NULL;
@@ -155,16 +155,16 @@ static cucul_canvas_t *import_caca(void const *data, unsigned int size)
         return NULL;
 
     for(n = height * width; n--; )
-    {
-        cv->chars[n] = ((uint32_t)buf[16 + 0 + 8 * n] << 24)
-                     | ((uint32_t)buf[16 + 1 + 8 * n] << 16)
-                     | ((uint32_t)buf[16 + 2 + 8 * n] << 8)
-                     | (uint32_t)buf[16 + 3 + 8 * n];
-        cv->attr[n] = ((uint32_t)buf[16 + 4 + 8 * n] << 24)
-                    | ((uint32_t)buf[16 + 5 + 8 * n] << 16)
-                    | ((uint32_t)buf[16 + 6 + 8 * n] << 8)
-                    | (uint32_t)buf[16 + 7 + 8 * n];
-    }
+        {
+            cv->chars[n] = ((uint32_t)buf[16 + 0 + 8 * n] << 24)
+                | ((uint32_t)buf[16 + 1 + 8 * n] << 16)
+                | ((uint32_t)buf[16 + 2 + 8 * n] << 8)
+                | (uint32_t)buf[16 + 3 + 8 * n];
+            cv->attr[n] = ((uint32_t)buf[16 + 4 + 8 * n] << 24)
+                | ((uint32_t)buf[16 + 5 + 8 * n] << 16)
+                | ((uint32_t)buf[16 + 6 + 8 * n] << 8)
+                | (uint32_t)buf[16 + 7 + 8 * n];
+        }
 
     return cv;
 }
@@ -179,33 +179,33 @@ static cucul_canvas_t *import_text(void const *data, unsigned int size)
     cucul_set_color(cv, CUCUL_COLOR_DEFAULT, CUCUL_COLOR_TRANSPARENT);
 
     for(i = 0; i < size; i++)
-    {
-        unsigned char ch = *text++;
-
-        if(ch == '\r')
-            continue;
-
-        if(ch == '\n')
         {
-            x = 0;
-            y++;
-            continue;
+            unsigned char ch = *text++;
+
+            if(ch == '\r')
+                continue;
+
+            if(ch == '\n')
+                {
+                    x = 0;
+                    y++;
+                    continue;
+                }
+
+            if(x >= width || y >= height)
+                {
+                    if(x >= width)
+                        width = x + 1;
+
+                    if(y >= height)
+                        height = y + 1;
+
+                    cucul_set_canvas_size(cv, width, height);
+                }
+
+            cucul_putchar(cv, x, y, ch);
+            x++;
         }
-
-        if(x >= width || y >= height)
-        {
-            if(x >= width)
-                width = x + 1;
-
-            if(y >= height)
-                height = y + 1;
-
-            cucul_set_canvas_size(cv, width, height);
-        }
-
-        cucul_putchar(cv, x, y, ch);
-        x++;
-    }
 
     return cv;
 }
@@ -223,154 +223,154 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
     ansi_parse_grcm(cv, &grcm, 1, &dummy);
 
     for(i = 0; i < size; i += skip)
-    {
-        skip = 1;
-
-        /* Wrap long lines */
-        if((unsigned int)x >= width)
         {
-            x = 0;
-            y++;
-        }
+            skip = 1;
 
-        if(buffer[i] == '\x1a' && size - i >= 8
-           && !memcmp(buffer + i + 1, "SAUCE00", 7))
-            break; /* End before SAUCE data */
-
-        if(buffer[i] == '\r')
-            continue; /* DOS sucks */
-
-        if(buffer[i] == '\n')
-        {
-            x = 0;
-            y++;
-            continue;
-        }
-
-        /* Interpret escape commands, as per Standard ECMA-48 "Control
-         * Functions for Coded Character Sets", 5.4. Control sequences. */
-        if(buffer[i] == '\x1b' && buffer[i + 1] == '[')
-        {
-            unsigned int argc = 0, argv[101];
-            unsigned int param, inter, final;
-
-        /* Compute offsets to parameter bytes, intermediate bytes and
-         * to the final byte. Only the final byte is mandatory, there
-         * can be zero of the others.
-         * 0  param=2             inter                 final           final+1
-         * +-----+------------------+---------------------+-----------------+
-         * | CSI | parameter bytes  | intermediate bytes  |   final byte    |
-         * |     |   0x30 - 0x3f    |    0x20 - 0x2f      |   0x40 - 0x7e   |
-         * | ^[[ | 0123456789:;<=>? | SPC !"#$%&'()*+,-./ | azAZ@[\]^_`{|}~ |
-         * +-----+------------------+---------------------+-----------------+
-         */
-            param = 2;
-
-            for(inter = param; i + inter < size; inter++)
-                if(buffer[i + inter] < 0x30 || buffer[i + inter] > 0x3f)
-                    break;
-
-            for(final = inter; i + final < size; final++)
-                if(buffer[i + final] < 0x20 || buffer[i + final] > 0x2f)
-                    break;
-
-            if(buffer[i + final] < 0x40 || buffer[i + final] > 0x7e)
-                break; /* Invalid Final Byte */
-
-            skip += final;
-
-            /* Sanity checks */
-            if(param < inter && buffer[i + param] >= 0x3c)
-            {
-                fprintf(stderr, "private sequence \"^[[%.*s\"\n",
-                                final - param + 1, buffer + i + param);
-                continue; /* Private sequence, skip it entirely */
-            }
-
-            if(final - param > 100)
-                continue; /* Suspiciously long sequence, skip it */
-
-            /* Parse parameter bytes as per ECMA-48 5.4.2: Parameter string
-             * format */
-            if(param < inter)
-            {
-                argv[0] = 0;
-                for(j = param; j < inter; j++)
+            /* Wrap long lines */
+            if((unsigned int)x >= width)
                 {
-                    if(buffer[i + j] == ';')
-                        argv[++argc] = 0;
-                    else if(buffer[i + j] >= '0' && buffer[i + j] <= '9')
-                        argv[argc] = 10 * argv[argc] + (buffer[i + j] - '0');
-                }
-                argc++;
-            }
-
-            /* Interpret final byte. The code representations are given in
-             * ECMA-48 5.4: Control sequences, and the code definitions are
-             * given in ECMA-48 8.3: Definition of control functions. */
-            switch(buffer[i + final])
-            {
-            case 'f': /* CUP - Cursor Position */
-            case 'H': /* HVP - Character And Line Position */
-                x = (argc > 1) ? argv[1] - 1 : 0;
-                y = (argc > 0) ? argv[0] - 1 : 0;
-                break;
-            case 'A': /* CUU - Cursor Up */
-                y -= argc ? argv[0] : 1;
-                if(y < 0)
-                    y = 0;
-                break;
-            case 'B': /* CUD - Cursor Down */
-                y += argc ? argv[0] : 1;
-                break;
-            case 'C': /* CUF - Cursor Right */
-                x += argc ? argv[0] : 1;
-                break;
-            case 'D': /* CUB - Cursor Left */
-                x -= argc ? argv[0] : 1;
-                if(x < 0)
                     x = 0;
-                break;
-            case 's': /* Private (save cursor position) */
-                save_x = x;
-                save_y = y;
-                break;
-            case 'u': /* Private (reload cursor positin) */
-                x = save_x;
-                y = save_y;
-                break;
-            case 'J': /* ED - Erase In Page */
-                if(argv[0] == 2)
-                    x = y = 0;
-                break;
-            case 'K': /* EL - Erase In Line */
-                for(j = x; j < width; j++)
-                    _cucul_putchar32(cv, j, y, (uint32_t)' ');
-                x = width;
-                break;
-            case 'm': /* SGR - Select Graphic Rendition */
-                ansi_parse_grcm(cv, &grcm, argc, argv);
-                break;
-            default:
-                fprintf(stderr, "unknown command %c\n", buffer[i + final]);
-                break;
-            }
+                    y++;
+                }
 
-            continue;
+            if(buffer[i] == '\x1a' && size - i >= 8
+               && !memcmp(buffer + i + 1, "SAUCE00", 7))
+                break; /* End before SAUCE data */
+
+            if(buffer[i] == '\r')
+                continue; /* DOS sucks */
+
+            if(buffer[i] == '\n')
+                {
+                    x = 0;
+                    y++;
+                    continue;
+                }
+
+            /* Interpret escape commands, as per Standard ECMA-48 "Control
+             * Functions for Coded Character Sets", 5.4. Control sequences. */
+            if(buffer[i] == '\x1b' && buffer[i + 1] == '[')
+                {
+                    unsigned int argc = 0, argv[101];
+                    unsigned int param, inter, final;
+
+                    /* Compute offsets to parameter bytes, intermediate bytes and
+                     * to the final byte. Only the final byte is mandatory, there
+                     * can be zero of the others.
+                     * 0  param=2             inter                 final           final+1
+                     * +-----+------------------+---------------------+-----------------+
+                     * | CSI | parameter bytes  | intermediate bytes  |   final byte    |
+                     * |     |   0x30 - 0x3f    |    0x20 - 0x2f      |   0x40 - 0x7e   |
+                     * | ^[[ | 0123456789:;<=>? | SPC !"#$%&'()*+,-./ | azAZ@[\]^_`{|}~ |
+                     * +-----+------------------+---------------------+-----------------+
+                     */
+                    param = 2;
+
+                    for(inter = param; i + inter < size; inter++)
+                        if(buffer[i + inter] < 0x30 || buffer[i + inter] > 0x3f)
+                            break;
+
+                    for(final = inter; i + final < size; final++)
+                        if(buffer[i + final] < 0x20 || buffer[i + final] > 0x2f)
+                            break;
+
+                    if(buffer[i + final] < 0x40 || buffer[i + final] > 0x7e)
+                        break; /* Invalid Final Byte */
+
+                    skip += final;
+
+                    /* Sanity checks */
+                    if(param < inter && buffer[i + param] >= 0x3c)
+                        {
+                            fprintf(stderr, "private sequence \"^[[%.*s\"\n",
+                                    final - param + 1, buffer + i + param);
+                            continue; /* Private sequence, skip it entirely */
+                        }
+
+                    if(final - param > 100)
+                        continue; /* Suspiciously long sequence, skip it */
+
+                    /* Parse parameter bytes as per ECMA-48 5.4.2: Parameter string
+                     * format */
+                    if(param < inter)
+                        {
+                            argv[0] = 0;
+                            for(j = param; j < inter; j++)
+                                {
+                                    if(buffer[i + j] == ';')
+                                        argv[++argc] = 0;
+                                    else if(buffer[i + j] >= '0' && buffer[i + j] <= '9')
+                                        argv[argc] = 10 * argv[argc] + (buffer[i + j] - '0');
+                                }
+                            argc++;
+                        }
+
+                    /* Interpret final byte. The code representations are given in
+                     * ECMA-48 5.4: Control sequences, and the code definitions are
+                     * given in ECMA-48 8.3: Definition of control functions. */
+                    switch(buffer[i + final])
+                        {
+                        case 'f': /* CUP - Cursor Position */
+                        case 'H': /* HVP - Character And Line Position */
+                            x = (argc > 1) ? argv[1] - 1 : 0;
+                            y = (argc > 0) ? argv[0] - 1 : 0;
+                            break;
+                        case 'A': /* CUU - Cursor Up */
+                            y -= argc ? argv[0] : 1;
+                            if(y < 0)
+                                y = 0;
+                            break;
+                        case 'B': /* CUD - Cursor Down */
+                            y += argc ? argv[0] : 1;
+                            break;
+                        case 'C': /* CUF - Cursor Right */
+                            x += argc ? argv[0] : 1;
+                            break;
+                        case 'D': /* CUB - Cursor Left */
+                            x -= argc ? argv[0] : 1;
+                            if(x < 0)
+                                x = 0;
+                            break;
+                        case 's': /* Private (save cursor position) */
+                            save_x = x;
+                            save_y = y;
+                            break;
+                        case 'u': /* Private (reload cursor positin) */
+                            x = save_x;
+                            y = save_y;
+                            break;
+                        case 'J': /* ED - Erase In Page */
+                            if(argv[0] == 2)
+                                x = y = 0;
+                            break;
+                        case 'K': /* EL - Erase In Line */
+                            for(j = x; j < width; j++)
+                                _cucul_putchar32(cv, j, y, (uint32_t)' ');
+                            x = width;
+                            break;
+                        case 'm': /* SGR - Select Graphic Rendition */
+                            ansi_parse_grcm(cv, &grcm, argc, argv);
+                            break;
+                        default:
+                            fprintf(stderr, "unknown command %c\n", buffer[i + final]);
+                            break;
+                        }
+
+                    continue;
+                }
+
+            /* We're going to paste a character. First make sure the canvas
+             * is big enough. */
+            if((unsigned int)y >= height)
+                {
+                    height = y + 1;
+                    cucul_set_canvas_size(cv, width, height);
+                }
+
+            /* Now paste our character */
+            _cucul_putchar32(cv, x, y, _cucul_cp437_to_utf32(buffer[i]));
+            x++;
         }
-
-        /* We're going to paste a character. First make sure the canvas
-         * is big enough. */
-        if((unsigned int)y >= height)
-        {
-            height = y + 1;
-            cucul_set_canvas_size(cv, width, height);
-        }
-
-        /* Now paste our character */
-        _cucul_putchar32(cv, x, y, _cucul_cp437_to_utf32(buffer[i]));
-        x++;
-    }
 
     return cv;
 }
@@ -381,82 +381,82 @@ static void ansi_parse_grcm(cucul_canvas_t *cv, struct ansi_grcm *g,
                             unsigned int argc, unsigned int const *argv)
 {
     static uint8_t const ansi2cucul[] =
-    {
-        CUCUL_COLOR_BLACK, CUCUL_COLOR_RED,
-        CUCUL_COLOR_GREEN, CUCUL_COLOR_BROWN,
-        CUCUL_COLOR_BLUE, CUCUL_COLOR_MAGENTA,
-        CUCUL_COLOR_CYAN, CUCUL_COLOR_LIGHTGRAY
-    };
+        {
+            CUCUL_COLOR_BLACK, CUCUL_COLOR_RED,
+            CUCUL_COLOR_GREEN, CUCUL_COLOR_BROWN,
+            CUCUL_COLOR_BLUE, CUCUL_COLOR_MAGENTA,
+            CUCUL_COLOR_CYAN, CUCUL_COLOR_LIGHTGRAY
+        };
 
     unsigned int j;
     uint8_t myfg, mybg;
 
     for(j = 0; j < argc; j++)
-    {
-        /* Defined in ECMA-48 8.3.117: SGR - SELECT GRAPHIC RENDITION */
-        if(argv[j] >= 30 && argv[j] <= 37)
-            g->fg = ansi2cucul[argv[j] - 30];
-        else if(argv[j] >= 40 && argv[j] <= 47)
-            g->bg = ansi2cucul[argv[j] - 40];
-        else if(argv[j] >= 90 && argv[j] <= 97)
-            g->fg = ansi2cucul[argv[j] - 90] + 8;
-        else if(argv[j] >= 100 && argv[j] <= 107)
-            g->bg = ansi2cucul[argv[j] - 100] + 8;
-        else switch(argv[j])
         {
-        case 0: /* default rendition */
-            g->fg = CUCUL_COLOR_DEFAULT;
-            g->bg = CUCUL_COLOR_DEFAULT;
-            g->bold = g->negative = g->concealed = 0;
-            break;
-        case 1: /* bold or increased intensity */
-            g->bold = 1;
-            break;
-        case 4: /* singly underlined */
-            break;
-        case 5: /* slowly blinking (less then 150 per minute) */
-            break;
-        case 7: /* negative image */
-            g->negative = 1;
-            break;
-        case 8: /* concealed characters */
-            g->concealed = 1;
-            break;
-        case 22: /* normal colour or normal intensity (neither bold nor faint) */
-            g->bold = 0;
-            break;
-        case 28: /* revealed characters */
-            g->concealed = 0;
-            break;
-        case 39: /* default display colour (implementation-defined) */
-            g->fg = CUCUL_COLOR_DEFAULT;
-            break;
-        case 49: /* default background colour (implementation-defined) */
-            g->bg = CUCUL_COLOR_DEFAULT;
-            break;
-        default:
-            fprintf(stderr, "unknown sgr %i\n", argv[j]);
-            break;
+            /* Defined in ECMA-48 8.3.117: SGR - SELECT GRAPHIC RENDITION */
+            if(argv[j] >= 30 && argv[j] <= 37)
+                g->fg = ansi2cucul[argv[j] - 30];
+            else if(argv[j] >= 40 && argv[j] <= 47)
+                g->bg = ansi2cucul[argv[j] - 40];
+            else if(argv[j] >= 90 && argv[j] <= 97)
+                g->fg = ansi2cucul[argv[j] - 90] + 8;
+            else if(argv[j] >= 100 && argv[j] <= 107)
+                g->bg = ansi2cucul[argv[j] - 100] + 8;
+            else switch(argv[j])
+                {
+                case 0: /* default rendition */
+                    g->fg = CUCUL_COLOR_DEFAULT;
+                    g->bg = CUCUL_COLOR_DEFAULT;
+                    g->bold = g->negative = g->concealed = 0;
+                    break;
+                case 1: /* bold or increased intensity */
+                    g->bold = 1;
+                    break;
+                case 4: /* singly underlined */
+                    break;
+                case 5: /* slowly blinking (less then 150 per minute) */
+                    break;
+                case 7: /* negative image */
+                    g->negative = 1;
+                    break;
+                case 8: /* concealed characters */
+                    g->concealed = 1;
+                    break;
+                case 22: /* normal colour or normal intensity (neither bold nor faint) */
+                    g->bold = 0;
+                    break;
+                case 28: /* revealed characters */
+                    g->concealed = 0;
+                    break;
+                case 39: /* default display colour (implementation-defined) */
+                    g->fg = CUCUL_COLOR_DEFAULT;
+                    break;
+                case 49: /* default background colour (implementation-defined) */
+                    g->bg = CUCUL_COLOR_DEFAULT;
+                    break;
+                default:
+                    fprintf(stderr, "unknown sgr %i\n", argv[j]);
+                    break;
+                }
         }
-    }
 
     if(g->concealed)
-    {
-        myfg = mybg = CUCUL_COLOR_TRANSPARENT;
-    }
-    else
-    {
-        myfg = g->negative ? g->bg : g->fg;
-        mybg = g->negative ? g->fg : g->bg;
-
-        if(g->bold)
         {
-            if(myfg < 8)
-                myfg += 8;
-            else if(myfg == CUCUL_COLOR_DEFAULT)
-                myfg = CUCUL_COLOR_WHITE;
+            myfg = mybg = CUCUL_COLOR_TRANSPARENT;
         }
-    }
+    else
+        {
+            myfg = g->negative ? g->bg : g->fg;
+            mybg = g->negative ? g->fg : g->bg;
+
+            if(g->bold)
+                {
+                    if(myfg < 8)
+                        myfg += 8;
+                    else if(myfg == CUCUL_COLOR_DEFAULT)
+                        myfg = CUCUL_COLOR_WHITE;
+                }
+        }
 
     cucul_set_color(cv, myfg, mybg);
 }
