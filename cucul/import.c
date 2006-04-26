@@ -243,7 +243,7 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
          * Functions for Coded Character Sets", 5.4. Control sequences. */
         if(buffer[i] == '\x1b' && buffer[i + 1] == '[')
         {
-            unsigned int argc, argv[101];
+            unsigned int argc = 0, argv[101];
             unsigned int param, inter, final;
 
         /* Compute offsets to parameter bytes, intermediate bytes and
@@ -285,7 +285,6 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
             /* ECMA-48 5.4.2: Parameter string format */
             if(param < inter)
             {
-                argc = 0;
                 argv[0] = 0;
                 for(j = param; j < inter; j++)
                 {
