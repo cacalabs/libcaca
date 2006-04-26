@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
     cv = cucul_import_canvas(b, "");
     if(!cv)
     {
-	fprintf(stderr, "%s: Can't load %s, unknow reason.\n", argv[0], argv[1]);
+	fprintf(stderr, "%s: could not import `%s'.\n", argv[0], argv[1]);
         return 1;
     }
 

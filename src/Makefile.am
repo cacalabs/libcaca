@@ -6,6 +6,7 @@ EXTRA_DIST = caca.txt
 AM_CPPFLAGS = -I$(top_srcdir)/cucul -I$(top_srcdir)/caca -DLIBCACA=1 -DX_DISPLAY_MISSING=1
 
 bin_PROGRAMS = cacafire cacaball cacaplas cacamoir cacaplay cacaview img2irc $(fcntl_programs)
+noinst_PROGRAMS = cacadraw
 
 cacafire_SOURCES = aafire.c
 cacafire_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
@@ -23,6 +24,9 @@ cacaview_SOURCES = cacaview.c common-image.c common-image.h
 cacaview_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
 cacaview_CFLAGS = $(img_cflags)
 cacaview_LDFLAGS = $(img_ldflags)
+
+cacadraw_SOURCES = cacadraw.c
+cacadraw_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
 
 cacaplay_SOURCES = cacaplay.c
 cacaplay_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
