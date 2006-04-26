@@ -243,19 +243,25 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
          * Functions for Coded Character Sets", 5.4. Control sequences. */
         if(buffer[i] == '\x1b' && buffer[i + 1] == '[')
         {
-            unsigned int argv[1024]; /* Should be enough. Will it be? */
-            unsigned int argc = 0;
+            unsigned int argc, argv[101];
             unsigned int param, inter, final;
 
-            /* Offset to parameter bytes */
+        /* Compute offsets to parameter bytes, intermediate bytes and
+         * to the final byte. Only the final byte is mandatory, there
+         * can be zero of the others.
+         *
+         * +-----+------------------+---------------------+-----------------+
+         * | CSI | parameter bytes  | intermediate bytes  |   final byte    |
+         * |     |   0x30 - 0x3f    |    0x20 - 0x2f      |   0x40 - 0x7e   |
+         * | ^[[ | 0123456789:;<=>? | SPC !"#$%&'()*+,-./ | azAZ@[\]^_`{|}~ |
+         * +-----+------------------+---------------------+-----------------+
+         */
             param = 2;
 
-            /* Offset to intermediate bytes: skip parameter bytes */
             for(inter = param; i + inter < size; inter++)
                 if(buffer[i + inter] < 0x30 || buffer[i + inter] > 0x3f)
                     break;
 
-            /* Offset to final byte: skip intermediate bytes */
             for(final = inter; i + final < size; final++)
                 if(buffer[i + final] < 0x20 || buffer[i + final] > 0x2f)
                     break;
@@ -265,6 +271,7 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
 
             skip += final;
 
+            /* Sanity checks */
             if(param < inter && buffer[i + param] >= 0x3c)
             {
                 //fprintf(stderr, "private sequence \"^[[%.*s\"\n",
@@ -272,7 +279,10 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
                 continue; /* Private sequence, skip it entirely */
             }
 
-            /* Parse parameter bytes, if any */
+            if(final - param > 100)
+                continue; /* Suspiciously long sequence, skip it */
+
+            /* ECMA-48 5.4.2: Parameter string format */
             if(param < inter)
             {
                 argv[0] = 0;
@@ -286,49 +296,50 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
                 argc++;
             }
 
-            /* Interpret final byte */
+            /* Interpret final byte. The code representations are given in
+             * ECMA-48 5.4: Control sequences, and the code definitions are
+             * given in ECMA-48 8.3: Definition of control functions. */
             switch(buffer[i + final])
             {
-            case 'f':
-            case 'H':
+            case 'f': /* CUP - Cursor Position */
+            case 'H': /* HVP - Character And Line Position */
                 x = (argc > 1) ? argv[1] - 1 : 0;
                 y = (argc > 0) ? argv[0] - 1 : 0;
                 break;
-            case 'A':
+            case 'A': /* CUU - Cursor Up */
                 y -= argc ? argv[0] : 1;
                 if(y < 0)
                     y = 0;
                 break;
-            case 'B':
+            case 'B': /* CUD - Cursor Down */
                 y += argc ? argv[0] : 1;
                 break;
-            case 'C':
+            case 'C': /* CUF - Cursor Right */
                 x += argc ? argv[0] : 1;
                 break;
-            case 'D':
+            case 'D': /* CUB - Cursor Left */
                 x -= argc ? argv[0] : 1;
                 if(x < 0)
                     x = 0;
                 break;
-            case 's':
+            case 's': /* Private (save cursor position) */
                 save_x = x;
                 save_y = y;
                 break;
-            case 'u':
+            case 'u': /* Private (reload cursor positin) */
                 x = save_x;
                 y = save_y;
                 break;
-            case 'J':
+            case 'J': /* ED - Erase In Page */
                 if(argv[0] == 2)
                     x = y = 0;
                 break;
-            case 'K':
-                // CLEAR END OF LINE
+            case 'K': /* EL - Erase In Line */
                 for(j = x; j < width; j++)
                     _cucul_putchar32(cv, j, y, (uint32_t)' ');
                 x = width;
                 break;
-            case 'm':
+            case 'm': /* SGR - Select Graphic Rendition */
                 for(j = 0; j < argc; j++)
                     manage_modifiers(argv[j], &fg, &bg,
                                      &save_fg, &save_bg, &bold, &reverse);
