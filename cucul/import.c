@@ -212,7 +212,7 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
     unsigned int i;
     unsigned int count = 0;
     unsigned int tuple[1024]; /* Should be enough. Will it be ? */
-    unsigned int x = 0, y = 0;
+    int x = 0, y = 0;
     unsigned int width = 80, height = 25;
     int save_x = 0, save_y = 0;
     unsigned int j, skip;
