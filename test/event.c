@@ -119,12 +119,12 @@ static void print_event(int x, int y, caca_event_t *ev)
         break;
     case CACA_EVENT_KEY_PRESS:
         character = ev->data.key.ch;
-        cucul_printf(cv, x, y, "CACA_EVENT_KEY_PRESS 0x%02x (%cv)", character,
+        cucul_printf(cv, x, y, "CACA_EVENT_KEY_PRESS 0x%02x (%c)", character,
                      (character > 0x1f && character < 0x80) ? character : '?');
         break;
     case CACA_EVENT_KEY_RELEASE:
         character = ev->data.key.ch;
-        cucul_printf(cv, x, y, "CACA_EVENT_KEY_RELEASE 0x%02x (%cv)", character,
+        cucul_printf(cv, x, y, "CACA_EVENT_KEY_RELEASE 0x%02x (%c)", character,
                      (character > 0x1f && character < 0x80) ? character : '?');
         break;
     case CACA_EVENT_MOUSE_MOTION:
