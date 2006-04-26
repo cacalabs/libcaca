@@ -30,28 +30,28 @@
 class Event
 {
     friend class Caca;
-  public:
+ public:
     enum caca_event_type
-    {
-        CACA_EVENT_NONE =          0x0000, /**< No event. */
+        {
+            CACA_EVENT_NONE =          0x0000, /**< No event. */
 
-        CACA_EVENT_KEY_PRESS =     0x0001, /**< A key was pressed. */
-        CACA_EVENT_KEY_RELEASE =   0x0002, /**< A key was released. */
-        CACA_EVENT_MOUSE_PRESS =   0x0004, /**< A mouse button was pressed. */
-        CACA_EVENT_MOUSE_RELEASE = 0x0008, /**< A mouse button was released. */
-        CACA_EVENT_MOUSE_MOTION =  0x0010, /**< The mouse was moved. */
-        CACA_EVENT_RESIZE =        0x0020, /**< The window was resized. */
+            CACA_EVENT_KEY_PRESS =     0x0001, /**< A key was pressed. */
+            CACA_EVENT_KEY_RELEASE =   0x0002, /**< A key was released. */
+            CACA_EVENT_MOUSE_PRESS =   0x0004, /**< A mouse button was pressed. */
+            CACA_EVENT_MOUSE_RELEASE = 0x0008, /**< A mouse button was released. */
+            CACA_EVENT_MOUSE_MOTION =  0x0010, /**< The mouse was moved. */
+            CACA_EVENT_RESIZE =        0x0020, /**< The window was resized. */
 
-        CACA_EVENT_ANY =           0xffff  /**< Bitmask for any event. */
-    } type;
+            CACA_EVENT_ANY =           0xffff  /**< Bitmask for any event. */
+        } type;
 
-  protected:
+ protected:
     caca_event e;
 };
 
 class Caca
 {
-  public:
+ public:
     Caca();
     Caca(Cucul *cv);
     ~Caca();
@@ -69,7 +69,7 @@ class Caca
     unsigned int getMouseY();
     void setMouse(int);
 
-  private:
+ private:
     caca_display_t *dp;
 };
 

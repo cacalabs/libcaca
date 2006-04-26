@@ -92,6 +92,6 @@ unsigned int Caca::getMouseY()
 
 void Caca::setMouse(int v)
 {
-     caca_set_mouse(dp, v);
+    caca_set_mouse(dp, v);
 }
 

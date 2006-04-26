@@ -38,10 +38,10 @@ class Font
     unsigned int getWidth();
     unsigned int getHeight();
     void renderCanvas(Cucul *, unsigned char *, unsigned int, unsigned int, unsigned int);
-
+    
  private:
     cucul_font *font;
-
+    
 };
 
 class Dither
@@ -92,7 +92,7 @@ class Cucul
     friend class Dither;
     friend class Font;
     friend class Buffer;
-  public:
+ public:
     Cucul();
     Cucul(int width, int height);
     Cucul(Buffer *, char const *);
@@ -128,10 +128,10 @@ class Cucul
     void fillTriangle(int, int, int, int, int, int, char const *);
     int Rand(int, int);
 
-  protected:
+ protected:
     cucul_canvas_t *get_cucul_canvas_t();
 
-  private:
+ private:
     cucul_canvas_t *cv;
 };
 
