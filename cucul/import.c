@@ -72,7 +72,7 @@ cucul_canvas_t * cucul_import_canvas(void const *data, unsigned int size,
             buf[0] == 'C' && buf[1] == 'A' && buf[2] == 'C' && buf[3] != 'A')
             return import_caca(data, size);
 
-        /* If we find ESC[ tuple, we guess it's an ANSI file */
+        /* If we find ESC[ argv, we guess it's an ANSI file */
         while(i<size-1) 
         {
             if((buf[i] == 0x1b) && (buf[i+1] == '['))
@@ -201,7 +201,7 @@ static cucul_canvas_t *import_text(void const *data, unsigned int size)
 }
 
 #define IS_ALPHA(x) (x>='A' && x<='z')
-#define END_TUP 0x1337
+#define END_ARG 0x1337
 static int parse_tuple(unsigned int *, unsigned char const *, int);
 static void manage_modifiers(int, uint8_t *, uint8_t *, uint8_t *, uint8_t *, uint8_t *, uint8_t *);
 
@@ -210,8 +210,6 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
     cucul_canvas_t *cv;
     unsigned char const *buffer = (unsigned char const*)data;
     unsigned int i;
-    unsigned int count = 0;
-    unsigned int tuple[1024]; /* Should be enough. Will it be ? */
     int x = 0, y = 0;
     unsigned int width = 80, height = 25;
     int save_x = 0, save_y = 0;
@@ -245,6 +243,8 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
 
         if(buffer[i] == '\x1b' && buffer[i + 1] == '[')  /* ESC code */
         {
+            unsigned int argv[1024]; /* Should be enough. Will it be? */
+            unsigned int argc = 0;
             unsigned char c = '\0';
 
             i++; // ESC
@@ -257,37 +257,35 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
                     break;
                 }
 
-            skip += parse_tuple(tuple, buffer + i, size - i);
-            count = 0;
+            skip += parse_tuple(argv, buffer + i, size - i);
 
-            while(tuple[count] != END_TUP)
-                count++;  /* Gruik */
+            while(argv[argc] != END_ARG)
+                argc++;  /* Gruik */
 
             switch(c)
             {
             case 'f':
             case 'H':
-                if(tuple[0] == END_TUP)
-                    x = y = 0;
-                else
+                switch(argc)
                 {
-                    y = tuple[0] - 1;
-                    x = tuple[1] == END_TUP ? 0 : tuple[1] - 1;
+                    case 0: x = y = 0; break;
+                    case 1: y = argv[0] - 1; x = 0; break;
+                    case 2: y = argv[0] - 1; x = argv[1] - 1; break;
                 }
                 break;
             case 'A':
-                y -= tuple[0] == END_TUP ? 1 : tuple[0];
+                y -= argc ? argv[0] : 1;
                 if(y < 0)
                     y = 0;
                 break;
             case 'B':
-                y += tuple[0] == END_TUP ? 1 : tuple[0];
+                y += argc ? argv[0] : 1;
                 break;
             case 'C':
-                x += tuple[0] == END_TUP ? 1 : tuple[0];
+                x += argc ? argv[0] : 1;
                 break;
             case 'D':
-                x -= tuple[0] == END_TUP ? 1 : tuple[0];
+                x -= argc ? argv[0] : 1;
                 if(x < 0)
                     x = 0;
                 break;
@@ -300,7 +298,7 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
                 y = save_y;
                 break;
             case 'J':
-                if(tuple[0] == 2)
+                if(argv[0] == 2)
                     x = y = 0;
                 break;
             case 'K':
@@ -310,8 +308,9 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
                 x = width;
                 break;
             case 'm':
-                for(j = 0; j < count; j++)
-                    manage_modifiers(tuple[j], &fg, &bg, &save_fg, &save_bg, &bold, &reverse);
+                for(j = 0; j < argc; j++)
+                    manage_modifiers(argv[j], &fg, &bg,
+                                     &save_fg, &save_bg, &bold, &reverse);
                 if(bold && fg < 8)
                     fg += 8;
                 if(bold && bg < 8)
@@ -359,7 +358,7 @@ static int parse_tuple(unsigned int *ret, unsigned char const *buffer, int size)
     int t = 0;
     unsigned char nbr[1024];
 
-    ret[0] = END_TUP;
+    ret[0] = END_ARG;
 
     for(i = 0; i < size; i++)
     {
@@ -370,7 +369,7 @@ static int parse_tuple(unsigned int *ret, unsigned char const *buffer, int size)
                 ret[t] = atoi((char*)nbr);
                 t++;
             }
-            ret[t] = END_TUP;
+            ret[t] = END_ARG;
             j = 0;
             return i;
         }
@@ -385,14 +384,15 @@ static int parse_tuple(unsigned int *ret, unsigned char const *buffer, int size)
         {
             ret[t] = atoi((char*)nbr);
             t++;
-            ret[t] = END_TUP;
+            ret[t] = END_ARG;
             j = 0;
         }
     }
     return size;
 }
 
-static void manage_modifiers(int i, uint8_t *fg, uint8_t *bg, uint8_t *save_fg, uint8_t *save_bg, uint8_t *bold, uint8_t *reverse)
+static void manage_modifiers(int i, uint8_t *fg, uint8_t *bg, uint8_t *save_fg,
+                             uint8_t *save_bg, uint8_t *bold, uint8_t *reverse)
 {
     static uint8_t const ansi2cucul[] =
     {
