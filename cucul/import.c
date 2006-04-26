@@ -345,8 +345,6 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
                                      &save_fg, &save_bg, &bold, &reverse);
                 if(bold && fg < 8)
                     fg += 8;
-                if(bold && bg < 8)
-                    bg += 8;
                 if(reverse)
                     cucul_set_color(cv, bg, fg);
                 else
