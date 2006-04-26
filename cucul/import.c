@@ -200,26 +200,28 @@ static cucul_canvas_t *import_text(void const *data, unsigned int size)
     return cv;
 }
 
-static void manage_modifiers(int, uint8_t *, uint8_t *, uint8_t *,
-                             uint8_t *, uint8_t *, uint8_t *);
+/* Graphic Rendition Combination Mode */
+struct grcm
+{
+    uint8_t fg, bg;
+    uint8_t bold, negative, concealed;
+};
+
+static void manage_modifiers(struct grcm *, int);
 
 static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
 {
-    cucul_canvas_t *cv;
+    struct grcm grcm;
     unsigned char const *buffer = (unsigned char const*)data;
-    unsigned int i, j;
-    int x = 0, y = 0;
+    cucul_canvas_t *cv;
+    unsigned int i, j, skip;
     unsigned int width = 80, height = 25;
-    int save_x = 0, save_y = 0;
-    unsigned int skip;
-    uint8_t fg, bg, save_fg, save_bg, bold, reverse;
+    int x = 0, y = 0, save_x = 0, save_y = 0;
 
-    fg = save_fg = CUCUL_COLOR_LIGHTGRAY;
-    bg = save_bg = CUCUL_COLOR_BLACK;
-    bold = reverse = 0;
+    manage_modifiers(&grcm, 0);
 
     cv = cucul_create_canvas(width, height);
-    cucul_set_color(cv, fg, bg);
+    cucul_set_color(cv, CUCUL_COLOR_DEFAULT, CUCUL_COLOR_DEFAULT);
 
     for(i = 0; i < size; i += skip)
     {
@@ -249,7 +251,7 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
         /* Compute offsets to parameter bytes, intermediate bytes and
          * to the final byte. Only the final byte is mandatory, there
          * can be zero of the others.
-         *
+         * 0  param=2             inter                 final           final+1
          * +-----+------------------+---------------------+-----------------+
          * | CSI | parameter bytes  | intermediate bytes  |   final byte    |
          * |     |   0x30 - 0x3f    |    0x20 - 0x2f      |   0x40 - 0x7e   |
@@ -282,7 +284,8 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
             if(final - param > 100)
                 continue; /* Suspiciously long sequence, skip it */
 
-            /* ECMA-48 5.4.2: Parameter string format */
+            /* Parse parameter bytes as per ECMA-48 5.4.2: Parameter string
+             * format */
             if(param < inter)
             {
                 argv[0] = 0;
@@ -341,14 +344,16 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
                 break;
             case 'm': /* SGR - Select Graphic Rendition */
                 for(j = 0; j < argc; j++)
-                    manage_modifiers(argv[j], &fg, &bg,
-                                     &save_fg, &save_bg, &bold, &reverse);
-                if(bold && fg < 8)
-                    fg += 8;
-                if(reverse)
-                    cucul_set_color(cv, bg, fg);
+                    manage_modifiers(&grcm, argv[j]);
+                if(grcm.concealed)
+                    cucul_set_color(cv, CUCUL_COLOR_TRANSPARENT,
+                                        CUCUL_COLOR_TRANSPARENT);
+                else if(grcm.negative)
+                    cucul_set_color(cv, (grcm.bold && grcm.bg < 8) ?
+                                        grcm.bg + 8 : grcm.bg, grcm.fg);
                 else
-                    cucul_set_color(cv, fg, bg);
+                    cucul_set_color(cv, (grcm.bold && grcm.fg < 8) ?
+                                        grcm.fg + 8 : grcm.fg, grcm.bg);
                 break;
             default:
                 break;
@@ -381,64 +386,59 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
 
 /* XXX : ANSI loader helper */
 
-static void manage_modifiers(int i, uint8_t *fg, uint8_t *bg, uint8_t *save_fg,
-                             uint8_t *save_bg, uint8_t *bold, uint8_t *reverse)
+static void manage_modifiers(struct grcm *g, int i)
 {
     static uint8_t const ansi2cucul[] =
     {
-        CUCUL_COLOR_BLACK,
-        CUCUL_COLOR_RED,
-        CUCUL_COLOR_GREEN,
-        CUCUL_COLOR_BROWN,
-        CUCUL_COLOR_BLUE,
-        CUCUL_COLOR_MAGENTA,
-        CUCUL_COLOR_CYAN,
-        CUCUL_COLOR_LIGHTGRAY
+        CUCUL_COLOR_BLACK, CUCUL_COLOR_RED,
+        CUCUL_COLOR_GREEN, CUCUL_COLOR_BROWN,
+        CUCUL_COLOR_BLUE, CUCUL_COLOR_MAGENTA,
+        CUCUL_COLOR_CYAN, CUCUL_COLOR_LIGHTGRAY
     };
 
+    /* Defined in ECMA-48 8.3.117: SGR - SELECT GRAPHIC RENDITION */
     if(i >= 30 && i <= 37)
-        *fg = ansi2cucul[i - 30];
+        g->fg = ansi2cucul[i - 30];
     else if(i >= 40 && i <= 47)
-        *bg = ansi2cucul[i - 40];
+        g->bg = ansi2cucul[i - 40];
     else if(i >= 90 && i <= 97)
-        *fg = ansi2cucul[i - 90] + 8;
+        g->fg = ansi2cucul[i - 90] + 8;
     else if(i >= 100 && i <= 107)
-        *bg = ansi2cucul[i - 100] + 8;
+        g->bg = ansi2cucul[i - 100] + 8;
     else switch(i)
     {
-    case 0:
-        *fg = CUCUL_COLOR_DEFAULT;
-        *bg = CUCUL_COLOR_DEFAULT;
-        *bold = 0;
-        *reverse = 0;
+    case 0: /* default rendition */
+        g->fg = CUCUL_COLOR_DEFAULT;
+        g->bg = CUCUL_COLOR_DEFAULT;
+        g->bold = g->negative = g->concealed = 0;
         break;
-    case 1: /* BOLD */
-        *bold = 1;
+    case 1: /* bold or increased intensity */
+        g->bold = 1;
         break;
-    case 4: // Underline
+    case 4: /* singly underlined */
         break;
-    case 5: // blink
+    case 5: /* slowly blinking (less then 150 per minute) */
         break;
-    case 7: // reverse
-        *reverse = 1;
+    case 7: /* negative image */
+        g->negative = 1;
         break;
-    case 8: // invisible
-        *save_fg = *fg;
-        *save_bg = *bg;
-        *fg = CUCUL_COLOR_TRANSPARENT;
-        *bg = CUCUL_COLOR_TRANSPARENT;
+    case 8: /* concealed characters */
+        g->concealed = 1;
         break;
-    case 28: // not invisible
-        *fg = *save_fg;
-        *bg = *save_bg;
+    case 22: /* normal colour or normal intensity (neither bold nor faint) */
+        g->bold = 0;
         break;
-    case 39:
-        *fg = CUCUL_COLOR_DEFAULT;
+    case 28: /* revealed characters */
+        g->concealed = 0;
         break;
-    case 49:
-        *bg = CUCUL_COLOR_DEFAULT;
+    case 39: /* default display colour (implementation-defined) */
+        g->fg = CUCUL_COLOR_DEFAULT;
+        break;
+    case 49: /* default background colour (implementation-defined) */
+        g->bg = CUCUL_COLOR_DEFAULT;
         break;
     default:
+        //fprintf(stderr, "unknown sgr %i\n", i);
         break;
     }
 }
