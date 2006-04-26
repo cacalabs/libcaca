@@ -33,7 +33,8 @@ static cucul_canvas_t *import_ansi(void const *, unsigned int);
 
 /** \brief Import a buffer into a canvas
  *
- *  This function imports a memory area into an internal libcucul canvas.
+ *  This function imports a libcucul buffer (cucul_load_memory()/cucul_load_file())
+ *  into an internal libcucul canvas.
  *
  *  Valid values for \c format are:
  *
