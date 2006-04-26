@@ -337,6 +337,15 @@ static void x11_display(caca_display_t *dp)
                                    dp->drv.p->font_width / 2,
                                    dp->drv.p->font_height);
                     break;
+                case 0x000025a0: /* ■ */
+                    XFillRectangle(dp->drv.p->dpy, dp->drv.p->pixmap,
+                                   dp->drv.p->gc,
+                                   x * dp->drv.p->font_width,
+                                   y * dp->drv.p->font_height
+                                     + dp->drv.p->font_height / 4,
+                                   dp->drv.p->font_width,
+                                   dp->drv.p->font_height / 2);
+                    break;
                 case 0x00002593: /* ▓ */
                 case 0x00002592: /* ▒ */
                 case 0x00002591: /* ░ */
