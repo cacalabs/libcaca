@@ -20,6 +20,9 @@
 #include "common.h"
 
 #if !defined(__KERNEL__)
+#   if defined(HAVE_ERRNO_H)
+#       include <errno.h>
+#   endif
 #   include <stdlib.h>
 #   include <stdio.h>
 #   include <string.h>
@@ -63,14 +66,27 @@ static void export_tga(cucul_canvas_t *, cucul_buffer_t *);
  *
  *  \li \c "tga": export a TGA image.
  *
+ *  If an error occurs, NULL is returned and \b errno is set accordingly:
+ *  - \c EINVAL Invalid format requested.
+ *  - \c ENOMEM Not enough memory to allocate output buffer.
+ *
  *  \param cv A libcucul canvas
  *  \param format A string describing the requested output format.
+ *  \return A libcucul buffer, or NULL in case of error.
  */
 cucul_buffer_t * cucul_export_canvas(cucul_canvas_t *cv, char const *format)
 {
     cucul_buffer_t *ex;
 
     ex = malloc(sizeof(cucul_buffer_t));
+    if(!ex)
+    {
+#if defined(HAVE_ERRNO_H)
+        errno = ENOMEM;
+#endif
+        return NULL;
+    }
+
     ex->size = 0;
     ex->data = NULL;
     ex->user_data = 0;
@@ -95,6 +111,9 @@ cucul_buffer_t * cucul_export_canvas(cucul_canvas_t *cv, char const *format)
     if(ex->size == 0)
     {
         free(ex);
+#if defined(HAVE_ERRNO_H)
+        errno = EINVAL;
+#endif
         return NULL;
     }
 
@@ -107,6 +126,8 @@ cucul_buffer_t * cucul_export_canvas(cucul_canvas_t *cv, char const *format)
  *  array of strings, interleaving a string containing the internal value for
  *  the export format, to be used with cucul_export_canvas(), and a string
  *  containing the natural language description for that export format.
+ *
+ *  This function never fails.
  *
  *  \return An array of strings.
  */

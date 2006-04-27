@@ -27,6 +27,9 @@
 #   elif defined(HAVE_NETINET_IN_H)
 #       include <netinet/in.h>
 #   endif
+#   if defined(HAVE_ERRNO_H)
+#       include <errno.h>
+#   endif
 #   include <stdio.h>
 #   include <stdlib.h>
 #   include <string.h>
@@ -108,6 +111,11 @@ DECLARE_UNPACKGLYPH(1)
  *  are loaded as a font. This memory are must not be freed by the calling
  *  program until the font handle has been freed with cucul_free_font().
  *
+ *  If an error occurs, NULL is returned and \b errno is set accordingly:
+ *  - \c ENOENT Requested built-in font does not exist.
+ *  - \c EINVAL Invalid font data in memory area.
+ *  - \c ENOMEM Not enough memory to allocate font structure.
+ *
  *  \param data The memory area containing the font or its name.
  *  \param size The size of the memory area, or 0 if the font name is given.
  *  \return A font handle or NULL in case of error.
@@ -126,13 +134,29 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
             return cucul_load_font(monobold12_data, monobold12_size);
 #endif
 
+#if defined(HAVE_ERRNO_H)
+        errno = ENOENT;
+#endif
         return NULL;
     }
 
     if(size < sizeof(struct font_header))
+    {
+#if defined(HAVE_ERRNO_H)
+        errno = EINVAL;
+#endif
         return NULL;
+    }
 
     f = malloc(sizeof(cucul_font_t));
+    if(!f)
+    {
+#if defined(HAVE_ERRNO_H)
+        errno = ENOMEM;
+#endif
+        return NULL;
+    }
+
     f->private = (void *)(uintptr_t)data;
 
     memcpy(&f->header, f->private + 8, sizeof(struct font_header));
@@ -152,10 +176,22 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
         || (f->header.flags & 1) == 0)
     {
         free(f);
+#if defined(HAVE_ERRNO_H)
+        errno = EINVAL;
+#endif
         return NULL;
     }
 
     f->block_list = malloc(f->header.blocks * sizeof(struct block_info));
+    if(!f->block_list)
+    {
+        free(f);
+#if defined(HAVE_ERRNO_H)
+        errno = ENOMEM;
+#endif
+        return NULL;
+    }
+
     memcpy(f->block_list,
            f->private + 8 + sizeof(struct font_header),
            f->header.blocks * sizeof(struct block_info));
@@ -171,11 +207,24 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
         {
             free(f->block_list);
             free(f);
+#if defined(HAVE_ERRNO_H)
+            errno = EINVAL;
+#endif
             return NULL;
         }
     }
 
     f->glyph_list = malloc(f->header.glyphs * sizeof(struct glyph_info));
+    if(!f->glyph_list)
+    {
+        free(f->block_list);
+        free(f);
+#if defined(HAVE_ERRNO_H)
+        errno = ENOMEM;
+#endif
+        return NULL;
+    }
+
     memcpy(f->glyph_list,
            f->private + 8 + sizeof(struct font_header)
                 + f->header.blocks * sizeof(struct block_info),
@@ -194,6 +243,9 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
             free(f->glyph_list);
             free(f->block_list);
             free(f);
+#if defined(HAVE_ERRNO_H)
+            errno = EINVAL;
+#endif
             return NULL;
         }
     }
@@ -207,6 +259,8 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
  *
  *  Return a list of available builtin fonts. The list is a NULL-terminated
  *  array of strings.
+ *
+ *  This function never fails.
  *
  *  \return An array of strings.
  */
@@ -226,6 +280,8 @@ char const * const * cucul_get_font_list(void)
  *
  *  This function returns the maximum value for the current font's glyphs
  *
+ *  This function never fails.
+ *
  *  \param f The font, as returned by cucul_load_font()
  *  \return The maximum glyph width.
  */
@@ -237,6 +293,8 @@ unsigned int cucul_get_font_width(cucul_font_t *f)
 /** \brief Get a font's maximum glyph height.
  *
  *  This function returns the maximum value for the current font's glyphs
+ *
+ *  This function never fails.
  *
  *  \param f The font, as returned by cucul_load_font()
  *  \return The maximum glyph height.
@@ -253,13 +311,18 @@ unsigned int cucul_get_font_height(cucul_font_t *f)
  *  this function has returned, the memory area that was given to
  *  cucul_load_font() can be freed.
  *
+ *  This function never fails.
+ *
  *  \param f The font, as returned by cucul_load_font()
+ *  \return This function always returns 0.
  */
-void cucul_free_font(cucul_font_t *f)
+int cucul_free_font(cucul_font_t *f)
 {
     free(f->glyph_list);
     free(f->block_list);
     free(f);
+
+    return 0;
 }
 
 /** \brief Render the canvas onto an image buffer.
@@ -275,16 +338,19 @@ void cucul_free_font(cucul_font_t *f)
  *  Glyphs that do not fit in the image buffer are currently not rendered at
  *  all. They may be cropped instead in future versions.
  *
+ *  This function never fails.
+ *
  *  \param cv The canvas to render
  *  \param f The font, as returned by cucul_load_font()
  *  \param buf The image buffer
  *  \param width The width (in pixels) of the image buffer
  *  \param height The height (in pixels) of the image buffer
  *  \param pitch The pitch (in bytes) of an image buffer line.
+ *  \return This function always returns 0.
  */
-void cucul_render_canvas(cucul_canvas_t *cv, cucul_font_t *f,
-                         void *buf, unsigned int width,
-                         unsigned int height, unsigned int pitch)
+int cucul_render_canvas(cucul_canvas_t *cv, cucul_font_t *f,
+                        void *buf, unsigned int width,
+                        unsigned int height, unsigned int pitch)
 {
     uint8_t *glyph = NULL;
     unsigned int x, y, xmax, ymax;
@@ -379,6 +445,8 @@ void cucul_render_canvas(cucul_canvas_t *cv, cucul_font_t *f,
 
     if(f->header.bpp != 8)
         free(glyph);
+
+    return 0;
 }
 
 /*

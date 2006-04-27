@@ -33,9 +33,12 @@ static uint32_t rotatechar(uint32_t ch);
  *  This function inverts a canvas' colours (black becomes white, red
  *  becomes cyan, etc.) without changing the characters in it.
  *
+ *  This function never fails.
+ *
  *  \param cv The canvas to invert.
+ *  \return This function always returns 0.
  */
-void cucul_invert(cucul_canvas_t *cv)
+int cucul_invert(cucul_canvas_t *cv)
 {
     uint32_t *attr = cv->attr;
     unsigned int i;
@@ -45,6 +48,8 @@ void cucul_invert(cucul_canvas_t *cv)
         *attr = *attr ^ 0x000f000f;
         attr++;
     }
+
+    return 0;
 }
 
 /** \brief Flip a canvas horizontally.
@@ -52,9 +57,12 @@ void cucul_invert(cucul_canvas_t *cv)
  *  This function flips a canvas horizontally, choosing characters that
  *  look like the mirrored version wherever possible.
  *
+ *  This function never fails.
+ *
  *  \param cv The canvas to flip.
+ *  \return This function always returns 0.
  */
-void cucul_flip(cucul_canvas_t *cv)
+int cucul_flip(cucul_canvas_t *cv)
 {
     unsigned int y;
 
@@ -82,6 +90,8 @@ void cucul_flip(cucul_canvas_t *cv)
         if(cleft == cright)
             *cleft = flipchar(*cleft);
     }
+
+    return 0;
 }
 
 /** \brief Flip a canvas vertically.
@@ -89,9 +99,12 @@ void cucul_flip(cucul_canvas_t *cv)
  *  This function flips a canvas vertically, choosing characters that
  *  look like the mirrored version wherever possible.
  *
+ *  This function never fails.
+ *
  *  \param cv The canvas to flop.
+ *  \return This function always returns 0.
  */
-void cucul_flop(cucul_canvas_t *cv)
+int cucul_flop(cucul_canvas_t *cv)
 {
     unsigned int x;
 
@@ -120,6 +133,8 @@ void cucul_flop(cucul_canvas_t *cv)
         if(ctop == cbottom)
             *ctop = flopchar(*ctop);
     }
+
+    return 0;
 }
 
 /** \brief Rotate a canvas.
@@ -128,9 +143,12 @@ void cucul_flop(cucul_canvas_t *cv)
  *  choosing characters that look like the mirrored version wherever
  *  possible.
  *
+ *  This function never fails.
+ *
  *  \param cv The canvas to rotate.
+ *  \return This function always returns 0.
  */
-void cucul_rotate(cucul_canvas_t *cv)
+int cucul_rotate(cucul_canvas_t *cv)
 {
     uint32_t *cbegin = cv->chars;
     uint32_t *cend = cbegin + cv->width * cv->height - 1;
@@ -153,6 +171,8 @@ void cucul_rotate(cucul_canvas_t *cv)
 
     if(cbegin == cend)
         *cbegin = rotatechar(*cbegin);
+
+    return 0;
 }
 
 static uint32_t flipchar(uint32_t ch)

@@ -26,6 +26,9 @@
 #   include <stdlib.h>
 #   include <limits.h>
 #   include <string.h>
+#   if defined(HAVE_ERRNO_H)
+#       include <errno.h>
+#   endif
 #endif
 
 #include "cucul.h"
@@ -236,6 +239,11 @@ static inline void rgb2hsv_default(int r, int g, int b,
  *  cucul_set_dither_palette() function. For depths greater than 8 bits per
  *  pixel, a zero alpha mask causes the alpha values to be ignored.
  *
+ *  If an error occurs, NULL is returned and \b errno is set accordingly:
+ *  - \c EINVAL Requested width, height, pitch or bits per pixel value was
+ *    invalid.
+ *  - \c ENOMEM Not enough memory to allocate dither structure.
+ *
  *  \param bpp Bitmap depth in bits per pixel.
  *  \param w Bitmap width in pixels.
  *  \param h Bitmap height in pixels.
@@ -244,7 +252,7 @@ static inline void rgb2hsv_default(int r, int g, int b,
  *  \param gmask Bitmask for green values.
  *  \param bmask Bitmask for blue values.
  *  \param amask Bitmask for alpha values.
- *  \return Dither object, or NULL upon error.
+ *  \return Dither object upon success, NULL if an error occurred.
  */
 cucul_dither_t *cucul_create_dither(unsigned int bpp, unsigned int w,
                                     unsigned int h, unsigned int pitch,
@@ -256,11 +264,21 @@ cucul_dither_t *cucul_create_dither(unsigned int bpp, unsigned int w,
 
     /* Minor sanity test */
     if(!w || !h || !pitch || bpp > 32 || bpp < 8)
+    {
+#if defined(HAVE_ERRNO_H)
+        errno = EINVAL;
+#endif
         return NULL;
+    }
 
     d = malloc(sizeof(cucul_dither_t));
     if(!d)
+    {
+#if defined(HAVE_ERRNO_H)
+        errno = ENOMEM;
+#endif
         return NULL;
+    }
 
     d->bpp = bpp;
     d->has_palette = 0;
@@ -325,99 +343,142 @@ cucul_dither_t *cucul_create_dither(unsigned int bpp, unsigned int w,
  *  Set the palette of an 8 bits per pixel bitmap. Values should be between
  *  0 and 4095 (0xfff).
  *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c EINVAL Dither bits per pixel value is not 8, or one of the pixel
+ *   values was outside the range 0 - 4095.
+ *
  *  \param d Dither object.
  *  \param red Array of 256 red values.
  *  \param green Array of 256 green values.
  *  \param blue Array of 256 blue values.
  *  \param alpha Array of 256 alpha values.
+ *  \return 0 in case of success, -1 if an error occurred.
  */
-void cucul_set_dither_palette(cucul_dither_t *d,
-                              unsigned int red[], unsigned int green[],
-                              unsigned int blue[], unsigned int alpha[])
+int cucul_set_dither_palette(cucul_dither_t *d,
+                             unsigned int red[], unsigned int green[],
+                             unsigned int blue[], unsigned int alpha[])
 {
     int i, has_alpha = 0;
 
     if(d->bpp != 8)
-        return;
+    {
+#if defined(HAVE_ERRNO_H)
+        errno = EINVAL;
+#endif
+        return -1;
+    }
 
     for(i = 0; i < 256; i++)
     {
-        if(red[i] >= 0 && red[i] < 0x1000 &&
-           green[i] >= 0 && green[i] < 0x1000 &&
-           blue[i] >= 0 && blue[i] < 0x1000 &&
-           alpha[i] >= 0 && alpha[i] < 0x1000)
+        if((red[i] | green[i] | blue[i] | alpha[i]) >= 0x1000)
         {
-            d->red[i] = red[i];
-            d->green[i] = green[i];
-            d->blue[i] = blue[i];
-            if(alpha[i])
-            {
-                d->alpha[i] = alpha[i];
-                has_alpha = 1;
-            }
+#if defined(HAVE_ERRNO_H)
+            errno = EINVAL;
+#endif
+            return -1;
+        }
+    }
+
+    for(i = 0; i < 256; i++)
+    {
+        d->red[i] = red[i];
+        d->green[i] = green[i];
+        d->blue[i] = blue[i];
+        if(alpha[i])
+        {
+            d->alpha[i] = alpha[i];
+            has_alpha = 1;
         }
     }
 
     d->has_alpha = has_alpha;
+
+    return 0;
 }
 
 /** \brief Set the brightness of a dither object.
  *
  *  Set the brightness of dither.
  *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c EINVAL Brightness value was out of range.
+ *
  *  \param d Dither object.
  *  \param brightness brightness value.
+ *  \return 0 in case of success, -1 if an error occurred.
  */
-void cucul_set_dither_brightness(cucul_dither_t *d, float brightness)
+int cucul_set_dither_brightness(cucul_dither_t *d, float brightness)
 {
     /* FIXME */
+    return 0;
 }
 
 /** \brief Set the gamma of a dither object.
  *
  *  Set the gamma of dither.
  *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c EINVAL Gamma value was out of range.
+ *
  *  \param d Dither object.
  *  \param gamma Gamma value.
+ *  \return 0 in case of success, -1 if an error occurred.
  */
-void cucul_set_dither_gamma(cucul_dither_t *d, float gamma)
+int cucul_set_dither_gamma(cucul_dither_t *d, float gamma)
 {
-    /* FIXME: we don't need 4096 calls to gammapow(), we can just compute
+    /* FIXME: we don't need 4096 calls to gammapow(), we could just compute
      * 128 of them and do linear interpolation for the rest. This will
      * probably speed up things a lot. */
     int i;
 
     if(gamma <= 0.0)
-        return;
+    {
+#if defined(HAVE_ERRNO_H)
+        errno = EINVAL;
+#endif
+        return -1;
+    }
 
     d->gamma = gamma;
 
     for(i = 0; i < 4096; i++)
         d->gammatab[i] = 4096.0 * gammapow((float)i / 4096.0, 1.0 / gamma);
+
+    return 0;
 }
 
 /** \brief Invert colors of dither
  *
- *  Invert colors of dither
+ *  Invert colors of dither.
+ *
+ *  This function never fails.
  *
  *  \param d Dither object.
  *  \param value 0 for normal behaviour, 1 for invert
+ *  \return This function always returns 0.
  */
-void cucul_set_dither_invert(cucul_dither_t *d, int value)
+int cucul_set_dither_invert(cucul_dither_t *d, int value)
 {
     d->invert = value ? 1 : 0;
+
+    return 0;
 }
 
 /** \brief Set the contrast of a dither object.
  *
  *  Set the contrast of dither.
  *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c EINVAL Contrast value was out of range.
+ *
  *  \param d Dither object.
  *  \param contrast contrast value.
+ *  \return 0 in case of success, -1 if an error occurred.
  */
-void cucul_set_dither_contrast(cucul_dither_t *d, float contrast)
+int cucul_set_dither_contrast(cucul_dither_t *d, float contrast)
 {
     /* FIXME */
+    return 0;
 }
 
 /** \brief Set dither antialiasing
@@ -427,19 +488,32 @@ void cucul_set_dither_contrast(cucul_dither_t *d, float contrast)
  *
  *  \li \c "none": no antialiasing.
  *
- *  \li \c "prefilter": simple prefilter antialiasing. This is the default
- *      value.
+ *  \li \c "prefilter" or \c "default": simple prefilter antialiasing. This
+ *      is the default value.
+ *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c EINVAL Invalid antialiasing mode.
  *
  *  \param d Dither object.
  *  \param str A string describing the antialiasing method that will be used
  *         for the dithering.
+ *  \return 0 in case of success, -1 if an error occurred.
  */
-void cucul_set_dither_antialias(cucul_dither_t *d, char const *str)
+int cucul_set_dither_antialias(cucul_dither_t *d, char const *str)
 {
     if(!strcasecmp(str, "none"))
         d->antialias = 0;
-    else /* "prefilter" is the default */
+    else if(!strcasecmp(str, "prefilter") || !strcasecmp(str, "default"))
         d->antialias = 1;
+    else
+    {
+#if defined(HAVE_ERRNO_H)
+        errno = EINVAL;
+#endif
+        return -1;
+    }
+
+    return 0;
 }
 
 /** \brief Get available antialiasing methods
@@ -449,6 +523,8 @@ void cucul_set_dither_antialias(cucul_dither_t *d, char const *str)
  *  containing the internal value for the antialiasing method to be used with
  *  cucul_set_dither_antialias(), and a string containing the natural
  *  language description for that antialiasing method.
+ *
+ *  This function never fails.
  *
  *  \param d Dither object.
  *  \return An array of strings.
@@ -485,14 +561,18 @@ char const * const *
  *  \li \c "full8": use the 8 ANSI colours for both the characters and the
  *      background.
  *
- *  \li \c "full16": use the 16 ANSI colours for both the characters and the
- *      background. This is the default value.
+ *  \li \c "full16" or \c "default": use the 16 ANSI colours for both the
+ *      characters and the background. This is the default value.
+ *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c EINVAL Invalid colour set.
  *
  *  \param d Dither object.
  *  \param str A string describing the colour set that will be used
  *         for the dithering.
+ *  \return 0 in case of success, -1 if an error occurred.
  */
-void cucul_set_dither_color(cucul_dither_t *d, char const *str)
+int cucul_set_dither_color(cucul_dither_t *d, char const *str)
 {
     if(!strcasecmp(str, "mono"))
         d->color_mode = COLOR_MODE_MONO;
@@ -506,8 +586,17 @@ void cucul_set_dither_color(cucul_dither_t *d, char const *str)
         d->color_mode = COLOR_MODE_FULLGRAY;
     else if(!strcasecmp(str, "full8"))
         d->color_mode = COLOR_MODE_FULL8;
-    else /* "full16" is the default */
+    else if(!strcasecmp(str, "full16") || !strcasecmp(str, "default"))
         d->color_mode = COLOR_MODE_FULL16;
+    else
+    {
+#if defined(HAVE_ERRNO_H)
+        errno = EINVAL;
+#endif
+        return -1;
+    }
+
+    return 0;
 }
 
 /** \brief Get available colour modes
@@ -517,6 +606,8 @@ void cucul_set_dither_color(cucul_dither_t *d, char const *str)
  *  the internal value for the colour mode, to be used with
  *  cucul_set_dither_color(), and a string containing the natural
  *  language description for that colour mode.
+ *
+ *  This function never fails.
  *
  *  \param d Dither object.
  *  \return An array of strings.
@@ -544,7 +635,8 @@ char const * const *
  *  Tell the renderer which characters should be used to render the
  *  dither. Valid values for \c str are:
  *
- *  \li \c "ascii": use only ASCII characters. This is the default value.
+ *  \li \c "ascii" or "default": use only ASCII characters. This is the
+ *      default value.
  *
  *  \li \c "shades": use Unicode characters "U+2591 LIGHT SHADE", "U+2592
  *      MEDIUM SHADE" and "U+2593 DARK SHADE". These characters are also
@@ -553,11 +645,15 @@ char const * const *
  *  \li \c "blocks": use Unicode quarter-cell block combinations. These
  *      characters are only found in the Unicode set.
  *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c EINVAL Invalid character set.
+ *
  *  \param d Dither object.
  *  \param str A string describing the characters that need to be used
  *         for the dithering.
+ *  \return 0 in case of success, -1 if an error occurred.
  */
-void cucul_set_dither_charset(cucul_dither_t *d, char const *str)
+int cucul_set_dither_charset(cucul_dither_t *d, char const *str)
 {
     if(!strcasecmp(str, "shades"))
     {
@@ -569,11 +665,20 @@ void cucul_set_dither_charset(cucul_dither_t *d, char const *str)
         d->glyphs = blocks_glyphs;
         d->glyph_count = sizeof(blocks_glyphs) / sizeof(*blocks_glyphs);
     }
-    else /* "ascii" is the default */
+    else if(!strcasecmp(str, "ascii") || !strcasecmp(str, "default"))
     {
         d->glyphs = ascii_glyphs;
         d->glyph_count = sizeof(ascii_glyphs) / sizeof(*ascii_glyphs);
     }
+    else
+    {
+#if defined(HAVE_ERRNO_H)
+        errno = EINVAL;
+#endif
+        return -1;
+    }
+
+    return 0;
 }
 
 /** \brief Get available dither character sets
@@ -583,6 +688,8 @@ void cucul_set_dither_charset(cucul_dither_t *d, char const *str)
  *  the internal value for the character set, to be used with
  *  cucul_set_dither_charset(), and a string containing the natural
  *  language description for that character set.
+ *
+ *  This function never fails.
  *
  *  \param d Dither object.
  *  \return An array of strings.
@@ -618,11 +725,15 @@ char const * const * cucul_get_dither_charset_list(cucul_dither_t const *d)
  *
  *  \li \c "fstein": use Floyd-Steinberg dithering. This is the default value.
  *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c EINVAL Unknown dithering mode.
+ *
  *  \param d Dither object.
  *  \param str A string describing the method that needs to be used
  *         for the dithering.
+ *  \return 0 in case of success, -1 if an error occurred.
  */
-void cucul_set_dither_mode(cucul_dither_t *d, char const *str)
+int cucul_set_dither_mode(cucul_dither_t *d, char const *str)
 {
     if(!strcasecmp(str, "none"))
     {
@@ -654,12 +765,21 @@ void cucul_set_dither_mode(cucul_dither_t *d, char const *str)
         d->get_dither = get_random_dither;
         d->increment_dither = increment_random_dither;
     }
-    else /* "fstein" is the default */
+    else if(!strcasecmp(str, "fstein") || !strcasecmp(str, "default"))
     {
         d->init_dither = init_fstein_dither;
         d->get_dither = get_fstein_dither;
         d->increment_dither = increment_fstein_dither;
     }
+    else
+    {
+#if defined(HAVE_ERRNO_H)
+        errno = EINVAL;
+#endif
+        return -1;
+    }
+
+    return 0;
 }
 
 /** \brief Get dithering methods
@@ -669,6 +789,8 @@ void cucul_set_dither_mode(cucul_dither_t *d, char const *str)
  *  the internal value for the dithering method, to be used with
  *  cucul_set_dither_dithering(), and a string containing the natural
  *  language description for that dithering method.
+ *
+ *  This function never fails.
  *
  *  \param d Dither object.
  *  \return An array of strings.
@@ -694,6 +816,8 @@ char const * const * cucul_get_dither_mode_list(cucul_dither_t const *d)
  *  Dither a bitmap at the given coordinates. The dither can be of any size
  *  and will be stretched to the text area.
  *
+ *  This function never fails.
+ *
  *  \param cv A handle to the libcucul canvas.
  *  \param x X coordinate of the upper-left corner of the drawing area.
  *  \param y Y coordinate of the upper-left corner of the drawing area.
@@ -701,9 +825,10 @@ char const * const * cucul_get_dither_mode_list(cucul_dither_t const *d)
  *  \param h Height of the drawing area.
  *  \param d Dither object to be drawn.
  *  \param pixels Bitmap's pixels.
+ *  \return This function always returns 0.
  */
-void cucul_dither_bitmap(cucul_canvas_t *cv, int x, int y, int w, int h,
-                         cucul_dither_t const *d, void *pixels)
+int cucul_dither_bitmap(cucul_canvas_t *cv, int x, int y, int w, int h,
+                        cucul_dither_t const *d, void *pixels)
 {
     int *floyd_steinberg, *fs_r, *fs_g, *fs_b;
     int fs_length;
@@ -711,7 +836,7 @@ void cucul_dither_bitmap(cucul_canvas_t *cv, int x, int y, int w, int h,
     unsigned int dchmax;
 
     if(!d || !pixels)
-        return;
+        return 0;
 
     x1 = x; x2 = x + w - 1;
     y1 = y; y2 = y + h - 1;
@@ -940,20 +1065,27 @@ void cucul_dither_bitmap(cucul_canvas_t *cv, int x, int y, int w, int h,
     }
 
     free(floyd_steinberg);
+
+    return 0;
 }
 
 /** \brief Free the memory associated with a dither.
  *
  *  Free the memory allocated by cucul_create_dither().
  *
+ *  This function never fails.
+ *
  *  \param d Dither object.
+ *  \return This function always returns 0.
  */
-void cucul_free_dither(cucul_dither_t *d)
+int cucul_free_dither(cucul_dither_t *d)
 {
     if(!d)
-        return;
+        return 0;
 
     free(d);
+
+    return 0;
 }
 
 /*

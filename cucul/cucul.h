@@ -112,10 +112,10 @@ int cucul_blit(cucul_canvas_t *, int, int, cucul_canvas_t const *, cucul_canvas_
  *  These functions perform horizontal and vertical canvas flipping.
  *
  *  @{ */
-void cucul_invert(cucul_canvas_t *);
-void cucul_flip(cucul_canvas_t *);
-void cucul_flop(cucul_canvas_t *);
-void cucul_rotate(cucul_canvas_t *);
+int cucul_invert(cucul_canvas_t *);
+int cucul_flip(cucul_canvas_t *);
+int cucul_flop(cucul_canvas_t *);
+int cucul_rotate(cucul_canvas_t *);
 /*  @} */
 
 /** \defgroup prim libcucul primitives drawing
@@ -150,9 +150,9 @@ int cucul_fill_triangle(cucul_canvas_t *, int, int, int, int, int, int, char con
  *
  *  @{ */
 unsigned int cucul_get_canvas_frame_count(cucul_canvas_t *);
-void cucul_set_canvas_frame(cucul_canvas_t *, unsigned int);
-void cucul_create_canvas_frame(cucul_canvas_t *, unsigned int);
-void cucul_free_canvas_frame(cucul_canvas_t *, unsigned int);
+int cucul_set_canvas_frame(cucul_canvas_t *, unsigned int);
+int cucul_create_canvas_frame(cucul_canvas_t *, unsigned int);
+int cucul_free_canvas_frame(cucul_canvas_t *, unsigned int);
 /*  @} */
 
 /** \defgroup dither libcucul bitmap dithering
@@ -165,24 +165,24 @@ cucul_dither_t *cucul_create_dither(unsigned int, unsigned int,
                                     unsigned int, unsigned int,
                                     unsigned int, unsigned int,
                                     unsigned int, unsigned int);
-void cucul_set_dither_palette(cucul_dither_t *,
-                              unsigned int r[], unsigned int g[],
-                              unsigned int b[], unsigned int a[]);
-void cucul_set_dither_brightness(cucul_dither_t *, float);
-void cucul_set_dither_gamma(cucul_dither_t *, float);
-void cucul_set_dither_contrast(cucul_dither_t *, float);
-void cucul_set_dither_invert(cucul_dither_t *, int);
-void cucul_set_dither_antialias(cucul_dither_t *, char const *);
+int cucul_set_dither_palette(cucul_dither_t *,
+                             unsigned int r[], unsigned int g[],
+                             unsigned int b[], unsigned int a[]);
+int cucul_set_dither_brightness(cucul_dither_t *, float);
+int cucul_set_dither_gamma(cucul_dither_t *, float);
+int cucul_set_dither_contrast(cucul_dither_t *, float);
+int cucul_set_dither_invert(cucul_dither_t *, int);
+int cucul_set_dither_antialias(cucul_dither_t *, char const *);
 char const * const * cucul_get_dither_antialias_list(cucul_dither_t const *);
-void cucul_set_dither_color(cucul_dither_t *, char const *);
+int cucul_set_dither_color(cucul_dither_t *, char const *);
 char const * const * cucul_get_dither_color_list(cucul_dither_t const *);
-void cucul_set_dither_charset(cucul_dither_t *, char const *);
+int cucul_set_dither_charset(cucul_dither_t *, char const *);
 char const * const * cucul_get_dither_charset_list(cucul_dither_t const *);
-void cucul_set_dither_mode(cucul_dither_t *, char const *);
+int cucul_set_dither_mode(cucul_dither_t *, char const *);
 char const * const * cucul_get_dither_mode_list(cucul_dither_t const *);
-void cucul_dither_bitmap(cucul_canvas_t *, int, int, int, int,
+int cucul_dither_bitmap(cucul_canvas_t *, int, int, int, int,
                          cucul_dither_t const *, void *);
-void cucul_free_dither(cucul_dither_t *);
+int cucul_free_dither(cucul_dither_t *);
 /*  @} */
 
 /** \defgroup font libcucul font handling
@@ -195,9 +195,9 @@ cucul_font_t *cucul_load_font(void const *, unsigned int);
 char const * const * cucul_get_font_list(void);
 unsigned int cucul_get_font_width(cucul_font_t *);
 unsigned int cucul_get_font_height(cucul_font_t *);
-void cucul_render_canvas(cucul_canvas_t *, cucul_font_t *, void *,
+int cucul_render_canvas(cucul_canvas_t *, cucul_font_t *, void *,
                          unsigned int, unsigned int, unsigned int);
-void cucul_free_font(cucul_font_t *);
+int cucul_free_font(cucul_font_t *);
 /*  @} */
 
 /** \defgroup importexport libcucul importers/exporters from/to various formats

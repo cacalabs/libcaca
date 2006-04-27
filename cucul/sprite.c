@@ -22,6 +22,9 @@
 #   include <stdio.h>
 #   include <stdlib.h>
 #   include <string.h>
+#   if defined(HAVE_ERRNO_H)
+#       include <errno.h>
+#   endif
 #endif
 
 #include "cucul.h"
@@ -30,6 +33,8 @@
 /** \brief Get the number of frames in a canvas.
  *
  *  This function returns the current canvas frame count.
+ *
+ *  This function never fails.
  *
  *  \param cv A libcucul canvas
  *  \return The frame count
@@ -47,18 +52,29 @@ unsigned int cucul_get_canvas_frame_count(cucul_canvas_t *cv)
  *
  *  If the frame index is outside the canvas' frame range, nothing happens.
  *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c EINVAL Requested frame is out of range.
+ *
  *  \param cv A libcucul canvas
  *  \param frame The canvas frame to activate
+ *  \return 0 in case of success, -1 if an error occurred.
  */
-void cucul_set_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
+int cucul_set_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
 {
     if(frame >= cv->framecount)
-        return;
+    {
+#if defined(HAVE_ERRNO_H)
+        errno = EINVAL;
+#endif
+        return -1;
+    }
 
     cv->frame = frame;
 
     cv->chars = cv->allchars[cv->frame];
     cv->attr = cv->allattr[cv->frame];
+
+    return 0;
 }
 
 /** \brief Add a frame to a canvas.
@@ -74,10 +90,14 @@ void cucul_set_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
  *  The active frame does not change, but its index may be renumbered due
  *  to the insertion.
  *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c ENOMEM Not enough memory to allocate new frame.
+ *
  *  \param cv A libcucul canvas
  *  \param frame The index where to insert the new frame
+ *  \return 0 in case of success, -1 if an error occurred.
  */
-void cucul_create_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
+int cucul_create_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
 {
     unsigned int size = cv->width * cv->height * sizeof(uint32_t);
     unsigned int f;
@@ -105,6 +125,8 @@ void cucul_create_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
 
     cv->chars = cv->allchars[cv->frame];
     cv->attr = cv->allattr[cv->frame];
+
+    return 0;
 }
 
 /** \brief Remove a frame from a canvas.
@@ -123,18 +145,33 @@ void cucul_create_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
  *  Otherwise, the active frame does not change, but its index may be
  *  renumbered due to the deletion.
  *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c EINVAL Requested frame is out of range, or attempt to delete the
+ *    last frame of the canvas.
+ *
  *  \param cv A libcucul canvas
  *  \param frame The index of the frame to delete
+ *  \return 0 in case of success, -1 if an error occurred.
  */
-void cucul_free_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
+int cucul_free_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
 {
     unsigned int f;
 
     if(frame >= cv->framecount)
-        return;
+    {
+#if defined(HAVE_ERRNO_H)
+        errno = EINVAL;
+#endif
+        return -1;
+    }
 
     if(cv->framecount == 1)
-        return;
+    {
+#if defined(HAVE_ERRNO_H)
+        errno = EINVAL;
+#endif
+        return -1;
+    }
 
     free(cv->allchars[frame]);
     free(cv->allattr[frame]);
@@ -156,5 +193,7 @@ void cucul_free_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
 
     cv->chars = cv->allchars[cv->frame];
     cv->attr = cv->allattr[cv->frame];
+
+    return 0;
 }
 
