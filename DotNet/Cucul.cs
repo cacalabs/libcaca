@@ -3,7 +3,7 @@
  *  Copyright (c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                All Rights Reserved
  *
- *  $Id: caca++.cpp 706 2006-04-26 18:53:08Z jylam $
+ *  $Id: $
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the Do What The Fuck You Want To
