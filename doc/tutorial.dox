@@ -21,7 +21,7 @@ int main(void)
     /* Draw a string at coordinates (0, 0) */
     cucul_putstr(cv, 0, 0, "This is a message");
     /* Refresh display */
-    caca_refresh_display();
+    caca_refresh_display(dp);
     /* Wait for a key press event */
     caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
     /* Clean up library */

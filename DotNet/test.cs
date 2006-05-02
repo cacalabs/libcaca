@@ -50,10 +50,11 @@ class Test {
         kk.setDisplayTitle("libcaca .NET Bindings test suite");
 
         Event e = new Event();
+        int startTime = kk.getRendertime();
         while(kk.getEvent(Event.type.KEY_RELEASE, e, 10) == 0)
           {
           kk.Refresh();
-          Console.WriteLine("Render time : {0}", kk.getRendertime());
+          Console.WriteLine("Render time : {0}", kk.getRendertime()-startTime);
           }
 
 

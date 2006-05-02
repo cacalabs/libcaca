@@ -57,7 +57,7 @@ static int _lowlevel_event(caca_display_t *, caca_event_t *);
  *
  *  \param dp The libcaca graphical context.
  *  \param event_mask Bitmask of requested events.
- *  \param timeout A timeout value in microseconds
+ *  \param timeout A timeout value in microseconds, -1 for blocking behaviour
  *  \param ev A pointer to a caca_event structure, or NULL.
  *  \return 1 if a matching event was received, or 0 if the wait timeouted.
  */
