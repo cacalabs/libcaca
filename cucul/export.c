@@ -33,6 +33,7 @@
 
 static void export_caca(cucul_canvas_t *, cucul_buffer_t *);
 static void export_ansi(cucul_canvas_t *, cucul_buffer_t *);
+static void export_utf8(cucul_canvas_t *, cucul_buffer_t *);
 static void export_html(cucul_canvas_t *, cucul_buffer_t *);
 static void export_html3(cucul_canvas_t *, cucul_buffer_t *);
 static void export_irc(cucul_canvas_t *, cucul_buffer_t *);
@@ -95,6 +96,8 @@ cucul_buffer_t * cucul_export_canvas(cucul_canvas_t *cv, char const *format)
         export_caca(cv, ex);
     else if(!strcasecmp("ansi", format))
         export_ansi(cv, ex);
+    else if(!strcasecmp("utf8", format))
+        export_utf8(cv, ex);
     else if(!strcasecmp("html", format))
         export_html(cv, ex);
     else if(!strcasecmp("html3", format))
@@ -137,6 +140,7 @@ char const * const * cucul_get_export_list(void)
     {
         "caca", "native libcaca format",
         "ansi", "ANSI",
+        "utf8", "UTF-8 with ANSI escape codes",
         "html", "HTML",
         "html3", "backwards-compatible HTML",
         "irc", "IRC with mIRC colours",
@@ -190,6 +194,97 @@ static void export_caca(cucul_canvas_t *cv, cucul_buffer_t *ex)
         *cur++ = (a >> 8) & 0xff;
         *cur++ = a & 0xff;
     }
+}
+
+/* Generate UTF-8 representation of current canvas. */
+static void export_utf8(cucul_canvas_t *cv, cucul_buffer_t *ex)
+{
+    static uint8_t const palette[] =
+    {
+        0,  4,  2,  6, 1,  5,  3,  7,
+        8, 12, 10, 14, 9, 13, 11, 15
+    };
+
+    char *cur;
+    unsigned int x, y;
+
+    /* 23 bytes assumed for max length per pixel ('\e[5;1;3x;4y;9x;10ym' plus
+     * 4 max bytes for a UTF-8 character).
+     * Add height*9 to that (zeroes color at the end and jump to next line) */
+    ex->size = (cv->height * 9) + (cv->width * cv->height * 23);
+    ex->data = malloc(ex->size);
+
+    cur = ex->data;
+
+    for(y = 0; y < cv->height; y++)
+    {
+        uint32_t *lineattr = cv->attr + y * cv->width;
+        uint32_t *linechar = cv->chars + y * cv->width;
+
+        uint8_t prevfg = -1;
+        uint8_t prevbg = -1;
+
+        for(x = 0; x < cv->width; x++)
+        {
+            static const uint8_t mark[7] =
+            {
+                0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC
+            };
+
+            uint8_t fg = palette[_cucul_argb32_to_ansi4fg(lineattr[x])];
+            uint8_t bg = palette[_cucul_argb32_to_ansi4bg(lineattr[x])];
+            uint32_t ch = linechar[x];
+
+            if(fg != prevfg || bg != prevbg)
+            {
+                cur += sprintf(cur, "\033[0;");
+
+                if(fg < 8)
+                    if(bg < 8)
+                        cur += sprintf(cur, "3%d;4%dm", fg, bg);
+                    else
+                        cur += sprintf(cur, "5;3%d;4%d;10%dm",
+                                            fg, bg - 8, bg - 8);
+                else
+                    if(bg < 8)
+                        cur += sprintf(cur, "1;3%d;4%d;9%dm",
+                                            fg - 8, bg, fg - 8);
+                    else
+                        cur += sprintf(cur, "5;1;3%d;4%d;9%d;10%dm",
+                                            fg - 8, bg - 8, fg - 8, bg - 8);
+            }
+
+            if(ch < 0x80)
+            {
+                *cur++ = (ch >= 0x20) ? ch : '?';
+            }
+            else
+            {
+                int bytes = (ch < 0x800) ? 2 : (ch < 0x10000) ? 3 : 4;
+                char *parser;
+
+                cur += bytes;
+                parser = cur;
+
+                switch(bytes)
+                {
+                    case 4: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
+                    case 3: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
+                    case 2: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
+                }
+                *--parser = ch | mark[bytes];
+            }
+
+            prevfg = fg;
+            prevbg = bg;
+        }
+
+        cur += sprintf(cur, "\033[0m\r\n");
+    }
+
+    /* Crop to really used size */
+    ex->size = (uintptr_t)(cur - ex->data);
+    ex->data = realloc(ex->data, ex->size);
 }
 
 /* Generate ANSI representation of current canvas. */
