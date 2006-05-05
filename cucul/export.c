@@ -299,10 +299,13 @@ static void export_ansi(cucul_canvas_t *cv, cucul_buffer_t *ex)
     char *cur;
     unsigned int x, y;
 
-    /* 23 bytes assumed for max length per pixel ('\e[5;1;3x;4y;9x;10ym' plus
-     * 4 max bytes for a UTF-8 character).
+    uint8_t prevfg = -1;
+    uint8_t prevbg = -1;
+
+    /* 16 bytes assumed for max length per pixel ('\e[5;1;3x;4ym' plus
+     * 1 byte for a CP437 character).
      * Add height*9 to that (zeroes color at the end and jump to next line) */
-    ex->size = (cv->height * 9) + (cv->width * cv->height * 23);
+    ex->size = (cv->height * 9) + (cv->width * cv->height * 16);
     ex->data = malloc(ex->size);
 
     cur = ex->data;
@@ -311,9 +314,6 @@ static void export_ansi(cucul_canvas_t *cv, cucul_buffer_t *ex)
     {
         uint32_t *lineattr = cv->attr + y * cv->width;
         uint32_t *linechar = cv->chars + y * cv->width;
-
-        uint8_t prevfg = -1;
-        uint8_t prevbg = -1;
 
         for(x = 0; x < cv->width; x++)
         {
@@ -329,24 +329,26 @@ static void export_ansi(cucul_canvas_t *cv, cucul_buffer_t *ex)
                     if(bg < 8)
                         cur += sprintf(cur, "3%d;4%dm", fg, bg);
                     else
-                        cur += sprintf(cur, "5;3%d;4%d;10%dm",
-                                            fg, bg - 8, bg - 8);
+                        cur += sprintf(cur, "5;3%d;4%dm", fg, bg - 8);
                 else
                     if(bg < 8)
-                        cur += sprintf(cur, "1;3%d;4%d;9%dm",
-                                            fg - 8, bg, fg - 8);
+                        cur += sprintf(cur, "1;3%d;4%dm", fg - 8, bg);
                     else
-                        cur += sprintf(cur, "5;1;3%d;4%d;9%d;10%dm",
-                                            fg - 8, bg - 8, fg - 8, bg - 8);
+                        cur += sprintf(cur, "5;1;3%d;4%dm", fg - 8, bg - 8);
             }
 
-            *cur++ = (ch >= 0x20 && ch < 0x7f) ? ch : '?';
+            *cur++ = _cucul_utf32_to_cp437(ch);
 
             prevfg = fg;
             prevbg = bg;
         }
 
-        cur += sprintf(cur, "\033[0m\r\n");
+        if(cv->width != 80)
+        {
+            cur += sprintf(cur, "\033[0m\r\n");
+            prevfg = -1;
+            prevbg = -1;
+        }
     }
 
     /* Crop to really used size */
