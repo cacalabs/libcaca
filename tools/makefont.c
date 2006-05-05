@@ -55,6 +55,7 @@ static int const blocklist[] =
     0, 0
 };
 
+static void fix_glyph(FT_Bitmap *, uint32_t, unsigned int, unsigned int);
 static int printf_hex(char const *, uint8_t *, int);
 static int printf_u32(char const *, uint32_t);
 static int printf_u16(char const *, uint16_t);
@@ -222,6 +223,9 @@ int main(int argc, char *argv[])
             memset(img.buffer, 0, img.pitch * height);
             pango_ft2_render_layout(&img, l, 0, 0);
 
+            /* Fix glyphs that we know how to handle better */
+            fix_glyph(&img, ch, width, height);
+
             /* Write bitmap as an escaped C string */
             n = 0;
             for(y = 0; y < height; y++)
@@ -251,6 +255,78 @@ int main(int argc, char *argv[])
 /*
  * XXX: the following functions are local
  */
+
+static void fix_glyph(FT_Bitmap *i, uint32_t ch,
+                      unsigned int width, unsigned int height)
+{
+    unsigned int x, y;
+
+    switch(ch)
+    {
+    case 0x00002580: /* ▀ */
+        for(y = 0; y < height; y++)
+            for(x = 0; x < width; x++)
+                i->buffer[x + y * i->pitch] = y < height / 2 ? 0xff : 0x00;
+        if(height & 1)
+            for(x = 0; x < width; x++)
+                i->buffer[x + (height / 2) * i->pitch] = 0x7f;
+        break;
+    case 0x00002584: /* ▄ */
+        for(y = 0; y < height; y++)
+            for(x = 0; x < width; x++)
+                i->buffer[x + y * i->pitch] = y < height / 2 ? 0x00 : 0xff;
+        if(height & 1)
+            for(x = 0; x < width; x++)
+                i->buffer[x + (height / 2) * i->pitch] = 0x7f;
+        break;
+    case 0x0000258c: /* ▌ */
+        for(y = 0; y < height; y++)
+            for(x = 0; x < width; x++)
+                i->buffer[x + y * i->pitch] = x < width / 2 ? 0xff : 0x00;
+        if(width & 1)
+            for(y = 0; y < height; y++)
+                i->buffer[(width / 2) + y * i->pitch] = 0x7f;
+        break;
+    case 0x00002590: /* ▐ */
+        for(y = 0; y < height; y++)
+            for(x = 0; x < width; x++)
+                i->buffer[x + y * i->pitch] = x < width / 2 ? 0x00 : 0xff;
+        if(width & 1)
+            for(y = 0; y < height; y++)
+                i->buffer[(width / 2) + y * i->pitch] = 0x7f;
+        break;
+    case 0x000025a0: /* ■ */
+        for(y = 0; y < height; y++)
+            for(x = 0; x < width; x++)
+                i->buffer[x + y * i->pitch] =
+                    (y >= height / 4) && (y < 3 * height / 4) ? 0xff : 0x00;
+        if(height & 3)
+            for(x = 0; x < width; x++) /* FIXME: could be more precise */
+                i->buffer[x + (height / 4) * i->pitch] =
+                    i->buffer[x + (3 * height / 4) * i->pitch] = 0x7f;
+        break;
+    case 0x00002588: /* █ */
+        memset(i->buffer, 0xff, height * i->pitch);
+        break;
+    case 0x00002593: /* ▓ */
+        for(y = 0; y < height; y++)
+            for(x = 0; x < width; x++)
+                i->buffer[x + y * i->pitch] =
+                    ((x + 2 * (y & 1)) & 3) ? 0xff : 0x00;
+        break;
+    case 0x00002592: /* ▒ */
+        for(y = 0; y < height; y++)
+            for(x = 0; x < width; x++)
+                i->buffer[x + y * i->pitch] = ((x + y) & 1) ? 0xff : 0x00;
+        break;
+    case 0x00002591: /* ░ */
+        for(y = 0; y < height; y++)
+            for(x = 0; x < width; x++)
+                i->buffer[x + y * i->pitch] =
+                    ((x + 2 * (y & 1)) & 3) ? 0x00 : 0xff;
+        break;
+    }
+}
 
 static int printf_u32(char const *fmt, uint32_t i)
 {
