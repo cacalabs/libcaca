@@ -102,6 +102,36 @@ uint32_t _cucul_utf8_to_utf32(char const *s)
     return ret;
 }
 
+unsigned int _cucul_utf32_to_utf8(void *buf, uint32_t ch)
+{
+    static const uint8_t mark[7] =
+    {
+        0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC
+    };
+
+    char *parser = buf;
+    int bytes;
+
+    if(ch < 0x80)
+    {
+        *parser++ = ch;
+        return 1;
+    }
+
+    bytes = (ch < 0x800) ? 2 : (ch < 0x10000) ? 3 : 4;
+    parser += bytes;
+
+    switch(bytes)
+    {
+        case 4: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
+        case 3: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
+        case 2: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
+    }
+    *--parser = ch | mark[bytes];
+
+    return bytes;
+}
+
 /*
  * CP437 handling
  */
