@@ -226,11 +226,6 @@ static void export_utf8(cucul_canvas_t *cv, cucul_buffer_t *ex)
 
         for(x = 0; x < cv->width; x++)
         {
-            static const uint8_t mark[7] =
-            {
-                0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC
-            };
-
             uint8_t fg = palette[_cucul_argb32_to_ansi4fg(lineattr[x])];
             uint8_t bg = palette[_cucul_argb32_to_ansi4bg(lineattr[x])];
             uint32_t ch = linechar[x];
@@ -254,26 +249,7 @@ static void export_utf8(cucul_canvas_t *cv, cucul_buffer_t *ex)
                                             fg - 8, bg - 8, fg - 8, bg - 8);
             }
 
-            if(ch < 0x80)
-            {
-                *cur++ = (ch >= 0x20) ? ch : '?';
-            }
-            else
-            {
-                int bytes = (ch < 0x800) ? 2 : (ch < 0x10000) ? 3 : 4;
-                char *parser;
-
-                cur += bytes;
-                parser = cur;
-
-                switch(bytes)
-                {
-                    case 4: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
-                    case 3: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
-                    case 2: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
-                }
-                *--parser = ch | mark[bytes];
-            }
+            cur += _cucul_utf32_to_utf8(cur, ch);
 
             prevfg = fg;
             prevbg = bg;
@@ -731,36 +707,15 @@ static void export_svg(cucul_canvas_t *cv, cucul_buffer_t *ex)
                                 _cucul_argb32_to_rgb12fg(*lineattr++),
                                 x * 6, (y * 10) + 10);
             if(ch < 0x00000020)
-                cur += sprintf(cur, "?");
+                *cur++ = '?';
             else if(ch > 0x0000007f)
-            {
-                static const uint8_t mark[7] =
-                {
-                    0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC
-                };
-
-                char buf[10], *parser;
-                int bytes = (ch < 0x800) ? 2 : (ch < 0x10000) ? 3 : 4;
-
-                buf[bytes] = '\0';
-                parser = buf + bytes;
-
-                switch(bytes)
-                {
-                    case 4: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
-                    case 3: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
-                    case 2: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
-                }
-                *--parser = ch | mark[bytes];
-
-                cur += sprintf(cur, "%s", buf);
-            }
+                cur += _cucul_utf32_to_utf8(cur, ch);
             else switch((uint8_t)ch)
             {
                 case '>': cur += sprintf(cur, "&gt;"); break;
                 case '<': cur += sprintf(cur, "&lt;"); break;
                 case '&': cur += sprintf(cur, "&amp;"); break;
-                default: cur += sprintf(cur, "%c", ch); break;
+                default: *cur++ = ch; break;
             }
             cur += sprintf(cur, "</text>\n");
         }
