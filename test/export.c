@@ -24,7 +24,7 @@
 
 #include "cucul.h"
 
-#define WIDTH 60
+#define WIDTH 80
 #define HEIGHT 32
 
 uint32_t pixels[256*256];
