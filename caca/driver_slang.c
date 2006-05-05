@@ -392,37 +392,14 @@ static void slang_init_palette(void)
 static void slang_write_utf32(uint32_t ch)
 {
 #ifdef HAVE_SLSMG_UTF8_ENABLE
-    static const uint8_t mark[7] =
-    {
-        0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC
-    };
-
-    char buf[10], *parser;
+    char buf[10];
     int bytes;
-#endif
 
-    if(ch < 0x80)
-    {
-        SLsmg_write_char(ch);
-        return;
-    }
-
-#ifdef HAVE_SLSMG_UTF8_ENABLE
-    bytes = (ch < 0x800) ? 2 : (ch < 0x10000) ? 3 : 4;
+    bytes = _cucul_utf32_to_utf8(buf, ch);
     buf[bytes] = '\0';
-    parser = buf + bytes;
-
-    switch(bytes)
-    {
-        case 4: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
-        case 3: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
-        case 2: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
-    }
-    *--parser = ch | mark[bytes];
-
     SLsmg_write_string(buf);
 #else
-    SLsmg_write_char(' ');
+    SLsmg_write_char(ch < 0x80 ? ch : ' ');
 #endif
 }
 

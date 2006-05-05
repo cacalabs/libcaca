@@ -27,6 +27,9 @@
 #   include <netinet/in.h>
 #endif
 
+#include "cucul.h"
+#include "cucul_internals.h"
+
 #include <pango/pango.h>
 #include <pango/pangoft2.h>
 
@@ -199,35 +202,11 @@ int main(int argc, char *argv[])
         for(i = blocklist[b]; i < blocklist[b + 1]; i++)
         {
             unsigned int ch = i;
-            char buf[10], *parser;
+            char buf[10];
             int x, y, bytes;
 
-            if(ch < 0x80)
-            {
-                bytes = 1;
-                buf[0] = ch;
-                buf[1] = '\0';
-            }
-            else
-            {
-                static const unsigned char mark[7] =
-                {
-                    0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC
-                };
-
-                /* FIXME: use libcucul instead of this shit */
-                bytes = (ch < 0x800) ? 2 : (ch < 0x10000) ? 3 : 4;
-                buf[bytes] = '\0';
-                parser = buf + bytes;
-
-                switch(bytes)
-                {
-                    case 4: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
-                    case 3: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
-                    case 2: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
-                }
-                *--parser = ch | mark[bytes];
-            }
+            bytes = _cucul_utf32_to_utf8(buf, ch);
+            buf[bytes] = '\0';
 
             /* Print glyph value in comment */
             printf("/* U+%.04X: \"", i);

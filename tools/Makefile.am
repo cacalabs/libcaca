@@ -9,6 +9,7 @@ optipal_SOURCES = optipal.c
 makefont_SOURCES = makefont.c
 makefont_CFLAGS = `pkg-config --cflags pangoft2`
 makefont_LDFLAGS = `pkg-config --libs pangoft2`
+makefont_LDADD = ../cucul/libcucul.la
 
 if USE_PANGO
 pango_programs = makefont
