@@ -44,10 +44,10 @@ static int const blocklist[] =
     0x0250, 0x02b0, /* IPA Extensions: ɐ ɔ ɘ ʌ ʍ */
     0x0370, 0x0400, /* Greek and Coptic: Λ α β */
     0x0400, 0x0500, /* Cyrillic: И Я */
+    0x0530, 0x0590, /* Armenian: Ո */
+    0x1d00, 0x1d80, /* Phonetic Extensions: ᴉ ᵷ */
     0x2000, 0x2070, /* General Punctuation: ‘’ “” */
-#if 0
     0x2100, 0x2150, /* Letterlike Symbols: Ⅎ */
-#endif
     0x2200, 0x2300, /* Mathematical Operators: √ ∞ ∙ */
     0x2300, 0x2400, /* Miscellaneous Technical: ⌐ ⌂ ⌠ ⌡ */
     0x2500, 0x2580, /* Box Drawing: ═ ║ ╗ ╔ ╩ */
