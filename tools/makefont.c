@@ -55,7 +55,16 @@ static int const blocklist[] =
     0, 0
 };
 
+struct glyph
+{
+    uint32_t unicode;
+    char buf[10];
+    unsigned int same_as;
+    unsigned int data_index;
+};
+
 static void fix_glyph(FT_Bitmap *, uint32_t, unsigned int, unsigned int);
+static int printf_unicode(struct glyph *);
 static int printf_hex(char const *, uint8_t *, int);
 static int printf_u32(char const *, uint32_t);
 static int printf_u16(char const *, uint16_t);
@@ -69,9 +78,10 @@ int main(int argc, char *argv[])
     PangoRectangle r;
 
     FT_Bitmap img;
-    int width, height, b, i, n, blocks, glyphs;
-    unsigned int glyph_size, control_size, data_size;
+    int width, height, b, i, blocks, glyphs;
+    unsigned int n, index, glyph_size, control_size, data_size;
     uint8_t *glyph_data;
+    struct glyph *gtab;
 
     unsigned int bpp, dpi;
     char const *prefix, *font;
@@ -128,7 +138,6 @@ int main(int argc, char *argv[])
     width = PANGO_PIXELS(r.width);
     height = PANGO_PIXELS(r.height);
     glyph_size = ((width * height) + (8 / bpp) - 1) / (8 / bpp);
-    glyph_data = malloc(glyph_size);
 
     /* Compute blocks and glyphs count */
     blocks = 0;
@@ -141,6 +150,9 @@ int main(int argc, char *argv[])
 
     control_size = 24 + 12 * blocks + 8 * glyphs;
     data_size = glyph_size * glyphs;
+
+    gtab = malloc(glyphs * sizeof(struct glyph));
+    glyph_data = malloc(data_size);
 
     /* Let's go! */
     printf("/* libcucul font file\n");
@@ -183,6 +195,63 @@ int main(int argc, char *argv[])
     }
     printf("\n");
 
+    /* Render all glyphs, so that we can know their offset */
+    n = index = 0;
+    for(b = 0; blocklist[b + 1]; b += 2)
+    {
+        for(i = blocklist[b]; i < blocklist[b + 1]; i++)
+        {
+            int x, y, bytes;
+            unsigned int k;
+
+            gtab[n].unicode = i;
+            bytes = _cucul_utf32_to_utf8(gtab[n].buf, gtab[n].unicode);
+            gtab[n].buf[bytes] = '\0';
+
+            /* Render glyph on a bitmap */
+            pango_layout_set_text(l, gtab[n].buf, -1);
+            memset(img.buffer, 0, img.pitch * height);
+            pango_ft2_render_layout(&img, l, 0, 0);
+
+            /* Fix glyphs that we know how to handle better */
+            fix_glyph(&img, gtab[n].unicode, width, height);
+
+            /* Write bitmap as an escaped C string */
+            memset(glyph_data + n * glyph_size, 0, glyph_size);
+            k = 0;
+            for(y = 0; y < height; y++)
+            {
+                for(x = 0; x < width; x++)
+                {
+                    uint8_t pixel = img.buffer[y * img.pitch + x];
+
+                    pixel >>= (8 - bpp);
+                    glyph_data[n * glyph_size + k / 8]
+                        |= pixel << (8 - bpp - (k % 8));
+                    k += bpp;
+                }
+            }
+
+            /* Check whether this is the same glyph as another one. Please
+             * don't bullshit me about sorting, hashing and stuff like that,
+             * our data is small enough for this to work. */
+            for(k = 0; k < n; k++)
+            {
+                if(!memcmp(glyph_data + k * glyph_size,
+                           glyph_data + n * glyph_size, glyph_size))
+                    break;
+            }
+
+            gtab[n].data_index = index;
+            gtab[n].same_as = k;
+
+            if(k == n)
+                index++;
+
+            n++;
+        }
+    }
+
     printf("/* glyph_info: */\n");
     n = 0;
     for(b = 0; blocklist[b + 1]; b += 2)
@@ -191,61 +260,41 @@ int main(int argc, char *argv[])
         {
             printf_u16("\"%s", width);
             printf_u16("%s", height);
-            printf_u32("%s\"\n", n * glyph_size);
+            printf_u32("%s\"\n", gtab[gtab[n].same_as].data_index * glyph_size);
             n++;
         }
     }
     printf("\n");
 
     printf("/* font_data: */\n");
+    n = 0;
     for(b = 0; blocklist[b + 1]; b += 2)
     {
         for(i = blocklist[b]; i < blocklist[b + 1]; i++)
         {
-            unsigned int ch = i;
-            char buf[10];
-            int x, y, bytes;
-
-            bytes = _cucul_utf32_to_utf8(buf, ch);
-            buf[bytes] = '\0';
-
             /* Print glyph value in comment */
-            printf("/* U+%.04X: \"", i);
+            printf("/* ");
+            printf_unicode(&gtab[n]);
 
-            if(i < 0x20 || (i >= 0x80 && i <= 0xa0))
-                printf("\\x%.02x\" */", i);
+            if(gtab[n].same_as == n)
+                printf_hex(" */ \"%s\"\n",
+                           glyph_data + n * glyph_size, glyph_size);
             else
-                printf("%s\" */ ", buf);
-
-            /* Render glyph on a bitmap */
-            pango_layout_set_text(l, buf, -1);
-            memset(glyph_data, 0, glyph_size);
-            memset(img.buffer, 0, img.pitch * height);
-            pango_ft2_render_layout(&img, l, 0, 0);
-
-            /* Fix glyphs that we know how to handle better */
-            fix_glyph(&img, ch, width, height);
-
-            /* Write bitmap as an escaped C string */
-            n = 0;
-            for(y = 0; y < height; y++)
             {
-                for(x = 0; x < width; x++)
-                {
-                    uint8_t pixel = img.buffer[y * img.pitch + x];
-
-                    pixel >>= (8 - bpp);
-                    glyph_data[n / 8] |= pixel << (8 - bpp - (n % 8));
-                    n += bpp;
-                }
+                printf(" is ");
+                printf_unicode(&gtab[gtab[n].same_as]);
+                printf(" */\n");
             }
-            printf_hex("\"%s\"\n", glyph_data, glyph_size);
+
+            n++;
         }
     }
 
     printf(";\n");
 
     free(img.buffer);
+    free(gtab);
+    free(glyph_data);
     g_object_unref(l);
     g_object_unref(cx);
 
@@ -326,6 +375,20 @@ static void fix_glyph(FT_Bitmap *i, uint32_t ch,
                     ((x + 2 * (y & 1)) & 3) ? 0x00 : 0xff;
         break;
     }
+}
+
+static int printf_unicode(struct glyph *g)
+{
+    int written = 0;
+
+    written += printf("U+%.04X: \"", g->unicode);
+
+    if(g->unicode < 0x20 || (g->unicode >= 0x7f && g->unicode <= 0xa0))
+        written += printf("\\x%.02x\"", g->unicode);
+    else
+        written += printf("%s\"", g->buf);
+
+    return written;
 }
 
 static int printf_u32(char const *fmt, uint32_t i)
