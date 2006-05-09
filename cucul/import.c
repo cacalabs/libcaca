@@ -243,7 +243,7 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
     unsigned char const *buffer = (unsigned char const*)data;
     cucul_canvas_t *cv;
     unsigned int i, j, skip, dummy = 0;
-    unsigned int width = 80, height = 25;
+    unsigned int width = 1, height = 1;
     int x = 0, y = 0, save_x = 0, save_y = 0;
 
     cv = cucul_create_canvas(width, height);
@@ -262,7 +262,7 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
         skip = 1;
 
         /* Wrap long lines */
-        if((unsigned int)x >= width)
+        if((unsigned int)x >= 80)
         {
             x = 0;
             y++;
@@ -379,9 +379,11 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
                     x = y = 0;
                 break;
             case 'K': /* EL - Erase In Line */
-                for(j = x; j < width; j++)
+                if(width < 80)
+                    cucul_set_canvas_size(cv, width = 80, height);
+                for(j = x; j < 80; j++)
                     _cucul_putchar32(cv, j, y, (uint32_t)' ');
-                x = width;
+                x = 80;
                 break;
             case 'm': /* SGR - Select Graphic Rendition */
                 ansi_parse_grcm(cv, &grcm, argc, argv);
@@ -396,11 +398,11 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
 
         /* We're going to paste a character. First make sure the canvas
          * is big enough. */
+        if((unsigned int)x >= width)
+            cucul_set_canvas_size(cv, width = x + 1, height);
+
         if((unsigned int)y >= height)
-        {
-            height = y + 1;
-            cucul_set_canvas_size(cv, width, height);
-        }
+            cucul_set_canvas_size(cv, width, height = y + 1);
 
         /* Now paste our character */
         _cucul_putchar32(cv, x, y, _cucul_cp437_to_utf32(buffer[i]));
