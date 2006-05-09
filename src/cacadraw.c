@@ -29,9 +29,8 @@ static int x = 0, y = 0;
 
 int main(int argc, char **argv)
 {
-    cucul_buffer_t *b;
-    int refresh = 1;
-    unsigned int iw, ih;
+    int refresh = 1, file = 1;
+    unsigned int iw = 0, ih = 0;
 
     if(argc < 2)
     {
@@ -45,31 +44,39 @@ int main(int argc, char **argv)
     dp = caca_create_display(cv);
     if(!dp)
         return 1;
-    caca_set_display_title(dp, argv[1]);
-
-    b = cucul_load_file(argv[1]);
-    if(!b)
-    {
-        fprintf(stderr, "%s: could not open `%s'.\n", argv[0], argv[1]);
-        return 1;
-    }
-
-    image = cucul_import_canvas(b, "");
-    if(!image)
-    {
-        fprintf(stderr, "%s: could not import `%s'.\n", argv[0], argv[1]);
-        return 1;
-    }
-
-    cucul_free_buffer(b);
-
-    ih = cucul_get_canvas_height(image);
-    iw = cucul_get_canvas_width(image);
 
     for(;;)
     {
         caca_event_t ev;
         unsigned int w, h;
+        int dx = 0, dy = 0;
+
+        if(!image)
+        {
+            cucul_buffer_t *b = cucul_load_file(argv[file]);
+            if(!b)
+            {
+                fprintf(stderr, "%s: could not open `%s'.\n", argv[0], argv[1]);
+                return 1;
+            }
+
+            image = cucul_import_canvas(b, "ansi");
+            if(!image)
+            {
+                fprintf(stderr, "%s: invalid file `%s'.\n", argv[0], argv[1]);
+                return 1;
+            }
+
+            cucul_free_buffer(b);
+
+            ih = cucul_get_canvas_height(image);
+            iw = cucul_get_canvas_width(image);
+            x = y = 0;
+
+            caca_set_display_title(dp, argv[file]);
+
+            refresh = 1;
+        }
 
         if(refresh)
         {
@@ -86,15 +93,25 @@ int main(int argc, char **argv)
                 case CACA_EVENT_KEY_PRESS:
                     switch(ev.data.key.ch)
                     {
-                    case CACA_KEY_LEFT: x -= 2; refresh = 1; goto stopevents;
-                    case CACA_KEY_RIGHT: x += 2; refresh = 1; goto stopevents;
-                    case CACA_KEY_UP: y--; refresh = 1; goto stopevents;
-                    case CACA_KEY_DOWN: y++; refresh = 1; goto stopevents;
-                    case CACA_KEY_PAGEUP: y-=25; refresh = 1; goto stopevents;
-                    case CACA_KEY_PAGEDOWN: y+=25; refresh = 1; goto stopevents;
+                    case CACA_KEY_LEFT: dx -= 2; break;
+                    case CACA_KEY_RIGHT: dx += 2; break;
+                    case CACA_KEY_UP: dy--; break;
+                    case CACA_KEY_DOWN: dy++; break;
+                    case CACA_KEY_PAGEUP: dy -= 12; break;
+                    case CACA_KEY_PAGEDOWN: dy += 12; break;
                     case CACA_KEY_ESCAPE:
                     case 'q':
                         goto quit;
+                    case 'n':
+                        file = file + 1 < argc ? file + 1 : 1;
+                        cucul_free_canvas(image);
+                        image = NULL;
+                        goto stopevents;
+                    case 'p':
+                        file = file > 1 ? file - 1 : argc - 1;
+                        cucul_free_canvas(image);
+                        image = NULL;
+                        goto stopevents;
                     default:
                         break;
                     }
@@ -109,8 +126,16 @@ stopevents:
 
         w = cucul_get_canvas_width(cv);
         h = cucul_get_canvas_height(cv);
-        if(x < 0) x = 0; else if(x + w > iw) x = iw > w ? iw - w : 0;
-        if(y < 0) y = 0; else if(y + h > ih) y = ih > h ? ih - h : 0;
+
+        if(dx | dy)
+        {
+            refresh = 1;
+            x += dx;
+            y += dy;
+
+            if(x < 0) x = 0; else if(x + w > iw) x = iw > w ? iw - w : 0;
+            if(y < 0) y = 0; else if(y + h > ih) y = ih > h ? ih - h : 0;
+        }
     }
 quit:
 
