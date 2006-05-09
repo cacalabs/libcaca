@@ -99,7 +99,7 @@ struct caca_event
 /** \brief Special key values.
  *
  *  Special key values returned by caca_get_event() for which there is no
- *  ASCII equivalent.
+ *  printable ASCII equivalent.
  */
 enum caca_key
 {
