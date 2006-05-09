@@ -40,14 +40,14 @@ int main(void)
     cv = cucul_import_canvas(buffer, "text");
     cucul_free_buffer(buffer);
 
-    buffer = cucul_export_canvas(cv, "ansi");
+    buffer = cucul_export_canvas(cv, "utf8");
     fwrite(cucul_get_buffer_data(buffer),
            cucul_get_buffer_size(buffer), 1, stdout);
     cucul_free_buffer(buffer);
 
     cucul_rotate(cv);
 
-    buffer = cucul_export_canvas(cv, "ansi");
+    buffer = cucul_export_canvas(cv, "utf8");
     fwrite(cucul_get_buffer_data(buffer),
            cucul_get_buffer_size(buffer), 1, stdout);
     cucul_free_buffer(buffer);

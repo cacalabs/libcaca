@@ -80,8 +80,8 @@ int main(int argc, char *argv[])
     if(__BYTE_ORDER == __BIG_ENDIAN)
 #else
     /* This is compile-time optimised with at least -O1 or -Os */
-    uint32_t const rmask = 0x12345678;
-    if(*(uint8_t const *)&rmask == 0x12)
+    uint32_t const tmp = 0x12345678;
+    if(*(uint8_t const *)&tmp == 0x12)
 #endif
         d = cucul_create_dither(32, w, h, 4 * w,
                                 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
