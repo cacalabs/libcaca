@@ -163,8 +163,8 @@ int cucul_free_canvas_frame(cucul_canvas_t *, unsigned int);
  *  @{ */
 cucul_dither_t *cucul_create_dither(unsigned int, unsigned int,
                                     unsigned int, unsigned int,
-                                    unsigned int, unsigned int,
-                                    unsigned int, unsigned int);
+                                    unsigned long int, unsigned long int,
+                                    unsigned long int, unsigned long int);
 int cucul_set_dither_palette(cucul_dither_t *,
                              unsigned int r[], unsigned int g[],
                              unsigned int b[], unsigned int a[]);
