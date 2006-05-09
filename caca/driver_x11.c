@@ -295,6 +295,22 @@ static void x11_display(caca_display_t *dp)
              * characters, just print '?'. */
             switch(*chars)
             {
+                case 0x000000b7: /* · */
+                    XFillRectangle(dp->drv.p->dpy, dp->drv.p->pixmap,
+                                   dp->drv.p->gc,
+                                   x * dp->drv.p->font_width
+                                     + dp->drv.p->font_width / 2,
+                                   y * dp->drv.p->font_height
+                                     + dp->drv.p->font_height / 2, 2, 2);
+                    break;
+                case 0x00002500: /* ─ */
+                    XFillRectangle(dp->drv.p->dpy, dp->drv.p->pixmap,
+                                   dp->drv.p->gc,
+                                   x * dp->drv.p->font_width,
+                                   y * dp->drv.p->font_height
+                                     + dp->drv.p->font_height / 2 + 1,
+                                   dp->drv.p->font_width, 1);
+                    break;
                 case 0x00002580: /* ▀ */
                     XFillRectangle(dp->drv.p->dpy, dp->drv.p->pixmap,
                                    dp->drv.p->gc,
