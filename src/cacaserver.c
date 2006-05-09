@@ -251,7 +251,7 @@ int main(void)
 
         /* Get ANSI representation of the image and skip the end-of buffer
          * linefeed ("\r\n", 2 bytes) */
-        server->buffer = cucul_export_canvas(server->canvas, "ansi");
+        server->buffer = cucul_export_canvas(server->canvas, "utf8");
         server->bufdata = cucul_get_buffer_data(server->buffer);
         server->buflen = cucul_get_buffer_size(server->buffer);
         server->buflen -= 2;
@@ -263,7 +263,7 @@ int main(void)
 
             if(send_data(server, &server->clients[i]))
             {
-                fprintf(stderr, "client %i dropped connection\n",
+                fprintf(stderr, "[%i] dropped connection\n",
                                 server->clients[i].fd);
                 close(server->clients[i].fd);
                 server->clients[i].fd = -1;
@@ -309,7 +309,7 @@ static void manage_connections(struct server *server)
     if(fd == -1)
         return;
 
-    fprintf(stderr, "client %i connected from %s\n",
+    fprintf(stderr, "[%i] connected from %s\n",
                     fd, inet_ntoa(remote_addr.sin_addr));
 
     /* Non blocking socket */
@@ -337,7 +337,7 @@ static void manage_connections(struct server *server)
     /* If we already have data to send, send it to the new client */
     if(send_data(server, &server->clients[server->client_count]))
     {
-        fprintf(stderr, "client %i dropped connection\n", fd);
+        fprintf(stderr, "[%i] dropped connection\n", fd);
         close(fd);
         server->clients[server->client_count].fd = -1;
         return;
@@ -374,7 +374,7 @@ static int send_data(struct server *server, struct client *c)
             {
                 if(c->inbytes == 3)
                 {
-                    fprintf(stderr, "client %i said: %.02x %.02x %.02x (%s %s %s)\n",
+                    fprintf(stderr, "[%i] said: %.02x %.02x %.02x (%s %s %s)\n",
                             c->fd, c->inbuf[0], c->inbuf[1], c->inbuf[2],
                             COMMAND_NAME(c->inbuf[0]), COMMAND_NAME(c->inbuf[1]), OPTION_NAME(c->inbuf[2]));
                     /* Just ignore, lol */
@@ -388,7 +388,7 @@ static int send_data(struct server *server, struct client *c)
         {
             if(c->inbuf[0] == 0x03)
             {
-                fprintf(stderr, "client %i pressed C-c\n", c->fd);
+                fprintf(stderr, "[%i] pressed C-c\n", c->fd);
                 return -1; /* User requested to quit */
             }
 
@@ -424,7 +424,7 @@ static int send_data(struct server *server, struct client *c)
                 ret = 0;
             else
             {
-                fprintf(stderr, "client %i failed (%s)\n",
+                fprintf(stderr, "[%i] failed (%s)\n",
                         c->fd, strerror(errno));
                 return -1;
             }
@@ -476,7 +476,7 @@ static int send_data(struct server *server, struct client *c)
             ret = 0;
         else
         {
-            fprintf(stderr, "client %i failed (%s)\n", c->fd, strerror(errno));
+            fprintf(stderr, "[%i] failed (%s)\n", c->fd, strerror(errno));
             return -1;
         }
     }
@@ -508,7 +508,7 @@ static int send_data(struct server *server, struct client *c)
             ret = 0;
         else
         {
-            fprintf(stderr, "client %i failed (%s)\n", c->fd, strerror(errno));
+            fprintf(stderr, "[%i] failed (%s)\n", c->fd, strerror(errno));
             return -1;
         }
     }
