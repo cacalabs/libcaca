@@ -3,7 +3,7 @@
  *  Copyright (c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                All Rights Reserved
  *
- *  $Id: $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the Do What The Fuck You Want To
