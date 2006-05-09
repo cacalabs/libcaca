@@ -295,7 +295,7 @@ double sqrt(double x)
     for(i = 0; i < 10; i++)
         ret = (ret * ret + x) / (ret * 2.0);
 
-    return (double)ret;
+    return ret;
 }
 
 #endif /* __KERNEL__ */
