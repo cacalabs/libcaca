@@ -319,7 +319,11 @@ static void export_ansi(cucul_canvas_t *cv, cucul_buffer_t *ex)
             prevbg = bg;
         }
 
-        if(cv->width != 80)
+        if(cv->width == 80)
+        {
+            cur += sprintf(cur, "\033[s\n\033[u");
+        }
+        else
         {
             cur += sprintf(cur, "\033[0m\r\n");
             prevfg = -1;
