@@ -347,8 +347,8 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
             {
             case 'f': /* CUP - Cursor Position */
             case 'H': /* HVP - Character And Line Position */
-                x = (argc > 1) ? argv[1] - 1 : 0;
-                y = (argc > 0) ? argv[0] - 1 : 0;
+                x = (argc > 1 && argv[1] > 0) ? argv[1] - 1 : 0;
+                y = (argc > 0 && argv[0] > 0) ? argv[0] - 1 : 0;
                 break;
             case 'A': /* CUU - Cursor Up */
                 y -= argc ? argv[0] : 1;
@@ -370,7 +370,7 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
                 save_x = x;
                 save_y = y;
                 break;
-            case 'u': /* Private (reload cursor positin) */
+            case 'u': /* Private (reload cursor position) */
                 x = save_x;
                 y = save_y;
                 break;
