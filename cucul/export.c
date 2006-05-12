@@ -587,6 +587,7 @@ static void export_ps(cucul_canvas_t *cv, cucul_buffer_t *ex)
 
     /* Header */
     cur += sprintf(cur, "%s", ps_header);
+    cur += sprintf(cur, "0 %d translate\n", cv->height);
 
     /* Background, drawn using csquare macro defined in header */
     for(y = cv->height; y--; )
@@ -608,6 +609,7 @@ static void export_ps(cucul_canvas_t *cv, cucul_buffer_t *ex)
     }
 
     cur += sprintf(cur, "grestore\n"); /* Restore transformation matrix */
+    cur += sprintf(cur, "0 %d translate\n", cv->height*10);
 
     for(y = cv->height; y--; )
     {
