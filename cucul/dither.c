@@ -88,19 +88,21 @@ static int const rgb_weight[] =
 };
 
 /* List of glyphs */
-static char const * ascii_glyphs[] =
+static uint32_t ascii_glyphs[] =
 {
-    " ", ".", ":", ";", "t", "%", "S", "X", "@", "8", "?"
+    ' ', '.', ':', ';', 't', '%', 'S', 'X', '@', '8', '?'
 };
 
-static char const * shades_glyphs[] =
+static uint32_t shades_glyphs[] =
 {
-    " ", ":", "░", "▒", "?"
+    /* ' '. '·', '░', '▒', '?' */
+    ' ', 0xb7, 0x2591, 0x2592, '?'
 };
 
-static char const * blocks_glyphs[] =
+static uint32_t blocks_glyphs[] =
 {
-    " ", "▘", "▚", "?"
+    /* ' ', '▘', '▚', '?' */
+    ' ', 0x2598, 0x259a, '?'
 };
 
 #if !defined(_DOXYGEN_SKIP_ME)
@@ -134,7 +136,7 @@ struct cucul_dither
     enum color_mode color_mode;
 
     /* Glyphs used for rendering */
-    char const * const * glyphs;
+    uint32_t const * glyphs;
     unsigned glyph_count;
 
     /* Current dithering method */
@@ -875,7 +877,7 @@ int cucul_dither_bitmap(cucul_canvas_t *cv, int x, int y, int w, int h,
         int error[3];
 
         unsigned int outfg = 0, outbg = 0;
-        char const *outch;
+        uint32_t outch;
 
         rgba[0] = rgba[1] = rgba[2] = rgba[3] = 0;
 
@@ -1059,7 +1061,7 @@ int cucul_dither_bitmap(cucul_canvas_t *cv, int x, int y, int w, int h,
 
         /* Now output the character */
         cucul_set_color(cv, outfg, outbg);
-        cucul_putstr(cv, x, y, outch);
+        _cucul_putchar32(cv, x, y, outch);
 
        d->increment_dither();
     }
