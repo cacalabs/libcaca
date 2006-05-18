@@ -22,7 +22,6 @@
 #include <stdlib.h>
 
 #include "cucul.h"
-#include "cucul_internals.h"
 
 #define WIDTH 64
 
