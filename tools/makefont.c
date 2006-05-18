@@ -33,9 +33,14 @@
 #include <pango/pango.h>
 #include <pango/pangoft2.h>
 
+/* Split our big strings into chunks of 480 characters, because it is
+ * the multiple of 32 directly below 509, which is the maximum allowed
+ * string size in C89. */
+#define STRING_CHUNKS 480
+
 /* This list is built so that it includes all of ASCII, Latin-1, CP-437,
  * and the UTF-8 glyphs necessary for canvas rotation and mirroring. */
-static int const blocklist[] =
+static unsigned int const blocklist[] =
 {
     0x0000, 0x0080, /* Basic latin: A, B, C, a, b, c */
     0x0080, 0x0100, /* Latin-1 Supplement: Ä, Ç, å, ß */
@@ -69,6 +74,9 @@ static int printf_hex(char const *, uint8_t *, int);
 static int printf_u32(char const *, uint32_t);
 static int printf_u16(char const *, uint16_t);
 
+/* Counter for written bytes */
+static int written = 0;
+
 int main(int argc, char *argv[])
 {
     PangoContext *cx;
@@ -78,8 +86,8 @@ int main(int argc, char *argv[])
     PangoRectangle r;
 
     FT_Bitmap img;
-    int width, height, b, i, blocks, glyphs;
-    unsigned int n, index, glyph_size, control_size, data_size;
+    int width, height, blocks, glyphs;
+    unsigned int n, b, i, index, glyph_size, control_size, data_size;
     uint8_t *glyph_data;
     struct glyph *gtab;
 
@@ -165,11 +173,19 @@ int main(int argc, char *argv[])
 
     printf("static unsigned int const %s_size = %i;\n",
            prefix, 8 + control_size + data_size);
-    printf("static unsigned char const %s_data[] =\n", prefix);
+    printf("static struct {\n");
+    printf("char ");
+    for(i = 0; (i + 1) * STRING_CHUNKS < 8 + control_size + data_size; i++)
+        printf("d%x[%i],%c", i, STRING_CHUNKS, (i % 6) == 5 ? '\n' : ' ');
+    printf("d%x[%i];\n", i, 8 + control_size + data_size - i * STRING_CHUNKS);
+    printf("} %s_data = {\n", prefix);
+    printf("\n");
 
     printf("/* file: */\n");
     printf("\"CACA\" /* caca_header */\n");
+    written += 4;
     printf("\"FONT\" /* caca_file_type */\n");
+    written += 4;
     printf("\n");
 
     printf("/* font_header: */\n");
@@ -290,7 +306,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    printf(";\n");
+    printf("};\n");
 
     free(img.buffer);
     free(gtab);
@@ -413,6 +429,14 @@ static int printf_hex(char const *fmt, uint8_t *data, int bytes)
     while(bytes--)
     {
         uint8_t ch = *data++;
+
+        if(written == STRING_CHUNKS)
+        {
+            parser += sprintf(parser, "\", \"");
+            written = 0;
+            rewind = 0;
+        }
+
         if(ch == '\\' || ch == '"')
         {
             parser -= rewind;
@@ -430,6 +454,8 @@ static int printf_hex(char const *fmt, uint8_t *data, int bytes)
             parser += sprintf(parser, "\\%.03o", ch);
             rewind = ch ? 0 : 2;
         }
+
+        written++;
     }
 
     parser -= rewind;
