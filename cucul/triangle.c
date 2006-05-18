@@ -141,7 +141,7 @@ int cucul_fill_triangle(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
         if(xb > xmax) xb = xmax;
 
         for(x = xa; x <= xb; x++)
-            _cucul_putchar32(cv, x, y, ch);
+            cucul_putchar(cv, x, y, ch);
     }
 
     return 0;

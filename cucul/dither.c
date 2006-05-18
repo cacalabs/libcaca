@@ -83,7 +83,7 @@ static int const rgb_palette[] =
 
 static int const rgb_weight[] =
 {
-    //2, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 2
+    /* 2, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 2 */
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 };
 
@@ -114,7 +114,7 @@ enum color_mode
     COLOR_MODE_16,
     COLOR_MODE_FULLGRAY,
     COLOR_MODE_FULL8,
-    COLOR_MODE_FULL16,
+    COLOR_MODE_FULL16
 };
 
 struct cucul_dither
@@ -1061,7 +1061,7 @@ int cucul_dither_bitmap(cucul_canvas_t *cv, int x, int y, int w, int h,
 
         /* Now output the character */
         cucul_set_color(cv, outfg, outbg);
-        _cucul_putchar32(cv, x, y, outch);
+        cucul_putchar(cv, x, y, outch);
 
        d->increment_dither();
     }

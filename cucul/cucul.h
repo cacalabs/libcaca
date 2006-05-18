@@ -100,7 +100,7 @@ int cucul_free_buffer(cucul_buffer_t *);
 int cucul_set_color(cucul_canvas_t *, unsigned char, unsigned char);
 int cucul_set_truecolor(cucul_canvas_t *, unsigned int, unsigned int);
 char const *cucul_get_color_name(unsigned int);
-int cucul_putchar(cucul_canvas_t *, int, int, char);
+int cucul_putchar(cucul_canvas_t *, int, int, unsigned long int);
 int cucul_putstr(cucul_canvas_t *, int, int, char const *);
 int cucul_printf(cucul_canvas_t *, int, int, char const *, ...);
 int cucul_clear_canvas(cucul_canvas_t *);

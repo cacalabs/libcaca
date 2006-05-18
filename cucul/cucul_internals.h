@@ -52,7 +52,6 @@ extern int _cucul_end_dither(void);
 
 /* Canvas functions */
 extern int _cucul_set_canvas_size(cucul_canvas_t *, unsigned int, unsigned int);
-extern void _cucul_putchar32(cucul_canvas_t *, int, int, uint32_t);
 
 /* Charset functions */
 extern unsigned int _cucul_strlen_utf8(char const *);

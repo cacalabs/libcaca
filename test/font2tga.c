@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
     {
         for(j = blocklist[i]; j < blocklist[i + 1]; j++)
         {
-            _cucul_putchar32(cv, x, y, j);
+            cucul_putchar(cv, x, y, j);
 
             if(++x == WIDTH)
             {

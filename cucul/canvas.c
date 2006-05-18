@@ -41,14 +41,16 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
-/** \brief Print an ASCII character.
+/** \brief Print an ASCII or Unicode character.
  *
- *  This function prints an ASCII character at the given coordinates, using
- *  the default foreground and background values. If the coordinates are
- *  outside the canvas boundaries, nothing is printed. If the character
- *  value is a non-printable character or is outside the ASCII range, it is
- *  replaced with a space. To print a sequence of bytes forming an UTF-8
- *  character, use cucul_putstr() instead.
+ *  This function prints an ASCII or Unicode character at the given
+ *  coordinates, using the default foreground and background values.
+ *
+ *  If the coordinates are outside the canvas boundaries, nothing is printed.
+ *  If the character value is a non-printable character or is outside the
+ *  UTF-32 range, it is replaced with a space. To print a sequence of bytes
+ *  forming an UTF-8 character instead of an UTF-32 character, use the
+ *  cucul_putstr() function instead.
  *
  *  This function never fails.
  *
@@ -58,12 +60,12 @@
  *  \param ch The character to print.
  *  \return This function always returns 0.
  */
-int cucul_putchar(cucul_canvas_t *cv, int x, int y, char ch)
+int cucul_putchar(cucul_canvas_t *cv, int x, int y, unsigned long int ch)
 {
     if(x < 0 || x >= (int)cv->width || y < 0 || y >= (int)cv->height)
         return 0;
 
-    if((unsigned char)ch < 0x20 || (unsigned char)ch > 0x7f)
+    if((unsigned char)ch < 0x20)
         ch = 0x20;
 
     cv->chars[x + y * cv->width] = ch;
@@ -258,19 +260,5 @@ int cucul_blit(cucul_canvas_t *dst, int x, int y,
     }
 
     return 0;
-}
-
-/*
- * XXX: The following functions are not exported
- */
-
-void _cucul_putchar32(cucul_canvas_t *cv, int x, int y, uint32_t ch)
-{
-    if(x < 0 || x >= (int)cv->width ||
-       y < 0 || y >= (int)cv->height)
-        return;
-
-    cv->chars[x + y * cv->width] = ch;
-    cv->attr[x + y * cv->width] = (cv->bgcolor << 16) | cv->fgcolor;
 }
 
