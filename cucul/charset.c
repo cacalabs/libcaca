@@ -92,6 +92,17 @@ static uint32_t const cp437_lookup2[] =
     0xb0, 0x2219, 0xb7, 0x221a, 0x207f, 0xb2, 0x25a0, 0xa0
 };
 
+/** \brief Convert a UTF-8 character to UTF-32.
+ *
+ *  This function converts a UTF-8 character read from a string and returns
+ *  its value in the UTF-32 character set.
+ *
+ *  This function never fails, but its behaviour with illegal UTF-8 sequences
+ *  is undefined.
+ *
+ *  \param s A string containing the UTF-8 character.
+ *  \return The corresponding UTF-32 character.
+ */
 unsigned long int cucul_utf8_to_utf32(char const *s)
 {
     int bytes = trailing[(int)(unsigned char)*s];
@@ -111,6 +122,19 @@ unsigned long int cucul_utf8_to_utf32(char const *s)
     return ret;
 }
 
+/** \brief Convert a UTF-32 character to UTF-8.
+ *
+ *  This function converts a UTF-32 character read from a string and writes
+ *  its value in the UTF-8 character set into the given buffer.
+ *
+ *  This function never fails, but its behaviour with illegal UTF-32 characters
+ *  is undefined.
+ *
+ *  \param buf A pointer to a character buffer where the UTF-8 sequence will
+ *  be written.
+ *  \param ch The UTF-32 character.
+ *  \return The number of bytes written.
+ */
 unsigned int cucul_utf32_to_utf8(char *buf, unsigned long int ch)
 {
     static const uint8_t mark[7] =
@@ -141,6 +165,17 @@ unsigned int cucul_utf32_to_utf8(char *buf, unsigned long int ch)
     return bytes;
 }
 
+/** \brief Convert a UTF-32 character to CP437.
+ *
+ *  This function converts a UTF-32 character read from a string and returns
+ *  its value in the CP437 character set, or "?" if the character has no
+ *  equivalent.
+ *
+ *  This function never fails.
+ *
+ *  \param ch The UTF-32 character.
+ *  \return The corresponding CP437 character, or "?" if not representable.
+ */
 unsigned char cucul_utf32_to_cp437(unsigned long int ch)
 {
     unsigned int i;
@@ -162,6 +197,17 @@ unsigned char cucul_utf32_to_cp437(unsigned long int ch)
     return '?';
 }
 
+/** \brief Convert a CP437 character to UTF-32.
+ *
+ *  This function converts a CP437 character read from a string and returns
+ *  its value in the UTF-32 character set, or zero if the character is a
+ *  CP437 control character.
+ *
+ *  This function never fails.
+ *
+ *  \param ch The CP437 character.
+ *  \return The corresponding UTF-32 character, or zero if not representable.
+ */
 unsigned long int cucul_cp437_to_utf32(unsigned char ch)
 {
     if(ch > 0x7f)
@@ -175,6 +221,10 @@ unsigned long int cucul_cp437_to_utf32(unsigned char ch)
 
     return 0x00000000;
 }
+
+/*
+ * XXX: The following functions are local.
+ */
 
 unsigned int _cucul_strlen_utf8(char const *s)
 {
