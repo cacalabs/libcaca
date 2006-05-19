@@ -8,7 +8,6 @@
 
   \subsection indep API-independent stuff
 
-  - support for transparency (CUCUL_COLOR_TRANSPARENT)
   - Brightness, contrast support for bitmaps (the functions are here, we
      just need to fill them)
   - Error distribution dithering
@@ -21,10 +20,8 @@
      could make them smoother by using ' ` , etc).
   - support for double width glyphs (also needs some libcaca changes)
   - better mask support in cucul_blit()
-  - factor internal Unicode character conversions, especially UCS4 -> UTF-8
   - optimise exporters so that they do not allocate huge blocks of memory
      when they only need half of it.
-  - ASCII/ANSI art loading functions (maybe load them as sprites)
 
 
 \section libcaca libcaca
@@ -33,7 +30,6 @@
 
   - text edit widget with cursor support (I'm unsure about this, it
      seems pretty difficult)
-  - rename caca_set_delay into something like caca_set_rendertime.
 
   \subsection indep API-independent stuff
 
@@ -85,7 +81,7 @@
 
   \section cacadraw cacadraw
 
-  - Does not exist yet, but I want it. A modern ANSI editor that can also
+  - Only a skeleton exists yet. A modern ANSI editor that can also
      do Unicode.
 
   \section cuculet CUCUlet
