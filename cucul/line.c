@@ -61,7 +61,7 @@ int cucul_draw_line(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
     s.y1 = y1;
     s.x2 = x2;
     s.y2 = y2;
-    s.ch = _cucul_utf8_to_utf32(str);
+    s.ch = cucul_utf8_to_utf32(str);
     s.draw = draw_solid_line;
     clip_line(cv, &s);
 
@@ -89,7 +89,7 @@ int cucul_draw_polyline(cucul_canvas_t *cv, int const x[], int const y[],
 {
     int i;
     struct line s;
-    s.ch = _cucul_utf8_to_utf32(str);
+    s.ch = cucul_utf8_to_utf32(str);
     s.draw = draw_solid_line;
 
     for(i = 0; i < n; i++)

@@ -116,7 +116,7 @@ int cucul_putstr(cucul_canvas_t *cv, int x, int y, char const *s)
 
     while(len)
     {
-        *chars++ = _cucul_utf8_to_utf32(s);
+        *chars++ = cucul_utf8_to_utf32(s);
         *attr++ = (cv->bgcolor << 16) | cv->fgcolor;
 
         s = _cucul_skip_utf8(s, 1);

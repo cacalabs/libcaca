@@ -56,10 +56,6 @@ extern int _cucul_set_canvas_size(cucul_canvas_t *, unsigned int, unsigned int);
 /* Charset functions */
 extern unsigned int _cucul_strlen_utf8(char const *);
 extern char const *_cucul_skip_utf8(char const *, unsigned int);
-extern uint32_t _cucul_utf8_to_utf32(char const *);
-extern unsigned int _cucul_utf32_to_utf8(void *, uint32_t);
-extern uint8_t _cucul_utf32_to_cp437(uint32_t);
-extern uint32_t _cucul_cp437_to_utf32(uint8_t);
 
 /* Colour functions */
 uint8_t _cucul_argb32_to_ansi8(uint32_t);

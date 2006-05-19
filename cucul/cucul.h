@@ -118,6 +118,17 @@ int cucul_flop(cucul_canvas_t *);
 int cucul_rotate(cucul_canvas_t *);
 /*  @} */
 
+/** \defgroup charset libcucul character set conversions
+ *
+ *  These functions perform conversions between usual character sets.
+ *
+ *  @{ */
+extern unsigned long int cucul_utf8_to_utf32(char const *);
+extern unsigned int cucul_utf32_to_utf8(char *, unsigned long int);
+extern unsigned char cucul_utf32_to_cp437(unsigned long int);
+extern unsigned long int cucul_cp437_to_utf32(unsigned char);
+/*  @} */
+
 /** \defgroup prim libcucul primitives drawing
  *
  *  These functions provide routines for primitive drawing, such as lines,

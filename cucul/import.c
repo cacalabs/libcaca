@@ -405,7 +405,7 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
             cucul_set_canvas_size(cv, width, height = y + 1);
 
         /* Now paste our character */
-        cucul_putchar(cv, x, y, _cucul_cp437_to_utf32(buffer[i]));
+        cucul_putchar(cv, x, y, cucul_cp437_to_utf32(buffer[i]));
         x++;
     }
 

@@ -490,7 +490,7 @@ static void ncurses_write_utf32(uint32_t ch)
     char buf[10];
     int bytes;
 
-    bytes = _cucul_utf32_to_utf8(buf, ch);
+    bytes = cucul_utf32_to_utf8(buf, ch);
     buf[bytes] = '\0';
     addstr(buf);
 #else

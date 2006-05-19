@@ -26,6 +26,10 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
+/*
+ * UTF-8 handling
+ */
+
 static char const trailing[256] =
 {
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -43,94 +47,6 @@ static uint32_t const offsets[6] =
     0x00000000UL, 0x00003080UL, 0x000E2080UL,
     0x03C82080UL, 0xFA082080UL, 0x82082080UL
 };
-
-unsigned int _cucul_strlen_utf8(char const *s)
-{
-    int len = 0;
-    char const *parser = s;
-
-    while(*parser)
-    {
-        int i;
-        int bytes = 1 + trailing[(int)(unsigned char)*parser];
-
-        for(i = 1; i < bytes; i++)
-            if(!parser[i])
-                return len;
-        parser += bytes;
-        len++;
-    }
-
-    return len;
-}
-
-char const *_cucul_skip_utf8(char const *s, unsigned int x)
-{
-    char const *parser = s;
-
-    while(x)
-    {
-        int i;
-        int bytes = 1 + trailing[(int)(unsigned char)*parser];
-
-        for(i = 1; i < bytes; i++)
-            if(!parser[i])
-                return parser;
-        parser += bytes;
-        x--;
-    }
-
-    return parser;
-}
-
-uint32_t _cucul_utf8_to_utf32(char const *s)
-{
-    int bytes = trailing[(int)(unsigned char)*s];
-    uint32_t ret = 0;
-
-    switch(bytes)
-    {
-        /* FIXME: do something for invalid sequences (4 and 5) */
-        case 3: ret += (uint8_t)*s++; ret <<= 6;
-        case 2: ret += (uint8_t)*s++; ret <<= 6;
-        case 1: ret += (uint8_t)*s++; ret <<= 6;
-        case 0: ret += (uint8_t)*s++;
-    }
-
-    ret -= offsets[bytes];
-
-    return ret;
-}
-
-unsigned int _cucul_utf32_to_utf8(void *buf, uint32_t ch)
-{
-    static const uint8_t mark[7] =
-    {
-        0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC
-    };
-
-    char *parser = buf;
-    int bytes;
-
-    if(ch < 0x80)
-    {
-        *parser++ = ch;
-        return 1;
-    }
-
-    bytes = (ch < 0x800) ? 2 : (ch < 0x10000) ? 3 : 4;
-    parser += bytes;
-
-    switch(bytes)
-    {
-        case 4: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
-        case 3: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
-        case 2: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
-    }
-    *--parser = ch | mark[bytes];
-
-    return bytes;
-}
 
 /*
  * CP437 handling
@@ -176,7 +92,56 @@ static uint32_t const cp437_lookup2[] =
     0xb0, 0x2219, 0xb7, 0x221a, 0x207f, 0xb2, 0x25a0, 0xa0
 };
 
-uint8_t _cucul_utf32_to_cp437(uint32_t ch)
+unsigned long int cucul_utf8_to_utf32(char const *s)
+{
+    int bytes = trailing[(int)(unsigned char)*s];
+    uint32_t ret = 0;
+
+    switch(bytes)
+    {
+        /* FIXME: do something for invalid sequences (4 and 5) */
+        case 3: ret += (uint8_t)*s++; ret <<= 6;
+        case 2: ret += (uint8_t)*s++; ret <<= 6;
+        case 1: ret += (uint8_t)*s++; ret <<= 6;
+        case 0: ret += (uint8_t)*s++;
+    }
+
+    ret -= offsets[bytes];
+
+    return ret;
+}
+
+unsigned int cucul_utf32_to_utf8(char *buf, unsigned long int ch)
+{
+    static const uint8_t mark[7] =
+    {
+        0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC
+    };
+
+    char *parser = buf;
+    int bytes;
+
+    if(ch < 0x80)
+    {
+        *parser++ = ch;
+        return 1;
+    }
+
+    bytes = (ch < 0x800) ? 2 : (ch < 0x10000) ? 3 : 4;
+    parser += bytes;
+
+    switch(bytes)
+    {
+        case 4: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
+        case 3: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
+        case 2: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
+    }
+    *--parser = ch | mark[bytes];
+
+    return bytes;
+}
+
+unsigned char cucul_utf32_to_cp437(unsigned long int ch)
 {
     unsigned int i;
 
@@ -197,7 +162,7 @@ uint8_t _cucul_utf32_to_cp437(uint32_t ch)
     return '?';
 }
 
-uint32_t _cucul_cp437_to_utf32(uint8_t ch)
+unsigned long int cucul_cp437_to_utf32(unsigned char ch)
 {
     if(ch > 0x7f)
         return cp437_lookup2[ch - 0x7f];
@@ -209,5 +174,44 @@ uint32_t _cucul_cp437_to_utf32(uint8_t ch)
         return cp437_lookup1[ch - 0x01];
 
     return 0x00000000;
+}
+
+unsigned int _cucul_strlen_utf8(char const *s)
+{
+    int len = 0;
+    char const *parser = s;
+
+    while(*parser)
+    {
+        int i;
+        int bytes = 1 + trailing[(int)(unsigned char)*parser];
+
+        for(i = 1; i < bytes; i++)
+            if(!parser[i])
+                return len;
+        parser += bytes;
+        len++;
+    }
+
+    return len;
+}
+
+char const *_cucul_skip_utf8(char const *s, unsigned int x)
+{
+    char const *parser = s;
+
+    while(x)
+    {
+        int i;
+        int bytes = 1 + trailing[(int)(unsigned char)*parser];
+
+        for(i = 1; i < bytes; i++)
+            if(!parser[i])
+                return parser;
+        parser += bytes;
+        x--;
+    }
+
+    return parser;
 }
 

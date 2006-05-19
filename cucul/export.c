@@ -249,7 +249,7 @@ static void export_utf8(cucul_canvas_t *cv, cucul_buffer_t *ex)
                                             fg - 8, bg - 8, fg - 8, bg - 8);
             }
 
-            cur += _cucul_utf32_to_utf8(cur, ch);
+            cur += cucul_utf32_to_utf8(cur, ch);
 
             prevfg = fg;
             prevbg = bg;
@@ -313,7 +313,7 @@ static void export_ansi(cucul_canvas_t *cv, cucul_buffer_t *ex)
                         cur += sprintf(cur, "5;1;3%d;4%dm", fg - 8, bg - 8);
             }
 
-            *cur++ = _cucul_utf32_to_cp437(ch);
+            *cur++ = cucul_utf32_to_cp437(ch);
 
             prevfg = fg;
             prevbg = bg;
@@ -715,7 +715,7 @@ static void export_svg(cucul_canvas_t *cv, cucul_buffer_t *ex)
             if(ch < 0x00000020)
                 *cur++ = '?';
             else if(ch > 0x0000007f)
-                cur += _cucul_utf32_to_utf8(cur, ch);
+                cur += cucul_utf32_to_utf8(cur, ch);
             else switch((uint8_t)ch)
             {
                 case '>': cur += sprintf(cur, "&gt;"); break;

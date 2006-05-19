@@ -28,7 +28,6 @@
 #endif
 
 #include "cucul.h"
-#include "cucul_internals.h"
 
 #include <pango/pango.h>
 #include <pango/pangoft2.h>
@@ -221,7 +220,7 @@ int main(int argc, char *argv[])
             unsigned int k;
 
             gtab[n].unicode = i;
-            bytes = _cucul_utf32_to_utf8(gtab[n].buf, gtab[n].unicode);
+            bytes = cucul_utf32_to_utf8(gtab[n].buf, gtab[n].unicode);
             gtab[n].buf[bytes] = '\0';
 
             /* Render glyph on a bitmap */

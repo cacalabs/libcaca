@@ -43,7 +43,7 @@ static void ellipsepoints(cucul_canvas_t *, int, int, int, int, uint32_t);
 int cucul_draw_circle(cucul_canvas_t *cv, int x, int y, int r, char const *str)
 {
     int test, dx, dy;
-    uint32_t ch = _cucul_utf8_to_utf32(str);
+    uint32_t ch = cucul_utf8_to_utf32(str);
 
     /* Optimized Bresenham. Kick ass. */
     for(test = 0, dx = 0, dy = r ; dx <= dy ; dx++)
@@ -138,7 +138,7 @@ int cucul_draw_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b,
     int x = 0;
     int y = b;
     int d1 = b*b - (a*a*b) + (a*a/4);
-    uint32_t ch = _cucul_utf8_to_utf32(str);
+    uint32_t ch = cucul_utf8_to_utf32(str);
 
     ellipsepoints(cv, xo, yo, x, y, ch);
 
