@@ -24,9 +24,9 @@ PyMODINIT_FUNC initcaca(void);
 static PyObject *
 pycaca_init(PyObject *self, PyObject *args);
 static PyObject *
-pycaca_set_delay(PyObject *self, PyObject *args);
+pycaca_set_display_time(PyObject *self, PyObject *args);
 static PyObject *
-pycaca_get_rendertime(PyObject *self, PyObject *args);
+pycaca_get_display_time(PyObject *self, PyObject *args);
 static PyObject *
 pycaca_get_width(PyObject *self, PyObject *args);
 static PyObject *

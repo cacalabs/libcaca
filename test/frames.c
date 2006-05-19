@@ -42,7 +42,7 @@ int main(void)
     cucul_set_canvas_size(cv, 41, 16);
 
     dp = caca_create_display(cv);
-    caca_set_delay(dp, 50000);
+    caca_set_display_time(dp, 50000);
 
     /* Fill the first 16 frames with a different colour */
     for(frame = 0; frame < 16; frame++)

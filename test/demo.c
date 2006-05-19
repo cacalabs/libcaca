@@ -55,7 +55,7 @@ int main(int argc, char **argv)
     if(!dp)
         return 1;
 
-    caca_set_delay(dp, 40000);
+    caca_set_display_time(dp, 40000);
 
     /* Initialize data */
 #if 0
@@ -187,8 +187,8 @@ int main(int argc, char **argv)
             cucul_draw_thin_box(cv, 1, 1, cucul_get_canvas_width(cv) - 2,
                                           cucul_get_canvas_height(cv) - 2);
             cucul_printf(cv, 4, 1, "[%i.%i fps]----",
-                         1000000 / caca_get_rendertime(dp),
-                         (10000000 / caca_get_rendertime(dp)) % 10);
+                         1000000 / caca_get_display_time(dp),
+                         (10000000 / caca_get_display_time(dp)) % 10);
             caca_refresh_display(dp);
         }
     }

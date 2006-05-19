@@ -15,8 +15,8 @@
 
 static PyMethodDef CacaMethods[] = {
     {"init", pycaca_init, METH_VARARGS, "Init libcaca"},
-    {"set_delay", pycaca_set_delay, METH_VARARGS, "Set delay"},
-    {"get_rendertime", pycaca_get_rendertime, METH_NOARGS, "Get render time"},
+    {"set_display_time", pycaca_set_display_time, METH_VARARGS, "Set display time"},
+    {"get_display_time", pycaca_get_display_time, METH_NOARGS, "Get render time"},
     {"get_width", pycaca_get_width, METH_NOARGS, "Get width"},
     {"get_height", pycaca_get_height, METH_NOARGS, "Get Height"},
     {"set_size", pycaca_set_size, METH_VARARGS, "Set size"},
@@ -196,18 +196,18 @@ pycaca_init(PyObject *self, PyObject *args)
 }
 
 static PyObject *
-pycaca_set_delay(PyObject *self, PyObject *args)
+pycaca_set_display_time(PyObject *self, PyObject *args)
 {
   int value=0;
   if (!PyArg_ParseTuple(args, "i", &value))
-  caca_set_delay(value);
+  caca_set_display_time(value);
   return Py_BuildValue("i", 1); /*FIXME*/
 }
 
 static PyObject *
-pycaca_get_rendertime(PyObject *self, PyObject *args)
+pycaca_get_display_time(PyObject *self, PyObject *args)
 {
-  int ret = caca_get_rendertime();
+  int ret = caca_get_display_time();
   return Py_BuildValue("i", ret);
 }
 

@@ -54,7 +54,7 @@ int main (int argc, char **argv)
     if(!dp)
         return 1;
 
-    caca_set_delay(dp, 20000);
+    caca_set_display_time(dp, 20000);
 
     c2 = cucul_create_canvas(cucul_get_canvas_width(cv),
                              cucul_get_canvas_height(cv));

@@ -50,7 +50,7 @@ int main (int argc, char **argv)
     if(!dp)
         return 1;
 
-    caca_set_delay(dp, 20000);
+    caca_set_display_time(dp, 20000);
 
     /* Fill various tables */
     for(i = 0 ; i < 256; i++)

@@ -28,7 +28,7 @@
  *  If libcaca runs in a window, try to change its title. This works with
  *  the X11 and Win32 drivers.
  *
- *  \param dp The libcaca graphical context.
+ *  \param dp The libcaca display context.
  *  \param title The desired display title.
  *  \return 0 upon success, a non-zero value if an error occurs.
  */
@@ -44,7 +44,7 @@ int caca_set_display_title(caca_display_t *dp, char const *title)
  *  or if there is no way to know the font size, most drivers will assume a
  *  6x10 font is being used. Note that the units are not necessarily pixels.
  *
- *  \param dp The libcaca graphical context.
+ *  \param dp The libcaca display context.
  *  \return The display width.
  */
 unsigned int caca_get_display_width(caca_display_t *dp)
@@ -59,7 +59,7 @@ unsigned int caca_get_display_width(caca_display_t *dp)
  *  or if there is no way to know the font size, assume a 6x10 font is being
  *  used. Note that the units are not necessarily pixels.
  *
- *  \param dp The libcaca graphical context.
+ *  \param dp The libcaca display context.
  *  \return The display height.
  */
 unsigned int caca_get_display_height(caca_display_t *dp)
@@ -76,26 +76,26 @@ unsigned int caca_get_display_height(caca_display_t *dp)
  *  If the argument is zero, constant framerate is disabled. This is the
  *  default behaviour.
  *
- *  \param dp The libcaca graphical context.
+ *  \param dp The libcaca display context.
  *  \param usec The refresh delay in microseconds.
  */
-void caca_set_delay(caca_display_t *dp, unsigned int usec)
+void caca_set_display_time(caca_display_t *dp, unsigned int usec)
 {
     dp->delay = usec;
 }
 
-/** \brief Get the average rendering time.
+/** \brief Get the display's average rendering time.
  *
  *  This function returns the average rendering time, which is the average
  *  measured time between two caca_refresh_display() calls, in microseconds. If
- *  constant framerate was activated by calling caca_set_delay(), the average
- *  rendering time will not be considerably shorter than the requested delay
- *  even if the real rendering time was shorter.
+ *  constant framerate was activated by calling caca_set_display_time(), the
+ *  average rendering time will not be considerably shorter than the requested
+ *  delay even if the real rendering time was shorter.
  *
- *  \param dp The libcaca graphical context.
+ *  \param dp The libcaca display context.
  *  \return The render time in microseconds.
  */
-unsigned int caca_get_rendertime(caca_display_t *dp)
+unsigned int caca_get_display_time(caca_display_t *dp)
 {
     return dp->rendertime;
 }
@@ -106,13 +106,13 @@ unsigned int caca_get_rendertime(caca_display_t *dp)
  *  screen. Nothing will show on the screen until caca_refresh_display() is
  *  called.
  *
- *  If caca_set_delay() was called with a non-zero value,
+ *  If caca_set_display_time() was called with a non-zero value,
  *  caca_refresh_display() will use that value to achieve constant
- *  framerate: if two consecutive calls to caca_refresh_display() are
- *  within a time range shorter than the value set with caca_set_delay(),
+ *  framerate: if two consecutive calls to caca_refresh_display() are within
+ *  a time range shorter than the value set with caca_set_display_time(),
  *  the second call will be delayed before performing the screen refresh.
  *
- *  \param dp The libcaca graphical context.
+ *  \param dp The libcaca display context.
  */
 void caca_refresh_display(caca_display_t *dp)
 {
@@ -154,7 +154,7 @@ void caca_refresh_display(caca_display_t *dp)
  *  This function shows or hides the mouse pointer, for devices that
  *  support it.
  *
- *  \param dp The libcaca graphical context.
+ *  \param dp The libcaca display context.
  *  \param flag 0 hides the pointer, 1 shows the system's default pointer
  *              (usually an arrow). Other values are reserved for future use.
  */

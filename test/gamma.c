@@ -55,7 +55,7 @@ int main(void)
                                0x00ff0000, 0x0000ff00, 0x000000ff, 0x0);
     right = cucul_create_dither(32, 256, 4, 4 * 256,
                                 0x00ff0000, 0x0000ff00, 0x000000ff, 0x0);
-    caca_set_delay(dp, 20000);
+    caca_set_display_time(dp, 20000);
 
     for(x = 0; ; x++)
     {

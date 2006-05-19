@@ -113,7 +113,7 @@ initialize (void)
       printf ("Failed to initialize libcaca\n");
       exit (1);
     }
-  caca_set_delay(dp, 10000);
+  caca_set_display_time(dp, 10000);
   XSIZ = cucul_get_canvas_width(cv) * 2;
   YSIZ = cucul_get_canvas_height(cv) * 2 - 4;
 #else

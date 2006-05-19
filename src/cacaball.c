@@ -61,7 +61,7 @@ int main(int argc, char **argv)
     if(!dp)
         return 1;
 
-    caca_set_delay(dp, 20000);
+    caca_set_display_time(dp, 20000);
 
     /* Make the palette eatable by libcaca */
     for(p = 0; p < 256; p++)

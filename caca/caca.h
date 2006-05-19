@@ -151,9 +151,9 @@ enum caca_key
  *  @{ */
 caca_display_t * caca_create_display(cucul_canvas_t *);
 void caca_free_display(caca_display_t *);
-void caca_set_delay(caca_display_t *, unsigned int);
 void caca_refresh_display(caca_display_t *);
-unsigned int caca_get_rendertime(caca_display_t *);
+void caca_set_display_time(caca_display_t *, unsigned int);
+unsigned int caca_get_display_time(caca_display_t *);
 unsigned int caca_get_display_width(caca_display_t *);
 unsigned int caca_get_display_height(caca_display_t *);
 int caca_set_display_title(caca_display_t *, char const *);
