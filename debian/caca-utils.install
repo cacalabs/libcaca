@@ -5,5 +5,9 @@ usr/bin/cacaview
 usr/bin/cacamoir
 usr/bin/cacaplas
 usr/bin/img2irc
-usr/share/man/man1
+usr/share/man/man1/cacaball.1.gz
+usr/share/man/man1/cacaplas.1.gz
+usr/share/man/man1/cacafire.1.gz
+usr/share/man/man1/cacamoir.1.gz
+usr/share/man/man1/cacaview.1.gz
 usr/share/libcaca
