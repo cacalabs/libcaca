@@ -163,118 +163,113 @@ static int gl_init_graphics(caca_display_t *dp)
     glEnable(GL_TEXTURE_2D);
 
     for(i = 32; i < 128; i++)
-        {
-            glGenTextures(1, (GLuint*)&dp->drv.p->id[i - 32]);
-            glBindTexture(GL_TEXTURE_2D, dp->drv.p->id[i - 32]);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8,
-                         16, 16, 0, GL_RGB, GL_UNSIGNED_BYTE, empty_texture);
-        }
+    {
+        glGenTextures(1, (GLuint*)&dp->drv.p->id[i - 32]);
+        glBindTexture(GL_TEXTURE_2D, dp->drv.p->id[i - 32]);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8,
+                     16, 16, 0, GL_RGB, GL_UNSIGNED_BYTE, empty_texture);
+    }
 
     for(i = 0; i < 8; i++)
-        {
-            glGenTextures(1, (GLuint*)&dp->drv.p->id_uni[i]);
-            glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[i]);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8,
-                         16, 16, 0, GL_RGB, GL_UNSIGNED_BYTE, empty_texture);
-        }
+    {
+        glGenTextures(1, (GLuint*)&dp->drv.p->id_uni[i]);
+        glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[i]);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8,
+                     16, 16, 0, GL_RGB, GL_UNSIGNED_BYTE, empty_texture);
+    }
 
     for(i = 32; i < 128; i++)
-        {
-            glDisable(GL_TEXTURE_2D);
-            glClear(GL_COLOR_BUFFER_BIT);
+    {
+        glDisable(GL_TEXTURE_2D);
+        glClear(GL_COLOR_BUFFER_BIT);
 
-            glColor3f(1, 1, 1);
-            glRasterPos2f(0, 15);
-            glutBitmapCharacter(GLUT_BITMAP_9_BY_15, i);
+        glColor3f(1, 1, 1);
+        glRasterPos2f(0, 15);
+        glutBitmapCharacter(GLUT_BITMAP_9_BY_15, i);
 
-            glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, dp->drv.p->id[i - 32]);
-            glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
-                             0, dp->drv.p->height - 16, 16, 16, 0);
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, dp->drv.p->id[i - 32]);
+        glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+                         0, dp->drv.p->height - 16, 16, 16, 0);
 
 #ifdef HAVE_GLUTCHECKLOOP
-            glutCheckLoop();
+        glutCheckLoop();
 #else
-            glutMainLoopEvent();
+        glutMainLoopEvent();
 #endif
-            glutSwapBuffers();
+        glutSwapBuffers();
 
-        }
+    }
+
     /* CP437 hack */
     for(i = 0; i < 8; i++)
+    {
+        glDisable(GL_TEXTURE_2D);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glColor3f(1, 1, 1);
+        glTranslatef(0.5,0.5,0);
+
+        if(i==0)                  /* 0x00002580*/
         {
-            glDisable(GL_TEXTURE_2D);
-            glClear(GL_COLOR_BUFFER_BIT);
-            glColor3f(1, 1, 1);
-            glTranslatef(0.5,0.5,0);
-
-            if(i==0)                  /* 0x00002580*/
+            glBegin(GL_QUADS);
+            glVertex2f(0,0); glVertex2f(9,0); glVertex2f(9,7); glVertex2f(0,7);
+            glEnd();
+        }
+        else if(i==1)             /* 0x00002584*/
+        {
+            glBegin(GL_QUADS);
+            glVertex2f(0,7); glVertex2f(9,7); glVertex2f(9,15); glVertex2f(0,15);
+            glEnd();
+        }
+        else if(i==2)             /* 0x00002588*/
+        {
+            glBegin(GL_QUADS);
+            glVertex2f(0,0); glVertex2f(9,0); glVertex2f(9,15); glVertex2f(0,15);
+            glEnd();
+        }
+        else if(i==3)             /* 0x0000258c*/
+        {
+            glBegin(GL_QUADS);
+            glVertex2f(0,0); glVertex2f(4,0); glVertex2f(4,15); glVertex2f(0,15);
+            glEnd();
+        }
+        else if(i==4)             /* 0x00002590*/
+        {
+            glBegin(GL_QUADS);
+            glVertex2f(4,0); glVertex2f(9,0); glVertex2f(9,15); glVertex2f(4,15);
+            glEnd();
+        }
+        else if(i>=5)             /* 0x00002591*/
+        {
+            int a, j, k = i-5;
+            for(j = dp->drv.p->font_height; j--; )
+                for(a = dp->drv.p->font_width; a--; )
                 {
-                    glBegin(GL_QUADS);
-                    glVertex2f(0,0); glVertex2f(9,0); glVertex2f(9,7); glVertex2f(0,7);
+                    if(((a + 2 * (j & 1)) & 3) > k)
+                        continue;
+
+                    glBegin(GL_POINTS);
+                    glVertex2f(a, j);
                     glEnd();
                 }
-            else if(i==1)             /* 0x00002584*/
-                {
-                    glBegin(GL_QUADS);
-                    glVertex2f(0,7); glVertex2f(9,7); glVertex2f(9,15); glVertex2f(0,15);
-                    glEnd();
-                }
-            else if(i==2)             /* 0x00002588*/
-                {
-                    glBegin(GL_QUADS);
-                    glVertex2f(0,0); glVertex2f(9,0); glVertex2f(9,15); glVertex2f(0,15);
-                    glEnd();
-                }
-            else if(i==3)             /* 0x0000258c*/
-                {
-                    glBegin(GL_QUADS);
-                    glVertex2f(0,0); glVertex2f(4,0); glVertex2f(4,15); glVertex2f(0,15);
-                    glEnd();
-                }
-            else if(i==4)             /* 0x00002590*/
-                {
-                    glBegin(GL_QUADS);
-                    glVertex2f(4,0); glVertex2f(9,0); glVertex2f(9,15); glVertex2f(4,15);
-                    glEnd();
-                }
-            else if(i>=5)             /* 0x00002591*/
-                {
-                    int a, j, k = i-5;
-                    for(j = dp->drv.p->font_height; j--; )
-                        for(a = dp->drv.p->font_width; a--; )
-                            {
-                                if(((a + 2 * (j & 1)) & 3) > k)
-                                    continue;
-
-                                glBegin(GL_POINTS);
-                                glVertex2f(a, j);
-                                glEnd();
-                            }
-                }
-
-
-
-            glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[i]);
-            glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
-                             0, dp->drv.p->height - 16, 16, 16, 0);
-#ifdef HAVE_GLUTCHECKLOOP
-            glutCheckLoop();
-#else
-            glutMainLoopEvent();
-#endif
-            glutSwapBuffers();
-            glutPostRedisplay();
-
-
         }
 
-
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[i]);
+        glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+                         0, dp->drv.p->height - 16, 16, 16, 0);
+#ifdef HAVE_GLUTCHECKLOOP
+        glutCheckLoop();
+#else
+        glutMainLoopEvent();
+#endif
+        glutSwapBuffers();
+        glutPostRedisplay();
+    }
 
     return 0;
 }
@@ -310,27 +305,27 @@ static void gl_display(caca_display_t *dp)
 
     line = 0;
     for(y = 0; y < dp->drv.p->height; y += dp->drv.p->font_height)
+    {
+        uint32_t *attr = dp->cv->attr + line * dp->cv->width;
+
+        for(x = 0; x < dp->drv.p->width; x += dp->drv.p->font_width)
         {
-            uint32_t *attr = dp->cv->attr + line * dp->cv->width;
-
-            for(x = 0; x < dp->drv.p->width; x += dp->drv.p->font_width)
-                {
-                    uint16_t bg = _cucul_argb32_to_rgb12bg(*attr++);
-                    glDisable(GL_TEXTURE_2D);
-                    glColor3b(((bg & 0xf00) >> 8) * 8,
-                              ((bg & 0x0f0) >> 4) * 8,
-                              (bg & 0x00f) * 8);
-                    glBegin(GL_QUADS);
-                    glVertex2f(x, y);
-                    glVertex2f(x + dp->drv.p->font_width, y);
-                    glVertex2f(x + dp->drv.p->font_width,
-                               y + dp->drv.p->font_height);
-                    glVertex2f(x, y + dp->drv.p->font_height);
-                    glEnd();
-                }
-
-            line++;
+            uint16_t bg = _cucul_argb32_to_rgb12bg(*attr++);
+            glDisable(GL_TEXTURE_2D);
+            glColor3b(((bg & 0xf00) >> 8) * 8,
+                      ((bg & 0x0f0) >> 4) * 8,
+                      (bg & 0x00f) * 8);
+            glBegin(GL_QUADS);
+            glVertex2f(x, y);
+            glVertex2f(x + dp->drv.p->font_width, y);
+            glVertex2f(x + dp->drv.p->font_width,
+                       y + dp->drv.p->font_height);
+            glVertex2f(x, y + dp->drv.p->font_height);
+            glEnd();
         }
+
+        line++;
+    }
 
     /* 2nd pass, avoids changing render state too much */
     glEnable(GL_BLEND);
@@ -339,70 +334,70 @@ static void gl_display(caca_display_t *dp)
 
     line = 0;
     for(y = 0; y < dp->drv.p->height; y += dp->drv.p->font_height)
+    {
+        uint32_t *attr = dp->cv->attr + line * dp->cv->width;
+        uint32_t *chars = dp->cv->chars + line * dp->cv->width;
+
+        for(x = 0; x < dp->drv.p->width; x += dp->drv.p->font_width)
         {
-            uint32_t *attr = dp->cv->attr + line * dp->cv->width;
-            uint32_t *chars = dp->cv->chars + line * dp->cv->width;
+            uint32_t cv = *chars++;
 
-            for(x = 0; x < dp->drv.p->width; x += dp->drv.p->font_width)
+            if(cv > 0x00000020 && cv < 0x00000080)
+            {
+                uint16_t fg = _cucul_argb32_to_rgb12fg(*attr);
+                glBindTexture(GL_TEXTURE_2D, dp->drv.p->id[cv - 32]);
+                glColor3b(((fg & 0xf00) >> 8) * 8,
+                          ((fg & 0x0f0) >> 4) * 8,
+                          (fg & 0x00f) * 8);
+                glBegin(GL_QUADS);
+                glTexCoord2f(0, dp->drv.p->sh);
+                glVertex2f(x, y);
+                glTexCoord2f(dp->drv.p->sw, dp->drv.p->sh);
+                glVertex2f(x + dp->drv.p->font_width, y);
+                glTexCoord2f(dp->drv.p->sw, 0);
+                glVertex2f(x + dp->drv.p->font_width,
+                           y + dp->drv.p->font_height);
+                glTexCoord2f(0, 0);
+                glVertex2f(x, y + dp->drv.p->font_height);
+                glEnd();
+            }
+            else if(cv!=' ')
+            {
+                switch(cv)
                 {
-                    uint32_t cv = *chars++;
-
-                    if(cv > 0x00000020 && cv < 0x00000080)
-                        {
-                            uint16_t fg = _cucul_argb32_to_rgb12fg(*attr);
-                            glBindTexture(GL_TEXTURE_2D, dp->drv.p->id[cv - 32]);
-                            glColor3b(((fg & 0xf00) >> 8) * 8,
-                                      ((fg & 0x0f0) >> 4) * 8,
-                                      (fg & 0x00f) * 8);
-                            glBegin(GL_QUADS);
-                            glTexCoord2f(0, dp->drv.p->sh);
-                            glVertex2f(x, y);
-                            glTexCoord2f(dp->drv.p->sw, dp->drv.p->sh);
-                            glVertex2f(x + dp->drv.p->font_width, y);
-                            glTexCoord2f(dp->drv.p->sw, 0);
-                            glVertex2f(x + dp->drv.p->font_width,
-                                       y + dp->drv.p->font_height);
-                            glTexCoord2f(0, 0);
-                            glVertex2f(x, y + dp->drv.p->font_height);
-                            glEnd();
-                        }
-                    else if(cv!=' ')
-                        {
-                            switch(cv)
-                                {
-                                case 0x00002580: glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[0]); break;
-                                case 0x00002584: glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[1]); break;
-                                case 0x00002588: glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[2]); break;
-                                case 0x0000258c: glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[3]); break;
-                                case 0x00002590: glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[4]); break;
-                                case 0x00002591: glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[5]); break;
-                                case 0x00002592: glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[6]); break;
-                                case 0x00002593: glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[7]); break;
-                                default:         glBindTexture(GL_TEXTURE_2D, dp->drv.p->id['?' - 32]); break;
-                                }
-
-                            uint16_t fg = _cucul_argb32_to_rgb12fg(*attr);
-                            glColor3b(((fg & 0xf00) >> 8) * 8,
-                                      ((fg & 0x0f0) >> 4) * 8,
-                                      (fg & 0x00f) * 8);
-                            glBegin(GL_QUADS);
-                            glTexCoord2f(0, dp->drv.p->sh);
-                            glVertex2f(x, y);
-                            glTexCoord2f(dp->drv.p->sw, dp->drv.p->sh);
-                            glVertex2f(x + dp->drv.p->font_width, y);
-                            glTexCoord2f(dp->drv.p->sw, 0);
-                            glVertex2f(x + dp->drv.p->font_width,
-                                       y + dp->drv.p->font_height);
-                            glTexCoord2f(0, 0);
-                            glVertex2f(x, y + dp->drv.p->font_height);
-                            glEnd();
-
-                        }
-
-                    attr++;
+                case 0x00002580: glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[0]); break;
+                case 0x00002584: glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[1]); break;
+                case 0x00002588: glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[2]); break;
+                case 0x0000258c: glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[3]); break;
+                case 0x00002590: glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[4]); break;
+                case 0x00002591: glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[5]); break;
+                case 0x00002592: glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[6]); break;
+                case 0x00002593: glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[7]); break;
+                default:         glBindTexture(GL_TEXTURE_2D, dp->drv.p->id['?' - 32]); break;
                 }
-            line++;
+
+                uint16_t fg = _cucul_argb32_to_rgb12fg(*attr);
+                glColor3b(((fg & 0xf00) >> 8) * 8,
+                          ((fg & 0x0f0) >> 4) * 8,
+                          (fg & 0x00f) * 8);
+                glBegin(GL_QUADS);
+                glTexCoord2f(0, dp->drv.p->sh);
+                glVertex2f(x, y);
+                glTexCoord2f(dp->drv.p->sw, dp->drv.p->sh);
+                glVertex2f(x + dp->drv.p->font_width, y);
+                glTexCoord2f(dp->drv.p->sw, 0);
+                glVertex2f(x + dp->drv.p->font_width,
+                           y + dp->drv.p->font_height);
+                glTexCoord2f(0, 0);
+                glVertex2f(x, y + dp->drv.p->font_height);
+                glEnd();
+
+            }
+
+            attr++;
         }
+        line++;
+    }
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
 
@@ -439,87 +434,87 @@ static int gl_get_event(caca_display_t *dp, caca_event_t *ev)
 
 #ifdef HAVE_GLUTCLOSEFUNC
     if(dp->drv.p->close)
-        {
-            dp->drv.p->close = 0;
-            ev->type = CACA_EVENT_QUIT;
-            return 1;
-        }
+    {
+        dp->drv.p->close = 0;
+        ev->type = CACA_EVENT_QUIT;
+        return 1;
+    }
 #endif
 
     if(dp->resize.resized)
-        {
-            ev->type = CACA_EVENT_RESIZE;
-            ev->data.resize.w = dp->cv->width;
-            ev->data.resize.h = dp->cv->height;
-            return 1;
-        }
+    {
+        ev->type = CACA_EVENT_RESIZE;
+        ev->data.resize.w = dp->cv->width;
+        ev->data.resize.h = dp->cv->height;
+        return 1;
+    }
 
     if(dp->drv.p->mouse_changed)
+    {
+        ev->type = CACA_EVENT_MOUSE_MOTION;
+        ev->data.mouse.x = dp->mouse.x;
+        ev->data.mouse.y = dp->mouse.y;
+        dp->drv.p->mouse_changed = 0;
+
+        if(dp->drv.p->mouse_clicked)
         {
-            ev->type = CACA_EVENT_MOUSE_MOTION;
-            ev->data.mouse.x = dp->mouse.x;
-            ev->data.mouse.y = dp->mouse.y;
-            dp->drv.p->mouse_changed = 0;
-
-            if(dp->drv.p->mouse_clicked)
-                {
-                    _push_event(dp, ev);
-                    ev->type = CACA_EVENT_MOUSE_PRESS;
-                    ev->data.mouse.button = dp->drv.p->mouse_button;
-                    dp->drv.p->mouse_clicked = 0;
-                }
-
-            return 1;
+            _push_event(dp, ev);
+            ev->type = CACA_EVENT_MOUSE_PRESS;
+            ev->data.mouse.button = dp->drv.p->mouse_button;
+            dp->drv.p->mouse_clicked = 0;
         }
+
+        return 1;
+    }
 
     if(dp->drv.p->key != 0)
-        {
-            ev->type = CACA_EVENT_KEY_PRESS;
-            ev->data.key.ch = dp->drv.p->key;
-            ev->data.key.utf32 = (uint32_t)dp->drv.p->key;
-            ev->data.key.utf8[0] = dp->drv.p->key;
-            ev->data.key.utf8[1] = '\0';
-            dp->drv.p->key = 0;
-            return 1;
-        }
+    {
+        ev->type = CACA_EVENT_KEY_PRESS;
+        ev->data.key.ch = dp->drv.p->key;
+        ev->data.key.utf32 = (uint32_t)dp->drv.p->key;
+        ev->data.key.utf8[0] = dp->drv.p->key;
+        ev->data.key.utf8[1] = '\0';
+        dp->drv.p->key = 0;
+        return 1;
+    }
 
     if(dp->drv.p->special_key != 0)
+    {
+        switch(dp->drv.p->special_key)
         {
-            switch(dp->drv.p->special_key)
-                {
-                case GLUT_KEY_F1 : ev->data.key.ch = CACA_KEY_F1; break;
-                case GLUT_KEY_F2 : ev->data.key.ch = CACA_KEY_F2; break;
-                case GLUT_KEY_F3 : ev->data.key.ch = CACA_KEY_F3; break;
-                case GLUT_KEY_F4 : ev->data.key.ch = CACA_KEY_F4; break;
-                case GLUT_KEY_F5 : ev->data.key.ch = CACA_KEY_F5; break;
-                case GLUT_KEY_F6 : ev->data.key.ch = CACA_KEY_F6; break;
-                case GLUT_KEY_F7 : ev->data.key.ch = CACA_KEY_F7; break;
-                case GLUT_KEY_F8 : ev->data.key.ch = CACA_KEY_F8; break;
-                case GLUT_KEY_F9 : ev->data.key.ch = CACA_KEY_F9; break;
-                case GLUT_KEY_F10: ev->data.key.ch = CACA_KEY_F10; break;
-                case GLUT_KEY_F11: ev->data.key.ch = CACA_KEY_F11; break;
-                case GLUT_KEY_F12: ev->data.key.ch = CACA_KEY_F12; break;
-                case GLUT_KEY_LEFT : ev->data.key.ch = CACA_KEY_LEFT; break;
-                case GLUT_KEY_RIGHT: ev->data.key.ch = CACA_KEY_RIGHT; break;
-                case GLUT_KEY_UP   : ev->data.key.ch = CACA_KEY_UP; break;
-                case GLUT_KEY_DOWN : ev->data.key.ch = CACA_KEY_DOWN; break;
-                case GLUT_KEY_PAGE_UP : ev->data.key.ch = CACA_KEY_PAGEUP; break;
-                case GLUT_KEY_PAGE_DOWN  : ev->data.key.ch = CACA_KEY_PAGEDOWN;
-                    break;
-                case GLUT_KEY_HOME : ev->data.key.ch = CACA_KEY_HOME; break;
-                case GLUT_KEY_END : ev->data.key.ch = CACA_KEY_END; break;
-                case GLUT_KEY_INSERT : ev->data.key.ch = CACA_KEY_INSERT; break;
+            case GLUT_KEY_F1 : ev->data.key.ch = CACA_KEY_F1; break;
+            case GLUT_KEY_F2 : ev->data.key.ch = CACA_KEY_F2; break;
+            case GLUT_KEY_F3 : ev->data.key.ch = CACA_KEY_F3; break;
+            case GLUT_KEY_F4 : ev->data.key.ch = CACA_KEY_F4; break;
+            case GLUT_KEY_F5 : ev->data.key.ch = CACA_KEY_F5; break;
+            case GLUT_KEY_F6 : ev->data.key.ch = CACA_KEY_F6; break;
+            case GLUT_KEY_F7 : ev->data.key.ch = CACA_KEY_F7; break;
+            case GLUT_KEY_F8 : ev->data.key.ch = CACA_KEY_F8; break;
+            case GLUT_KEY_F9 : ev->data.key.ch = CACA_KEY_F9; break;
+            case GLUT_KEY_F10: ev->data.key.ch = CACA_KEY_F10; break;
+            case GLUT_KEY_F11: ev->data.key.ch = CACA_KEY_F11; break;
+            case GLUT_KEY_F12: ev->data.key.ch = CACA_KEY_F12; break;
+            case GLUT_KEY_LEFT : ev->data.key.ch = CACA_KEY_LEFT; break;
+            case GLUT_KEY_RIGHT: ev->data.key.ch = CACA_KEY_RIGHT; break;
+            case GLUT_KEY_UP   : ev->data.key.ch = CACA_KEY_UP; break;
+            case GLUT_KEY_DOWN : ev->data.key.ch = CACA_KEY_DOWN; break;
+            case GLUT_KEY_PAGE_UP : ev->data.key.ch = CACA_KEY_PAGEUP; break;
+            case GLUT_KEY_PAGE_DOWN  : ev->data.key.ch = CACA_KEY_PAGEDOWN;
+                break;
+            case GLUT_KEY_HOME : ev->data.key.ch = CACA_KEY_HOME; break;
+            case GLUT_KEY_END : ev->data.key.ch = CACA_KEY_END; break;
+            case GLUT_KEY_INSERT : ev->data.key.ch = CACA_KEY_INSERT; break;
 
-                default: ev->type = CACA_EVENT_NONE; return 0;
-                }
-
-            ev->type = CACA_EVENT_KEY_PRESS;
-            ev->data.key.utf32 = 0;
-            ev->data.key.utf8[0] = '\0';
-
-            dp->drv.p->special_key = 0;
-            return 1;
+            default: ev->type = CACA_EVENT_NONE; return 0;
         }
+
+        ev->type = CACA_EVENT_KEY_PRESS;
+        ev->data.key.utf32 = 0;
+        ev->data.key.utf8[0] = '\0';
+
+        dp->drv.p->special_key = 0;
+        return 1;
+    }
 
     ev->type = CACA_EVENT_NONE;
     return 0;
@@ -557,15 +552,15 @@ static void gl_handle_reshape(int w, int h)
     caca_display_t *dp = gl_d;
 
     if(dp->drv.p->bit) /* Do not handle reshaping at the first time */
-        {
-            dp->drv.p->new_width = w;
-            dp->drv.p->new_height = h;
+    {
+        dp->drv.p->new_width = w;
+        dp->drv.p->new_height = h;
 
-            dp->resize.w = w / dp->drv.p->font_width;
-            dp->resize.h = (h / dp->drv.p->font_height) + 1;
+        dp->resize.w = w / dp->drv.p->font_width;
+        dp->resize.h = (h / dp->drv.p->font_height) + 1;
 
-            dp->resize.resized = 1;
-        }
+        dp->resize.resized = 1;
+    }
     else
         dp->drv.p->bit = 1;
 }
