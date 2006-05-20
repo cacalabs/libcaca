@@ -65,7 +65,7 @@ struct driver_private
     float font_width, font_height;
     float incx, incy;
     int id[(128 - 32)];
-    int id_uni[8]; /* Hack, fixme*/
+    int id_uni[8]; /* Hack, FIXME */
     unsigned char close;
     unsigned char bit;
     unsigned char mouse_changed, mouse_clicked;
@@ -213,49 +213,47 @@ static int gl_init_graphics(caca_display_t *dp)
         glColor3f(1, 1, 1);
         glTranslatef(0.5,0.5,0);
 
-        if(i==0)                  /* 0x00002580*/
+        switch(i)
         {
+        case 0: /* 0x00002580 */
             glBegin(GL_QUADS);
             glVertex2f(0,0); glVertex2f(9,0); glVertex2f(9,7); glVertex2f(0,7);
             glEnd();
-        }
-        else if(i==1)             /* 0x00002584*/
-        {
+            break;
+        case 1: /* 0x00002584 */
             glBegin(GL_QUADS);
             glVertex2f(0,7); glVertex2f(9,7); glVertex2f(9,15); glVertex2f(0,15);
             glEnd();
-        }
-        else if(i==2)             /* 0x00002588*/
-        {
+            break;
+        case 2: /* 0x00002588 */
             glBegin(GL_QUADS);
             glVertex2f(0,0); glVertex2f(9,0); glVertex2f(9,15); glVertex2f(0,15);
             glEnd();
-        }
-        else if(i==3)             /* 0x0000258c*/
-        {
+            break;
+        case 3: /* 0x0000258c */
             glBegin(GL_QUADS);
             glVertex2f(0,0); glVertex2f(4,0); glVertex2f(4,15); glVertex2f(0,15);
             glEnd();
-        }
-        else if(i==4)             /* 0x00002590*/
-        {
+            break;
+        case 4: /* 0x00002590 */
             glBegin(GL_QUADS);
             glVertex2f(4,0); glVertex2f(9,0); glVertex2f(9,15); glVertex2f(4,15);
             glEnd();
-        }
-        else if(i>=5)             /* 0x00002591*/
-        {
-            int a, j, k = i-5;
-            for(j = dp->drv.p->font_height; j--; )
-                for(a = dp->drv.p->font_width; a--; )
-                {
-                    if(((a + 2 * (j & 1)) & 3) > k)
-                        continue;
+            break;
+        default: /* 0x0000259[123] */
+            {
+                int a, j, k = i - 5;
+                for(j = dp->drv.p->font_height; j--; )
+                    for(a = dp->drv.p->font_width; a--; )
+                    {
+                        if(((a + 2 * (j & 1)) & 3) > k)
+                            continue;
 
-                    glBegin(GL_POINTS);
-                    glVertex2f(a, j);
-                    glEnd();
-                }
+                        glBegin(GL_POINTS);
+                        glVertex2f(a, j);
+                        glEnd();
+                    }
+            }
         }
 
         glEnable(GL_TEXTURE_2D);
