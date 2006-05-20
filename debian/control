@@ -3,7 +3,7 @@ Section: libs
 Priority: optional
 Maintainer: Sam Hocevar (Debian packages) <sam+deb@zoy.org>
 Build-Depends: debhelper (>= 4.0), libncurses5-dev, libslang2-dev, libx11-dev, libimlib2-dev, doxygen, tetex-bin, tetex-extra
-Standards-Version: 3.6.2
+Standards-Version: 3.7.2
 
 Package: libcucul-dev
 Section: libdevel

@@ -4,6 +4,32 @@ libcaca (0.99.beta1-1) UNRELEASED; urgency=low
 
  -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Sat, 22 Apr 2006 21:57:18 +0200
 
+libcaca (0.9-6) unstable; urgency=low
+
+  * Maintainer upload.
+  * Acknowledging previous NMU (Closes: #349790). Thanks to Don Armstrong.
+  * debian/control:
+    + Set policy to 3.7.2.
+  * configure.ac:
+    + Work around AC_PATH_X not setting ${x_libraries} to avoid build
+      failures (Closes: #268651, #367854).
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Fri, 19 May 2006 03:08:53 -0500
+
+libcaca (0.9-5.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Hard-code cacaview_LDFLAGS = -lImlib2 instead of using the output of
+    imlib2-config which is incorrect for GNU/* systems using dynamic
+    linking. (Closes: #349790)
+  * Add AM_MAINTAINER_MODE to configure.ac as well, to avoid build-time
+    regeneration of autotools files.
+  * Fix syntax errors in doc/Makefile.am that aren't accepted by current
+    automake-1.7
+  * Thanks to Steve Langasek for the above patches
+
+ -- Don Armstrong <don@debian.org>  Sun, 19 Feb 2006 01:46:44 -0800
+
 libcaca (0.9-5) unstable; urgency=low
 
   * debian/control:
