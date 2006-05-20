@@ -275,10 +275,13 @@ static int slang_get_event(caca_display_t *dp, caca_event_t *ev)
     }
 
     /* If the key was ASCII, return it immediately */
-    if(intkey < 0x100)
+    if(intkey < 0x80)
     {
         ev->type = CACA_EVENT_KEY_PRESS;
         ev->data.key.ch = intkey;
+        ev->data.key.utf32 = intkey;
+        ev->data.key.utf8[0] = intkey;
+        ev->data.key.utf8[1] = '\0';
         return 1;
     }
 
@@ -315,6 +318,7 @@ static int slang_get_event(caca_display_t *dp, caca_event_t *ev)
 
         case SL_KEY_IC: ev->data.key.ch = CACA_KEY_INSERT; break;
         case SL_KEY_DELETE: ev->data.key.ch = CACA_KEY_DELETE; break;
+        case SL_KEY_BACKSPACE: ev->data.key.ch = CACA_KEY_BACKSPACE; break;
         case SL_KEY_HOME: ev->data.key.ch = CACA_KEY_HOME; break;
         case SL_KEY_END: ev->data.key.ch = CACA_KEY_END; break;
         case SL_KEY_PPAGE: ev->data.key.ch = CACA_KEY_PAGEUP; break;
