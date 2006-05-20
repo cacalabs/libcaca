@@ -238,7 +238,7 @@ static int ncurses_get_event(caca_display_t *dp, caca_event_t *ev)
         return 0;
     }
 
-    if(intkey < 0x80)
+    if(intkey < 0x7f)
     {
         ev->type = CACA_EVENT_KEY_PRESS;
         ev->data.key.ch = intkey;
@@ -409,6 +409,7 @@ static int ncurses_get_event(caca_display_t *dp, caca_event_t *ev)
 
         case KEY_IC: ev->data.key.ch = CACA_KEY_INSERT; break;
         case KEY_DC: ev->data.key.ch = CACA_KEY_DELETE; break;
+        case 0x7f:
         case KEY_BACKSPACE: ev->data.key.ch = CACA_KEY_BACKSPACE; break;
         case KEY_HOME: ev->data.key.ch = CACA_KEY_HOME; break;
         case KEY_END: ev->data.key.ch = CACA_KEY_END; break;
