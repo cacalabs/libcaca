@@ -256,7 +256,7 @@ static int win32_get_event(caca_display_t *dp, caca_event_t *ev)
             if(rec.Event.KeyEvent.uChar.AsciiChar)
             {
                 ev->data.key.ch = rec.Event.KeyEvent.uChar.AsciiChar;
-                ev->data.key.ucs4 = (uint32_t)ev->data.key.ch;
+                ev->data.key.utf32 = (uint32_t)ev->data.key.ch;
                 ev->data.key.utf8[0] = ev->data.key.ch;
                 ev->data.key.utf8[1] = '\0';
 

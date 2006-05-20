@@ -428,7 +428,7 @@ static int ncurses_get_event(caca_display_t *dp, caca_event_t *ev)
     }
 
     ev->type = CACA_EVENT_KEY_PRESS;
-    ev->data.key.ucs4 = 0;
+    ev->data.key.utf32 = 0;
     ev->data.key.utf8[0] = '\0';
     return 1;
 }

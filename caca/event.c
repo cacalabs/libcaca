@@ -201,7 +201,7 @@ static int _get_next_event(caca_display_t *dp, caca_event_t *ev)
     if(ev->type == CACA_EVENT_KEY_PRESS
         && dp->events.last_key_event.type
         && ev->data.key.ch == dp->events.last_key_event.data.key.ch
-        && ev->data.key.ucs4 == dp->events.last_key_event.data.key.ucs4)
+        && ev->data.key.utf32 == dp->events.last_key_event.data.key.utf32)
     {
         dp->events.last_key_ticks = 0;
         return _get_next_event(dp, ev);

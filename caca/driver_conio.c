@@ -135,7 +135,7 @@ static int conio_get_event(caca_display_t *dp, caca_event_t *ev)
 
     ev->type = CACA_EVENT_KEY_PRESS;
     ev->data.key.ch = ch;
-    ev->data.key.ucs4 = (uint32_t)ch;
+    ev->data.key.utf32 = (uint32_t)ch;
     ev->data.key.utf8[0] = ch;
     ev->data.key.utf8[1] = '\0';
 

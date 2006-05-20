@@ -49,8 +49,8 @@ typedef struct caca_event caca_event_t;
  *  \li \b CACA_EVENT_KEY_PRESS, \b CACA_EVENT_KEY_RELEASE: the \e data.key.ch
  *      field is valid and contains either the ASCII value for the key, or
  *      an \e enum \e caca_key value. If the value is a printable ASCII
- *      character, the \e data.key.ucs4 and \e data.key.utf8 fields are
- *      also filled and contain respectively the UCS-4/UTF-32 and the UTF-8
+ *      character, the \e data.key.utf32 and \e data.key.utf8 fields are
+ *      also filled and contain respectively the UTF-32/UCS-4 and the UTF-8
  *      representations of the character. Otherwise, their content is
  *      undefined.
  *
@@ -92,7 +92,7 @@ struct caca_event
     {
         struct { unsigned int x, y, button; } mouse;
         struct { unsigned int w, h; } resize;
-        struct { unsigned int ch; unsigned long int ucs4; char utf8[8]; } key;
+        struct { unsigned int ch; unsigned long int utf32; char utf8[8]; } key;
     } data;
 };
 

@@ -130,7 +130,7 @@ int main(void)
                     memmove(entries[e].buffer + entries[e].cursor + 1,
                             entries[e].buffer + entries[e].cursor,
                             (entries[e].size - entries[e].cursor) * 4);
-                    entries[e].buffer[entries[e].cursor] = ev.data.key.ucs4;
+                    entries[e].buffer[entries[e].cursor] = ev.data.key.utf32;
                     entries[e].size++;
                     entries[e].cursor++;
                 }

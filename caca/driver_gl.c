@@ -476,7 +476,7 @@ static int gl_get_event(caca_display_t *dp, caca_event_t *ev)
         {
             ev->type = CACA_EVENT_KEY_PRESS;
             ev->data.key.ch = dp->drv.p->key;
-            ev->data.key.ucs4 = (uint32_t)dp->drv.p->key;
+            ev->data.key.utf32 = (uint32_t)dp->drv.p->key;
             ev->data.key.utf8[0] = dp->drv.p->key;
             ev->data.key.utf8[1] = '\0';
             dp->drv.p->key = 0;
@@ -514,7 +514,7 @@ static int gl_get_event(caca_display_t *dp, caca_event_t *ev)
                 }
 
             ev->type = CACA_EVENT_KEY_PRESS;
-            ev->data.key.ucs4 = 0;
+            ev->data.key.utf32 = 0;
             ev->data.key.utf8[0] = '\0';
 
             dp->drv.p->special_key = 0;

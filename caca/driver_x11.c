@@ -508,7 +508,7 @@ static int x11_get_event(caca_display_t *dp, caca_event_t *ev)
         if(XLookupString(&xevent.xkey, &key, 1, NULL, NULL))
         {
             ev->data.key.ch = key;
-            ev->data.key.ucs4 = key;
+            ev->data.key.utf32 = key;
             ev->data.key.utf8[0] = key;
             ev->data.key.utf8[1] = '\0';
             return 1;
@@ -548,7 +548,7 @@ static int x11_get_event(caca_display_t *dp, caca_event_t *ev)
             default: ev->type = CACA_EVENT_NONE; return 0;
         }
 
-        ev->data.key.ucs4 = 0;
+        ev->data.key.utf32 = 0;
         ev->data.key.utf8[0] = '\0';
         return 1;
     }
