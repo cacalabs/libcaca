@@ -155,7 +155,7 @@ int cucul_fill_box(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
     if(x2 > xmax) x2 = xmax;
     if(y2 > ymax) y2 = ymax;
 
-    ch = cucul_utf8_to_utf32(str);
+    ch = cucul_utf8_to_utf32(str, NULL);
 
     for(y = y1; y <= y2; y++)
         for(x = x1; x <= x2; x++)

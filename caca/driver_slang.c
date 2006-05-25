@@ -211,17 +211,16 @@ static void slang_display(caca_display_t *dp)
             uint32_t ch = *chars++;
 
 #if defined(OPTIMISE_SLANG_PALETTE)
+            /* If foreground == background, just don't use this colour
+             * pair, and print a space instead of the real character.
+             * XXX: disabled, because I can't remember what it was
+             * here for, and in cases where SLang does not render
+             * bright backgrounds, it's just fucked up. */
+#if 0
             uint8_t fgcolor = _cucul_argb32_to_ansi4fg(*attr);
             uint8_t bgcolor = _cucul_argb32_to_ansi4bg(*attr);
 
-            /* If foreground == background, just don't use this colour
-             * pair, and print a space instead of the real character. */
-            if(fgcolor != bgcolor)
-            {
-                SLsmg_set_color(slang_assoc[_cucul_argb32_to_ansi8(*attr++)]);
-                slang_write_utf32(ch);
-            }
-            else
+            if(fgcolor == bgcolor)
             {
                 if(fgcolor == CUCUL_COLOR_BLACK)
                     fgcolor = CUCUL_COLOR_WHITE;
@@ -233,6 +232,12 @@ static void slang_display(caca_display_t *dp)
                 SLsmg_set_color(slang_assoc[fgcolor + 16 * bgcolor]);
                 SLsmg_write_char(' ');
                 attr++;
+            }
+            else
+#endif
+            {
+                SLsmg_set_color(slang_assoc[_cucul_argb32_to_ansi8(*attr++)]);
+                slang_write_utf32(ch);
             }
 #else
             SLsmg_set_color(_cucul_argb32_to_ansi8(*attr++));
@@ -283,6 +288,41 @@ static int slang_get_event(caca_display_t *dp, caca_event_t *ev)
         ev->data.key.utf8[0] = intkey;
         ev->data.key.utf8[1] = '\0';
         return 1;
+    }
+
+    /* If the key was UTF-8, parse the whole sequence */
+    if(intkey >= 0x80 && intkey < 0x100)
+    {
+        int keys[7]; /* Necessary for ungetkey(); */
+        char utf8[7];
+        uint32_t utf32;
+        unsigned int i, bytes = 0;
+
+        keys[0] = intkey;
+        utf8[0] = intkey;
+
+        for(i = 1; i < 6; i++)
+        {
+            if(!SLang_input_pending(0))
+                break;
+            keys[i] = SLang_getkey();
+            utf8[i] = (unsigned char)keys[i];
+        }
+
+        utf8[i] = '\0';
+        utf32 = cucul_utf8_to_utf32(utf8, &bytes);
+
+        while(i > bytes)
+            SLang_ungetkey(keys[--i]);
+
+        if(bytes)
+        {
+            ev->type = CACA_EVENT_KEY_PRESS;
+            ev->data.key.ch = 0;
+            ev->data.key.utf32 = utf32;
+            strcpy(ev->data.key.utf8, utf8);
+            return 1;
+        }
     }
 
     if(intkey == 0x3e9)
@@ -338,7 +378,9 @@ static int slang_get_event(caca_display_t *dp, caca_event_t *ev)
         case SL_KEY_F(11): ev->data.key.ch = CACA_KEY_F11; break;
         case SL_KEY_F(12): ev->data.key.ch = CACA_KEY_F12; break;
 
-        default: ev->type = CACA_EVENT_NONE; return 0;
+        default:
+            /* Unknown key */
+            ev->type = CACA_EVENT_NONE; return 0;
     }
 
     ev->type = CACA_EVENT_KEY_PRESS;

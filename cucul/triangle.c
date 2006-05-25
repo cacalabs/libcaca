@@ -109,7 +109,7 @@ int cucul_fill_triangle(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
     xmax = cv->width - 1;
     ymax = cv->height - 1;
 
-    ch = cucul_utf8_to_utf32(str);
+    ch = cucul_utf8_to_utf32(str, NULL);
 
     /* Rasterize our triangle */
     for(y = y1 < 0 ? 0 : y1; y <= y3 && y <= ymax; y++)

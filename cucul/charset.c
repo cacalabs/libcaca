@@ -95,31 +95,45 @@ static uint32_t const cp437_lookup2[] =
 /** \brief Convert a UTF-8 character to UTF-32.
  *
  *  This function converts a UTF-8 character read from a string and returns
- *  its value in the UTF-32 character set.
+ *  its value in the UTF-32 character set. If the second argument is not null,
+ *  the total number of read bytes is written in it.
+ *
+ *  If a null byte was reached before the expected end of the UTF-8 sequence,
+ *  this function returns zero and the number of read bytes is set to zero.
  *
  *  This function never fails, but its behaviour with illegal UTF-8 sequences
  *  is undefined.
  *
  *  \param s A string containing the UTF-8 character.
- *  \return The corresponding UTF-32 character.
+ *  \param read A pointer to an unsigned integer to store the number of
+ *  bytes in the character, or NULL.
+ *  \return The corresponding UTF-32 character, or zero if the character
+ *  is incomplete.
  */
-unsigned long int cucul_utf8_to_utf32(char const *s)
+unsigned long int cucul_utf8_to_utf32(char const *s, unsigned int *read)
 {
-    int bytes = trailing[(int)(unsigned char)*s];
+    unsigned int bytes = trailing[(int)(unsigned char)*s];
+    unsigned int i = 0;
     uint32_t ret = 0;
 
-    switch(bytes)
+    for(;;)
     {
-        /* FIXME: do something for invalid sequences (4 and 5) */
-        case 3: ret += (uint8_t)*s++; ret <<= 6;
-        case 2: ret += (uint8_t)*s++; ret <<= 6;
-        case 1: ret += (uint8_t)*s++; ret <<= 6;
-        case 0: ret += (uint8_t)*s++;
+        if(!*s)
+        {
+            if(read)
+                *read = 0;
+            return 0;
+        }
+
+        ret += ((uint32_t)(unsigned char)*s++) << (6 * (bytes - i));
+
+        if(bytes == i++)
+        {
+            if(read)
+                *read = i;
+            return ret - offsets[bytes];
+        }
     }
-
-    ret -= offsets[bytes];
-
-    return ret;
 }
 
 /** \brief Convert a UTF-32 character to UTF-8.
