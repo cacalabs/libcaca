@@ -136,7 +136,7 @@ struct caca_display
         caca_event_t last_key_event;
 #endif
 #if defined(USE_WIN32)
-		unsigned char not_empty_struct;
+        unsigned char not_empty_struct;
 #endif
     } events;
 };
