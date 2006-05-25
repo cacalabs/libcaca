@@ -161,6 +161,8 @@ static int caca_init_driver(caca_display_t *dp)
 #if defined(USE_GL)
     if(gl_install(dp) == 0) return 0;
 #endif
+    /* slang has a higher priority than ncurses because though ncurses handles
+     * color a bit better across terminals, its UTF-8 supports seems broken. */
 #if defined(USE_SLANG)
     if(slang_install(dp) == 0) return 0;
 #endif

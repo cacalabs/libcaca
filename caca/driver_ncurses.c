@@ -255,136 +255,44 @@ static int ncurses_get_event(caca_display_t *dp, caca_event_t *ev)
 
         switch(mevent.bstate)
         {
-            case BUTTON1_PRESSED:
-                ev->data.mouse.button = 1;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
-                break;
-            case BUTTON1_RELEASED:
-                ev->data.mouse.button = 1;
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
-                break;
-            case BUTTON1_CLICKED:
-                ev->data.mouse.button = 1;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
-                break;
-            case BUTTON1_DOUBLE_CLICKED:
-                ev->data.mouse.button = 1;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
-                break;
-            case BUTTON1_TRIPLE_CLICKED:
-                ev->data.mouse.button = 1;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
-                break;
-            case BUTTON1_RESERVED_EVENT:
-                break;
+#define PRESS(x) ev->data.mouse.button = x; \
+                 ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev)
+#define RELEASE(x) ev->data.mouse.button = x; \
+                   ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev)
+#define CLICK(x) PRESS(x); RELEASE(x)
+            case BUTTON1_PRESSED: PRESS(1); break;
+            case BUTTON1_RELEASED: RELEASE(1); break;
+            case BUTTON1_CLICKED: CLICK(1); break;
+            case BUTTON1_DOUBLE_CLICKED: CLICK(1); CLICK(1); break;
+            case BUTTON1_TRIPLE_CLICKED: CLICK(1); CLICK(1); CLICK(1); break;
+            case BUTTON1_RESERVED_EVENT: break;
 
-            case BUTTON2_PRESSED:
-                ev->data.mouse.button = 2;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
-                break;
-            case BUTTON2_RELEASED:
-                ev->data.mouse.button = 2;
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
-                break;
-            case BUTTON2_CLICKED:
-                ev->data.mouse.button = 2;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
-                break;
-            case BUTTON2_DOUBLE_CLICKED:
-                ev->data.mouse.button = 2;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
-                break;
-            case BUTTON2_TRIPLE_CLICKED:
-                ev->data.mouse.button = 2;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
-                break;
-            case BUTTON2_RESERVED_EVENT:
-                break;
+            case BUTTON2_PRESSED: PRESS(2); break;
+            case BUTTON2_RELEASED: RELEASE(2); break;
+            case BUTTON2_CLICKED: CLICK(2); break;
+            case BUTTON2_DOUBLE_CLICKED: CLICK(2); CLICK(2); break;
+            case BUTTON2_TRIPLE_CLICKED: CLICK(2); CLICK(2); CLICK(2); break;
+            case BUTTON2_RESERVED_EVENT: break;
 
-            case BUTTON3_PRESSED:
-                ev->data.mouse.button = 3;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
-                break;
-            case BUTTON3_RELEASED:
-                ev->data.mouse.button = 3;
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
-                break;
-            case BUTTON3_CLICKED:
-                ev->data.mouse.button = 3;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
-                break;
-            case BUTTON3_DOUBLE_CLICKED:
-                ev->data.mouse.button = 3;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
-                break;
-            case BUTTON3_TRIPLE_CLICKED:
-                ev->data.mouse.button = 3;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
-                break;
-            case BUTTON3_RESERVED_EVENT:
-                break;
+            case BUTTON3_PRESSED: PRESS(3); break;
+            case BUTTON3_RELEASED: RELEASE(3); break;
+            case BUTTON3_CLICKED: CLICK(3); break;
+            case BUTTON3_DOUBLE_CLICKED: CLICK(3); CLICK(3); break;
+            case BUTTON3_TRIPLE_CLICKED: CLICK(3); CLICK(3); CLICK(3); break;
+            case BUTTON3_RESERVED_EVENT: break;
 
-            case BUTTON4_PRESSED:
-                ev->data.mouse.button = 4;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
-                break;
-            case BUTTON4_RELEASED:
-                ev->data.mouse.button = 4;
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
-                break;
-            case BUTTON4_CLICKED:
-                ev->data.mouse.button = 4;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
-                break;
-            case BUTTON4_DOUBLE_CLICKED:
-                ev->data.mouse.button = 4;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
-                break;
-            case BUTTON4_TRIPLE_CLICKED:
-                ev->data.mouse.button = 4;
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev);
-                ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev);
-                break;
-            case BUTTON4_RESERVED_EVENT:
-                break;
+            case BUTTON4_PRESSED: PRESS(4); break;
+            case BUTTON4_RELEASED: RELEASE(4); break;
+            case BUTTON4_CLICKED: CLICK(4); break;
+            case BUTTON4_DOUBLE_CLICKED: CLICK(4); CLICK(4); break;
+            case BUTTON4_TRIPLE_CLICKED: CLICK(4); CLICK(4); CLICK(4); break;
+            case BUTTON4_RESERVED_EVENT: break;
 
             default:
                 break;
+#undef PRESS
+#undef RELEASE
+#undef CLICK
         }
 
         if(dp->mouse.x == (unsigned int)mevent.x &&
@@ -429,7 +337,9 @@ static int ncurses_get_event(caca_display_t *dp, caca_event_t *ev)
         case KEY_F(11): ev->data.key.ch = CACA_KEY_F11; break;
         case KEY_F(12): ev->data.key.ch = CACA_KEY_F12; break;
 
-        default: ev->type = CACA_EVENT_NONE; return 0;
+        default:
+            /* Unknown key */
+            ev->type = CACA_EVENT_NONE; return 0;
     }
 
     ev->type = CACA_EVENT_KEY_PRESS;

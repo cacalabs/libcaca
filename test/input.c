@@ -74,7 +74,7 @@ int main(void)
         }
 
         /* Put the cursor on the active textentry */
-        cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_WHITE);
+        cucul_set_color(cv, CUCUL_COLOR_LIGHTRED, CUCUL_COLOR_LIGHTRED);
         cucul_putchar(cv, 2 + entries[e].cursor, 3 * e + 4, ' ');
 
         caca_refresh_display(dp);

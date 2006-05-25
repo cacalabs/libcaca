@@ -46,7 +46,7 @@ int main(int argc, char **argv)
         {
             cucul_set_color(cv, i, j);
             cucul_putstr(cv, (j >= 8 ? 41 : 40) + j * 2, i + (i >= 8 ? 4 : 3),
-                         "# ");
+                         "Aa");
         }
     }
 
