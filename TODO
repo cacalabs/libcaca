@@ -37,7 +37,7 @@
   - Better keyboard driver in an X terminal, see
      http://groups.yahoo.com/group/zepp/message/381
   - Unicode support for X11 (maybe through Xft)
-  - fix Unicode support for ncurses
+  - fix Unicode support for ncurses (look at the nano source, it gets it right)
   - Unicode support for GL
   - and Jylam wants a framebuffer output
 
@@ -90,5 +90,12 @@
      also do Unicode
   - Colour support, of course: outputs to IRC, ANSI, HTML...
   - Can open FIGlet fonts
+
+  \section ttyvaders TTYvaders
+
+  - Managed in another repository.
+  - Change vertical scrolling to horizontal scrolling for smoother scrolling.
+  - Add ground and air vehicles, make it moon-buggy on steroids!
+  - Provide several sets of sprites (monochrome, ANSI, UTF-8).
 
 */
