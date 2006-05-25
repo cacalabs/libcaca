@@ -18,13 +18,13 @@
 #include "config.h"
 #include "common.h"
 
-#if defined(USE_NCURSES)
+#if defined USE_NCURSES
 
-#if defined(HAVE_NCURSESW_NCURSES_H)
+#if defined HAVE_NCURSESW_NCURSES_H
 #   include <ncursesw/ncurses.h>
-#elif defined(HAVE_NCURSES_NCURSES_H)
+#elif defined HAVE_NCURSES_NCURSES_H
 #   include <ncurses/ncurses.h>
-#elif defined(HAVE_NCURSES_H)
+#elif defined HAVE_NCURSES_H
 #   include <ncurses.h>
 #else
 #   include <curses.h>
@@ -33,11 +33,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if defined(HAVE_SIGNAL_H)
+#if defined HAVE_SIGNAL_H
 #   include <signal.h>
 #endif
-#if defined(HAVE_SYS_IOCTL_H)
+#if defined HAVE_SYS_IOCTL_H
 #   include <sys/ioctl.h>
+#endif
+#if defined HAVE_LOCALE_H
+#   include <locale.h>
 #endif
 
 #include "caca.h"
@@ -49,11 +52,11 @@
  * Local functions
  */
 
-#if defined(HAVE_SIGNAL)
+#if defined HAVE_SIGNAL
 static RETSIGTYPE sigwinch_handler(int);
 static caca_display_t *sigwinch_d; /* FIXME: we ought to get rid of this */
 #endif
-#if defined(HAVE_GETENV) && defined(HAVE_PUTENV)
+#if defined HAVE_GETENV && defined HAVE_PUTENV
 static void ncurses_check_terminal(void);
 #endif
 static void ncurses_write_utf32(uint32_t);
@@ -93,13 +96,17 @@ static int ncurses_init_graphics(caca_display_t *dp)
 
     dp->drv.p = malloc(sizeof(struct driver_private));
 
-#if defined(HAVE_GETENV) && defined(HAVE_PUTENV)
+#if defined HAVE_GETENV && defined HAVE_PUTENV
     ncurses_check_terminal();
 #endif
 
-#if defined(HAVE_SIGNAL)
+#if defined HAVE_SIGNAL
     sigwinch_d = dp;
     signal(SIGWINCH, sigwinch_handler);
+#endif
+
+#if defined HAVE_LOCALE_H
+    setlocale(LC_ALL, "");
 #endif
 
     initscr();
@@ -207,12 +214,12 @@ static void ncurses_handle_resize(caca_display_t *dp)
 {
     struct winsize size;
 
-#if defined(HAVE_SYS_IOCTL_H)
+#if defined HAVE_SYS_IOCTL_H
     if(ioctl(fileno(stdout), TIOCGWINSZ, &size) == 0)
     {
         dp->resize.w = size.ws_col;
         dp->resize.h = size.ws_row;
-#if defined(HAVE_RESIZE_TERM)
+#if defined HAVE_RESIZE_TERM
         resize_term(dp->resize.h, dp->resize.w);
 #else
         resizeterm(*dp->resize.h, *dp->resize.w);
@@ -352,7 +359,7 @@ static int ncurses_get_event(caca_display_t *dp, caca_event_t *ev)
  * XXX: following functions are local
  */
 
-#if defined(HAVE_SIGNAL)
+#if defined HAVE_SIGNAL
 static RETSIGTYPE sigwinch_handler(int sig)
 {
     sigwinch_d->resize.resized = 1;
@@ -361,7 +368,7 @@ static RETSIGTYPE sigwinch_handler(int sig)
 }
 #endif
 
-#if defined(HAVE_GETENV) && defined(HAVE_PUTENV)
+#if defined HAVE_GETENV && defined HAVE_PUTENV
 static void ncurses_check_terminal(void)
 {
     char *term, *colorterm, *other;
@@ -401,7 +408,7 @@ static void ncurses_check_terminal(void)
 
 static void ncurses_write_utf32(uint32_t ch)
 {
-#if defined(HAVE_NCURSESW_NCURSES_H)
+#if defined HAVE_NCURSESW_NCURSES_H
     char buf[10];
     int bytes;
 
