@@ -1,6 +1,6 @@
 # $Id$
 
-AM_CPPFLAGS = -I$(top_srcdir)/cucul -I$(top_srcdir)/caca -DDATADIR=\"$(pkgdatadir)\"
+AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/cucul -I$(top_srcdir)/caca -DDATADIR=\"$(pkgdatadir)\"
 
 noinst_PROGRAMS = colors demo dithering event export font frames gamma hsv input spritedit font2tga text transform truecolor unicode import
 

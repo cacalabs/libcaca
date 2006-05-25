@@ -13,4 +13,5 @@ libkernel_la_SOURCES = \
 	multiboot.h \
 	$(NULL)
 libkernel_la_LDFLAGS = -no-undefined
+AM_CPPFLAGS = -I$(top_srcdir)
 

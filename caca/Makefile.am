@@ -26,7 +26,7 @@ libcaca_la_SOURCES = \
 	driver_win32.c \
 	driver_x11.c \
 	$(NULL)
-AM_CPPFLAGS = -I$(top_srcdir)/cucul
+AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/cucul
 libcaca_la_LDFLAGS = -no-undefined -version-info @LT_VERSION@
 libcaca_la_LIBADD = ../cucul/libcucul.la @CACA_LIBS@
 
