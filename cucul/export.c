@@ -176,8 +176,10 @@ static void export_caca(cucul_canvas_t *cv, cucul_buffer_t *ex)
     h = cv->height;
 
     cur += sprintf(cur, "CACACANV%c%c%c%c%c%c%c%c",
-                   (w >> 24), (w >> 16) & 0xff, (w >> 8) & 0xff, w & 0xff,
-                   (h >> 24), (h >> 16) & 0xff, (h >> 8) & 0xff, h & 0xff);
+                   (unsigned char)(w >> 24), (unsigned char)((w >> 16) & 0xff),
+                   (unsigned char)((w >> 8) & 0xff), (unsigned char)(w & 0xff),
+                   (unsigned char)(h >> 24), (unsigned char)((h >> 16) & 0xff),
+                   (unsigned char)((h >> 8) & 0xff), (unsigned char)(h & 0xff));
 
     for(n = cv->height * cv->width; n--; )
     {
@@ -379,9 +381,11 @@ static void export_html(cucul_canvas_t *cv, cucul_buffer_t *ex)
                 if(linechar[x + len] <= 0x00000020)
                     cur += sprintf(cur, "&nbsp;");
                 else if(linechar[x + len] < 0x00000080)
-                    cur += sprintf(cur, "%c", linechar[x + len]);
+                    cur += sprintf(cur, "%c",
+                                   (unsigned char)linechar[x + len]);
                 else
-                    cur += sprintf(cur, "&#%i;", linechar[x + len]);
+                    cur += sprintf(cur, "&#%i;",
+                                   (unsigned int)linechar[x + len]);
             }
             cur += sprintf(cur, "</span>");
         }
@@ -436,13 +440,13 @@ static void export_html3(cucul_canvas_t *cv, cucul_buffer_t *ex)
             while(x + len < cv->width && lineattr[x + len] == lineattr[x])
                 len++;
 
-            cur += sprintf(cur, "<td bgcolor=#%.06x",
+            cur += sprintf(cur, "<td bgcolor=#%.06lx", (unsigned long int)
                            _cucul_argb32_to_rgb24bg(lineattr[x]));
 
             if(len > 1)
                 cur += sprintf(cur, " colspan=%d", len);
 
-            cur += sprintf(cur, "><font color=#%.06x>",
+            cur += sprintf(cur, "><font color=#%.06lx>", (unsigned long int)
                            _cucul_argb32_to_rgb24fg(lineattr[x]));
 
             for(i = 0; i < len; i++)
@@ -450,9 +454,9 @@ static void export_html3(cucul_canvas_t *cv, cucul_buffer_t *ex)
                 if(linechar[x + i] <= 0x00000020)
                     cur += sprintf(cur, "&nbsp;");
                 else if(linechar[x + i] < 0x00000080)
-                    cur += sprintf(cur, "%c", linechar[x + i]);
+                    cur += sprintf(cur, "%c", (unsigned char)linechar[x + i]);
                 else
-                    cur += sprintf(cur, "&#%i;", linechar[x + i]);
+                    cur += sprintf(cur, "&#%i;", (unsigned int)linechar[x + i]);
             }
 
             cur += sprintf(cur, "</font></td>");
@@ -643,10 +647,10 @@ static void export_ps(cucul_canvas_t *cv, cucul_buffer_t *ex)
                 case '\\':
                 case '(':
                 case ')':
-                    cur += sprintf(cur, "(\\%c) show\n", ch);
+                    cur += sprintf(cur, "(\\%c) show\n", (unsigned char)ch);
                     break;
                 default:
-                    cur += sprintf(cur, "(%c) show\n", ch);
+                    cur += sprintf(cur, "(%c) show\n", (unsigned char)ch);
                     break;
             }
         }
