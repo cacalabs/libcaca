@@ -103,7 +103,7 @@ static void conio_display(caca_display_t *dp)
 
     for(n = dp->cv->height * dp->cv->width; n--; )
     {
-        *screen++ = _cucul_utf32_to_cp437(*chars++);
+        *screen++ = cucul_utf32_to_cp437(*chars++);
         *screen++ = _cucul_argb32_to_ansi8(*attr++);
     }
 #   if defined(SCREENUPDATE_IN_PC_H)
