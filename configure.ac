@@ -180,17 +180,6 @@ if test "${enable_gl}" != "no"; then
   fi
 fi
 
-if test "${enable_network}" != "no"; then
-  ac_cv_my_have_network="no"
-  AC_CHECK_HEADERS(sys/socket.h,
-     [ac_cv_my_have_network="yes"
-      AC_DEFINE(USE_NETWORK, 1, Define to 1 to activate the network backend driver)
-      CACA_DRIVERS="${CACA_DRIVERS} network"])
-  if test "${ac_cv_my_have_network}" = "no" -a "${enable_network}" = "yes"; then
-    AC_MSG_ERROR([cannot find standard networking socket files])
-  fi
-fi
-
 if test "${enable_ncurses}" != "no"; then
   ac_cv_my_have_ncurses="no"
   AC_CHECK_HEADERS(ncursesw/ncurses.h ncurses/ncurses.h ncurses.h curses.h,
@@ -254,10 +243,10 @@ fi
 AM_CONDITIONAL(USE_CXX, test "${ac_cv_my_have_cxx}" = "yes")
 
 # Build cacaserver?
-ac_cv_my_have_fcntl="no"
-AC_CHECK_FUNC(fcntl,
- [ac_cv_my_have_fcntl="yes"])
-AM_CONDITIONAL(USE_FCNTL, test "${ac_cv_my_have_fcntl}" = "yes")
+ac_cv_my_have_network="no"
+AC_CHECK_HEADERS(sys/socket.h,
+ [ac_cv_my_have_network="yes"])
+AM_CONDITIONAL(USE_NETWORK, test "${ac_cv_my_have_network}" = "yes")
 
 # Use Imlib2?
 ac_cv_my_have_imlib2="no"

@@ -3,7 +3,7 @@
 pkgdata_DATA = caca.txt
 
 EXTRA_DIST = caca.txt
-AM_CPPFLAGS = -I$(top_srcdir)/cucul -I$(top_srcdir)/caca -DLIBCACA=1 -DX_DISPLAY_MISSING=1
+AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/cucul -I$(top_srcdir)/caca -DLIBCACA=1 -DX_DISPLAY_MISSING=1
 
 bin_PROGRAMS = cacafire cacaball cacaplas cacamoir cacaplay cacaview img2irc $(fcntl_programs)
 noinst_PROGRAMS = cacadraw
@@ -47,7 +47,7 @@ img_cflags =
 img_ldflags =
 endif
 
-if USE_FCNTL
+if USE_NETWORK
 fcntl_programs = cacaserver
 else
 fcntl_programs =
