@@ -7,28 +7,40 @@ set -x
 set -e
 
 # Clean up our working directory
-DIRNAME="libcaca-dos-`sed -ne '/^VERSION/s/[^0-9]*//p' Makefile`"
-DESTDIR="`pwd`/${DIRNAME}"
-rm -Rf "${DIRNAME}"
-rm -f "${DIRNAME}.zip"
-mkdir "${DIRNAME}"
+SRCDIR="`pwd`"
+DIRNAME="libcaca-dos-`sed -ne 's/^AM_INIT_AUTOMAKE(.*, \(.*\)).*/\1/p' configure.ac`"
+INSTALLDIR="`pwd`/${DIRNAME}"
+BUILDDIR="${INSTALLDIR}/build"
+rm -Rf "${INSTALLDIR}"
+rm -f "${INSTALLDIR}.zip"
+mkdir "${INSTALLDIR}"
+mkdir "${BUILDDIR}"
 
+cd "${BUILDDIR}"
 # Build for DOS
-./configure --host=i386-pc-msdosdjgpp --prefix=/ --bindir=/ --libdir=/ --disable-imlib2 --disable-doc
+"${SRCDIR}/configure" --host=i386-pc-msdosdjgpp --prefix=/ --bindir=/ --libdir=/ --disable-imlib2 --disable-doc
 make pkglibdir=/lib pkgdatadir=/data
-
 # Install into our private directory
-make install DESTDIR="${DESTDIR}" pkglibdir=/lib pkgdatadir=/
-i386-pc-msdosdjgpp-strip "${DESTDIR}/"*.exe
-rm -Rf "${DESTDIR}/man"
-rm -Rf "${DESTDIR}/include"
-rm -f "${DESTDIR}/caca-config"
-rm -f "${DESTDIR}/"*.a
-mv "${DESTDIR}/share/doc/libcaca-dev/" "${DESTDIR}/doc"
-rmdir "${DESTDIR}/share/doc"
-rmdir "${DESTDIR}/share"
+make install DESTDIR="${INSTALLDIR}" pkglibdir=/lib pkgdatadir=/
+cd "${SRCDIR}"
+rm -Rf "${BUILDDIR}"
+
+i386-pc-msdosdjgpp-strip "${INSTALLDIR}/"*.exe
+
+mkdir "${INSTALLDIR}/doc"
+for f in COPYING COPYING.LGPL COPYING.GPL README AUTHORS NEWS NOTES THANKS TODO; do
+   sed -e 's/$/^M/' < "${SRCDIR}/${f}" > "${INSTALLDIR}/doc/${f}.txt"
+done
+
+rm -Rf "${INSTALLDIR}/share"
+rm -Rf "${INSTALLDIR}/man"
+rm -Rf "${INSTALLDIR}/include"
+rm -Rf "${INSTALLDIR}/pkg-config"
+rm -f "${INSTALLDIR}/caca-config"
+rm -f "${INSTALLDIR}/"*.a
+rm -f "${INSTALLDIR}/"*.la
 
 # Pack the directory
 zip "${DIRNAME}.zip" `find "${DIRNAME}"`
-rm -Rf "${DIRNAME}"
+rm -Rf "${INSTALLDIR}"
 

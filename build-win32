@@ -7,38 +7,45 @@ set -x
 set -e
 
 # Clean up our working directory
-DIRNAME="libcaca-win32-`sed -ne '/^VERSION/s/[^0-9]*//p' Makefile`"
-DESTDIR="`pwd`/${DIRNAME}"
-rm -Rf "${DIRNAME}"
-rm -f "${DIRNAME}.zip"
-mkdir "${DIRNAME}"
+SRCDIR="`pwd`"
+DIRNAME="libcaca-win32-`sed -ne 's/^AM_INIT_AUTOMAKE(.*, \(.*\)).*/\1/p' configure.ac`"
+INSTALLDIR="`pwd`/${DIRNAME}"
+BUILDDIR="${INSTALLDIR}/build"
+rm -Rf "${INSTALLDIR}"
+rm -f "${INSTALLDIR}.zip"
+mkdir "${INSTALLDIR}"
+mkdir "${BUILDDIR}"
 
+cd "${BUILDDIR}"
 # Build for win32
-./configure --host=i586-mingw32msvc --prefix=/ --bindir=/bin --libdir=/lib --disable-imlib2 --disable-doc
+"${SRCDIR}/configure" --host=i586-mingw32msvc --program-suffix=.exe --prefix=/ --bindir=/bin --libdir=/lib --disable-imlib2 --disable-doc
 make pkglibdir=/lib pkgdatadir=/data bindir=/bin
-
 # Install into our private directory
-make install DESTDIR="${DESTDIR}" pkglibdir=/lib/ pkgdatadir=/ bindir=/bin/
+make install DESTDIR="${INSTALLDIR}" pkglibdir=/lib/ pkgdatadir=/ bindir=/bin/
+cd "${SRCDIR}"
+rm -Rf "${BUILDDIR}"
 
-mv "${DESTDIR}/bin/"* "${DESTDIR}/"
-mv "${DESTDIR}/lib/"* "${DESTDIR}/"
-i586-mingw32msvc-strip "${DESTDIR}/"*.exe
-i586-mingw32msvc-strip "${DESTDIR}/"*.dll
-rmdir "${DESTDIR}/bin"
-rmdir "${DESTDIR}/lib"
+mv "${INSTALLDIR}/bin/"* "${INSTALLDIR}/"
+mv "${INSTALLDIR}/lib/"* "${INSTALLDIR}/"
+rm -f "${INSTALLDIR}/caca-config.exe" # Just in case. *sigh*.
+i586-mingw32msvc-strip "${INSTALLDIR}/"*.exe
+i586-mingw32msvc-strip "${INSTALLDIR}/"*.dll
+rmdir "${INSTALLDIR}/bin"
+rmdir "${INSTALLDIR}/lib"
 
-mkdir "${DESTDIR}/doc"
+mkdir "${INSTALLDIR}/doc"
 for f in COPYING COPYING.LGPL COPYING.GPL README AUTHORS NEWS NOTES THANKS TODO; do
-   sed -e 's/$//' < "${f}" > "${DESTDIR}/doc/${f}.txt"
+   sed -e 's/$//' < "${SRCDIR}/${f}" > "${INSTALLDIR}/doc/${f}.txt"
 done
-rm -Rf "${DESTDIR}/share"
-rm -Rf "${DESTDIR}/man"
-rm -Rf "${DESTDIR}/include"
-rm -f "${DESTDIR}/caca-config"
-rm -f "${DESTDIR}/"*.a
-rm -f "${DESTDIR}/"*.la
+rm -Rf "${INSTALLDIR}/share"
+rm -Rf "${INSTALLDIR}/man"
+rm -Rf "${INSTALLDIR}/include"
+rm -Rf "${INSTALLDIR}/pkg-config"
+rm -f "${INSTALLDIR}/caca-config"
+rm -f "${INSTALLDIR}/"*.a
+rm -f "${INSTALLDIR}/"*.la
 
 # Pack the directory
 zip "${DIRNAME}.zip" `find "${DIRNAME}"`
-rm -Rf "${DIRNAME}"
+rm -Rf "${INSTALLDIR}"
 
