@@ -117,7 +117,7 @@ unsigned int caca_get_display_time(caca_display_t *dp)
 void caca_refresh_display(caca_display_t *dp)
 {
 #if !defined(_DOXYGEN_SKIP_ME)
-#define IDLE_USEC 10000
+#define IDLE_USEC 5000
 #endif
     int ticks = dp->lastticks + _caca_getticks(&dp->timer);
 
