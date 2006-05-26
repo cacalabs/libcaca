@@ -230,7 +230,8 @@ int cucul_blit(cucul_canvas_t *dst, int x, int y,
     endi = (x + src->width >= dst->width) ? dst->width - x : src->width;
     endj = (y + src->height >= dst->height) ? dst->height - y : src->height;
 
-    if(starti >= endi || startj >= endj)
+    if((unsigned int)starti > src->width || (unsigned int)startj > src->height
+        || starti >= endi || startj >= endj)
         return 0;
 
     for(j = startj; j < endj; j++)
