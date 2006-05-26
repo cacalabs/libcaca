@@ -69,10 +69,10 @@ do
       echo_libs=yes
       ;;
     cucul)
-      libs="$libs -lcucul @CUCUL_LIBS@"
+      libs="$libs -lcucul"
       ;;
     caca)
-      libs="$libs -lcaca @CACA_LIBS@ -lcucul @CUCUL_LIBS@"
+      libs="$libs -lcaca @CACA_LIBS@ -lcucul"
       ;;
     *)
       usage 1 1>&2
@@ -83,7 +83,7 @@ done
 
 if test "$libs" = ""
 then
-  libs="-lcaca @CACA_LIBS@ -lcucul @CUCUL_LIBS@"
+  libs="-lcaca @CACA_LIBS@ -lcucul"
 fi
 
 if test "$local_prefix" = "yes"
