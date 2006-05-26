@@ -467,22 +467,17 @@ static void slang_check_terminal(void)
     term = getenv("TERM");
     colorterm = getenv("COLORTERM");
 
-    if(term && !strcmp(term, "xterm"))
-    {
-        /* If we are using gnome-terminal, it's really a 16 colour terminal */
-        if(colorterm && !strcmp(colorterm, "gnome-terminal"))
-        {
-            (void)putenv("TERM=xterm-16color");
-            return;
-        }
+    if(!term || strcmp(term, "xterm"))
+        return;
 
-        /* Ditto if we are using Konsole */
-        other = getenv("KONSOLE_DCOP_SESSION");
-        if(other)
-        {
-            (void)putenv("TERM=xterm-16color");
-            return;
-        }
+    /* If we are using gnome-terminal, it's really a 16 colour terminal.
+     * Ditto if we are using xfce4-terminal, or Konsole. */
+    if((colorterm && (!strcmp(colorterm, "gnome-terminal")
+                       || !strcmp(colorterm, "Terminal")))
+         || getenv("KONSOLE_DCOP_SESSION"))
+    {
+        (void)putenv("TERM=xterm-16color");
+        return;
     }
 }
 #endif

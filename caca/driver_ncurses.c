@@ -255,6 +255,39 @@ static int ncurses_get_event(caca_display_t *dp, caca_event_t *ev)
         return 1;
     }
 
+    /* If the key was UTF-8, parse the whole sequence */
+    if(intkey >= 0x80 && intkey < 0x100)
+    {
+        int keys[7]; /* Necessary for ungetch(); */
+        char utf8[7];
+        uint32_t utf32;
+        unsigned int i, bytes = 0;
+
+        keys[0] = intkey;
+        utf8[0] = intkey;
+
+        for(i = 1; i < 6; i++)
+        {
+            keys[i] = getch();
+            utf8[i] = (unsigned char)keys[i];
+        }
+
+        utf8[i] = '\0';
+        utf32 = cucul_utf8_to_utf32(utf8, &bytes);
+
+        while(i > bytes)
+            ungetch(keys[--i]);
+
+        if(bytes)
+        {
+            ev->type = CACA_EVENT_KEY_PRESS;
+            ev->data.key.ch = 0;
+            ev->data.key.utf32 = utf32;
+            strcpy(ev->data.key.utf8, utf8);
+            return 1;
+        }
+    }
+
     if(intkey == KEY_MOUSE)
     {
         MEVENT mevent;
@@ -371,37 +404,27 @@ static RETSIGTYPE sigwinch_handler(int sig)
 #if defined HAVE_GETENV && defined HAVE_PUTENV
 static void ncurses_check_terminal(void)
 {
-    char *term, *colorterm, *other;
+    char *term, *colorterm;
 
     term = getenv("TERM");
     colorterm = getenv("COLORTERM");
 
-    if(term && !strcmp(term, "xterm"))
-    {
-        /* If we are using gnome-terminal, it's really a 16 colour terminal */
-        if(colorterm && !strcmp(colorterm, "gnome-terminal"))
-        {
-            SCREEN *screen;
-            screen = newterm("xterm-16color", stdout, stdin);
-            if(screen == NULL)
-                return;
-            endwin();
-            (void)putenv("TERM=xterm-16color");
-            return;
-        }
+    if(!term || strcmp(term, "xterm"))
+        return;
 
-        /* Ditto if we are using Konsole */
-        other = getenv("KONSOLE_DCOP_SESSION");
-        if(other)
-        {
-            SCREEN *screen;
-            screen = newterm("xterm-16color", stdout, stdin);
-            if(screen == NULL)
-                return;
-            endwin();
-            (void)putenv("TERM=xterm-16color");
+    /* If we are using gnome-terminal, it's really a 16 colour terminal.
+     * Ditto if we are using xfce4-terminal, or Konsole. */
+    if((colorterm && (!strcmp(colorterm, "gnome-terminal")
+                       || !strcmp(colorterm, "Terminal")))
+         || getenv("KONSOLE_DCOP_SESSION"))
+    {
+        SCREEN *screen;
+        screen = newterm("xterm-16color", stdout, stdin);
+        if(screen == NULL)
             return;
-        }
+        endwin();
+        (void)putenv("TERM=xterm-16color");
+        return;
     }
 }
 #endif
