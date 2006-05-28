@@ -1,6 +1,16 @@
 /* $Id$ */ /** \page news News
 
-\section news0_99 Changes between 0.9 and 0.99
+\section news0_99_beta2 Changes between 0.9.beta2 and 0.99.beta1
+
+ - ANSI importer
+ - functions use errno for error reporting
+ - updated C++ bindings
+ - .NET bindings
+ - cacadraw, an ANSI viewer that will evolve into an editor
+ - Unicode input and output support for SLang and ncurses
+ - built-in fonts work on Win32
+
+\section news0_99_beta1 Changes between 0.9 and 0.99.beta1
 
  - license switched to WTFPL
  - libcaca was split into libcucul, a standalone text manipulation backend,

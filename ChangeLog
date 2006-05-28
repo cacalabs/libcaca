@@ -1,4 +1,1198 @@
 ------------------------------------------------------------------------
+r778 | sam | 2006-05-26 09:43:41 +0200 (Fri, 26 May 2006) | 2 lines
+Changed paths:
+   M /trunk/debian/caca-utils.install
+   M /trunk/debian/libcucul-dev.install
+
+  * Updated the Debian build scripts.
+
+------------------------------------------------------------------------
+r777 | sam | 2006-05-26 09:01:10 +0200 (Fri, 26 May 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/canvas.c
+
+  * Fixed an out of bounds bug in cucul_blit().
+
+------------------------------------------------------------------------
+r776 | sam | 2006-05-26 09:00:34 +0200 (Fri, 26 May 2006) | 2 lines
+Changed paths:
+   M /trunk/caca-config.in
+
+  * Removed legacy CUCUL_LIBS from caca-config.
+
+------------------------------------------------------------------------
+r775 | sam | 2006-05-26 09:00:04 +0200 (Fri, 26 May 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/driver_ncurses.c
+   M /trunk/caca/driver_slang.c
+
+  * UTF-8 input support for ncurses.
+  * Hack for 16-color support in xfce4-terminal for both ncurses and slang.
+
+------------------------------------------------------------------------
+r774 | sam | 2006-05-26 08:59:11 +0200 (Fri, 26 May 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/graphics.c
+
+  * Reduced IDLE_USEC by half. Today's machines are fast :-)
+
+------------------------------------------------------------------------
+r773 | sam | 2006-05-26 00:32:03 +0200 (Fri, 26 May 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/caca.c
+   M /trunk/caca/driver_ncurses.c
+   M /trunk/configure.ac
+
+  * Fixed UTF-8 support in ncurses.
+  * Set ncurses's priority higher than slang.
+
+------------------------------------------------------------------------
+r772 | sam | 2006-05-25 22:01:30 +0200 (Thu, 25 May 2006) | 2 lines
+Changed paths:
+   M /trunk/TODO
+
+  * Updated TODO list.
+
+------------------------------------------------------------------------
+r771 | sam | 2006-05-25 22:01:10 +0200 (Thu, 25 May 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/driver_slang.c
+   M /trunk/cucul/box.c
+   M /trunk/cucul/canvas.c
+   M /trunk/cucul/charset.c
+   M /trunk/cucul/conic.c
+   M /trunk/cucul/cucul.h
+   M /trunk/cucul/line.c
+   M /trunk/cucul/triangle.c
+
+  * Have cucul_utf8_to_utf32 write how many bytes it read.
+  * Use that in the SLang driver so that it supports UTF-8 input.
+
+------------------------------------------------------------------------
+r770 | sam | 2006-05-25 21:59:35 +0200 (Thu, 25 May 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/export.c
+
+  * Fix warnings in a few exporters. Do not assume %d accepts uint32_t without
+    an explicit cast.
+
+------------------------------------------------------------------------
+r769 | sam | 2006-05-25 21:58:21 +0200 (Thu, 25 May 2006) | 4 lines
+Changed paths:
+   M /trunk/caca/caca.c
+   M /trunk/caca/driver_ncurses.c
+   M /trunk/test/colors.c
+   M /trunk/test/input.c
+
+  * Minor cosmetic changes in the test programs.
+  * Code enhancements in the ncurses driver.
+  * Added a comment to explain why slang has a higher priority than ncurses.
+
+------------------------------------------------------------------------
+r768 | sam | 2006-05-25 21:56:55 +0200 (Thu, 25 May 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_conio.c
+
+  * Fixed the DOS build.
+
+------------------------------------------------------------------------
+r767 | sam | 2006-05-25 21:56:03 +0200 (Thu, 25 May 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/caca_internals.h
+
+  * Minor cosmetic fix.
+
+------------------------------------------------------------------------
+r766 | sam | 2006-05-25 21:55:11 +0200 (Thu, 25 May 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/Makefile.am
+   M /trunk/cucul/Makefile.am
+   M /trunk/cxx/Makefile.am
+   M /trunk/kernel/Makefile.am
+   M /trunk/test/Makefile.am
+   M /trunk/tools/Makefile.am
+
+  * Added -I${top_srcdir} to the compilation flags to fix builds configured
+    from an alternate directory (they failed to find common.h).
+
+------------------------------------------------------------------------
+r765 | sam | 2006-05-25 21:11:18 +0200 (Thu, 25 May 2006) | 3 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/src/Makefile.am
+
+  * Removed --enable-network flag, but reused the test as a condition for
+    building cacaserver.
+
+------------------------------------------------------------------------
+r764 | sam | 2006-05-25 21:10:35 +0200 (Thu, 25 May 2006) | 2 lines
+Changed paths:
+   M /trunk/build-dos
+   M /trunk/build-win32
+
+  * Updated build scripts for DOS and Win32.
+
+------------------------------------------------------------------------
+r763 | sam | 2006-05-20 10:45:19 +0200 (Sat, 20 May 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/driver_ncurses.c
+   M /trunk/caca/driver_slang.c
+
+  * Got backspace to work with the slang and ncurses drivers in an X
+    terminal window.
+
+------------------------------------------------------------------------
+r762 | sam | 2006-05-20 10:19:13 +0200 (Sat, 20 May 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_gl.c
+
+  * More coding style fixes in the GL driver.
+
+------------------------------------------------------------------------
+r761 | sam | 2006-05-20 10:11:58 +0200 (Sat, 20 May 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_gl.c
+
+  * Fixed awful indenting of the GL plugin.
+
+------------------------------------------------------------------------
+r760 | sam | 2006-05-20 07:45:57 +0200 (Sat, 20 May 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/driver_ncurses.c
+
+  * Make the ncurses driver UTF-8 and UTF-32 aware.
+  * Add the backspace key to the ncurses driver.
+
+------------------------------------------------------------------------
+r759 | sam | 2006-05-20 07:41:14 +0200 (Sat, 20 May 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/driver_slang.c
+
+  * Make the slang driver UTF-8 and UTF-32 aware.
+  * Add the backspace key to the slang driver.
+
+------------------------------------------------------------------------
+r758 | sam | 2006-05-20 07:29:24 +0200 (Sat, 20 May 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/caca.h
+   M /trunk/caca/driver_conio.c
+   M /trunk/caca/driver_gl.c
+   M /trunk/caca/driver_ncurses.c
+   M /trunk/caca/driver_slang.c
+   M /trunk/caca/driver_win32.c
+   M /trunk/caca/driver_x11.c
+   M /trunk/caca/event.c
+   M /trunk/test/input.c
+
+  * Renamed the event data member "ucs4" to "utf32" for consistency
+    with "utf8".
+
+------------------------------------------------------------------------
+r757 | sam | 2006-05-20 07:28:31 +0200 (Sat, 20 May 2006) | 3 lines
+Changed paths:
+   M /trunk/debian/changelog
+   M /trunk/debian/control
+
+  * Added information from a recent Debian upload of the old
+    version of libcaca.
+
+------------------------------------------------------------------------
+r756 | sam | 2006-05-19 20:34:23 +0200 (Fri, 19 May 2006) | 2 lines
+Changed paths:
+   M /trunk/test
+   M /trunk/test/Makefile.am
+   A /trunk/test/input.c
+
+  * Text input test program. Might be merged into libcaca if it works well.
+
+------------------------------------------------------------------------
+r755 | sam | 2006-05-19 08:44:58 +0200 (Fri, 19 May 2006) | 2 lines
+Changed paths:
+   M /trunk/TODO
+
+  * Updated the TODO list.
+
+------------------------------------------------------------------------
+r754 | sam | 2006-05-19 08:00:00 +0200 (Fri, 19 May 2006) | 2 lines
+Changed paths:
+   M /trunk/debian/caca-utils.install
+   M /trunk/debian/libcucul-dev.install
+
+  * Install caca-config.1.gz in the libcucul-dev package, not caca-utils.
+
+------------------------------------------------------------------------
+r753 | sam | 2006-05-19 07:44:27 +0200 (Fri, 19 May 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/caca.h
+   M /trunk/caca/graphics.c
+   M /trunk/python/pypycaca.c
+   M /trunk/python/pypycaca.h
+   M /trunk/src/aafire.c
+   M /trunk/src/cacaball.c
+   M /trunk/src/cacamoir.c
+   M /trunk/src/cacaplas.c
+   M /trunk/test/demo.c
+   M /trunk/test/frames.c
+   M /trunk/test/gamma.c
+
+  * Renamed caca_set_delay() and caca_get_rendertime() into
+    caca_set_display_time() and caca_get_display_time() for consistency.
+
+------------------------------------------------------------------------
+r752 | sam | 2006-05-19 07:30:01 +0200 (Fri, 19 May 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/charset.c
+
+  * Documented the newly exported charset functions.
+
+------------------------------------------------------------------------
+r751 | sam | 2006-05-19 06:53:48 +0200 (Fri, 19 May 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_ncurses.c
+   M /trunk/caca/driver_slang.c
+   M /trunk/cucul/box.c
+   M /trunk/cucul/canvas.c
+   M /trunk/cucul/charset.c
+   M /trunk/cucul/conic.c
+   M /trunk/cucul/cucul.h
+   M /trunk/cucul/cucul_internals.h
+   M /trunk/cucul/export.c
+   M /trunk/cucul/import.c
+   M /trunk/cucul/line.c
+   M /trunk/cucul/triangle.c
+   M /trunk/tools/makefont.c
+
+  * Export the UTF-8 / UTF-32 / CP437 character conversions to applications.
+
+------------------------------------------------------------------------
+r750 | sam | 2006-05-18 09:57:42 +0200 (Thu, 18 May 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/font.c
+   M /trunk/cucul/font_mono9.h
+   M /trunk/cucul/font_monobold12.h
+
+  * Regenerated fonts and reactivated them under Win32.
+
+------------------------------------------------------------------------
+r749 | sam | 2006-05-18 09:56:54 +0200 (Thu, 18 May 2006) | 6 lines
+Changed paths:
+   M /trunk/tools/makefont.c
+
+  * Elite trick in the font generator to cope with C89's string length
+    limitation of 509 characters. Instead of doing:
+       char foo[10] = "abcdefghij";
+    we now do:
+       struct { char f1[4], f2[4], f3[2]; } foo = { "abcd", "efgh", "ij" };
+
+------------------------------------------------------------------------
+r748 | sam | 2006-05-18 08:26:31 +0200 (Thu, 18 May 2006) | 2 lines
+Changed paths:
+   M /trunk/test/font2tga.c
+
+  * font2tga no longer needs cucul_internal.h.
+
+------------------------------------------------------------------------
+r747 | sam | 2006-05-18 08:23:47 +0200 (Thu, 18 May 2006) | 5 lines
+Changed paths:
+   M /trunk/cucul/box.c
+   M /trunk/cucul/canvas.c
+   M /trunk/cucul/conic.c
+   M /trunk/cucul/cucul.h
+   M /trunk/cucul/cucul_internals.h
+   M /trunk/cucul/dither.c
+   M /trunk/cucul/import.c
+   M /trunk/cucul/line.c
+   M /trunk/cucul/triangle.c
+   M /trunk/test/font2tga.c
+
+  * Changed cucul_putchar's prototype so that it accepts a 32-bit unsigned
+    int which shall be used as an UTF-32 character. We do not have any casting
+    problems due to the signedness of chars because all characters were
+    ASCII (ie. <= 0x7f) beforehands.
+
+------------------------------------------------------------------------
+r746 | sam | 2006-05-18 08:13:36 +0200 (Thu, 18 May 2006) | 2 lines
+Changed paths:
+   M /trunk/test
+   M /trunk/test/Makefile.am
+   A /trunk/test/font2tga.c
+
+  * Added font2tga, a test program that exports our font in a known format.
+
+------------------------------------------------------------------------
+r745 | sam | 2006-05-18 08:09:44 +0200 (Thu, 18 May 2006) | 3 lines
+Changed paths:
+   M /trunk/test/export.c
+
+  * If the export test target is ANSI or UTF-8, dither image with special
+    shaded glyphs.
+
+------------------------------------------------------------------------
+r744 | sam | 2006-05-18 07:43:43 +0200 (Thu, 18 May 2006) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+
+  * Removed useless -lXt from X11 libraries check.
+
+------------------------------------------------------------------------
+r743 | sam | 2006-05-12 21:33:44 +0200 (Fri, 12 May 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+  * Workaround for illegal ^[[0,0H ANSI escape code.
+
+------------------------------------------------------------------------
+r742 | sam | 2006-05-12 21:32:41 +0200 (Fri, 12 May 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/dither.c
+
+  * Use UTF-32 instead of UTF-8 in the dithering glyph block list for slightly
+    better performances.
+
+------------------------------------------------------------------------
+r741 | sam | 2006-05-12 21:31:50 +0200 (Fri, 12 May 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/export.c
+
+  * Add linebreaks to the ANSI exporter for better readability, and use
+    the save/load cursor position trick to ignore them.
+
+------------------------------------------------------------------------
+r740 | jylam | 2006-05-12 21:19:36 +0200 (Fri, 12 May 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/export.c
+
+ * Fixed postscript exporter, image in not at the bottom of the page anymore
+
+------------------------------------------------------------------------
+r739 | sam | 2006-05-09 22:25:29 +0200 (Tue, 09 May 2006) | 1 line
+Changed paths:
+   M /trunk/src/cacaserver.c
+
+  * Use UTF-8 instead of ANSI in cacaserver
+------------------------------------------------------------------------
+r738 | sam | 2006-05-09 20:59:00 +0200 (Tue, 09 May 2006) | 1 line
+Changed paths:
+   M /trunk/cucul/font_mono9.h
+   M /trunk/cucul/font_monobold12.h
+
+  * Optimise built-in fonts. We gain about 100kB in the final binary.
+------------------------------------------------------------------------
+r737 | sam | 2006-05-09 17:52:15 +0200 (Tue, 09 May 2006) | 3 lines
+Changed paths:
+   M /trunk/tools/makefont.c
+
+  * Optimise similar glyphs when generating a font. Given how many glyphs
+    are unavailable, this is a significant gain.
+
+------------------------------------------------------------------------
+r736 | sam | 2006-05-09 03:58:47 +0200 (Tue, 09 May 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_x11.c
+
+  * Added the long dash and middle dot CP437 characters to the X11 driver.
+
+------------------------------------------------------------------------
+r735 | sam | 2006-05-09 03:57:47 +0200 (Tue, 09 May 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+  * If the ANSI file we import does not use the 80 columns, we don't expand
+    the canvas to 80 columns.
+
+------------------------------------------------------------------------
+r734 | sam | 2006-05-09 03:12:58 +0200 (Tue, 09 May 2006) | 3 lines
+Changed paths:
+   M /trunk/src/cacadraw.c
+
+  * Allow cacadraw to open several files; use 'n' and 'p' to cycle.
+  * Decreased PgUp/PgDn scrolling rate.
+
+------------------------------------------------------------------------
+r733 | sam | 2006-05-09 03:03:02 +0200 (Tue, 09 May 2006) | 2 lines
+Changed paths:
+   M /trunk/kernel/kernel.c
+
+  * Removed a useless cast in the kernel code.
+
+------------------------------------------------------------------------
+r732 | sam | 2006-05-09 02:59:29 +0200 (Tue, 09 May 2006) | 2 lines
+Changed paths:
+   M /trunk/DotNet
+   M /trunk/DotNet/AssemblyInfo.cs
+   M /trunk/DotNet/Caca.cs
+   M /trunk/DotNet/Cucul.cs
+   M /trunk/DotNet/test.cs
+
+  * Set svn properties on the .NET files.
+
+------------------------------------------------------------------------
+r731 | sam | 2006-05-09 02:47:28 +0200 (Tue, 09 May 2006) | 3 lines
+Changed paths:
+   M /trunk/test/font.c
+   M /trunk/test/text.c
+
+  * Cosmetic fix in test/font.c.
+  * Use UTF-8 output in test/text.c instead of ANSI.
+
+------------------------------------------------------------------------
+r730 | sam | 2006-05-09 02:46:08 +0200 (Tue, 09 May 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/caca.h
+
+  * Minor cosmetic fix in a comment.
+
+------------------------------------------------------------------------
+r729 | sam | 2006-05-09 02:43:22 +0200 (Tue, 09 May 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/font_mono9.h
+   M /trunk/cucul/font_monobold12.h
+   M /trunk/tools/makefont.c
+
+  * Added a few more Unicode blocks to the default fonts.
+
+------------------------------------------------------------------------
+r728 | sam | 2006-05-09 02:36:33 +0200 (Tue, 09 May 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/transform.c
+
+  * Added a few more Unicode characters to the glyph transformations.
+
+------------------------------------------------------------------------
+r727 | sam | 2006-05-09 02:34:16 +0200 (Tue, 09 May 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/cucul.h
+   M /trunk/cucul/dither.c
+
+  * Changed the cucul_create_dither() prototype to make sure the mask
+    arguments are at least 32 bits.
+
+------------------------------------------------------------------------
+r721 | sam | 2006-05-05 17:19:44 +0200 (Fri, 05 May 2006) | 3 lines
+Changed paths:
+   M /trunk/test/export.c
+
+  * Make the export test 80 columns wide, so that the ANSI we generate can
+    be read by other programs.
+
+------------------------------------------------------------------------
+r720 | sam | 2006-05-05 17:13:32 +0200 (Fri, 05 May 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/font_mono9.h
+   M /trunk/cucul/font_monobold12.h
+
+  * Updated fonts with the new hardcoded CP437 glyphs.
+
+------------------------------------------------------------------------
+r719 | sam | 2006-05-05 17:12:50 +0200 (Fri, 05 May 2006) | 3 lines
+Changed paths:
+   M /trunk/tools/makefont.c
+
+  * Hardcode a few CP437 glyphs in makefont.c because they don't look that
+    good with Pango.
+
+------------------------------------------------------------------------
+r718 | sam | 2006-05-05 16:03:40 +0200 (Fri, 05 May 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_ncurses.c
+   M /trunk/caca/driver_slang.c
+   M /trunk/tools/Makefile.am
+   M /trunk/tools/makefont.c
+
+  * Factored more UTF32 to UTF8 conversions using _cucul_utf32_to_utf8().
+
+------------------------------------------------------------------------
+r717 | sam | 2006-05-05 15:44:54 +0200 (Fri, 05 May 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/export.c
+
+  * Use _cucul_utf32_to_utf8() instead of the inline code in the UTF-8 and
+    SVG exporters.
+
+------------------------------------------------------------------------
+r716 | sam | 2006-05-05 07:09:54 +0200 (Fri, 05 May 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/charset.c
+   M /trunk/cucul/cucul_internals.h
+
+  * Implemented the private _cucul_utf32_to_utf8() helper.
+
+------------------------------------------------------------------------
+r715 | sam | 2006-05-05 07:08:51 +0200 (Fri, 05 May 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/export.c
+
+  * Exporter now generates valid ANSI, with CP437 characters.
+
+------------------------------------------------------------------------
+r714 | sam | 2006-05-05 00:00:52 +0200 (Fri, 05 May 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/export.c
+
+  * Added "utf8" export that is like ANSI but exports UTF-8 encoded coloured
+    text.
+
+------------------------------------------------------------------------
+r713 | sam | 2006-05-04 23:34:10 +0200 (Thu, 04 May 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/colour.c
+
+  * Use a slightly different RGB palette for ANSI colours, so that brown
+    really looks like brown and not like desaturated yellow.
+
+------------------------------------------------------------------------
+r712 | jylam | 2006-05-02 20:26:02 +0200 (Tue, 02 May 2006) | 2 lines
+Changed paths:
+   M /trunk/DotNet/test.cs
+   M /trunk/caca/event.c
+   M /trunk/doc/tutorial.dox
+
+ * Fixed error in tutorial, updated caca_get_event() doc
+
+------------------------------------------------------------------------
+r711 | jylam | 2006-04-29 13:26:44 +0200 (Sat, 29 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/DotNet/AssemblyInfo.cs
+   M /trunk/DotNet/Caca.cs
+   M /trunk/DotNet/Cucul.cs
+   M /trunk/DotNet/test.cs
+
+ * Fixed $Id 
+
+------------------------------------------------------------------------
+r710 | jylam | 2006-04-29 13:20:43 +0200 (Sat, 29 Apr 2006) | 2 lines
+Changed paths:
+   A /trunk/DotNet
+   A /trunk/DotNet/AssemblyInfo.cs
+   A /trunk/DotNet/Caca.cs
+   A /trunk/DotNet/Cucul.cs
+   A /trunk/DotNet/Makefile
+   A /trunk/DotNet/libCaca.dll.config
+   A /trunk/DotNet/libCucul.dll.config
+   A /trunk/DotNet/test.cs
+
+ * Added preliminary .NET bindings. Caca is complete, Cucul needs to be finished
+
+------------------------------------------------------------------------
+r709 | sam | 2006-04-27 16:15:23 +0200 (Thu, 27 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/cucul.h
+   M /trunk/cucul/dither.c
+   M /trunk/cucul/export.c
+   M /trunk/cucul/font.c
+   M /trunk/cucul/import.c
+   M /trunk/cucul/sprite.c
+   M /trunk/cucul/transform.c
+
+  * Completed return value and errno handling in libcucul API.
+
+------------------------------------------------------------------------
+r708 | sam | 2006-04-27 15:02:27 +0200 (Thu, 27 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/test/export.c
+
+  * Allow an optional input filename in the export test for cheap conversions.
+
+------------------------------------------------------------------------
+r707 | jylam | 2006-04-26 20:59:20 +0200 (Wed, 26 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_gl.c
+   M /trunk/cucul/import.c
+
+ * coding style fixes again
+
+------------------------------------------------------------------------
+r706 | jylam | 2006-04-26 20:53:08 +0200 (Wed, 26 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cxx/caca++.cpp
+   M /trunk/cxx/caca++.h
+   M /trunk/cxx/cucul++.h
+   M /trunk/src/cacadraw.c
+
+ * Fixed indentation. I did it myself, I'm a big boy.
+
+------------------------------------------------------------------------
+r705 | sam | 2006-04-26 19:24:27 +0200 (Wed, 26 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+  * Fixed line wrapping on some weird ANSI files.
+
+------------------------------------------------------------------------
+r704 | sam | 2006-04-26 19:02:37 +0200 (Wed, 26 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+  * Fixed an ANSI rendering bug related to the bold attribute.
+
+------------------------------------------------------------------------
+r703 | sam | 2006-04-26 17:21:28 +0200 (Wed, 26 Apr 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/font_mono9.h
+   M /trunk/cucul/font_monobold12.h
+   M /trunk/tools/makefont.c
+
+  * Added Unicode range U+2200 - U+22FF (Mathematical Operators) to the
+    built-in font so that we now cover all of CP437.
+
+------------------------------------------------------------------------
+r702 | sam | 2006-04-26 16:36:11 +0200 (Wed, 26 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+  * Minor code reorganisation and documenting.
+
+------------------------------------------------------------------------
+r701 | jylam | 2006-04-26 16:06:19 +0200 (Wed, 26 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_gl.c
+
+ * Added preliminary (it means that's fucked up) CP437 codepage
+
+------------------------------------------------------------------------
+r700 | sam | 2006-04-26 15:22:04 +0200 (Wed, 26 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_x11.c
+
+  * Added U+25A0 (■) to the CP437 hack in the X11 driver.
+
+------------------------------------------------------------------------
+r699 | jylam | 2006-04-26 14:59:14 +0200 (Wed, 26 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_gl.c
+
+ * cut too long line (I read the coding style rules, yes). And we had home/end keys support in opengl driver BEFORE X11. Yeah !
+
+------------------------------------------------------------------------
+r698 | jylam | 2006-04-26 14:57:31 +0200 (Wed, 26 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_x11.c
+
+ * removed duplicate code
+
+------------------------------------------------------------------------
+r697 | sam | 2006-04-26 14:51:37 +0200 (Wed, 26 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_x11.c
+
+  * Wow, we even have Home/End support in X11.
+
+------------------------------------------------------------------------
+r696 | sam | 2006-04-26 14:48:41 +0200 (Wed, 26 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_x11.c
+
+  * PageUp/PageDown support in X11.
+
+------------------------------------------------------------------------
+r695 | jylam | 2006-04-26 14:47:21 +0200 (Wed, 26 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_gl.c
+
+ * Fixed home/pgup/pgdown/insert events
+
+------------------------------------------------------------------------
+r694 | jylam | 2006-04-26 14:36:31 +0200 (Wed, 26 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/src/cacadraw.c
+
+ * page up / down 
+
+------------------------------------------------------------------------
+r693 | sam | 2006-04-26 14:30:54 +0200 (Wed, 26 Apr 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+  * In ANSI, bold only sets the foreground colour to bright, not the
+    background.
+
+------------------------------------------------------------------------
+r692 | sam | 2006-04-26 14:25:44 +0200 (Wed, 26 Apr 2006) | 3 lines
+Changed paths:
+   M /trunk/src
+   M /trunk/src/Makefile.am
+   A /trunk/src/cacadraw.c
+   M /trunk/test/import.c
+
+  * Added cacadraw. It only shows files and lets you scroll for now, but
+    it will eventually evolve into something better.
+
+------------------------------------------------------------------------
+r691 | jylam | 2006-04-26 14:23:30 +0200 (Wed, 26 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+ * Really updated doc
+
+------------------------------------------------------------------------
+r690 | jylam | 2006-04-26 14:18:35 +0200 (Wed, 26 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+ * Fixed documentation for import
+
+------------------------------------------------------------------------
+r689 | sam | 2006-04-26 14:17:22 +0200 (Wed, 26 Apr 2006) | 2 lines
+Changed paths:
+   D /trunk/cpp
+
+  * Removed legacy cpp directory.
+
+------------------------------------------------------------------------
+r688 | jylam | 2006-04-26 14:11:55 +0200 (Wed, 26 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/Makefile.am
+   M /trunk/configure.ac
+   A /trunk/cxx (from /trunk/cpp:684)
+   M /trunk/cxx/Makefile.am
+   R /trunk/cxx/caca++.cpp (from /trunk/cpp/caca++.cpp:686)
+   R /trunk/cxx/caca++.h (from /trunk/cpp/caca++.h:686)
+   R /trunk/cxx/cpptest.cpp (from /trunk/cpp/cpptest.cpp:686)
+   R /trunk/cxx/cucul++.cpp (from /trunk/cpp/cucul++.cpp:686)
+   R /trunk/cxx/cucul++.h (from /trunk/cpp/cucul++.h:686)
+
+ * Updated C++ bindings and renamed directory to more comprehensive cxx
+
+------------------------------------------------------------------------
+r687 | sam | 2006-04-26 14:06:13 +0200 (Wed, 26 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/test/event.c
+
+  * Minor typo.
+
+------------------------------------------------------------------------
+r686 | jylam | 2006-04-26 13:57:30 +0200 (Wed, 26 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cpp/caca++.cpp
+   M /trunk/cpp/caca++.h
+   M /trunk/cpp/cpptest.cpp
+   M /trunk/cpp/cucul++.cpp
+   M /trunk/cpp/cucul++.h
+
+ * Updated libcaca c++ bindings
+
+------------------------------------------------------------------------
+r685 | sam | 2006-04-26 13:54:26 +0200 (Wed, 26 Apr 2006) | 5 lines
+Changed paths:
+   M /trunk/cucul/buffer.c
+   M /trunk/cucul/cucul.h
+   M /trunk/cucul/cucul_internals.h
+   M /trunk/cucul/export.c
+   M /trunk/cucul/import.c
+   M /trunk/src/cacaplay.c
+   M /trunk/src/cacaserver.c
+   M /trunk/test
+   M /trunk/test/import.c
+   M /trunk/test/text.c
+
+  * Implemented cucul_load_file() and cucul_load_memory() to load respectively
+    a file and a memory area into a libcucul buffer.
+  * Changed the cucul_import_canvas() prototype so that it uses libcucul
+    buffers instead of simple memory areas.
+
+------------------------------------------------------------------------
+r684 | sam | 2006-04-26 13:29:50 +0200 (Wed, 26 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+  * Argh, _really_ fixed the uninitialised variable.
+
+------------------------------------------------------------------------
+r683 | sam | 2006-04-26 13:28:55 +0200 (Wed, 26 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+  * Fixed an uninitialised variable.
+
+------------------------------------------------------------------------
+r682 | sam | 2006-04-26 12:22:31 +0200 (Wed, 26 Apr 2006) | 4 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+  * Fixed our buffer overflow in the ANSI parser by simply skipping control
+    sequences longer than 100 characters.
+  * Documented the escape sequence format.
+
+------------------------------------------------------------------------
+r681 | jylam | 2006-04-26 12:04:02 +0200 (Wed, 26 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cpp/cpptest.cpp
+   M /trunk/cpp/cucul++.cpp
+   M /trunk/cpp/cucul++.h
+   M /trunk/test/demo.c
+
+ * Updated C++ bindings, should be coding-style-correction-proof, or at least a bit better than before. Not tested at all.
+
+------------------------------------------------------------------------
+r680 | sam | 2006-04-26 11:56:26 +0200 (Wed, 26 Apr 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+  * More robust ANSI sequence argument parser. Detects private sequences and
+    intermediate bytes.
+
+------------------------------------------------------------------------
+r679 | jylam | 2006-04-26 11:00:40 +0200 (Wed, 26 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+ * Fixed warning in a clever and tested way. Bordel de merde.
+
+------------------------------------------------------------------------
+r678 | sam | 2006-04-26 10:21:46 +0200 (Wed, 26 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+  * Coding style.
+
+------------------------------------------------------------------------
+r677 | sam | 2006-04-26 10:12:57 +0200 (Wed, 26 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+  * No way, dude. You cannot declare x and y unsigned if you test for (x < 0).
+
+------------------------------------------------------------------------
+r676 | jylam | 2006-04-26 10:09:14 +0200 (Wed, 26 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+ * Fixed warnings in ansi importer
+
+------------------------------------------------------------------------
+r675 | sam | 2006-04-26 09:57:26 +0200 (Wed, 26 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+  * More cleaning up of the ANSI loader. Fixed reverse video.
+
+------------------------------------------------------------------------
+r674 | sam | 2006-04-26 09:46:58 +0200 (Wed, 26 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/colour.c
+
+  * Set the transparent colour's RGB values to the default colour's ones.
+
+------------------------------------------------------------------------
+r673 | jylam | 2006-04-25 20:23:33 +0200 (Tue, 25 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+ * Improved ANSI format detection
+
+------------------------------------------------------------------------
+r672 | sam | 2006-04-25 20:16:42 +0200 (Tue, 25 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+  * Really fixed bold in ANSI loader, and removed dead code.
+
+------------------------------------------------------------------------
+r671 | sam | 2006-04-25 20:02:20 +0200 (Tue, 25 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+  * Simplified _manage_modifiers() a bit.
+
+------------------------------------------------------------------------
+r670 | sam | 2006-04-25 19:46:49 +0200 (Tue, 25 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+  * Fixed bold support in ANSI loader.
+
+------------------------------------------------------------------------
+r669 | sam | 2006-04-25 19:43:16 +0200 (Tue, 25 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+  * A few fixes in the ANSI interpreter.
+
+------------------------------------------------------------------------
+r668 | sam | 2006-04-25 18:28:00 +0200 (Tue, 25 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+  * Got rid of _update_canvas_size().
+
+------------------------------------------------------------------------
+r667 | jylam | 2006-04-25 17:39:13 +0200 (Tue, 25 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+ * _updated_coding_style(aBit);
+
+------------------------------------------------------------------------
+r666 | sam | 2006-04-25 17:22:53 +0200 (Tue, 25 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+  * Ahahaha. Meet the "optimisation" that breaks everything.
+
+------------------------------------------------------------------------
+r665 | sam | 2006-04-25 17:04:19 +0200 (Tue, 25 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+  * Small optimisation in import_text().
+
+------------------------------------------------------------------------
+r664 | sam | 2006-04-25 16:12:31 +0200 (Tue, 25 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+  * Really minor coding style fixes in the ANSI importer.
+
+------------------------------------------------------------------------
+r663 | sam | 2006-04-25 13:05:25 +0200 (Tue, 25 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/canvas.c
+   M /trunk/cucul/colour.c
+   M /trunk/cucul/cucul.c
+   M /trunk/cucul/cucul.h
+   M /trunk/cucul/cucul_internals.h
+
+  * More error checking in libcucul.
+
+------------------------------------------------------------------------
+r662 | sam | 2006-04-25 13:05:03 +0200 (Tue, 25 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/test/import.c
+
+  * Jylam is too modest.
+
+------------------------------------------------------------------------
+r661 | jylam | 2006-04-25 12:14:47 +0200 (Tue, 25 Apr 2006) | 2 lines
+Changed paths:
+   A /trunk/test/import.c
+
+ * Added importers test
+
+------------------------------------------------------------------------
+r660 | jylam | 2006-04-25 12:14:12 +0200 (Tue, 25 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/import.c
+   M /trunk/test/Makefile.am
+
+ * Added preliminary ANSI importer, added import formats autodection
+
+------------------------------------------------------------------------
+r659 | sam | 2006-04-25 11:59:58 +0200 (Tue, 25 Apr 2006) | 4 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/cucul/box.c
+   M /trunk/cucul/buffer.c
+   M /trunk/cucul/canvas.c
+   M /trunk/cucul/conic.c
+   M /trunk/cucul/cucul.h
+   M /trunk/cucul/line.c
+   M /trunk/cucul/triangle.c
+
+  * Check for <errno.h>.
+  * Started changing function prototypes so that they return an integer
+    instead of void, just in case they might fail.
+
+------------------------------------------------------------------------
+r658 | sam | 2006-04-25 11:34:41 +0200 (Tue, 25 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/Makefile.am
+   M /trunk/cucul/cucul.h
+   D /trunk/cucul/error.c
+
+  * Reverted that errno stuff. We'll just use the real errno.
+
+------------------------------------------------------------------------
+r657 | sam | 2006-04-25 10:54:44 +0200 (Tue, 25 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/Makefile.am
+   M /trunk/cucul/cucul.h
+   A /trunk/cucul/error.c
+
+  * Added basis for an errno-like mechanism.
+
+------------------------------------------------------------------------
+r656 | sam | 2006-04-25 00:10:38 +0200 (Tue, 25 Apr 2006) | 3 lines
+Changed paths:
+   M /trunk/build-win32
+   M /trunk/configure.ac
+
+  * Removed my previously introduced --enable-pangoft2 and replaced it with
+    a nicer cross compilation check.
+
+------------------------------------------------------------------------
+r655 | sam | 2006-04-24 23:45:26 +0200 (Mon, 24 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/build-win32
+   M /trunk/configure.ac
+   M /trunk/src/Makefile.am
+   M /trunk/src/cacaserver.c
+
+  * Brought the Win32 build back on its wheels.
+
+------------------------------------------------------------------------
+r654 | sam | 2006-04-24 23:09:06 +0200 (Mon, 24 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/common.h
+   M /trunk/configure.ac
+   M /trunk/cucul/font.c
+   M /trunk/src/cacaserver.c
+   M /trunk/tools/makefont.c
+
+  * Renamed htons/htonl to hton16/hton32 to avoid useless conflicts.
+
+------------------------------------------------------------------------
+r653 | sam | 2006-04-24 23:05:31 +0200 (Mon, 24 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_win32.c
+
+  * Fixed minor compilation warning.
+
+------------------------------------------------------------------------
+r652 | sam | 2006-04-24 22:56:07 +0200 (Mon, 24 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/common.h
+
+  * Win32 compilation fix.
+
+------------------------------------------------------------------------
+r651 | sam | 2006-04-24 22:55:46 +0200 (Mon, 24 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/font.c
+
+  * On win32, only disable the built-in fonts, not all the font functions.
+
+------------------------------------------------------------------------
+r650 | sam | 2006-04-24 22:45:55 +0200 (Mon, 24 Apr 2006) | 3 lines
+Changed paths:
+   M /trunk/common.h
+   M /trunk/configure.ac
+   M /trunk/cucul/font.c
+   M /trunk/tools/makefont.c
+
+  * Look for htons/htonl in netinet/in.h in addition to arpa/inet.h
+  * Implement htons/htonl in common.h just in case.
+
+------------------------------------------------------------------------
+r649 | sam | 2006-04-24 22:39:54 +0200 (Mon, 24 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/doc/style.dox
+
+  * Hahaha, fixed the coding style example.
+
+------------------------------------------------------------------------
+r648 | sam | 2006-04-24 22:35:59 +0200 (Mon, 24 Apr 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/caca.c
+   M /trunk/caca/caca_internals.h
+   M /trunk/caca/driver_conio.c
+   M /trunk/caca/driver_gl.c
+   M /trunk/caca/driver_ncurses.c
+   M /trunk/caca/driver_raw.c
+   M /trunk/caca/driver_slang.c
+   M /trunk/caca/driver_vga.c
+   M /trunk/caca/driver_win32.c
+   M /trunk/caca/driver_x11.c
+   M /trunk/caca/event.c
+   M /trunk/caca/graphics.c
+   M /trunk/caca/time.c
+   M /trunk/common.h
+   M /trunk/configure.ac
+   M /trunk/cucul/box.c
+   M /trunk/cucul/buffer.c
+   M /trunk/cucul/canvas.c
+   M /trunk/cucul/charset.c
+   M /trunk/cucul/colour.c
+   M /trunk/cucul/conic.c
+   M /trunk/cucul/cucul.c
+   M /trunk/cucul/cucul_internals.h
+   M /trunk/cucul/dither.c
+   M /trunk/cucul/export.c
+   M /trunk/cucul/font.c
+   M /trunk/cucul/import.c
+   M /trunk/cucul/line.c
+   M /trunk/cucul/sprite.c
+   M /trunk/cucul/transform.c
+   M /trunk/cucul/triangle.c
+   M /trunk/kernel/kernel.c
+   M /trunk/src/aafire.c
+   M /trunk/src/cacaball.c
+   M /trunk/src/cacamoir.c
+   M /trunk/src/cacaplas.c
+   M /trunk/src/cacaplay.c
+   M /trunk/src/cacaserver.c
+   M /trunk/src/cacaview.c
+   M /trunk/src/common-image.c
+   M /trunk/src/img2irc.c
+   M /trunk/test/colors.c
+   M /trunk/test/demo.c
+   M /trunk/test/dithering.c
+   M /trunk/test/event.c
+   M /trunk/test/spritedit.c
+   M /trunk/tools/makefont.c
+   M /trunk/tools/optipal.c
+
+  * Removed duplicate uint*_t defines from *_internal.h and included common.h
+    in all .c files that needed it.
+
+------------------------------------------------------------------------
+r647 | sam | 2006-04-24 21:57:23 +0200 (Mon, 24 Apr 2006) | 3 lines
+Changed paths:
+   M /trunk/Makefile.am
+   A /trunk/common.h
+   M /trunk/test/export.c
+   M /trunk/test/font.c
+   M /trunk/test/frames.c
+   M /trunk/test/gamma.c
+   M /trunk/test/hsv.c
+   M /trunk/test/text.c
+   M /trunk/test/transform.c
+   M /trunk/test/truecolor.c
+   M /trunk/test/unicode.c
+
+  * Added "common.h", a placeholder for simple features and functions missing
+    from some systems.
+
+------------------------------------------------------------------------
+r646 | sam | 2006-04-24 20:46:06 +0200 (Mon, 24 Apr 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/export.c
+
+  * Print '?' for Unicode characters in the ANSI export. We'll decide later
+    whether we want plain ASCII, UTF-8, or CP437.
+
+------------------------------------------------------------------------
+r645 | sam | 2006-04-24 19:51:23 +0200 (Mon, 24 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+
+  * Oops, fixed an old typo that brevented building without PangoFt2.
+
+------------------------------------------------------------------------
+r644 | sam | 2006-04-24 19:47:44 +0200 (Mon, 24 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/debian/Makefile.am
+   M /trunk/debian/caca-utils.install
+   M /trunk/debian/libcucul-dev.install
+
+  * Fixed Debian build files.
+
+------------------------------------------------------------------------
+r643 | sam | 2006-04-24 19:39:53 +0200 (Mon, 24 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+
+  * Do not bail out if PangoFt2 was not found.
+
+------------------------------------------------------------------------
+r641 | sam | 2006-04-22 23:51:50 +0200 (Sat, 22 Apr 2006) | 2 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/NEWS
+   M /trunk/TODO
+
+  * 0.99.beta1 release.
+
+------------------------------------------------------------------------
 r640 | sam | 2006-04-22 23:36:11 +0200 (Sat, 22 Apr 2006) | 2 lines
 Changed paths:
    M /trunk/configure.ac
