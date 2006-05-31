@@ -146,10 +146,10 @@ if test "${enable_x11}" != "no"; then
   AC_CHECK_LIB(X11, XOpenDisplay,
    [ac_cv_my_have_x11="yes"
     if test -n "${x_includes}"; then X_CFLAGS="-I${x_includes}"; fi
-    if test -n "${x_libraries}"; then X_LIBS="-lX11 -L${x_libraries}"; fi
+    if test -n "${x_libraries}"; then X_LIBS="-L${x_libraries}"; fi
     AC_DEFINE(USE_X11, 1, Define to 1 to activate the X11 backend driver)
     CPPFLAGS="${CPPFLAGS} ${X_CFLAGS}"
-    CACA_LIBS="${CACA_LIBS} ${X_LIBS}"
+    CACA_LIBS="${CACA_LIBS} -lX11 ${X_LIBS}"
     CACA_DRIVERS="${CACA_DRIVERS} x11"],
    [ac_cv_my_have_x11="no"],
    [[`if test -n "${x_libraries}"; then echo -L${x_libraries}; fi`]])
