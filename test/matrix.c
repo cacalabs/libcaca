@@ -69,14 +69,13 @@ int main(void)
         {
             FILE *f = fopen("/sys/devices/platform/hdaps/position", "r");
 
-            if(!f)
+            if(f)
             {
-                have_hdaps = 0;
-                break;
+                fscanf(f, "(%d,%d)", &sensorx, &sensory);
+                fclose(f);
             }
-
-            fscanf(f, "(%d,%d)", &sensorx, &sensory);
-            fclose(f);
+            else
+                have_hdaps = 0;
         }
 
         w = cucul_get_canvas_width(cv);
