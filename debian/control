@@ -8,7 +8,7 @@ Standards-Version: 3.7.2
 Package: libcucul-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: libcucul0, ${shlibs:Depends}
 Conflicts: libcaca-dev (<< 0.10-1)
 Replaces: libcaca-dev (<< 0.10-1)
 Description: development files for libcucul
@@ -22,7 +22,7 @@ Description: development files for libcucul
 Package: libcaca-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, libcucul-dev (= ${Source-Version}), libncurses5-dev, libslang2-dev, libx11-dev
+Depends: libcaca0, ${shlibs:Depends}, libcucul-dev (= ${Source-Version}), libncurses5-dev, libslang2-dev, libx11-dev
 Description: development files for libcaca
  libcaca is the Colour AsCii Art library. It provides high level functions
  for colour text drawing, simple primitives for line, polygon and ellipse
