@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    kk->setDelay(20000);
+    kk->setDisplayTime(20000);
 
     while(!kk->getEvent(ev.CACA_EVENT_KEY_PRESS, &ev, 0)) {
 

@@ -58,9 +58,10 @@ class Caca
 
     void Attach(Cucul *cv);
     void Detach();
-    void setDelay(unsigned int);
+    void setDisplayTime(unsigned int);
+
     void Display();
-    unsigned int getRendertime();
+    unsigned int getDisplayTime();
     unsigned int getWidth();
     unsigned int getHeight();
     int setTitle(char const *);

@@ -45,9 +45,9 @@ void Caca::Detach()
     caca_free_display(dp);
 }
 
-void Caca::setDelay(unsigned int d)
+void Caca::setDisplayTime(unsigned int d)
 {
-    caca_set_delay(dp, d);
+    caca_set_display_time(dp, d);
 }
 
 void Caca::Display()
@@ -55,9 +55,9 @@ void Caca::Display()
     caca_refresh_display(dp);
 }
 
-unsigned int Caca::getRendertime()
+unsigned int Caca::getDisplayTime()
 {
-    return caca_get_rendertime(dp);
+    return caca_get_display_time(dp);
 }
 
 unsigned int Caca::getWidth()
