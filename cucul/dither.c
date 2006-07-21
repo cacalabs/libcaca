@@ -757,7 +757,7 @@ int cucul_set_dither_mode(cucul_dither_t *d, char const *str)
         d->get_dither = get_ordered4_dither;
         d->increment_dither = increment_ordered4_dither;
     }
-    else if(!strcasecmp(str, "ordered4"))
+    else if(!strcasecmp(str, "ordered8"))
     {
         d->init_dither = init_ordered8_dither;
         d->get_dither = get_ordered8_dither;
@@ -805,8 +805,8 @@ char const * const * cucul_get_dither_mode_list(cucul_dither_t const *d)
     {
         "none", "no dithering",
         "ordered2", "2x2 ordered dithering",
-        "ordered2", "2x2 ordered dithering",
-        "ordered2", "2x2 ordered dithering",
+        "ordered4", "4x4 ordered dithering",
+        "ordered8", "8x8 ordered dithering",
         "random", "random dithering",
         "fstein", "Floyd-Steinberg dithering",
         NULL, NULL
