@@ -43,7 +43,7 @@ int main(void)
     caca_display_t *dp;
     int i, j;
     int w, h, xo, yo, dx = 0, dy = 0, newdx, newdy;
-    int have_hdaps = 1;
+    int have_hdaps = 1, have_ams = 1;
 
     cv = cucul_create_canvas(0, 0);
     dp = caca_create_display(cv);
@@ -62,29 +62,52 @@ int main(void)
 
     for(;;)
     {
-        int sensorx = -387, sensory = -387;
+        int sensorx, sensory;
 
-        /* IBM HDAPS support */
         if(have_hdaps)
         {
+            /* IBM HDAPS support */
             FILE *f = fopen("/sys/devices/platform/hdaps/position", "r");
 
             if(f)
             {
+                sensorx = sensory = -387; /* FIXME */
+
                 fscanf(f, "(%d,%d)", &sensorx, &sensory);
                 fclose(f);
+
+                sensorx = (sensorx + 387) * 180 / 387 * 4;
+                sensory = (sensory + 387) * 180 / 387 * 4;
             }
             else
                 have_hdaps = 0;
+        }
+        else if(have_ams)
+        {
+            /* Apple Motion Sensor support */
+            FILE *fx = fopen("/sys/devices/ams/x", "r");
+            FILE *fy = fopen("/sys/devices/ams/y", "r");
+
+            if(fx && fy)
+            {
+                sensorx = sensory = 0;
+                fscanf(fx, "%d", &sensorx);
+                fscanf(fy, "%d", &sensory);
+                fclose(fx);
+                fclose(fy);
+                sensorx = - sensorx * 180 / 60;
+            }
+            else
+                have_ams = 0;
         }
 
         w = cucul_get_canvas_width(cv);
         h = cucul_get_canvas_height(cv);
         xo = w / 2;
         yo = h / 2;
-        //newdx = 1000.0 * cos((M_PI / 360.0) * (sensorx + 387));
-        //newdy = -1000.0 * sin((M_PI / 360.0) * (sensorx + 387));
-        newdx = sensorx + 387;
+        //newdx = 1000.0 * cos((M_PI / 360.0) * (sensorx));
+        //newdy = -1000.0 * sin((M_PI / 360.0) * (sensorx));
+        newdx = sensorx;
         newdy = 100;
 
         if(newdx > -10 && newdx < 10)
