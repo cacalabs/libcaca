@@ -41,7 +41,7 @@
  *  If one of the desired canvas coordinates is zero, a default canvas size
  *  of 80x32 is used instead.
  *
- *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  If an error occurs, NULL is returned and \b errno is set accordingly:
  *  - \c ENOMEM Not enough memory for the requested canvas size.
  *
  *  \param width The desired canvas width
