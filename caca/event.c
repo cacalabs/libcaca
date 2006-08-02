@@ -44,7 +44,7 @@ static int _lowlevel_event(caca_display_t *, caca_event_t *);
  *
  *  This function polls the event queue for mouse or keyboard events matching
  *  the event mask and returns the first matching event. Non-matching events
- *  are discarded. \c event_mask must have a non-zero value.
+ *  are discarded. If \c event_mask is zero, the function returns immediately.
  *
  *  The timeout value tells how long this function needs to wait for an
  *  event. A value of zero returns immediately and the function returns zero
@@ -54,6 +54,8 @@ static int _lowlevel_event(caca_display_t *, caca_event_t *);
  *  If not null, \c ev will be filled with information about the event
  *  received. If null, the function will return but no information about
  *  the event will be sent.
+ *
+ *  This function never fails.
  *
  *  \param dp The libcaca graphical context.
  *  \param event_mask Bitmask of requested events.
@@ -117,6 +119,8 @@ int caca_get_event(caca_display_t *dp, unsigned int event_mask,
  *  drivers are being used, because mouse position is only detected when
  *  the mouse is clicked. Other drivers such as X11 work well.
  *
+ *  This function never fails.
+ *
  *  \param dp The libcaca graphical context.
  *  \return The X mouse coordinate.
  */
@@ -134,6 +138,8 @@ unsigned int caca_get_mouse_x(caca_display_t *dp)
  *  it was detected. This function is not reliable if the ncurses or S-Lang
  *  drivers are being used, because mouse position is only detected when
  *  the mouse is clicked. Other drivers such as X11 work well.
+ *
+ *  This function never fails.
  *
  *  \param dp The libcaca graphical context.
  *  \return The Y mouse coordinate.

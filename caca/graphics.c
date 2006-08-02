@@ -18,6 +18,12 @@
 #include "config.h"
 #include "common.h"
 
+#if !defined(__KERNEL__)
+#   if defined(HAVE_ERRNO_H)
+#       include <errno.h>
+#   endif
+#endif
+
 #include "caca.h"
 #include "caca_internals.h"
 #include "cucul.h"
@@ -26,15 +32,25 @@
 /** \brief Set the display title.
  *
  *  If libcaca runs in a window, try to change its title. This works with
- *  the X11 and Win32 drivers.
+ *  the OpenGL, X11 and Win32 drivers.
+ *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c ENOSYS Display driver does not support setting the window title.
  *
  *  \param dp The libcaca display context.
  *  \param title The desired display title.
- *  \return 0 upon success, a non-zero value if an error occurs.
+ *  \return 0 upon success, -1 if an error occurred.
  */
 int caca_set_display_title(caca_display_t *dp, char const *title)
 {
-    return dp->drv.set_display_title(dp, title);
+    int ret = dp->drv.set_display_title(dp, title);
+
+#if defined(HAVE_ERRNO_H)
+    if(ret)
+        errno = ENOSYS;
+#endif
+
+    return ret;
 }
 
 /** \brief Get the display width.
@@ -43,6 +59,8 @@ int caca_set_display_title(caca_display_t *dp, char const *title)
  *  be used for aspect ratio calculation. If libcaca does not run in a window
  *  or if there is no way to know the font size, most drivers will assume a
  *  6x10 font is being used. Note that the units are not necessarily pixels.
+ *
+ *  This function never fails.
  *
  *  \param dp The libcaca display context.
  *  \return The display width.
@@ -58,6 +76,8 @@ unsigned int caca_get_display_width(caca_display_t *dp)
  *  be used for aspect ratio calculation. If libcaca does not run in a window
  *  or if there is no way to know the font size, assume a 6x10 font is being
  *  used. Note that the units are not necessarily pixels.
+ *
+ *  This function never fails.
  *
  *  \param dp The libcaca display context.
  *  \return The display height.
@@ -76,12 +96,16 @@ unsigned int caca_get_display_height(caca_display_t *dp)
  *  If the argument is zero, constant framerate is disabled. This is the
  *  default behaviour.
  *
+ *  This function never fails.
+ *
  *  \param dp The libcaca display context.
  *  \param usec The refresh delay in microseconds.
+ *  \return This function always returns 0.
  */
-void caca_set_display_time(caca_display_t *dp, unsigned int usec)
+int caca_set_display_time(caca_display_t *dp, unsigned int usec)
 {
     dp->delay = usec;
+    return 0;
 }
 
 /** \brief Get the display's average rendering time.
@@ -91,6 +115,8 @@ void caca_set_display_time(caca_display_t *dp, unsigned int usec)
  *  constant framerate was activated by calling caca_set_display_time(), the
  *  average rendering time will not be considerably shorter than the requested
  *  delay even if the real rendering time was shorter.
+ *
+ *  This function never fails.
  *
  *  \param dp The libcaca display context.
  *  \return The render time in microseconds.
@@ -112,9 +138,12 @@ unsigned int caca_get_display_time(caca_display_t *dp)
  *  a time range shorter than the value set with caca_set_display_time(),
  *  the second call will be delayed before performing the screen refresh.
  *
+ *  This function never fails.
+ *
  *  \param dp The libcaca display context.
+ *  \return This function always returns 0.
  */
-void caca_refresh_display(caca_display_t *dp)
+int caca_refresh_display(caca_display_t *dp)
 {
 #if !defined(_DOXYGEN_SKIP_ME)
 #define IDLE_USEC 5000
@@ -147,6 +176,8 @@ void caca_refresh_display(caca_display_t *dp)
     /* If we drifted too much, it's bad, bad, bad. */
     if(dp->lastticks > (int)dp->delay)
         dp->lastticks = 0;
+
+    return 0;
 }
 
 /** \brief Show or hide the mouse pointer.
@@ -154,14 +185,26 @@ void caca_refresh_display(caca_display_t *dp)
  *  This function shows or hides the mouse pointer, for devices that
  *  support it.
  *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c ENOSYS Display driver does not support hiding the mouse pointer.
+ *
  *  \param dp The libcaca display context.
  *  \param flag 0 hides the pointer, 1 shows the system's default pointer
  *              (usually an arrow). Other values are reserved for future use.
+ *  \return 0 upon success, -1 if an error occurred.
  */
-void caca_set_mouse(caca_display_t *dp, int flag)
+int caca_set_mouse(caca_display_t *dp, int flag)
 {
-    if(dp->drv.set_mouse)
-        dp->drv.set_mouse(dp, flag);
+    if(!dp->drv.set_mouse)
+    {
+#if defined(HAVE_ERRNO_H)
+        errno = ENOSYS;
+#endif
+        return -1;
+    }
+
+    dp->drv.set_mouse(dp, flag);
+    return 0;
 }
 
 /*

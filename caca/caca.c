@@ -23,6 +23,9 @@
 #if !defined(__KERNEL__)
 #   include <stdlib.h>
 #   include <string.h>
+#   if defined(HAVE_ERRNO_H)
+#       include <errno.h>
+#   endif
 #endif
 
 #include "cucul.h"
@@ -30,7 +33,7 @@
 #include "caca.h"
 #include "caca_internals.h"
 
-static int caca_init_driver(caca_display_t *dp);
+static int caca_select_driver(caca_display_t *dp);
 
 /** \brief Attach a caca graphical context to a cucul canvas.
  *
@@ -39,6 +42,10 @@ static int caca_init_driver(caca_display_t *dp);
  *  libcucul canvas. Everything that gets drawn in the libcucul canvas can
  *  then be displayed by the libcaca driver.
  *
+ *  If an error occurs, NULL is returned and \b errno is set accordingly:
+ *  - \c ENOMEM Not enough memory.
+ *  - \c ENODEV Graphical device could not be initialised.
+ *
  *  \param cv The cucul cavas.
  *  \return The caca graphical context or NULL if an error occurred.
  */
@@ -46,17 +53,31 @@ caca_display_t * caca_create_display(cucul_canvas_t * cv)
 {
     caca_display_t *dp = malloc(sizeof(caca_display_t));
 
+    if(!dp)
+    {
+#if defined(HAVE_ERRNO_H)
+        errno = ENOMEM;
+#endif
+        return NULL;
+    }
+
     dp->cv = cv;
 
-    if(caca_init_driver(dp))
+    if(caca_select_driver(dp))
     {
         free(dp);
+#if defined(HAVE_ERRNO_H)
+        errno = ENODEV;
+#endif
         return NULL;
     }
 
     if(dp->drv.init_graphics(dp))
     {
         free(dp);
+#if defined(HAVE_ERRNO_H)
+        errno = ENODEV;
+#endif
         return NULL;
     }
 
@@ -99,20 +120,25 @@ caca_display_t * caca_create_display(cucul_canvas_t * cv)
  *  libcucul canvas continues to exist and other graphical contexts can be
  *  attached to it afterwards.
  *
+ *  This function never fails.
+ *
  *  \param dp The libcaca graphical context.
+ *  \return This function always returns 0.
  */
-void caca_free_display(caca_display_t *dp)
+int caca_free_display(caca_display_t *dp)
 {
     dp->drv.end_graphics(dp);
     dp->cv->refcount--;
     free(dp);
+
+    return 0;
 }
 
 /*
  * XXX: The following functions are local.
  */
 
-static int caca_init_driver(caca_display_t *dp)
+static int caca_select_driver(caca_display_t *dp)
 {
 #if defined(HAVE_GETENV) && defined(HAVE_STRCASECMP)
     char *var = getenv("CACA_DRIVER");

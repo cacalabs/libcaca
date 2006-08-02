@@ -97,7 +97,7 @@ static int vga_end_graphics(caca_display_t *dp)
 static int vga_set_display_title(caca_display_t *dp, char const *title)
 {
     /* Unsupported, of course. */
-    return 0;
+    return -1;
 }
 
 static unsigned int vga_get_display_width(caca_display_t *dp)

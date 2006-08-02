@@ -183,7 +183,7 @@ static int slang_end_graphics(caca_display_t *dp)
 static int slang_set_display_title(caca_display_t *dp, char const *title)
 {
     /* FIXME */
-    return 0;
+    return -1;
 }
 
 static unsigned int slang_get_display_width(caca_display_t *dp)

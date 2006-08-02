@@ -39,7 +39,7 @@ static int raw_end_graphics(caca_display_t *dp)
 
 static int raw_set_display_title(caca_display_t *dp, char const *title)
 {
-    return 0;
+    return -1;
 }
 
 static unsigned int raw_get_display_width(caca_display_t *dp)
