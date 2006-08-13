@@ -326,43 +326,30 @@ static void gl_display(caca_display_t *dp)
     }
 
     /* 2nd pass, avoids changing render state too much */
-    glEnable(GL_BLEND);
     glEnable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE);
 
     line = 0;
-    for(y = 0; y < dp->drv.p->height; y += dp->drv.p->font_height)
+    for(y = 0; y < dp->drv.p->height; y += dp->drv.p->font_height, line++)
     {
         uint32_t *attr = dp->cv->attr + line * dp->cv->width;
         uint32_t *chars = dp->cv->chars + line * dp->cv->width;
 
-        for(x = 0; x < dp->drv.p->width; x += dp->drv.p->font_width)
+        for(x = 0; x < dp->drv.p->width; x += dp->drv.p->font_width, attr++)
         {
             uint32_t cv = *chars++;
+            uint16_t fg;
+
+            if(cv == ' ')
+                continue;
 
             if(cv > 0x00000020 && cv < 0x00000080)
             {
-                uint16_t fg = _cucul_argb32_to_rgb12fg(*attr);
                 glBindTexture(GL_TEXTURE_2D, dp->drv.p->id[cv - 32]);
-                glColor3b(((fg & 0xf00) >> 8) * 8,
-                          ((fg & 0x0f0) >> 4) * 8,
-                          (fg & 0x00f) * 8);
-                glBegin(GL_QUADS);
-                glTexCoord2f(0, dp->drv.p->sh);
-                glVertex2f(x, y);
-                glTexCoord2f(dp->drv.p->sw, dp->drv.p->sh);
-                glVertex2f(x + dp->drv.p->font_width, y);
-                glTexCoord2f(dp->drv.p->sw, 0);
-                glVertex2f(x + dp->drv.p->font_width,
-                           y + dp->drv.p->font_height);
-                glTexCoord2f(0, 0);
-                glVertex2f(x, y + dp->drv.p->font_height);
-                glEnd();
             }
-            else if(cv!=' ')
+            else switch(cv)
             {
-                switch(cv)
-                {
                 case 0x00002580: glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[0]); break;
                 case 0x00002584: glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[1]); break;
                 case 0x00002588: glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[2]); break;
@@ -372,30 +359,26 @@ static void gl_display(caca_display_t *dp)
                 case 0x00002592: glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[6]); break;
                 case 0x00002593: glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[7]); break;
                 default:         glBindTexture(GL_TEXTURE_2D, dp->drv.p->id['?' - 32]); break;
-                }
-
-                uint16_t fg = _cucul_argb32_to_rgb12fg(*attr);
-                glColor3b(((fg & 0xf00) >> 8) * 8,
-                          ((fg & 0x0f0) >> 4) * 8,
-                          (fg & 0x00f) * 8);
-                glBegin(GL_QUADS);
-                glTexCoord2f(0, dp->drv.p->sh);
-                glVertex2f(x, y);
-                glTexCoord2f(dp->drv.p->sw, dp->drv.p->sh);
-                glVertex2f(x + dp->drv.p->font_width, y);
-                glTexCoord2f(dp->drv.p->sw, 0);
-                glVertex2f(x + dp->drv.p->font_width,
-                           y + dp->drv.p->font_height);
-                glTexCoord2f(0, 0);
-                glVertex2f(x, y + dp->drv.p->font_height);
-                glEnd();
-
             }
 
-            attr++;
+            fg = _cucul_argb32_to_rgb12fg(*attr);
+            glColor3b(((fg & 0xf00) >> 8) * 8,
+                      ((fg & 0x0f0) >> 4) * 8,
+                      (fg & 0x00f) * 8);
+            glBegin(GL_QUADS);
+            glTexCoord2f(0, dp->drv.p->sh);
+            glVertex2f(x, y);
+            glTexCoord2f(dp->drv.p->sw, dp->drv.p->sh);
+            glVertex2f(x + dp->drv.p->font_width, y);
+            glTexCoord2f(dp->drv.p->sw, 0);
+            glVertex2f(x + dp->drv.p->font_width,
+                       y + dp->drv.p->font_height);
+            glTexCoord2f(0, 0);
+            glVertex2f(x, y + dp->drv.p->font_height);
+            glEnd();
         }
-        line++;
     }
+    glBlendFunc(GL_ONE, GL_ZERO);
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
 
