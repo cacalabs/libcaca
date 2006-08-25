@@ -1,4 +1,101 @@
 ------------------------------------------------------------------------
+r789 | sam | 2006-08-13 19:30:34 +0200 (Sun, 13 Aug 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_gl.c
+
+  * Factored some of the GL code.
+
+------------------------------------------------------------------------
+r788 | sam | 2006-08-02 15:15:52 +0200 (Wed, 02 Aug 2006) | 2 lines
+Changed paths:
+   M /trunk/test
+   M /trunk/test/matrix.c
+
+  * A few changes to the matrix program. I do not plan to maintain it.
+
+------------------------------------------------------------------------
+r787 | sam | 2006-08-02 15:12:43 +0200 (Wed, 02 Aug 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/caca.c
+   M /trunk/caca/caca.h
+   M /trunk/caca/driver_conio.c
+   M /trunk/caca/driver_ncurses.c
+   M /trunk/caca/driver_raw.c
+   M /trunk/caca/driver_slang.c
+   M /trunk/caca/driver_vga.c
+   M /trunk/caca/event.c
+   M /trunk/caca/graphics.c
+
+  * Fixed libcaca prototypes so that all functions use the errno mechanism
+    and return a value.
+
+------------------------------------------------------------------------
+r786 | sam | 2006-08-02 15:11:39 +0200 (Wed, 02 Aug 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/cucul.c
+
+  * Fixed cucul_create_canvas()'s documentation.
+
+------------------------------------------------------------------------
+r785 | sam | 2006-07-21 10:19:29 +0200 (Fri, 21 Jul 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/dither.c
+
+  * Fixed typos in cucul/dither.c that prevented using ordered dither modes,
+    thanks to Sean D'Epagnier.
+
+------------------------------------------------------------------------
+r784 | jylam | 2006-06-10 13:35:18 +0200 (Sat, 10 Jun 2006) | 2 lines
+Changed paths:
+   M /trunk/cxx/caca++.cpp
+   M /trunk/cxx/caca++.h
+   M /trunk/cxx/cpptest.cpp
+
+ * Updated C++ bindings
+
+------------------------------------------------------------------------
+r783 | sam | 2006-06-10 13:04:21 +0200 (Sat, 10 Jun 2006) | 3 lines
+Changed paths:
+   M /trunk/debian/control
+
+  * Fix debian package dependencies; -dev packages didn't pull their library
+    dependencies. Of course.
+
+------------------------------------------------------------------------
+r782 | sam | 2006-05-31 16:33:48 +0200 (Wed, 31 May 2006) | 2 lines
+Changed paths:
+   M /trunk/test/matrix.c
+
+  * Fixed matrix.c for non-Thinkpad computers.
+
+------------------------------------------------------------------------
+r781 | sam | 2006-05-31 16:08:58 +0200 (Wed, 31 May 2006) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+
+  * Fix a build failure when X11R7 is available but OpenGL isn't.
+
+------------------------------------------------------------------------
+r780 | sam | 2006-05-31 14:18:23 +0200 (Wed, 31 May 2006) | 3 lines
+Changed paths:
+   M /trunk/test/Makefile.am
+   A /trunk/test/matrix.c
+
+  * Small matrix effect. Totally useless. Unless you have a Thinkpad, in
+    which case it is massively useless.
+
+------------------------------------------------------------------------
+r779 | sam | 2006-05-29 00:19:10 +0200 (Mon, 29 May 2006) | 3 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/NEWS
+   M /trunk/configure.ac
+   M /trunk/debian/changelog
+
+  * Updated ChangeLog and NEWS.
+  * 0.99.beta2 release.
+
+------------------------------------------------------------------------
 r778 | sam | 2006-05-26 09:43:41 +0200 (Fri, 26 May 2006) | 2 lines
 Changed paths:
    M /trunk/debian/caca-utils.install

@@ -1,8 +1,0 @@
-usr/bin/caca-config
-usr/include/cucul.h
-usr/lib/libcucul.so
-usr/lib/libcucul.a
-usr/lib/pkgconfig/cucul.pc
-usr/share/man/man3/*.3caca
-usr/share/man/man1/caca-config.1
-usr/share/doc/libcucul-dev

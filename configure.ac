@@ -308,7 +308,6 @@ AC_CONFIG_FILES([
   cxx/Makefile
   doc/Makefile
   autotools/Makefile
-  debian/Makefile
   msvc/Makefile
 ])
 AC_CONFIG_FILES([
