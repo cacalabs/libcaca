@@ -1,5 +1,11 @@
 /* $Id$ */ /** \page news News
 
+\section news0_99_beta3 Changes between 0.9.beta3 and 0.99.beta2
+
+ - libcaca functions use errno for error reporting
+ - updated C++ bindings
+ - minor improvements, bugfixes and documentation updates
+
 \section news0_99_beta2 Changes between 0.9.beta2 and 0.99.beta1
 
  - ANSI importer

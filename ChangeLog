@@ -1,4 +1,15 @@
 ------------------------------------------------------------------------
+r790 | sam | 2006-08-25 12:16:53 +0200 (Fri, 25 Aug 2006) | 3 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/Makefile.am
+   M /trunk/configure.ac
+   D /trunk/debian
+
+  * Removed debian packaging stuff from the trunk. It'll now be at
+    svn://svn.debian.org/svn/sam-hocevar/pkg-misc
+
+------------------------------------------------------------------------
 r789 | sam | 2006-08-13 19:30:34 +0200 (Sun, 13 Aug 2006) | 2 lines
 Changed paths:
    M /trunk/caca/driver_gl.c
