@@ -342,6 +342,7 @@ static uint32_t rotatechar(uint32_t ch)
          (uint32_t)'_', 0x203e, /* _ ‾ */
          (uint32_t)',', 0x00b4, /* , ´ */
          (uint32_t)'`', 0x02ce, /* ` ˎ */
+         (uint32_t)'&', 0x214b, /* & ⅋ */
          (uint32_t)'!', 0x00a1, /* ! ¡ */
          (uint32_t)'?', 0x00bf, /* ? ¿ */
          (uint32_t)'C', 0x03fd, /* C Ͻ */
