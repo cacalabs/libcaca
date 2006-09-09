@@ -18,7 +18,6 @@ Options:
    [--exec-prefix[=DIR]]
    [--version]
    [--libs]
-   [--plugin-libs]
    [--ldflags]
    [--cflags]
 EOF
@@ -72,7 +71,7 @@ do
       libs="$libs -lcucul"
       ;;
     caca)
-      libs="$libs -lcaca @CACA_LIBS@ -lcucul"
+      libs="$libs -lcaca -lcucul"
       ;;
     *)
       usage 1 1>&2
@@ -83,7 +82,7 @@ done
 
 if test "$libs" = ""
 then
-  libs="-lcaca @CACA_LIBS@ -lcucul"
+  libs="-lcaca -lcucul"
 fi
 
 if test "$local_prefix" = "yes"
