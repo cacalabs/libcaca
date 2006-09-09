@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
             exit(-1);
         }
         cv = cucul_import_canvas(tmp, "");
-        if(!tmp)
+        if(!cv)
         {
             fprintf(stderr, "%s: `%s' has unknown format\n", argv[0], file);
             exit(-1);
