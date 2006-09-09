@@ -98,7 +98,7 @@ int main(void)
 </td><td>
 \code
 #include <caca.h>
-#ifndef CACA_API_VERSION_1
+#ifdef CACA_API_VERSION_1
 #   include <caca0.h>
 #endif
 
