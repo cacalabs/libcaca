@@ -6,7 +6,7 @@ DISTCLEANFILES = caca.pc
 pkgconfig_DATA = caca.pc
 pkgconfigdir = $(libdir)/pkgconfig
 
-include_HEADERS = caca.h
+include_HEADERS = caca.h caca0.h
 
 lib_LTLIBRARIES = libcaca.la
 
@@ -14,6 +14,8 @@ libcaca_la_SOURCES = \
 	caca.c \
 	caca.h \
 	caca_internals.h \
+	caca0.c \
+	caca0.h \
 	graphics.c \
 	event.c \
 	time.c \
