@@ -70,7 +70,6 @@ int main(int argc, char **argv)
 
     /* Main menu */
     display_menu();
-    caca_refresh();
 
     /* Go ! */
     while(!quit)
@@ -107,7 +106,7 @@ int main(int argc, char **argv)
                 case 'd':
                 case 'D':
                     dithering = (dithering + 1) % 5;
-                    caca_set_dithering(dithering);
+                    caca_set_dithering(CACA_DITHERING_NONE + dithering);
                     display_menu();
                     break;
                 case 'c':
@@ -220,9 +219,10 @@ static void display_menu(void)
     caca_printf(4, 18, "'b': drawing boundaries: %s",
               bounds == 0 ? "screen" : "infinite");
     caca_printf(4, 19, "'d': dithering (%s)",
-                caca_get_dithering_name(dithering));
+                caca_get_dithering_name(CACA_DITHERING_NONE + dithering));
 
     caca_putstr(4, yo - 2, "'q': quit");
+    caca_refresh();
 }
 
 static void demo_all(void)
