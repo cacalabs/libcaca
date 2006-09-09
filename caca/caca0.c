@@ -20,7 +20,7 @@
 #include "common.h"
 
 #if !defined(__KERNEL__)
-#   include <stdio.h>
+#   include <stdlib.h>
 #endif
 
 #include "caca.h"
@@ -29,18 +29,23 @@
 /* These variables are needed to emulate old non-thread safe behaviour */
 cucul_canvas_t *__caca0_cv = NULL;
 caca_display_t *__caca0_dp = NULL;
-unsigned char __caca0_fg;
-unsigned char __caca0_bg;
+unsigned char __caca0_fg = CUCUL_COLOR_LIGHTGRAY;
+unsigned char __caca0_bg = CUCUL_COLOR_BLACK;
 char __caca0_utf8[2] = " ";
 
 /* These functions are needed, too */
 int __caca0_init(void);
 void __caca0_end(void);
 unsigned int __caca0_get_event(unsigned int, int);
+unsigned int __caca0_sqrt(unsigned int);
 int __caca0_get_feature(int);
 void __caca0_set_feature(int);
 char const *__caca0_get_feature_name(int);
 cucul_canvas_t *__caca0_load_sprite(char const *);
+cucul_dither_t *__caca0_create_bitmap(unsigned int, unsigned int,
+          unsigned int, unsigned int, unsigned long int, unsigned long int,
+          unsigned long int, unsigned long int);
+void __caca0_free_bitmap(cucul_dither_t *);
 
 /* Emulation functions */
 int __caca0_init(void)
@@ -99,60 +104,88 @@ unsigned int __caca0_get_event(unsigned int m, int t)
     return 0x00000000;
 }
 
-enum caca_feature
+unsigned int __caca0_sqrt(unsigned int a)
 {
-    CACA_BACKGROUND       = 0x10,
-    CACA_BACKGROUND_BLACK = 0x11,
-    CACA_BACKGROUND_SOLID = 0x12,
-#define CACA_BACKGROUND_MIN 0x11
-#define CACA_BACKGROUND_MAX 0x12
-    CACA_ANTIALIASING           = 0x20,
-    CACA_ANTIALIASING_NONE      = 0x21,
-    CACA_ANTIALIASING_PREFILTER = 0x22,
-#define CACA_ANTIALIASING_MIN     0x21
-#define CACA_ANTIALIASING_MAX     0x22
-    CACA_DITHERING          = 0x30,
-    CACA_DITHERING_NONE     = 0x31,
-    CACA_DITHERING_ORDERED2 = 0x32,
-    CACA_DITHERING_ORDERED4 = 0x33,
-    CACA_DITHERING_ORDERED8 = 0x34,
-    CACA_DITHERING_RANDOM   = 0x35,
-#define CACA_DITHERING_MIN    0x31
-#define CACA_DITHERING_MAX    0x35
-    CACA_FEATURE_UNKNOWN = 0xffff
+    if(a == 0)
+        return 0;
+
+    if(a < 1000000000)
+    {
+        unsigned int x = a < 10 ? 1
+                       : a < 1000 ? 10
+                       : a < 100000 ? 100
+                       : a < 10000000 ? 1000
+                       : 10000;
+
+        /* Newton's method. Three iterations would be more than enough. */
+        x = (x * x + a) / x / 2;
+        x = (x * x + a) / x / 2;
+        x = (x * x + a) / x / 2;
+        x = (x * x + a) / x / 2;
+
+        return x;
+    }
+
+    return 2 * __caca0_sqrt(a / 4);
+}
+
+static char const *features[] =
+{
+    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+
+    NULL, "16", "full16", NULL, NULL, NULL, NULL, NULL,
+    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+
+    NULL, "none", "prefilter", NULL, NULL, NULL, NULL, NULL,
+    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+
+    NULL, "none", "ordered2", "ordered4", "ordered8", "random"
 };
+
+static cucul_dither_t **bitmaps = NULL;
+static unsigned int nbitmaps = 0;
+
+static int background = 0x12;
+static int antialiasing = 0x22;
+static int dithering = 0x33;
 
 int __caca0_get_feature(int feature)
 {
-    return feature;
+    if(feature == 0x10)
+        return background;
+    if(feature == 0x20)
+        return antialiasing;
+    if(feature == 0x30)
+        return dithering;
+    return 0xffff; /* CACA_FEATURE_UNKNOWN */
 }
 
 void __caca0_set_feature(int feature)
 {
+    unsigned int i;
+
     switch(feature)
     {
-        case CACA_BACKGROUND:
-            feature = CACA_BACKGROUND_SOLID;
-        case CACA_BACKGROUND_BLACK:
-        case CACA_BACKGROUND_SOLID:
-            //_caca_background = feature;
+        case 0x10: feature = 0x12; /* CACA_BACKGROUND_SOLID */
+        case 0x11: case 0x12:
+            background = feature;
+            for(i = 0; i < nbitmaps; i++)
+                cucul_set_dither_color(bitmaps[i], features[feature]);
             break;
 
-        case CACA_ANTIALIASING:
-            feature = CACA_ANTIALIASING_PREFILTER;
-        case CACA_ANTIALIASING_NONE:
-        case CACA_ANTIALIASING_PREFILTER:
-            //_caca_antialiasing = feature;
+        case 0x20: feature = 0x22; /* CACA_ANTIALIASING_PREFILTER */
+        case 0x21: case 0x22:
+            antialiasing = feature;
+            for(i = 0; i < nbitmaps; i++)
+                cucul_set_dither_antialias(bitmaps[i], features[feature]);
             break;
 
-        case CACA_DITHERING:
-            feature = CACA_DITHERING_ORDERED4;
-        case CACA_DITHERING_NONE:
-        case CACA_DITHERING_ORDERED2:
-        case CACA_DITHERING_ORDERED4:
-        case CACA_DITHERING_ORDERED8:
-        case CACA_DITHERING_RANDOM:
-            //_caca_dithering = feature;
+        case 0x30: feature = 0x33; /* CACA_DITHERING_ORDERED4 */
+        case 0x31: case 0x32: case 0x33: case 0x34: case 0x35:
+            dithering = feature;
+            for(i = 0; i < nbitmaps; i++)
+                cucul_set_dither_mode(bitmaps[i], features[feature]);
             break;
     }
 }
@@ -161,17 +194,17 @@ char const *__caca0_get_feature_name(int feature)
 {
     switch(feature)
     {
-        case CACA_BACKGROUND_BLACK: return "black background";
-        case CACA_BACKGROUND_SOLID: return "solid background";
+        case 0x11: return "black background";
+        case 0x12: return "solid background";
 
-        case CACA_ANTIALIASING_NONE:      return "no antialiasing";
-        case CACA_ANTIALIASING_PREFILTER: return "prefilter antialiasing";
+        case 0x21: return "no antialiasing";
+        case 0x22: return "prefilter antialiasing";
 
-        case CACA_DITHERING_NONE:     return "no dithering";
-        case CACA_DITHERING_ORDERED2: return "2x2 ordered dithering";
-        case CACA_DITHERING_ORDERED4: return "4x4 ordered dithering";
-        case CACA_DITHERING_ORDERED8: return "8x8 ordered dithering";
-        case CACA_DITHERING_RANDOM:   return "random dithering";
+        case 0x31: return "no dithering";
+        case 0x32: return "2x2 ordered dithering";
+        case 0x33: return "4x4 ordered dithering";
+        case 0x34: return "8x8 ordered dithering";
+        case 0x35: return "random dithering";
 
         default: return "unknown";
     }
@@ -191,5 +224,46 @@ cucul_canvas_t *__caca0_load_sprite(char const *file)
         return NULL;
 
     return cv;
+}
+
+cucul_dither_t *__caca0_create_bitmap(unsigned int bpp, unsigned int w,
+                                      unsigned int h, unsigned int pitch,
+                                      unsigned long int r, unsigned long int g,
+                                      unsigned long int b, unsigned long int a)
+{
+    cucul_dither_t *d;
+
+    d = cucul_create_dither(bpp, w, h, pitch, r, g, b, a);
+    if(!d)
+        return NULL;
+
+    cucul_set_dither_color(d, features[background]);
+    cucul_set_dither_antialias(d, features[antialiasing]);
+    cucul_set_dither_mode(d, features[dithering]);
+
+    /* Store bitmap in our list */
+    nbitmaps++;
+    bitmaps = realloc(bitmaps, nbitmaps * (sizeof(cucul_dither_t *)));
+    bitmaps[nbitmaps - 1] = d;
+
+    return d;
+}
+
+void __caca0_free_bitmap(cucul_dither_t *d)
+{
+    unsigned int i, found = 0;
+
+    cucul_free_dither(d);
+
+    /* Remove bitmap from our list */
+    for(i = 0; i + 1 < nbitmaps; i++)
+    {
+        if(bitmaps[i] == d)
+            found = 1;
+        if(found)
+            bitmaps[i] = bitmaps[i + 1];
+    }
+
+    nbitmaps--;
 }
 

@@ -30,10 +30,15 @@ extern "C"
 extern int __caca0_init(void);
 extern void __caca0_end(void);
 extern unsigned int __caca0_get_event(unsigned int, int);
+extern unsigned int __caca0_sqrt(unsigned int);
 extern int __caca0_get_feature(int);
 extern void __caca0_set_feature(int);
 extern char const *__caca0_get_feature_name(int);
 extern cucul_canvas_t *__caca0_load_sprite(char const *);
+extern cucul_dither_t *__caca0_create_bitmap(unsigned int, unsigned int,
+          unsigned int, unsigned int, unsigned long int, unsigned long int,
+          unsigned long int, unsigned long int);
+extern void __caca0_free_bitmap(cucul_dither_t *);
 
 /* These variables are needed to emulate old non-thread safe behaviour */
 extern cucul_canvas_t *__caca0_cv;
@@ -86,6 +91,7 @@ enum caca_feature
     CACA_FEATURE_UNKNOWN = 0xffff
 };
 
+/* This enum still exists in libcaca 1.x, thus cannot be redefined */
 #define CACA_EVENT_NONE          0x00000000
 #define CACA_EVENT_KEY_PRESS     0x01000000
 #define CACA_EVENT_KEY_RELEASE   0x02000000
@@ -123,7 +129,10 @@ enum caca_feature
 #define caca_get_mouse_x() caca_get_mouse_x(__caca0_dp)
 #define caca_get_mouse_y() caca_get_mouse_y(__caca0_dp)
 
-#define caca_set_color(x, y) cucul_set_color(__caca0_cv, x, y)
+#define caca_set_color(x, y) \
+    (__caca0_fg = (x), __caca0_bg = (y), cucul_set_color(__caca0_cv, x, y))
+#define caca_get_fg_color() __caca0_fg
+#define caca_get_bg_color() __caca0_bg
 #define caca_get_color_name cucul_get_color_name
 #define caca_putchar(x, y, c) cucul_putchar(__caca0_cv, x, y, c)
 #define caca_putstr(x, y, s) cucul_putstr(__caca0_cv, x, y, s)
@@ -166,10 +175,11 @@ enum caca_feature
      cucul_fill_triangle(__caca0_cv, x, y, z, t, u, v, __caca0_utf8))
 
 #define caca_rand(a, b) cucul_rand(a, (b)+1)
+#define caca_sqrt __caca0_sqrt
 
 #define caca_sprite cucul_canvas
 #define caca_load_sprite __caca0_load_sprite
-#define caca_get_sprite_frames(c) 0
+#define caca_get_sprite_frames(c) 1
 #define caca_get_sprite_width(c, f) cucul_get_canvas_width(c)
 #define caca_get_sprite_height(c, f) cucul_get_canvas_height(c)
 #define caca_get_sprite_dx(c, f) 0
@@ -178,11 +188,11 @@ enum caca_feature
 #define caca_free_sprite cucul_free_canvas
 
 #define caca_bitmap cucul_dither
-#define caca_create_bitmap cucul_create_dither
+#define caca_create_bitmap __caca0_create_bitmap
 #define caca_set_bitmap_palette cucul_set_dither_palette
 #define caca_draw_bitmap(x, y, z, t, b, p) \
     cucul_dither_bitmap(__caca0_cv, x, y, z, t, b, p)
-#define caca_free_bitmap cucul_free_dither
+#define caca_free_bitmap __caca0_free_bitmap
 
 #ifdef __cplusplus
 }
