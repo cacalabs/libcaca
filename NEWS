@@ -1,5 +1,11 @@
 /* $Id$ */ /** \page news News
 
+\section news0_99_beta4 Changes between 0.9.beta4 and 0.99.beta3
+
+ - added a compatibility layer for pre-1.x libcaca applications
+ - fixed manpage generation
+ - minor bugfixes and documentation updates
+
 \section news0_99_beta3 Changes between 0.9.beta3 and 0.99.beta2
 
  - libcaca functions use errno for error reporting

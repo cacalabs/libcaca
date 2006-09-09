@@ -1,4 +1,98 @@
 ------------------------------------------------------------------------
+r801 | sam | 2006-09-09 19:54:06 +0200 (Sat, 09 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/doc/Makefile.am
+
+  * Replace 'man3caca' with 'man3' in generated manpages.
+
+------------------------------------------------------------------------
+r800 | sam | 2006-09-09 19:52:54 +0200 (Sat, 09 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/test/demo0.c
+
+  * Fix dithering handling in demo0.c.
+
+------------------------------------------------------------------------
+r799 | sam | 2006-09-09 19:31:43 +0200 (Sat, 09 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/caca-config.in
+
+  * Do not output unnecessary libraries in caca-output config.
+
+------------------------------------------------------------------------
+r798 | sam | 2006-09-09 19:20:32 +0200 (Sat, 09 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/doc/migrating.dox
+
+  * Oops, thinko in the migration doc.
+
+------------------------------------------------------------------------
+r797 | sam | 2006-09-09 19:02:30 +0200 (Sat, 09 Sep 2006) | 3 lines
+Changed paths:
+   M /trunk/doc/migrating.dox
+
+  * Updated the migration documentation so that it mentions the <caca0.h>
+    compatibility layer.
+
+------------------------------------------------------------------------
+r796 | sam | 2006-09-09 18:53:13 +0200 (Sat, 09 Sep 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/caca0.c
+   M /trunk/caca/caca0.h
+
+  * Made features (such as dithering mode) and caca_sqrt work in the legacy
+    0.x glue code.
+
+------------------------------------------------------------------------
+r795 | sam | 2006-09-09 17:40:16 +0200 (Sat, 09 Sep 2006) | 3 lines
+Changed paths:
+   M /trunk/test
+   M /trunk/test/Makefile.am
+   A /trunk/test/demo0.c
+
+  * Added demo0.c, which is basically the old libcaca-0.9 demo.c file, as a
+    test for the <caca0.h> emulation layer.
+
+------------------------------------------------------------------------
+r794 | sam | 2006-09-09 17:38:06 +0200 (Sat, 09 Sep 2006) | 8 lines
+Changed paths:
+   M /trunk/caca/Makefile.am
+   A /trunk/caca/caca0.c
+   A /trunk/caca/caca0.h
+
+  * Added an emulation layer for pre-1.0 libcaca API. Legacy applications
+    just need to include <caca0.h> instead of <caca.h> and should be source-
+    compatible with old versions of libcaca.
+
+    Most of the old API works, except features and caca_sqrt(). Sprites do
+    work API-wise but due to the new format they are no longer working in
+    the same way.
+
+------------------------------------------------------------------------
+r793 | sam | 2006-09-09 16:52:05 +0200 (Sat, 09 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/test/export.c
+
+  * Fix a crash in export.c with unknown file formats.
+
+------------------------------------------------------------------------
+r792 | sam | 2006-08-30 23:30:29 +0200 (Wed, 30 Aug 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/transform.c
+
+  * U+214B TURNED AMPERSAND
+
+------------------------------------------------------------------------
+r791 | sam | 2006-08-25 12:22:57 +0200 (Fri, 25 Aug 2006) | 3 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/NEWS
+   M /trunk/configure.ac
+
+  * Updated ChangeLog and NEWS.
+  * 0.99.beta3 release.
+
+------------------------------------------------------------------------
 r790 | sam | 2006-08-25 12:16:53 +0200 (Fri, 25 Aug 2006) | 3 lines
 Changed paths:
    M /trunk/ChangeLog
