@@ -77,20 +77,50 @@ int main(void)
  - All input/output functions start with \b caca_ and all
    drawing and text handling functions start with \b cucul_ .
 
- \section foo2 Function equivalence list
+ \section foo2 Migration strategy
+
+ You have two ways to migrate your application to use \e libcaca 1.x:
+
+ - Port your code using the function equivalence list. This is the preferred
+   way because new functions are thread safe and offer much more features
+   to both the programmer and the end user.
+ - Use the legacy compatibility layer.
+
+ Using the compatibility layer is as easy as adding the following three lines:
+
+<table border="0"><tr><td valign="top">
+\code
+#include <caca.h>
+
+/* libcaca program - 0.x API */
+...
+\endcode
+</td><td>
+\code
+#include <caca.h>
+#ifndef CACA_API_VERSION_1
+#   include <caca0.h>
+#endif
+
+/* libcaca program - 0.x API */
+...
+\endcode
+</td></tr></table>
+
+ \section foo3 Function equivalence list
 
  \subsection bar1 Basic functions
 
  - \b caca_init(): use cucul_create_canvas() to create a \e libcucul canvas,
    followed by caca_create_display() to attach a \e libcaca display to it.
- - \b caca_set_delay(): unchanged.
+ - \b caca_set_delay(): use caca_set_display_time().
  - \b caca_get_feature(): deprecated.
  - \b caca_set_feature(): deprecated, see cucul_set_dither_antialias(),
    cucul_set_dither_color() and cucul_set_dither_mode() instead.
  - \b caca_get_feature_name(): deprecated, see cucul_get_dither_mode_list(),
    cucul_get_dither_antialias_list() and cucul_get_dither_color_list()
    instead.
- - \b caca_get_rendertime(): unchanged.
+ - \b caca_get_rendertime(): use caca_get_display_time().
  - \b caca_get_width(): use cucul_get_canvas_width().
  - \b caca_get_height(): use cucul_get_canvas_height().
  - \b caca_set_window_title(): use caca_set_display_title().
@@ -174,7 +204,7 @@ int main(void)
  - \b caca_draw_bitmap(): use cucul_dither_bitmap().
  - \b caca_free_bitmap(): use cucul_free_dither().
 
- \section foo3 Compilation
+ \section foo4 Compilation
 
  The \c caca-config utility is deprecated in favour of the standard
  \c pkg-config interface:
