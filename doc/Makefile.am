@@ -46,7 +46,9 @@ if BUILD_DOCUMENTATION
 	cp `find html -name '*.html' -o -name '*.gif' -o -name '*.png'` \
 	  $(DESTDIR)$(datadir)/doc/libcucul-dev/html
 	$(mkinstalldirs) $(DESTDIR)$(mandir)/man3
-	cp `find man -name '*.3caca'` $(DESTDIR)$(mandir)/man3
+	for man in $$(find man -name '*.3caca'); do \
+	  sed 's/man3caca/man3/g' $$man >$(DESTDIR)$(mandir)/man3/$${man##*/}; \
+	done
 	$(mkinstalldirs) $(DESTDIR)$(mandir)/man1
 	rm -f $(DESTDIR)$(mandir)/man1/cacaball.1
 	ln -s cacafire.1 $(DESTDIR)$(mandir)/man1/cacaball.1
