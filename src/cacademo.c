@@ -34,13 +34,18 @@ enum action { INIT, UPDATE, DRAW, FREE };
 void plasma(enum action, cucul_canvas_t *);
 void metaballs(enum action, cucul_canvas_t *);
 void moire(enum action, cucul_canvas_t *);
+void langton(enum action, cucul_canvas_t *);
+void matrix(enum action, cucul_canvas_t *);
 
 void (*demo_list[])(enum action, cucul_canvas_t *) =
 {
     plasma,
     metaballs,
     moire,
+    //langton,
+    matrix,
 };
+#define DEMOS (sizeof(demo_list)/sizeof(*demo_list))
 
 /* Common macros for dither-based demos */
 #define XSIZ 256
@@ -71,9 +76,9 @@ int main(int argc, char **argv)
 
     caca_set_display_time(dp, 20000);
 
-    demo = cucul_rand(0, 3);
+    demo = cucul_rand(0, DEMOS);
 
-    demo_list[demo](INIT, NULL);
+    demo_list[demo](INIT, frontcv);
 
     for(;;) 
     {
@@ -90,7 +95,7 @@ int main(int argc, char **argv)
         if(pause)
             goto paused;
 
-        demo_list[demo](UPDATE, NULL);
+        demo_list[demo](UPDATE, frontcv);
         frame++;
 paused:
         demo_list[demo](DRAW, frontcv);
@@ -101,7 +106,7 @@ paused:
         caca_refresh_display(dp);
     }
 end:
-    demo_list[demo](FREE, NULL);
+    demo_list[demo](FREE, frontcv);
 
     caca_free_display(dp);
     cucul_free_canvas(mask);
@@ -178,12 +183,14 @@ void plasma(enum action action, cucul_canvas_t *cv)
                   (1.0 + sin(((double)frame) * R[4])) / 2,
                   (1.0 + sin(((double)frame) * R[5])) / 2);
         break;
+
     case DRAW:
         cucul_dither_bitmap(cv, 0, 0,
                             cucul_get_canvas_width(cv),
                             cucul_get_canvas_height(cv),
                             dither, screen);
         break;
+
     case FREE:
         free(screen);
         cucul_free_dither(dither);
@@ -480,4 +487,173 @@ static void draw_line(int x, int y, char color)
     memset(disc + (DISCSIZ / 2) - x + DISCSIZ * ((DISCSIZ / 2) + y - 1),
            color, 2 * x - 1);
 }
+
+/* Langton ant effect */
+#define ANTS 15
+#define ITER 2
+
+void langton(enum action action, cucul_canvas_t *cv)
+{
+    static char gradient[] =
+    {
+        ' ', ' ', '.', '.', ':', ':', 'x', 'x',
+        'X', 'X', '&', '&', 'W', 'W', '@', '@',
+    };
+    static int steps[][2] = { { 0, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 } };
+    static uint8_t *screen;
+    static int width, height;
+    static int ax[ANTS], ay[ANTS], dir[ANTS];
+
+    int i, a, x, y;
+
+    switch(action)
+    {
+    case INIT:
+        width = cucul_get_canvas_width(cv);
+        height = cucul_get_canvas_height(cv);
+        screen = malloc(width * height);
+        memset(screen, 0, width * height);
+        for(i = 0; i < ANTS; i++)
+        {
+            ax[i] = cucul_rand(0, width);
+            ay[i] = cucul_rand(0, height);
+            dir[i] = cucul_rand(0, 4);
+        }
+        break;
+
+    case UPDATE:
+        for(i = 0; i < ITER; i++)
+        {
+            for(x = 0; x < width * height; x++)
+            {
+                uint8_t p = screen[x];
+                if((p & 0x0f) > 1)
+                    screen[x] = p - 1;
+            }
+
+            for(a = 0; a < ANTS; a++)
+            {
+                uint8_t p = screen[ax[a] + width * ay[a]];
+
+                if(p & 0x0f)
+                {
+                    dir[a] = (dir[a] + 1) % 4;
+                    screen[ax[a] + width * ay[a]] = a << 4;
+                }
+                else
+                {
+                    dir[a] = (dir[a] + 3) % 4;
+                    screen[ax[a] + width * ay[a]] = (a << 4) | 0x0f;
+                } 
+                ax[a] = (width + ax[a] + steps[dir[a]][0]) % width;
+                ay[a] = (height + ay[a] + steps[dir[a]][1]) % height;
+            }
+        }
+        break;
+
+    case DRAW:
+        for(y = 0; y < height; y++)
+        {
+            for(x = 0; x < width; x++)
+            {
+                uint8_t p = screen[x + width * y];
+
+                if(p & 0x0f)
+                    cucul_set_color(cv, CUCUL_COLOR_WHITE, p >> 4);
+                else
+                    cucul_set_color(cv, CUCUL_COLOR_BLACK, CUCUL_COLOR_BLACK);
+                cucul_putchar(cv, x, y, gradient[p & 0x0f]);
+            }
+        }
+        break;
+
+    case FREE:
+        free(screen);
+        break;
+    }
+}
+
+/* Matrix effect */
+#define MAXDROPS 500
+#define MINLEN 15
+#define MAXLEN 30
+
+struct drop
+{
+    int x, y, speed, len;
+    char str[MAXLEN];
+}
+drop[MAXDROPS];
+
+void matrix(enum action action, cucul_canvas_t *cv)
+{
+    static int w, h;
+
+    int i, j;
+
+    switch(action)
+    {
+    case INIT:
+        for(i = 0; i < MAXDROPS; i++)
+        {
+            drop[i].x = cucul_rand(0, 1000);
+            drop[i].y = cucul_rand(0, 1000);
+            drop[i].speed = 5 + cucul_rand(0, 30);
+            drop[i].len = MINLEN + cucul_rand(0, (MAXLEN - MINLEN));
+            for(j = 0; j < MAXLEN; j++)
+                drop[i].str[j] = cucul_rand('0', 'z');
+        }
+        break;
+
+    case UPDATE:
+        w = cucul_get_canvas_width(cv);
+        h = cucul_get_canvas_height(cv);
+
+        for(i = 0; i < MAXDROPS && i < (w * h / 32); i++)
+        {
+            drop[i].y += drop[i].speed;
+            if(drop[i].y > 1000)
+            {
+                drop[i].y -= 1000;
+                drop[i].x = cucul_rand(0, 1000);
+            }
+        }
+        break;
+
+    case DRAW:
+        cucul_set_color(cv, CUCUL_COLOR_BLACK, CUCUL_COLOR_BLACK);
+        cucul_clear_canvas(cv);
+
+        for(i = 0; i < MAXDROPS && i < (w * h / 32); i++)
+        {
+            int x, y;
+
+            x = drop[i].x * w / 1000 / 2 * 2;
+            y = drop[i].y * (h + MAXLEN) / 1000;
+
+            for(j = 0; j < drop[i].len; j++)
+            {
+                unsigned int fg;
+
+                if(j < 2)
+                    fg = CUCUL_COLOR_WHITE;
+                else if(j < drop[i].len / 4)
+                    fg = CUCUL_COLOR_LIGHTGREEN;
+                else if(j < drop[i].len * 4 / 5)
+                    fg = CUCUL_COLOR_GREEN;
+                else
+                    fg = CUCUL_COLOR_DARKGRAY;
+                cucul_set_color(cv, fg, CUCUL_COLOR_BLACK);
+
+                cucul_putchar(cv, x, y - j,
+                              drop[i].str[(y - j) % drop[i].len]);
+            }
+        }
+        break;
+
+    case FREE:
+        break;
+    }
+}
+
 
