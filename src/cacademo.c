@@ -63,21 +63,6 @@ void (*fn[])(enum action, cucul_canvas_t *) =
 #define OFFSET_X(i) (i*2)
 #define OFFSET_Y(i) (i*2)+1
 
-float star[] = {
-    0.000000, -1.000000,
-    0.308000,-0.349000,
-    0.992000,-0.244000,
-    0.500000,0.266000,
-    0.632000,0.998000,
-    0.008000,0.659000,
-    -0.601000,0.995000,
-    -0.496000,0.275000,
-    -0.997000,-0.244000,
-    -0.313000,-0.349000
-};
-
-float star_rot[sizeof(star)/sizeof(*star)];
-
 /* Global variables */
 static int frame = 0;
 
@@ -211,8 +196,23 @@ end:
 /* Transitions */
 void do_transition(cucul_canvas_t *mask, int transition, float time)
 {
-    float mulx = time*cucul_get_canvas_width(mask);
-    float muly = time*cucul_get_canvas_height(mask);
+    static float const star[] =
+    {
+         0.000000, -1.000000,
+         0.308000, -0.349000,
+         0.992000, -0.244000,
+         0.500000,  0.266000,
+         0.632000,  0.998000,
+         0.008000,  0.659000,
+        -0.601000,  0.995000,
+        -0.496000,  0.275000,
+        -0.997000, -0.244000,
+        -0.313000, -0.349000
+    };
+    static float star_rot[sizeof(star)/sizeof(*star)];
+
+    float mulx = time * cucul_get_canvas_width(mask);
+    float muly = time * cucul_get_canvas_height(mask);
     int w2 = cucul_get_canvas_width(mask) / 2;
     int h2 = cucul_get_canvas_height(mask) / 2;
     float angle = (time*360)*3.14/180, x,y;
@@ -437,29 +437,29 @@ void metaballs(enum action action, cucul_canvas_t *cv)
     static float i = 10.0, j = 17.0, k = 11.0;
     static double offset[360 + 80];
 
-    int p, angle;
+    int n, angle;
 
     switch(action)
     {
     case PREPARE:
         /* Make the palette eatable by libcaca */
-        for(p = 0; p < 256; p++)
-            r[p] = g[p] = b[p] = a[p] = 0x0;
+        for(n = 0; n < 256; n++)
+            r[n] = g[n] = b[n] = a[n] = 0x0;
         r[255] = g[255] = b[255] = 0xfff;
 
         /* Generate ball sprite */
         create_ball();
 
-        for(p = 0; p < METABALLS; p++)
+        for(n = 0; n < METABALLS; n++)
         {
-            dd[p] = cucul_rand(0, 100);
-            di[p] = (float)cucul_rand(500, 4000) / 6000.0;
-            dj[p] = (float)cucul_rand(500, 4000) / 6000.0;
-            dk[p] = (float)cucul_rand(500, 4000) / 6000.0;
+            dd[n] = cucul_rand(0, 100);
+            di[n] = (float)cucul_rand(500, 4000) / 6000.0;
+            dj[n] = (float)cucul_rand(500, 4000) / 6000.0;
+            dk[n] = (float)cucul_rand(500, 4000) / 6000.0;
         }
 
-        for(p = 0; p < 360 + 80; p++)
-            offset[p] = 1.0 + sin((double)(p * M_PI / 60));
+        for(n = 0; n < 360 + 80; n++)
+            offset[n] = 1.0 + sin((double)(n * M_PI / 60));
         break;
 
     case INIT:
@@ -474,34 +474,34 @@ void metaballs(enum action action, cucul_canvas_t *cv)
         angle = frame % 360;
 
         /* Crop the palette */
-        for(p = CROPBALL; p < 255; p++)
+        for(n = CROPBALL; n < 255; n++)
         {
             int t1, t2, t3;
             double c1 = offset[angle];
             double c2 = offset[angle + 40];
             double c3 = offset[angle + 80];
 
-            t1 = p < 0x40 ? 0 : p < 0xc0 ? (p - 0x40) * 0x20 : 0xfff;
-            t2 = p < 0xe0 ? 0 : (p - 0xe0) * 0x80;
-            t3 = p < 0x40 ? p * 0x40 : 0xfff;
+            t1 = n < 0x40 ? 0 : n < 0xc0 ? (n - 0x40) * 0x20 : 0xfff;
+            t2 = n < 0xe0 ? 0 : (n - 0xe0) * 0x80;
+            t3 = n < 0x40 ? n * 0x40 : 0xfff;
 
-            r[p] = (c1 * t1 + c2 * t2 + c3 * t3) / 4;
-            g[p] = (c1 * t2 + c2 * t3 + c3 * t1) / 4;
-            b[p] = (c1 * t3 + c2 * t1 + c3 * t2) / 4;
+            r[n] = (c1 * t1 + c2 * t2 + c3 * t3) / 4;
+            g[n] = (c1 * t2 + c2 * t3 + c3 * t1) / 4;
+            b[n] = (c1 * t3 + c2 * t1 + c3 * t2) / 4;
         }
 
         /* Set the palette */
         cucul_set_dither_palette(cucul_dither, r, g, b, a);
 
         /* Silly paths for our balls */
-        for(p = 0; p < METABALLS; p++)
+        for(n = 0; n < METABALLS; n++)
         {
-            float u = di[p] * i + dj[p] * j + dk[p] * sin(di[p] * k);
-            float v = dd[p] + di[p] * j + dj[p] * k + dk[p] * sin(dk[p] * i);
+            float u = di[n] * i + dj[n] * j + dk[n] * sin(di[n] * k);
+            float v = dd[n] + di[n] * j + dj[n] * k + dk[n] * sin(dk[n] * i);
             u = sin(i + u * 2.1) * (1.0 + sin(u));
             v = sin(j + v * 1.9) * (1.0 + sin(v));
-            x[p] = (XSIZ - METASIZE) / 2 + u * (XSIZ - METASIZE) / 4;
-            y[p] = (YSIZ - METASIZE) / 2 + v * (YSIZ - METASIZE) / 4;
+            x[n] = (XSIZ - METASIZE) / 2 + u * (XSIZ - METASIZE) / 4;
+            y[n] = (YSIZ - METASIZE) / 2 + v * (YSIZ - METASIZE) / 4;
         }
 
         i += 0.011;
@@ -510,10 +510,8 @@ void metaballs(enum action action, cucul_canvas_t *cv)
 
         memset(screen, 0, XSIZ * YSIZ);
 
-        /* Here is all the trick. Maybe if you're that
-         * clever you'll understand. */
-        for(p = 0; p < METABALLS; p++)
-            draw_ball(screen, x[p], y[p]);
+        for(n = 0; n < METABALLS; n++)
+            draw_ball(screen, x[n], y[n]);
         break;
 
     case RENDER:
@@ -530,8 +528,6 @@ void metaballs(enum action action, cucul_canvas_t *cv)
     }
 }
 
-/* Generate ball sprite
- * You should read the comments, I already wrote that before ... */
 static void create_ball(void)
 {
     int x, y;
@@ -547,7 +543,6 @@ static void create_ball(void)
     }
 }
 
-/* You missed the trick ? */
 static void draw_ball(uint8_t *screen, unsigned int bx, unsigned int by)
 {
     unsigned int color;
@@ -578,7 +573,6 @@ static void draw_ball(uint8_t *screen, unsigned int bx, unsigned int by)
 static uint8_t disc[DISCSIZ * DISCSIZ];
 
 static void put_disc(uint8_t *, int, int);
-static void draw_disc(int, char);
 static void draw_line(int, int, char);
 
 void moire(enum action action, cucul_canvas_t *cv)
@@ -601,7 +595,17 @@ void moire(enum action action, cucul_canvas_t *cv)
 
         /* Fill the circle */
         for(i = DISCSIZ * 2; i > 0; i -= DISCTHICKNESS)
-            draw_disc(i, (i / DISCTHICKNESS) % 2);
+        {
+            int t, dx, dy;
+
+            for(t = 0, dx = 0, dy = i; dx <= dy; dx++)
+            {
+                draw_line(dx / 3,   dy / 3, (i / DISCTHICKNESS) % 2);
+                draw_line(dy / 3,   dx / 3, (i / DISCTHICKNESS) % 2);
+        
+                t += t > 0 ? dx - dy-- : dx;
+            }
+        }
 
         break;
 
@@ -657,19 +661,6 @@ static void put_disc(uint8_t *screen, int x, int y)
         for(i = 0; i < XSIZ; i++)
     {
         screen[i + XSIZ * j] ^= src[i + DISCSIZ * j];
-    }
-}
-
-static void draw_disc(int r, char color)
-{
-    int t, dx, dy;
-
-    for(t = 0, dx = 0, dy = r; dx <= dy; dx++)
-    {
-        draw_line(dx / 3,   dy / 3, color);
-        draw_line(dy / 3,   dx / 3, color);
-
-        t += t > 0 ? dx - dy-- : dx;
     }
 }
 
@@ -780,18 +771,16 @@ void langton(enum action action, cucul_canvas_t *cv)
 #define MINLEN 15
 #define MAXLEN 30
 
-struct drop
-{
-    int x, y, speed, len;
-    char str[MAXLEN];
-}
-drop[MAXDROPS];
-
 void matrix(enum action action, cucul_canvas_t *cv)
 {
-    static int w, h;
+    static struct drop
+    {
+        int x, y, speed, len;
+        char str[MAXLEN];
+    }
+    drop[MAXDROPS];
 
-    int i, j;
+    int w, h, i, j;
 
     switch(action)
     {
@@ -826,6 +815,9 @@ void matrix(enum action action, cucul_canvas_t *cv)
         break;
 
     case RENDER:
+        w = cucul_get_canvas_width(cv);
+        h = cucul_get_canvas_height(cv);
+
         cucul_set_color(cv, CUCUL_COLOR_BLACK, CUCUL_COLOR_BLACK);
         cucul_clear_canvas(cv);
 
