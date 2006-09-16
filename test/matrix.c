@@ -62,7 +62,7 @@ int main(void)
 
     for(;;)
     {
-        int sensorx, sensory;
+        int sensorx = 0, sensory = 0;
 
         if(have_hdaps)
         {
