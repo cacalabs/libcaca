@@ -1,6 +1,7 @@
 /*
  *  cacademo      various demo effects for libcaca
  *  Copyright (c) 1998 Michele Bini <mibin@tin.it>
+ *                2003-2004 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                2004 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
@@ -17,6 +18,7 @@
 
 #if !defined(__KERNEL__)
 #   include <stdio.h>
+#   include <stdlib.h>
 #   include <string.h>
 #   include <math.h>
 #   ifndef M_PI
@@ -27,105 +29,53 @@
 #include "cucul.h"
 #include "caca.h"
 
-/* Virtual buffer size for dither-based demos */
+enum action { INIT, UPDATE, DRAW, FREE };
+
+void plasma(enum action, cucul_canvas_t *);
+void metaballs(enum action, cucul_canvas_t *);
+void moire(enum action, cucul_canvas_t *);
+
+void (*demo_list[])(enum action, cucul_canvas_t *) =
+{
+    plasma,
+    metaballs,
+    moire,
+};
+
+/* Common macros for dither-based demos */
 #define XSIZ 256
 #define YSIZ 256
-static unsigned char screen[XSIZ * YSIZ];
 
-/* The plasma effect */
-#define TABLEX (XSIZ * 2)
-#define TABLEY (YSIZ * 2)
-
-static unsigned char table[TABLEX * TABLEY];
-
-static int main_plasma(int, char **);
-static void do_plasma(unsigned char *,
-                      double, double, double, double, double, double);
-
-/* The metaball effect */
-#define METASIZE 128
-#define METABALLS 12
-#define CROPBALL 200 /* Colour index where to crop balls */
-
-static int main_ball(int, char **);
-static void create_ball(void);
-static void draw_ball(unsigned int, unsigned int);
-
-static unsigned char metaball[METASIZE * METASIZE];
-
-/* The moiré effect */
-#define DISCSIZ 512
-#define DISCTHICKNESS 96
-
-static unsigned char disc[DISCSIZ * DISCSIZ];
-
-static int main_moir(int, char **);
-static void put_disc(int, int);
-static void draw_disc(int, char);
-static void draw_line(int, int, char);
+/* Global variables */
+static int frame = 0;
 
 int main(int argc, char **argv)
 {
-    switch(cucul_rand(0, 3))
-    {
-        case 0:
-            return main_plasma(argc, argv);
-        case 1:
-            return main_ball(argc, argv);
-        case 2:
-            return main_moir(argc, argv);
-    }
+    static caca_display_t *dp;
+    static cucul_canvas_t *frontcv, *backcv, *mask;
+    int demo = 0, pause = 0;
 
-    return -1;
-}
+    /* Set up two canvases, a mask, and attach a display to the front one */
+    frontcv = cucul_create_canvas(0, 0);
+    backcv = cucul_create_canvas(0, 0);
+    mask = cucul_create_canvas(0, 0);
 
-static int main_plasma(int argc, char **argv)
-{
-    cucul_canvas_t *cv, *c2, *mask; caca_display_t *dp;
-    unsigned int red[256], green[256], blue[256], alpha[256];
-    double r[3], R[6];
-    cucul_dither_t *dither;
-    int i, x, y, frame = 0, pause = 0;
-
-    cv = cucul_create_canvas(0, 0);
-    if(!cv)
-        return 1;
-    dp = caca_create_display(cv);
+    dp = caca_create_display(frontcv);
     if(!dp)
         return 1;
 
+    cucul_set_canvas_size(backcv, cucul_get_canvas_width(frontcv),
+                                  cucul_get_canvas_height(frontcv));
+    cucul_set_canvas_size(mask, cucul_get_canvas_width(frontcv),
+                                cucul_get_canvas_height(frontcv));
+
     caca_set_display_time(dp, 20000);
 
-    c2 = cucul_create_canvas(cucul_get_canvas_width(cv),
-                             cucul_get_canvas_height(cv));
-    mask = cucul_create_canvas(cucul_get_canvas_width(cv),
-                               cucul_get_canvas_height(cv));
+    demo = cucul_rand(0, 3);
 
-    /* Fill various tables */
-    for(i = 0 ; i < 256; i++)
-        red[i] = green[i] = blue[i] = alpha[i] = 0;
+    demo_list[demo](INIT, NULL);
 
-    for(i = 0; i < 3; i++)
-        r[i] = (double)(cucul_rand(1, 1000)) / 60000 * M_PI;
-
-    for(i = 0; i < 6; i++)
-        R[i] = (double)(cucul_rand(1, 1000)) / 10000;
-
-    for(y = 0 ; y < TABLEY ; y++)
-        for(x = 0 ; x < TABLEX ; x++)
-    {
-        double tmp = (((double)((x - (TABLEX / 2)) * (x - (TABLEX / 2))
-                              + (y - (TABLEX / 2)) * (y - (TABLEX / 2))))
-                      * (M_PI / (TABLEX * TABLEX + TABLEY * TABLEY)));
-
-        table[x + y * TABLEX] = (1.0 + sin(12.0 * sqrt(tmp))) * 256 / 6;
-    }
-
-    /* Create a libcucul dither */
-    dither = cucul_create_dither(8, XSIZ, YSIZ, XSIZ, 0, 0, 0, 0);
-
-    /* Main loop */
-    for(;;)
+    for(;;) 
     {
         caca_event_t ev;
         if(caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, 0))
@@ -140,6 +90,74 @@ static int main_plasma(int argc, char **argv)
         if(pause)
             goto paused;
 
+        demo_list[demo](UPDATE, NULL);
+        frame++;
+paused:
+        demo_list[demo](DRAW, frontcv);
+        cucul_set_color(frontcv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
+        cucul_putstr(frontcv, cucul_get_canvas_width(frontcv) - 30,
+                              cucul_get_canvas_height(frontcv) - 2,
+                              " -=[ Powered by libcaca ]=- ");
+        caca_refresh_display(dp);
+    }
+end:
+    demo_list[demo](FREE, NULL);
+
+    caca_free_display(dp);
+    cucul_free_canvas(mask);
+    cucul_free_canvas(backcv);
+    cucul_free_canvas(frontcv);
+
+    return 0;
+}
+
+/* The plasma effect */
+#define TABLEX (XSIZ * 2)
+#define TABLEY (YSIZ * 2)
+static uint8_t table[TABLEX * TABLEY];
+
+static void do_plasma(uint8_t *,
+                      double, double, double, double, double, double);
+
+void plasma(enum action action, cucul_canvas_t *cv)
+{
+    static cucul_dither_t *dither;
+    static uint8_t *screen;
+    static unsigned int red[256], green[256], blue[256], alpha[256];
+    static double r[3], R[6];
+
+    int i, x, y;
+
+    switch(action)
+    {
+    case INIT:
+        screen = malloc(XSIZ * YSIZ * sizeof(uint8_t));
+
+        /* Fill various tables */
+        for(i = 0 ; i < 256; i++)
+            red[i] = green[i] = blue[i] = alpha[i] = 0;
+
+        for(i = 0; i < 3; i++)
+            r[i] = (double)(cucul_rand(1, 1000)) / 60000 * M_PI;
+
+        for(i = 0; i < 6; i++)
+            R[i] = (double)(cucul_rand(1, 1000)) / 10000;
+
+        for(y = 0 ; y < TABLEY ; y++)
+            for(x = 0 ; x < TABLEX ; x++)
+        {
+            double tmp = (((double)((x - (TABLEX / 2)) * (x - (TABLEX / 2))
+                                  + (y - (TABLEX / 2)) * (y - (TABLEX / 2))))
+                          * (M_PI / (TABLEX * TABLEX + TABLEY * TABLEY)));
+
+            table[x + y * TABLEX] = (1.0 + sin(12.0 * sqrt(tmp))) * 256 / 6;
+        }
+
+        /* Create a libcucul dither */
+        dither = cucul_create_dither(8, XSIZ, YSIZ, XSIZ, 0, 0, 0, 0);
+        break;
+
+    case UPDATE:
         for(i = 0 ; i < 256; i++)
         {
             double z = ((double)i) / 256 * 6 * M_PI;
@@ -159,36 +177,21 @@ static int main_plasma(int argc, char **argv)
                   (1.0 + sin(((double)frame) * R[3])) / 2,
                   (1.0 + sin(((double)frame) * R[4])) / 2,
                   (1.0 + sin(((double)frame) * R[5])) / 2);
-        frame++;
-
-paused:
+        break;
+    case DRAW:
         cucul_dither_bitmap(cv, 0, 0,
                             cucul_get_canvas_width(cv),
                             cucul_get_canvas_height(cv),
                             dither, screen);
-
-        cucul_blit(c2, 0, 0, cv, NULL);
-        cucul_invert(c2);
-
-
-        cucul_blit(cv, 0, 0, c2, mask);
-
-        cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
-        cucul_putstr(cv, cucul_get_canvas_width(cv) - 30,
-                         cucul_get_canvas_height(cv) - 2,
-                         " -=[ Powered by libcaca ]=- ");
-        caca_refresh_display(dp);
+        break;
+    case FREE:
+        free(screen);
+        cucul_free_dither(dither);
+        break;
     }
-
-end:
-    cucul_free_dither(dither);
-    caca_free_display(dp);
-    cucul_free_canvas(cv);
-
-    return 0;
 }
 
-static void do_plasma(unsigned char *pixels, double x_1, double y_1,
+static void do_plasma(uint8_t *pixels, double x_1, double y_1,
                       double x_2, double y_2, double x_3, double y_3)
 {
     unsigned int X1 = x_1 * (TABLEX / 2),
@@ -198,91 +201,80 @@ static void do_plasma(unsigned char *pixels, double x_1, double y_1,
                  X3 = x_3 * (TABLEX / 2),
                  Y3 = y_3 * (TABLEY / 2);
     unsigned int y;
-    unsigned char * t1 = table + X1 + Y1 * TABLEX,
-                  * t2 = table + X2 + Y2 * TABLEX,
-                  * t3 = table + X3 + Y3 * TABLEX;
+    uint8_t * t1 = table + X1 + Y1 * TABLEX,
+            * t2 = table + X2 + Y2 * TABLEX,
+            * t3 = table + X3 + Y3 * TABLEX;
 
     for(y = 0; y < YSIZ; y++)
     {
         unsigned int x;
-        unsigned char * tmp = pixels + y * YSIZ;
+        uint8_t * tmp = pixels + y * YSIZ;
         unsigned int ty = y * TABLEX, tmax = ty + XSIZ;
         for(x = 0; ty < tmax; ty++, tmp++)
             tmp[0] = t1[ty] + t2[ty] + t3[ty];
     }
 }
 
-static int main_ball(int argc, char **argv)
+/* The metaball effect */
+#define METASIZE (XSIZ/2)
+#define METABALLS 12
+#define CROPBALL 200 /* Colour index where to crop balls */
+static uint8_t metaball[METASIZE * METASIZE];
+
+static void create_ball(void);
+static void draw_ball(uint8_t *, unsigned int, unsigned int);
+
+void metaballs(enum action action, cucul_canvas_t *cv)
 {
-    cucul_canvas_t *cv; caca_display_t *dp;
-    unsigned int r[256], g[256], b[256], a[256];
-    float dd[METABALLS], di[METABALLS], dj[METABALLS], dk[METABALLS];
-    unsigned int x[METABALLS], y[METABALLS];
-    cucul_dither_t *cucul_dither;
-    float i = 10.0, j = 17.0, k = 11.0;
-    int p, frame = 0, pause = 0;
-    double frameOffset[360 + 80];
+    static cucul_dither_t *cucul_dither;
+    static uint8_t *screen;
+    static unsigned int r[256], g[256], b[256], a[256];
+    static float dd[METABALLS], di[METABALLS], dj[METABALLS], dk[METABALLS];
+    static unsigned int x[METABALLS], y[METABALLS];
+    static float i = 10.0, j = 17.0, k = 11.0;
+    static double offset[360 + 80];
 
-    cv = cucul_create_canvas(0, 0);
-    if(!cv)
-        return 1;
-    dp = caca_create_display(cv);
-    if(!dp)
-        return 1;
+    int p, angle;
 
-    caca_set_display_time(dp, 20000);
-
-    /* Make the palette eatable by libcaca */
-    for(p = 0; p < 256; p++)
-        r[p] = g[p] = b[p] = a[p] = 0x0;
-    r[255] = g[255] = b[255] = 0xfff;
-
-    /* Create a libcucul dither smaller than our pixel buffer, so that we
-     * display only the interesting part of it */
-    cucul_dither = cucul_create_dither(8, XSIZ - METASIZE, YSIZ - METASIZE,
-                                       XSIZ, 0, 0, 0, 0);
-
-    /* Generate ball sprite */
-    create_ball();
-
-    for(p = 0; p < METABALLS; p++)
+    switch(action)
     {
-        dd[p] = cucul_rand(0, 100);
-        di[p] = (float)cucul_rand(500, 4000) / 6000.0;
-        dj[p] = (float)cucul_rand(500, 4000) / 6000.0;
-        dk[p] = (float)cucul_rand(500, 4000) / 6000.0;
-    }
+    case INIT:
+        screen = malloc(XSIZ * YSIZ * sizeof(uint8_t));
 
-    for(frame = 0; frame < 360 + 80; frame++)
-        frameOffset[frame] = 1.0 + sin((double)(frame * M_PI / 60));
+        /* Make the palette eatable by libcaca */
+        for(p = 0; p < 256; p++)
+            r[p] = g[p] = b[p] = a[p] = 0x0;
+        r[255] = g[255] = b[255] = 0xfff;
 
-    /* Go ! */
-    for(;;)
-    {
-        caca_event_t ev;
-        if(caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, 0))
+        /* Create a libcucul dither smaller than our pixel buffer, so that we
+         * display only the interesting part of it */
+        cucul_dither = cucul_create_dither(8, XSIZ - METASIZE, YSIZ - METASIZE,
+                                           XSIZ, 0, 0, 0, 0);
+        /* Generate ball sprite */
+        create_ball();
+
+        for(p = 0; p < METABALLS; p++)
         {
-            switch(ev.data.key.ch)
-            {
-                case CACA_KEY_ESCAPE: goto end;
-                case ' ': pause = !pause;
-            }
+            dd[p] = cucul_rand(0, 100);
+            di[p] = (float)cucul_rand(500, 4000) / 6000.0;
+            dj[p] = (float)cucul_rand(500, 4000) / 6000.0;
+            dk[p] = (float)cucul_rand(500, 4000) / 6000.0;
         }
 
-        if(pause)
-            goto paused;
+        for(p = 0; p < 360 + 80; p++)
+            offset[p] = 1.0 + sin((double)(p * M_PI / 60));
+        break;
 
-        frame++;
-        if(frame >= 360)
-            frame = 0;
+    case UPDATE:
+        angle = frame % 360;
 
         /* Crop the palette */
         for(p = CROPBALL; p < 255; p++)
         {
             int t1, t2, t3;
-            double c1 = frameOffset[frame];
-            double c2 = frameOffset[frame+40];
-            double c3 = frameOffset[frame+80];
+            double c1 = offset[angle];
+            double c2 = offset[angle + 40];
+            double c3 = offset[angle + 80];
 
             t1 = p < 0x40 ? 0 : p < 0xc0 ? (p - 0x40) * 0x20 : 0xfff;
             t2 = p < 0xe0 ? 0 : (p - 0xe0) * 0x80;
@@ -316,29 +308,21 @@ static int main_ball(int argc, char **argv)
         /* Here is all the trick. Maybe if you're that
          * clever you'll understand. */
         for(p = 0; p < METABALLS; p++)
-            draw_ball(x[p], y[p]);
+            draw_ball(screen, x[p], y[p]);
+        break;
 
-paused:
-        /* Draw our virtual buffer to screen, letting libcucul resize it */
+    case DRAW:
         cucul_dither_bitmap(cv, 0, 0,
                           cucul_get_canvas_width(cv),
                           cucul_get_canvas_height(cv),
                           cucul_dither, screen + (METASIZE / 2) * (1 + XSIZ));
-        cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
-        cucul_putstr(cv, cucul_get_canvas_width(cv) - 30,
-                         cucul_get_canvas_height(cv) - 2,
-                         " -=[ Powered by libcaca ]=- ");
+        break;
 
-        caca_refresh_display(dp);
+    case FREE:
+        free(screen);
+        cucul_free_dither(cucul_dither);
+        break;
     }
-
-    /* End, bye folks */
-end:
-    cucul_free_dither(cucul_dither);
-    caca_free_display(dp);
-    cucul_free_canvas(cv);
-
-    return 0;
 }
 
 /* Generate ball sprite
@@ -359,7 +343,7 @@ static void create_ball(void)
 }
 
 /* You missed the trick ? */
-static void draw_ball(unsigned int bx, unsigned int by)
+static void draw_ball(uint8_t *screen, unsigned int bx, unsigned int by)
 {
     unsigned int color;
     unsigned int i, e = 0;
@@ -383,52 +367,44 @@ static void draw_ball(unsigned int bx, unsigned int by)
     }
 }
 
-static int main_moir(int argc, char **argv)
+/* The moiré effect */
+#define DISCSIZ (XSIZ*2)
+#define DISCTHICKNESS (XSIZ*15/40)
+static uint8_t disc[DISCSIZ * DISCSIZ];
+
+static void put_disc(uint8_t *, int, int);
+static void draw_disc(int, char);
+static void draw_line(int, int, char);
+
+void moire(enum action action, cucul_canvas_t *cv)
 {
-    cucul_canvas_t *cv; caca_display_t *dp;
-    unsigned int red[256], green[256], blue[256], alpha[256];
-    cucul_dither_t *dither;
-    int i, x, y, frame = 0, pause = 0;
+    static cucul_dither_t *dither;
+    static uint8_t *screen;
+    static unsigned int red[256], green[256], blue[256], alpha[256];
 
-    cv = cucul_create_canvas(0, 0);
-    if(!cv)
-        return 1;
-    dp = caca_create_display(cv);
-    if(!dp)
-        return 1;
+    int i, x, y;
 
-    caca_set_display_time(dp, 20000);
-
-    /* Fill various tables */
-    for(i = 0 ; i < 256; i++)
-        red[i] = green[i] = blue[i] = alpha[i] = 0;
-
-    red[0] = green[0] = blue[0] = 0x777;
-    red[1] = green[1] = blue[1] = 0xfff;
-
-    /* Fill the circle */
-    for(i = DISCSIZ * 2; i > 0; i -= DISCTHICKNESS)
-        draw_disc(i, (i / DISCTHICKNESS) % 2);
-
-    /* Create a libcucul dither */
-    dither = cucul_create_dither(8, XSIZ, YSIZ, XSIZ, 0, 0, 0, 0);
-
-    /* Main loop */
-    for(;;)
+    switch(action)
     {
-        caca_event_t ev;
-        if(caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, 0))
-        {
-            switch(ev.data.key.ch)
-            {
-                case CACA_KEY_ESCAPE: goto end;
-                case ' ': pause = !pause;
-            }
-        }
+    case INIT:
+        screen = malloc(XSIZ * YSIZ * sizeof(uint8_t));
 
-        if(pause)
-            goto paused;
+        /* Fill various tables */
+        for(i = 0 ; i < 256; i++)
+            red[i] = green[i] = blue[i] = alpha[i] = 0;
 
+        red[0] = green[0] = blue[0] = 0x777;
+        red[1] = green[1] = blue[1] = 0xfff;
+
+        /* Fill the circle */
+        for(i = DISCSIZ * 2; i > 0; i -= DISCTHICKNESS)
+            draw_disc(i, (i / DISCTHICKNESS) % 2);
+
+        /* Create a libcucul dither */
+        dither = cucul_create_dither(8, XSIZ, YSIZ, XSIZ, 0, 0, 0, 0);
+        break;
+
+    case UPDATE:
         memset(screen, 0, XSIZ * YSIZ);
 
         /* Set the palette */
@@ -445,35 +421,28 @@ static int main_moir(int argc, char **argv)
         /* Draw circles */
         x = cos(0.07 * frame + 5.0) * 128.0 + (XSIZ / 2);
         y = sin(0.11 * frame) * 128.0 + (YSIZ / 2);
-        put_disc(x, y);
+        put_disc(screen, x, y);
 
         x = cos(0.13 * frame + 2.0) * 64.0 + (XSIZ / 2);
         y = sin(0.09 * frame + 1.0) * 64.0 + (YSIZ / 2);
-        put_disc(x, y);
+        put_disc(screen, x, y);
+        break;
 
-        frame++;
-
-paused:
+    case DRAW:
         cucul_dither_bitmap(cv, 0, 0,
                             cucul_get_canvas_width(cv),
                             cucul_get_canvas_height(cv),
                             dither, screen);
-        cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
-        cucul_putstr(cv, cucul_get_canvas_width(cv) - 30,
-                         cucul_get_canvas_height(cv) - 2,
-                         " -=[ Powered by libcaca ]=- ");
-        caca_refresh_display(dp);
+        break;
+
+    case FREE:
+        free(screen);
+        cucul_free_dither(dither);
+        break;
     }
-
-end:
-    cucul_free_dither(dither);
-    caca_free_display(dp);
-    cucul_free_canvas(cv);
-
-    return 0;
 }
 
-static void put_disc(int x, int y)
+static void put_disc(uint8_t *screen, int x, int y)
 {
     char *src = ((char*)disc) + (DISCSIZ / 2 - x) + (DISCSIZ / 2 - y) * DISCSIZ;
     int i, j;
