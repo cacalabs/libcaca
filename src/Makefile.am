@@ -5,20 +5,14 @@ pkgdata_DATA = caca.txt
 EXTRA_DIST = caca.txt
 AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/cucul -I$(top_srcdir)/caca -DLIBCACA=1 -DX_DISPLAY_MISSING=1
 
-bin_PROGRAMS = cacafire cacaball cacaplas cacamoir cacaplay cacaview img2irc $(fcntl_programs)
+bin_PROGRAMS = cacademo cacafire cacaplay cacaview img2irc $(fcntl_programs)
 noinst_PROGRAMS = cacadraw
+
+cacademo_SOURCES = cacademo.c
+cacademo_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@ @MATH_LIBS@
 
 cacafire_SOURCES = aafire.c
 cacafire_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
-
-cacaball_SOURCES = cacaball.c
-cacaball_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@ @MATH_LIBS@
-
-cacaplas_SOURCES = cacaplas.c
-cacaplas_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@ @MATH_LIBS@
-
-cacamoir_SOURCES = cacamoir.c
-cacamoir_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@ @MATH_LIBS@
 
 cacaview_SOURCES = cacaview.c common-image.c common-image.h
 cacaview_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
