@@ -132,13 +132,13 @@ int cucul_fill_triangle(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
         }
 
         /* Rescale xa and xb, slightly cropping */
-        xa = (xa + 2) / 4;
-        xb = (xb - 2) / 4;
+        xa = xa / 4;
+        xb = xb / 4;
 
         if(xb < 0) continue;
         if(xa > xmax) continue;
         if(xa < 0) xa = 0;
-        if(xb > xmax) xb = xmax;
+        if((xb) > xmax) xb = xmax;
 
         for(x = xa; x <= xb; x++)
             cucul_putchar(cv, x, y, ch);
