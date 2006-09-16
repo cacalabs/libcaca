@@ -462,7 +462,7 @@ static RETSIGTYPE sigwinch_handler(int sig)
 #if defined(HAVE_GETENV) && defined(HAVE_PUTENV)
 static void slang_check_terminal(void)
 {
-    char *term, *colorterm, *other;
+    char *term, *colorterm;
 
     term = getenv("TERM");
     colorterm = getenv("COLORTERM");
