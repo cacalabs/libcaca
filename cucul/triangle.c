@@ -131,9 +131,9 @@ int cucul_fill_triangle(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
             xb = xa; xa = tmp;
         }
 
-        /* Rescale xa and xb, slightly cropping */
-        xa = xa / 4;
-        xb = xb / 4;
+        /* Rescale xa and xb, recentering the division */
+        xa = (xa + 1) / 4;
+        xb = (xb + 2) / 4;
 
         if(xb < 0) continue;
         if(xa > xmax) continue;
