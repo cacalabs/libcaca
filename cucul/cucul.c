@@ -23,8 +23,13 @@
 #   include <stdio.h>
 #   include <stdlib.h>
 #   include <string.h>
+#   include <time.h>
 #   if defined(HAVE_ERRNO_H)
 #       include <errno.h>
+#   endif
+#   include <sys/types.h>
+#   if defined(HAVE_UNISTD_H)
+#       include <unistd.h>
 #   endif
 #endif
 
@@ -272,6 +277,14 @@ int cucul_free_canvas(cucul_canvas_t *cv)
  */
 int cucul_rand(int min, int max)
 {
+    static int need_init = 1;
+
+    if(need_init)
+    {
+        srand(getpid() + time(NULL));
+        need_init = 0;
+    }
+
     return min + (int)((1.0 * (max - min)) * rand() / (RAND_MAX + 1.0));
 }
 
