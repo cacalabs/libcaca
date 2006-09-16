@@ -222,8 +222,6 @@ static int main_ball(int argc, char **argv)
     float i = 10.0, j = 17.0, k = 11.0;
     int p, frame = 0, pause = 0;
     double frameOffset[360 + 80];
-    double frameOffset40[360];
-    double frameOffset80[360];
 
     cv = cucul_create_canvas(0, 0);
     if(!cv)
@@ -255,11 +253,8 @@ static int main_ball(int argc, char **argv)
         dk[p] = (float)cucul_rand(500, 4000) / 6000.0;
     }
 
-    for(frame = 0; frame < 360; frame++) {
-        frameOffset[frame] = sin(frame * M_PI / 60);
-        frameOffset40[frame] = sin((frame + 40) * M_PI / 60);
-        frameOffset80[frame] = sin((frame + 80) * M_PI / 60);
-    }
+    for(frame = 0; frame < 360 + 80; frame++)
+        frameOffset[frame] = 1.0 + sin((double)(frame * M_PI / 60));
 
     /* Go ! */
     for(;;)
@@ -285,9 +280,9 @@ static int main_ball(int argc, char **argv)
         for(p = CROPBALL; p < 255; p++)
         {
             int t1, t2, t3;
-            double c1 = 1.0 + (double)frameOffset[frame];
-            double c2 = 1.0 + (double)frameOffset40[frame];
-            double c3 = 1.0 + (double)frameOffset80[frame];
+            double c1 = frameOffset[frame];
+            double c2 = frameOffset[frame+40];
+            double c3 = frameOffset[frame+80];
 
             t1 = p < 0x40 ? 0 : p < 0xc0 ? (p - 0x40) * 0x20 : 0xfff;
             t2 = p < 0xe0 ? 0 : (p - 0xe0) * 0x80;
