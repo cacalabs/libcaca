@@ -76,6 +76,7 @@ float star[] = {
     -0.313000,-0.349000
 };
 
+float star_rot[sizeof(star)/sizeof(*star)];
 
 /* Global variables */
 static int frame = 0;
@@ -88,8 +89,6 @@ int main(int argc, char **argv)
     int demo, next = -1, pause = 0, next_transition = DEMO_FRAMES;
     unsigned int i;
     int transition = cucul_rand(0, TRANSITION_COUNT);
-
-
 
     /* Set up two canvases, a mask, and attach a display to the front one */
     frontcv = cucul_create_canvas(0, 0);
@@ -216,51 +215,86 @@ void do_transition(cucul_canvas_t *mask, int transition, float time)
     float muly = time*cucul_get_canvas_height(mask);
     int w2 = cucul_get_canvas_width(mask) / 2;
     int h2 = cucul_get_canvas_height(mask) / 2;
-
+    float angle = (time*360)*3.14/180, x,y;
+    unsigned int i;
     switch(transition)
     {
         case TRANSITION_STAR:
+            /* Compute rotated coordinates */
+            for(i=0;i<(sizeof(star)/sizeof(*star))/2;i++)
+            {
+                x = star[OFFSET_X(i)];
+                y = star[OFFSET_Y(i)];
+
+                star_rot[OFFSET_X(i)] = x*cos(angle) - y*sin(angle);
+                star_rot[OFFSET_Y(i)] = y*cos(angle) + x*sin(angle);
+            }
+
             mulx*=1.8;
             muly*=1.8;
             cucul_fill_triangle(mask,
-                                star[OFFSET_X(0)]*mulx+w2, star[OFFSET_Y(0)]*muly+h2,
-                                star[OFFSET_X(1)]*mulx+w2, star[OFFSET_Y(1)]*muly+h2,
-                                star[OFFSET_X(9)]*mulx+w2, star[OFFSET_Y(9)]*muly+h2,
+                                star_rot[OFFSET_X(0)]*mulx+w2,
+                                star_rot[OFFSET_Y(0)]*muly+h2,
+                                star_rot[OFFSET_X(1)]*mulx+w2,
+                                star_rot[OFFSET_Y(1)]*muly+h2,
+                                star_rot[OFFSET_X(9)]*mulx+w2,
+                                star_rot[OFFSET_Y(9)]*muly+h2,
                                 "#");
             cucul_fill_triangle(mask,
-                                star[OFFSET_X(1)]*mulx+w2, star[OFFSET_Y(1)]*muly+h2,
-                                star[OFFSET_X(2)]*mulx+w2, star[OFFSET_Y(2)]*muly+h2,
-                                star[OFFSET_X(3)]*mulx+w2, star[OFFSET_Y(3)]*muly+h2,
+                                star_rot[OFFSET_X(1)]*mulx+w2,
+                                star_rot[OFFSET_Y(1)]*muly+h2,
+                                star_rot[OFFSET_X(2)]*mulx+w2,
+                                star_rot[OFFSET_Y(2)]*muly+h2,
+                                star_rot[OFFSET_X(3)]*mulx+w2,
+                                star_rot[OFFSET_Y(3)]*muly+h2,
                                 "#");
             cucul_fill_triangle(mask,
-                                star[OFFSET_X(3)]*mulx+w2, star[OFFSET_Y(3)]*muly+h2,
-                                star[OFFSET_X(4)]*mulx+w2, star[OFFSET_Y(4)]*muly+h2,
-                                star[OFFSET_X(5)]*mulx+w2, star[OFFSET_Y(5)]*muly+h2,
+                                star_rot[OFFSET_X(3)]*mulx+w2,
+                                star_rot[OFFSET_Y(3)]*muly+h2,
+                                star_rot[OFFSET_X(4)]*mulx+w2,
+                                star_rot[OFFSET_Y(4)]*muly+h2,
+                                star_rot[OFFSET_X(5)]*mulx+w2,
+                                star_rot[OFFSET_Y(5)]*muly+h2,
                                 "#");
             cucul_fill_triangle(mask,
-                                star[OFFSET_X(5)]*mulx+w2, star[OFFSET_Y(5)]*muly+h2,
-                                star[OFFSET_X(6)]*mulx+w2, star[OFFSET_Y(6)]*muly+h2,
-                                star[OFFSET_X(7)]*mulx+w2, star[OFFSET_Y(7)]*muly+h2,
+                                star_rot[OFFSET_X(5)]*mulx+w2,
+                                star_rot[OFFSET_Y(5)]*muly+h2,
+                                star_rot[OFFSET_X(6)]*mulx+w2,
+                                star_rot[OFFSET_Y(6)]*muly+h2,
+                                star_rot[OFFSET_X(7)]*mulx+w2,
+                                star_rot[OFFSET_Y(7)]*muly+h2,
                                 "#");
             cucul_fill_triangle(mask,
-                                star[OFFSET_X(7)]*mulx+w2, star[OFFSET_Y(7)]*muly+h2,
-                                star[OFFSET_X(8)]*mulx+w2, star[OFFSET_Y(8)]*muly+h2,
-                                star[OFFSET_X(9)]*mulx+w2, star[OFFSET_Y(9)]*muly+h2,
+                                star_rot[OFFSET_X(7)]*mulx+w2,
+                                star_rot[OFFSET_Y(7)]*muly+h2,
+                                star_rot[OFFSET_X(8)]*mulx+w2,
+                                star_rot[OFFSET_Y(8)]*muly+h2,
+                                star_rot[OFFSET_X(9)]*mulx+w2,
+                                star_rot[OFFSET_Y(9)]*muly+h2,
                                 "#");
             cucul_fill_triangle(mask,
-                                star[OFFSET_X(9)]*mulx+w2, star[OFFSET_Y(9)]*muly+h2,
-                                star[OFFSET_X(1)]*mulx+w2, star[OFFSET_Y(1)]*muly+h2,
-                                star[OFFSET_X(5)]*mulx+w2, star[OFFSET_Y(5)]*muly+h2,
+                                star_rot[OFFSET_X(9)]*mulx+w2,
+                                star_rot[OFFSET_Y(9)]*muly+h2,
+                                star_rot[OFFSET_X(1)]*mulx+w2,
+                                star_rot[OFFSET_Y(1)]*muly+h2,
+                                star_rot[OFFSET_X(5)]*mulx+w2,
+                                star_rot[OFFSET_Y(5)]*muly+h2,
                                 "#");
             cucul_fill_triangle(mask,
-                                star[OFFSET_X(9)]*mulx+w2, star[OFFSET_Y(9)]*muly+h2,
-                                star[OFFSET_X(5)]*mulx+w2, star[OFFSET_Y(5)]*muly+h2,
-                                star[OFFSET_X(7)]*mulx+w2, star[OFFSET_Y(7)]*muly+h2,
+                                star_rot[OFFSET_X(9)]*mulx+w2,
+                                star_rot[OFFSET_Y(9)]*muly+h2,
+                                star_rot[OFFSET_X(5)]*mulx+w2,
+                                star_rot[OFFSET_Y(5)]*muly+h2,
+                                star_rot[OFFSET_X(7)]*mulx+w2,
+                                star_rot[OFFSET_Y(7)]*muly+h2,
                                 "#");
             cucul_fill_triangle(mask,
-                                star[OFFSET_X(1)]*mulx+w2, star[OFFSET_Y(1)]*muly+h2,
-                                star[OFFSET_X(3)]*mulx+w2, star[OFFSET_Y(3)]*muly+h2,
-                                star[OFFSET_X(5)]*mulx+w2, star[OFFSET_Y(5)]*muly+h2,
+                                star_rot[OFFSET_X(1)]*mulx+w2,
+                                star_rot[OFFSET_Y(1)]*muly+h2,
+                                star_rot[OFFSET_X(3)]*mulx+w2,
+                                star_rot[OFFSET_Y(3)]*muly+h2,
+                                star_rot[OFFSET_X(5)]*mulx+w2,
+                                star_rot[OFFSET_Y(5)]*muly+h2,
                                 "#");
             break;
 
