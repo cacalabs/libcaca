@@ -1,8 +1,8 @@
 /*
  *  cacademo      various demo effects for libcaca
  *  Copyright (c) 1998 Michele Bini <mibin@tin.it>
- *                2003-2004 Jean-Yves Lamoureux <jylam@lnxscene.org>
- *                2004 Sam Hocevar <sam@zoy.org>
+ *                2003-2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
+ *                2004-2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
  *  $Id$
@@ -29,7 +29,7 @@
 #include "cucul.h"
 #include "caca.h"
 
-enum action { INIT, UPDATE, DRAW, FREE };
+enum action { PREPARE, INIT, UPDATE, RENDER, FREE };
 
 void plasma(enum action, cucul_canvas_t *);
 void metaballs(enum action, cucul_canvas_t *);
@@ -37,7 +37,7 @@ void moire(enum action, cucul_canvas_t *);
 void langton(enum action, cucul_canvas_t *);
 void matrix(enum action, cucul_canvas_t *);
 
-void (*demo_list[])(enum action, cucul_canvas_t *) =
+void (*fn[])(enum action, cucul_canvas_t *) =
 {
     plasma,
     metaballs,
@@ -45,7 +45,10 @@ void (*demo_list[])(enum action, cucul_canvas_t *) =
     //langton,
     matrix,
 };
-#define DEMOS (sizeof(demo_list)/sizeof(*demo_list))
+#define DEMOS (sizeof(fn)/sizeof(*fn))
+
+#define DEMO_FRAMES 1000
+#define TRANSITION_FRAMES 40
 
 /* Common macros for dither-based demos */
 #define XSIZ 256
@@ -58,7 +61,9 @@ int main(int argc, char **argv)
 {
     static caca_display_t *dp;
     static cucul_canvas_t *frontcv, *backcv, *mask;
-    int demo = 0, pause = 0;
+
+    int demo, next = -1, pause = 0, next_transition = DEMO_FRAMES;
+    unsigned int i;
 
     /* Set up two canvases, a mask, and attach a display to the front one */
     frontcv = cucul_create_canvas(0, 0);
@@ -76,29 +81,92 @@ int main(int argc, char **argv)
 
     caca_set_display_time(dp, 20000);
 
-    demo = cucul_rand(0, DEMOS);
+    /* Initialise all demos' lookup tables */
+    for(i = 0; i < DEMOS; i++)
+        fn[i](PREPARE, frontcv);
 
-    demo_list[demo](INIT, frontcv);
+    /* Choose a demo at random */
+    demo = cucul_rand(0, DEMOS);
+    fn[demo](INIT, frontcv);
 
     for(;;) 
     {
+        /* Handle events */
         caca_event_t ev;
-        if(caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, 0))
+        while(caca_get_event(dp, CACA_EVENT_KEY_PRESS
+                                  | CACA_EVENT_QUIT, &ev, 0))
         {
+            if(ev.type == CACA_EVENT_QUIT)
+                goto end;
+
             switch(ev.data.key.ch)
             {
-                case CACA_KEY_ESCAPE: goto end;
-                case ' ': pause = !pause;
+                case CACA_KEY_ESCAPE:
+                    goto end;
+                case ' ':
+                    pause = !pause;
+                    break;
+                case 'n':
+                    if(next == -1)
+                        next_transition = frame;
+                    break;
             }
         }
+
+        /* Resize the spare canvas, just in case the main one changed */
+        cucul_set_canvas_size(backcv, cucul_get_canvas_width(frontcv),
+                                      cucul_get_canvas_height(frontcv));
+        cucul_set_canvas_size(mask, cucul_get_canvas_width(frontcv),
+                                    cucul_get_canvas_height(frontcv));
 
         if(pause)
             goto paused;
 
-        demo_list[demo](UPDATE, frontcv);
+        /* Update demo's data */
+        fn[demo](UPDATE, frontcv);
+
+        /* Handle transitions */
+        if(frame == next_transition)
+        {
+            next = cucul_rand(0, DEMOS);
+            if(next == demo) 
+                next = (next + 1) % DEMOS;
+            fn[next](INIT, backcv);
+        }
+        else if(frame == next_transition + TRANSITION_FRAMES)
+        {
+            fn[demo](FREE, frontcv);
+            demo = next;
+            next = -1;
+            next_transition = frame + DEMO_FRAMES;
+        }
+
+        if(next != -1)
+            fn[next](UPDATE, backcv);
+
         frame++;
 paused:
-        demo_list[demo](DRAW, frontcv);
+        /* Render main demo's canvas */
+        fn[demo](RENDER, frontcv);
+
+        /* If a transition is on its way, render it */
+        if(next != -1)
+        {
+            fn[next](RENDER, backcv);
+            cucul_set_color(mask, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
+            cucul_clear_canvas(mask);
+            cucul_set_color(mask, CUCUL_COLOR_WHITE, CUCUL_COLOR_WHITE);
+            cucul_fill_ellipse(mask,
+                cucul_get_canvas_width(mask) / 2,
+                cucul_get_canvas_height(mask) / 2,
+                cucul_get_canvas_width(mask) *
+                    (frame - next_transition) / TRANSITION_FRAMES * 3 / 4,
+                cucul_get_canvas_height(mask) *
+                    (frame - next_transition) / TRANSITION_FRAMES * 3 / 4,
+                "#");
+            cucul_blit(frontcv, 0, 0, backcv, mask);
+        }
+
         cucul_set_color(frontcv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
         cucul_putstr(frontcv, cucul_get_canvas_width(frontcv) - 30,
                               cucul_get_canvas_height(frontcv) - 2,
@@ -106,7 +174,9 @@ paused:
         caca_refresh_display(dp);
     }
 end:
-    demo_list[demo](FREE, frontcv);
+    if(next != -1)
+        fn[next](FREE, frontcv);
+    fn[demo](FREE, frontcv);
 
     caca_free_display(dp);
     cucul_free_canvas(mask);
@@ -135,9 +205,7 @@ void plasma(enum action action, cucul_canvas_t *cv)
 
     switch(action)
     {
-    case INIT:
-        screen = malloc(XSIZ * YSIZ * sizeof(uint8_t));
-
+    case PREPARE:
         /* Fill various tables */
         for(i = 0 ; i < 256; i++)
             red[i] = green[i] = blue[i] = alpha[i] = 0;
@@ -157,8 +225,10 @@ void plasma(enum action action, cucul_canvas_t *cv)
 
             table[x + y * TABLEX] = (1.0 + sin(12.0 * sqrt(tmp))) * 256 / 6;
         }
+        break;
 
-        /* Create a libcucul dither */
+    case INIT:
+        screen = malloc(XSIZ * YSIZ * sizeof(uint8_t));
         dither = cucul_create_dither(8, XSIZ, YSIZ, XSIZ, 0, 0, 0, 0);
         break;
 
@@ -184,7 +254,7 @@ void plasma(enum action action, cucul_canvas_t *cv)
                   (1.0 + sin(((double)frame) * R[5])) / 2);
         break;
 
-    case DRAW:
+    case RENDER:
         cucul_dither_bitmap(cv, 0, 0,
                             cucul_get_canvas_width(cv),
                             cucul_get_canvas_height(cv),
@@ -245,18 +315,12 @@ void metaballs(enum action action, cucul_canvas_t *cv)
 
     switch(action)
     {
-    case INIT:
-        screen = malloc(XSIZ * YSIZ * sizeof(uint8_t));
-
+    case PREPARE:
         /* Make the palette eatable by libcaca */
         for(p = 0; p < 256; p++)
             r[p] = g[p] = b[p] = a[p] = 0x0;
         r[255] = g[255] = b[255] = 0xfff;
 
-        /* Create a libcucul dither smaller than our pixel buffer, so that we
-         * display only the interesting part of it */
-        cucul_dither = cucul_create_dither(8, XSIZ - METASIZE, YSIZ - METASIZE,
-                                           XSIZ, 0, 0, 0, 0);
         /* Generate ball sprite */
         create_ball();
 
@@ -270,6 +334,14 @@ void metaballs(enum action action, cucul_canvas_t *cv)
 
         for(p = 0; p < 360 + 80; p++)
             offset[p] = 1.0 + sin((double)(p * M_PI / 60));
+        break;
+
+    case INIT:
+        screen = malloc(XSIZ * YSIZ * sizeof(uint8_t));
+        /* Create a libcucul dither smaller than our pixel buffer, so that we
+         * display only the interesting part of it */
+        cucul_dither = cucul_create_dither(8, XSIZ - METASIZE, YSIZ - METASIZE,
+                                           XSIZ, 0, 0, 0, 0);
         break;
 
     case UPDATE:
@@ -318,7 +390,7 @@ void metaballs(enum action action, cucul_canvas_t *cv)
             draw_ball(screen, x[p], y[p]);
         break;
 
-    case DRAW:
+    case RENDER:
         cucul_dither_bitmap(cv, 0, 0,
                           cucul_get_canvas_width(cv),
                           cucul_get_canvas_height(cv),
@@ -393,9 +465,7 @@ void moire(enum action action, cucul_canvas_t *cv)
 
     switch(action)
     {
-    case INIT:
-        screen = malloc(XSIZ * YSIZ * sizeof(uint8_t));
-
+    case PREPARE:
         /* Fill various tables */
         for(i = 0 ; i < 256; i++)
             red[i] = green[i] = blue[i] = alpha[i] = 0;
@@ -407,7 +477,10 @@ void moire(enum action action, cucul_canvas_t *cv)
         for(i = DISCSIZ * 2; i > 0; i -= DISCTHICKNESS)
             draw_disc(i, (i / DISCTHICKNESS) % 2);
 
-        /* Create a libcucul dither */
+        break;
+
+    case INIT:
+        screen = malloc(XSIZ * YSIZ * sizeof(uint8_t));
         dither = cucul_create_dither(8, XSIZ, YSIZ, XSIZ, 0, 0, 0, 0);
         break;
 
@@ -435,7 +508,7 @@ void moire(enum action action, cucul_canvas_t *cv)
         put_disc(screen, x, y);
         break;
 
-    case DRAW:
+    case RENDER:
         cucul_dither_bitmap(cv, 0, 0,
                             cucul_get_canvas_width(cv),
                             cucul_get_canvas_height(cv),
@@ -508,17 +581,20 @@ void langton(enum action action, cucul_canvas_t *cv)
 
     switch(action)
     {
-    case INIT:
+    case PREPARE:
         width = cucul_get_canvas_width(cv);
         height = cucul_get_canvas_height(cv);
-        screen = malloc(width * height);
-        memset(screen, 0, width * height);
         for(i = 0; i < ANTS; i++)
         {
             ax[i] = cucul_rand(0, width);
             ay[i] = cucul_rand(0, height);
             dir[i] = cucul_rand(0, 4);
         }
+        break;
+
+    case INIT:
+        screen = malloc(width * height);
+        memset(screen, 0, width * height);
         break;
 
     case UPDATE:
@@ -551,7 +627,7 @@ void langton(enum action action, cucul_canvas_t *cv)
         }
         break;
 
-    case DRAW:
+    case RENDER:
         for(y = 0; y < height; y++)
         {
             for(x = 0; x < width; x++)
@@ -593,7 +669,7 @@ void matrix(enum action action, cucul_canvas_t *cv)
 
     switch(action)
     {
-    case INIT:
+    case PREPARE:
         for(i = 0; i < MAXDROPS; i++)
         {
             drop[i].x = cucul_rand(0, 1000);
@@ -603,6 +679,9 @@ void matrix(enum action action, cucul_canvas_t *cv)
             for(j = 0; j < MAXLEN; j++)
                 drop[i].str[j] = cucul_rand('0', 'z');
         }
+        break;
+
+    case INIT:
         break;
 
     case UPDATE:
@@ -620,7 +699,7 @@ void matrix(enum action action, cucul_canvas_t *cv)
         }
         break;
 
-    case DRAW:
+    case RENDER:
         cucul_set_color(cv, CUCUL_COLOR_BLACK, CUCUL_COLOR_BLACK);
         cucul_clear_canvas(cv);
 
