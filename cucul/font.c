@@ -445,6 +445,81 @@ int cucul_render_canvas(cucul_canvas_t *cv, cucul_font_t *f,
     return 0;
 }
 
+/** \brief Render the given character onto given buffer
+ *
+ *  This function renders the given character on an image buffer using a specific
+ *  font. The pixel format is fixed (8 bits per pixel).
+ *
+ *  The required buffer width can be computed using
+ *  cucul_get_canvas_width() and cucul_get_font_width(). The required
+ *  height can be computed using cucul_get_canvas_height() and
+ *  cucul_get_font_height().
+ *
+ *  Glyphs that do not fit in the image buffer are currently not rendered at
+ *  all. They may be cropped instead in future versions.
+ *
+ *  This function never fails.
+ *
+ *  \param f The font, as returned by cucul_load_font()
+ *  \param ch The character to render
+ *  \param buf The image buffer
+ *  \param width The width (in pixels) of the image buffer
+ *  \param height The height (in pixels) of the image buffer
+ *  \return This function return 1 if glyph is succesfully renderer, 0 otherwise
+ */
+int cucul_render_glyph(cucul_font_t *f, unsigned int ch, void *buffer,
+                       unsigned int width, unsigned int height)
+{
+    unsigned int b;
+    struct glyph_info *g;
+    uint8_t *glyph = buffer;
+
+
+
+    /* Find the Unicode block where our glyph lies */
+    for(b = 0; b < f->header.blocks; b++)
+    {
+        if(ch < f->block_list[b].start)
+        {
+            b = f->header.blocks;
+            break;
+        }
+        if(ch < f->block_list[b].stop) {
+            break;
+        }
+    }
+
+    /* Glyph not in font? Skip it. */
+    if(b == f->header.blocks)
+        return 0;
+
+    g = &f->glyph_list[f->block_list[b].index
+                       + ch - f->block_list[b].start];
+
+    /* Step 1: unpack glyph */
+    switch(f->header.bpp)
+    {
+    case 8:
+        glyph = f->font_data + g->data_offset;
+        break;
+    case 4:
+        unpack_glyph4(glyph, f->font_data + g->data_offset,
+                      g->width * g->height);
+        break;
+    case 2:
+        unpack_glyph2(glyph, f->font_data + g->data_offset,
+                      g->width * g->height);
+        break;
+    case 1:
+        unpack_glyph1(glyph, f->font_data + g->data_offset,
+                      g->width * g->height);
+        break;
+    }
+    return 1;
+}
+
+
+
 /*
  * The libcaca font format, version 1
  * ----------------------------------
