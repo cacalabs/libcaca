@@ -279,7 +279,7 @@ static void gl_display(caca_display_t *dp)
     /* 2nd pass, avoids changing render state too much */
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA,GL_ONE);
+    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
     line = 0;
     for(y = 0; y < dp->drv.p->height; y += dp->drv.p->font_height, line++)
