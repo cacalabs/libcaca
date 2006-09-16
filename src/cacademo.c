@@ -125,7 +125,7 @@ static int main_plasma(int argc, char **argv)
     dither = cucul_create_dither(8, XSIZ, YSIZ, XSIZ, 0, 0, 0, 0);
 
     /* Main loop */
-    for(;;) 
+    for(;;)
     {
         caca_event_t ev;
         if(caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, 0))
@@ -256,9 +256,9 @@ static int main_ball(int argc, char **argv)
     }
 
     for(frame = 0; frame < 360; frame++) {
-        frameOffset[frame] = frame * M_PI / 60;
-        frameOffset40[frame] = (frame + 40) * M_PI / 60;
-        frameOffset80[frame] = (frame + 80) * M_PI / 60;
+        frameOffset[frame] = sin(frame * M_PI / 60);
+        frameOffset40[frame] = sin((frame + 40) * M_PI / 60);
+        frameOffset80[frame] = sin((frame + 80) * M_PI / 60);
     }
 
     /* Go ! */
@@ -285,9 +285,9 @@ static int main_ball(int argc, char **argv)
         for(p = CROPBALL; p < 255; p++)
         {
             int t1, t2, t3;
-            double c1 = 1.0 + sin((double)frameOffset[frame]);
-            double c2 = 1.0 + sin((double)frameOffset40[frame]);
-            double c3 = 1.0 + sin((double)frameOffset80[frame]);
+            double c1 = 1.0 + (double)frameOffset[frame];
+            double c2 = 1.0 + (double)frameOffset40[frame];
+            double c3 = 1.0 + (double)frameOffset80[frame];
 
             t1 = p < 0x40 ? 0 : p < 0xc0 ? (p - 0x40) * 0x20 : 0xfff;
             t2 = p < 0xe0 ? 0 : (p - 0xe0) * 0x80;
