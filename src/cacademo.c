@@ -31,6 +31,7 @@
 
 enum action { PREPARE, INIT, UPDATE, RENDER, FREE };
 
+void do_transition(cucul_canvas_t *mask, int transition, float time);
 void plasma(enum action, cucul_canvas_t *);
 void metaballs(enum action, cucul_canvas_t *);
 void moire(enum action, cucul_canvas_t *);
@@ -50,9 +51,31 @@ void (*fn[])(enum action, cucul_canvas_t *) =
 #define DEMO_FRAMES 1000
 #define TRANSITION_FRAMES 40
 
+#define TRANSITION_COUNT  2
+#define TRANSITION_CIRCLE 0
+#define TRANSITION_STAR   1
+
+
 /* Common macros for dither-based demos */
 #define XSIZ 256
 #define YSIZ 256
+
+#define OFFSET_X(i) (i*2)
+#define OFFSET_Y(i) (i*2)+1
+
+float star[] = {
+    0.000000, -1.000000,
+    0.308000,-0.349000,
+    0.992000,-0.244000,
+    0.500000,0.266000,
+    0.632000,0.998000,
+    0.008000,0.659000,
+    -0.601000,0.995000,
+    -0.496000,0.275000,
+    -0.997000,-0.244000,
+    -0.313000,-0.349000
+};
+
 
 /* Global variables */
 static int frame = 0;
@@ -64,6 +87,9 @@ int main(int argc, char **argv)
 
     int demo, next = -1, pause = 0, next_transition = DEMO_FRAMES;
     unsigned int i;
+    int transition = cucul_rand(0, TRANSITION_COUNT);
+
+
 
     /* Set up two canvases, a mask, and attach a display to the front one */
     frontcv = cucul_create_canvas(0, 0);
@@ -89,7 +115,7 @@ int main(int argc, char **argv)
     demo = cucul_rand(0, DEMOS);
     fn[demo](INIT, frontcv);
 
-    for(;;) 
+    for(;;)
     {
         /* Handle events */
         caca_event_t ev;
@@ -129,7 +155,7 @@ int main(int argc, char **argv)
         if(frame == next_transition)
         {
             next = cucul_rand(0, DEMOS);
-            if(next == demo) 
+            if(next == demo)
                 next = (next + 1) % DEMOS;
             fn[next](INIT, backcv);
         }
@@ -156,15 +182,12 @@ paused:
             cucul_set_color(mask, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
             cucul_clear_canvas(mask);
             cucul_set_color(mask, CUCUL_COLOR_WHITE, CUCUL_COLOR_WHITE);
-            cucul_fill_ellipse(mask,
-                cucul_get_canvas_width(mask) / 2,
-                cucul_get_canvas_height(mask) / 2,
-                cucul_get_canvas_width(mask) *
-                    (frame - next_transition) / TRANSITION_FRAMES * 3 / 4,
-                cucul_get_canvas_height(mask) *
-                    (frame - next_transition) / TRANSITION_FRAMES * 3 / 4,
-                "#");
+            do_transition(mask,
+                          transition,
+                          (float)(frame - next_transition) / TRANSITION_FRAMES * 3.0f / 4.0f);
             cucul_blit(frontcv, 0, 0, backcv, mask);
+        } else {
+            transition = cucul_rand(0, TRANSITION_COUNT);
         }
 
         cucul_set_color(frontcv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
@@ -185,6 +208,75 @@ end:
 
     return 0;
 }
+
+/* Transitions */
+void do_transition(cucul_canvas_t *mask, int transition, float time)
+{
+    float mulx = time*cucul_get_canvas_width(mask);
+    float muly = time*cucul_get_canvas_height(mask);
+    int w2 = cucul_get_canvas_width(mask) / 2;
+    int h2 = cucul_get_canvas_height(mask) / 2;
+
+    switch(transition)
+    {
+        case TRANSITION_STAR:
+            mulx*=1.8;
+            muly*=1.8;
+            cucul_fill_triangle(mask,
+                                star[OFFSET_X(0)]*mulx+w2, star[OFFSET_Y(0)]*muly+h2,
+                                star[OFFSET_X(1)]*mulx+w2, star[OFFSET_Y(1)]*muly+h2,
+                                star[OFFSET_X(9)]*mulx+w2, star[OFFSET_Y(9)]*muly+h2,
+                                "#");
+            cucul_fill_triangle(mask,
+                                star[OFFSET_X(1)]*mulx+w2, star[OFFSET_Y(1)]*muly+h2,
+                                star[OFFSET_X(2)]*mulx+w2, star[OFFSET_Y(2)]*muly+h2,
+                                star[OFFSET_X(3)]*mulx+w2, star[OFFSET_Y(3)]*muly+h2,
+                                "#");
+            cucul_fill_triangle(mask,
+                                star[OFFSET_X(3)]*mulx+w2, star[OFFSET_Y(3)]*muly+h2,
+                                star[OFFSET_X(4)]*mulx+w2, star[OFFSET_Y(4)]*muly+h2,
+                                star[OFFSET_X(5)]*mulx+w2, star[OFFSET_Y(5)]*muly+h2,
+                                "#");
+            cucul_fill_triangle(mask,
+                                star[OFFSET_X(5)]*mulx+w2, star[OFFSET_Y(5)]*muly+h2,
+                                star[OFFSET_X(6)]*mulx+w2, star[OFFSET_Y(6)]*muly+h2,
+                                star[OFFSET_X(7)]*mulx+w2, star[OFFSET_Y(7)]*muly+h2,
+                                "#");
+            cucul_fill_triangle(mask,
+                                star[OFFSET_X(7)]*mulx+w2, star[OFFSET_Y(7)]*muly+h2,
+                                star[OFFSET_X(8)]*mulx+w2, star[OFFSET_Y(8)]*muly+h2,
+                                star[OFFSET_X(9)]*mulx+w2, star[OFFSET_Y(9)]*muly+h2,
+                                "#");
+            cucul_fill_triangle(mask,
+                                star[OFFSET_X(9)]*mulx+w2, star[OFFSET_Y(9)]*muly+h2,
+                                star[OFFSET_X(1)]*mulx+w2, star[OFFSET_Y(1)]*muly+h2,
+                                star[OFFSET_X(5)]*mulx+w2, star[OFFSET_Y(5)]*muly+h2,
+                                "#");
+            cucul_fill_triangle(mask,
+                                star[OFFSET_X(9)]*mulx+w2, star[OFFSET_Y(9)]*muly+h2,
+                                star[OFFSET_X(5)]*mulx+w2, star[OFFSET_Y(5)]*muly+h2,
+                                star[OFFSET_X(7)]*mulx+w2, star[OFFSET_Y(7)]*muly+h2,
+                                "#");
+            cucul_fill_triangle(mask,
+                                star[OFFSET_X(1)]*mulx+w2, star[OFFSET_Y(1)]*muly+h2,
+                                star[OFFSET_X(3)]*mulx+w2, star[OFFSET_Y(3)]*muly+h2,
+                                star[OFFSET_X(5)]*mulx+w2, star[OFFSET_Y(5)]*muly+h2,
+                                "#");
+            break;
+
+        case TRANSITION_CIRCLE:
+            cucul_fill_ellipse(mask,
+                               w2,
+                               h2,
+                               mulx,
+                               muly,
+                               "#");
+
+            break;
+
+    }
+}
+
 
 /* The plasma effect */
 #define TABLEX (XSIZ * 2)
@@ -620,7 +712,7 @@ void langton(enum action action, cucul_canvas_t *cv)
                 {
                     dir[a] = (dir[a] + 3) % 4;
                     screen[ax[a] + width * ay[a]] = (a << 4) | 0x0f;
-                } 
+                }
                 ax[a] = (width + ax[a] + steps[dir[a]][0]) % width;
                 ay[a] = (height + ay[a] + steps[dir[a]][1]) % height;
             }
