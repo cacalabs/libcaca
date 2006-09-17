@@ -217,100 +217,44 @@ void do_transition(cucul_canvas_t *mask, int transition, float time)
     int h2 = cucul_get_canvas_height(mask) / 2;
     float angle = (time*360)*3.14/180, x,y;
     unsigned int i;
+
     switch(transition)
     {
         case TRANSITION_STAR:
             /* Compute rotated coordinates */
-            for(i=0;i<(sizeof(star)/sizeof(*star))/2;i++)
+            for(i = 0; i < (sizeof(star) / sizeof(*star)) / 2; i++)
             {
                 x = star[OFFSET_X(i)];
                 y = star[OFFSET_Y(i)];
 
-                star_rot[OFFSET_X(i)] = x*cos(angle) - y*sin(angle);
-                star_rot[OFFSET_Y(i)] = y*cos(angle) + x*sin(angle);
+                star_rot[OFFSET_X(i)] = x * cos(angle) - y * sin(angle);
+                star_rot[OFFSET_Y(i)] = y * cos(angle) + x * sin(angle);
             }
 
-            mulx*=1.8;
-            muly*=1.8;
-            cucul_fill_triangle(mask,
-                                star_rot[OFFSET_X(0)]*mulx+w2,
-                                star_rot[OFFSET_Y(0)]*muly+h2,
-                                star_rot[OFFSET_X(1)]*mulx+w2,
-                                star_rot[OFFSET_Y(1)]*muly+h2,
-                                star_rot[OFFSET_X(9)]*mulx+w2,
-                                star_rot[OFFSET_Y(9)]*muly+h2,
-                                "#");
-            cucul_fill_triangle(mask,
-                                star_rot[OFFSET_X(1)]*mulx+w2,
-                                star_rot[OFFSET_Y(1)]*muly+h2,
-                                star_rot[OFFSET_X(2)]*mulx+w2,
-                                star_rot[OFFSET_Y(2)]*muly+h2,
-                                star_rot[OFFSET_X(3)]*mulx+w2,
-                                star_rot[OFFSET_Y(3)]*muly+h2,
-                                "#");
-            cucul_fill_triangle(mask,
-                                star_rot[OFFSET_X(3)]*mulx+w2,
-                                star_rot[OFFSET_Y(3)]*muly+h2,
-                                star_rot[OFFSET_X(4)]*mulx+w2,
-                                star_rot[OFFSET_Y(4)]*muly+h2,
-                                star_rot[OFFSET_X(5)]*mulx+w2,
-                                star_rot[OFFSET_Y(5)]*muly+h2,
-                                "#");
-            cucul_fill_triangle(mask,
-                                star_rot[OFFSET_X(5)]*mulx+w2,
-                                star_rot[OFFSET_Y(5)]*muly+h2,
-                                star_rot[OFFSET_X(6)]*mulx+w2,
-                                star_rot[OFFSET_Y(6)]*muly+h2,
-                                star_rot[OFFSET_X(7)]*mulx+w2,
-                                star_rot[OFFSET_Y(7)]*muly+h2,
-                                "#");
-            cucul_fill_triangle(mask,
-                                star_rot[OFFSET_X(7)]*mulx+w2,
-                                star_rot[OFFSET_Y(7)]*muly+h2,
-                                star_rot[OFFSET_X(8)]*mulx+w2,
-                                star_rot[OFFSET_Y(8)]*muly+h2,
-                                star_rot[OFFSET_X(9)]*mulx+w2,
-                                star_rot[OFFSET_Y(9)]*muly+h2,
-                                "#");
-            cucul_fill_triangle(mask,
-                                star_rot[OFFSET_X(9)]*mulx+w2,
-                                star_rot[OFFSET_Y(9)]*muly+h2,
-                                star_rot[OFFSET_X(1)]*mulx+w2,
-                                star_rot[OFFSET_Y(1)]*muly+h2,
-                                star_rot[OFFSET_X(5)]*mulx+w2,
-                                star_rot[OFFSET_Y(5)]*muly+h2,
-                                "#");
-            cucul_fill_triangle(mask,
-                                star_rot[OFFSET_X(9)]*mulx+w2,
-                                star_rot[OFFSET_Y(9)]*muly+h2,
-                                star_rot[OFFSET_X(5)]*mulx+w2,
-                                star_rot[OFFSET_Y(5)]*muly+h2,
-                                star_rot[OFFSET_X(7)]*mulx+w2,
-                                star_rot[OFFSET_Y(7)]*muly+h2,
-                                "#");
-            cucul_fill_triangle(mask,
-                                star_rot[OFFSET_X(1)]*mulx+w2,
-                                star_rot[OFFSET_Y(1)]*muly+h2,
-                                star_rot[OFFSET_X(3)]*mulx+w2,
-                                star_rot[OFFSET_Y(3)]*muly+h2,
-                                star_rot[OFFSET_X(5)]*mulx+w2,
-                                star_rot[OFFSET_Y(5)]*muly+h2,
-                                "#");
+            mulx *= 1.8;
+            muly *= 1.8;
+
+#define DO_TRI(a, b, c) \
+    cucul_fill_triangle(mask, \
+        star_rot[OFFSET_X(a)]*mulx+w2, star_rot[OFFSET_Y(a)]*muly+h2, \
+        star_rot[OFFSET_X(b)]*mulx+w2, star_rot[OFFSET_Y(b)]*muly+h2, \
+        star_rot[OFFSET_X(c)]*mulx+w2, star_rot[OFFSET_Y(c)]*muly+h2, "#")
+            DO_TRI(0, 1, 9);
+            DO_TRI(1, 2, 3);
+            DO_TRI(3, 4, 5);
+            DO_TRI(5, 6, 7);
+            DO_TRI(7, 8, 9);
+            DO_TRI(9, 1, 5);
+            DO_TRI(9, 5, 7);
+            DO_TRI(1, 3, 5);
             break;
 
         case TRANSITION_CIRCLE:
-            cucul_fill_ellipse(mask,
-                               w2,
-                               h2,
-                               mulx,
-                               muly,
-                               "#");
-
+            cucul_fill_ellipse(mask, w2, h2, mulx, muly, "#");
             break;
 
     }
 }
-
 
 /* The plasma effect */
 #define TABLEX (XSIZ * 2)
