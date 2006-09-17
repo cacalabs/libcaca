@@ -57,8 +57,8 @@ static void gl_handle_mouse_motion(int, int);
 static void gl_handle_close(void);
 #endif
 static void _display(void);
-void gl_generate_glyph(uint32_t c, uint32_t tid, caca_display_t *dp);
-void gl_generate_unicode_glyph(uint32_t c, uint32_t tid, caca_display_t *dp);
+static void gl_generate_glyph(uint32_t, uint32_t, caca_display_t *);
+static void gl_generate_unicode_glyph(uint32_t, uint32_t, caca_display_t *);
 
 struct driver_private
 {
@@ -535,6 +535,74 @@ static void _display(void)
     gl_display(dp);
 }
 
+static void gl_generate_glyph(uint32_t c, uint32_t tid, caca_display_t *dp)
+{
+    int s,d;
+    uint8_t *glyph8 =  calloc(dp->drv.p->font_width*dp->drv.p->font_height, 1);
+    uint8_t *glyph32 = calloc(16*16*4, 1);
+
+    cucul_render_glyph(dp->drv.p->f, c, glyph8, dp->drv.p->font_width);
+
+    /* Convert resulting 8bbp glyph to 32bits, 16x16*/
+    for(s=0;s<(dp->drv.p->font_height<=16?dp->drv.p->font_height:16);s++)
+    {
+        for(d=0;d<dp->drv.p->font_width;d++)
+        {
+            uint32_t offset = d*4+(15-s)*16*4;
+            uint8_t c = glyph8[d+s*(int)dp->drv.p->font_width];
+            glyph32[offset] = c;
+            glyph32[1+offset] = c;
+            glyph32[2+offset] = c;
+            glyph32[3+offset] = c;
+        }
+    }
+
+    glBindTexture(GL_TEXTURE_2D, dp->drv.p->id[tid]);
+    glTexImage2D(GL_TEXTURE_2D,
+                 0, 4,
+                 16,16,
+                 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                 glyph32);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+    free(glyph8);
+    free(glyph32);
+}
+
+static void gl_generate_unicode_glyph(uint32_t c, uint32_t tid,
+                                      caca_display_t *dp)
+{
+    int s,d;
+    uint8_t *glyph8 =  calloc(dp->drv.p->font_width*dp->drv.p->font_height, 1);
+    uint8_t *glyph32 = calloc(16*16*4, 1);
+
+    cucul_render_glyph(dp->drv.p->f, c, glyph8, dp->drv.p->font_width);
+
+    /* Convert resulting 8bbp glyph to 32bits, 16x16*/
+    for(s=0;s<(dp->drv.p->font_height<=16?dp->drv.p->font_height:16);s++)
+    {
+        for(d=0;d<(dp->drv.p->font_width<=16?dp->drv.p->font_width:16);d++)
+        {
+            uint32_t offset = d*4+(15-s)*16*4;
+            uint8_t c = glyph8[d+s*(int)dp->drv.p->font_width];
+            glyph32[offset] = c;
+            glyph32[1+offset] = c;
+            glyph32[2+offset] = c;
+            glyph32[3+offset] = c;
+        }
+    }
+
+    glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[tid]);
+    glTexImage2D(GL_TEXTURE_2D,
+                 0, 4,
+                 16,16,
+                 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                 glyph32);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+    free(glyph8);
+    free(glyph32);
+}
 
 /*
  * Driver initialisation
@@ -561,77 +629,6 @@ int gl_install(caca_display_t *dp)
 
     return 0;
 }
-
-
-
-void gl_generate_glyph(uint32_t c, uint32_t tid, caca_display_t *dp) {
-    int s,d;
-    uint8_t *glyph8 =  calloc(dp->drv.p->font_width*dp->drv.p->font_height, 1);
-    uint8_t *glyph32 = calloc(16*16*4, 1);
-
-    cucul_render_glyph(dp->drv.p->f, c, glyph8, dp->drv.p->font_width);
-
-    /* Convert resulting 8bbp glyph to 32bits, 16x16*/
-    for(s=0;s<(dp->drv.p->font_height<=16?dp->drv.p->font_height:16);s++) {
-        for(d=0;d<dp->drv.p->font_width;d++)
-        {
-            uint32_t offset = d*4+(15-s)*16*4;
-            uint8_t c = glyph8[d+s*(int)dp->drv.p->font_width];
-            glyph32[offset] = c;
-            glyph32[1+offset] = c;
-            glyph32[2+offset] = c;
-            glyph32[3+offset] = c;
-        }
-    }
-
-    glBindTexture(GL_TEXTURE_2D, dp->drv.p->id[tid]);
-    glTexImage2D(GL_TEXTURE_2D,
-                 0, 4,
-                 16,16,
-                 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                 glyph32);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-    free(glyph8);
-    free(glyph32);
-}
-
-void gl_generate_unicode_glyph(uint32_t c, uint32_t tid, caca_display_t *dp) {
-    int s,d;
-    uint8_t *glyph8 =  calloc(dp->drv.p->font_width*dp->drv.p->font_height, 1);
-    uint8_t *glyph32 = calloc(16*16*4, 1);
-
-    cucul_render_glyph(dp->drv.p->f, c, glyph8, dp->drv.p->font_width);
-
-    /* Convert resulting 8bbp glyph to 32bits, 16x16*/
-    for(s=0;s<(dp->drv.p->font_height<=16?dp->drv.p->font_height:16);s++) {
-        for(d=0;d<(dp->drv.p->font_width<=16?dp->drv.p->font_width:16);d++)
-        {
-            uint32_t offset = d*4+(15-s)*16*4;
-            uint8_t c = glyph8[d+s*(int)dp->drv.p->font_width];
-            glyph32[offset] = c;
-            glyph32[1+offset] = c;
-            glyph32[2+offset] = c;
-            glyph32[3+offset] = c;
-        }
-    }
-
-    glBindTexture(GL_TEXTURE_2D, dp->drv.p->id_uni[tid]);
-    glTexImage2D(GL_TEXTURE_2D,
-                 0, 4,
-                 16,16,
-                 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                 glyph32);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-    free(glyph8);
-    free(glyph32);
-}
-
-
-
-
-
 
 #endif /* USE_GL */
 
