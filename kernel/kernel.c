@@ -176,15 +176,15 @@ int strcasecmp(const char *s1, const char *s2)
 
 int memcmp(const char *s1, const char *s2, size_t n)
 {
-    while(n) {
-        if(*s1 != *s2) return *s1-*s2;
+    while(n--)
+    {
+        if(*s1 != *s2)
+            return *s1 - *s2;
         *s1++;
         *s2++;
-        n--;
     }
     return 0;
 }
-
 
 /* stdarg.h functions */
 int vsnprintf(char *str, size_t size, const char *format, va_list ap)

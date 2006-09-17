@@ -16,9 +16,9 @@
 
 #if !defined(__KERNEL__)
 #   include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#   endif
+#   include <string.h>
+#   include <stdlib.h>
+#endif
 
 #include "cucul.h"
 #include "common-image.h"
