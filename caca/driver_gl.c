@@ -80,7 +80,6 @@ struct driver_private
     int special_key;
 
     float sw, sh;
-
 };
 
 static int gl_init_graphics(caca_display_t *dp)

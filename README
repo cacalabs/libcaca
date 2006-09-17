@@ -10,6 +10,7 @@ Building libcaca
      --enable-x11: support for native X11 rendering
      --enable-gl: support for OpenGL rendering
      --enable-win32: support for the Windows console
+     --enable-network: support for the network server
 
      --disable-imlib2: remove Imlib2 support in cacaview
 
