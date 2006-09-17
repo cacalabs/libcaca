@@ -94,7 +94,6 @@
   \section ttyvaders TTYvaders
 
   - Managed in another repository.
-  - Change vertical scrolling to horizontal scrolling for smoother scrolling.
   - Add ground and air vehicles, make it moon-buggy on steroids!
   - Provide several sets of sprites (monochrome, ANSI, UTF-8).
 
