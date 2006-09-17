@@ -569,9 +569,7 @@ void gl_generate_glyph(uint32_t c, uint32_t tid, caca_display_t *dp) {
     uint8_t *glyph8 =  calloc(dp->drv.p->font_width*dp->drv.p->font_height, 1);
     uint8_t *glyph32 = calloc(16*16*4, 1);
 
-    cucul_render_glyph(dp->drv.p->f, c,
-                       glyph8, dp->drv.p->font_width, dp->drv.p->font_height);
-
+    cucul_render_glyph(dp->drv.p->f, c, glyph8, dp->drv.p->font_width);
 
     /* Convert resulting 8bbp glyph to 32bits, 16x16*/
     for(s=0;s<(dp->drv.p->font_height<=16?dp->drv.p->font_height:16);s++) {
@@ -603,9 +601,7 @@ void gl_generate_unicode_glyph(uint32_t c, uint32_t tid, caca_display_t *dp) {
     uint8_t *glyph8 =  calloc(dp->drv.p->font_width*dp->drv.p->font_height, 1);
     uint8_t *glyph32 = calloc(16*16*4, 1);
 
-    cucul_render_glyph(dp->drv.p->f, c,
-                       glyph8, dp->drv.p->font_width, dp->drv.p->font_height);
-
+    cucul_render_glyph(dp->drv.p->f, c, glyph8, dp->drv.p->font_width);
 
     /* Convert resulting 8bbp glyph to 32bits, 16x16*/
     for(s=0;s<(dp->drv.p->font_height<=16?dp->drv.p->font_height:16);s++) {
