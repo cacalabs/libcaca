@@ -93,9 +93,9 @@ namespace libCaca
     [DllImport("libCaca.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
       public static extern void caca_refresh_display(IntPtr kk);
     [DllImport("libCaca.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
-      public static extern void caca_set_delay(IntPtr kk, Int32 d);
+      public static extern void caca_set_display_time(IntPtr kk, Int32 d);
     [DllImport("libCaca.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
-      public static extern Int32 caca_get_rendertime(IntPtr kk);
+      public static extern Int32 caca_get_display_time(IntPtr kk);
     [DllImport("libCaca.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
       public static extern Int32 caca_get_display_width(IntPtr kk);
     [DllImport("libCaca.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
@@ -132,13 +132,13 @@ namespace libCaca
         {
         caca_refresh_display(kk);
         }
-    public void setDelay(Int32 d)
+    public void setDisplayTime(Int32 d)
         {
-        caca_set_delay(kk, d);
+        caca_set_display_time(kk, d);
         }
-    public Int32 getRendertime()
+    public Int32 getDisplayTime()
         {
-        return caca_get_rendertime(kk);
+        return caca_get_display_time(kk);
         }
     public Int32 getDisplayWidth()
         {

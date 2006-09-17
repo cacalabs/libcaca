@@ -45,16 +45,16 @@ class Test {
 
         /* We have a proper canvas, let's display it using Caca */
         Caca kk = new Caca(qq);
-        kk.setDelay(2000000); // Refresh every 2 seconds
+        kk.setDisplayTime(2000000); // Refresh every 2 seconds
 
         kk.setDisplayTitle("libcaca .NET Bindings test suite");
 
         Event e = new Event();
-        int startTime = kk.getRendertime();
+        int startTime = kk.getDisplayTime();
         while(kk.getEvent(Event.type.KEY_RELEASE, e, 10) == 0)
           {
           kk.Refresh();
-          Console.WriteLine("Render time : {0}", kk.getRendertime()-startTime);
+          Console.WriteLine("Render time : {0}", kk.getDisplayTime()-startTime);
           }
 
 
