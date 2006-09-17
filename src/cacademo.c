@@ -60,9 +60,6 @@ void (*fn[])(enum action, cucul_canvas_t *) =
 #define XSIZ 256
 #define YSIZ 256
 
-#define OFFSET_X(i) (i*2)
-#define OFFSET_Y(i) (i*2)+1
-
 /* Global variables */
 static int frame = 0;
 
@@ -222,11 +219,11 @@ void transition(cucul_canvas_t *mask, int tmode, int completed)
             /* Compute rotated coordinates */
             for(i = 0; i < (sizeof(star) / sizeof(*star)) / 2; i++)
             {
-                x = star[OFFSET_X(i)];
-                y = star[OFFSET_Y(i)];
+                x = star[i * 2];
+                y = star[i * 2 + 1];
 
-                star_rot[OFFSET_X(i)] = x * cos(angle) - y * sin(angle);
-                star_rot[OFFSET_Y(i)] = y * cos(angle) + x * sin(angle);
+                star_rot[i * 2] = x * cos(angle) - y * sin(angle);
+                star_rot[i * 2 + 1] = y * cos(angle) + x * sin(angle);
             }
 
             mulx *= 1.8;
@@ -234,9 +231,9 @@ void transition(cucul_canvas_t *mask, int tmode, int completed)
 
 #define DO_TRI(a, b, c) \
     cucul_fill_triangle(mask, \
-        star_rot[OFFSET_X(a)]*mulx+w2, star_rot[OFFSET_Y(a)]*muly+h2, \
-        star_rot[OFFSET_X(b)]*mulx+w2, star_rot[OFFSET_Y(b)]*muly+h2, \
-        star_rot[OFFSET_X(c)]*mulx+w2, star_rot[OFFSET_Y(c)]*muly+h2, "#")
+        star_rot[(a)*2] * mulx + w2, star_rot[(a)*2+1] * muly + h2, \
+        star_rot[(b)*2] * mulx + w2, star_rot[(b)*2+1] * muly + h2, \
+        star_rot[(c)*2] * mulx + w2, star_rot[(c)*2+1] * muly + h2, "#")
             DO_TRI(0, 1, 9);
             DO_TRI(1, 2, 3);
             DO_TRI(3, 4, 5);
