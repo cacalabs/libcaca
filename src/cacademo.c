@@ -31,7 +31,7 @@
 
 enum action { PREPARE, INIT, UPDATE, RENDER, FREE };
 
-void do_transition(cucul_canvas_t *mask, int transition, float time);
+void transition(cucul_canvas_t *mask, int tmode, float time);
 void plasma(enum action, cucul_canvas_t *);
 void metaballs(enum action, cucul_canvas_t *);
 void moire(enum action, cucul_canvas_t *);
@@ -73,7 +73,7 @@ int main(int argc, char **argv)
 
     int demo, next = -1, pause = 0, next_transition = DEMO_FRAMES;
     unsigned int i;
-    int transition = cucul_rand(0, TRANSITION_COUNT);
+    int tmode = cucul_rand(0, TRANSITION_COUNT);
 
     /* Set up two canvases, a mask, and attach a display to the front one */
     frontcv = cucul_create_canvas(0, 0);
@@ -149,6 +149,7 @@ int main(int argc, char **argv)
             demo = next;
             next = -1;
             next_transition = frame + DEMO_FRAMES;
+            tmode = cucul_rand(0, TRANSITION_COUNT);
         }
 
         if(next != -1)
@@ -166,12 +167,9 @@ paused:
             cucul_set_color(mask, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
             cucul_clear_canvas(mask);
             cucul_set_color(mask, CUCUL_COLOR_WHITE, CUCUL_COLOR_WHITE);
-            do_transition(mask,
-                          transition,
+            transition(mask, tmode,
                           (float)(frame - next_transition) / TRANSITION_FRAMES * 3.0f / 4.0f);
             cucul_blit(frontcv, 0, 0, backcv, mask);
-        } else {
-            transition = cucul_rand(0, TRANSITION_COUNT);
         }
 
         cucul_set_color(frontcv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
@@ -194,7 +192,7 @@ end:
 }
 
 /* Transitions */
-void do_transition(cucul_canvas_t *mask, int transition, float time)
+void transition(cucul_canvas_t *mask, int tmode, float time)
 {
     static float const star[] =
     {
@@ -218,7 +216,7 @@ void do_transition(cucul_canvas_t *mask, int transition, float time)
     float angle = (time*360)*3.14/180, x,y;
     unsigned int i;
 
-    switch(transition)
+    switch(tmode)
     {
         case TRANSITION_STAR:
             /* Compute rotated coordinates */
