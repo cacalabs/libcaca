@@ -98,13 +98,13 @@ cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
 
     if(ret < 0)
     {
-#if defined(HAVE_ERRNO_H)
+#if defined(HAVE_ERRNO_H) && !defined(__KERNEL__)
         int saved_errno = errno;
 #endif
         free(cv->allattr);
         free(cv->allchars);
         free(cv);
-#if defined(HAVE_ERRNO_H)
+#if defined(HAVE_ERRNO_H) && !defined(__KERNEL__)
         errno = saved_errno;
 #endif
         return NULL;
@@ -116,7 +116,7 @@ cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
     return cv;
 
 nomem:
-#if defined(HAVE_ERRNO_H)
+#if defined(HAVE_ERRNO_H) && !defined(__KERNEL__)
     errno = ENOMEM;
 #endif
     return NULL;
@@ -152,7 +152,7 @@ int cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
 {
     if(cv->refcount)
     {
-#if defined(HAVE_ERRNO_H)
+#if defined(HAVE_ERRNO_H) && !defined(__KERNEL__)
         errno = EBUSY;
 #endif
         return -1;
@@ -246,7 +246,7 @@ int cucul_free_canvas(cucul_canvas_t *cv)
 
     if(cv->refcount)
     {
-#if defined(HAVE_ERRNO_H)
+#if defined(HAVE_ERRNO_H) && !defined(__KERNEL__)
         errno = EBUSY;
 #endif
         return -1;
@@ -316,7 +316,7 @@ int _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
                                      new_size * sizeof(uint32_t));
             if(!cv->allchars[f] || !cv->allattr[f])
             {
-#if defined(HAVE_ERRNO_H)
+#if defined(HAVE_ERRNO_H) && !defined(__KERNEL__)
                 errno = ENOMEM;
 #endif
                 return -1;
@@ -405,7 +405,7 @@ int _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
                                      new_size * sizeof(uint32_t));
             if(!cv->allchars[f] || !cv->allattr[f])
             {
-#if defined(HAVE_ERRNO_H)
+#if defined(HAVE_ERRNO_H) && !defined(__KERNEL__)
                 errno = ENOMEM;
 #endif
                 return -1;

@@ -209,9 +209,9 @@ fi
 if test "${enable_vga}" = "yes"; then
   ac_cv_my_have_vga="yes"
   CPPFLAGS="${CPPFLAGS} -I. -D__KERNEL__ -nostdinc -include kernel/kernel.h"
-  CFLAGS="${CFLAGS} -fno-builtin -O2 -Wall"
+  CFLAGS="${CFLAGS} -fno-builtin -O2 -Wall -I../kernel/"
   CCASFLAGS="${CCASFLAGS} -I."
-  LDFLAGS="${LDFLAGS} -nostdlib -Wl,-N -Wl,-Ttext -Wl,100000"
+  LDFLAGS="${LDFLAGS} -nostdlib -Wl,-N -Wl,-Ttext -Wl,100000 "
   AC_DEFINE(USE_VGA, 1, Define to 1 to activate the VGA backend driver)
   CACA_DRIVERS="${CACA_DRIVERS} vga"
 fi
@@ -224,6 +224,7 @@ if test -z "${CACA_DRIVERS}"; then
 else
   AC_MSG_RESULT([${CACA_DRIVERS}])
 fi
+
 
 AC_SUBST(MATH_LIBS)
 AC_SUBST(CACA_LIBS)

@@ -62,6 +62,7 @@ cucul_buffer_t *cucul_load_memory(void *data, unsigned long int size)
  *  \return A \e libcucul buffer containing the file's contents, or NULL
  *          if an error occurred.
  */
+#if !defined(__KERNEL__)
 cucul_buffer_t *cucul_load_file(char const *file)
 {
     cucul_buffer_t *buf;
@@ -98,7 +99,7 @@ cucul_buffer_t *cucul_load_file(char const *file)
 
     return buf;
 }
-
+#endif
 /** \brief Get the buffer size.
  *
  *  This function returns the length (in bytes) of the memory area stored

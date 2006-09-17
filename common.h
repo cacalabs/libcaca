@@ -17,7 +17,7 @@
  *  function prototypes that are sometimes missing.
  */
 
-#if defined(HAVE_INTTYPES_H)
+#if defined(HAVE_INTTYPES_H) && !defined(__KERNEL__)
 #   include <inttypes.h>
 #else
 typedef signed char int8_t;
@@ -69,3 +69,6 @@ static inline uint32_t hton32(uint32_t x)
 }
 #endif
 
+#if defined(__KERNEL__)
+#undef HAVE_ERRNO_H
+#endif

@@ -13,9 +13,9 @@
 
 #include "config.h"
 #include "common.h"
-
-#include <stdio.h>
-
+#if !defined(__KERNEL__)
+#   include <stdio.h>
+#endif
 #include "cucul.h"
 #include "caca.h"
 

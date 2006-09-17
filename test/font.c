@@ -14,17 +14,19 @@
 #include "config.h"
 #include "common.h"
 
-#if defined(HAVE_INTTYPES_H)
-#   include <inttypes.h>
-#endif
+#if !defined(__KERNEL__)
+#   if defined(HAVE_INTTYPES_H)
+#      include <inttypes.h>
+#   endif
 
-#if defined(HAVE_ENDIAN_H)
-#   include <endian.h>
-#endif
+#   if defined(HAVE_ENDIAN_H)
+#      include <endian.h>
+#   endif
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#   include <stdio.h>
+#   include <stdlib.h>
+#   include <string.h>
+#endif
 
 #include "cucul.h"
 #include "caca.h"

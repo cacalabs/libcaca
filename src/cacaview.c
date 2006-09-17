@@ -14,9 +14,11 @@
 #include "config.h"
 #include "common.h"
 
+#if !defined(__KERNEL__)
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#endif
 
 #if defined(HAVE_SLEEP)
 #   include <windows.h>

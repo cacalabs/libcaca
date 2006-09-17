@@ -14,8 +14,10 @@
 #include "config.h"
 #include "common.h"
 
-#include <stdio.h>
-#include <stdlib.h>
+#if !defined(__KERNEL__)
+  #include <stdio.h>
+  #include <stdlib.h>
+#endif
 
 #include "cucul.h"
 #include "caca.h"

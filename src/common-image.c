@@ -14,14 +14,18 @@
 #include "config.h"
 #include "common.h"
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#if !defined(__KERNEL__)
+#   include <stdio.h>
+#   include <string.h>
+#   include <stdlib.h>
+#endif
 
 #if defined(HAVE_IMLIB2_H)
 #   include <Imlib2.h>
 #else
-#   include <stdio.h>
+#   if !defined(__KERNEL__)
+#      include <stdio.h>
+#   endif
 #endif
 
 #include "cucul.h"

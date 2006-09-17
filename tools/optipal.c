@@ -14,7 +14,9 @@
 #include "config.h"
 #include "common.h"
 
-#include <stdio.h>
+#if !defined(__KERNEL__)
+#   include <stdio.h>
+#endif
 
 #include "cucul.h" /* Only necessary for CUCUL_* macros */
 
@@ -44,7 +46,7 @@ static unsigned int const hue_list[] =
     } \
     while(0);
 
-int main(void)
+int main(int argc, char *argv[])
 {
     int i;
 

@@ -13,17 +13,17 @@
 
 #include "config.h"
 #include "common.h"
+#if !defined(__KERNEL__)
+#   if defined(HAVE_INTTYPES_H)
+#      include <inttypes.h>
+#   endif
 
-#if defined(HAVE_INTTYPES_H)
-#   include <inttypes.h>
+#   include <stdio.h>
 #endif
-
-#include <stdio.h>
-
 #include "cucul.h"
 #include "caca.h"
 
-int main(void)
+int main(int argc, char *argv[])
 {
     cucul_canvas_t *cv;
     caca_display_t *dp;

@@ -17,6 +17,8 @@
  *  that must be used when building libcucul and libcaca into a kernel.
  */
 
+#ifndef __KERNEL_H_
+#define __KERNEL_H_
 /* Various defines */
 #define NULL ((void *)0)
 #define BUFSIZ 4096
@@ -44,12 +46,6 @@ extern inline unsigned char inb(unsigned short port)
 
 /* Various typedefs -- some are x86-specific */
 #define CUSTOM_INTTYPES
-typedef unsigned char uint8_t;
-typedef unsigned short uint16_t;
-typedef unsigned long int uint32_t;
-typedef long int intptr_t;
-typedef long unsigned int uintptr_t;
-
 typedef unsigned int size_t;
 
 typedef struct file
@@ -81,13 +77,17 @@ char *getenv(const char *name);
 int rand(void);
 int abs(int j);
 void exit(int status);
+void srand(unsigned int s);
+int stdint;
+int stdout;
+int stderr;
 
 /* string.h functions */
 void *memset(void *s, int c, size_t n);
 void *memcpy(void *dest, const void *src, size_t n);
 size_t strlen(const char *s);
 int strcasecmp(const char *s1, const char *s2);
-
+int memcmp(const char *s1, const char *s2, size_t n);
 /* stdarg.h functions */
 typedef void * va_list;
 #define va_start(v,a) v = (void *)((uintptr_t)(&a) + sizeof(a))
@@ -98,6 +98,7 @@ int vsnprintf(char *str, size_t size, const char *format, va_list ap);
 FILE *fopen(const char *path, const char *mode);
 int feof(FILE *stream);
 char *fgets(char *s, int size, FILE *stream);
+size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);
 int fclose(FILE *fp);
 int printf(const char *format, ...);
 int sprintf(char *str, const char *format, ...);
@@ -105,12 +106,20 @@ int sscanf(const char *str, const char *format, ...);
 
 /* unistd.h functions */
 void usleep(unsigned long usec);
+int getpid(void);
+
 
 /* time.h functions */
 int gettimeofday(struct timeval *tv, struct timezone *tz);
+int time(void *);
 
 /* math.h functions */
 double cos(double x);
 double sin(double x);
 double sqrt(double x);
 
+/* arpa/inet.h functions */
+unsigned int htonl(unsigned int hostlong);
+unsigned short htons(unsigned short hostlong);
+
+#endif /* __KERNEL_H_ */

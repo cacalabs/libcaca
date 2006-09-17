@@ -29,6 +29,9 @@
 #define UPPER(x) (IS_LOWER(x)?(x+('A'-'a')):x)
 #define LOWER(x) (IS_UPPER(x)?(x-('a'-'A')):x)
 
+/* Our default seed for random number generator */
+static int seed = 0x68743284;
+
 /* Our memory mapping */
 static uint32_t *freemem = (uint32_t*) 0x00200000;
 
@@ -94,9 +97,23 @@ char *getenv(const char *name)
     return NULL;
 }
 
+int getpid(void)
+{
+    return 0x1337;
+}
+
+void srand(unsigned int s)
+{
+    seed = rand();
+}
+
+int time(void *dummy)
+{
+    return rand();
+}
+
 int rand(void)
 {
-    static int seed = 0x68743284;
     seed = (seed * 0x7f32ba17) ^ 0xf893a735;
     return seed % RAND_MAX;
 }
@@ -157,6 +174,18 @@ int strcasecmp(const char *s1, const char *s2)
     return (int)UPPER(*s1) - (int)UPPER(*s2);
 }
 
+int memcmp(const char *s1, const char *s2, size_t n)
+{
+    while(n) {
+        if(*s1 != *s2) return *s1-*s2;
+        *s1++;
+        *s2++;
+        n--;
+    }
+    return 0;
+}
+
+
 /* stdarg.h functions */
 int vsnprintf(char *str, size_t size, const char *format, va_list ap)
 {
@@ -181,6 +210,11 @@ char *fgets(char *s, int size, FILE *stream)
 {
     /* FIXME */
     return NULL;
+}
+
+size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream)
+{
+    return 0;
 }
 
 int fclose(FILE *fp)
@@ -297,5 +331,20 @@ double sqrt(double x)
 
     return ret;
 }
+
+
+/* XXX FIXME Converts only from little endian to big endian (x86) */
+unsigned int htonl(unsigned int hostlong)
+{
+    return ((hostlong&0xFFFF0000)>>16)|((hostlong&0x0000FFFFFF)<<16);
+}
+
+/* XXX FIXME Converts only from little endian to big endian (x86) */
+unsigned short htons(unsigned short hostlong)
+{
+    return ((hostlong&0xFF00)>>8)|((hostlong&0x00FF)<<8);
+}
+
+
 
 #endif /* __KERNEL__ */

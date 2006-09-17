@@ -133,7 +133,7 @@ static void vga_handle_resize(caca_display_t *dp)
     dp->resize.h = dp->cv->height;
 }
 
-static int vga_get_event(caca_display_t *dp, caca_event-t *ev)
+static int vga_get_event(caca_display_t *dp, caca_event_t *ev)
 {
     /* FIXME */
     ev->type = CACA_EVENT_NONE;

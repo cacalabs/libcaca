@@ -14,9 +14,11 @@
 #include "config.h"
 #include "common.h"
 
-#include <stdio.h>
+#if !defined(__KERNEL__)
+#   include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#   endif
 
 #include "cucul.h"
 #include "common-image.h"

@@ -13,12 +13,12 @@
 
 #include "config.h"
 #include "common.h"
-
-#if defined(HAVE_INTTYPES_H)
-#   include <inttypes.h>
+#if !defined(__KERNEL__)
+#   if defined(HAVE_INTTYPES_H)
+#      include <inttypes.h>
+#   endif
+#   include <stdio.h>
 #endif
-
-#include <stdio.h>
 
 #include "cucul.h"
 #include "caca.h"
@@ -44,7 +44,7 @@ static char const *duck[] =
     NULL
 };
 
-int main(void)
+int main(int argc, char *argv[])
 {
     cucul_canvas_t *cv, *normal, *flip, *flop, *rotate;
     caca_display_t *dp;

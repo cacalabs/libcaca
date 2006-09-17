@@ -23,9 +23,11 @@
 
 #include "config.h"
 
-#include <math.h>
-#include <string.h>
-#include <stdio.h>
+#if !defined(__KERNEL__)
+#   include <math.h>
+#   include <string.h>
+#   include <stdio.h>
+#endif
 
 #include "caca0.h"
 

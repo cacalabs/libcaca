@@ -14,11 +14,10 @@
 #include "config.h"
 #include "common.h"
 
-#if defined(HAVE_INTTYPES_H)
-#   include <inttypes.h>
-#endif
-
 #if !defined(__KERNEL__)
+#   if defined(HAVE_INTTYPES_H)
+#      include <inttypes.h>
+#   endif
 #   include <stdio.h>
 #   include <math.h>
 #endif
@@ -28,7 +27,7 @@
 
 uint32_t buffer[256 * 4];
 
-int main(void)
+int main(int argc, char *argv[])
 {
     caca_event_t ev;
     cucul_canvas_t *cv, *cw, *mask;
