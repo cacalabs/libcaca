@@ -175,6 +175,10 @@ static int gl_init_graphics(caca_display_t *dp)
     glMatrixMode(GL_MODELVIEW);
 
     glClear(GL_COLOR_BUFFER_BIT);
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+
 
     empty_texture = malloc(16 * 16 * 4);
     if(empty_texture == NULL)
@@ -248,9 +252,11 @@ static unsigned int gl_get_display_height(caca_display_t *dp)
 static void gl_display(caca_display_t *dp)
 {
     unsigned int x, y, line;
+    static int old_texture = 0;
 
     glClear(GL_COLOR_BUFFER_BIT);
-
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_BLEND);
     line = 0;
     for(y = 0; y < dp->drv.p->height; y += dp->drv.p->font_height)
     {
@@ -259,7 +265,7 @@ static void gl_display(caca_display_t *dp)
         for(x = 0; x < dp->drv.p->width; x += dp->drv.p->font_width)
         {
             uint16_t bg = _cucul_argb32_to_rgb12bg(*attr++);
-            glDisable(GL_TEXTURE_2D);
+
             glColor4b(((bg & 0xf00) >> 8) * 8,
                       ((bg & 0x0f0) >> 4) * 8,
                       (bg & 0x00f) * 8,
@@ -279,7 +285,6 @@ static void gl_display(caca_display_t *dp)
     /* 2nd pass, avoids changing render state too much */
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
     line = 0;
     for(y = 0; y < dp->drv.p->height; y += dp->drv.p->font_height, line++)
@@ -297,7 +302,11 @@ static void gl_display(caca_display_t *dp)
 
             if(cv > 0x00000020 && cv < 0x00000080)
             {
-                glBindTexture(GL_TEXTURE_2D, dp->drv.p->id[cv - 32]);
+                if(old_texture != dp->drv.p->id[cv - 32])
+                {
+                    glBindTexture(GL_TEXTURE_2D, dp->drv.p->id[cv - 32]);
+                    old_texture = dp->drv.p->id[cv - 32];
+                }
             }
             else switch(cv)
             {
@@ -329,9 +338,6 @@ static void gl_display(caca_display_t *dp)
             glEnd();
         }
     }
-    glBlendFunc(GL_ONE, GL_ZERO);
-    glDisable(GL_BLEND);
-    glDisable(GL_TEXTURE_2D);
 
 #ifdef HAVE_GLUTCHECKLOOP
     glutCheckLoop();

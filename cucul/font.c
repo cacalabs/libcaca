@@ -458,7 +458,7 @@ int cucul_render_canvas(cucul_canvas_t *cv, cucul_font_t *f,
  *  \param f The font, as returned by cucul_load_font()
  *  \param ch The character to render
  *  \param buf The image buffer
- *  \param pitch The pitch of the image buffer
+ *  \param stride width of the destination buffer
  *  \return This function always returns 0.
  */
 int cucul_render_glyph(cucul_font_t *f, unsigned int ch, void *buf,
@@ -466,7 +466,7 @@ int cucul_render_glyph(cucul_font_t *f, unsigned int ch, void *buf,
 {
     unsigned int b, y;
     struct glyph_info *g;
-    uint8_t *glyph;
+    uint8_t *glyph = NULL;
 
     /* Find the Unicode block where our glyph lies */
     for(b = 0; b < f->header.blocks; b++)
