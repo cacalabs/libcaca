@@ -445,7 +445,7 @@ int cucul_render_canvas(cucul_canvas_t *cv, cucul_font_t *f,
     return 0;
 }
 
-/** \brief Render the given character onto given buffer
+/** \brief Render a single glyph onto an image buffer
  *
  *  This function renders the given character on an image buffer using a
  *  specific font. The pixel format is fixed (8 bits per pixel).
