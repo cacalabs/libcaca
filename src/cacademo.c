@@ -31,7 +31,7 @@
 
 enum action { PREPARE, INIT, UPDATE, RENDER, FREE };
 
-void transition(cucul_canvas_t *mask, int tmode, float time);
+void transition(cucul_canvas_t *, int, int);
 void plasma(enum action, cucul_canvas_t *);
 void metaballs(enum action, cucul_canvas_t *);
 void moire(enum action, cucul_canvas_t *);
@@ -168,7 +168,7 @@ paused:
             cucul_clear_canvas(mask);
             cucul_set_color(mask, CUCUL_COLOR_WHITE, CUCUL_COLOR_WHITE);
             transition(mask, tmode,
-                          (float)(frame - next_transition) / TRANSITION_FRAMES * 3.0f / 4.0f);
+                       100 * (frame - next_transition) / TRANSITION_FRAMES);
             cucul_blit(frontcv, 0, 0, backcv, mask);
         }
 
@@ -192,7 +192,7 @@ end:
 }
 
 /* Transitions */
-void transition(cucul_canvas_t *mask, int tmode, float time)
+void transition(cucul_canvas_t *mask, int tmode, int completed)
 {
     static float const star[] =
     {
@@ -209,11 +209,11 @@ void transition(cucul_canvas_t *mask, int tmode, float time)
     };
     static float star_rot[sizeof(star)/sizeof(*star)];
 
-    float mulx = time * cucul_get_canvas_width(mask);
-    float muly = time * cucul_get_canvas_height(mask);
+    float mulx = 0.0075f * completed * cucul_get_canvas_width(mask);
+    float muly = 0.0075f * completed * cucul_get_canvas_height(mask);
     int w2 = cucul_get_canvas_width(mask) / 2;
     int h2 = cucul_get_canvas_height(mask) / 2;
-    float angle = (time*360)*3.14/180, x,y;
+    float angle = (0.0075f * completed * 360) * 3.14 / 180, x, y;
     unsigned int i;
 
     switch(tmode)
