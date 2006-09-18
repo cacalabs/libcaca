@@ -158,7 +158,9 @@ static int caca_select_driver(caca_display_t *dp)
 #if defined(USE_GL)
         if(!strcasecmp(var, "gl")) return gl_install(dp);
 #endif
+#if !defined(__KERNEL__)
         if(!strcasecmp(var, "raw")) return raw_install(dp);
+#endif
 #if defined(USE_SLANG)
         if(!strcasecmp(var, "slang")) return slang_install(dp);
 #endif

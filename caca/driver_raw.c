@@ -19,8 +19,8 @@
 #include "common.h"
 
 #if !defined(__KERNEL__)
-#   include <stdio.h>
-#endif
+
+#include <stdio.h>
 
 #include "caca.h"
 #include "caca_internals.h"
@@ -95,3 +95,4 @@ int raw_install(caca_display_t *dp)
     return 0;
 }
 
+#endif /* !__KERNEL__ */
