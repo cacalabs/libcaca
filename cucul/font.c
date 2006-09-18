@@ -228,7 +228,7 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
     }
 
     f->user_block_list[i * 2] = 0;
-    f->user_block_list[i * 2] = 0;
+    f->user_block_list[i * 2 + 1] = 0;
 
     f->glyph_list = malloc(f->header.glyphs * sizeof(struct glyph_info));
     if(!f->glyph_list)
