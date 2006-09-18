@@ -175,14 +175,16 @@ int strcasecmp(const char *s1, const char *s2)
     return (int)UPPER(*s1) - (int)UPPER(*s2);
 }
 
-int memcmp(const char *s1, const char *s2, size_t n)
+int memcmp(const void *_s1, const void *_s2, size_t n)
 {
+    unsigned char const *s1 = _s1, *s2 = _s2;
+
     while(n--)
     {
         if(*s1 != *s2)
-            return *s1 - *s2;
-        *s1++;
-        *s2++;
+            return (int)*s1 - (int)*s2;
+        s1++;
+        s2++;
     }
     return 0;
 }
