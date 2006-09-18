@@ -17,8 +17,6 @@
  *  that must be used when building libcucul and libcaca into a kernel.
  */
 
-#ifndef __KERNEL_H_
-#define __KERNEL_H_
 /* Various defines */
 #define NULL ((void *)0)
 #define BUFSIZ 4096
@@ -108,7 +106,6 @@ int sscanf(const char *str, const char *format, ...);
 void usleep(unsigned long usec);
 int getpid(void);
 
-
 /* time.h functions */
 int gettimeofday(struct timeval *tv, struct timezone *tz);
 int time(void *);
@@ -118,8 +115,17 @@ double cos(double x);
 double sin(double x);
 double sqrt(double x);
 
+/* errno.h functions */
+#define ENOENT   2 /* No such file or directory */
+#define ENOMEM  12 /* Out of memory */
+#define EBUSY   16 /* Device or resource busy */
+#define ENODEV  19 /* No such device */
+#define EINVAL  22 /* Invalid argument */
+#define ENOTTY  25 /* Not a typewriter */
+#define ENOSYS  38 /* Function not implemented */
+extern int errno;
+
 /* arpa/inet.h functions */
 unsigned int htonl(unsigned int hostlong);
 unsigned short htons(unsigned short hostlong);
 
-#endif /* __KERNEL_H_ */

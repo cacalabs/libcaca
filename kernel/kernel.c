@@ -2,6 +2,7 @@
  *  libcucul      Canvas for ultrafast compositing of Unicode letters
  *  libcaca       Colour ASCII-Art library
  *  Copyright (c) 2006 Sam Hocevar <sam@zoy.org>
+ *                2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                All Rights Reserved
  *
  *  $Id$
@@ -332,6 +333,10 @@ double sqrt(double x)
     return ret;
 }
 
+/* errno.h stuff */
+int errno = 0;
+
+/* arpa/inet.h functions */
 
 /* XXX FIXME Converts only from little endian to big endian (x86) */
 unsigned int htonl(unsigned int hostlong)
@@ -344,7 +349,5 @@ unsigned short htons(unsigned short hostlong)
 {
     return ((hostlong&0xFF00)>>8)|((hostlong&0x00FF)<<8);
 }
-
-
 
 #endif /* __KERNEL__ */
