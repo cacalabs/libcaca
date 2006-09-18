@@ -68,6 +68,7 @@ struct cucul_font
     struct font_header header;
 
     struct block_info *block_list;
+    unsigned int *user_block_list;
     struct glyph_info *glyph_list;
     uint8_t *font_data;
 
@@ -188,6 +189,18 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
         return NULL;
     }
 
+    f->user_block_list = malloc((f->header.blocks + 1)
+                                  * 2 * sizeof(unsigned long int));
+    if(!f->user_block_list)
+    {
+        free(f->block_list);
+        free(f);
+#if defined(HAVE_ERRNO_H)
+        errno = ENOMEM;
+#endif
+        return NULL;
+    }
+
     memcpy(f->block_list,
            f->private + 8 + sizeof(struct font_header),
            f->header.blocks * sizeof(struct block_info));
@@ -201,6 +214,7 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
             || (i > 0 && f->block_list[i].start < f->block_list[i - 1].stop)
             || f->block_list[i].index >= f->header.glyphs)
         {
+            free(f->user_block_list);
             free(f->block_list);
             free(f);
 #if defined(HAVE_ERRNO_H)
@@ -208,11 +222,18 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
 #endif
             return NULL;
         }
+
+        f->user_block_list[i * 2] = f->block_list[i].start;
+        f->user_block_list[i * 2 + 1] = f->block_list[i].stop;
     }
+
+    f->user_block_list[i * 2] = 0;
+    f->user_block_list[i * 2] = 0;
 
     f->glyph_list = malloc(f->header.glyphs * sizeof(struct glyph_info));
     if(!f->glyph_list)
     {
+        free(f->user_block_list);
         free(f->block_list);
         free(f);
 #if defined(HAVE_ERRNO_H)
@@ -237,6 +258,7 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
                    f->header.bpp + 7) / 8 > f->header.data_size)
         {
             free(f->glyph_list);
+            free(f->user_block_list);
             free(f->block_list);
             free(f);
 #if defined(HAVE_ERRNO_H)
@@ -300,6 +322,31 @@ unsigned int cucul_get_font_height(cucul_font_t *f)
     return f->header.height;
 }
 
+/** \brief Get a font's list of supported glyphs.
+ *
+ *  This function returns the list of Unicode blocks supported by the
+ *  given font. The list is a zero-terminated list of indices. Here is
+ *  an example:
+ *
+ *  \code
+ *  {
+ *       0x0,  0x80,   // Basic latin: A, B, C, a, b, c
+ *      0x80, 0x100,   // Latin-1 supplement: "A, 'e, ^u
+ *     0x530, 0x590,   // Armenian
+ *       0x0,   0x0,   // END
+ *  };
+ *  \endcode
+ *
+ *  This function never fails.
+ *
+ *  \param f The font, as returned by cucul_load_font()
+ *  \return The list of Unicode blocks supported by the font.
+ */
+unsigned long int const *cucul_get_font_blocks(cucul_font_t *f)
+{
+    return (unsigned long int const *)f->user_block_list;
+}
+
 /** \brief Free a font structure.
  *
  *  This function frees all data allocated by cucul_load_font(). The
@@ -315,6 +362,7 @@ unsigned int cucul_get_font_height(cucul_font_t *f)
 int cucul_free_font(cucul_font_t *f)
 {
     free(f->glyph_list);
+    free(f->user_block_list);
     free(f->block_list);
     free(f);
 
