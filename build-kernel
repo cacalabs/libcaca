@@ -21,18 +21,18 @@ make clean
 cd cucul && make && cd ..
 cd caca && make && cd ..
 
-cd src && make cacafire-aafire.o && cd ..
+cd src && make cacademo.o && cd ..
 
 cd kernel &&
     gcc $CFLAGS -c multiboot.S -o multiboot.o &&
     gcc $CFLAGS $CPPFLAGS -c kernel.c -o kernel.o &&
 cd ..
 
-gcc $LDFLAGS -o src/cacafire kernel/multiboot.o kernel/kernel.o src/cacafire-aafire.o caca/.libs/libcaca.a cucul/.libs/libcucul.a
+gcc $LDFLAGS -o src/cacademo kernel/multiboot.o kernel/kernel.o src/cacademo.o caca/.libs/libcaca.a cucul/.libs/libcucul.a
 
-objcopy -O binary src/cacafire cacafire.boot
+objcopy -O binary src/cacademo cacademo.boot
 
 # For further development: create floppy images using the kernel
 #gcc -traditional -c -o bootsect.o /usr/src/linux/arch/i386/boot/bootsect.S
-#ld -Ttext 0x0 -s --oformat binary bootsect.o -o cacafire.img
+#ld -Ttext 0x0 -s --oformat binary bootsect.o -o cacademo.img
 
