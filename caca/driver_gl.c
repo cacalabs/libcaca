@@ -58,7 +58,6 @@ static void gl_handle_close(void);
 #endif
 static void _display(void);
 static void gl_compute_font(caca_display_t *);
-static void gl_generate_unicode_glyph(uint32_t, uint32_t, caca_display_t *);
 
 struct driver_private
 {
