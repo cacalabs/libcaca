@@ -68,7 +68,7 @@ struct cucul_font
     struct font_header header;
 
     struct block_info *block_list;
-    unsigned int *user_block_list;
+    unsigned long int *user_block_list;
     struct glyph_info *glyph_list;
     uint8_t *font_data;
 

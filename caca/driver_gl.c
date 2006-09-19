@@ -67,7 +67,7 @@ struct driver_private
     cucul_font_t *f;
     float font_width, font_height;
     float incx, incy;
-    uint32_t const *blocks;
+    unsigned long int const *blocks;
     int *txid;
     unsigned char close;
     unsigned char bit;
@@ -256,19 +256,19 @@ static void gl_display(caca_display_t *dp)
 
             for(b = 0, i = 0; dp->drv.p->blocks[i + 1]; i += 2)
             {
-                if(cv < dp->drv.p->blocks[i])
+                if(cv < (uint32_t)dp->drv.p->blocks[i])
                      break;
 
-                if(cv >= dp->drv.p->blocks[i + 1])
+                if(cv >= (uint32_t)dp->drv.p->blocks[i + 1])
                 {
-                    b += (dp->drv.p->blocks[i + 1]
+                    b += (uint32_t)(dp->drv.p->blocks[i + 1]
                                      - dp->drv.p->blocks[i]);
                     continue;
                 }
 
                 glBindTexture(GL_TEXTURE_2D,
                               dp->drv.p->txid[b + cv
-                                        - dp->drv.p->blocks[i]]);
+                                        - (uint32_t)dp->drv.p->blocks[i]]);
 
                 fg = _cucul_argb32_to_rgb12fg(*attr);
                 glColor3b(((fg & 0xf00) >> 8) * 8,
@@ -498,7 +498,7 @@ static void gl_compute_font(caca_display_t *dp)
     int i, b, w, h, x, y;
 
     /* Count how many glyphs this font has */
-    dp->drv.p->blocks = (uint32_t*)cucul_get_font_blocks(dp->drv.p->f);
+    dp->drv.p->blocks = cucul_get_font_blocks(dp->drv.p->f);
 
     for(b = 0, i = 0; dp->drv.p->blocks[i + 1]; i += 2)
         b += (int)(dp->drv.p->blocks[i + 1] - dp->drv.p->blocks[i]);
