@@ -495,12 +495,13 @@ static void gl_compute_font(caca_display_t *dp)
     uint32_t *image;
     int i, b, w, h, x, y;
 
+    /* Count how many glyphs this font has */
     dp->drv.p->blocks = cucul_get_font_blocks(dp->drv.p->f);
 
     for(b = 0, i = 0; dp->drv.p->blocks[i + 1]; i += 2)
         b += dp->drv.p->blocks[i + 1] - dp->drv.p->blocks[i];
 
-    dp->drv.p->txid = malloc(b * sizeof(int));
+    /* Allocate a libcucul canvas and print all the glyphs on it */
     cv = cucul_create_canvas(1, b);
     cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLACK);
 
@@ -514,11 +515,15 @@ static void gl_compute_font(caca_display_t *dp)
         b += n;
     }
 
+    /* Draw the cucul canvas onto an image buffer */
     image = malloc(b * dp->drv.p->font_height
                      * dp->drv.p->font_width * sizeof(uint32_t));
     cucul_render_canvas(cv, dp->drv.p->f, image, dp->drv.p->font_width,
                         b * dp->drv.p->font_height, 4 * dp->drv.p->font_width);
     cucul_free_canvas(cv);
+
+    /* Convert all glyphs in the image buffer to GL textures */
+    dp->drv.p->txid = malloc(b * sizeof(int));
 
     w = dp->drv.p->font_width <= 16 ? dp->drv.p->font_width : 16;
     h = dp->drv.p->font_height <= 16 ? dp->drv.p->font_height : 16;
