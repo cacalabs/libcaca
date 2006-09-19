@@ -259,9 +259,10 @@ static void gl_display(caca_display_t *dp)
                 if(cv < (uint32_t)dp->drv.p->blocks[i])
                      break;
 
-                if(cv >= (dp->drv.p->blocks[i + 1]))
+                if(cv >= (uint32_t)dp->drv.p->blocks[i + 1])
                 {
-                    b += (dp->drv.p->blocks[i + 1]) - (dp->drv.p->blocks[i]);
+                    b += (uint32_t)(dp->drv.p->blocks[i + 1]
+                                     - dp->drv.p->blocks[i]);
                     continue;
                 }
 
@@ -500,7 +501,7 @@ static void gl_compute_font(caca_display_t *dp)
     dp->drv.p->blocks = cucul_get_font_blocks(dp->drv.p->f);
 
     for(b = 0, i = 0; dp->drv.p->blocks[i + 1]; i += 2)
-        b += dp->drv.p->blocks[i + 1] - dp->drv.p->blocks[i];
+        b += (int)(dp->drv.p->blocks[i + 1] - dp->drv.p->blocks[i]);
 
     /* Allocate a libcucul canvas and print all the glyphs on it */
     cv = cucul_create_canvas(1, b);
@@ -508,7 +509,7 @@ static void gl_compute_font(caca_display_t *dp)
 
     for(b = 0, i = 0; dp->drv.p->blocks[i + 1]; i += 2)
     {
-        int j, n = dp->drv.p->blocks[i + 1] - dp->drv.p->blocks[i];
+        int j, n = (int)(dp->drv.p->blocks[i + 1] - dp->drv.p->blocks[i]);
 
         for(j = 0; j < n; j++)
             cucul_putchar(cv, 0, b + j, dp->drv.p->blocks[i] + j);
