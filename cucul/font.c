@@ -432,9 +432,9 @@ int cucul_render_canvas(cucul_canvas_t *cv, cucul_font_t *f,
                     b = f->header.blocks;
                     break;
                 }
-                if(ch < f->block_list[b].stop) {
+
+                if(ch < f->block_list[b].stop)
                     break;
-                }
             }
 
             /* Glyph not in font? Skip it. */

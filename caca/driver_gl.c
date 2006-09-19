@@ -254,9 +254,9 @@ static void gl_display(caca_display_t *dp)
             uint16_t fg;
             int i, b;
 
-            for(b = 0, i = 0; (dp->drv.p->blocks[i + 1]); i += 2)
+            for(b = 0, i = 0; dp->drv.p->blocks[i + 1]; i += 2)
             {
-                if(cv < (dp->drv.p->blocks[i]&0xFFFFFFFF))
+                if(cv < (uint32_t)dp->drv.p->blocks[i])
                      break;
 
                 if(cv >= (dp->drv.p->blocks[i + 1]))
@@ -266,7 +266,8 @@ static void gl_display(caca_display_t *dp)
                 }
 
                 glBindTexture(GL_TEXTURE_2D,
-                              dp->drv.p->txid[b + cv - (dp->drv.p->blocks[i]&0xFFFFFFFF)]);
+                              dp->drv.p->txid[b + cv
+                                        - (uint32_t)dp->drv.p->blocks[i]]);
 
                 fg = _cucul_argb32_to_rgb12fg(*attr);
                 glColor3b(((fg & 0xf00) >> 8) * 8,
