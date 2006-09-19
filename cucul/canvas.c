@@ -74,6 +74,32 @@ int cucul_putchar(cucul_canvas_t *cv, int x, int y, unsigned long int ch)
     return 0;
 }
 
+/** \brief Get the Unicode character at the given coordinates.
+ *
+ *  This function gets the ASCII or Unicode value of the character at
+ *  the given coordinates. If the value is less or equal to 127 (0x7f),
+ *  the character can be printed as ASCII. Otherise, it must be handled
+ *  as a UTF-32 value.
+ *
+ *  If the coordinates are outside the canvas boundaries, a space (0x20)
+ *  is returned.
+ *
+ *  This function never fails.
+ *
+ *  \param cv A handle to the libcucul canvas.
+ *  \param x X coordinate.
+ *  \param y Y coordinate.
+ *  \param ch The requested character value.
+ *  \return The character always returns 0.
+ */
+unsigned long int cucul_getchar(cucul_canvas_t *cv, int x, int y)
+{
+    if(x < 0 || x >= (int)cv->width || y < 0 || y >= (int)cv->height)
+        return 0;
+
+    return (unsigned long int)cv->chars[x + y * cv->width];
+}
+
 /** \brief Print a string.
  *
  *  This function prints an UTF-8 string at the given coordinates, using the
