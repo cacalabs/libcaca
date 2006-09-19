@@ -209,7 +209,6 @@ unsigned int cucul_get_font_height(cucul_font_t *);
 unsigned long int const *cucul_get_font_blocks(cucul_font_t *);
 int cucul_render_canvas(cucul_canvas_t *, cucul_font_t *, void *,
                          unsigned int, unsigned int, unsigned int);
-int cucul_render_glyph(cucul_font_t *, unsigned int, void *, unsigned int);
 int cucul_free_font(cucul_font_t *);
 /*  @} */
 
