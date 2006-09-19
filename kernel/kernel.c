@@ -232,6 +232,12 @@ int printf(const char *format, ...)
     return 0;
 }
 
+int fprintf(FILE *stream, const char *format, ...)
+{
+    /* FIXME */
+    return 0;
+}
+
 int sprintf(char *str, const char *format, ...)
 {
     /* FIXME */

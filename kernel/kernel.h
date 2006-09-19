@@ -76,9 +76,7 @@ int rand(void);
 int abs(int j);
 void exit(int status);
 void srand(unsigned int s);
-int stdint;
-int stdout;
-int stderr;
+FILE *stdin, *stdout, *stderr;
 
 /* string.h functions */
 void *memset(void *s, int c, size_t n);
@@ -100,6 +98,7 @@ char *fgets(char *s, int size, FILE *stream);
 size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);
 int fclose(FILE *fp);
 int printf(const char *format, ...);
+int fprintf(FILE *stream, const char *format, ...);
 int sprintf(char *str, const char *format, ...);
 int sscanf(const char *str, const char *format, ...);
 
