@@ -47,10 +47,11 @@ int main(int argc, char *argv[])
 
     unsigned flag_gay = 0;
 
+#if defined(HAVE_GETOPT_H)
     for(;;)
     {
-#ifdef HAVE_GETOPT_LONG
-#   define MOREINFO "Try `%s --help' for more information.\n"
+#   ifdef HAVE_GETOPT_LONG
+#       define MOREINFO "Try `%s --help' for more information.\n"
         int option_index = 0;
         static struct option long_options[] =
         {
@@ -62,10 +63,10 @@ int main(int argc, char *argv[])
         };
 
         int c = getopt_long(argc, argv, "ghv", long_options, &option_index);
-#else
-#   define MOREINFO "Try `%s -h' for more information.\n"
+#   else
+#       define MOREINFO "Try `%s -h' for more information.\n"
         int c = getopt(argc, argv, "ghv");
-#endif
+#   endif
         if(c == -1)
             break;
 
@@ -100,6 +101,10 @@ int main(int argc, char *argv[])
             return 1;
         }
     }
+#else
+#   define MOREINFO "Usage: %s message...\n"
+    int optind = 1;
+#endif
 
     if(optind >= argc)
     {
