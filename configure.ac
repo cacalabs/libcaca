@@ -65,9 +65,9 @@ dnl conditional builds
 AC_ARG_ENABLE(doc,
   [  --enable-doc            build documentation (needs doxygen and LaTeX)])
 
-AC_CHECK_HEADERS(stdio.h stdarg.h signal.h sys/ioctl.h sys/time.h inttypes.h endian.h unistd.h arpa/inet.h netinet/in.h winsock2.h errno.h locale.h)
+AC_CHECK_HEADERS(stdio.h stdarg.h signal.h sys/ioctl.h sys/time.h inttypes.h endian.h unistd.h arpa/inet.h netinet/in.h winsock2.h errno.h locale.h getopt.h)
 AC_CHECK_FUNCS(signal ioctl vsnprintf getenv putenv strcasecmp htons)
-AC_CHECK_FUNCS(usleep gettimeofday)
+AC_CHECK_FUNCS(usleep gettimeofday getopt_long)
 
 AC_MSG_CHECKING(for Sleep)
 AC_TRY_COMPILE([#include <windows.h>],[Sleep(42);],
@@ -86,6 +86,12 @@ AC_TRY_COMPILE([],[asm("fldln2; fldln2; fxch; fyl2x");],
  [AC_MSG_RESULT(yes)
   AC_DEFINE(HAVE_FLDLN2, 1, [Define to 1 if you have the `fldln2' and other floating points operands.])],
  [AC_MSG_RESULT(no)])
+
+AC_CHECK_FUNCS(getopt_long,
+ [AC_DEFINE(HAVE_GETOPT_LONG, 1, Define to 1 if you have the `getopt_long' function.)],
+ [AC_CHECK_LIB(gnugetopt, getopt_long,
+   [AC_DEFINE(HAVE_GETOPT_LONG, 1, Define to 1 if you have the `getopt_long' function.)
+    GETOPT_LIBS="${GETOPT_LIBS} -lgnugetopt"])])
 
 AC_CHECK_LIB(m, sin, MATH_LIBS="${MATH_LIBS} -lm")
 
@@ -227,6 +233,7 @@ fi
 
 
 AC_SUBST(MATH_LIBS)
+AC_SUBST(GETOPT_LIBS)
 AC_SUBST(CACA_LIBS)
 
 # Optimizations
