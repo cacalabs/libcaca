@@ -484,15 +484,15 @@ static void export_irc(cucul_canvas_t *cv, cucul_buffer_t *ex)
     char *cur;
     unsigned int x, y;
 
-    /* 11 bytes assumed for max length per pixel. Worst case scenario:
+    /* 16 bytes assumed for max length per pixel. Worst case scenario:
      * ^Cxx,yy   6 bytes
      * ^B^B      2 bytes
-     * ch        1 byte
+     * ch        6 bytes
      * \r\n      2 bytes
      * In real life, the average bytes per pixel value will be around 5.
      */
 
-    ex->size = 2 + (cv->width * cv->height * 11);
+    ex->size = 2 + (cv->width * cv->height * 16);
     ex->data = malloc(ex->size);
 
     cur = ex->data;
@@ -543,7 +543,7 @@ static void export_irc(cucul_canvas_t *cv, cucul_buffer_t *ex)
                     cur += sprintf(cur, "\x02\x02");
             }
 #endif
-            *cur++ = ch & 0x7f;
+            cur += cucul_utf32_to_utf8(cur, ch);
             prevfg = fg;
             prevbg = bg;
         }
