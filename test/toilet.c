@@ -30,8 +30,8 @@
 #include "caca.h"
 
 /* String to canvas transformations */
-static cucul_canvas_t *cuculize_big(char const *);
-static cucul_canvas_t *cuculize_tiny(char const *);
+static cucul_canvas_t *cuculize_big(uint32_t const *, unsigned int);
+static cucul_canvas_t *cuculize_tiny(uint32_t const *, unsigned int);
 
 /* Canvas special effects */
 static void make_gay(cucul_canvas_t *);
@@ -41,10 +41,12 @@ int main(int argc, char *argv[])
     cucul_canvas_t *cv;
     cucul_buffer_t *buffer;
 
-    char *string = NULL;
-    unsigned int n;
+    uint32_t *string = NULL;
+    unsigned int length;
+
     int i;
 
+    char const *export = "utf8";
     unsigned flag_gay = 0;
 
 #if defined(HAVE_GETOPT_H)
@@ -57,15 +59,16 @@ int main(int argc, char *argv[])
         {
             /* Long option, needs arg, flag, short option */
             { "gay", 0, NULL, 'g' },
+            { "irc", 0, NULL, 'i' },
             { "help", 0, NULL, 'h' },
             { "version", 0, NULL, 'v' },
             { NULL, 0, NULL, 0 }
         };
 
-        int c = getopt_long(argc, argv, "ghv", long_options, &option_index);
+        int c = getopt_long(argc, argv, "gihv", long_options, &option_index);
 #   else
 #       define MOREINFO "Try `%s -h' for more information.\n"
-        int c = getopt(argc, argv, "ghv");
+        int c = getopt(argc, argv, "gihv");
 #   endif
         if(c == -1)
             break;
@@ -73,19 +76,24 @@ int main(int argc, char *argv[])
         switch(c)
         {
         case 'h': /* --help */
-            printf("Usage: %s [ -ghv ] [ message ]\n", argv[0]);
-#ifdef HAVE_GETOPT_LONG
+            printf("Usage: %s [ -gihv ] [ message ]\n", argv[0]);
+#   ifdef HAVE_GETOPT_LONG
             printf("  -g, --gay        add a rainbow effect to the text\n");
+            printf("  -i, --irc        output IRC colour codes\n");
             printf("  -h, --help       display this help and exit\n");
             printf("  -v, --version    output version information and exit\n");
-#else
+#   else
             printf("  -g    add a rainbow effect to the text\n");
+            printf("  -i    output IRC colour codes\n");
             printf("  -h    display this help and exit\n");
             printf("  -v    output version information and exit\n");
-#endif
+#   endif
             return 0;
         case 'g': /* --gay */
             flag_gay = 1;
+            break;
+        case 'i': /* --irc */
+            export = "irc";
             break;
         case 'v': /* --version */
             printf("TOIlet Copyright 2006 Sam Hocevar %s\n", VERSION);
@@ -113,23 +121,38 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    for(i = optind, n = 0; i < argc; i++)
+    /* Load rest of commandline into a UTF-32 string */
+    for(i = optind, length = 0; i < argc; i++)
     {
-        unsigned int l = strlen(argv[i]);
+        unsigned int k, guessed_len, real_len;
+
+        guessed_len = strlen(argv[i]);
+
         if(i > optind)
-            string[n++] = ' ';
-        string = realloc(string, n + l + 1);
-        strcpy(string + n, argv[i]);
-        n += l;
+            string[length++] = (uint32_t)' ';
+
+        string = realloc(string, (length + guessed_len + 1) * 4);
+
+        for(k = 0, real_len = 0; k < guessed_len; real_len++)
+        {
+            unsigned int char_len;
+
+            string[length + real_len] =
+                cucul_utf8_to_utf32(argv[i] + k, &char_len);
+
+            k += char_len;
+        }
+
+        length += real_len;
     }
 
     /* Do gay stuff with our string (léopard) */
-    cv = cuculize_big(string);
+    cv = cuculize_big(string, length);
     if(flag_gay)
         make_gay(cv);
 
     /* Output char */
-    buffer = cucul_export_canvas(cv, "utf8");
+    buffer = cucul_export_canvas(cv, export);
     fwrite(cucul_get_buffer_data(buffer),
            cucul_get_buffer_size(buffer), 1, stdout);
     cucul_free_buffer(buffer);
@@ -139,17 +162,18 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-static cucul_canvas_t *cuculize_big(char const *string)
+static cucul_canvas_t *cuculize_big(uint32_t const *string,
+                                    unsigned int length)
 {
     cucul_canvas_t *cv;
     cucul_font_t *f;
     char const * const * fonts;
     unsigned char *buf;
-    unsigned int n, w, h, x, y, miny, maxy;
+    unsigned int w, h, x, y, miny, maxy;
 
-    n = strlen(string);
-    cv = cucul_create_canvas(n, 1);
-    cucul_putstr(cv, 0, 0, string);
+    cv = cucul_create_canvas(length, 1);
+    for(x = 0; x < length; x++)
+        cucul_putchar(cv, x, 0, string[x]);
 
     fonts = cucul_get_font_list();
     f = cucul_load_font(fonts[0], 0);
@@ -193,12 +217,14 @@ static cucul_canvas_t *cuculize_big(char const *string)
     return cv;
 }
 
-static cucul_canvas_t *cuculize_tiny(char const *string)
+static cucul_canvas_t *cuculize_tiny(uint32_t const *string,
+                                     unsigned int length)
 {
-    unsigned int n = strlen(string);
-    cucul_canvas_t *cv = cucul_create_canvas(n, 1);
+    unsigned int x;
+    cucul_canvas_t *cv = cucul_create_canvas(length, 1);
 
-    cucul_putstr(cv, 0, 0, string);
+    for(x = 0; x < length; x++)
+        cucul_putchar(cv, x, 0, string[x]);
 
     return cv;
 }
