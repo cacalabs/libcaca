@@ -18,6 +18,9 @@
 #   if defined(HAVE_INTTYPES_H)
 #      include <inttypes.h>
 #   endif
+#   if defined(HAVE_GETOPT_H)
+#      include <getopt.h>
+#   endif
 #   include <stdio.h>
 #   include <string.h>
 #   include <stdlib.h>
@@ -39,19 +42,76 @@ int main(int argc, char *argv[])
     cucul_buffer_t *buffer;
 
     char *string = NULL;
-    unsigned int i, n;
+    unsigned int n;
+    int i;
 
-    if(argc < 2)
+    unsigned flag_gay = 0;
+
+    for(;;)
     {
-        fprintf(stderr, "%s: too few arguments\n", argv[0]);
-        fprintf(stderr, "usage: %s [OPTIONS] <string>\n", argv[0]);
-        return -1;
+#ifdef HAVE_GETOPT_LONG
+#   define MOREINFO "Try `%s --help' for more information.\n"
+        int option_index = 0;
+        static struct option long_options[] =
+        {
+            /* Long option, needs arg, flag, short option */
+            { "gay", 0, NULL, 'g' },
+            { "help", 0, NULL, 'h' },
+            { "version", 0, NULL, 'v' },
+            { NULL, 0, NULL, 0 }
+        };
+
+        int c = getopt_long(argc, argv, "ghv", long_options, &option_index);
+#else
+#   define MOREINFO "Try `%s -h' for more information.\n"
+        int c = getopt(argc, argv, "ghv");
+#endif
+        if(c == -1)
+            break;
+
+        switch(c)
+        {
+        case 'h': /* --help */
+            printf("Usage: %s [ -ghv ] [ message ]\n", argv[0]);
+#ifdef HAVE_GETOPT_LONG
+            printf("  -g, --gay        add a rainbow effect to the text\n");
+            printf("  -h, --help       display this help and exit\n");
+            printf("  -v, --version    output version information and exit\n");
+#else
+            printf("  -g    add a rainbow effect to the text\n");
+            printf("  -h    display this help and exit\n");
+            printf("  -v    output version information and exit\n");
+#endif
+            return 0;
+        case 'g': /* --gay */
+            flag_gay = 1;
+            break;
+        case 'v': /* --version */
+            printf("TOIlet Copyright 2006 Sam Hocevar %s\n", VERSION);
+            printf("Internet: <sam@zoy.org> Version: 0, date: 21 Sep 2006\n");
+            printf("\n");
+            return 0;
+        case '?':
+            printf(MOREINFO, argv[0]);
+            return 1;
+        default:
+            printf("%s: invalid option -- %i\n", argv[0], c);
+            printf(MOREINFO, argv[0]);
+            return 1;
+        }
     }
 
-    for(i = 1, n = 0; i < (unsigned int)argc; i++)
+    if(optind >= argc)
+    {
+        printf("%s: too few arguments\n", argv[0]);
+        printf(MOREINFO, argv[0]);
+        return 1;
+    }
+
+    for(i = optind, n = 0; i < argc; i++)
     {
         unsigned int l = strlen(argv[i]);
-        if(i > 1)
+        if(i > optind)
             string[n++] = ' ';
         string = realloc(string, n + l + 1);
         strcpy(string + n, argv[i]);
@@ -60,7 +120,8 @@ int main(int argc, char *argv[])
 
     /* Do gay stuff with our string (léopard) */
     cv = cuculize_big(string);
-    make_gay(cv);
+    if(flag_gay)
+        make_gay(cv);
 
     /* Output char */
     buffer = cucul_export_canvas(cv, "utf8");
@@ -159,7 +220,8 @@ static void make_gay(cucul_canvas_t *cv)
         unsigned long int ch = cucul_getchar(cv, x, y);
         if(ch != (unsigned char)' ')
         {
-            cucul_set_color(cv, rainbow[(x + y) % 6], CUCUL_COLOR_TRANSPARENT);
+            cucul_set_color(cv, rainbow[(x / 2 + y) % 6],
+                                CUCUL_COLOR_TRANSPARENT);
             cucul_putchar(cv, x, y, ch);
         }
     }

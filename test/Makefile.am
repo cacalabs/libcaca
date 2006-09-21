@@ -47,7 +47,7 @@ text_SOURCES = text.c
 text_LDADD = ../cucul/libcucul.la
 
 toilet_SOURCES = toilet.c
-toilet_LDADD = ../cucul/libcucul.la
+toilet_LDADD = ../cucul/libcucul.la @GETOPT_LIBS@
 
 transform_SOURCES = transform.c
 transform_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
