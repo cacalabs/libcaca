@@ -34,7 +34,8 @@ static cucul_canvas_t *cuculize_big(uint32_t const *, unsigned int);
 static cucul_canvas_t *cuculize_tiny(uint32_t const *, unsigned int);
 
 /* Canvas special effects */
-static void make_gay(cucul_canvas_t *);
+static void filter_autocrop(cucul_canvas_t *);
+static void filter_gay(cucul_canvas_t *);
 
 int main(int argc, char *argv[])
 {
@@ -148,8 +149,9 @@ int main(int argc, char *argv[])
 
     /* Do gay stuff with our string (léopard) */
     cv = cuculize_big(string, length);
+    filter_autocrop(cv);
     if(flag_gay)
-        make_gay(cv);
+        filter_gay(cv);
 
     /* Output char */
     buffer = cucul_export_canvas(cv, export);
@@ -229,7 +231,38 @@ static cucul_canvas_t *cuculize_tiny(uint32_t const *string,
     return cv;
 }
 
-static void make_gay(cucul_canvas_t *cv)
+static void filter_autocrop(cucul_canvas_t *cv)
+{
+    unsigned int x, y, w, h;
+    unsigned int xmin, xmax, ymin, ymax;
+
+    xmin = w = cucul_get_canvas_width(cv);
+    xmax = 0;
+    ymin = h = cucul_get_canvas_height(cv);
+    ymax = 0;
+
+    for(y = 0; y < h; y++)
+        for(x = 0; x < w; x++)
+    {
+        unsigned long int ch = cucul_getchar(cv, x, y);
+        if(ch != (unsigned char)' ')
+        {
+            if(x < xmin)
+                xmin = x;
+            if(x > xmax)
+                xmax = x;
+            if(y < ymin)
+                ymin = y;
+            if(y > ymax)
+                ymax = y;
+        }
+    }
+
+    cucul_set_canvas_boundaries(cv, xmin, ymin,
+                                xmax - xmin + 1, ymax - ymin + 1);
+}
+
+static void filter_gay(cucul_canvas_t *cv)
 {
     static unsigned char const rainbow[] =
     {
