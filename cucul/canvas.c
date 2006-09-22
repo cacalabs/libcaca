@@ -289,3 +289,60 @@ int cucul_blit(cucul_canvas_t *dst, int x, int y,
     return 0;
 }
 
+/** \brief Set a canvas' new boundaries.
+ *
+ *  This function sets new boundaries for a canvas. It can be used to crop a
+ *  canvas, to expand it or for combinations of both actions.
+ *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c EBUSY The canvas is in use by a display driver and cannot be resized.
+ *  - \c ENOMEM Not enough memory for the requested canvas size. If this
+ *    happens, the canvas handle becomes invalid and should not be used.
+ *
+ *  \param cv The canvas to crop.
+ *  \param x X coordinate of the top-left corner.
+ *  \param y Y coordinate of the top-left corner.
+ *  \param w The width of the cropped area.
+ *  \param h The height of the cropped area.
+ *  \return 0 in case of success, -1 if an error occurred.
+ */
+int cucul_set_canvas_boundaries(cucul_canvas_t *cv, int x, int y,
+                                unsigned int w, unsigned int h)
+{
+    cucul_canvas_t *new;
+    unsigned int f, saved_f, framecount;
+
+    if(cv->refcount)
+    {
+#if defined(HAVE_ERRNO_H)
+        errno = EBUSY;
+#endif
+        return -1;
+    }
+
+    new = cucul_create_canvas(w, h);
+
+    framecount = cucul_get_canvas_frame_count(cv);
+    saved_f = cv->frame;
+
+    for(f = 0; f < framecount; f++)
+    {
+        if(f)
+            cucul_create_canvas_frame(new, framecount);
+
+        cucul_set_canvas_frame(cv, f);
+        cucul_set_canvas_frame(new, f);
+        cucul_blit(new, -x, -y, cv, NULL);
+
+        free(cv->allchars[f]);
+        free(cv->allattr[f]);
+    }
+
+    memcpy(cv, new, sizeof(cucul_canvas_t));
+    free(new);
+
+    cucul_set_canvas_frame(cv, saved_f);
+
+    return 0;
+}
+

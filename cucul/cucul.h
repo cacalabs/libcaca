@@ -105,7 +105,10 @@ unsigned long int cucul_getchar(cucul_canvas_t *, int, int);
 int cucul_putstr(cucul_canvas_t *, int, int, char const *);
 int cucul_printf(cucul_canvas_t *, int, int, char const *, ...);
 int cucul_clear_canvas(cucul_canvas_t *);
-int cucul_blit(cucul_canvas_t *, int, int, cucul_canvas_t const *, cucul_canvas_t const *);
+int cucul_blit(cucul_canvas_t *, int, int, cucul_canvas_t const *,
+               cucul_canvas_t const *);
+int cucul_set_canvas_boundaries(cucul_canvas_t *, int, int,
+                                unsigned int, unsigned int);
 /*  @} */
 
 /** \defgroup transform libcucul canvas transformation
