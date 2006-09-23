@@ -50,11 +50,7 @@ if BUILD_DOCUMENTATION
 	  sed 's/man3caca/man3/g' $$man >$(DESTDIR)$(mandir)/man3/$${man##*/}; \
 	done
 	$(mkinstalldirs) $(DESTDIR)$(mandir)/man1
-	rm -f $(DESTDIR)$(mandir)/man1/cacaball.1
-	ln -s cacafire.1 $(DESTDIR)$(mandir)/man1/cacaball.1
-	rm -f $(DESTDIR)$(mandir)/man1/cacamoir.1
-	ln -s cacafire.1 $(DESTDIR)$(mandir)/man1/cacamoir.1
-	rm -f $(DESTDIR)$(mandir)/man1/cacaplas.1
-	ln -s cacafire.1 $(DESTDIR)$(mandir)/man1/cacaplas.1
+	rm -f $(DESTDIR)$(mandir)/man1/cacademo.1
+	ln -s cacafire.1 $(DESTDIR)$(mandir)/man1/cacademo.1
 endif
 

@@ -1,32 +1,24 @@
-.TH libcaca 1 "2006-3-6" "libcaca"
+.TH libcaca 1 "2006-9-23" "libcaca"
 .SH NAME
-cacaball, cacafire, cacamoir, cacaplas \- libcaca's demonstration
-applications
+cacademo, cacafire \- libcaca's demonstration applications
 .SH SYNOPSIS
-cacaball
+cacademo
 .PP
 cacafire
-.PP
-cacamoir
-.PP
-cacaplas
 .RI
 .SH DESCRIPTION
-This manual page documents briefly the cacaball, cacafire, cacamoir
-and cacaplas programs.
+This manual page documents briefly the cacademo and cacafire programs.
 .PP
-.B cacaball
-displays ASCII art metaballs.
+.B cacademo
+displays ASCII art effects with animated transitions: metaballs, moire pattern
+of concentric circles, old school plasma, Matrix-like scrolling.
 .PP
 .B cacafire
 displays burning ASCII art flames.
-.PP
-.B cacamoir
-displays a coloured ASCII art moire pattern of concentric circles.
-.PP
-.B cacaplas
-displays an old school ASCII art plasma effect.
 .SH KEYS
+.TP
+.B n
+forces an effect transition to happen
 .TP
 .B Space
 pauses and resumes the program
@@ -36,21 +28,21 @@ exits the program
 .SH BUGS
 Please report any bugs you find to <libcaca@lists.zoy.org>.
 .SH LICENSE
-cacaball, cacamoir and cacaplas are covered by the Do What The
-Fuck You Want To Public License (WTFPL).
-cacafire is covered by the GNU Lesser General Public License (LGPL).
+cacademo is covered by the Do What The Fuck You Want To Public License
+(WTFPL). cacafire is covered by the GNU Lesser General Public License (LGPL).
 .SH AUTHORS
-.B cacamoir
-and this manual page were written by Sam Hocevar <sam@zoy.org>.
+.B cacademo's
+moire and matrix effects and this manual page were written by Sam Hocevar
+<sam@zoy.org>.
 .PP
-.B cacaball
-was written by Jean-Yves Lamoureux <jylam@lnxscene.org>,
+.B cacademo's
+metaball effect was written by Jean-Yves Lamoureux <jylam@lnxscene.org>,
 .B cacafire
 is a port of AAlib's
 .B aafire
 written by Jan Hubicka <hubicka@freesoft.cz> and
-.B cacaplas
-is a port of an SDL plasma effect written and put in the public domain by
-Michele Bini <mibin@tin.it>.
+.B cacademo's
+plasma effect is a port of an SDL plasma effect written and put in the
+public domain by Michele Bini <mibin@tin.it>.
 .SH SEE ALSO
 cacaview(1), aafire(1)
