@@ -502,15 +502,21 @@ static void export_irc(cucul_canvas_t *cv, cucul_buffer_t *ex)
         uint32_t *lineattr = cv->attr + y * cv->width;
         uint32_t *linechar = cv->chars + y * cv->width;
 
-        uint8_t prevfg = -1;
-        uint8_t prevbg = -1;
+        uint8_t prevfg = 0x10;
+        uint8_t prevbg = 0x10;
 
         for(x = 0; x < cv->width; x++)
         {
-            uint8_t fg = palette[_cucul_argb32_to_ansi4fg(lineattr[x])];
-            uint8_t bg = palette[_cucul_argb32_to_ansi4bg(lineattr[x])];
+            uint32_t attr = lineattr[x];
+            uint8_t fg = palette[_cucul_argb32_to_ansi4fg(attr)];
+            uint8_t bg = palette[_cucul_argb32_to_ansi4bg(attr)];
             uint32_t ch = linechar[x];
 
+            if((attr & 0xffff) == CUCUL_COLOR_DEFAULT)
+                fg = 0x10;
+
+            if((attr >> 16) == CUCUL_COLOR_TRANSPARENT)
+                bg = 0x10;
 #if 0
             if(bg == prevbg)
             {
@@ -538,7 +544,23 @@ static void export_irc(cucul_canvas_t *cv, cucul_buffer_t *ex)
 #else
             if(bg != prevbg || fg != prevfg)
             {
-                cur += sprintf(cur, "\x03%d,%d", fg, bg);
+                if(bg == 0x10)
+                {
+                    if(fg == 0x10)
+                        cur += sprintf(cur, "\x0f");
+                    else if(prevbg == 0x10)
+                        cur += sprintf(cur, "\x03%d", fg);
+                    else
+                        cur += sprintf(cur, "\x0f\x03%d", fg);
+                }
+                else
+                {
+                    if(fg == 0x10)
+                        cur += sprintf(cur, "\x0f\x03,%d", bg);
+                    else
+                        cur += sprintf(cur, "\x03%d,%d", fg, bg);
+                }
+
                 if(ch >= (uint32_t)'0' && ch <= (uint32_t)'9')
                     cur += sprintf(cur, "\x02\x02");
             }
