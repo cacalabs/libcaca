@@ -1,4 +1,540 @@
 ------------------------------------------------------------------------
+r866 | sam | 2006-09-23 03:28:49 +0200 (Sat, 23 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/colour.c
+   M /trunk/cucul/cucul.h
+
+  * Implemented cucul_get_color().
+
+------------------------------------------------------------------------
+r865 | sam | 2006-09-23 03:18:49 +0200 (Sat, 23 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/canvas.c
+
+  * Fixed chcul_getchar's error behaviour.
+
+------------------------------------------------------------------------
+r864 | sam | 2006-09-23 03:10:15 +0200 (Sat, 23 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+
+  * Update versioning.
+
+------------------------------------------------------------------------
+r863 | sam | 2006-09-23 02:59:47 +0200 (Sat, 23 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/export.c
+
+  * Handle transparency in the IRC export.
+
+------------------------------------------------------------------------
+r862 | sam | 2006-09-23 02:55:42 +0200 (Sat, 23 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/cucul.c
+
+  * When resizing a canvas, use the current fg/bg colours to fill holes.
+
+------------------------------------------------------------------------
+r861 | sam | 2006-09-23 01:26:56 +0200 (Sat, 23 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/test
+   M /trunk/test/Makefile.am
+   D /trunk/test/toilet.c
+
+  * Remove toilet from the libcaca source, it'll be moved to its own repo.
+
+------------------------------------------------------------------------
+r860 | sam | 2006-09-22 02:27:13 +0200 (Fri, 22 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/test/toilet.c
+
+  * Autocrop toilet output.
+
+------------------------------------------------------------------------
+r859 | sam | 2006-09-22 02:20:06 +0200 (Fri, 22 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/canvas.c
+   M /trunk/cucul/cucul.h
+
+  * Implement cucul_set_canvas_boundaries() for cropping and expanding.
+
+------------------------------------------------------------------------
+r858 | sam | 2006-09-22 00:36:00 +0200 (Fri, 22 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/export.c
+
+  * Really export IRC as UTF-8, as advertised in the documentation.
+
+------------------------------------------------------------------------
+r857 | sam | 2006-09-21 23:30:50 +0200 (Thu, 21 Sep 2006) | 3 lines
+Changed paths:
+   M /trunk/test/toilet.c
+
+  * Handle UTF-8 in TOIlet.
+  * Add a --irc flag to TOIlet.
+
+------------------------------------------------------------------------
+r856 | sam | 2006-09-21 21:54:54 +0200 (Thu, 21 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/test/toilet.c
+
+  * Support for platforms without <getopt.h> in TOIlet.
+
+------------------------------------------------------------------------
+r855 | sam | 2006-09-21 19:32:27 +0200 (Thu, 21 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/test/Makefile.am
+   M /trunk/test/toilet.c
+
+  * Added getopt support to toilet.
+
+------------------------------------------------------------------------
+r854 | sam | 2006-09-21 18:59:23 +0200 (Thu, 21 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+
+  * Check for <getopt.h> and getopt_long.
+
+------------------------------------------------------------------------
+r853 | sam | 2006-09-20 18:31:12 +0200 (Wed, 20 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/test
+   M /trunk/test/Makefile.am
+   A /trunk/test/toilet.c
+
+  * TOIlet, The Other Implementation's letters. Will be a FIGlet clone. Later.
+
+------------------------------------------------------------------------
+r852 | sam | 2006-09-19 21:11:33 +0200 (Tue, 19 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_gl.c
+   M /trunk/cucul/font.c
+
+  * Ahahaha mais vieux porc ! Tiens, mange-toi ce fix.
+
+------------------------------------------------------------------------
+r851 | jylam | 2006-09-19 21:06:04 +0200 (Tue, 19 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_gl.c
+
+ * Oops \o/
+
+------------------------------------------------------------------------
+r850 | jylam | 2006-09-19 21:04:29 +0200 (Tue, 19 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_gl.c
+
+ * REAL fix
+
+------------------------------------------------------------------------
+r849 | sam | 2006-09-19 21:00:40 +0200 (Tue, 19 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_gl.c
+
+  * More long int -> int32 casts to fix the GL driver on 64-bit arches.
+
+------------------------------------------------------------------------
+r848 | sam | 2006-09-19 20:47:39 +0200 (Tue, 19 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_gl.c
+   M /trunk/cucul/font.c
+
+  * Hopefully fix 64-bit bug.
+
+------------------------------------------------------------------------
+r847 | jylam | 2006-09-19 20:40:09 +0200 (Tue, 19 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_gl.c
+   M /trunk/cucul/font.c
+
+ * Ugly workaround in OpenGL driver for IA64 platform, unicode still does not work, thought.
+
+------------------------------------------------------------------------
+r846 | sam | 2006-09-19 18:07:13 +0200 (Tue, 19 Sep 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/canvas.c
+   M /trunk/cucul/cucul.h
+
+  * Implemented cucul_getchar(). Useful because you don’t necessarily know
+    what you are importing.
+
+------------------------------------------------------------------------
+r845 | sam | 2006-09-19 10:26:43 +0200 (Tue, 19 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/kernel/kernel.c
+   M /trunk/kernel/kernel.h
+
+  * Added an fprintf stub to the kernel.
+
+------------------------------------------------------------------------
+r844 | sam | 2006-09-19 10:18:32 +0200 (Tue, 19 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_gl.c
+
+  * Optimised memory usage in the GL driver and added a few comments.
+
+------------------------------------------------------------------------
+r843 | jylam | 2006-09-19 10:04:38 +0200 (Tue, 19 Sep 2006) | 5 lines
+Changed paths:
+   M /trunk/caca/driver_gl.c
+
+ * Fixed compilation warning, and ....
+ AHAHAHAHAHAHAHA GL DRIVER IS B0RKEN YOU SMELLY GOATS ! (no time to fix it, thought)
+ 
+ 
+
+------------------------------------------------------------------------
+r842 | sam | 2006-09-19 02:02:59 +0200 (Tue, 19 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/cucul.h
+   M /trunk/cucul/font.c
+
+  * Got rid of cucul_render_glyph(). Ahahahaha.
+
+------------------------------------------------------------------------
+r841 | sam | 2006-09-19 02:01:26 +0200 (Tue, 19 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_gl.c
+
+  * Use cucul_render_canvas() instead of cucul_render_glyph() in the GL driver.
+
+------------------------------------------------------------------------
+r840 | sam | 2006-09-19 00:32:25 +0200 (Tue, 19 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_gl.c
+
+  * Full Unicode support in the GL driver.
+
+------------------------------------------------------------------------
+r839 | sam | 2006-09-19 00:29:20 +0200 (Tue, 19 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/font.c
+
+  * Oops, fixed typo in cucul_get_font_blocks().
+
+------------------------------------------------------------------------
+r838 | sam | 2006-09-18 19:40:35 +0200 (Mon, 18 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/cucul.h
+   M /trunk/cucul/font.c
+
+  * Implemented cucul_get_font_blocks() to export the list of available glyphs.
+
+------------------------------------------------------------------------
+r837 | sam | 2006-09-18 09:31:31 +0200 (Mon, 18 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+
+  * Remove useless -I../kernel/ from CFLAGS.
+
+------------------------------------------------------------------------
+r836 | sam | 2006-09-18 09:30:14 +0200 (Mon, 18 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/build-kernel
+
+  * Fix the kernel build rules.
+
+------------------------------------------------------------------------
+r835 | sam | 2006-09-18 09:20:06 +0200 (Mon, 18 Sep 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/caca.c
+   M /trunk/caca/driver_raw.c
+   M /trunk/caca/driver_vga.c
+
+  * Do not build the raw output in kernel mode.
+  * Fix cucul_utf32_to_cp437() call in the VGA output.
+
+------------------------------------------------------------------------
+r834 | sam | 2006-09-18 09:11:43 +0200 (Mon, 18 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/kernel/kernel.c
+   M /trunk/kernel/kernel.h
+
+  * Fixed memcmp() prototype and implementation.
+
+------------------------------------------------------------------------
+r833 | sam | 2006-09-18 08:59:48 +0200 (Mon, 18 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/cucul.c
+   M /trunk/kernel/kernel.c
+   M /trunk/kernel/kernel.h
+
+  * Added errno support to the kernel.
+
+------------------------------------------------------------------------
+r832 | jylam | 2006-09-17 15:36:13 +0200 (Sun, 17 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/DotNet/Caca.cs
+   M /trunk/DotNet/test.cs
+
+ * Updated .Net bindings
+
+------------------------------------------------------------------------
+r831 | jylam | 2006-09-17 15:15:12 +0200 (Sun, 17 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/README
+   M /trunk/caca/driver_gl.c
+
+ * Updated README, just to say my coding style is just perfect, sam is too pedantic.
+
+------------------------------------------------------------------------
+r830 | sam | 2006-09-17 14:58:12 +0200 (Sun, 17 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/kernel/kernel.c
+   M /trunk/src/cacaview.c
+   M /trunk/src/img2irc.c
+
+  * A few coding style fixes.
+
+------------------------------------------------------------------------
+r829 | jylam | 2006-09-17 14:44:18 +0200 (Sun, 17 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_vga.c
+   M /trunk/common.h
+   M /trunk/configure.ac
+   M /trunk/cucul/buffer.c
+   M /trunk/cucul/cucul.c
+   M /trunk/kernel/kernel.c
+   M /trunk/kernel/kernel.h
+   M /trunk/src/Makefile.am
+   M /trunk/src/cacadraw.c
+   M /trunk/src/cacaplay.c
+   M /trunk/src/cacaview.c
+   M /trunk/src/common-image.c
+   M /trunk/src/img2irc.c
+   M /trunk/test/demo.c
+   M /trunk/test/demo0.c
+   M /trunk/test/dithering.c
+   M /trunk/test/event.c
+   M /trunk/test/export.c
+   M /trunk/test/font.c
+   M /trunk/test/font2tga.c
+   M /trunk/test/frames.c
+   M /trunk/test/gamma.c
+   M /trunk/test/hsv.c
+   M /trunk/test/import.c
+   M /trunk/test/input.c
+   M /trunk/test/spritedit.c
+   M /trunk/test/text.c
+   M /trunk/test/transform.c
+   M /trunk/test/truecolor.c
+   M /trunk/test/unicode.c
+   M /trunk/tools/optipal.c
+
+ * Updated kernel 'driver', still not working, but most of the work is done
+
+------------------------------------------------------------------------
+r828 | sam | 2006-09-17 13:39:22 +0200 (Sun, 17 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/TODO
+
+  * Minor TODO update.
+
+------------------------------------------------------------------------
+r827 | sam | 2006-09-17 13:10:49 +0200 (Sun, 17 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/font.c
+
+  * Minor documentation fix (testing the buildbot, actually).
+
+------------------------------------------------------------------------
+r826 | jylam | 2006-09-17 12:54:23 +0200 (Sun, 17 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_gl.c
+   M /trunk/cucul/font.c
+
+ * Updated documentation, removed warning in cucul_render_glyph(), minor optimisation in driver_gl
+
+------------------------------------------------------------------------
+r825 | sam | 2006-09-17 03:12:28 +0200 (Sun, 17 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_gl.c
+
+  * Coding style (ahaha vieux porc).
+
+------------------------------------------------------------------------
+r824 | sam | 2006-09-17 02:53:48 +0200 (Sun, 17 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/src/cacademo.c
+
+  * Got rid of OFFSET_X and OFFSET_Y.
+
+------------------------------------------------------------------------
+r823 | sam | 2006-09-17 02:48:30 +0200 (Sun, 17 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/src/cacademo.c
+
+  * More cleanup in cacademo.c.
+
+------------------------------------------------------------------------
+r822 | sam | 2006-09-17 02:32:23 +0200 (Sun, 17 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/src/cacademo.c
+
+  * Cosmetic changes to cacademo.
+
+------------------------------------------------------------------------
+r821 | sam | 2006-09-17 02:11:29 +0200 (Sun, 17 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/src/cacademo.c
+
+  * Factored the star code (vieux porc).
+
+------------------------------------------------------------------------
+r820 | sam | 2006-09-17 02:02:31 +0200 (Sun, 17 Sep 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/driver_gl.c
+   M /trunk/cucul/cucul.h
+   M /trunk/cucul/font.c
+
+  * Fixed cucul_render_glyph(). There is no way this could have ever possibly
+    worked properly.
+
+------------------------------------------------------------------------
+r819 | sam | 2006-09-17 01:34:18 +0200 (Sun, 17 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/src/cacademo.c
+
+  * Moved transition data to the function.
+
+------------------------------------------------------------------------
+r818 | jylam | 2006-09-16 23:27:59 +0200 (Sat, 16 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/src/cacademo.c
+
+ * Added nifty rotation to our 80's star.
+
+------------------------------------------------------------------------
+r817 | sam | 2006-09-16 23:08:11 +0200 (Sat, 16 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/triangle.c
+
+  * Fixing precision.
+
+------------------------------------------------------------------------
+r816 | jylam | 2006-09-16 23:00:46 +0200 (Sat, 16 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/triangle.c
+
+ * Fixed triangle routine so that it fits perfectly from one side to the other one (I know, that's no clear)
+
+------------------------------------------------------------------------
+r815 | jylam | 2006-09-16 22:48:31 +0200 (Sat, 16 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/src/cacademo.c
+
+ * Added much disco transition (ellipses suck). YMCA \o/
+
+------------------------------------------------------------------------
+r814 | sam | 2006-09-16 19:15:11 +0200 (Sat, 16 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_slang.c
+
+  * Fix compilation warning in the slang driver.
+
+------------------------------------------------------------------------
+r813 | sam | 2006-09-16 18:01:48 +0200 (Sat, 16 Sep 2006) | 3 lines
+Changed paths:
+   M /trunk/src/cacademo.c
+
+  * Smooth transitions between effects in cacademo. Press 'n' to switch
+    immediately to the next transition.
+
+------------------------------------------------------------------------
+r812 | sam | 2006-09-16 17:46:30 +0200 (Sat, 16 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/test/gamma.c
+
+  * Fix badly initialised data in the gamma test.
+
+------------------------------------------------------------------------
+r811 | sam | 2006-09-16 17:06:09 +0200 (Sat, 16 Sep 2006) | 3 lines
+Changed paths:
+   M /trunk/src/cacademo.c
+   M /trunk/test
+   M /trunk/test/Makefile.am
+   D /trunk/test/matrix.c
+
+  * Moved the matrix effect test into cacademo. Removed the motion sensor
+    stuff, it's cool but it's crap.
+
+------------------------------------------------------------------------
+r810 | jylam | 2006-09-16 15:26:51 +0200 (Sat, 16 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/test/matrix.c
+
+ * AHAHAHA FILTHY PIG, init sensors values to 0, in case there's no sensor at all
+
+------------------------------------------------------------------------
+r809 | jylam | 2006-09-16 15:19:23 +0200 (Sat, 16 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_gl.c
+
+ * Fixed truecolor bug in OpenGL driver. 
+
+------------------------------------------------------------------------
+r808 | sam | 2006-09-16 15:12:11 +0200 (Sat, 16 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/src/cacademo.c
+
+  * Factor most of the cacademo code.
+
+------------------------------------------------------------------------
+r807 | sam | 2006-09-16 14:57:41 +0200 (Sat, 16 Sep 2006) | 3 lines
+Changed paths:
+   M /trunk/src/cacademo.c
+
+  * Ahaha old pig, you could have factored the 1.0 + as well, and you forgot
+    to cast the int to double in the sin() call.  (:@ gruik!
+
+------------------------------------------------------------------------
+r806 | jylam | 2006-09-16 14:47:55 +0200 (Sat, 16 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/src/cacademo.c
+
+ * hey, ***I*** found a factorisation bug in cacaballs !
+
+------------------------------------------------------------------------
+r805 | jylam | 2006-09-16 14:40:37 +0200 (Sat, 16 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_gl.c
+   M /trunk/cucul/cucul.h
+   M /trunk/cucul/font.c
+
+ * OpenGL builtin font support
+
+------------------------------------------------------------------------
+r804 | sam | 2006-09-16 11:45:03 +0200 (Sat, 16 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/src
+   M /trunk/src/Makefile.am
+   D /trunk/src/cacaball.c
+   A /trunk/src/cacademo.c (from /trunk/src/cacaplas.c:802)
+   D /trunk/src/cacamoir.c
+   D /trunk/src/cacaplas.c
+
+  * Merge cacamoir, cacaball and cacaplas into cacademo. No code cleanup yet.
+
+------------------------------------------------------------------------
+r803 | sam | 2006-09-16 11:43:36 +0200 (Sat, 16 Sep 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/cucul.c
+
+  * Initialize random seed to getpid()+time(NULL) so that the user does not
+    have to do it.
+
+------------------------------------------------------------------------
+r802 | sam | 2006-09-09 19:58:57 +0200 (Sat, 09 Sep 2006) | 3 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/NEWS
+   M /trunk/configure.ac
+
+  * Updated ChangeLog and NEWS.
+  * 0.99.beta4 release.
+
+------------------------------------------------------------------------
 r801 | sam | 2006-09-09 19:54:06 +0200 (Sat, 09 Sep 2006) | 2 lines
 Changed paths:
    M /trunk/doc/Makefile.am

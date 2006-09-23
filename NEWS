@@ -1,5 +1,14 @@
 /* $Id$ */ /** \page news News
 
+\section news0_99_beta5 Changes between 0.9.beta5 and 0.99.beta4
+
+ - implemented cucul_getchar() and cucul_get_color()
+ - handle transparency in the IRC export
+ - new cropping and expanding filters
+ - full Unicode support in the OpenGL driver
+ - portability fixes for 64-bit architectures, Win32 and MS-DOS
+ - all demos except cacafire were merged into cacademo
+
 \section news0_99_beta4 Changes between 0.9.beta4 and 0.99.beta3
 
  - added a compatibility layer for pre-1.x libcaca applications
