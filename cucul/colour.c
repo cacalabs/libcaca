@@ -108,6 +108,33 @@ int cucul_set_truecolor(cucul_canvas_t *cv, unsigned int fg, unsigned int bg)
     return 0;
 }
 
+/** \brief Get the colour pair at the given coordinates.
+ *
+ *  This function gets the internal \e libcucul colour pair value of the
+ *  character at the given coordinates. The colour pair value has 32
+ *  significant bits: the lower 16 are for the foreground colour, the higher
+ *  16 are for the background.
+ *
+ *  If the coordinates are outside the canvas boundaries, the current colour
+ *  pair is returned.
+ *
+ *  This function never fails.
+ *
+ *  \param cv A handle to the libcucul canvas.
+ *  \param x X coordinate.
+ *  \param y Y coordinate.
+ *  \param ch The requested colour pair value.
+ *  \return The character always returns 0.
+ */
+unsigned long int cucul_get_color(cucul_canvas_t *cv, int x, int y)
+{
+    if(x < 0 || x >= (int)cv->width || y < 0 || y >= (int)cv->height)
+        return ((uint32_t)cv->bgcolor << 16) | (uint32_t)cv->fgcolor;
+
+    return (unsigned long int)cv->attr[x + y * cv->width];
+}
+
+
 /*
  * XXX: the following functions are local
  */
