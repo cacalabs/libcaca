@@ -95,7 +95,7 @@ int cucul_putchar(cucul_canvas_t *cv, int x, int y, unsigned long int ch)
 unsigned long int cucul_getchar(cucul_canvas_t *cv, int x, int y)
 {
     if(x < 0 || x >= (int)cv->width || y < 0 || y >= (int)cv->height)
-        return 0;
+        return (unsigned char)' ';
 
     return (unsigned long int)cv->chars[x + y * cv->width];
 }
