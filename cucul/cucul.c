@@ -342,6 +342,8 @@ int _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
 
             for(y = height < old_height ? height : old_height; y--; )
             {
+                uint32_t color = (cv->bgcolor << 16) | cv->fgcolor;
+
                 for(x = old_width; x--; )
                 {
                     chars[y * width + x] = chars[y * old_width + x];
@@ -350,9 +352,10 @@ int _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
 
                 /* Zero the end of the line */
                 for(x = width - old_width; x--; )
+                {
                     chars[y * width + old_width + x] = (uint32_t)' ';
-                memset(attr + y * width + old_width, 0,
-                       (width - old_width) * 4);
+                    attr[y * width + old_width + x] = color;
+                }
             }
         }
     }
@@ -385,12 +388,14 @@ int _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
         {
             uint32_t *chars = cv->allchars[f];
             uint32_t *attr = cv->allattr[f];
+            uint32_t color = (cv->bgcolor << 16) | cv->fgcolor;
 
             /* Zero the bottom of the screen */
             for(x = (height - old_height) * width; x--; )
+            {
                 chars[old_height * width + x] = (uint32_t)' ';
-            memset(attr + old_height * width, 0,
-                   (height - old_height) * width * 4);
+                attr[old_height * width + x] = color;
+            }
         }
     }
 
