@@ -33,7 +33,8 @@
 /* ANSI Graphic Rendition Combination Mode */
 struct ansi_grcm
 {
-    uint8_t fg, bg;
+    uint8_t fg, bg;   /* ANSI-context fg/bg */
+    uint8_t efg, ebg; /* Effective (libcucul) fg/bg */
     uint8_t bold, negative, concealed;
 };
 
@@ -380,6 +381,8 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
                 break;
             case 'K': /* EL - Erase In Line */
                 if(width < 80)
+                    cucul_set_color(cv, CUCUL_COLOR_DEFAULT,
+                                        CUCUL_COLOR_TRANSPARENT);
                     cucul_set_canvas_size(cv, width = 80, height);
                 for(j = x; j < 80; j++)
                     cucul_putchar(cv, j, y, ' ');
@@ -399,12 +402,19 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
         /* We're going to paste a character. First make sure the canvas
          * is big enough. */
         if((unsigned int)x >= width)
+        {
+            cucul_set_color(cv, CUCUL_COLOR_DEFAULT, CUCUL_COLOR_TRANSPARENT);
             cucul_set_canvas_size(cv, width = x + 1, height);
+        }
 
         if((unsigned int)y >= height)
+        {
+            cucul_set_color(cv, CUCUL_COLOR_DEFAULT, CUCUL_COLOR_TRANSPARENT);
             cucul_set_canvas_size(cv, width, height = y + 1);
+        }
 
         /* Now paste our character */
+        cucul_set_color(cv, grcm.efg, grcm.ebg);
         cucul_putchar(cv, x, y, cucul_cp437_to_utf32(buffer[i]));
         x++;
     }
@@ -426,7 +436,6 @@ static void ansi_parse_grcm(cucul_canvas_t *cv, struct ansi_grcm *g,
     };
 
     unsigned int j;
-    uint8_t myfg, mybg;
 
     for(j = 0; j < argc; j++)
     {
@@ -479,22 +488,20 @@ static void ansi_parse_grcm(cucul_canvas_t *cv, struct ansi_grcm *g,
 
     if(g->concealed)
     {
-        myfg = mybg = CUCUL_COLOR_TRANSPARENT;
+        g->efg = g->ebg = CUCUL_COLOR_TRANSPARENT;
     }
     else
     {
-        myfg = g->negative ? g->bg : g->fg;
-        mybg = g->negative ? g->fg : g->bg;
+        g->efg = g->negative ? g->bg : g->fg;
+        g->ebg = g->negative ? g->fg : g->bg;
 
         if(g->bold)
         {
-            if(myfg < 8)
-                myfg += 8;
-            else if(myfg == CUCUL_COLOR_DEFAULT)
-                myfg = CUCUL_COLOR_WHITE;
+            if(g->efg < 8)
+                g->efg += 8;
+            else if(g->efg == CUCUL_COLOR_DEFAULT)
+                g->efg = CUCUL_COLOR_WHITE;
         }
     }
-
-    cucul_set_color(cv, myfg, mybg);
 }
 
