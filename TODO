@@ -38,7 +38,6 @@
      http://groups.yahoo.com/group/zepp/message/381
   - Unicode support for X11 (maybe through Xft)
   - fix Unicode support for ncurses (look at the nano source, it gets it right)
-  - Unicode support for GL
   - and Jylam wants a framebuffer output
 
 
@@ -84,10 +83,9 @@
   - Only a skeleton exists yet. A modern ANSI editor that can also
      do Unicode.
 
-  \section cuculet CUCUlet
+  \section cuculet TOIlet
 
-  - Does not exist yet, but I want it. A replacement for FIGlet that can
-     also do Unicode
+  - Managed in another repository.
   - Colour support, of course: outputs to IRC, ANSI, HTML...
   - Can open FIGlet fonts
 
