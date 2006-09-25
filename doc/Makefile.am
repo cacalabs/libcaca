@@ -47,7 +47,8 @@ if BUILD_DOCUMENTATION
 	  $(DESTDIR)$(datadir)/doc/libcucul-dev/html
 	$(mkinstalldirs) $(DESTDIR)$(mandir)/man3
 	for man in $$(find man -name '*.3caca'); do \
-	  sed 's/man3caca/man3/g' $$man >$(DESTDIR)$(mandir)/man3/$${man##*/}; \
+	  sed -e 's/man3caca/man3/g' -e "s/fC'\([a-zA-Z0-9]*\)'/fC\"\1\"/g" \
+	    $$man >$(DESTDIR)$(mandir)/man3/$${man##*/}; \
 	done
 	$(mkinstalldirs) $(DESTDIR)$(mandir)/man1
 	rm -f $(DESTDIR)$(mandir)/man1/cacademo.1
