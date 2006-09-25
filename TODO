@@ -12,10 +12,10 @@
      just need to fill them)
   - Error distribution dithering
   - Add a random factor to the random ditherer. No need to change the API
-     for that, we can just pass "random:10" instead of "random" to the
+     for that, we can just pass \c "random:10" instead of \c "random" to the
      cucul_set_bitmap_dithering() function.
   - Implement the colour modes set in cucul_set_bitmap_color(). For the
-     moment only "full16" and "16" are implemented.
+     moment only \c "full16" and \c "16" are implemented.
   - Fix the thin ellipse rendering (currently it's only |s and -s, we
      could make them smoother by using ' ` , etc).
   - support for double width glyphs (also needs some libcaca changes)

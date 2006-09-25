@@ -49,23 +49,15 @@ static void export_tga(cucul_canvas_t *, cucul_buffer_t *);
  *  data is valid until cucul_free_buffer() is called.
  *
  *  Valid values for \c format are:
- *
- *  \li \c "caca": export native libcaca files.
- *
- *  \li \c "ansi": export ANSI art (CP437 charset with ANSI colour codes).
- *
- *  \li \c "html": export an HTML page with CSS information.
- *
- *  \li \c "html3": export an HTML table that should be compatible with
- *      most navigators, including textmode ones.
- *
- *  \li \c "irc": export UTF-8 text with mIRC colour codes.
- *
- *  \li \c "ps": export a PostScript document.
- *
- *  \li \c "svg": export an SVG vector image.
- *
- *  \li \c "tga": export a TGA image.
+ *  - \c "caca": export native libcaca files.
+ *  - \c "ansi": export ANSI art (CP437 charset with ANSI colour codes).
+ *  - \c "html": export an HTML page with CSS information.
+ *  - \c "html3": export an HTML table that should be compatible with
+ *    most navigators, including textmode ones.
+ *  - \c "irc": export UTF-8 text with mIRC colour codes.
+ *  - \c "ps": export a PostScript document.
+ *  - \c "svg": export an SVG vector image.
+ *  - \c "tga": export a TGA image.
  *
  *  If an error occurs, NULL is returned and \b errno is set accordingly:
  *  - \c EINVAL Invalid format requested.

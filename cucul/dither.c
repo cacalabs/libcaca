@@ -489,11 +489,9 @@ int cucul_set_dither_contrast(cucul_dither_t *d, float contrast)
  *
  *  Tell the renderer whether to antialias the dither. Antialiasing smoothens
  *  the rendered image and avoids the commonly seen staircase effect.
- *
- *  \li \c "none": no antialiasing.
- *
- *  \li \c "prefilter" or \c "default": simple prefilter antialiasing. This
- *      is the default value.
+ *  - \c "none": no antialiasing.
+ *  - \c "prefilter" or \c "default": simple prefilter antialiasing. This
+ *    is the default value.
  *
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
  *  - \c EINVAL Invalid antialiasing mode.
@@ -550,23 +548,16 @@ char const * const *
  *
  *  Tell the renderer which colours should be used to render the
  *  bitmap. Valid values for \c str are:
- *
- *  \li \c "mono": use light gray on a black background.
- *
- *  \li \c "gray": use white and two shades of gray on a black background.
- *
- *  \li \c "8": use the 8 ANSI colours on a black background.
- *
- *  \li \c "16": use the 16 ANSI colours on a black background.
- *
- *  \li \c "fullgray": use black, white and two shades of gray for both the
- *      characters and the background.
- *
- *  \li \c "full8": use the 8 ANSI colours for both the characters and the
- *      background.
- *
- *  \li \c "full16" or \c "default": use the 16 ANSI colours for both the
- *      characters and the background. This is the default value.
+ *  - \c "mono": use light gray on a black background.
+ *  - \c "gray": use white and two shades of gray on a black background.
+ *  - \c "8": use the 8 ANSI colours on a black background.
+ *  - \c "16": use the 16 ANSI colours on a black background.
+ *  - \c "fullgray": use black, white and two shades of gray for both the
+ *    characters and the background.
+ *  - \c "full8": use the 8 ANSI colours for both the characters and the
+ *    background.
+ *  - \c "full16" or \c "default": use the 16 ANSI colours for both the
+ *    characters and the background. This is the default value.
  *
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
  *  - \c EINVAL Invalid colour set.
@@ -638,16 +629,13 @@ char const * const *
  *
  *  Tell the renderer which characters should be used to render the
  *  dither. Valid values for \c str are:
- *
- *  \li \c "ascii" or "default": use only ASCII characters. This is the
- *      default value.
- *
- *  \li \c "shades": use Unicode characters "U+2591 LIGHT SHADE", "U+2592
- *      MEDIUM SHADE" and "U+2593 DARK SHADE". These characters are also
- *      present in the CP437 codepage available on DOS and VGA.
- *
- *  \li \c "blocks": use Unicode quarter-cell block combinations. These
- *      characters are only found in the Unicode set.
+ *  - \c "ascii" or \c "default": use only ASCII characters. This is the
+ *    default value.
+ *  - \c "shades": use Unicode characters "U+2591 LIGHT SHADE", "U+2592
+ *    MEDIUM SHADE" and "U+2593 DARK SHADE". These characters are also
+ *    present in the CP437 codepage available on DOS and VGA.
+ *  - \c "blocks": use Unicode quarter-cell block combinations. These
+ *    characters are only found in the Unicode set.
  *
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
  *  - \c EINVAL Invalid character set.
@@ -716,18 +704,12 @@ char const * const * cucul_get_dither_charset_list(cucul_dither_t const *d)
  *  Tell the renderer which dithering method should be used. Dithering is
  *  necessary because the picture being rendered has usually far more colours
  *  than the available palette. Valid values for \c str are:
- *
- *  \li \c "none": no dithering is used, the nearest matching colour is used.
- *
- *  \li \c "ordered2": use a 2x2 Bayer matrix for dithering.
- *
- *  \li \c "ordered4": use a 4x4 Bayer matrix for dithering.
- *
- *  \li \c "ordered8": use a 8x8 Bayer matrix for dithering.
- *
- *  \li \c "random": use random dithering.
- *
- *  \li \c "fstein": use Floyd-Steinberg dithering. This is the default value.
+ *  - \c "none": no dithering is used, the nearest matching colour is used.
+ *  - \c "ordered2": use a 2x2 Bayer matrix for dithering.
+ *  - \c "ordered4": use a 4x4 Bayer matrix for dithering.
+ *  - \c "ordered8": use a 8x8 Bayer matrix for dithering.
+ *  - \c "random": use random dithering.
+ *  - \c "fstein": use Floyd-Steinberg dithering. This is the default value.
  *
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
  *  - \c EINVAL Unknown dithering mode.

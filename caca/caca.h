@@ -43,30 +43,24 @@ typedef struct caca_event caca_event_t;
  *  This structure is filled by caca_get_event() when an event is received.
  *  The \e type field is always valid. The validity of the \e data union
  *  depends on the value of the \e type field:
- *
- *  \li \b CACA_EVENT_NONE: no other field is valid.
- *
- *  \li \b CACA_EVENT_KEY_PRESS, \b CACA_EVENT_KEY_RELEASE: the \e data.key.ch
+ *  - \b CACA_EVENT_NONE: no other field is valid.
+ *  - \b CACA_EVENT_KEY_PRESS, \b CACA_EVENT_KEY_RELEASE: the \e data.key.ch
  *      field is valid and contains either the ASCII value for the key, or
  *      an \e enum \e caca_key value. If the value is a printable ASCII
  *      character, the \e data.key.utf32 and \e data.key.utf8 fields are
  *      also filled and contain respectively the UTF-32/UCS-4 and the UTF-8
  *      representations of the character. Otherwise, their content is
  *      undefined.
- *
- *  \li \b CACA_EVENT_MOUSE_PRESS, \b CACA_EVENT_MOUSE_RELEASE: the
+ *  - \b CACA_EVENT_MOUSE_PRESS, \b CACA_EVENT_MOUSE_RELEASE: the
  *      \e data.mouse.button field is valid and contains the index of the
  *      mouse button that was pressed.
- *
- *  \li \b CACA_EVENT_MOUSE_MOTION: the \e data.mouse.x and \e data.mouse.y
+ *  - \b CACA_EVENT_MOUSE_MOTION: the \e data.mouse.x and \e data.mouse.y
  *      fields are valid and contain the mouse coordinates in character
  *      cells.
- *
- *  \li \b CACA_EVENT_RESIZE: the \e data.resize.w and \e data.resize.h
+ *  - \b CACA_EVENT_RESIZE: the \e data.resize.w and \e data.resize.h
  *      fields are valid and contain the new width and height values of
  *      the \e libcucul canvas attached to \e libcaca.
- *
- *  \li \b CACA_EVENT_QUIT: no other field is valid.
+ *  - \b CACA_EVENT_QUIT: no other field is valid.
  *
  *  The result of accessing data members outside the above conditions is
  *  undefined.

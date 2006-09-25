@@ -51,12 +51,9 @@ static void ansi_parse_grcm(cucul_canvas_t *, struct ansi_grcm *,
  *  or cucul_load_file() into an internal libcucul canvas.
  *
  *  Valid values for \c format are:
- *
- *  \li \c "": attempt to autodetect the file format.
- *
- *  \li \c "ansi": import ANSI files.
- *
- *  \li \c "caca": import native libcaca files.
+ *  - \c "": attempt to autodetect the file format.
+ *  - \c "ansi": import ANSI files.
+ *  - \c "caca": import native libcaca files.
  *
  *  If an error occurs, NULL is returned and \b errno is set accordingly:
  *  - \c ENOMEM Not enough memory to allocate canvas.
