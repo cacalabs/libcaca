@@ -62,7 +62,7 @@
  - autorepeat emulation in the ncurses and slang drivers
  - support for more keycodes in the ncurses and slang drivers
  - cacaplas, a plasma animation example
- - cacamoir, a moiré circles animation example
+ - cacamoir, a moire circles animation example
  - MSVC project file
 
 \section news0_7 Changes between 0.6 and 0.7
