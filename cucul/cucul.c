@@ -63,8 +63,8 @@ cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
 
     cv->refcount = 0;
 
-    cv->fgcolor = CUCUL_COLOR_LIGHTGRAY;
-    cv->bgcolor = CUCUL_COLOR_BLACK;
+    cv->fgcolor = CUCUL_COLOR_DEFAULT;
+    cv->bgcolor = CUCUL_COLOR_TRANSPARENT;
 
     cv->width = cv->height = 0;
     cv->chars = NULL;
