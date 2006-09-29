@@ -40,7 +40,7 @@ struct ansi_grcm
 
 static cucul_canvas_t *import_caca(void const *, unsigned int);
 static cucul_canvas_t *import_text(void const *, unsigned int);
-static cucul_canvas_t *import_ansi(void const *, unsigned int);
+static cucul_canvas_t *import_ansi(void const *, unsigned int, int);
 
 static void ansi_parse_grcm(cucul_canvas_t *, struct ansi_grcm *,
                             unsigned int, unsigned int const *);
@@ -52,7 +52,9 @@ static void ansi_parse_grcm(cucul_canvas_t *, struct ansi_grcm *,
  *
  *  Valid values for \c format are:
  *  - \c "": attempt to autodetect the file format.
+ *  - \c "text": import ASCII text files.
  *  - \c "ansi": import ANSI files.
+ *  - \c "utf8": import UTF-8 files with ANSI colour files.
  *  - \c "caca": import native libcaca files.
  *
  *  If an error occurs, NULL is returned and \b errno is set accordingly:
@@ -70,10 +72,12 @@ cucul_canvas_t * cucul_import_canvas(cucul_buffer_t *buffer, char const *format)
 
     if(!strcasecmp("caca", format))
         return import_caca(buffer->data, buffer->size);
+    if(!strcasecmp("utf8", format))
+        return import_ansi(buffer->data, buffer->size, 1);
     if(!strcasecmp("text", format))
         return import_text(buffer->data, buffer->size);
     if(!strcasecmp("ansi", format))
-        return import_ansi(buffer->data, buffer->size);
+        return import_ansi(buffer->data, buffer->size, 0);
 
     /* Autodetection */
     if(!strcasecmp("", format))
@@ -88,7 +92,7 @@ cucul_canvas_t * cucul_import_canvas(cucul_buffer_t *buffer, char const *format)
         /* If we find ESC[ argv, we guess it's an ANSI file */
         for(i = 0; i < buffer->size - 1; i++)
             if((buf[i] == 0x1b) && (buf[i + 1] == '['))
-                return import_ansi(buffer->data, buffer->size);
+                return import_ansi(buffer->data, buffer->size, 0);
 
         /* Otherwise, import it as text */
         return import_text(buffer->data, buffer->size);
@@ -235,13 +239,15 @@ static cucul_canvas_t *import_text(void const *data, unsigned int size)
     return cv;
 }
 
-static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
+static cucul_canvas_t *import_ansi(void const *data, unsigned int size,
+                                   int utf8)
 {
     struct ansi_grcm grcm;
     unsigned char const *buffer = (unsigned char const*)data;
     cucul_canvas_t *cv;
     unsigned int i, j, skip, dummy = 0;
     unsigned int width = 1, height = 1;
+    unsigned long int ch;
     int x = 0, y = 0, save_x = 0, save_y = 0;
 
     cv = cucul_create_canvas(width, height);
@@ -411,8 +417,18 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size)
         }
 
         /* Now paste our character */
+        if(utf8)
+        {
+            unsigned int bytes;
+            ch = cucul_utf8_to_utf32((char const *)(buffer + i), &bytes);
+            skip += bytes - 1;
+        }
+        else
+        {
+            ch = cucul_cp437_to_utf32(buffer[i]);
+        }
         cucul_set_color(cv, grcm.efg, grcm.ebg);
-        cucul_putchar(cv, x, y, cucul_cp437_to_utf32(buffer[i]));
+        cucul_putchar(cv, x, y, ch);
         x++;
     }
 
