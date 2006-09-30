@@ -1,5 +1,11 @@
 /* $Id$ */ /** \page news News
 
+\section news0_99_beta6 Changes between 0.9.beta6 and 0.99.beta5
+
+ - ANSI importer now handles transparency and UTF-8
+ - Unicode support was broken for about 10% of the set
+ - various memory leaks were fixed
+
 \section news0_99_beta5 Changes between 0.9.beta5 and 0.99.beta4
 
  - implemented cucul_getchar() and cucul_get_color()

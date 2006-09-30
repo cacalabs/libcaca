@@ -1,4 +1,122 @@
 ------------------------------------------------------------------------
+r899 | sam | 2006-09-30 20:25:41 +0200 (Sat, 30 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+
+  * Set version to 0.99.beta6.
+
+------------------------------------------------------------------------
+r898 | sam | 2006-09-30 20:24:10 +0200 (Sat, 30 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/test/import.c
+
+  * Added an optional argument to the import test to select import format.
+
+------------------------------------------------------------------------
+r897 | sam | 2006-09-30 20:20:39 +0200 (Sat, 30 Sep 2006) | 3 lines
+Changed paths:
+   M /trunk/src/aafire.c
+   M /trunk/src/cacademo.c
+
+  * As per user request, only display the "Powered by libcaca" banner for a
+    few seconds at the beginning.
+
+------------------------------------------------------------------------
+r896 | sam | 2006-09-30 19:49:09 +0200 (Sat, 30 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/canvas.c
+
+  * Fix minor memory leak in cucul_set_canvas_boundaries().
+
+------------------------------------------------------------------------
+r895 | sam | 2006-09-30 19:31:16 +0200 (Sat, 30 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/cucul.c
+
+  * Fix minor memory leak in cucul_free_canvas().
+
+------------------------------------------------------------------------
+r890 | sam | 2006-09-30 01:36:02 +0200 (Sat, 30 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/canvas.c
+
+  * Fixed a bug in cucul_putchar() that broke half of the Unicode set.
+
+------------------------------------------------------------------------
+r889 | sam | 2006-09-30 01:34:03 +0200 (Sat, 30 Sep 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+  * Add "utf8" import format.
+  * Documented "text" import format.
+
+------------------------------------------------------------------------
+r874 | sam | 2006-09-26 22:32:48 +0200 (Tue, 26 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/cucul.c
+
+  * Initialise colours to default/transparent instead of lightgray/black.
+
+------------------------------------------------------------------------
+r873 | sam | 2006-09-25 18:12:17 +0200 (Mon, 25 Sep 2006) | 3 lines
+Changed paths:
+   M /trunk/NEWS
+
+  * Remove non-ASCII character from NEWS file because Doxygen is unable to
+    encode it in the manpages.
+
+------------------------------------------------------------------------
+r872 | sam | 2006-09-25 18:00:10 +0200 (Mon, 25 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/TODO
+   M /trunk/caca/caca.h
+   M /trunk/cucul/dither.c
+   M /trunk/cucul/export.c
+   M /trunk/cucul/import.c
+
+  * Fix enumeration layout in the manpage documentation.
+
+------------------------------------------------------------------------
+r871 | sam | 2006-09-25 17:58:33 +0200 (Mon, 25 Sep 2006) | 3 lines
+Changed paths:
+   M /trunk/doc/Makefile.am
+
+  * Fucking Doxygen replaces "s with 's in manpages. And it does not even
+    escape them. Fix that upon installation.
+
+------------------------------------------------------------------------
+r870 | sam | 2006-09-23 21:07:13 +0200 (Sat, 23 Sep 2006) | 4 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+  * Fix a bug in the ANSI importer. We need to set the proper fg/bg colours
+    before calling cucul_set_canvas_size(), otherwise it'll fill the new area
+    with the current values.
+
+------------------------------------------------------------------------
+r869 | sam | 2006-09-23 09:36:54 +0200 (Sat, 23 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/TODO
+
+  * Updated TODO.
+
+------------------------------------------------------------------------
+r868 | sam | 2006-09-23 03:55:29 +0200 (Sat, 23 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/NEWS
+
+  * Updated NEWS and ChangeLog.
+
+------------------------------------------------------------------------
+r867 | sam | 2006-09-23 03:48:10 +0200 (Sat, 23 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/doc/Makefile.am
+   M /trunk/doc/cacafire.1
+
+  * Update the cacademo manpage to reflect the merge.
+
+------------------------------------------------------------------------
 r866 | sam | 2006-09-23 03:28:49 +0200 (Sat, 23 Sep 2006) | 2 lines
 Changed paths:
    M /trunk/cucul/colour.c
