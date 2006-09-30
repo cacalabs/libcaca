@@ -241,8 +241,10 @@ paused:
   cucul_dither_bitmap(cv, 0, 0, cucul_get_canvas_width(cv),
                       cucul_get_canvas_height(cv), cucul_dither, bitmap);
   cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
-  cucul_putstr(cv, cucul_get_canvas_width(cv) - 30,
-               cucul_get_canvas_height(cv) - 2, " -=[ Powered by libcaca ]=- ");
+  if (sloop < 100)
+    cucul_putstr(cv, cucul_get_canvas_width(cv) - 30,
+		 cucul_get_canvas_height(cv) - 2,
+		 " -=[ Powered by libcaca ]=- ");
   
   caca_refresh_display(dp);
   /*XSIZ = caca_get_width() * 2;

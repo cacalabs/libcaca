@@ -170,9 +170,10 @@ paused:
         }
 
         cucul_set_color(frontcv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
-        cucul_putstr(frontcv, cucul_get_canvas_width(frontcv) - 30,
-                              cucul_get_canvas_height(frontcv) - 2,
-                              " -=[ Powered by libcaca ]=- ");
+        if(frame < 100)
+            cucul_putstr(frontcv, cucul_get_canvas_width(frontcv) - 30,
+                                  cucul_get_canvas_height(frontcv) - 2,
+                                  " -=[ Powered by libcaca ]=- ");
         caca_refresh_display(dp);
     }
 end:
