@@ -23,6 +23,25 @@
 
 #include "cucul++.h"
 
+
+unsigned long int Charset::utf8ToUtf32(char const *s, unsigned int *read)
+{
+    return cucul_utf8_to_utf32(s, read);
+}
+unsigned int Charset::utf32ToUtf8(char *buf, unsigned long int ch)
+{
+    return cucul_utf32_to_utf8(buf, ch);
+}
+unsigned char Charset::utf32ToCp437(unsigned long int ch)
+{
+    return cucul_utf32_to_cp437(ch);
+}
+unsigned long int Charset::cp437ToUtf32(unsigned char ch)
+{
+    return cucul_cp437_to_utf32(ch);
+}
+
+
 Cucul::Cucul()
 {
     cv = cucul_create_canvas(0, 0);
@@ -38,7 +57,7 @@ Cucul::Cucul(int width, int height)
 
 Cucul::Cucul(Buffer *b, char const *format)
 {
-    cv = cucul_import_canvas(b->get_buffer(), format);
+    cv = cucul_import_canvas(b->getBuffer(), format);
     if(!cv) throw -1;
 }
 
@@ -71,6 +90,11 @@ unsigned int Cucul::getHeight(void)
 void Cucul::setColor(unsigned int f, unsigned int b)
 {
     cucul_set_color(cv, f, b);
+}
+
+int  Cucul::setTruecolor(unsigned int f, unsigned int b)
+{
+    return cucul_set_truecolor(cv, f, b);
 }
 
 char const * Cucul::getColorName(unsigned int color)
@@ -211,6 +235,34 @@ int Cucul::Rand(int min, int max)
     return cucul_rand(min, max);
 }
 
+unsigned long int Cucul::getColor(int x, int y)
+{
+    return cucul_get_color(cv, x, y);
+}
+
+int Cucul::setBoundaries(cucul_canvas_t *, int x, int y,
+                         unsigned int w, unsigned int h)
+{
+    return cucul_set_canvas_boundaries(cv, x, y, h, w);
+}
+
+unsigned int Cucul::getFrameCount()
+{
+    return cucul_get_canvas_frame_count(cv);
+}
+int Cucul::setFrame(unsigned int f)
+{
+    return cucul_set_canvas_frame(cv, f);
+}
+int Cucul::createFrame(unsigned int f)
+{
+    return cucul_create_canvas_frame(cv, f);
+}
+int Cucul::freeFrame(unsigned int f)
+{
+    return cucul_create_canvas_frame(cv, f);
+}
+
 Dither::Dither(unsigned int v1, unsigned int v2, unsigned int v3, unsigned int v4, unsigned int v5, unsigned int v6, unsigned int v7, unsigned int v8)
 {
     dither = cucul_create_dither(v1, v2, v3, v4, v5, v6, v7, v8);
@@ -316,15 +368,25 @@ void Font::renderCanvas(Cucul *cv, unsigned char *buf, unsigned int x, unsigned 
     cucul_render_canvas(cv->get_cucul_canvas_t(), font, buf, x, y, w);
 }
 
+unsigned long int const *Font::getBlocks()
+{
+    return cucul_get_font_blocks(font);
+}
+
 Font::~Font()
 {
     cucul_free_font(font);
 }
 
-Buffer::Buffer(Cucul *cv, char const *buf)
+Buffer::Buffer()
 {
-    buffer = cucul_export_canvas(cv->get_cucul_canvas_t(), buf);
-    if(!buffer) throw -1;
+    buffer_ = NULL;
+}
+
+Buffer::~Buffer()
+{
+    if(buffer_)
+        cucul_free_buffer(buffer_);
 }
 
 char const *const * Buffer::getExportList(void)
@@ -332,7 +394,31 @@ char const *const * Buffer::getExportList(void)
     return cucul_get_export_list();
 }
 
-cucul_buffer *Buffer::get_buffer(void)
+void *Buffer::getData(void)
 {
-    return buffer;
+    return cucul_get_buffer_data(buffer_);
+}
+
+void Buffer::loadMemory(void *buf, unsigned long int size)
+{
+    buffer_ = cucul_load_memory(buf, size);
+    if(buffer_ == NULL)
+        throw -1;
+}
+
+void Buffer::loadFile(char const *filename)
+{
+    buffer_ = cucul_load_file(filename);
+    if(buffer_ == NULL)
+        throw -1;
+}
+
+unsigned long int Buffer::getSize()
+{
+    return cucul_get_buffer_size(buffer_);
+}
+
+cucul_buffer *Buffer::getBuffer()
+{
+    return buffer_;
 }

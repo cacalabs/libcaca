@@ -16,9 +16,9 @@ libcaca___la_LDFLAGS = -no-undefined -version-info @LT_VERSION@
 libcaca___la_LIBADD = ../caca/libcaca.la
 
 if USE_CXX
-noinst_PROGRAMS = cpptest
+noinst_PROGRAMS = cxxtest
 endif
 
-cpptest_SOURCES = cpptest.cpp
-cpptest_LDADD = libcaca++.la libcucul++.la ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
+cxxtest_SOURCES = cxxtest.cpp
+cxxtest_LDADD = libcaca++.la libcucul++.la ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
 

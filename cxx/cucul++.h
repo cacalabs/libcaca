@@ -28,6 +28,19 @@
 
 class Cucul;
 
+
+class Charset
+{
+    unsigned long int utf8ToUtf32(char const *, unsigned int *);
+    unsigned int utf32ToUtf8(char *, unsigned long int);
+    unsigned char utf32ToCp437(unsigned long int);
+    unsigned long int cp437ToUtf32(unsigned char);
+};
+
+
+
+
+
 /* Ugly, I know */
 class Font
 {
@@ -38,10 +51,11 @@ class Font
     unsigned int getWidth();
     unsigned int getHeight();
     void renderCanvas(Cucul *, unsigned char *, unsigned int, unsigned int, unsigned int);
-    
+    unsigned long int const *getBlocks();
+
  private:
     cucul_font *font;
-    
+
 };
 
 class Dither
@@ -74,15 +88,20 @@ class Buffer
 {
     friend class Cucul;
  public:
-    Buffer(Cucul *cv, char const *);
+    Buffer();
     ~Buffer();
     char const *const * getExportList(void);
+    void *Buffer::getData(void);
+    void loadMemory(void *buf, unsigned long int size);
+    void loadFile(char const *filename);
+    unsigned long int getSize();
 
  protected:
     cucul_buffer *get_buffer();
 
  private:
-    cucul_buffer *buffer;
+    cucul_buffer *buffer_;
+    cucul_buffer *getBuffer();
 };
 
 
@@ -102,9 +121,12 @@ class Cucul
     unsigned int getWidth(void);
     unsigned int getHeight(void);
     void setColor(unsigned int f, unsigned int b);
+    int  setTruecolor(unsigned int f, unsigned int b);
+    unsigned long int getColor(int, int);
     char const * getColorName(unsigned int color);
     void Printf(int x , int y , char const * format,...);
     void putChar(int x, int y, char ch);
+    unsigned long int getChar(cucul_canvas_t *, int, int);
     void putStr(int x, int y, char *str);
     void Clear(void);
     void Blit(int, int, Cucul* c1, Cucul* c2);
@@ -127,6 +149,12 @@ class Cucul
     void drawThinTriangle(int, int, int, int, int, int);
     void fillTriangle(int, int, int, int, int, int, char const *);
     int Rand(int, int);
+    int setBoundaries(cucul_canvas_t *, int, int,
+                                unsigned int, unsigned int);
+    unsigned int getFrameCount();
+    int setFrame(unsigned int);
+    int createFrame(unsigned int);
+    int freeFrame(unsigned int);
 
  protected:
     cucul_canvas_t *get_cucul_canvas_t();
