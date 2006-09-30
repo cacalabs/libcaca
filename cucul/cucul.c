@@ -261,6 +261,8 @@ int cucul_free_canvas(cucul_canvas_t *cv)
         free(cv->allattr[f]);
     }
 
+    free(cv->allchars);
+    free(cv->allattr);
     free(cv);
 
     return 0;
