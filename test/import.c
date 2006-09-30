@@ -36,6 +36,7 @@ int main(int argc, char *argv[])
     if(argc < 2)
     {
         fprintf(stderr, "%s: missing argument (filename).\n", argv[0]);
+        fprintf(stderr, "usage: %s <filename> [<format>]\n", argv[0]);
         return 1;
     }
 
@@ -46,7 +47,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    cv = cucul_import_canvas(b, "");
+    cv = cucul_import_canvas(b, argc >= 3 ? argv[2] : "");
     if(!cv)
     {
 	fprintf(stderr, "%s: could not import `%s'.\n", argv[0], argv[1]);
