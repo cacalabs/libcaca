@@ -465,7 +465,7 @@ static void ansi_parse_grcm(cucul_canvas_t *cv, struct ansi_grcm *g,
         {
         case 0: /* default rendition */
             g->fg = CUCUL_COLOR_DEFAULT;
-            g->bg = CUCUL_COLOR_DEFAULT;
+            g->bg = CUCUL_COLOR_TRANSPARENT;
             g->bold = g->negative = g->concealed = 0;
             break;
         case 1: /* bold or increased intensity */
@@ -491,7 +491,7 @@ static void ansi_parse_grcm(cucul_canvas_t *cv, struct ansi_grcm *g,
             g->fg = CUCUL_COLOR_DEFAULT;
             break;
         case 49: /* default background colour (implementation-defined) */
-            g->bg = CUCUL_COLOR_DEFAULT;
+            g->bg = CUCUL_COLOR_TRANSPARENT;
             break;
         default:
             fprintf(stderr, "unknown sgr %i\n", argv[j]);
