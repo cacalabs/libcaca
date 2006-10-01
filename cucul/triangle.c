@@ -91,8 +91,8 @@ int cucul_draw_thin_triangle(cucul_canvas_t *cv, int x1, int y1,
 int cucul_fill_triangle(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
                         int x3, int y3, char const *str)
 {
-    int x, y, xmax, ymax;
-    long int xa, xb, sl21, sl31, sl32;
+    int x, y, xmin, xmax, ymin, ymax;
+    long int xx1, xx2, xa, xb, sl21, sl31, sl32;
     uint32_t ch;
 
     /* Bubble-sort y1 <= y2 <= y3 */
@@ -113,39 +113,48 @@ int cucul_fill_triangle(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
     x2 *= 0x1000;
     x3 *= 0x1000;
 
-    xmax = cv->width - 1;
-    ymax = cv->height - 1;
+    ymin = y1 < 0 ? 0 : y1;
+    ymax = y3 + 1 < (int)cv->height ? y3 + 1 : (int)cv->height;
+
+    if(ymin < y2)
+    {
+        xa = x1 + sl21 * (ymin - y1);
+        xb = x1 + sl31 * (ymin - y1);
+    }
+    else if(ymin == y2)
+    {
+        xa = x2;
+        xb = (y1 == y3) ? x3 : x1 + sl31 * (ymin - y1);
+    }
+    else /* (ymin > y2) */
+    {
+        xa = x3 + sl32 * (ymin - y3);
+        xb = x3 + sl31 * (ymin - y3);
+    }
 
     /* Rasterize our triangle */
-    for(y = y1 < 0 ? 0 : y1; y <= y3 && y <= ymax; y++)
+    for(y = ymin; y < ymax; y++)
     {
-        if(y < y2)
-        {
-            xa = x1 + sl21 * (y - y1);
-            xb = x1 + sl31 * (y - y1);
-        }
-        else if(y == y2)
-        {
-            xa = x2;
-            xb = (y1 == y3) ? x3 : x1 + sl31 * (y - y1);
-        }
-        else /* (y > y2) */
-        {
-            xa = x3 + sl32 * (y - y3);
-            xb = x3 + sl31 * (y - y3);
-        }
-
-        if(xb < xa)
-        {
-            long int tmp = xb; xb = xa; xa = tmp;
-        }
-
         /* Rescale xa and xb, recentering the division */
-        xa = (xa + 0x800) / 0x1000;
-        xb = (xb + 0x801) / 0x1000;
+        if(xa < xb)
+        {
+            xx1 = (xa + 0x800) / 0x1000;
+            xx2 = (xb + 0x801) / 0x1000;
+        }
+        else
+        {
+            xx1 = (xb + 0x800) / 0x1000;
+            xx2 = (xa + 0x801) / 0x1000;
+        }
 
-        for(x = xa < 0 ? 0 : xa; x <= xb && x <= xmax; x++)
+        xmin = xx1 < 0 ? 0 : xx1;
+        xmax = xx2 + 1 < (int)cv->width ? xx2 + 1 : (int)cv->width;
+
+        for(x = xmin; x < xmax; x++)
             cucul_putchar(cv, x, y, ch);
+
+        xa += y < y2 ? sl21 : sl32;
+        xb += sl31;
     }
 
     return 0;
