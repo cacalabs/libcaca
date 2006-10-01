@@ -91,7 +91,8 @@ int cucul_draw_thin_triangle(cucul_canvas_t *cv, int x1, int y1,
 int cucul_fill_triangle(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
                         int x3, int y3, char const *str)
 {
-    int x, y, xa, xb, xmax, ymax;
+    int x, y, xmax, ymax;
+    long int xa, xb, sl21, sl31, sl32;
     uint32_t ch;
 
     /* Bubble-sort y1 <= y2 <= y3 */
@@ -101,46 +102,49 @@ int cucul_fill_triangle(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
     if(y2 > y3)
         return cucul_fill_triangle(cv, x1, y1, x3, y3, x2, y2, str);
 
-    /* Promote precision */
-    x1 *= 4;
-    x2 *= 4;
-    x3 *= 4;
+    ch = cucul_utf8_to_utf32(str, NULL);
+
+    /* Compute slopes and promote precision */
+    sl21 = (y2 == y1) ? 0 : (x2 - x1) * 0x1000 / (y2 - y1);
+    sl31 = (y3 == y1) ? 0 : (x3 - x1) * 0x1000 / (y3 - y1);
+    sl32 = (y3 == y2) ? 0 : (x3 - x2) * 0x1000 / (y3 - y2);
+
+    x1 *= 0x1000;
+    x2 *= 0x1000;
+    x3 *= 0x1000;
 
     xmax = cv->width - 1;
     ymax = cv->height - 1;
 
-    ch = cucul_utf8_to_utf32(str, NULL);
-
     /* Rasterize our triangle */
     for(y = y1 < 0 ? 0 : y1; y <= y3 && y <= ymax; y++)
     {
-        if(y <= y2)
+        if(y < y2)
         {
-            xa = (y1 == y2) ? x2 : x1 + (x2 - x1) * (y - y1) / (y2 - y1);
-            xb = (y1 == y3) ? x3 : x1 + (x3 - x1) * (y - y1) / (y3 - y1);
+            xa = x1 + sl21 * (y - y1);
+            xb = x1 + sl31 * (y - y1);
         }
-        else
+        else if(y == y2)
         {
-            xa = (y3 == y2) ? x2 : x3 + (x2 - x3) * (y - y3) / (y2 - y3);
-            xb = (y3 == y1) ? x1 : x3 + (x1 - x3) * (y - y3) / (y1 - y3);
+            xa = x2;
+            xb = (y1 == y3) ? x3 : x1 + sl31 * (y - y1);
+        }
+        else /* (y > y2) */
+        {
+            xa = x3 + sl32 * (y - y3);
+            xb = x3 + sl31 * (y - y3);
         }
 
         if(xb < xa)
         {
-            int tmp = xb;
-            xb = xa; xa = tmp;
+            long int tmp = xb; xb = xa; xa = tmp;
         }
 
         /* Rescale xa and xb, recentering the division */
-        xa = (xa + 1) / 4;
-        xb = (xb + 2) / 4;
+        xa = (xa + 0x800) / 0x1000;
+        xb = (xb + 0x801) / 0x1000;
 
-        if(xb < 0) continue;
-        if(xa > xmax) continue;
-        if(xa < 0) xa = 0;
-        if((xb) > xmax) xb = xmax;
-
-        for(x = xa; x <= xb; x++)
+        for(x = xa < 0 ? 0 : xa; x <= xb && x <= xmax; x++)
             cucul_putchar(cv, x, y, ch);
     }
 
