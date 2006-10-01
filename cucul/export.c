@@ -215,32 +215,36 @@ static void export_utf8(cucul_canvas_t *cv, cucul_buffer_t *ex)
         uint32_t *lineattr = cv->attr + y * cv->width;
         uint32_t *linechar = cv->chars + y * cv->width;
 
-        uint8_t prevfg = -1;
-        uint8_t prevbg = -1;
+        uint8_t prevfg = 0x10;
+        uint8_t prevbg = 0x10;
 
         for(x = 0; x < cv->width; x++)
         {
-            uint8_t fg = palette[_cucul_argb32_to_ansi4fg(lineattr[x])];
-            uint8_t bg = palette[_cucul_argb32_to_ansi4bg(lineattr[x])];
+            uint32_t attr = lineattr[x];
             uint32_t ch = linechar[x];
+            uint8_t fg, bg;
 
+            fg = ((attr & 0xffff) == CUCUL_COLOR_DEFAULT) ?
+                     0x10 : palette[_cucul_argb32_to_ansi4fg(attr)];
+            bg = ((attr >> 16) == CUCUL_COLOR_TRANSPARENT) ?
+                     0x10 : palette[_cucul_argb32_to_ansi4bg(attr)];
+
+            /* TODO: the [0 could be omitted in some cases */
             if(fg != prevfg || bg != prevbg)
             {
-                cur += sprintf(cur, "\033[0;");
+                cur += sprintf(cur, "\033[0");
 
                 if(fg < 8)
-                    if(bg < 8)
-                        cur += sprintf(cur, "3%d;4%dm", fg, bg);
-                    else
-                        cur += sprintf(cur, "5;3%d;4%d;10%dm",
-                                            fg, bg - 8, bg - 8);
-                else
-                    if(bg < 8)
-                        cur += sprintf(cur, "1;3%d;4%d;9%dm",
-                                            fg - 8, bg, fg - 8);
-                    else
-                        cur += sprintf(cur, "5;1;3%d;4%d;9%d;10%dm",
-                                            fg - 8, bg - 8, fg - 8, bg - 8);
+                    cur += sprintf(cur, ";3%d", fg);
+                else if(fg < 16)
+                    cur += sprintf(cur, ";1;3%d;9%d", fg - 8, fg - 8);
+
+                if(bg < 8)
+                    cur += sprintf(cur, ";4%d", bg);
+                else if(bg < 16)
+                    cur += sprintf(cur, ";5;4%d;10%d", bg - 8, bg - 8);
+
+                cur += sprintf(cur, "m");
             }
 
             cur += cucul_utf32_to_utf8(cur, ch);
@@ -249,7 +253,10 @@ static void export_utf8(cucul_canvas_t *cv, cucul_buffer_t *ex)
             prevbg = bg;
         }
 
-        cur += sprintf(cur, "\033[0m\r\n");
+        if(prevfg != 0x10 || prevbg != 0x10)
+            cur += sprintf(cur, "\033[0m");
+
+        cur += sprintf(cur, "\r\n");
     }
 
     /* Crop to really used size */
