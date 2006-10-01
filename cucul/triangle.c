@@ -105,13 +105,13 @@ int cucul_fill_triangle(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
     ch = cucul_utf8_to_utf32(str, NULL);
 
     /* Compute slopes and promote precision */
-    sl21 = (y2 == y1) ? 0 : (x2 - x1) * 0x1000 / (y2 - y1);
-    sl31 = (y3 == y1) ? 0 : (x3 - x1) * 0x1000 / (y3 - y1);
-    sl32 = (y3 == y2) ? 0 : (x3 - x2) * 0x1000 / (y3 - y2);
+    sl21 = (y2 == y1) ? 0 : (x2 - x1) * 0x10000 / (y2 - y1);
+    sl31 = (y3 == y1) ? 0 : (x3 - x1) * 0x10000 / (y3 - y1);
+    sl32 = (y3 == y2) ? 0 : (x3 - x2) * 0x10000 / (y3 - y2);
 
-    x1 *= 0x1000;
-    x2 *= 0x1000;
-    x3 *= 0x1000;
+    x1 *= 0x10000;
+    x2 *= 0x10000;
+    x3 *= 0x10000;
 
     ymin = y1 < 0 ? 0 : y1;
     ymax = y3 + 1 < (int)cv->height ? y3 + 1 : (int)cv->height;
@@ -138,13 +138,13 @@ int cucul_fill_triangle(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
         /* Rescale xa and xb, recentering the division */
         if(xa < xb)
         {
-            xx1 = (xa + 0x800) / 0x1000;
-            xx2 = (xb + 0x801) / 0x1000;
+            xx1 = (xa + 0x800) / 0x10000;
+            xx2 = (xb + 0x801) / 0x10000;
         }
         else
         {
-            xx1 = (xb + 0x800) / 0x1000;
-            xx2 = (xa + 0x801) / 0x1000;
+            xx1 = (xb + 0x800) / 0x10000;
+            xx2 = (xa + 0x801) / 0x10000;
         }
 
         xmin = xx1 < 0 ? 0 : xx1;
