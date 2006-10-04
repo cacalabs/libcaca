@@ -1,4 +1,64 @@
 ------------------------------------------------------------------------
+r917 | sam | 2006-10-01 14:50:43 +0200 (Sun, 01 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/export.c
+
+  * Support transparency in the colour UTF-8 exporter.
+
+------------------------------------------------------------------------
+r916 | sam | 2006-10-01 14:23:30 +0200 (Sun, 01 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/triangle.c
+
+  * Better precision in cucul_fill_triangle().
+
+------------------------------------------------------------------------
+r915 | sam | 2006-10-01 13:53:35 +0200 (Sun, 01 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/triangle.c
+
+  * More optimisations in cucul_fill_triangle().
+
+------------------------------------------------------------------------
+r914 | sam | 2006-10-01 12:47:41 +0200 (Sun, 01 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/triangle.c
+
+  * Optimised triangle rasteriser. Thanks to Jylam for the hints.
+
+------------------------------------------------------------------------
+r913 | sam | 2006-10-01 10:53:41 +0200 (Sun, 01 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+  * Set default background to transparent in the ANSI and UTF-8 importers.
+
+------------------------------------------------------------------------
+r901 | jylam | 2006-09-30 20:56:23 +0200 (Sat, 30 Sep 2006) | 9 lines
+Changed paths:
+   M /trunk/cxx/Makefile.am
+   M /trunk/cxx/cucul++.cpp
+   M /trunk/cxx/cucul++.h
+   A /trunk/cxx/cxxtest.cpp
+
+ * Updated C++ bindings to support every single cucul/caca functionnality. Renamed cpptest to cxxtext for consistency.
+ 
+ --This line, and those below, will be ignored--
+
+M    cxx/cucul++.cpp
+A    cxx/cxxtest.cpp
+M    cxx/cucul++.h
+M    cxx/Makefile.am
+
+------------------------------------------------------------------------
+r900 | sam | 2006-09-30 20:35:50 +0200 (Sat, 30 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/NEWS
+
+  * Updated NEWS and ChangeLog.
+
+------------------------------------------------------------------------
 r899 | sam | 2006-09-30 20:25:41 +0200 (Sat, 30 Sep 2006) | 2 lines
 Changed paths:
    M /trunk/configure.ac
