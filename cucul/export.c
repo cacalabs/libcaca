@@ -516,41 +516,28 @@ static void export_irc(cucul_canvas_t *cv, cucul_buffer_t *ex)
 
             if((attr >> 16) == CUCUL_COLOR_TRANSPARENT)
                 bg = 0x10;
-#if 0
-            if(bg == prevbg)
-            {
-                if(fg == prevfg)
-                    ; /* Same fg/bg, do nothing */
-                else if(ch == (uint32_t)' ')
-                    fg = prevfg; /* Hackety hack */
-                else
-                {
-                    cur += sprintf(cur, "\x03%d", fg);
-                    if(ch >= (uint32_t)'0' && ch <= (uint32_t)'9')
-                        cur += sprintf(cur, "\x02\x02");
-                }
-            }
-            else
-            {
-                if(fg == prevfg)
-                    cur += sprintf(cur, "\x03,%d", bg);
-                else
-                    cur += sprintf(cur, "\x03%d,%d", fg, bg);
 
-                if(ch >= (uint32_t)'0' && ch <= (uint32_t)'9')
-                    cur += sprintf(cur, "\x02\x02");
-            }
-#else
+            /* TODO: optimise series of same fg / same bg
+             *       don't change fg value if ch == ' '
+             *       make sure the \x03,%d trick works everywhere */
             if(bg != prevbg || fg != prevfg)
             {
+                int need_escape = 0;
+
                 if(bg == 0x10)
                 {
                     if(fg == 0x10)
                         cur += sprintf(cur, "\x0f");
-                    else if(prevbg == 0x10)
-                        cur += sprintf(cur, "\x03%d", fg);
                     else
-                        cur += sprintf(cur, "\x0f\x03%d", fg);
+                    {
+                        if(prevbg == 0x10)
+                            cur += sprintf(cur, "\x03%d", fg);
+                        else
+                            cur += sprintf(cur, "\x0f\x03%d", fg);
+
+                        if(ch == (uint32_t)',')
+                            need_escape = 1;
+                    }
                 }
                 else
                 {
@@ -561,9 +548,12 @@ static void export_irc(cucul_canvas_t *cv, cucul_buffer_t *ex)
                 }
 
                 if(ch >= (uint32_t)'0' && ch <= (uint32_t)'9')
+                    need_escape = 1;
+
+                if(need_escape)
                     cur += sprintf(cur, "\x02\x02");
             }
-#endif
+
             cur += cucul_utf32_to_utf8(cur, ch);
             prevfg = fg;
             prevbg = bg;
