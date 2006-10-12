@@ -16,8 +16,8 @@ cacafire_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
 
 cacaview_SOURCES = cacaview.c common-image.c common-image.h
 cacaview_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
-cacaview_CFLAGS = $(img_cflags)
-cacaview_LDFLAGS = $(img_ldflags)
+cacaview_CFLAGS = @IMLIB2_CFLAGS@
+cacaview_LDFLAGS = @IMLIB2_LIBS@
 
 cacadraw_SOURCES = cacadraw.c
 cacadraw_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
@@ -30,16 +30,8 @@ cacaserver_LDADD = ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
 
 img2irc_SOURCES = img2irc.c common-image.c common-image.h
 img2irc_LDADD = ../cucul/libcucul.la @CACA_LIBS@
-img2irc_CFLAGS = $(img_cflags)
-img2irc_LDFLAGS = $(img_ldflags)
-
-if USE_IMLIB2
-img_cflags = `imlib2-config --cflags`
-img_ldflags = `imlib2-config --libs`
-else
-img_cflags =
-img_ldflags =
-endif
+img2irc_CFLAGS = @IMLIB2_CFLAGS@
+img2irc_LDFLAGS = @IMLIB2_LIBS@
 
 if USE_NETWORK
 fcntl_programs = cacaserver

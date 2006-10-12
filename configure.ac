@@ -31,7 +31,7 @@ dnl PKG_PROG_PKG_CONFIG which needs to be called first.
 AC_EGREP_CPP(yes, foo)
 PKG_PROG_PKG_CONFIG()
 m4_pattern_allow([^PKG_CONFIG_LIBDIR$])
-if test "$build" != "$host" -a "${PKG_CONFIG_LIBDIR}" = ""; then
+if test "${build}" != "${host}" -a "${PKG_CONFIG_LIBDIR}" = ""; then
   export PKG_CONFIG_LIBDIR=/dev/null
 fi
 
@@ -222,6 +222,7 @@ if test -z "${CACA_DRIVERS}"; then
   AC_MSG_RESULT(no)
   AC_MSG_ERROR([no output drivers were selected!])
 else
+  CACA_DRIVERS="${CACA_DRIVERS# *}"
   AC_MSG_RESULT([${CACA_DRIVERS}])
 fi
 
@@ -251,20 +252,13 @@ AC_CHECK_HEADERS(sys/socket.h,
 AM_CONDITIONAL(USE_NETWORK, test "${ac_cv_my_have_network}" = "yes")
 
 # Use Imlib2?
-ac_cv_my_have_imlib2="no"
-save_CPPFLAGS="${CPPFLAGS}"
 if test "${enable_imlib2}" != "no"; then
-  AC_PATH_PROG(IMLIB2_CONFIG, imlib2-config, no)
-  if test "${IMLIB2_CONFIG}" != "no"; then
-    CPPFLAGS="${CPPFLAGS} `imlib2-config --cflags` -DX_DISPLAY_MISSING=1"
+  IMLIB2="no"
+  PKG_CHECK_MODULES(imlib2, imlib2, [IMLIB2="yes"], [AC_MSG_RESULT(no)])
+  if test "${IMLIB2}" = no; then
+    AC_MSG_ERROR([[cannot find Imlib2 development files. Without Imlib2, cacaview will only open BMP files; if this is really what you want, re-run configure with '--disable-imlib2'.]])
   fi
-  AC_CHECK_HEADERS(Imlib2.h,
-    ac_cv_my_have_imlib2="yes",
-   [ac_cv_my_have_imlib2="no"
-    AC_MSG_ERROR([[cannot find Imlib2 development files. Without Imlib2, cacaview will only open BMP files; if this is really what you want, re-run configure with '--disable-imlib2'.]])])
-  CPPFLAGS="${save_CPPFLAGS}"
 fi
-AM_CONDITIONAL(USE_IMLIB2, test "${ac_cv_my_have_imlib2}" = "yes")
 
 # Build development tools?
 PANGOFT2="no"
