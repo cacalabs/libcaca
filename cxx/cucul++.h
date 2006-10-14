@@ -91,7 +91,7 @@ class Buffer
     Buffer();
     ~Buffer();
     char const *const * getExportList(void);
-    void *Buffer::getData(void);
+    void *getData(void);
     void loadMemory(void *buf, unsigned long int size);
     void loadFile(char const *filename);
     unsigned long int getSize();
