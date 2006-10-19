@@ -5,6 +5,7 @@
   \subsection dep API-dependent stuff
 
   - support for multi-frame canvases in the caca exporter
+  - support for double width glyphs (also needs some libcaca changes)
 
   \subsection indep API-independent stuff
 
@@ -18,7 +19,6 @@
      moment only \c "full16" and \c "16" are implemented.
   - Fix the thin ellipse rendering (currently it's only |s and -s, we
      could make them smoother by using ' ` , etc).
-  - support for double width glyphs (also needs some libcaca changes)
   - better mask support in cucul_blit()
   - optimise exporters so that they do not allocate huge blocks of memory
      when they only need half of it.
@@ -28,9 +28,6 @@
 
   \subsection dep API-dependent stuff
 
-  - text edit widget with cursor support (I'm unsure about this, it
-     seems pretty difficult)
-
   \subsection indep API-independent stuff
 
   - Write a Linux console output
@@ -39,6 +36,7 @@
   - Unicode support for X11 (maybe through Xft)
   - fix Unicode support for ncurses (look at the nano source, it gets it right)
   - and Jylam wants a framebuffer output
+  - write sample code for a text edit widget with cursor support
 
 
 \section bindings Language bindings
@@ -82,12 +80,6 @@
 
   - Only a skeleton exists yet. A modern ANSI editor that can also
      do Unicode.
-
-  \section cuculet TOIlet
-
-  - Managed in another repository.
-  - Colour support, of course: outputs to IRC, ANSI, HTML...
-  - Can open FIGlet fonts
 
   \section ttyvaders TTYvaders
 
