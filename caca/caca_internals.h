@@ -88,6 +88,10 @@ struct caca_display
     /* A link to our cucul canvas */
     cucul_canvas_t *cv;
 
+#if defined(USE_PLUGINS)
+    void *plugin;
+#endif
+
     /* Device-specific functions */
     struct drv
     {

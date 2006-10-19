@@ -23,8 +23,14 @@
 #if !defined(__KERNEL__)
 #   include <stdlib.h>
 #   include <string.h>
+#   include <stdio.h>
 #   if defined(HAVE_ERRNO_H)
 #       include <errno.h>
+#   endif
+#   if defined(USE_PLUGINS)
+#       if defined(HAVE_DLFCN_H)
+#           include <dlfcn.h>
+#       endif
 #   endif
 #endif
 
@@ -33,7 +39,15 @@
 #include "caca.h"
 #include "caca_internals.h"
 
-static int caca_select_driver(caca_display_t *dp);
+#if defined(USE_PLUGINS)
+#   define gl_install(p) caca_plugin_install("gl", p)
+#   define x11_install(p) caca_plugin_install("x11", p)
+#endif
+
+static int caca_select_driver(caca_display_t *);
+#if defined(USE_PLUGINS)
+static int caca_plugin_install(char const *, caca_display_t *);
+#endif
 
 /** \brief Attach a caca graphical context to a cucul canvas.
  *
@@ -62,9 +76,16 @@ caca_display_t * caca_create_display(cucul_canvas_t * cv)
     }
 
     dp->cv = cv;
+#if defined(USE_PLUGINS)
+    dp->plugin = NULL;
+#endif
 
     if(caca_select_driver(dp))
     {
+#if defined(USE_PLUGINS)
+        if(dp->plugin)
+            dlclose(dp->plugin);
+#endif
         free(dp);
 #if defined(HAVE_ERRNO_H)
         errno = ENODEV;
@@ -74,6 +95,10 @@ caca_display_t * caca_create_display(cucul_canvas_t * cv)
 
     if(dp->drv.init_graphics(dp))
     {
+#if defined(USE_PLUGINS)
+        if(dp->plugin)
+            dlclose(dp->plugin);
+#endif
         free(dp);
 #if defined(HAVE_ERRNO_H)
         errno = ENODEV;
@@ -128,6 +153,10 @@ caca_display_t * caca_create_display(cucul_canvas_t * cv)
 int caca_free_display(caca_display_t *dp)
 {
     dp->drv.end_graphics(dp);
+#if defined(USE_PLUGINS)
+    if(dp->plugin)
+        dlclose(dp->plugin);
+#endif
     dp->cv->refcount--;
     free(dp);
 
@@ -200,4 +229,32 @@ static int caca_select_driver(caca_display_t *dp)
 
     return -1;
 }
+
+#if defined(USE_PLUGINS)
+static int caca_plugin_install(char const *name, caca_display_t *dp)
+{
+    char buf[512];
+    int (*sym) (caca_display_t *);
+
+    sprintf(buf, "%s/lib%s_plugin.so", PLUGINDIR, name);
+    dp->plugin = dlopen(buf, RTLD_NOW);
+    if(!dp->plugin)
+    {
+        sprintf(buf, "lib%s_plugin.so", name);
+        dp->plugin = dlopen(buf, RTLD_NOW);
+        if(!dp->plugin)
+            return -1;
+    }
+
+    sprintf(buf, "%s_install", name);
+    sym = dlsym(dp->plugin, buf);
+    if(!sym)
+    {
+        dlclose(dp->plugin);
+        return -1;
+    }
+
+    return sym(dp);
+}
+#endif
 

@@ -62,10 +62,12 @@ AC_ARG_ENABLE(imlib2,
   [  --enable-imlib2         Imlib2 graphics support (default enabled)])
 
 dnl conditional builds
+AC_ARG_ENABLE(plugins,
+  [  --enable-plugins        build X11 and GL drivers as plugins])
 AC_ARG_ENABLE(doc,
   [  --enable-doc            build documentation (needs doxygen and LaTeX)])
 
-AC_CHECK_HEADERS(stdio.h stdarg.h signal.h sys/ioctl.h sys/time.h inttypes.h endian.h unistd.h arpa/inet.h netinet/in.h winsock2.h errno.h locale.h getopt.h)
+AC_CHECK_HEADERS(stdio.h stdarg.h signal.h sys/ioctl.h sys/time.h inttypes.h endian.h unistd.h arpa/inet.h netinet/in.h winsock2.h errno.h locale.h getopt.h dlfcn.h)
 AC_CHECK_FUNCS(signal ioctl vsnprintf getenv putenv strcasecmp htons)
 AC_CHECK_FUNCS(usleep gettimeofday)
 
@@ -156,7 +158,7 @@ if test "${enable_x11}" != "no"; then
     if test -n "${x_libraries}"; then X_LIBS="-L${x_libraries}"; fi
     AC_DEFINE(USE_X11, 1, Define to 1 to activate the X11 backend driver)
     CPPFLAGS="${CPPFLAGS} ${X_CFLAGS}"
-    CACA_LIBS="${CACA_LIBS} -lX11 ${X_LIBS}"
+    X11_LIBS="${X11_LIBS} -lX11 ${X_LIBS}"
     CACA_DRIVERS="${CACA_DRIVERS} x11"],
    [ac_cv_my_have_x11="no"],
    [[`if test -n "${x_libraries}"; then echo -L${x_libraries}; fi`]])
@@ -180,7 +182,7 @@ if test "${enable_gl}" != "no"; then
       break])
   if test "${ac_cv_my_have_gl}" = "yes"; then
     AC_DEFINE(USE_GL, 1, Define to 1 to activate the OpenGL backend driver)
-    CACA_LIBS="${CACA_LIBS} -lGL -lglut"
+    GL_LIBS="${GL_LIBS} -lGL -lglut"
     CACA_DRIVERS="${CACA_DRIVERS} gl"
   elif test "${enable_gl}" = "yes"; then
     AC_MSG_ERROR([cannot find OpenGL+FreeGLUT development files])
@@ -224,6 +226,15 @@ if test "${enable_vga}" = "yes"; then
 fi
 AM_CONDITIONAL(USE_KERNEL, test "${ac_cv_my_have_vga}" = "yes")
 
+if test "${enable_plugins}" = "yes"; then
+  ac_cv_my_have_plugins="yes"
+  AC_DEFINE(USE_PLUGINS, 1, Define to 1 to activate plugins)
+  CACA_LIBS="${CACA_LIBS} -ldl"
+else
+  CACA_LIBS="${CACA_LIBS} ${X11_LIBS} ${GL_LIBS}"
+fi
+AM_CONDITIONAL(USE_PLUGINS, test "${ac_cv_my_have_plugins}" = "yes")
+
 AC_MSG_CHECKING(valid output drivers)
 if test -z "${CACA_DRIVERS}"; then
   AC_MSG_RESULT(no)
@@ -237,6 +248,8 @@ fi
 AC_SUBST(MATH_LIBS)
 AC_SUBST(GETOPT_LIBS)
 AC_SUBST(CACA_LIBS)
+AC_SUBST(X11_LIBS)
+AC_SUBST(GL_LIBS)
 
 # Optimizations
 CFLAGS="${CFLAGS} -g -O2 -fno-strength-reduce -fomit-frame-pointer"
@@ -261,7 +274,7 @@ AM_CONDITIONAL(USE_NETWORK, test "${ac_cv_my_have_network}" = "yes")
 # Use Imlib2?
 if test "${enable_imlib2}" != "no"; then
   IMLIB2="no"
-  PKG_CHECK_MODULES(imlib2, imlib2, [IMLIB2="yes"], [AC_MSG_RESULT(no)])
+  PKG_CHECK_MODULES(IMLIB2, imlib2, [IMLIB2="yes"], [AC_MSG_RESULT(no)])
   if test "${IMLIB2}" = no; then
     AC_MSG_ERROR([[cannot find Imlib2 development files. Without Imlib2, cacaview will only open BMP files; if this is really what you want, re-run configure with '--disable-imlib2'.]])
   fi
@@ -269,7 +282,7 @@ fi
 
 # Build development tools?
 PANGOFT2="no"
-PKG_CHECK_MODULES(pangoft2, pangoft2, [PANGOFT2="yes"], [AC_MSG_RESULT(no)])
+PKG_CHECK_MODULES(PANGOFT2, pangoft2, [PANGOFT2="yes"], [AC_MSG_RESULT(no)])
 AM_CONDITIONAL(USE_PANGO, test "${PANGOFT2}" != "no")
 
 # Build documentation?
