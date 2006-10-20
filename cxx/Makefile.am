@@ -20,5 +20,5 @@ noinst_PROGRAMS = cxxtest
 endif
 
 cxxtest_SOURCES = cxxtest.cpp
-cxxtest_LDADD = libcaca++.la libcucul++.la ../caca/libcaca.la ../cucul/libcucul.la @CACA_LIBS@
+cxxtest_LDADD = libcaca++.la libcucul++.la ../caca/libcaca.la ../cucul/libcucul.la
 
