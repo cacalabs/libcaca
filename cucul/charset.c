@@ -236,6 +236,50 @@ unsigned long int cucul_cp437_to_utf32(unsigned char ch)
     return 0x00000000;
 }
 
+/** \brief Tell whether a UTF-32 character is fullwidth.
+ *
+ *  This function returns 1 if the given UTF-32 character should be
+ *  printed at twice the normal width (fullwidth), or 0 if it is a
+ *  standard-width character or if the library does not know.
+ *
+ *  This function never fails.
+ *
+ *  \param ch The UTF-32 character.
+ *  \return 1 if the character is fullwidth, 0 otherwise.
+ */
+int cucul_utf32_is_fullwidth(unsigned long int ch)
+{
+    if(ch < 0x2e80) /* Standard stuff */
+        return 0;
+    if(ch < 0xa700) /* Japanese, Korean, CJK, Yi... */
+        return 1;
+    if(ch < 0xac00) /* Modified Tone Letters, Syloti Nagri */
+        return 0;
+    if(ch < 0xd800) /* Hangul Syllables */
+        return 1;
+    if(ch < 0xf900) /* Misc crap */
+        return 0;
+    if(ch < 0xfb00) /* More CJK */
+        return 1;
+    if(ch < 0xfe20) /* Misc crap */
+        return 0;
+    if(ch < 0xfe70) /* More CJK */
+        return 1;
+    if(ch < 0xff00) /* Misc crap */
+        return 0;
+    if(ch < 0xff61) /* Fullwidth forms */
+        return 1;
+    if(ch < 0xffe0) /* Halfwidth forms */
+        return 0;
+    if(ch < 0xffe8) /* More fullwidth forms */
+        return 1;
+    if(ch < 0x20000) /* Misc crap */
+        return 0;
+    if(ch < 0xe0000) /* More CJK */
+        return 1;
+    return 0;
+}
+
 /*
  * XXX: The following functions are local.
  */
