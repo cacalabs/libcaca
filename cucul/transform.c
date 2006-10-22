@@ -79,16 +79,30 @@ int cucul_flip(cucul_canvas_t *cv)
             uint32_t attr;
 
             /* Swap attributes */
-            attr = *aright; *aright = *aleft; *aleft = attr;
+            attr = *aright;
+            *aright-- = *aleft;
+            *aleft++ = attr;
 
             /* Swap characters */
-            ch = *cright; *cright = flipchar(*cleft); *cleft = flipchar(ch);
-
-            cleft++; cright--; aleft++; aright--;
+            ch = *cright;
+            *cright-- = flipchar(*cleft);
+            *cleft++ = flipchar(ch);
         }
 
         if(cleft == cright)
             *cleft = flipchar(*cleft);
+
+        cleft = cv->chars + y * cv->width;
+        cright = cleft + cv->width - 1;
+        for( ; cleft < cright; cleft++)
+        {
+            if(cleft[0] == CUCUL_MAGIC_FULLWIDTH)
+            {
+                cleft[0] = cleft[1];
+                cleft[1] = CUCUL_MAGIC_FULLWIDTH;
+                cleft++;
+            }
+        }
     }
 
     return 0;
@@ -154,6 +168,7 @@ int cucul_rotate(cucul_canvas_t *cv)
     uint32_t *cend = cbegin + cv->width * cv->height - 1;
     uint32_t *abegin = cv->attr;
     uint32_t *aend = abegin + cv->width * cv->height - 1;
+    unsigned int y;
 
     while(cbegin < cend)
     {
@@ -172,9 +187,26 @@ int cucul_rotate(cucul_canvas_t *cv)
     if(cbegin == cend)
         *cbegin = rotatechar(*cbegin);
 
+    for(y = 0; y < cv->height; y++)
+    {
+        cbegin = cv->chars + y * cv->width;
+        cend = cbegin + cv->width - 1;
+        for( ; cbegin < cend; cbegin++)
+        {
+            if(cbegin[0] == CUCUL_MAGIC_FULLWIDTH)
+            {
+                cbegin[0] = cbegin[1];
+                cbegin[1] = CUCUL_MAGIC_FULLWIDTH;
+                cbegin++;
+            }
+        }
+    }
+
     return 0;
 }
 
+/* FIXME: as the lookup tables grow bigger, use a log(n) lookup instead
+ * of linear lookup. */
 static uint32_t flipchar(uint32_t ch)
 {
     int i;
@@ -182,41 +214,38 @@ static uint32_t flipchar(uint32_t ch)
     static uint32_t const noflip[] =
     {
          /* ASCII */
-         (uint32_t)' ', (uint32_t)'"', (uint32_t)'#', (uint32_t)'\'',
-         (uint32_t)'-', (uint32_t)'.', (uint32_t)'*', (uint32_t)'+',
-         (uint32_t)':', (uint32_t)'=',
-         (uint32_t)'0', (uint32_t)'8', (uint32_t)'A', (uint32_t)'H',
-         (uint32_t)'I', (uint32_t)'M', (uint32_t)'O', (uint32_t)'T',
-         (uint32_t)'U', (uint32_t)'V', (uint32_t)'W', (uint32_t)'X',
-         (uint32_t)'Y', (uint32_t)'^', (uint32_t)'_', (uint32_t)'i',
-         (uint32_t)'o', (uint32_t)'v', (uint32_t)'w', (uint32_t)'x',
-         (uint32_t)'|',
+         ' ', '"', '#', '\'', '-', '.', '*', '+', ':', '=', '0', '8',
+         'A', 'H', 'I', 'M', 'O', 'T', 'U', 'V', 'W', 'X', 'Y', '^',
+         '_', 'i', 'o', 'v', 'w', 'x', '|',
          /* CP437 */
          0x2591, 0x2592, 0x2593, 0x2588, 0x2584, 0x2580, /* ░ ▒ ▓ █ ▄ ▀ */
+         0x2500, 0x2501, 0x2503, 0x2503, 0x253c, 0x254b, /* ─ ━ │ ┃ ┼ ╋ */
+         0x252c, 0x2534, 0x2533, 0x253b, 0x2566, 0x2569, /* ┬ ┴ ┳ ┻ ╦ ╩ */
+         0x2550, 0x2551, 0x256c, /* ═ ║ ╬ */
          0
     };
 
     static uint32_t const pairs[] =
     {
          /* ASCII */
-         (uint32_t)'(', (uint32_t)')',
-         (uint32_t)'/', (uint32_t)'\\',
-         (uint32_t)'<', (uint32_t)'>',
-         (uint32_t)'[', (uint32_t)']',
-         (uint32_t)'b', (uint32_t)'d',
-         (uint32_t)'p', (uint32_t)'q',
-         (uint32_t)'{', (uint32_t)'}',
+         '(', ')',
+         '/', '\\',
+         '<', '>',
+         '[', ']',
+         'b', 'd',
+         'p', 'q',
+         '{', '}',
          /* ASCII-Unicode */
-         (uint32_t)';', 0x204f, /* ; ⁏ */
-         (uint32_t)'`', 0x00b4, /* ` ´ */
-         (uint32_t)',', 0x02ce, /* , ˎ */
-         (uint32_t)'C', 0x03fd, /* C Ͻ */
-         (uint32_t)'E', 0x018e, /* E Ǝ */
-         (uint32_t)'N', 0x0418, /* N И */
-         (uint32_t)'R', 0x042f, /* R Я */
-         (uint32_t)'S', 0x01a7, /* S Ƨ */
-         (uint32_t)'c', 0x0254, /* c ɔ */
-         (uint32_t)'e', 0x0258, /* e ɘ */
+         ';', 0x204f, /* ; ⁏ */
+         '`', 0x00b4, /* ` ´ */
+         ',', 0x02ce, /* , ˎ */
+         'C', 0x03fd, /* C Ͻ */
+         'E', 0x018e, /* E Ǝ */
+         'N', 0x0418, /* N И */
+         'R', 0x042f, /* R Я */
+         'S', 0x01a7, /* S Ƨ */
+         'c', 0x0254, /* c ɔ */
+         'e', 0x0258, /* e ɘ */
          /* CP437 */
          0x258c, 0x2590, /* ▌ ▐ */
          0x2596, 0x2597, /* ▖ ▗ */
@@ -227,6 +256,16 @@ static uint32_t flipchar(uint32_t ch)
          0x25ba, 0x25c4, /* ► ◄ */
          0x2192, 0x2190, /* → ← */
          0x2310, 0xac,   /* ⌐ ¬ */
+         /* Box drawing */
+         0x250c, 0x2510, /* ┌ ┐ */
+         0x2514, 0x2518, /* └ ┘ */
+         0x251c, 0x2524, /* ├ ┤ */
+         0x250f, 0x2513, /* ┏ ┓ */
+         0x2517, 0x251b, /* ┗ ┛ */
+         0x2523, 0x252b, /* ┣ ┫ */
+         0x2554, 0x2557, /* ╔ ╗ */
+         0x255a, 0x255d, /* ╚ ╝ */
+         0x2560, 0x2563, /* ╠ ╣ */
          0
     };
 
@@ -248,48 +287,46 @@ static uint32_t flopchar(uint32_t ch)
     static uint32_t const noflop[] =
     {
          /* ASCII */
-         (uint32_t)' ', (uint32_t)'(', (uint32_t)')', (uint32_t)'*',
-         (uint32_t)'+', (uint32_t)'-',
-         (uint32_t)'0', (uint32_t)'3', (uint32_t)'8', (uint32_t)':',
-         (uint32_t)'<', (uint32_t)'=', (uint32_t)'>', (uint32_t)'B',
-         (uint32_t)'C', (uint32_t)'D', (uint32_t)'E', (uint32_t)'H',
-         (uint32_t)'I', (uint32_t)'K', (uint32_t)'O', (uint32_t)'X',
-         (uint32_t)'[', (uint32_t)']', (uint32_t)'c', (uint32_t)'o',
-         (uint32_t)'{', (uint32_t)'|', (uint32_t)'}',
+         ' ', '(', ')', '*', '+', '-', '0', '3', '8', ':', '<', '=',
+         '>', 'B', 'C', 'D', 'E', 'H', 'I', 'K', 'O', 'X', '[', ']',
+         'c', 'o', '{', '|', '}',
          /* CP437 */
          0x2591, 0x2592, 0x2593, 0x2588, 0x258c, 0x2590, /* ░ ▒ ▓ █ ▌ ▐ */
+         0x2500, 0x2501, 0x2503, 0x2503, 0x253c, 0x254b, /* ─ ━ │ ┃ ┼ ╋ */
+         0x251c, 0x2524, 0x2523, 0x252b, 0x2560, 0x2563, /* ├ ┤ ┣ ┫ ╠ ╣ */
+         0x2550, 0x2551, 0x256c, /* ═ ║ ╬ */
          0
     };
 
     static uint32_t const pairs[] =
     {
          /* ASCII */
-         (uint32_t)'/', (uint32_t)'\\',
-         (uint32_t)'M', (uint32_t)'W',
-         (uint32_t)',', (uint32_t)'`',
-         (uint32_t)'b', (uint32_t)'p',
-         (uint32_t)'d', (uint32_t)'q',
-         (uint32_t)'p', (uint32_t)'q',
-         (uint32_t)'f', (uint32_t)'t',
-         (uint32_t)'.', (uint32_t)'\'',
+         '/', '\\',
+         'M', 'W',
+         ',', '`',
+         'b', 'p',
+         'd', 'q',
+         'p', 'q',
+         'f', 't',
+         '.', '\'',
          /* ASCII-Unicode */
-         (uint32_t)'_', 0x203e, /* _ ‾ */
-         (uint32_t)'!', 0x00a1, /* ! ¡ */
-         (uint32_t)'L', 0x0413, /* L Г */
-         (uint32_t)'N', 0x0418, /* N И */
-         (uint32_t)'P', 0x042c, /* P Ь */
-         (uint32_t)'R', 0x0281, /* R ʁ */
-         (uint32_t)'S', 0x01a7, /* S Ƨ */
-         (uint32_t)'U', 0x0548, /* U Ո */
-         (uint32_t)'V', 0x039b, /* V Λ */
-         (uint32_t)'h', 0x03bc, /* h μ */
-         (uint32_t)'i', 0x1d09, /* i ᴉ */
-         (uint32_t)'v', 0x028c, /* v ʌ */
-         (uint32_t)'w', 0x028d, /* w ʍ */
-         (uint32_t)'y', 0x03bb, /* y λ */
+         '_', 0x203e, /* _ ‾ */
+         '!', 0x00a1, /* ! ¡ */
+         'L', 0x0413, /* L Г */
+         'N', 0x0418, /* N И */
+         'P', 0x042c, /* P Ь */
+         'R', 0x0281, /* R ʁ */
+         'S', 0x01a7, /* S Ƨ */
+         'U', 0x0548, /* U Ո */
+         'V', 0x039b, /* V Λ */
+         'h', 0x03bc, /* h μ */
+         'i', 0x1d09, /* i ᴉ */
+         'v', 0x028c, /* v ʌ */
+         'w', 0x028d, /* w ʍ */
+         'y', 0x03bb, /* y λ */
          /* Not perfect, but better than nothing */
-         (uint32_t)'m', 0x026f, /* m ɯ */
-         (uint32_t)'n', (uint32_t)'u',
+         'm', 0x026f, /* m ɯ */
+         'n', 'u',
          /* CP437 */
          0x2584, 0x2580, /* ▄ ▀ */
          0x2596, 0x2598, /* ▖ ▘ */
@@ -297,6 +334,16 @@ static uint32_t flopchar(uint32_t ch)
          0x2599, 0x259b, /* ▙ ▛ */
          0x259f, 0x259c, /* ▟ ▜ */
          0x259a, 0x259e, /* ▚ ▞ */
+         /* Box drawing */
+         0x250c, 0x2514, /* ┌ └ */
+         0x2510, 0x2518, /* ┐ ┘ */
+         0x252c, 0x2534, /* ┬ ┴ */
+         0x250f, 0x2517, /* ┏ ┗ */
+         0x2513, 0x251b, /* ┓ ┛ */
+         0x2533, 0x253b, /* ┳ ┻ */
+         0x2554, 0x255a, /* ╔ ╚ */
+         0x2557, 0x255d, /* ╗ ╝ */
+         0x2566, 0x2569, /* ╦ ╩ */
          0
     };
 
@@ -317,53 +364,55 @@ static uint32_t rotatechar(uint32_t ch)
 
     static uint32_t const norotate[] =
     {
-         /* ASCII - FIXME: a lot are missing */
-         (uint32_t)' ', (uint32_t)'*', (uint32_t)'+', (uint32_t)'-',
-         (uint32_t)'0', (uint32_t)'8', (uint32_t)':', (uint32_t)'=',
+         /* ASCII */
+         ' ', '*', '+', '-', '/', '0', '8', ':', '=', 'H', 'I', 'N',
+         'O', 'S', 'X', 'Z', '\\', 'l', 'o', 's', 'u', 'x', 'z', '|',
          /* Unicode */
          0x2591, 0x2592, 0x2593, 0x2588, 0x259a, 0x259e, /* ░ ▒ ▓ █ ▚ ▞ */
+         0x2500, 0x2501, 0x2503, 0x2503, 0x253c, 0x254b, /* ─ ━ │ ┃ ┼ ╋ */
+         0x2550, 0x2551, 0x256c, /* ═ ║ ╬ */
          0
     };
 
     static uint32_t const pairs[] =
     {
          /* ASCII */
-         (uint32_t)'(', (uint32_t)')',
-         (uint32_t)'<', (uint32_t)'>',
-         (uint32_t)'[', (uint32_t)']',
-         (uint32_t)'{', (uint32_t)'}',
-         (uint32_t)'.', (uint32_t)'\'',
-         (uint32_t)'6', (uint32_t)'9',
-         (uint32_t)'M', (uint32_t)'W',
-         (uint32_t)'b', (uint32_t)'q',
-         (uint32_t)'d', (uint32_t)'p',
-         (uint32_t)'n', (uint32_t)'u',
+         '(', ')',
+         '<', '>',
+         '[', ']',
+         '{', '}',
+         '.', '\'',
+         '6', '9',
+         'M', 'W',
+         'b', 'q',
+         'd', 'p',
+         'n', 'u',
          /* ASCII-Unicode */
-         (uint32_t)'_', 0x203e, /* _ ‾ */
-         (uint32_t)',', 0x00b4, /* , ´ */
-         (uint32_t)'`', 0x02ce, /* ` ˎ */
-         (uint32_t)'&', 0x214b, /* & ⅋ */
-         (uint32_t)'!', 0x00a1, /* ! ¡ */
-         (uint32_t)'?', 0x00bf, /* ? ¿ */
-         (uint32_t)'C', 0x03fd, /* C Ͻ */
-         (uint32_t)'E', 0x018e, /* E Ǝ */
-         (uint32_t)'F', 0x2132, /* F Ⅎ */
-         (uint32_t)'U', 0x0548, /* U Ո */
-         (uint32_t)'V', 0x039b, /* V Λ */
-         (uint32_t)'a', 0x0250, /* a ɐ */
-         (uint32_t)'c', 0x0254, /* c ɔ */
-         (uint32_t)'e', 0x0259, /* e ə */
-         (uint32_t)'f', 0x025f, /* f ɟ */
-         (uint32_t)'g', 0x1d77, /* g ᵷ */
-         (uint32_t)'h', 0x0265, /* h ɥ */
-         (uint32_t)'i', 0x1d09, /* i ᴉ */
-         (uint32_t)'k', 0x029e, /* k ʞ */
-         (uint32_t)'m', 0x026f, /* m ɯ */
-         (uint32_t)'r', 0x0279, /* r ɹ */
-         (uint32_t)'t', 0x0287, /* t ʇ */
-         (uint32_t)'v', 0x028c, /* v ʌ */
-         (uint32_t)'w', 0x028d, /* w ʍ */
-         (uint32_t)'y', 0x028e, /* y ʎ */
+         '_', 0x203e, /* _ ‾ */
+         ',', 0x00b4, /* , ´ */
+         '`', 0x02ce, /* ` ˎ */
+         '&', 0x214b, /* & ⅋ */
+         '!', 0x00a1, /* ! ¡ */
+         '?', 0x00bf, /* ? ¿ */
+         'C', 0x03fd, /* C Ͻ */
+         'E', 0x018e, /* E Ǝ */
+         'F', 0x2132, /* F Ⅎ */
+         'U', 0x0548, /* U Ո */
+         'V', 0x039b, /* V Λ */
+         'a', 0x0250, /* a ɐ */
+         'c', 0x0254, /* c ɔ */
+         'e', 0x0259, /* e ə */
+         'f', 0x025f, /* f ɟ */
+         'g', 0x1d77, /* g ᵷ */
+         'h', 0x0265, /* h ɥ */
+         'i', 0x1d09, /* i ᴉ */
+         'k', 0x029e, /* k ʞ */
+         'm', 0x026f, /* m ɯ */
+         'r', 0x0279, /* r ɹ */
+         't', 0x0287, /* t ʇ */
+         'v', 0x028c, /* v ʌ */
+         'w', 0x028d, /* w ʍ */
+         'y', 0x028e, /* y ʎ */
          /* CP437 */
          0x258c, 0x2590, /* ▌ ▐ */
          0x2584, 0x2580, /* ▄ ▀ */
@@ -371,6 +420,19 @@ static uint32_t rotatechar(uint32_t ch)
          0x2597, 0x2598, /* ▗ ▘ */
          0x2599, 0x259c, /* ▙ ▜ */
          0x259f, 0x259b, /* ▟ ▛ */
+         /* Box drawing */
+         0x250c, 0x2518, /* ┌ ┘ */
+         0x2510, 0x2514, /* ┐ └ */
+         0x251c, 0x2524, /* ├ ┤ */
+         0x252c, 0x2534, /* ┬ ┴ */
+         0x250f, 0x251b, /* ┏ ┛ */
+         0x2513, 0x2517, /* ┓ ┗ */
+         0x2523, 0x252b, /* ┣ ┫ */
+         0x2533, 0x253b, /* ┳ ┻ */
+         0x2554, 0x255d, /* ╔ ╝ */
+         0x2557, 0x255a, /* ╗ ╚ */
+         0x2560, 0x2563, /* ╠ ╣ */
+         0x2566, 0x2569, /* ╦ ╩ */
          0
     };
 
