@@ -47,10 +47,14 @@
  *  coordinates, using the default foreground and background values.
  *
  *  If the coordinates are outside the canvas boundaries, nothing is printed.
- *  If the character value is a non-printable character or is outside the
- *  UTF-32 range, it is replaced with a space. To print a sequence of bytes
- *  forming an UTF-8 character instead of an UTF-32 character, use the
- *  cucul_putstr() function instead.
+ *  If a fullwidth Unicode character gets overwritten, its remaining parts
+ *  are replaced with spaces. If the canvas' boundaries would split the
+ *  fullwidth character in two, a space is printed instead.
+ *
+ *  The behaviour when printing non-printable characters or invalid UTF-32
+ *  characters is undefined. To print a sequence of bytes forming an UTF-8
+ *  character instead of an UTF-32 character, use the cucul_putstr() function
+ *  instead.
  *
  *  This function never fails.
  *
@@ -62,14 +66,57 @@
  */
 int cucul_putchar(cucul_canvas_t *cv, int x, int y, unsigned long int ch)
 {
-    if(x < 0 || x >= (int)cv->width || y < 0 || y >= (int)cv->height)
+    uint32_t *curchar, *curattr, attr;
+    int fullwidth;
+
+    if(!ch || x >= (int)cv->width || y < 0 || y >= (int)cv->height)
         return 0;
 
-    if(ch < 0x20)
-        ch = 0x20;
+    fullwidth = cucul_utf32_is_fullwidth(ch);
 
-    cv->chars[x + y * cv->width] = ch;
-    cv->attr[x + y * cv->width] = (cv->bgcolor << 16) | cv->fgcolor;
+    if(x == -1 && fullwidth)
+    {
+        x = 0;
+        ch = ' ';
+        fullwidth = 0;
+    }
+    else if(x < 0)
+        return 0;
+
+    curchar = cv->chars + x + y * cv->width;
+    curattr = cv->attr + x + y * cv->width;
+    attr = (cv->bgcolor << 16) | cv->fgcolor;
+
+    /* When overwriting the right part of a fullwidth character,
+     * replace its left part with a space. */
+    if(x && curchar[0] == MAGIC_FULLWIDTH)
+        curchar[-1] = ' ';
+
+    if(fullwidth)
+    {
+        if(x + 1 == (int)cv->width)
+            ch = ' ';
+        else
+        {
+            /* When overwriting the left part of a fullwidth character,
+             * replace its right part with a space. */
+            if(x + 2 < (int)cv->width && curchar[2] == MAGIC_FULLWIDTH)
+                curchar[2] = ' ';
+
+            curchar[1] = MAGIC_FULLWIDTH;
+            curattr[1] = attr;
+        }
+    }
+    else
+    {
+        /* When overwriting the left part of a fullwidth character,
+         * replace its right part with a space. */
+        if(x + 1 != (int)cv->width && curchar[1] == MAGIC_FULLWIDTH)
+            curchar[1] = ' ';
+    }
+
+    curchar[0] = ch;
+    curattr[0] = attr;
 
     return 0;
 }
@@ -82,7 +129,7 @@ int cucul_putchar(cucul_canvas_t *cv, int x, int y, unsigned long int ch)
  *  as a UTF-32 value.
  *
  *  If the coordinates are outside the canvas boundaries, a space (0x20)
- *  is returned.
+ *  is returned. FIXME: explain MAGIC_FULLWIDTH
  *
  *  This function never fails.
  *
@@ -95,7 +142,7 @@ int cucul_putchar(cucul_canvas_t *cv, int x, int y, unsigned long int ch)
 unsigned long int cucul_getchar(cucul_canvas_t *cv, int x, int y)
 {
     if(x < 0 || x >= (int)cv->width || y < 0 || y >= (int)cv->height)
-        return (unsigned char)' ';
+        return ' ';
 
     return (unsigned long int)cv->chars[x + y * cv->width];
 }
@@ -107,6 +154,9 @@ unsigned long int cucul_getchar(cucul_canvas_t *cv, int x, int y)
  *  the canvas boundaries (eg. a negative Y coordinate) and the string will
  *  be cropped accordingly if it is too long.
  *
+ *  See cucul_putchar() for more information on how fullwidth characters
+ *  are handled when overwriting each other or at the canvas' boundaries.
+ *
  *  This function never fails.
  *
  *  \param cv A handle to the libcucul canvas.
@@ -117,36 +167,23 @@ unsigned long int cucul_getchar(cucul_canvas_t *cv, int x, int y)
  */
 int cucul_putstr(cucul_canvas_t *cv, int x, int y, char const *s)
 {
-    uint32_t *chars, *attr;
-    unsigned int len;
+    unsigned int read;
 
     if(y < 0 || y >= (int)cv->height || x >= (int)cv->width)
         return 0;
 
-    len = _cucul_strlen_utf8(s);
-
-    if(x < 0)
+    while(*s && x < -1)
     {
-        if(len < (unsigned int)-x)
-            return 0;
-        len -= -x;
-        s = _cucul_skip_utf8(s, -x);
-        x = 0;
+        x += cucul_utf32_is_fullwidth(cucul_utf8_to_utf32(s, &read)) ? 2 : 1;
+        s += read;
     }
 
-    chars = cv->chars + x + y * cv->width;
-    attr = cv->attr + x + y * cv->width;
-
-    if(x + len >= cv->width)
-        len = cv->width - x;
-
-    while(len)
+    while(*s && x < (int)cv->width)
     {
-        *chars++ = cucul_utf8_to_utf32(s, NULL);
-        *attr++ = (cv->bgcolor << 16) | cv->fgcolor;
-
-        s = _cucul_skip_utf8(s, 1);
-        len--;
+        uint32_t ch = cucul_utf8_to_utf32(s, &read);
+        cucul_putchar(cv, x, y, ch);
+        x += cucul_utf32_is_fullwidth(ch) ? 2 : 1;
+        s += read;
     }
 
     return 0;
@@ -212,7 +249,6 @@ int cucul_clear_canvas(cucul_canvas_t *cv)
     uint32_t color = (cv->bgcolor << 16) | cv->fgcolor;
     unsigned int n;
 
-    /* We could use SLsmg_cls() etc., but drawing empty lines is much faster */
     for(n = cv->width * cv->height; n--; )
     {
         cv->chars[n] = (uint32_t)' ';
