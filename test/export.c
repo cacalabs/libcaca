@@ -121,7 +121,9 @@ int main(int argc, char *argv[])
         cucul_set_color(cv, CUCUL_COLOR_BLACK, CUCUL_COLOR_WHITE);
         cucul_fill_ellipse(cv, WIDTH / 2, HEIGHT / 2,
                                WIDTH / 4, HEIGHT / 4, " ");
-        cucul_putstr(cv, WIDTH / 2 - 5, HEIGHT / 2 - 2, "(\") \\o/ <&>");
+        cucul_putstr(cv, WIDTH / 2 - 5, HEIGHT / 2 - 5, "(\") \\o/ <&>");
+        cucul_putstr(cv, WIDTH / 2 - 8, HEIGHT / 2 - 3, "[<><><><> <>--<>]");
+        cucul_putstr(cv, WIDTH / 2 - 8, HEIGHT / 2 - 2, "[ドラゴン ボーレ]");
         cucul_putstr(cv, WIDTH / 2 - 7, HEIGHT / 2 + 2, "äβç ░▒▓█▓▒░ ΔЗҒ");
 
         cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_LIGHTBLUE);
