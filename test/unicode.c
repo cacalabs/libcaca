@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
     cucul_putstr(cv, 1, 16, "| ()()()() ()()() |");
     cucul_set_color(cv, CUCUL_COLOR_YELLOW, CUCUL_COLOR_BLACK);
     cucul_putstr(cv, 1, 17, "| ドラゴン");
-    cucul_putstr(cv, 10, 17, "ボーレ |");
+    cucul_putstr(cv, 12, 17, "ボーレ |");
 
     cucul_set_color(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
     cucul_putstr(cv, 1, 18, "If the three lines do not have the same length, there is a bug somewhere.");

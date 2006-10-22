@@ -2,7 +2,7 @@
 
 AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/cucul -I$(top_srcdir)/caca -DDATADIR=\"$(pkgdatadir)\"
 
-noinst_PROGRAMS = colors demo demo0 dithering event export font frames gamma hsv input spritedit font2tga text transform truecolor unicode import
+noinst_PROGRAMS = colors demo demo0 dithering event export font frames fullwidth gamma hsv input spritedit font2tga text transform truecolor unicode import
 
 colors_SOURCES = colors.c
 colors_LDADD = ../caca/libcaca.la ../cucul/libcucul.la
@@ -32,6 +32,9 @@ font2tga_LDADD = ../cucul/libcucul.la
 
 frames_SOURCES = frames.c
 frames_LDADD = ../caca/libcaca.la ../cucul/libcucul.la
+
+fullwidth_SOURCES = fullwidth.c
+fullwidth_LDADD = ../caca/libcaca.la ../cucul/libcucul.la
 
 gamma_SOURCES = gamma.c
 gamma_LDADD = ../caca/libcaca.la ../cucul/libcucul.la
