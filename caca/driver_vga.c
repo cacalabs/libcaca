@@ -121,7 +121,16 @@ static void vga_display(caca_display_t *dp)
 
     for(n = dp->cv->height * dp->cv->width; n--; )
     {
-        *screen++ = cucul_utf32_to_cp437(*chars++);
+        char ch = cucul_utf32_to_cp437(*chars++);
+        if(n && *chars == CUCUL_MAGIC_FULLWIDTH)
+        {
+            *screen++ = '[';
+            *screen++ = _cucul_argb32_to_ansi8(*attr++);
+            ch = ']';
+            chars++;
+            n--;
+        }
+        *screen++ = ch;
         *screen++ = _cucul_argb32_to_ansi8(*attr++);
     }
 }

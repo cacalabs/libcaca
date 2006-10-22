@@ -18,8 +18,6 @@
 #   include <inttypes.h>
 #endif
 
-#define MAGIC_FULLWIDTH 0x00000000
-
 struct cucul_canvas
 {
     /* Canvas size */

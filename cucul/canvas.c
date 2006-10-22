@@ -69,7 +69,10 @@ int cucul_putchar(cucul_canvas_t *cv, int x, int y, unsigned long int ch)
     uint32_t *curchar, *curattr, attr;
     int fullwidth;
 
-    if(!ch || x >= (int)cv->width || y < 0 || y >= (int)cv->height)
+    if(x >= (int)cv->width || y < 0 || y >= (int)cv->height)
+        return 0;
+
+    if(ch == CUCUL_MAGIC_FULLWIDTH)
         return 0;
 
     fullwidth = cucul_utf32_is_fullwidth(ch);
@@ -89,7 +92,7 @@ int cucul_putchar(cucul_canvas_t *cv, int x, int y, unsigned long int ch)
 
     /* When overwriting the right part of a fullwidth character,
      * replace its left part with a space. */
-    if(x && curchar[0] == MAGIC_FULLWIDTH)
+    if(x && curchar[0] == CUCUL_MAGIC_FULLWIDTH)
         curchar[-1] = ' ';
 
     if(fullwidth)
@@ -100,10 +103,10 @@ int cucul_putchar(cucul_canvas_t *cv, int x, int y, unsigned long int ch)
         {
             /* When overwriting the left part of a fullwidth character,
              * replace its right part with a space. */
-            if(x + 2 < (int)cv->width && curchar[2] == MAGIC_FULLWIDTH)
+            if(x + 2 < (int)cv->width && curchar[2] == CUCUL_MAGIC_FULLWIDTH)
                 curchar[2] = ' ';
 
-            curchar[1] = MAGIC_FULLWIDTH;
+            curchar[1] = CUCUL_MAGIC_FULLWIDTH;
             curattr[1] = attr;
         }
     }
@@ -111,7 +114,7 @@ int cucul_putchar(cucul_canvas_t *cv, int x, int y, unsigned long int ch)
     {
         /* When overwriting the left part of a fullwidth character,
          * replace its right part with a space. */
-        if(x + 1 != (int)cv->width && curchar[1] == MAGIC_FULLWIDTH)
+        if(x + 1 != (int)cv->width && curchar[1] == CUCUL_MAGIC_FULLWIDTH)
             curchar[1] = ' ';
     }
 
@@ -129,7 +132,7 @@ int cucul_putchar(cucul_canvas_t *cv, int x, int y, unsigned long int ch)
  *  as a UTF-32 value.
  *
  *  If the coordinates are outside the canvas boundaries, a space (0x20)
- *  is returned. FIXME: explain MAGIC_FULLWIDTH
+ *  is returned. FIXME: explain CUCUL_MAGIC_FULLWIDTH
  *
  *  This function never fails.
  *

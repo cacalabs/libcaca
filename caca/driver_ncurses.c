@@ -434,7 +434,12 @@ static void ncurses_write_utf32(uint32_t ch)
 #if defined HAVE_NCURSESW_NCURSES_H
     char buf[10];
     int bytes;
+#endif
 
+    if(ch == CUCUL_MAGIC_FULLWIDTH)
+        return;
+
+#if defined HAVE_NCURSESW_NCURSES_H
     bytes = cucul_utf32_to_utf8(buf, ch);
     buf[bytes] = '\0';
     addstr(buf);

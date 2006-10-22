@@ -99,11 +99,20 @@ static void conio_display(caca_display_t *dp)
     char *screen = dp->drv.p->screen;
     uint32_t *attr = dp->cv->attr;
     uint32_t *chars = dp->cv->chars;
-    int n;
+    unsigned int n;
 
     for(n = dp->cv->height * dp->cv->width; n--; )
     {
-        *screen++ = cucul_utf32_to_cp437(*chars++);
+        char ch = cucul_utf32_to_cp437(*chars++);
+        if(n && *chars == CUCUL_MAGIC_FULLWIDTH)
+        {
+            *screen++ = '[';
+            *screen++ = _cucul_argb32_to_ansi8(*attr++);
+            ch = ']';
+            chars++;
+            n--;
+        }
+        *screen++ = ch;
         *screen++ = _cucul_argb32_to_ansi8(*attr++);
     }
 #   if defined(SCREENUPDATE_IN_PC_H)

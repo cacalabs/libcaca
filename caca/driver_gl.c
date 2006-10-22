@@ -218,6 +218,7 @@ static void gl_display(caca_display_t *dp)
     {
         uint32_t *attr = dp->cv->attr + line * dp->cv->width;
 
+        /* FIXME: optimise using stride */
         for(x = 0; x < dp->drv.p->width; x += dp->drv.p->font_width)
         {
             uint16_t bg = _cucul_argb32_to_rgb12bg(*attr++);
@@ -250,16 +251,18 @@ static void gl_display(caca_display_t *dp)
 
         for(x = 0; x < dp->drv.p->width; x += dp->drv.p->font_width, attr++)
         {
-            uint32_t cv = *chars++;
+            uint32_t ch = *chars++;
             uint16_t fg;
-            int i, b;
+            int i, b, fullwidth;
+
+            fullwidth = cucul_utf32_is_fullwidth(ch);
 
             for(b = 0, i = 0; dp->drv.p->blocks[i + 1]; i += 2)
             {
-                if(cv < (uint32_t)dp->drv.p->blocks[i])
+                if(ch < (uint32_t)dp->drv.p->blocks[i])
                      break;
 
-                if(cv >= (uint32_t)dp->drv.p->blocks[i + 1])
+                if(ch >= (uint32_t)dp->drv.p->blocks[i + 1])
                 {
                     b += (uint32_t)(dp->drv.p->blocks[i + 1]
                                      - dp->drv.p->blocks[i]);
@@ -267,13 +270,14 @@ static void gl_display(caca_display_t *dp)
                 }
 
                 glBindTexture(GL_TEXTURE_2D,
-                              dp->drv.p->txid[b + cv
+                              dp->drv.p->txid[b + ch
                                         - (uint32_t)dp->drv.p->blocks[i]]);
 
                 fg = _cucul_argb32_to_rgb12fg(*attr);
                 glColor3b(((fg & 0xf00) >> 8) * 8,
                           ((fg & 0x0f0) >> 4) * 8,
                           (fg & 0x00f) * 8);
+                /* FIXME: handle fullwidth glyphs here */
                 glBegin(GL_QUADS);
                 glTexCoord2f(0, dp->drv.p->sh);
                 glVertex2f(x, y);
@@ -285,6 +289,11 @@ static void gl_display(caca_display_t *dp)
                 glTexCoord2f(0, 0);
                 glVertex2f(x, y + dp->drv.p->font_height);
                 glEnd();
+            }
+
+            if(fullwidth)
+            {
+                chars++; attr++; x += dp->drv.p->font_width;
             }
         }
     }

@@ -441,7 +441,12 @@ static void slang_write_utf32(uint32_t ch)
 #ifdef HAVE_SLSMG_UTF8_ENABLE
     char buf[10];
     int bytes;
+#endif
 
+    if(ch == CUCUL_MAGIC_FULLWIDTH)
+        return;
+
+#ifdef HAVE_SLSMG_UTF8_ENABLE
     bytes = cucul_utf32_to_utf8(buf, ch);
     buf[bytes] = '\0';
     SLsmg_write_string(buf);

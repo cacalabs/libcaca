@@ -189,12 +189,15 @@ static void win32_display(caca_display_t *dp)
 {
     COORD size, pos;
     SMALL_RECT rect;
-    unsigned int i;
+    CHAR_INFO *buffer = dp->drv.p->buffer;
+    uint32_t *attr = dp->cv->attr;
+    uint32_t *chars = dp->cv->chars;
+    unsigned int n;
 
     /* Render everything to our screen buffer */
-    for(i = 0; i < dp->cv->width * dp->cv->height; i++)
+    for(n = dp->cv->height * dp->cv->width; n--; )
     {
-        uint32_t ch = dp->cv->chars[i];
+        uint32_t ch = *chars++;
 
 #if 0
         if(ch > 0x00000020 && ch < 0x00000080)
@@ -202,15 +205,19 @@ static void win32_display(caca_display_t *dp)
         else
             dp->drv.p->buffer[i].Char.AsciiChar = ' ';
 #else
-        if(ch > 0x00000020 && ch < 0x00010000)
-            dp->drv.p->buffer[i].Char.UnicodeChar = (uint16_t)ch;
+        if(n && *chars == CUCUL_MAGIC_FULLWIDTH)
+            ;
+        else if(ch > 0x00000020 && ch < 0x00010000)
+            buffer->Char.UnicodeChar = (uint16_t)ch;
         else
-            dp->drv.p->buffer[i].Char.UnicodeChar = (uint16_t)' ';
+            buffer->Char.UnicodeChar = (uint16_t)' ';
 #endif
 
-        dp->drv.p->buffer[i].Attributes =
-                win32_fg_palette[_cucul_argb32_to_ansi4fg(dp->cv->attr[i])]
-                 | win32_bg_palette[_cucul_argb32_to_ansi4bg(dp->cv->attr[i])];
+        buffer->Attributes =
+                win32_fg_palette[_cucul_argb32_to_ansi4fg(*attr)]
+                 | win32_bg_palette[_cucul_argb32_to_ansi4bg(*attr)];
+        attr++;
+        buffer++;
     }
 
     /* Blit the screen buffer */

@@ -97,6 +97,7 @@ int cucul_free_buffer(cucul_buffer_t *);
  *  higher level graphics functions.
  *
  *  @{ */
+#define CUCUL_MAGIC_FULLWIDTH 0x000ffffe /**< Used to indicate that the previous character was a fullwidth glyph. */
 int cucul_set_color(cucul_canvas_t *, unsigned char, unsigned char);
 int cucul_set_truecolor(cucul_canvas_t *, unsigned int, unsigned int);
 unsigned long int cucul_get_color(cucul_canvas_t *, int, int);

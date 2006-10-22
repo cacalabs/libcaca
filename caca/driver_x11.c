@@ -275,7 +275,10 @@ static void x11_display(caca_display_t *dp)
             uint32_t *attr = dp->cv->attr + x + y * dp->cv->width;
 
             /* Skip spaces */
-            if(*chars == 0x00000020)
+            if(*chars <= 0x00000020)
+                continue;
+
+            if(*chars == CUCUL_MAGIC_FULLWIDTH)
                 continue;
 
             XSetForeground(dp->drv.p->dpy, dp->drv.p->gc,
