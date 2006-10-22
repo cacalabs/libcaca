@@ -1,5 +1,12 @@
 /* $Id$ */ /** \page news News
 
+\section news0_99_beta8 Changes between 0.9.beta8 and 0.99.beta7
+
+ - allow to build the X11 and GL drivers as separate plugins
+ - support for fullwidth Unicode characters
+ - improved cucul_flip() and cucul_rotate()
+ - minor bugfixes and documentation updates
+
 \section news0_99_beta7 Changes between 0.9.beta7 and 0.99.beta6
 
  - transparency support in the UTF-8 importer and exporter

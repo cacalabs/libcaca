@@ -1,4 +1,178 @@
 ------------------------------------------------------------------------
+r940 | sam | 2006-10-22 23:13:32 +0200 (Sun, 22 Oct 2006) | 4 lines
+Changed paths:
+   M /trunk/cucul/canvas.c
+   M /trunk/cucul/transform.c
+   M /trunk/test/fullwidth.c
+
+  * Made cucul_blit(), and therefore cucul_set_canvas_boundaries(), support
+    fullwidth characters.
+  * Added a case to test/fullwidth.c for cucul_blit and fullwidth chars.
+
+------------------------------------------------------------------------
+r939 | sam | 2006-10-22 22:31:10 +0200 (Sun, 22 Oct 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/transform.c
+
+  * Added block drawing glyphs to the flip/flop/rotate functions.
+  * Made these functions fullwidth-aware.
+
+------------------------------------------------------------------------
+r938 | sam | 2006-10-22 21:53:48 +0200 (Sun, 22 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/test/transform.c
+
+  * Add fullwidth characters to the transform test.
+
+------------------------------------------------------------------------
+r937 | sam | 2006-10-22 19:40:55 +0200 (Sun, 22 Oct 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/canvas.c
+   M /trunk/cucul/export.c
+
+  * Updated documentation of fullwidth-aware functions.
+  * Fullwidth support in all exporters.
+
+------------------------------------------------------------------------
+r936 | sam | 2006-10-22 19:19:58 +0200 (Sun, 22 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/test/export.c
+
+  * Add a test for fullwidth characters to the exporter test.
+
+------------------------------------------------------------------------
+r935 | sam | 2006-10-22 18:49:54 +0200 (Sun, 22 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+  * Support for fullwidth glyphs in the UTF-8 importer.
+
+------------------------------------------------------------------------
+r934 | sam | 2006-10-22 18:35:25 +0200 (Sun, 22 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_conio.c
+   M /trunk/caca/driver_gl.c
+   M /trunk/caca/driver_ncurses.c
+   M /trunk/caca/driver_slang.c
+   M /trunk/caca/driver_vga.c
+   M /trunk/caca/driver_win32.c
+   M /trunk/caca/driver_x11.c
+   M /trunk/cucul/canvas.c
+   M /trunk/cucul/cucul.h
+   M /trunk/cucul/cucul_internals.h
+
+  * Support for fullwidth glyphs in the libcaca output drivers.
+
+------------------------------------------------------------------------
+r933 | sam | 2006-10-22 18:16:15 +0200 (Sun, 22 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/test/fullwidth.c
+
+  * Use 0xCACA as the test character. Ahaha. Caca. Got it?
+
+------------------------------------------------------------------------
+r932 | sam | 2006-10-22 17:03:22 +0200 (Sun, 22 Oct 2006) | 3 lines
+Changed paths:
+   M /trunk/test
+   M /trunk/test/Makefile.am
+   A /trunk/test/fullwidth.c
+   M /trunk/test/unicode.c
+
+  * Fix the Unicode test.
+  * Add a test for fullwidth characters.
+
+------------------------------------------------------------------------
+r931 | sam | 2006-10-22 17:01:04 +0200 (Sun, 22 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/canvas.c
+   M /trunk/cucul/cucul_internals.h
+
+  * Support for fullwidth (= double width) Unicode characters.
+
+------------------------------------------------------------------------
+r930 | sam | 2006-10-22 16:40:50 +0200 (Sun, 22 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/doc/libcaca.dox
+
+  * Minor changes to the documentation front page.
+
+------------------------------------------------------------------------
+r929 | sam | 2006-10-20 18:19:41 +0200 (Fri, 20 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/cxx/Makefile.am
+   M /trunk/src/Makefile.am
+   M /trunk/test/Makefile.am
+   M /trunk/tools/Makefile.am
+
+  * Do not link binaries with @CACA_LIBS@, it's useless.
+
+------------------------------------------------------------------------
+r928 | sam | 2006-10-20 18:17:12 +0200 (Fri, 20 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/charset.c
+   M /trunk/cucul/cucul.h
+
+  * Implemented cucul_utf32_is_fullwidth().
+
+------------------------------------------------------------------------
+r927 | sam | 2006-10-20 01:17:33 +0200 (Fri, 20 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/TODO
+
+  * Slightly updated TODO list.
+
+------------------------------------------------------------------------
+r926 | sam | 2006-10-20 00:43:17 +0200 (Fri, 20 Oct 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/Makefile.am
+   M /trunk/caca/caca.c
+   M /trunk/caca/caca_internals.h
+   M /trunk/configure.ac
+
+  * Added a --enable-plugins configure flag that builds the GL and X11 drivers
+    as plugins. This way, libcaca does not directly depend on those libraries.
+
+------------------------------------------------------------------------
+r925 | sam | 2006-10-19 23:21:00 +0200 (Thu, 19 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+
+  * Add checks for getopt / getopt_long.
+
+------------------------------------------------------------------------
+r924 | sam | 2006-10-15 00:11:33 +0200 (Sun, 15 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/cxx/cucul++.h
+
+  * Fix extra qualification bug in cucul++.h, courtesy of Hanno Böck.
+
+------------------------------------------------------------------------
+r923 | sam | 2006-10-12 11:33:49 +0200 (Thu, 12 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/src/Makefile.am
+
+  * Use pkg-config to check for Imlib2. Patch adapted from Alt Linux.
+
+------------------------------------------------------------------------
+r922 | sam | 2006-10-06 12:12:52 +0200 (Fri, 06 Oct 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/export.c
+
+  * Fixed a bug in the IRC exporter that could break the output when there
+    were commas in the canvas.
+
+------------------------------------------------------------------------
+r920 | sam | 2006-10-04 14:11:16 +0200 (Wed, 04 Oct 2006) | 3 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/NEWS
+   M /trunk/configure.ac
+
+  * Set version to 0.99.beta7.
+  * Updated NEWS and ChangeLog.
+
+------------------------------------------------------------------------
 r917 | sam | 2006-10-01 14:50:43 +0200 (Sun, 01 Oct 2006) | 2 lines
 Changed paths:
    M /trunk/cucul/export.c
