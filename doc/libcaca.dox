@@ -28,7 +28,10 @@
  Unicode compositing canvas.
 
  The complete \e libcucul and \e libcaca programming interface is
- available from the cucul.h and caca.h headers.
+ available from the following headers:
+
+ - cucul.h
+ - caca.h
 
  Some other topics are covered by specific sections:
 
