@@ -224,6 +224,9 @@ static void export_utf8(cucul_canvas_t *cv, cucul_buffer_t *ex)
             uint32_t ch = linechar[x];
             uint8_t fg, bg;
 
+            if(ch == CUCUL_MAGIC_FULLWIDTH)
+                continue;
+
             fg = ((attr & 0xffff) == CUCUL_COLOR_DEFAULT) ?
                      0x10 : palette[_cucul_argb32_to_ansi4fg(attr)];
             bg = ((attr >> 16) == CUCUL_COLOR_TRANSPARENT) ?
@@ -297,6 +300,9 @@ static void export_ansi(cucul_canvas_t *cv, cucul_buffer_t *ex)
             uint8_t fg = palette[_cucul_argb32_to_ansi4fg(lineattr[x])];
             uint8_t bg = palette[_cucul_argb32_to_ansi4bg(lineattr[x])];
             uint32_t ch = linechar[x];
+
+            if(ch == CUCUL_MAGIC_FULLWIDTH)
+                ch = '?';
 
             if(fg != prevfg || bg != prevbg)
             {
@@ -377,7 +383,9 @@ static void export_html(cucul_canvas_t *cv, cucul_buffer_t *ex)
                 x + len < cv->width && lineattr[x + len] == lineattr[x];
                 len++)
             {
-                if(linechar[x + len] <= 0x00000020)
+                if(linechar[x + len] == CUCUL_MAGIC_FULLWIDTH)
+                    ;
+                else if(linechar[x + len] <= 0x00000020)
                     cur += sprintf(cur, "&nbsp;");
                 else if(linechar[x + len] < 0x00000080)
                     cur += sprintf(cur, "%c",
@@ -450,7 +458,9 @@ static void export_html3(cucul_canvas_t *cv, cucul_buffer_t *ex)
 
             for(i = 0; i < len; i++)
             {
-                if(linechar[x + i] <= 0x00000020)
+                if(linechar[x + i] == CUCUL_MAGIC_FULLWIDTH)
+                    ;
+                else if(linechar[x + i] <= 0x00000020)
                     cur += sprintf(cur, "&nbsp;");
                 else if(linechar[x + i] < 0x00000080)
                     cur += sprintf(cur, "%c", (unsigned char)linechar[x + i]);
@@ -510,6 +520,9 @@ static void export_irc(cucul_canvas_t *cv, cucul_buffer_t *ex)
             uint8_t fg = palette[_cucul_argb32_to_ansi4fg(attr)];
             uint8_t bg = palette[_cucul_argb32_to_ansi4bg(attr)];
             uint32_t ch = linechar[x];
+
+            if(ch == CUCUL_MAGIC_FULLWIDTH)
+                continue;
 
             if((attr & 0xffff) == CUCUL_COLOR_DEFAULT)
                 fg = 0x10;
@@ -697,7 +710,8 @@ static void export_svg(cucul_canvas_t *cv, cucul_buffer_t *ex)
     cur += sprintf(cur, svg_header, cv->width * 6, cv->height * 10,
                                     cv->width * 6, cv->height * 10);
 
-    cur += sprintf(cur, " <g id=\"mainlayer\" font-size=\"12\">\n");
+    cur += sprintf(cur, " <g id=\"mainlayer\" font-size=\"10\""
+                        " style=\"font-family: monospace\">\n");
 
     /* Background */
     for(y = 0; y < cv->height; y++)
@@ -723,10 +737,17 @@ static void export_svg(cucul_canvas_t *cv, cucul_buffer_t *ex)
         {
             uint32_t ch = *linechar++;
 
+            if(ch == ' ' || ch == CUCUL_MAGIC_FULLWIDTH)
+            {
+                lineattr++;
+                continue;
+            }
+
             cur += sprintf(cur, "<text style=\"fill:#%.03x\" "
                                 "x=\"%d\" y=\"%d\">",
                                 _cucul_argb32_to_rgb12fg(*lineattr++),
-                                x * 6, (y * 10) + 10);
+                                x * 6, (y * 10) + 8);
+
             if(ch < 0x00000020)
                 *cur++ = '?';
             else if(ch > 0x0000007f)

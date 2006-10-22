@@ -53,8 +53,7 @@
  *
  *  The behaviour when printing non-printable characters or invalid UTF-32
  *  characters is undefined. To print a sequence of bytes forming an UTF-8
- *  character instead of an UTF-32 character, use the cucul_putstr() function
- *  instead.
+ *  character instead of an UTF-32 character, use the cucul_putstr() function.
  *
  *  This function never fails.
  *
@@ -132,7 +131,12 @@ int cucul_putchar(cucul_canvas_t *cv, int x, int y, unsigned long int ch)
  *  as a UTF-32 value.
  *
  *  If the coordinates are outside the canvas boundaries, a space (0x20)
- *  is returned. FIXME: explain CUCUL_MAGIC_FULLWIDTH
+ *  is returned.
+ *
+ *  A special exception is when CUCUL_MAGIC_FULLWIDTH is returned. This
+ *  value is guaranteed not to be a valid Unicode character, and indicates
+ *  that the character at the left of the requested one is a fullwidth
+ *  character.
  *
  *  This function never fails.
  *
@@ -269,6 +273,9 @@ int cucul_clear_canvas(cucul_canvas_t *cv)
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
  *  - \c EINVAL A mask was specified but the mask size and source canvas
  *    size do not match.
+ *
+ *  FIXME: this function may corrupt the canvas if fullwidth characters
+ *         appear at odd places.
  *
  *  \param dst The destination canvas.
  *  \param x X coordinate.
