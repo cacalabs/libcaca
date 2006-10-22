@@ -92,6 +92,7 @@ int cucul_flip(cucul_canvas_t *cv)
         if(cleft == cright)
             *cleft = flipchar(*cleft);
 
+        /* Fix fullwidth characters. Could it be done in one loop? */
         cleft = cv->chars + y * cv->width;
         cright = cleft + cv->width - 1;
         for( ; cleft < cright; cleft++)
@@ -187,6 +188,7 @@ int cucul_rotate(cucul_canvas_t *cv)
     if(cbegin == cend)
         *cbegin = rotatechar(*cbegin);
 
+    /* Fix fullwidth characters. Could it be done in one loop? */
     for(y = 0; y < cv->height; y++)
     {
         cbegin = cv->chars + y * cv->width;

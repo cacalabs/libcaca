@@ -28,7 +28,7 @@
 
 int main(int argc, char *argv[])
 {
-    cucul_canvas_t *cv, *caca;
+    cucul_canvas_t *cv, *caca, *line;
     caca_display_t *dp;
 
     unsigned int i;
@@ -37,7 +37,9 @@ int main(int argc, char *argv[])
     dp = caca_create_display(cv);
 
     caca = cucul_create_canvas(6, 10);
+    line = cucul_create_canvas(2, 1);
 
+    /* Line of x's */
     for(i = 0; i < 10; i++)
     {
         cucul_set_color(caca, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
@@ -48,6 +50,7 @@ int main(int argc, char *argv[])
 
     cucul_blit(cv, 1, 1, caca, NULL);
 
+    /* Line of ホ's */
     for(i = 0; i < 10; i++)
     {
         cucul_set_color(caca, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
@@ -58,11 +61,26 @@ int main(int argc, char *argv[])
 
     cucul_blit(cv, 15, 1, caca, NULL);
 
+    /* Line of canvas */
+    cucul_set_color(line, CUCUL_COLOR_WHITE, CUCUL_COLOR_MAGENTA);
+    cucul_putstr(line, 0, 0, "ほ");
+    for(i = 0; i < 10; i++)
+    {
+        cucul_set_color(caca, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
+        cucul_putstr(caca, 0, i, CACA);
+        cucul_blit(caca, i - 2, i, line, NULL);
+    }
+
+    cucul_blit(cv, 29, 1, caca, NULL);
+
     caca_refresh_display(dp);
 
     caca_get_event(dp, CACA_EVENT_KEY_PRESS, NULL, -1);
 
     caca_free_display(dp);
+
+    cucul_free_canvas(line);
+    cucul_free_canvas(caca);
     cucul_free_canvas(cv);
 
     return 0;

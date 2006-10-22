@@ -274,9 +274,6 @@ int cucul_clear_canvas(cucul_canvas_t *cv)
  *  - \c EINVAL A mask was specified but the mask size and source canvas
  *    size do not match.
  *
- *  FIXME: this function may corrupt the canvas if fullwidth characters
- *         appear at odd places.
- *
  *  \param dst The destination canvas.
  *  \param x X coordinate.
  *  \param y Y coordinate.
@@ -308,28 +305,42 @@ int cucul_blit(cucul_canvas_t *dst, int x, int y,
 
     for(j = startj; j < endj; j++)
     {
+        unsigned int dstix = (j + y) * dst->width + starti + x;
+        unsigned int srcix = j * src->width + starti;
+        int stride = endi - starti;
+
+        /* FIXME: we are ignoring the mask here */
+        if((starti + x) && dst->chars[dstix] == CUCUL_MAGIC_FULLWIDTH)
+            dst->chars[dstix - 1] = ' ';
+
+        if((unsigned int)(endi + x) < dst->width
+                && dst->chars[dstix + stride] == CUCUL_MAGIC_FULLWIDTH)
+            dst->chars[dstix + stride] = ' ';
+
         if(mask)
         {
-            for(i = starti; i < endi; i++)
+            for(i = 0; i < stride; i++)
             {
-                if(mask->chars[j * src->width + i] == (uint32_t)' ')
+                if(mask->chars[srcix + i] == (uint32_t)' ')
                     continue;
 
-                dst->chars[(j + y) * dst->width + (i + x)]
-                                             = src->chars[j * src->width + i];
-                dst->attr[(j + y) * dst->width + (i + x)]
-                                             = src->attr[j * src->width + i];
+                dst->chars[dstix + i] = src->chars[srcix + i];
+                dst->attr[dstix + i] = src->attr[srcix + i];
             }
         }
         else
         {
-            memcpy(dst->chars + (j + y) * dst->width + starti + x,
-                   src->chars + j * src->width + starti,
-                   (endi - starti) * 4);
-            memcpy(dst->attr + (j + y) * dst->width + starti + x,
-                   src->attr + j * src->width + starti,
-                   (endi - starti) * 4);
+            memcpy(dst->chars + dstix, src->chars + srcix, (stride) * 4);
+            memcpy(dst->attr + dstix, src->attr + srcix, (stride) * 4);
         }
+
+        /* Fix split fullwidth chars */
+        if(src->chars[srcix] == CUCUL_MAGIC_FULLWIDTH)
+            dst->chars[dstix] = ' ';
+
+        if((unsigned int)endi < src->width
+                && src->chars[endi] == CUCUL_MAGIC_FULLWIDTH)
+            dst->chars[dstix + stride - 1] = ' ';
     }
 
     return 0;
