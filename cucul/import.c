@@ -246,7 +246,7 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size,
     unsigned char const *buffer = (unsigned char const*)data;
     cucul_canvas_t *cv;
     unsigned int i, j, skip, dummy = 0;
-    unsigned int width = 1, height = 1;
+    unsigned int width = 1, height = 1, wch = 1;
     unsigned long int ch;
     int x = 0, y = 0, save_x = 0, save_y = 0;
 
@@ -402,12 +402,24 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size,
             continue;
         }
 
-        /* We're going to paste a character. First make sure the canvas
-         * is big enough. */
-        if((unsigned int)x >= width)
+        /* Get the character we’re going to paste */
+        if(utf8)
+        {
+            unsigned int bytes;
+            ch = cucul_utf8_to_utf32((char const *)(buffer + i), &bytes);
+            wch = cucul_utf32_is_fullwidth(ch) ? 2 : 1;
+            skip += bytes - 1;
+        }
+        else
+        {
+            ch = cucul_cp437_to_utf32(buffer[i]);
+        }
+
+        /* Make sure the canvas is big enough. */
+        if((unsigned int)x + wch > width)
         {
             cucul_set_color(cv, CUCUL_COLOR_DEFAULT, CUCUL_COLOR_TRANSPARENT);
-            cucul_set_canvas_size(cv, width = x + 1, height);
+            cucul_set_canvas_size(cv, width = x + wch, height);
         }
 
         if((unsigned int)y >= height)
@@ -417,19 +429,9 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size,
         }
 
         /* Now paste our character */
-        if(utf8)
-        {
-            unsigned int bytes;
-            ch = cucul_utf8_to_utf32((char const *)(buffer + i), &bytes);
-            skip += bytes - 1;
-        }
-        else
-        {
-            ch = cucul_cp437_to_utf32(buffer[i]);
-        }
         cucul_set_color(cv, grcm.efg, grcm.ebg);
         cucul_putchar(cv, x, y, ch);
-        x++;
+        x += wch;
     }
 
     return cv;
