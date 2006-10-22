@@ -24,11 +24,11 @@
 #include "cucul.h"
 #include "caca.h"
 
-#define HOHO "ホホホホホホホホホホホホホホホ"
+#define CACA "쫊쫊쫊쫊쫊쫊쫊쫊쫊쫊쫊쫊쫊쫊쫊"
 
 int main(int argc, char *argv[])
 {
-    cucul_canvas_t *cv, *hoho;
+    cucul_canvas_t *cv, *caca;
     caca_display_t *dp;
 
     unsigned int i;
@@ -36,27 +36,27 @@ int main(int argc, char *argv[])
     cv = cucul_create_canvas(0, 0);
     dp = caca_create_display(cv);
 
-    hoho = cucul_create_canvas(6, 10);
+    caca = cucul_create_canvas(6, 10);
 
     for(i = 0; i < 10; i++)
     {
-        cucul_set_color(hoho, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
-        cucul_putstr(hoho, 0, i, HOHO);
-        cucul_set_color(hoho, CUCUL_COLOR_WHITE, CUCUL_COLOR_RED);
-        cucul_putchar(hoho, i - 2, i, 'x');
+        cucul_set_color(caca, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
+        cucul_putstr(caca, 0, i, CACA);
+        cucul_set_color(caca, CUCUL_COLOR_WHITE, CUCUL_COLOR_RED);
+        cucul_putchar(caca, i - 2, i, 'x');
     }
 
-    cucul_blit(cv, 1, 1, hoho, NULL);
+    cucul_blit(cv, 1, 1, caca, NULL);
 
     for(i = 0; i < 10; i++)
     {
-        cucul_set_color(hoho, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
-        cucul_putstr(hoho, 0, i, HOHO);
-        cucul_set_color(hoho, CUCUL_COLOR_WHITE, CUCUL_COLOR_GREEN);
-        cucul_putstr(hoho, i - 2, i, "ホ");
+        cucul_set_color(caca, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
+        cucul_putstr(caca, 0, i, CACA);
+        cucul_set_color(caca, CUCUL_COLOR_WHITE, CUCUL_COLOR_GREEN);
+        cucul_putstr(caca, i - 2, i, "ホ");
     }
 
-    cucul_blit(cv, 15, 1, hoho, NULL);
+    cucul_blit(cv, 15, 1, caca, NULL);
 
     caca_refresh_display(dp);
 
