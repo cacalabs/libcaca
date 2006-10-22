@@ -67,7 +67,9 @@ int main(int argc, char *argv[])
         cucul_putstr(normal, 30, 1 + i, duck[i]);
 
     cucul_set_color(normal, CUCUL_COLOR_LIGHTCYAN, CUCUL_COLOR_BLACK);
-    cucul_putstr(normal, 1, 1, "hahaha mais vieux porc immonde !!");
+    cucul_putstr(normal, 1, 1, "hahaha mais vieux porc immonde !! [⽼ ⾗]");
+    cucul_set_color(normal, CUCUL_COLOR_LIGHTRED, CUCUL_COLOR_BLACK);
+    cucul_putchar(normal, 38, 1, '|');
 
     cucul_set_color(normal, CUCUL_COLOR_YELLOW, CUCUL_COLOR_BLACK);
     cucul_putstr(normal, 4, 2, "\\o\\ \\o| _o/ \\o_ |o/ /o/");
