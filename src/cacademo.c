@@ -113,7 +113,7 @@ int main(int argc, char **argv)
                 case ' ':
                     pause = !pause;
                     break;
-                case 'n':
+                case '\r':
                     if(next == -1)
                         next_transition = frame;
                     break;
