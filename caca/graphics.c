@@ -89,8 +89,8 @@ unsigned int caca_get_display_height(caca_display_t *dp)
 
 /** \brief Set the refresh delay.
  *
- *  This function sets the refresh delay in microseconds. The refresh delay
- *  is used by caca_refresh_display() to achieve constant framerate. See the
+ *  Set the refresh delay in microseconds. The refresh delay is used by
+ *  caca_refresh_display() to achieve constant framerate. See the
  *  caca_refresh_display() documentation for more details.
  *
  *  If the argument is zero, constant framerate is disabled. This is the
@@ -110,11 +110,11 @@ int caca_set_display_time(caca_display_t *dp, unsigned int usec)
 
 /** \brief Get the display's average rendering time.
  *
- *  This function returns the average rendering time, which is the average
- *  measured time between two caca_refresh_display() calls, in microseconds. If
- *  constant framerate was activated by calling caca_set_display_time(), the
- *  average rendering time will not be considerably shorter than the requested
- *  delay even if the real rendering time was shorter.
+ *  Get the average rendering time, which is the average measured time
+ *  between two caca_refresh_display() calls, in microseconds. If constant
+ *  framerate was activated by calling caca_set_display_time(), the average
+ *  rendering time will be close to the requested delay even if the real
+ *  rendering time was shorter.
  *
  *  This function never fails.
  *
@@ -128,9 +128,8 @@ unsigned int caca_get_display_time(caca_display_t *dp)
 
 /** \brief Flush pending changes and redraw the screen.
  *
- *  This function flushes all graphical operations and prints them to the
- *  screen. Nothing will show on the screen until caca_refresh_display() is
- *  called.
+ *  Flush all graphical operations and print them to the display device.
+ *  Nothing will show on the screen until this function is called.
  *
  *  If caca_set_display_time() was called with a non-zero value,
  *  caca_refresh_display() will use that value to achieve constant
@@ -182,8 +181,7 @@ int caca_refresh_display(caca_display_t *dp)
 
 /** \brief Show or hide the mouse pointer.
  *
- *  This function shows or hides the mouse pointer, for devices that
- *  support it.
+ *  Show or hide the mouse pointer, for devices that support such a feature.
  *
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
  *  - \c ENOSYS Display driver does not support hiding the mouse pointer.

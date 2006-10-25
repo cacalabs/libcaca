@@ -37,7 +37,7 @@ static const uint16_t ansitab[16] =
 
 /** \brief Set the default colour pair.
  *
- *  This function sets the default ANSI colour pair. String functions such as
+ *  Set the default ANSI colour pair for drawing. String functions such as
  *  caca_printf() and graphical primitive functions such as caca_draw_line()
  *  will use these colours.
  *
@@ -70,7 +70,7 @@ int cucul_set_color(cucul_canvas_t *cv, unsigned char fg, unsigned char bg)
 
 /** \brief Set the default colour pair (truecolor version).
  *
- *  This function sets the default colour pair. String functions such as
+ *  Set the default colour pair for drawing. String functions such as
  *  caca_printf() and graphical primitive functions such as caca_draw_line()
  *  will use these colours.
  *
@@ -110,10 +110,10 @@ int cucul_set_truecolor(cucul_canvas_t *cv, unsigned int fg, unsigned int bg)
 
 /** \brief Get the colour pair at the given coordinates.
  *
- *  This function gets the internal \e libcucul colour pair value of the
- *  character at the given coordinates. The colour pair value has 32
- *  significant bits: the lower 16 are for the foreground colour, the higher
- *  16 are for the background.
+ *  Get the internal \e libcucul colour pair value of the character at the
+ *  given coordinates. The colour pair value has 32 significant bits: the
+ *  lower 16 bits are for the foreground colour, the higher 16 bits are for
+ *  the background.
  *
  *  If the coordinates are outside the canvas boundaries, the current colour
  *  pair is returned.

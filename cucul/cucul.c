@@ -38,9 +38,9 @@
 
 /** \brief Initialise a \e libcucul canvas.
  *
- *  This function initialises internal \e libcucul structures and the backend
- *  that will be used for subsequent graphical operations. It must be the
- *  first \e libcucul function to be called in a function. cucul_free_canvas()
+ *  Initialise internal \e libcucul structures and the backend that will
+ *  be used for subsequent graphical operations. It must be the first
+ *  \e libcucul function to be called in a function. cucul_free_canvas()
  *  should be called at the end of the program to free all allocated resources.
  *
  *  If one of the desired canvas coordinates is zero, a default canvas size
@@ -124,7 +124,7 @@ nomem:
 
 /** \brief Resize a canvas.
  *
- *  This function sets the canvas width and height, in character cells.
+ *  Set the canvas' width and height, in character cells.
  *
  *  The contents of the canvas are preserved to the extent of the new
  *  canvas size. Newly allocated character cells at the right and/or at
@@ -163,7 +163,7 @@ int cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
 
 /** \brief Get the canvas width.
  *
- *  This function returns the current canvas width, in character cells.
+ *  Return the current canvas' width, in character cells.
  *
  *  This function never fails.
  *
@@ -177,7 +177,7 @@ unsigned int cucul_get_canvas_width(cucul_canvas_t *cv)
 
 /** \brief Get the canvas height.
  *
- *  This function returns the current canvas height, in character cells.
+ *  Returns the current canvas' height, in character cells.
  *
  *  This function never fails.
  *
@@ -191,8 +191,8 @@ unsigned int cucul_get_canvas_height(cucul_canvas_t *cv)
 
 /** \brief Translate a colour index into the colour's name.
  *
- *  This function translates a cucul_color enum into a human-readable
- *  description string of the associated colour.
+ *  Translate a cucul_color enum into a human-readable string describing
+ *  the corresponding colour.
  *
  *  This function never fails.
  *
@@ -230,8 +230,8 @@ char const *cucul_get_color_name(unsigned int color)
 
 /** \brief Uninitialise \e libcucul.
  *
- *  This function frees all resources allocated by cucul_create_canvas(). After
- *  cucul_free_canvas() has been called, no other \e libcucul functions may be
+ *  Free all resources allocated by cucul_create_canvas(). After
+ *  this function has been called, no other \e libcucul functions may be
  *  used unless a new call to cucul_create_canvas() is done.
  *
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
@@ -269,6 +269,8 @@ int cucul_free_canvas(cucul_canvas_t *cv)
 }
 
 /** \brief Generate a random integer within a range.
+ *
+ *  Generate a random integer within the given range.
  *
  *  This function never fails.
  *

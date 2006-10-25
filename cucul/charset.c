@@ -94,9 +94,9 @@ static uint32_t const cp437_lookup2[] =
 
 /** \brief Convert a UTF-8 character to UTF-32.
  *
- *  This function converts a UTF-8 character read from a string and returns
- *  its value in the UTF-32 character set. If the second argument is not null,
- *  the total number of read bytes is written in it.
+ *  Convert a UTF-8 character read from a string and return its value in
+ *  the UTF-32 character set. If the second argument is not null, the total
+ *  number of read bytes is written in it.
  *
  *  If a null byte was reached before the expected end of the UTF-8 sequence,
  *  this function returns zero and the number of read bytes is set to zero.
@@ -138,8 +138,8 @@ unsigned long int cucul_utf8_to_utf32(char const *s, unsigned int *read)
 
 /** \brief Convert a UTF-32 character to UTF-8.
  *
- *  This function converts a UTF-32 character read from a string and writes
- *  its value in the UTF-8 character set into the given buffer.
+ *  Convert a UTF-32 character read from a string and write its value in
+ *  the UTF-8 character set into the given buffer.
  *
  *  This function never fails, but its behaviour with illegal UTF-32 characters
  *  is undefined.
@@ -181,9 +181,8 @@ unsigned int cucul_utf32_to_utf8(char *buf, unsigned long int ch)
 
 /** \brief Convert a UTF-32 character to CP437.
  *
- *  This function converts a UTF-32 character read from a string and returns
- *  its value in the CP437 character set, or "?" if the character has no
- *  equivalent.
+ *  Convert a UTF-32 character read from a string and return its value in
+ *  the CP437 character set, or "?" if the character has no equivalent.
  *
  *  This function never fails.
  *
@@ -213,9 +212,9 @@ unsigned char cucul_utf32_to_cp437(unsigned long int ch)
 
 /** \brief Convert a CP437 character to UTF-32.
  *
- *  This function converts a CP437 character read from a string and returns
- *  its value in the UTF-32 character set, or zero if the character is a
- *  CP437 control character.
+ *  Convert a CP437 character read from a string and return its value in
+ *  the UTF-32 character set, or zero if the character is a CP437 control
+ *  character.
  *
  *  This function never fails.
  *
@@ -238,9 +237,10 @@ unsigned long int cucul_cp437_to_utf32(unsigned char ch)
 
 /** \brief Tell whether a UTF-32 character is fullwidth.
  *
- *  This function returns 1 if the given UTF-32 character should be
- *  printed at twice the normal width (fullwidth), or 0 if it is a
- *  standard-width character or if the library does not know.
+ *  Check whether the given UTF-32 character should be printed at twice
+ *  the normal width (fullwidth characters). If the character is unknown
+ *  or if its status cannot be decided, it is treated as a standard-width
+ *  character.
  *
  *  This function never fails.
  *

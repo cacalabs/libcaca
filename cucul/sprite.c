@@ -32,7 +32,7 @@
 
 /** \brief Get the number of frames in a canvas.
  *
- *  This function returns the current canvas frame count.
+ *  Return the current canvas' frame count.
  *
  *  This function never fails.
  *
@@ -46,9 +46,9 @@ unsigned int cucul_get_canvas_frame_count(cucul_canvas_t *cv)
 
 /** \brief Activate a given canvas frame.
  *
- *  This function sets the active canvas frame. All subsequent drawing
- *  operations will be performed on that frame. The current painting
- *  context set by cucul_set_color() or cucul_set_truecolor() is inherited.
+ *  Set the active canvas frame. All subsequent drawing operations will
+ *  be performed on that frame. The current painting context set by
+ *  cucul_set_color() or cucul_set_truecolor() is inherited.
  *
  *  If the frame index is outside the canvas' frame range, nothing happens.
  *
@@ -79,8 +79,8 @@ int cucul_set_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
 
 /** \brief Add a frame to a canvas.
  *
- *  This function creates a new frame within the given canvas. Its contents
- *  are copied from the currently active frame.
+ *  Create a new frame within the given canvas. Its contents are copied
+ *  from the currently active frame.
  *
  *  The frame index indicates where the frame should be inserted. Valid
  *  values range from 0 to the current canvas frame count. If the frame
@@ -131,10 +131,7 @@ int cucul_create_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
 
 /** \brief Remove a frame from a canvas.
  *
- *  This function deletes a frame from a given canvas.
- *
- *  It is not legal to remove the last frame from a canvas. Such a request
- *  will be ignored by cucul_free_canvas_frame().
+ *  Delete a frame from a given canvas.
  *
  *  The frame index indicates the frame to delete. Valid values range from
  *  0 to the current canvas frame count minus 1. If the frame index is

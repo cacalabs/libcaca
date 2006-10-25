@@ -43,12 +43,12 @@
 
 /** \brief Print an ASCII or Unicode character.
  *
- *  This function prints an ASCII or Unicode character at the given
- *  coordinates, using the default foreground and background values.
+ *  Print an ASCII or Unicode character at the given coordinates, using
+ *  the default foreground and background colour values.
  *
  *  If the coordinates are outside the canvas boundaries, nothing is printed.
- *  If a fullwidth Unicode character gets overwritten, its remaining parts
- *  are replaced with spaces. If the canvas' boundaries would split the
+ *  If a fullwidth Unicode character gets overwritten, its remaining visible
+ *  parts are replaced with spaces. If the canvas' boundaries would split the
  *  fullwidth character in two, a space is printed instead.
  *
  *  The behaviour when printing non-printable characters or invalid UTF-32
@@ -125,8 +125,8 @@ int cucul_putchar(cucul_canvas_t *cv, int x, int y, unsigned long int ch)
 
 /** \brief Get the Unicode character at the given coordinates.
  *
- *  This function gets the ASCII or Unicode value of the character at
- *  the given coordinates. If the value is less or equal to 127 (0x7f),
+ *  Get the ASCII or Unicode value of the character at the given
+ *  coordinates. If the value is less or equal to 127 (0x7f),
  *  the character can be printed as ASCII. Otherise, it must be handled
  *  as a UTF-32 value.
  *
@@ -144,7 +144,7 @@ int cucul_putchar(cucul_canvas_t *cv, int x, int y, unsigned long int ch)
  *  \param x X coordinate.
  *  \param y Y coordinate.
  *  \param ch The requested character value.
- *  \return The character always returns 0.
+ *  \return This function always returns 0.
  */
 unsigned long int cucul_getchar(cucul_canvas_t *cv, int x, int y)
 {
@@ -156,9 +156,9 @@ unsigned long int cucul_getchar(cucul_canvas_t *cv, int x, int y)
 
 /** \brief Print a string.
  *
- *  This function prints an UTF-8 string at the given coordinates, using the
- *  default foreground and background values. The coordinates may be outside
- *  the canvas boundaries (eg. a negative Y coordinate) and the string will
+ *  Print an UTF-8 string at the given coordinates, using the default
+ *  foreground and background values. The coordinates may be outside the
+ *  canvas boundaries (eg. a negative Y coordinate) and the string will
  *  be cropped accordingly if it is too long.
  *
  *  See cucul_putchar() for more information on how fullwidth characters
@@ -198,11 +198,11 @@ int cucul_putstr(cucul_canvas_t *cv, int x, int y, char const *s)
 
 /** \brief Print a formated string.
  *
- *  This function formats a string at the given coordinates, using the
- *  default foreground and background values. The coordinates may be outside
- *  the canvas boundaries (eg. a negative Y coordinate) and the string will
- *  be cropped accordingly if it is too long. The syntax of the format
- *  string is the same as for the C printf() function.
+ *  Format a string at the given coordinates, using the default foreground
+ *  and background values. The coordinates may be outside the canvas
+ *  boundaries (eg. a negative Y coordinate) and the string will be cropped
+ *  accordingly if it is too long. The syntax of the format string is the
+ *  same as for the C printf() function.
  *
  *  This function never fails.
  *
@@ -244,7 +244,7 @@ int cucul_printf(cucul_canvas_t *cv, int x, int y, char const *format, ...)
 
 /** \brief Clear the canvas.
  *
- *  This function clears the canvas using the current background colour.
+ *  Clear the canvas using the current foreground and background colours.
  *
  *  This function never fails.
  *
@@ -267,7 +267,7 @@ int cucul_clear_canvas(cucul_canvas_t *cv)
 
 /** \brief Blit a canvas onto another one.
  *
- *  This function blits a canvas onto another one at the given coordinates.
+ *  Blit a canvas onto another one at the given coordinates.
  *  An optional mask canvas can be used.
  *
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
@@ -348,7 +348,7 @@ int cucul_blit(cucul_canvas_t *dst, int x, int y,
 
 /** \brief Set a canvas' new boundaries.
  *
- *  This function sets new boundaries for a canvas. It can be used to crop a
+ *  Set new boundaries for a canvas. This function can be used to crop a
  *  canvas, to expand it or for combinations of both actions.
  *
  *  If an error occurs, -1 is returned and \b errno is set accordingly:

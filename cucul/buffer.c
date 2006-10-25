@@ -29,9 +29,9 @@
 
 /** \brief Load a memory area into a buffer.
  *
- *  This function creates a \e libcucul buffer that points to the given
- *  memory area. The data is not duplicated and any changes made to the
- *  original memory area appear in the buffer.
+ *  Create a \e libcucul buffer that points to the given memory area. The
+ *  data is not duplicated and any changes made to the original memory area
+ *  will appear in the buffer.
  *
  *  \param data The memory area to load.
  *  \param size The size of the memory area.
@@ -55,8 +55,8 @@ cucul_buffer_t *cucul_load_memory(void *data, unsigned long int size)
 
 /** \brief Load a file into a buffer.
  *
- *  This function loads a file into memory and returns a \e libcucul buffer
- *  for use with other functions.
+ *  Load a file into memory and returns a \e libcucul buffer for use with
+ *  other functions.
  *
  *  \param file The filename
  *  \return A \e libcucul buffer containing the file's contents, or NULL
@@ -102,8 +102,8 @@ cucul_buffer_t *cucul_load_file(char const *file)
 #endif
 /** \brief Get the buffer size.
  *
- *  This function returns the length (in bytes) of the memory area stored
- *  in the given \e libcucul buffer.
+ *  Return the length (in bytes) of the memory area stored in the given
+ *  \e libcucul buffer.
  *
  *  This function never fails.
  *
@@ -117,7 +117,7 @@ unsigned long int cucul_get_buffer_size(cucul_buffer_t *buf)
 
 /** \brief Get the buffer data.
  *
- *  This function returns a pointer to the memory area stored in the given
+ *  Get a pointer to the memory area stored in the given
  *  \e libcucul buffer.
  *
  *  This function never fails.
@@ -132,8 +132,7 @@ void * cucul_get_buffer_data(cucul_buffer_t *buf)
 
 /** \brief Free a buffer.
  *
- *  This function frees the structures associated with the given
- *  \e libcucul buffer.
+ *  Free the structures associated with the given \e libcucul buffer.
  *
  *  This function never fails.
  *

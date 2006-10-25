@@ -30,8 +30,8 @@ static uint32_t rotatechar(uint32_t ch);
 
 /** \brief Invert a canvas' colours.
  *
- *  This function inverts a canvas' colours (black becomes white, red
- *  becomes cyan, etc.) without changing the characters in it.
+ *  Invert a canvas' colours (black becomes white, red becomes cyan, etc.)
+ *  without changing the characters in it.
  *
  *  This function never fails.
  *
@@ -54,8 +54,8 @@ int cucul_invert(cucul_canvas_t *cv)
 
 /** \brief Flip a canvas horizontally.
  *
- *  This function flips a canvas horizontally, choosing characters that
- *  look like the mirrored version wherever possible.
+ *  Flip a canvas horizontally, choosing characters that look like the
+ *  mirrored version wherever possible.
  *
  *  This function never fails.
  *
@@ -111,8 +111,8 @@ int cucul_flip(cucul_canvas_t *cv)
 
 /** \brief Flip a canvas vertically.
  *
- *  This function flips a canvas vertically, choosing characters that
- *  look like the mirrored version wherever possible.
+ *  Flip a canvas vertically, choosing characters that look like the
+ *  mirrored version wherever possible.
  *
  *  This function never fails.
  *
@@ -154,9 +154,8 @@ int cucul_flop(cucul_canvas_t *cv)
 
 /** \brief Rotate a canvas.
  *
- *  This function applies a 180 degrees transformation to a canvas,
- *  choosing characters that look like the mirrored version wherever
- *  possible.
+ *  Apply a 180-degree transformation to a canvas, choosing characters
+ *  that look like the upside-down version wherever possible.
  *
  *  This function never fails.
  *

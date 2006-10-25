@@ -47,14 +47,14 @@ static void ansi_parse_grcm(cucul_canvas_t *, struct ansi_grcm *,
 
 /** \brief Import a buffer into a canvas
  *
- *  This function imports a libcucul buffer as returned by cucul_load_memory()
+ *  Import a libcucul buffer as returned by cucul_load_memory()
  *  or cucul_load_file() into an internal libcucul canvas.
  *
  *  Valid values for \c format are:
  *  - \c "": attempt to autodetect the file format.
  *  - \c "text": import ASCII text files.
  *  - \c "ansi": import ANSI files.
- *  - \c "utf8": import UTF-8 files with ANSI colour files.
+ *  - \c "utf8": import UTF-8 files with ANSI colour codes.
  *  - \c "caca": import native libcaca files.
  *
  *  If an error occurs, NULL is returned and \b errno is set accordingly:

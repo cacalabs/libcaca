@@ -42,9 +42,9 @@ static int _lowlevel_event(caca_display_t *, caca_event_t *);
 
 /** \brief Get the next mouse or keyboard input event.
  *
- *  This function polls the event queue for mouse or keyboard events matching
- *  the event mask and returns the first matching event. Non-matching events
- *  are discarded. If \c event_mask is zero, the function returns immediately.
+ *  Poll the event queue for mouse or keyboard events matching the event
+ *  mask and return the first matching event. Non-matching events are
+ *  discarded. If \c event_mask is zero, the function returns immediately.
  *
  *  The timeout value tells how long this function needs to wait for an
  *  event. A value of zero returns immediately and the function returns zero
@@ -114,7 +114,7 @@ int caca_get_event(caca_display_t *dp, unsigned int event_mask,
 
 /** \brief Return the X mouse coordinate.
  *
- *  This function returns the X coordinate of the mouse position last time
+ *  Return the X coordinate of the mouse position last time
  *  it was detected. This function is not reliable if the ncurses or S-Lang
  *  drivers are being used, because mouse position is only detected when
  *  the mouse is clicked. Other drivers such as X11 work well.
@@ -134,7 +134,7 @@ unsigned int caca_get_mouse_x(caca_display_t *dp)
 
 /** \brief Return the Y mouse coordinate.
  *
- *  This function returns the Y coordinate of the mouse position last time
+ *  Return the Y coordinate of the mouse position last time
  *  it was detected. This function is not reliable if the ncurses or S-Lang
  *  drivers are being used, because mouse position is only detected when
  *  the mouse is clicked. Other drivers such as X11 work well.
