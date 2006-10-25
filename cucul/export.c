@@ -259,7 +259,7 @@ static void export_utf8(cucul_canvas_t *cv, cucul_buffer_t *ex)
         if(prevfg != 0x10 || prevbg != 0x10)
             cur += sprintf(cur, "\033[0m");
 
-        cur += sprintf(cur, "\r\n");
+        cur += sprintf(cur, "\n");
     }
 
     /* Crop to really used size */
