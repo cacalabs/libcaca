@@ -327,6 +327,7 @@ static uint32_t flopchar(uint32_t ch)
          'w', 0x028d, /* w ʍ */
          'y', 0x03bb, /* y λ */
          /* Not perfect, but better than nothing */
+         '"', 0x201e, /* " „ */
          'm', 0x026f, /* m ɯ */
          'n', 'u',
          /* CP437 */
@@ -368,7 +369,7 @@ static uint32_t rotatechar(uint32_t ch)
     {
          /* ASCII */
          ' ', '*', '+', '-', '/', '0', '8', ':', '=', 'H', 'I', 'N',
-         'O', 'S', 'X', 'Z', '\\', 'l', 'o', 's', 'u', 'x', 'z', '|',
+         'O', 'S', 'X', 'Z', '\\', 'l', 'o', 's', 'x', 'z', '|',
          /* Unicode */
          0x2591, 0x2592, 0x2593, 0x2588, 0x259a, 0x259e, /* ░ ▒ ▓ █ ▚ ▞ */
          0x2500, 0x2501, 0x2503, 0x2503, 0x253c, 0x254b, /* ─ ━ │ ┃ ┼ ╋ */
@@ -415,6 +416,8 @@ static uint32_t rotatechar(uint32_t ch)
          'v', 0x028c, /* v ʌ */
          'w', 0x028d, /* w ʍ */
          'y', 0x028e, /* y ʎ */
+         /* Not perfect, but better than nothing */
+         '"', 0x201e, /* " „ */
          /* CP437 */
          0x258c, 0x2590, /* ▌ ▐ */
          0x2584, 0x2580, /* ▄ ▀ */
