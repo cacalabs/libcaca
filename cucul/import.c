@@ -153,9 +153,6 @@ static cucul_canvas_t *import_caca(void const *data, unsigned int size)
     height = ((uint32_t)buf[12] << 24) | ((uint32_t)buf[13] << 16)
         | ((uint32_t)buf[14] << 8) | (uint32_t)buf[15];
 
-    if(!width || !height)
-        goto invalid_caca;
-
     if(size != 16 + width * height * 8)
         goto invalid_caca;
 
@@ -170,16 +167,16 @@ static cucul_canvas_t *import_caca(void const *data, unsigned int size)
     }
 
     for(n = height * width; n--; )
-        {
-            cv->chars[n] = ((uint32_t)buf[16 + 0 + 8 * n] << 24)
-                | ((uint32_t)buf[16 + 1 + 8 * n] << 16)
-                | ((uint32_t)buf[16 + 2 + 8 * n] << 8)
-                | (uint32_t)buf[16 + 3 + 8 * n];
-            cv->attr[n] = ((uint32_t)buf[16 + 4 + 8 * n] << 24)
-                | ((uint32_t)buf[16 + 5 + 8 * n] << 16)
-                | ((uint32_t)buf[16 + 6 + 8 * n] << 8)
-                | (uint32_t)buf[16 + 7 + 8 * n];
-        }
+    {
+        cv->chars[n] = ((uint32_t)buf[16 + 0 + 8 * n] << 24)
+            | ((uint32_t)buf[16 + 1 + 8 * n] << 16)
+            | ((uint32_t)buf[16 + 2 + 8 * n] << 8)
+            | (uint32_t)buf[16 + 3 + 8 * n];
+        cv->attr[n] = ((uint32_t)buf[16 + 4 + 8 * n] << 24)
+            | ((uint32_t)buf[16 + 5 + 8 * n] << 16)
+            | ((uint32_t)buf[16 + 6 + 8 * n] << 8)
+            | (uint32_t)buf[16 + 7 + 8 * n];
+    }
 
     return cv;
 
@@ -194,7 +191,7 @@ static cucul_canvas_t *import_text(void const *data, unsigned int size)
 {
     cucul_canvas_t *cv;
     char const *text = (char const *)data;
-    unsigned int width = 1, height = 1, x = 0, y = 0, i;
+    unsigned int width = 0, height = 0, x = 0, y = 0, i;
 
     cv = cucul_create_canvas(width, height);
     if(!cv)
@@ -246,7 +243,7 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size,
     unsigned char const *buffer = (unsigned char const*)data;
     cucul_canvas_t *cv;
     unsigned int i, j, skip, dummy = 0;
-    unsigned int width = 1, height = 1, wch = 1;
+    unsigned int width = 0, height = 0, wch = 1;
     unsigned long int ch;
     int x = 0, y = 0, save_x = 0, save_y = 0;
 
