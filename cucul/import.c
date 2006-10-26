@@ -90,7 +90,7 @@ cucul_canvas_t * cucul_import_canvas(cucul_buffer_t *buffer, char const *format)
             return import_caca(buffer->data, buffer->size);
 
         /* If we find ESC[ argv, we guess it's an ANSI file */
-        for(i = 0; i < buffer->size - 1; i++)
+        for(i = 0; i + 1 < buffer->size; i++)
             if((buf[i] == 0x1b) && (buf[i + 1] == '['))
                 return import_ansi(buffer->data, buffer->size, 0);
 
