@@ -504,15 +504,17 @@ static int export_irc(cucul_canvas_t *cv, cucul_buffer_t *ex)
     char *cur;
     unsigned int x, y;
 
-    /* 16 bytes assumed for max length per pixel. Worst case scenario:
+    /* 14 bytes assumed for max length per pixel. Worst case scenario:
      * ^Cxx,yy   6 bytes
      * ^B^B      2 bytes
      * ch        6 bytes
+     * 3 bytes for max length per line. Worst case scenario:
+     * <spc>     1 byte (for empty lines)
      * \r\n      2 bytes
      * In real life, the average bytes per pixel value will be around 5.
      */
 
-    ex->size = 2 + (cv->width * cv->height * 16);
+    ex->size = 2 + cv->height * (3 + cv->width * 14);
     ex->data = malloc(ex->size);
 
     cur = ex->data;
@@ -582,6 +584,11 @@ static int export_irc(cucul_canvas_t *cv, cucul_buffer_t *ex)
             prevfg = fg;
             prevbg = bg;
         }
+
+        /* TODO: do the same the day we optimise whole lines above */
+        if(!cv->width)
+            *cur++ = ' ';
+
         *cur++ = '\r';
         *cur++ = '\n';
     }
