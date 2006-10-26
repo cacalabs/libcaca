@@ -43,9 +43,6 @@
  *  \e libcucul function to be called in a function. cucul_free_canvas()
  *  should be called at the end of the program to free all allocated resources.
  *
- *  If one of the desired canvas coordinates is zero, a default canvas size
- *  of 80x32 is used instead.
- *
  *  If an error occurs, NULL is returned and \b errno is set accordingly:
  *  - \c ENOMEM Not enough memory for the requested canvas size.
  *
@@ -56,7 +53,6 @@
 cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
 {
     cucul_canvas_t *cv = malloc(sizeof(cucul_canvas_t));
-    int ret;
 
     if(!cv)
         goto nomem;
@@ -88,15 +84,7 @@ cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
     cv->allchars[0] = NULL;
     cv->allattr[0] = NULL;
 
-    /* Initialise to a default size. 80x32 is arbitrary but matches AAlib's
-     * default X11 window. When a graphic driver attaches to us, it can set
-     * a different size. */
-    if(width && height)
-        ret = _cucul_set_canvas_size(cv, width, height);
-    else
-        ret = _cucul_set_canvas_size(cv, 80, 32);
-
-    if(ret < 0)
+    if(_cucul_set_canvas_size(cv, width, height) < 0)
     {
 #if defined(HAVE_ERRNO_H)
         int saved_errno = errno;

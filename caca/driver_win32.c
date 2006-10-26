@@ -112,8 +112,8 @@ static int win32_init_graphics(caca_display_t *dp)
         return -1;
 
     /* Set the new console size */
-    size.X = dp->cv->width;
-    size.Y = dp->cv->height;
+    size.X = dp->cv->width ? dp->cv->width : 80;
+    size.Y = dp->cv->height ? dp->cv->height : 25;
     SetConsoleScreenBufferSize(dp->drv.p->screen, size);
 
     rect.Left = rect.Top = 0;

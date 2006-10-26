@@ -21,6 +21,7 @@
 #if !defined(__KERNEL__)
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "caca.h"
 #include "caca_internals.h"
@@ -29,6 +30,17 @@
 
 static int raw_init_graphics(caca_display_t *dp)
 {
+    unsigned int width = dp->cv->width, height = dp->cv->height;
+    char const *geometry;
+
+#if defined(HAVE_GETENV)
+    geometry = getenv("CACA_GEOMETRY");
+    if(geometry && *geometry)
+        sscanf(geometry, "%ux%u", &width, &height);
+#endif
+
+    _cucul_set_canvas_size(dp->cv, width ? width : 80, height ? height : 24);
+
     return 0;
 }
 

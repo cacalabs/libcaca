@@ -86,7 +86,7 @@ static int gl_init_graphics(caca_display_t *dp)
     char const *geometry;
     char *argv[2] = { "", NULL };
     char const * const * fonts;
-    unsigned int width = 0, height = 0;
+    unsigned int width = dp->cv->width, height = dp->cv->height;
     int argc = 1;
 
     dp->drv.p = malloc(sizeof(struct driver_private));
@@ -99,9 +99,7 @@ static int gl_init_graphics(caca_display_t *dp)
         sscanf(geometry, "%ux%u", &width, &height);
 #endif
 
-    if(width && height)
-        _cucul_set_canvas_size(dp->cv, width, height);
-
+    _cucul_set_canvas_size(dp->cv, width ? width : 80, height ? height : 32);
 
     /* Load a libcucul internal font */
     fonts = cucul_get_font_list();

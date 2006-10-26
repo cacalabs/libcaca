@@ -67,7 +67,7 @@ static int x11_init_graphics(caca_display_t *dp)
     int (*old_error_handler)(Display *, XErrorEvent *);
     char const *fonts[] = { NULL, "8x13bold", "fixed" }, **parser;
     char const *geometry;
-    unsigned int width = 0, height = 0;
+    unsigned int width = dp->cv->width, height = dp->cv->height;
     int i;
 
     dp->drv.p = malloc(sizeof(struct driver_private));
@@ -78,8 +78,7 @@ static int x11_init_graphics(caca_display_t *dp)
         sscanf(geometry, "%ux%u", &width, &height);
 #endif
 
-    if(width && height)
-        _cucul_set_canvas_size(dp->cv, width, height);
+    _cucul_set_canvas_size(dp->cv, width ? width : 80, height ? height : 32);
 
     dp->drv.p->dpy = XOpenDisplay(NULL);
     if(dp->drv.p->dpy == NULL)
