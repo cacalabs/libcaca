@@ -233,6 +233,9 @@ static cucul_canvas_t *import_text(void const *data, unsigned int size)
         x++;
     }
 
+    if(y > height)
+        cucul_set_canvas_size(cv, width, height = y);
+
     return cv;
 }
 
@@ -429,6 +432,12 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size,
         cucul_set_color(cv, grcm.efg, grcm.ebg);
         cucul_putchar(cv, x, y, ch);
         x += wch;
+    }
+
+    if((unsigned int)y > height)
+    {
+        cucul_set_color(cv, CUCUL_COLOR_DEFAULT, CUCUL_COLOR_TRANSPARENT);
+        cucul_set_canvas_size(cv, width, height = y);
     }
 
     return cv;
