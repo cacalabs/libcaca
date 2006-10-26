@@ -35,24 +35,37 @@ int main(int argc, char *argv[])
     for(frame = 1; frame < 200; frame++)
         cucul_create_canvas_frame(cv, frame);
 
+    fprintf(stderr, "canvas created, size is %ix%i\n",
+            cucul_get_canvas_width(cv), cucul_get_canvas_height(cv));
+
     /* Resize it to 150 x 80 (around 19MB) */
     cucul_set_canvas_size(cv, 150, 80);
 
-    /* Resize it to a more decent size */
-    cucul_set_canvas_size(cv, 41, 16);
-
-    dp = caca_create_display(cv);
-    caca_set_display_time(dp, 50000);
+    fprintf(stderr, "canvas expanded, size is %ix%i\n",
+            cucul_get_canvas_width(cv), cucul_get_canvas_height(cv));
 
     /* Fill the first 16 frames with a different colour */
     for(frame = 0; frame < 16; frame++)
     {
         cucul_set_canvas_frame(cv, frame);
         cucul_set_color(cv, CUCUL_COLOR_WHITE, frame);
-        cucul_clear_canvas(cv);
+        cucul_fill_box(cv, 0, 0, 40, 15, ":");
         cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
-        cucul_putstr(cv, frame * 5 / 2, frame, "CACA");
+        cucul_putstr(cv, frame * 5 / 2, frame, "カカ");
     }
+
+    /* Resize it to a more decent size */
+    cucul_set_canvas_size(cv, 41, 16);
+
+    fprintf(stderr, "canvas shrinked, size is %ix%i\n",
+            cucul_get_canvas_width(cv), cucul_get_canvas_height(cv));
+
+    cucul_set_color(cv, CUCUL_COLOR_DEFAULT, CUCUL_COLOR_TRANSPARENT);
+    dp = caca_create_display(cv);
+    caca_set_display_time(dp, 50000);
+
+    fprintf(stderr, "display attached, size is %ix%i\n",
+            cucul_get_canvas_width(cv), cucul_get_canvas_height(cv));
 
     n = 0;
     while(!caca_get_event(dp, CACA_EVENT_KEY_PRESS, NULL, 0))
