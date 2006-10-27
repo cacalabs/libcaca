@@ -406,12 +406,24 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size,
         if(utf8)
         {
             unsigned int bytes;
-            /* Probably a wrong thing */
-            if(((char const *)(buffer + i))[0] == 0)
+
+            if(i + 6 < size)
+                ch = cucul_utf8_to_utf32((char const *)(buffer + i), &bytes);
+            else
             {
-                goto end;
+                /* Add a trailing zero to what we're going to read */
+                char tmp[7];
+                memcpy(tmp, buffer + i, size - i);
+                tmp[size - i] = '\0';
+                ch = cucul_utf8_to_utf32(tmp, &bytes);
             }
-            ch = cucul_utf8_to_utf32((char const *)(buffer + i), &bytes);
+
+            if(!bytes)
+            {
+                /* If the Unicode is invalid, assume it was latin1. */
+                ch = buffer[i];
+                bytes = 1;
+            }
             wch = cucul_utf32_is_fullwidth(ch) ? 2 : 1;
             skip += bytes - 1;
         }
@@ -444,7 +456,7 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size,
         cucul_set_color(cv, CUCUL_COLOR_DEFAULT, CUCUL_COLOR_TRANSPARENT);
         cucul_set_canvas_size(cv, width, height = y);
     }
- end:
+
     return cv;
 }
 
