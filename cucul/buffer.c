@@ -31,7 +31,8 @@
  *
  *  Create a \e libcucul buffer that points to the given memory area. The
  *  data is not duplicated and any changes made to the original memory area
- *  will appear in the buffer.
+ *  will appear in the buffer. If you are importing a string, the
+ *  terminating zero must NOT be counted in size.
  *
  *  \param data The memory area to load.
  *  \param size The size of the memory area.
