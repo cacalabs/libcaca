@@ -57,7 +57,6 @@ class Test {
           Console.WriteLine("Render time : {0}", kk.getDisplayTime()-startTime);
           }
 
-
         /* Force deletion of our instance for fun */
         qq.Dispose();
 	}

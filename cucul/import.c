@@ -406,6 +406,11 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size,
         if(utf8)
         {
             unsigned int bytes;
+            /* Probably a wrong thing */
+            if(((char const *)(buffer + i))[0] == 0)
+            {
+                goto end;
+            }
             ch = cucul_utf8_to_utf32((char const *)(buffer + i), &bytes);
             wch = cucul_utf32_is_fullwidth(ch) ? 2 : 1;
             skip += bytes - 1;
@@ -439,7 +444,7 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size,
         cucul_set_color(cv, CUCUL_COLOR_DEFAULT, CUCUL_COLOR_TRANSPARENT);
         cucul_set_canvas_size(cv, width, height = y);
     }
-
+ end:
     return cv;
 }
 
