@@ -201,7 +201,7 @@ static unsigned int slang_get_display_height(caca_display_t *dp)
 static void slang_display(caca_display_t *dp)
 {
     int x, y;
-    uint32_t *attr = dp->cv->attr;
+    uint32_t *attrs = dp->cv->attrs;
     uint32_t *chars = dp->cv->chars;
     for(y = 0; y < (int)dp->cv->height; y++)
     {
@@ -217,8 +217,8 @@ static void slang_display(caca_display_t *dp)
              * here for, and in cases where SLang does not render
              * bright backgrounds, it's just fucked up. */
 #if 0
-            uint8_t fgcolor = _cucul_argb32_to_ansi4fg(*attr);
-            uint8_t bgcolor = _cucul_argb32_to_ansi4bg(*attr);
+            uint8_t fgcolor = _cucul_attr_to_ansi4fg(*attrs);
+            uint8_t bgcolor = _cucul_attr_to_ansi4bg(*attrs);
 
             if(fgcolor == bgcolor)
             {
@@ -231,16 +231,16 @@ static void slang_display(caca_display_t *dp)
                     fgcolor = CUCUL_COLOR_WHITE;
                 SLsmg_set_color(slang_assoc[fgcolor + 16 * bgcolor]);
                 SLsmg_write_char(' ');
-                attr++;
+                attrs++;
             }
             else
 #endif
             {
-                SLsmg_set_color(slang_assoc[_cucul_argb32_to_ansi8(*attr++)]);
+                SLsmg_set_color(slang_assoc[_cucul_attr_to_ansi8(*attrs++)]);
                 slang_write_utf32(ch);
             }
 #else
-            SLsmg_set_color(_cucul_argb32_to_ansi8(*attr++));
+            SLsmg_set_color(_cucul_attr_to_ansi8(*attrs++));
             slang_write_utf32(ch);
 #endif
         }

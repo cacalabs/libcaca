@@ -40,9 +40,10 @@ typedef struct cucul_buffer cucul_buffer_t;
 /** font structure */
 typedef struct cucul_font cucul_font_t;
 
-/** \defgroup colour libcucul colour definitions
+/** \defgroup attributes libcucul attribute definitions
  *
- *  Colours that can be used with cucul_set_color().
+ *  Colours and styles that can be used with cucul_set_attr_ansi() and
+ *  cucul_set_attr_argb().
  *
  *  @{ */
 #define CUCUL_COLOR_BLACK 0x00 /**< The colour index for black. */
@@ -63,6 +64,11 @@ typedef struct cucul_font cucul_font_t;
 #define CUCUL_COLOR_WHITE 0x0f /**< The colour index for white. */
 #define CUCUL_COLOR_DEFAULT 0x10 /**< The output driver's default colour. */
 #define CUCUL_COLOR_TRANSPARENT 0x20 /**< The transparent colour. */
+
+#define CUCUL_STYLE_BOLD 0x01 /**< The style mask for bold. */
+#define CUCUL_STYLE_ITALICS 0x02 /**< The style mask for italics. */
+#define CUCUL_STYLE_UNDERLINE 0x04 /**< The style mask for underline. */
+#define CUCUL_STYLE_BLINK 0x08 /**< The style mask for blink. */
 /*  @} */
 
 /** \defgroup cucul libcucul basic functions
@@ -98,9 +104,12 @@ int cucul_free_buffer(cucul_buffer_t *);
  *
  *  @{ */
 #define CUCUL_MAGIC_FULLWIDTH 0x000ffffe /**< Used to indicate that the previous character was a fullwidth glyph. */
-int cucul_set_color(cucul_canvas_t *, unsigned char, unsigned char);
-int cucul_set_truecolor(cucul_canvas_t *, unsigned int, unsigned int);
-unsigned long int cucul_get_color(cucul_canvas_t *, int, int);
+int cucul_set_attr(cucul_canvas_t *, unsigned long int);
+int cucul_set_attr_ansi(cucul_canvas_t *, unsigned char, unsigned char,
+                        unsigned char);
+int cucul_set_attr_argb(cucul_canvas_t *, unsigned int, unsigned int,
+                        unsigned char);
+unsigned long int cucul_get_attr(cucul_canvas_t *, int, int);
 char const *cucul_get_color_name(unsigned int);
 int cucul_putchar(cucul_canvas_t *, int, int, unsigned long int);
 unsigned long int cucul_getchar(cucul_canvas_t *, int, int);
@@ -111,6 +120,9 @@ int cucul_blit(cucul_canvas_t *, int, int, cucul_canvas_t const *,
                cucul_canvas_t const *);
 int cucul_set_canvas_boundaries(cucul_canvas_t *, int, int,
                                 unsigned int, unsigned int);
+/* Legacy stuff */
+int cucul_set_color(cucul_canvas_t *, unsigned char, unsigned char);
+int cucul_set_truecolor(cucul_canvas_t *, unsigned int, unsigned int);
 /*  @} */
 
 /** \defgroup transform libcucul canvas transformation

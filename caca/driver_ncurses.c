@@ -196,14 +196,14 @@ static unsigned int ncurses_get_display_height(caca_display_t *dp)
 static void ncurses_display(caca_display_t *dp)
 {
     int x, y;
-    uint32_t *attr = dp->cv->attr;
+    uint32_t *attrs = dp->cv->attrs;
     uint32_t *chars = dp->cv->chars;
     for(y = 0; y < (int)dp->cv->height; y++)
     {
         move(y, 0);
         for(x = dp->cv->width; x--; )
         {
-            attrset(dp->drv.p->attr[_cucul_argb32_to_ansi8(*attr++)]);
+            attrset(dp->drv.p->attr[_cucul_attr_to_ansi8(*attrs++)]);
             ncurses_write_utf32(*chars++);
         }
     }

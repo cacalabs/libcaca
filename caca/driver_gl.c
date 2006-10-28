@@ -214,12 +214,12 @@ static void gl_display(caca_display_t *dp)
     line = 0;
     for(y = 0; y < dp->drv.p->height; y += dp->drv.p->font_height)
     {
-        uint32_t *attr = dp->cv->attr + line * dp->cv->width;
+        uint32_t *attrs = dp->cv->attrs + line * dp->cv->width;
 
         /* FIXME: optimise using stride */
         for(x = 0; x < dp->drv.p->width; x += dp->drv.p->font_width)
         {
-            uint16_t bg = _cucul_argb32_to_rgb12bg(*attr++);
+            uint16_t bg = _cucul_attr_to_rgb12bg(*attrs++);
 
             glColor4b(((bg & 0xf00) >> 8) * 8,
                       ((bg & 0x0f0) >> 4) * 8,
@@ -244,10 +244,10 @@ static void gl_display(caca_display_t *dp)
     line = 0;
     for(y = 0; y < dp->drv.p->height; y += dp->drv.p->font_height, line++)
     {
-        uint32_t *attr = dp->cv->attr + line * dp->cv->width;
+        uint32_t *attrs = dp->cv->attrs + line * dp->cv->width;
         uint32_t *chars = dp->cv->chars + line * dp->cv->width;
 
-        for(x = 0; x < dp->drv.p->width; x += dp->drv.p->font_width, attr++)
+        for(x = 0; x < dp->drv.p->width; x += dp->drv.p->font_width, attrs++)
         {
             uint32_t ch = *chars++;
             uint16_t fg;
@@ -271,7 +271,7 @@ static void gl_display(caca_display_t *dp)
                               dp->drv.p->txid[b + ch
                                         - (uint32_t)dp->drv.p->blocks[i]]);
 
-                fg = _cucul_argb32_to_rgb12fg(*attr);
+                fg = _cucul_attr_to_rgb12fg(*attrs);
                 glColor3b(((fg & 0xf00) >> 8) * 8,
                           ((fg & 0x0f0) >> 4) * 8,
                           (fg & 0x00f) * 8);
@@ -291,7 +291,7 @@ static void gl_display(caca_display_t *dp)
 
             if(fullwidth)
             {
-                chars++; attr++; x += dp->drv.p->font_width;
+                chars++; attrs++; x += dp->drv.p->font_width;
             }
         }
     }

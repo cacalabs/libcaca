@@ -130,7 +130,8 @@ enum caca_feature
 #define caca_get_mouse_y() caca_get_mouse_y(__caca0_dp)
 
 #define caca_set_color(x, y) \
-    (__caca0_fg = (x), __caca0_bg = (y), cucul_set_color(__caca0_cv, x, y))
+    (__caca0_fg = (x), __caca0_bg = (y), \
+     cucul_set_attr_ansi(__caca0_cv, x, y, 0))
 #define caca_get_fg_color() __caca0_fg
 #define caca_get_bg_color() __caca0_bg
 #define caca_get_color_name cucul_get_color_name

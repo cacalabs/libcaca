@@ -246,12 +246,12 @@ static void x11_display(caca_display_t *dp)
     {
         for(x = 0; x < dp->cv->width; x += len)
         {
-            uint32_t *attr = dp->cv->attr + x + y * dp->cv->width;
-            uint16_t bg = _cucul_argb32_to_rgb12bg(*attr);
+            uint32_t *attrs = dp->cv->attrs + x + y * dp->cv->width;
+            uint16_t bg = _cucul_attr_to_rgb12bg(*attrs);
 
             len = 1;
             while(x + len < dp->cv->width
-                   && _cucul_argb32_to_rgb12bg(attr[len]) == bg)
+                   && _cucul_attr_to_rgb12bg(attrs[len]) == bg)
                 len++;
 
             XSetForeground(dp->drv.p->dpy, dp->drv.p->gc,
@@ -271,7 +271,7 @@ static void x11_display(caca_display_t *dp)
 
         for(x = 0; x < dp->cv->width; x++, chars++)
         {
-            uint32_t *attr = dp->cv->attr + x + y * dp->cv->width;
+            uint32_t *attrs = dp->cv->attrs + x + y * dp->cv->width;
 
             /* Skip spaces */
             if(*chars <= 0x00000020)
@@ -281,7 +281,7 @@ static void x11_display(caca_display_t *dp)
                 continue;
 
             XSetForeground(dp->drv.p->dpy, dp->drv.p->gc,
-                           dp->drv.p->colors[_cucul_argb32_to_rgb12fg(*attr)]);
+                           dp->drv.p->colors[_cucul_attr_to_rgb12fg(*attrs)]);
 
             /* Plain ASCII, no problem. */
             if(*chars > 0x00000020 && *chars < 0x00000080)

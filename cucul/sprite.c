@@ -72,7 +72,7 @@ int cucul_set_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
     cv->frame = frame;
 
     cv->chars = cv->allchars[cv->frame];
-    cv->attr = cv->allattr[cv->frame];
+    cv->attrs = cv->allattrs[cv->frame];
 
     return 0;
 }
@@ -107,24 +107,24 @@ int cucul_create_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
 
     cv->framecount++;
     cv->allchars = realloc(cv->allchars, sizeof(uint32_t *) * cv->framecount);
-    cv->allattr = realloc(cv->allattr, sizeof(uint32_t *) * cv->framecount);
+    cv->allattrs = realloc(cv->allattrs, sizeof(uint32_t *) * cv->framecount);
 
     for(f = cv->framecount - 1; f > frame; f--)
     {
         cv->allchars[f] = cv->allchars[f - 1];
-        cv->allattr[f] = cv->allattr[f - 1];
+        cv->allattrs[f] = cv->allattrs[f - 1];
     }
 
     cv->allchars[frame] = malloc(size);
     memcpy(cv->allchars[frame], cv->chars, size);
-    cv->allattr[frame] = malloc(size);
-    memcpy(cv->allattr[frame], cv->attr, size);
+    cv->allattrs[frame] = malloc(size);
+    memcpy(cv->allattrs[frame], cv->attrs, size);
 
     if(cv->frame >= frame)
         cv->frame++;
 
     cv->chars = cv->allchars[cv->frame];
-    cv->attr = cv->allattr[cv->frame];
+    cv->attrs = cv->allattrs[cv->frame];
 
     return 0;
 }
@@ -171,17 +171,17 @@ int cucul_free_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
     }
 
     free(cv->allchars[frame]);
-    free(cv->allattr[frame]);
+    free(cv->allattrs[frame]);
 
     for(f = frame + 1; f < cv->framecount; f++)
     {
         cv->allchars[f - 1] = cv->allchars[f];
-        cv->allattr[f - 1] = cv->allattr[f];
+        cv->allattrs[f - 1] = cv->allattrs[f];
     }
 
     cv->framecount--;
     cv->allchars = realloc(cv->allchars, sizeof(uint32_t *) * cv->framecount);
-    cv->allattr = realloc(cv->allattr, sizeof(uint32_t *) * cv->framecount);
+    cv->allattrs = realloc(cv->allattrs, sizeof(uint32_t *) * cv->framecount);
 
     if(cv->frame > frame)
         cv->frame--;
@@ -189,7 +189,7 @@ int cucul_free_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
         cv->frame = 0;
 
     cv->chars = cv->allchars[cv->frame];
-    cv->attr = cv->allattr[cv->frame];
+    cv->attrs = cv->allattrs[cv->frame];
 
     return 0;
 }

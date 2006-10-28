@@ -190,7 +190,7 @@ static void win32_display(caca_display_t *dp)
     COORD size, pos;
     SMALL_RECT rect;
     CHAR_INFO *buffer = dp->drv.p->buffer;
-    uint32_t *attr = dp->cv->attr;
+    uint32_t *attrs = dp->cv->attrs;
     uint32_t *chars = dp->cv->chars;
     unsigned int n;
 
@@ -214,9 +214,9 @@ static void win32_display(caca_display_t *dp)
 #endif
 
         buffer->Attributes =
-                win32_fg_palette[_cucul_argb32_to_ansi4fg(*attr)]
-                 | win32_bg_palette[_cucul_argb32_to_ansi4bg(*attr)];
-        attr++;
+                win32_fg_palette[_cucul_attr_to_ansi4fg(*attrs)]
+                 | win32_bg_palette[_cucul_attr_to_ansi4bg(*attrs)];
+        attrs++;
         buffer++;
     }
 

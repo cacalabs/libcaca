@@ -172,7 +172,7 @@ static cucul_canvas_t *import_caca(void const *data, unsigned int size)
             | ((uint32_t)buf[16 + 1 + 8 * n] << 16)
             | ((uint32_t)buf[16 + 2 + 8 * n] << 8)
             | (uint32_t)buf[16 + 3 + 8 * n];
-        cv->attr[n] = ((uint32_t)buf[16 + 4 + 8 * n] << 24)
+        cv->attrs[n] = ((uint32_t)buf[16 + 4 + 8 * n] << 24)
             | ((uint32_t)buf[16 + 5 + 8 * n] << 16)
             | ((uint32_t)buf[16 + 6 + 8 * n] << 8)
             | (uint32_t)buf[16 + 7 + 8 * n];

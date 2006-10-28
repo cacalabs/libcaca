@@ -59,12 +59,11 @@ cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
 
     cv->refcount = 0;
 
-    cv->fgcolor = CUCUL_COLOR_DEFAULT;
-    cv->bgcolor = CUCUL_COLOR_TRANSPARENT;
+    cv->curattr = (CUCUL_COLOR_DEFAULT << 20) | (CUCUL_COLOR_TRANSPARENT < 4);
 
     cv->width = cv->height = 0;
     cv->chars = NULL;
-    cv->attr = NULL;
+    cv->attrs = NULL;
 
     cv->frame = 0;
     cv->framecount = 1;
@@ -74,22 +73,22 @@ cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
         free(cv);
         goto nomem;
     }
-    cv->allattr = malloc(sizeof(uint32_t *));
-    if(!cv->allattr)
+    cv->allattrs = malloc(sizeof(uint32_t *));
+    if(!cv->allattrs)
     {
         free(cv->allchars);
         free(cv);
         goto nomem;
     }
     cv->allchars[0] = NULL;
-    cv->allattr[0] = NULL;
+    cv->allattrs[0] = NULL;
 
     if(_cucul_set_canvas_size(cv, width, height) < 0)
     {
 #if defined(HAVE_ERRNO_H)
         int saved_errno = errno;
 #endif
-        free(cv->allattr);
+        free(cv->allattrs);
         free(cv->allchars);
         free(cv);
 #if defined(HAVE_ERRNO_H)
@@ -246,11 +245,11 @@ int cucul_free_canvas(cucul_canvas_t *cv)
     for(f = 0; f < cv->framecount; f++)
     {
         free(cv->allchars[f]);
-        free(cv->allattr[f]);
+        free(cv->allattrs[f]);
     }
 
     free(cv->allchars);
-    free(cv->allattr);
+    free(cv->allattrs);
     free(cv);
 
     return 0;
@@ -304,9 +303,9 @@ int _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
         {
             cv->allchars[f] = realloc(cv->allchars[f],
                                       new_size * sizeof(uint32_t));
-            cv->allattr[f] = realloc(cv->allattr[f],
+            cv->allattrs[f] = realloc(cv->allattrs[f],
                                      new_size * sizeof(uint32_t));
-            if(!cv->allchars[f] || !cv->allattr[f])
+            if(!cv->allchars[f] || !cv->allattrs[f])
             {
 #if defined(HAVE_ERRNO_H)
                 errno = ENOMEM;
@@ -330,23 +329,23 @@ int _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
         for(f = 0; f < cv->framecount; f++)
         {
             uint32_t *chars = cv->allchars[f];
-            uint32_t *attr = cv->allattr[f];
+            uint32_t *attrs = cv->allattrs[f];
 
             for(y = height < old_height ? height : old_height; y--; )
             {
-                uint32_t color = (cv->bgcolor << 16) | cv->fgcolor;
+                uint32_t attr = cv->curattr;
 
                 for(x = old_width; x--; )
                 {
                     chars[y * width + x] = chars[y * old_width + x];
-                    attr[y * width + x] = attr[y * old_width + x];
+                    attrs[y * width + x] = attrs[y * old_width + x];
                 }
 
                 /* Zero the end of the line */
                 for(x = width - old_width; x--; )
                 {
                     chars[y * width + old_width + x] = (uint32_t)' ';
-                    attr[y * width + old_width + x] = color;
+                    attrs[y * width + old_width + x] = attr;
                 }
             }
         }
@@ -360,14 +359,14 @@ int _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
         for(f = 0; f < cv->framecount; f++)
         {
             uint32_t *chars = cv->allchars[f];
-            uint32_t *attr = cv->allattr[f];
+            uint32_t *attrs = cv->allattrs[f];
 
             for(y = 1; y < lines; y++)
             {
                 for(x = 0; x < width; x++)
                 {
                     chars[y * width + x] = chars[y * old_width + x];
-                    attr[y * width + x] = attr[y * old_width + x];
+                    attrs[y * width + x] = attrs[y * old_width + x];
                 }
             }
         }
@@ -379,14 +378,14 @@ int _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
         for(f = 0; f < cv->framecount; f++)
         {
             uint32_t *chars = cv->allchars[f];
-            uint32_t *attr = cv->allattr[f];
-            uint32_t color = (cv->bgcolor << 16) | cv->fgcolor;
+            uint32_t *attrs = cv->allattrs[f];
+            uint32_t attr = cv->curattr;
 
             /* Zero the bottom of the screen */
             for(x = (height - old_height) * width; x--; )
             {
                 chars[old_height * width + x] = (uint32_t)' ';
-                attr[old_height * width + x] = color;
+                attrs[old_height * width + x] = attr;
             }
         }
     }
@@ -398,9 +397,9 @@ int _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
         {
             cv->allchars[f] = realloc(cv->allchars[f],
                                       new_size * sizeof(uint32_t));
-            cv->allattr[f] = realloc(cv->allattr[f],
+            cv->allattrs[f] = realloc(cv->allattrs[f],
                                      new_size * sizeof(uint32_t));
-            if(!cv->allchars[f] || !cv->allattr[f])
+            if(!cv->allchars[f] || !cv->allattrs[f])
             {
 #if defined(HAVE_ERRNO_H)
                 errno = ENOMEM;
@@ -412,7 +411,7 @@ int _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
 
     /* Reset the current frame shortcut */
     cv->chars = cv->allchars[cv->frame];
-    cv->attr = cv->allattr[cv->frame];
+    cv->attrs = cv->allattrs[cv->frame];
 
     return 0;
 }

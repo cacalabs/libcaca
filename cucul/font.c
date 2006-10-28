@@ -420,7 +420,7 @@ int cucul_render_canvas(cucul_canvas_t *cv, cucul_font_t *f,
             unsigned int starty = y * f->header.height;
             unsigned int startx = x * f->header.width;
             uint32_t ch = cv->chars[y * cv->width + x];
-            uint32_t attr = cv->attr[y * cv->width + x];
+            uint32_t attr = cv->attrs[y * cv->width + x];
             unsigned int b, i, j;
             struct glyph_info *g;
 
@@ -444,7 +444,7 @@ int cucul_render_canvas(cucul_canvas_t *cv, cucul_font_t *f,
             g = &f->glyph_list[f->block_list[b].index
                                 + ch - f->block_list[b].start];
 
-            _cucul_argb32_to_argb4(attr, argb);
+            _cucul_attr_to_argb4(attr, argb);
 
             /* Step 1: unpack glyph */
             switch(f->header.bpp)

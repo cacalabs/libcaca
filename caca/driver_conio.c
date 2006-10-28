@@ -97,7 +97,7 @@ static unsigned int conio_get_display_height(caca_display_t *dp)
 static void conio_display(caca_display_t *dp)
 {
     char *screen = dp->drv.p->screen;
-    uint32_t *attr = dp->cv->attr;
+    uint32_t *attrs = dp->cv->attrs;
     uint32_t *chars = dp->cv->chars;
     unsigned int n;
 
@@ -107,13 +107,13 @@ static void conio_display(caca_display_t *dp)
         if(n && *chars == CUCUL_MAGIC_FULLWIDTH)
         {
             *screen++ = '[';
-            *screen++ = _cucul_argb32_to_ansi8(*attr++);
+            *screen++ = _cucul_attr_to_ansi8(*attrs++);
             ch = ']';
             chars++;
             n--;
         }
         *screen++ = ch;
-        *screen++ = _cucul_argb32_to_ansi8(*attr++);
+        *screen++ = _cucul_attr_to_ansi8(*attrs++);
     }
 #   if defined(SCREENUPDATE_IN_PC_H)
     ScreenUpdate(dp->drv.p->screen);

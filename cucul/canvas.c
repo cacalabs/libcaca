@@ -86,8 +86,8 @@ int cucul_putchar(cucul_canvas_t *cv, int x, int y, unsigned long int ch)
         return 0;
 
     curchar = cv->chars + x + y * cv->width;
-    curattr = cv->attr + x + y * cv->width;
-    attr = (cv->bgcolor << 16) | cv->fgcolor;
+    curattr = cv->attrs + x + y * cv->width;
+    attr = cv->curattr;
 
     /* When overwriting the right part of a fullwidth character,
      * replace its left part with a space. */
@@ -253,13 +253,13 @@ int cucul_printf(cucul_canvas_t *cv, int x, int y, char const *format, ...)
  */
 int cucul_clear_canvas(cucul_canvas_t *cv)
 {
-    uint32_t color = (cv->bgcolor << 16) | cv->fgcolor;
+    uint32_t attr = cv->curattr;
     unsigned int n;
 
     for(n = cv->width * cv->height; n--; )
     {
         cv->chars[n] = (uint32_t)' ';
-        cv->attr[n] = color;
+        cv->attrs[n] = attr;
     }
 
     return 0;
@@ -325,13 +325,13 @@ int cucul_blit(cucul_canvas_t *dst, int x, int y,
                     continue;
 
                 dst->chars[dstix + i] = src->chars[srcix + i];
-                dst->attr[dstix + i] = src->attr[srcix + i];
+                dst->attrs[dstix + i] = src->attrs[srcix + i];
             }
         }
         else
         {
-            memcpy(dst->chars + dstix, src->chars + srcix, (stride) * 4);
-            memcpy(dst->attr + dstix, src->attr + srcix, (stride) * 4);
+            memcpy(dst->chars + dstix, src->chars + srcix, stride * 4);
+            memcpy(dst->attrs + dstix, src->attrs + srcix, stride * 4);
         }
 
         /* Fix split fullwidth chars */
@@ -392,10 +392,10 @@ int cucul_set_canvas_boundaries(cucul_canvas_t *cv, int x, int y,
         cucul_blit(new, -x, -y, cv, NULL);
 
         free(cv->allchars[f]);
-        free(cv->allattr[f]);
+        free(cv->allattrs[f]);
     }
     free(cv->allchars);
-    free(cv->allattr);
+    free(cv->allattrs);
 
     memcpy(cv, new, sizeof(cucul_canvas_t));
     free(new);

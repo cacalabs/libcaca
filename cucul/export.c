@@ -153,7 +153,7 @@ char const * const * cucul_get_export_list(void)
 /* Generate a native libcaca canvas file. */
 static int export_caca(cucul_canvas_t *cv, cucul_buffer_t *ex)
 {
-    uint32_t *attr = cv->attr;
+    uint32_t *attrs = cv->attrs;
     uint32_t *chars = cv->chars;
     char *cur;
     uint32_t w, h;
@@ -177,7 +177,7 @@ static int export_caca(cucul_canvas_t *cv, cucul_buffer_t *ex)
     for(n = cv->height * cv->width; n--; )
     {
         uint32_t ch = *chars++;
-        uint32_t a = *attr++;
+        uint32_t a = *attrs++;
 
         *cur++ = ch >> 24;
         *cur++ = (ch >> 16) & 0xff;
@@ -215,7 +215,7 @@ static int export_utf8(cucul_canvas_t *cv, cucul_buffer_t *ex)
 
     for(y = 0; y < cv->height; y++)
     {
-        uint32_t *lineattr = cv->attr + y * cv->width;
+        uint32_t *lineattr = cv->attrs + y * cv->width;
         uint32_t *linechar = cv->chars + y * cv->width;
 
         uint8_t prevfg = 0x10;
@@ -230,10 +230,10 @@ static int export_utf8(cucul_canvas_t *cv, cucul_buffer_t *ex)
             if(ch == CUCUL_MAGIC_FULLWIDTH)
                 continue;
 
-            fg = ((attr & 0xffff) == CUCUL_COLOR_DEFAULT) ?
-                     0x10 : palette[_cucul_argb32_to_ansi4fg(attr)];
-            bg = ((attr >> 16) == CUCUL_COLOR_TRANSPARENT) ?
-                     0x10 : palette[_cucul_argb32_to_ansi4bg(attr)];
+            fg = ((attr & 0xeffe) == (CUCUL_COLOR_DEFAULT << 4)) ?
+                     0x10 : palette[_cucul_attr_to_ansi4fg(attr)];
+            bg = (((attr >> 16) & 0xeffe) == (CUCUL_COLOR_TRANSPARENT << 4)) ?
+                     0x10 : palette[_cucul_attr_to_ansi4bg(attr)];
 
             /* TODO: the [0 could be omitted in some cases */
             if(fg != prevfg || bg != prevbg)
@@ -297,13 +297,13 @@ static int export_ansi(cucul_canvas_t *cv, cucul_buffer_t *ex)
 
     for(y = 0; y < cv->height; y++)
     {
-        uint32_t *lineattr = cv->attr + y * cv->width;
+        uint32_t *lineattr = cv->attrs + y * cv->width;
         uint32_t *linechar = cv->chars + y * cv->width;
 
         for(x = 0; x < cv->width; x++)
         {
-            uint8_t fg = palette[_cucul_argb32_to_ansi4fg(lineattr[x])];
-            uint8_t bg = palette[_cucul_argb32_to_ansi4bg(lineattr[x])];
+            uint8_t fg = palette[_cucul_attr_to_ansi4fg(lineattr[x])];
+            uint8_t bg = palette[_cucul_attr_to_ansi4bg(lineattr[x])];
             uint32_t ch = linechar[x];
 
             if(ch == CUCUL_MAGIC_FULLWIDTH)
@@ -376,15 +376,15 @@ static int export_html(cucul_canvas_t *cv, cucul_buffer_t *ex)
 
     for(y = 0; y < cv->height; y++)
     {
-        uint32_t *lineattr = cv->attr + y * cv->width;
+        uint32_t *lineattr = cv->attrs + y * cv->width;
         uint32_t *linechar = cv->chars + y * cv->width;
 
         for(x = 0; x < cv->width; x += len)
         {
             cur += sprintf(cur, "<span style=\"color:#%.03x;"
                                 "background-color:#%.03x\">",
-                                _cucul_argb32_to_rgb12fg(lineattr[x]),
-                                _cucul_argb32_to_rgb12bg(lineattr[x]));
+                                _cucul_attr_to_rgb12fg(lineattr[x]),
+                                _cucul_attr_to_rgb12bg(lineattr[x]));
 
             for(len = 0;
                 x + len < cv->width && lineattr[x + len] == lineattr[x];
@@ -441,7 +441,7 @@ static int export_html3(cucul_canvas_t *cv, cucul_buffer_t *ex)
 
     for(y = 0; y < cv->height; y++)
     {
-        uint32_t *lineattr = cv->attr + y * cv->width;
+        uint32_t *lineattr = cv->attrs + y * cv->width;
         uint32_t *linechar = cv->chars + y * cv->width;
 
         cur += sprintf(cur, "<tr>");
@@ -457,13 +457,13 @@ static int export_html3(cucul_canvas_t *cv, cucul_buffer_t *ex)
                 len++;
 
             cur += sprintf(cur, "<td bgcolor=#%.06lx", (unsigned long int)
-                           _cucul_argb32_to_rgb24bg(lineattr[x]));
+                           _cucul_attr_to_rgb24bg(lineattr[x]));
 
             if(len > 1)
                 cur += sprintf(cur, " colspan=%d", len);
 
             cur += sprintf(cur, "><font color=#%.06lx>", (unsigned long int)
-                           _cucul_argb32_to_rgb24fg(lineattr[x]));
+                           _cucul_attr_to_rgb24fg(lineattr[x]));
 
             for(i = 0; i < len; i++)
             {
@@ -521,7 +521,7 @@ static int export_irc(cucul_canvas_t *cv, cucul_buffer_t *ex)
 
     for(y = 0; y < cv->height; y++)
     {
-        uint32_t *lineattr = cv->attr + y * cv->width;
+        uint32_t *lineattr = cv->attrs + y * cv->width;
         uint32_t *linechar = cv->chars + y * cv->width;
 
         uint8_t prevfg = 0x10;
@@ -530,17 +530,17 @@ static int export_irc(cucul_canvas_t *cv, cucul_buffer_t *ex)
         for(x = 0; x < cv->width; x++)
         {
             uint32_t attr = lineattr[x];
-            uint8_t fg = palette[_cucul_argb32_to_ansi4fg(attr)];
-            uint8_t bg = palette[_cucul_argb32_to_ansi4bg(attr)];
+            uint8_t fg = palette[_cucul_attr_to_ansi4fg(attr)];
+            uint8_t bg = palette[_cucul_attr_to_ansi4bg(attr)];
             uint32_t ch = linechar[x];
 
             if(ch == CUCUL_MAGIC_FULLWIDTH)
                 continue;
 
-            if((attr & 0xffff) == CUCUL_COLOR_DEFAULT)
+            if((attr & 0xeffe) == (CUCUL_COLOR_DEFAULT << 4))
                 fg = 0x10;
 
-            if((attr >> 16) == CUCUL_COLOR_TRANSPARENT)
+            if(((attr >> 16) & 0xeffe) == (CUCUL_COLOR_TRANSPARENT << 4))
                 bg = 0x10;
 
             /* TODO: optimise series of same fg / same bg
@@ -644,12 +644,12 @@ static int export_ps(cucul_canvas_t *cv, cucul_buffer_t *ex)
     /* Background, drawn using csquare macro defined in header */
     for(y = cv->height; y--; )
     {
-        uint32_t *lineattr = cv->attr + y * cv->width;
+        uint32_t *lineattr = cv->attrs + y * cv->width;
 
         for(x = 0; x < cv->width; x++)
         {
             uint8_t argb[8];
-            _cucul_argb32_to_argb4(*lineattr++, argb);
+            _cucul_attr_to_argb4(*lineattr++, argb);
             cur += sprintf(cur, "1 0 translate\n %f %f %f csquare\n",
                            (float)argb[1] * (1.0 / 0xf),
                            (float)argb[2] * (1.0 / 0xf),
@@ -665,7 +665,7 @@ static int export_ps(cucul_canvas_t *cv, cucul_buffer_t *ex)
 
     for(y = cv->height; y--; )
     {
-        uint32_t *lineattr = cv->attr + (cv->height - y - 1) * cv->width;
+        uint32_t *lineattr = cv->attrs + (cv->height - y - 1) * cv->width;
         uint32_t *linechar = cv->chars + (cv->height - y - 1) * cv->width;
 
         for(x = 0; x < cv->width; x++)
@@ -673,7 +673,7 @@ static int export_ps(cucul_canvas_t *cv, cucul_buffer_t *ex)
             uint8_t argb[8];
             uint32_t ch = *linechar++;
 
-            _cucul_argb32_to_argb4(*lineattr++, argb);
+            _cucul_attr_to_argb4(*lineattr++, argb);
 
             cur += sprintf(cur, "newpath\n");
             cur += sprintf(cur, "%d %d moveto\n", (x + 1) * 6, y * 10 + 2);
@@ -738,13 +738,13 @@ static int export_svg(cucul_canvas_t *cv, cucul_buffer_t *ex)
     /* Background */
     for(y = 0; y < cv->height; y++)
     {
-        uint32_t *lineattr = cv->attr + y * cv->width;
+        uint32_t *lineattr = cv->attrs + y * cv->width;
 
         for(x = 0; x < cv->width; x++)
         {
             cur += sprintf(cur, "<rect style=\"fill:#%.03x\" x=\"%d\" y=\"%d\""
                                 " width=\"6\" height=\"10\"/>\n",
-                                _cucul_argb32_to_rgb12bg(*lineattr++),
+                                _cucul_attr_to_rgb12bg(*lineattr++),
                                 x * 6, y * 10);
         }
     }
@@ -752,7 +752,7 @@ static int export_svg(cucul_canvas_t *cv, cucul_buffer_t *ex)
     /* Text */
     for(y = 0; y < cv->height; y++)
     {
-        uint32_t *lineattr = cv->attr + y * cv->width;
+        uint32_t *lineattr = cv->attrs + y * cv->width;
         uint32_t *linechar = cv->chars + y * cv->width;
 
         for(x = 0; x < cv->width; x++)
@@ -767,7 +767,7 @@ static int export_svg(cucul_canvas_t *cv, cucul_buffer_t *ex)
 
             cur += sprintf(cur, "<text style=\"fill:#%.03x\" "
                                 "x=\"%d\" y=\"%d\">",
-                                _cucul_argb32_to_rgb12fg(*lineattr++),
+                                _cucul_attr_to_rgb12fg(*lineattr++),
                                 x * 6, (y * 10) + 8);
 
             if(ch < 0x00000020)

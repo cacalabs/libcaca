@@ -40,13 +40,13 @@ static uint32_t rotatechar(uint32_t ch);
  */
 int cucul_invert(cucul_canvas_t *cv)
 {
-    uint32_t *attr = cv->attr;
+    uint32_t *attrs = cv->attrs;
     unsigned int i;
 
     for(i = cv->height * cv->width; i--; )
     {
-        *attr = *attr ^ 0x000f000f;
-        attr++;
+        *attrs = *attrs ^ 0x000f000f;
+        attrs++;
     }
 
     return 0;
@@ -70,7 +70,7 @@ int cucul_flip(cucul_canvas_t *cv)
     {
         uint32_t *cleft = cv->chars + y * cv->width;
         uint32_t *cright = cleft + cv->width - 1;
-        uint32_t *aleft = cv->attr + y * cv->width;
+        uint32_t *aleft = cv->attrs + y * cv->width;
         uint32_t *aright = aleft + cv->width - 1;
 
         while(cleft < cright)
@@ -127,7 +127,7 @@ int cucul_flop(cucul_canvas_t *cv)
     {
         uint32_t *ctop = cv->chars + x;
         uint32_t *cbottom = ctop + cv->width * (cv->height - 1);
-        uint32_t *atop = cv->attr + x;
+        uint32_t *atop = cv->attrs + x;
         uint32_t *abottom = atop + cv->width * (cv->height - 1);
 
         while(ctop < cbottom)
@@ -166,7 +166,7 @@ int cucul_rotate(cucul_canvas_t *cv)
 {
     uint32_t *cbegin = cv->chars;
     uint32_t *cend = cbegin + cv->width * cv->height - 1;
-    uint32_t *abegin = cv->attr;
+    uint32_t *abegin = cv->attrs;
     uint32_t *aend = abegin + cv->width * cv->height - 1;
     unsigned int y;
 
