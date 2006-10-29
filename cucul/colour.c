@@ -30,15 +30,6 @@
 int cucul_set_color(cucul_canvas_t *, unsigned char, unsigned char);
 int cucul_set_truecolor(cucul_canvas_t *, unsigned int, unsigned int);
 
-/* RGB colours for the ANSI palette. There is no real standard, so we
- * use the same values as gnome-terminal. The 7th colour (brown) is a bit
- * special: 0xfa50 instead of 0xfaa0. */
-static const uint16_t ansitab[16] =
-{
-    0xf000, 0xf00a, 0xf0a0, 0xf0aa, 0xfa00, 0xfa0a, 0xfa50, 0xfaaa,
-    0xf555, 0xf55f, 0xf5f5, 0xf5ff, 0xff55, 0xff5f, 0xfff5, 0xffff,
-};
-
 /** \brief Set the default character attribute.
  *
  *  Set the default character attribute for drawing. Attributes define
@@ -47,9 +38,9 @@ static const uint16_t ansitab[16] =
  *  caca_printf() and graphical primitive functions such as caca_draw_line()
  *  will use this attribute.
  *
- *  The attribute value is a 32-bit integer as returned by cucul_get_attr().
- *  For more user-friendly versions of this function, see cucul_set_attr_ansi()
- *  and cucul_set_attr_argb().
+ *  The attribute value is a 32-bit integer as returned by cucul_get_attr()
+ *  or created using cucul_ansi_to_attr() and cucul_argb_to_attr(), optionally
+ *  ORed with style values such as CUCUL_UNDERLINE or CUCUL_BLINK.
  *
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
  *  - \c EINVAL The attribute value is out of the 32-bit range.
@@ -79,14 +70,14 @@ int cucul_set_attr(cucul_canvas_t *cv, unsigned long int attr)
  *  functions such as caca_printf() and graphical primitive functions such as
  *  caca_draw_line() will use these attributes.
  *
- *  Color values are those defined in cucul.h, such as CUCUL_COLOR_RED
- *  or CUCUL_COLOR_TRANSPARENT.
+ *  Color values are those defined in cucul.h, such as CUCUL_RED
+ *  or CUCUL_TRANSPARENT.
  *
- *  Style values are those defined in cucul.h, such as CUCUL_STYLE_UNDERLINE
- *  or CUCUL_STYLE_BLINK. The values can be ORed to set several styles at
+ *  Style values are those defined in cucul.h, such as CUCUL_UNDERLINE
+ *  or CUCUL_BLINK. The values can be ORed to set several styles at
  *  the same time.
  *
- *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  If an error occurs, 0 is returned and \b errno is set accordingly:
  *  - \c EINVAL The colour values and/or the style mask are invalid.
  *
  *  \param cv A handle to the libcucul canvas.
@@ -95,33 +86,23 @@ int cucul_set_attr(cucul_canvas_t *cv, unsigned long int attr)
  *  \param style The requested text styles.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_set_attr_ansi(cucul_canvas_t *cv, unsigned char fg, unsigned char bg,
-                        unsigned char style)
+unsigned long int cucul_ansi_to_attr(unsigned char fg, unsigned char bg)
 {
-    uint32_t attr;
-
-    if(fg > 0x20 || bg > 0x20 || style > 0x0f)
+    if(fg > 0x20 || bg > 0x20)
     {
 #if defined(HAVE_ERRNO_H)
         errno = EINVAL;
 #endif
-        return -1;
+        return 0;
     }
 
-    attr = ((uint32_t)bg << 20) | ((uint32_t)fg << 4);
-
-    if(style)
-        attr |= (0x02004801 * style) & 0x10011001;
-
-    cv->curattr = attr;
-
-    return 0;
+    return ((unsigned long int)bg << 18) | ((unsigned long int)fg << 4);
 }
 
 /* Legacy function for old programs */
 int cucul_set_color(cucul_canvas_t *cv, unsigned char fg, unsigned char bg)
 {
-    return cucul_set_attr_ansi(cv, fg, bg, 0);
+    return cucul_set_attr(cv, cucul_ansi_to_attr(fg, bg));
 }
 
 /** \brief Set the default colour pair and text style (truecolor version).
@@ -134,11 +115,7 @@ int cucul_set_color(cucul_canvas_t *cv, unsigned char fg, unsigned char bg)
  *  instance, 0xf088 is solid dark cyan (A=15 R=0 G=8 B=8), and 0x8fff is
  *  white with 50% alpha (A=8 R=15 G=15 B=15).
  *
- *  Style values are those defined in cucul.h, such as CUCUL_STYLE_UNDERLINE
- *  or CUCUL_STYLE_BLINK. The values can be ORed to set several styles at
- *  the same time.
- *
- *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  If an error occurs, 0 is returned and \b errno is set accordingly:
  *  - \c EINVAL At least one of the colour values is invalid.
  *
  *  \param cv A handle to the libcucul canvas.
@@ -147,12 +124,9 @@ int cucul_set_color(cucul_canvas_t *cv, unsigned char fg, unsigned char bg)
  *  \param style The requested text styles.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_set_attr_argb(cucul_canvas_t *cv, unsigned int fg, unsigned int bg,
-                        unsigned char style)
+unsigned long int cucul_argb_to_attr(unsigned int fg, unsigned int bg)
 {
-    uint32_t attr;
-
-    if(fg > 0xffff || bg > 0xffff || style > 0x0f)
+    if(fg > 0xffff || bg > 0xffff)
     {
 #if defined(HAVE_ERRNO_H)
         errno = EINVAL;
@@ -166,20 +140,16 @@ int cucul_set_attr_argb(cucul_canvas_t *cv, unsigned int fg, unsigned int bg,
     if(bg < 0x100)
         bg += 0x100;
 
-    attr = (((uint32_t)bg << 16) | (uint32_t)fg) & 0xeffeeffe;
+    fg = ((fg >> 1) & 0x7ff) | ((fg >> 13) << 11);
+    bg = ((bg >> 1) & 0x7ff) | ((bg >> 13) << 11);
 
-    if(style)
-        attr |= (0x02004801 * style) & 0x10011001;
-
-    cv->curattr = attr;
-
-    return 0;
+    return ((unsigned long int)bg << 18) | ((unsigned long int)fg << 4);
 }
 
 /* Legacy function for old programs */
 int cucul_set_truecolor(cucul_canvas_t *cv, unsigned int fg, unsigned int bg)
 {
-    return cucul_set_attr_argb(cv, fg, bg, 0);
+    return cucul_set_attr(cv, cucul_argb_to_attr(fg, bg));
 }
 
 /** \brief Get the text attribute at the given coordinates.
@@ -188,17 +158,14 @@ int cucul_set_truecolor(cucul_canvas_t *cv, unsigned int fg, unsigned int bg)
  *  given coordinates. The attribute value has 32 significant bits,
  *  organised as follows from MSB to LSB:
  *  - 3 bits for the background alpha
- *  - 1 bit for the blink flag
  *  - 4 bits for the background red component
  *  - 4 bits for the background green component
  *  - 3 bits for the background blue component
- *  - 1 bit for the underline flag
  *  - 3 bits for the foreground alpha
- *  - 1 bit for the italics flag
  *  - 4 bits for the foreground red component
  *  - 4 bits for the foreground green component
  *  - 3 bits for the foreground blue component
- *  - 1 bit for the bold flag
+ *  - 4 bits for the bold, italics, underline and blink flags
  *
  *  If the coordinates are outside the canvas boundaries, the current
  *  attribute is returned.
@@ -222,37 +189,52 @@ unsigned long int cucul_get_attr(cucul_canvas_t *cv, int x, int y)
  * XXX: the following functions are local
  */
 
-static uint8_t nearest_ansi(uint16_t argb16, uint8_t def)
+/* RGB colours for the ANSI palette. There is no real standard, so we
+ * use the same values as gnome-terminal. The 7th colour (brown) is a bit
+ * special: 0xfa50 instead of 0xfaa0. */
+static const uint16_t ansitab16[16] =
+{
+    0xf000, 0xf00a, 0xf0a0, 0xf0aa, 0xfa00, 0xfa0a, 0xfa50, 0xfaaa,
+    0xf555, 0xf55f, 0xf5f5, 0xf5ff, 0xff55, 0xff5f, 0xfff5, 0xffff,
+};
+
+/* Same table, except on 14 bits (3-4-4-3) */
+static const uint16_t ansitab14[16] =
+{
+    0x3800, 0x3805, 0x3850, 0x3855, 0x3d00, 0x3d05, 0x3d28, 0x3d55,
+    0x3aaa, 0x3aaf, 0x3afa, 0x3aff, 0x3faa, 0x3faf, 0x3ffa, 0x3fff,
+};
+
+static uint8_t nearest_ansi(uint16_t argb14, uint8_t def)
 {
     unsigned int i, best, dist;
 
-    if(argb16 == (argb16 & 0x00f0))
-        return argb16 >> 4;
+    if(argb14 < 0x0010)
+        return argb14;
 
-    if(argb16 == (CUCUL_COLOR_DEFAULT << 4)
-       || argb16 == (CUCUL_COLOR_TRANSPARENT << 4))
+    if(argb14 == CUCUL_DEFAULT || argb14 == CUCUL_TRANSPARENT)
         return def;
 
-    if(argb16 < 0x6fff) /* too transparent, return default colour */
+    if(argb14 < 0x0fff) /* too transparent, return default colour */
         return def;
 
     best = def;
-    dist = 0xffff;
+    dist = 0x3fff;
     for(i = 0; i < 16; i++)
     {
         unsigned int d = 0;
         int a, b;
 
-        a = (ansitab[i] >> 8) & 0xf;
-        b = (argb16 >> 8) & 0xf;
+        a = (ansitab14[i] >> 7) & 0xf;
+        b = (argb14 >> 7) & 0xf;
         d += (a - b) * (a - b);
 
-        a = (ansitab[i] >> 4) & 0xf;
-        b = (argb16 >> 4) & 0xf;
+        a = (ansitab14[i] >> 3) & 0xf;
+        b = (argb14 >> 3) & 0xf;
         d += (a - b) * (a - b);
 
-        a = ansitab[i] & 0xf;
-        b = argb16 & 0xf;
+        a = (ansitab14[i] << 1) & 0xf;
+        b = (argb14 << 1) & 0xf;
         d += (a - b) * (a - b);
 
         if(d < dist)
@@ -267,53 +249,53 @@ static uint8_t nearest_ansi(uint16_t argb16, uint8_t def)
 
 uint8_t _cucul_attr_to_ansi8(uint32_t attr)
 {
-    uint16_t fg = attr & 0xeffe;
-    uint16_t bg = (attr >> 16) & 0xeffe;
+    uint16_t fg = (attr >> 4) & 0x3fff;
+    uint16_t bg = attr >> 18;
 
-    return nearest_ansi(fg, CUCUL_COLOR_LIGHTGRAY)
-            | (nearest_ansi(bg, CUCUL_COLOR_BLACK) << 4);
+    return nearest_ansi(fg, CUCUL_LIGHTGRAY)
+            | (nearest_ansi(bg, CUCUL_BLACK) << 4);
 }
 
 uint8_t _cucul_attr_to_ansi4fg(uint32_t attr)
 {
-    return nearest_ansi(attr & 0xeffe, CUCUL_COLOR_LIGHTGRAY);
+    return nearest_ansi((attr >> 4) & 0x3fff, CUCUL_LIGHTGRAY);
 }
 
 uint8_t _cucul_attr_to_ansi4bg(uint32_t attr)
 {
-    return nearest_ansi((attr >> 16) & 0xeffe, CUCUL_COLOR_BLACK);
+    return nearest_ansi(attr >> 18, CUCUL_BLACK);
 }
 
 uint16_t _cucul_attr_to_rgb12fg(uint32_t attr)
 {
-    uint16_t fg = attr & 0xeffe;
+    uint16_t fg = (attr >> 4) & 0x3fff;
 
-    if(fg == (fg & 0x00f0))
-        return ansitab[fg >> 4] & 0x0fff;
+    if(fg < 0x0010)
+        return ansitab16[fg] & 0x0fff;
 
-    if(fg == (CUCUL_COLOR_DEFAULT << 4))
-        return ansitab[CUCUL_COLOR_LIGHTGRAY] & 0x0fff;
+    if(fg == CUCUL_DEFAULT)
+        return ansitab16[CUCUL_LIGHTGRAY] & 0x0fff;
 
-    if(fg == (CUCUL_COLOR_TRANSPARENT << 4))
-        return ansitab[CUCUL_COLOR_LIGHTGRAY] & 0x0fff;
+    if(fg == CUCUL_TRANSPARENT)
+        return ansitab16[CUCUL_LIGHTGRAY] & 0x0fff;
 
-    return fg & 0x0fff;
+    return (fg << 1) & 0x0fff;
 }
 
 uint16_t _cucul_attr_to_rgb12bg(uint32_t attr)
 {
-    uint16_t bg = (attr >> 16) & 0xeffe;
+    uint16_t bg = attr >> 18;
 
-    if(bg == (bg & 0x00f0))
-        return ansitab[bg >> 4] & 0x0fff;
+    if(bg < 0x0010)
+        return ansitab16[bg] & 0x0fff;
 
-    if(bg == (CUCUL_COLOR_DEFAULT << 4))
-        return ansitab[CUCUL_COLOR_BLACK] & 0x0fff;
+    if(bg == CUCUL_DEFAULT)
+        return ansitab16[CUCUL_BLACK] & 0x0fff;
 
-    if(bg == (CUCUL_COLOR_TRANSPARENT << 4))
-        return ansitab[CUCUL_COLOR_BLACK] & 0x0fff;
+    if(bg == CUCUL_TRANSPARENT)
+        return ansitab16[CUCUL_BLACK] & 0x0fff;
 
-    return bg & 0x0fff;
+    return (bg << 1) & 0x0fff;
 }
 
 #define RGB12TO24(i) \
@@ -333,27 +315,31 @@ uint32_t _cucul_attr_to_rgb24bg(uint32_t attr)
 
 void _cucul_attr_to_argb4(uint32_t attr, uint8_t argb[8])
 {
-    uint16_t fg = attr & 0xeffe;
-    uint16_t bg = (attr >> 16) & 0xeffe;
+    uint16_t fg = (attr >> 4) & 0x3fff;
+    uint16_t bg = attr >> 18;
 
-    if(fg == (fg & 0x00f0))
-        fg = ansitab[fg >> 4];
-    else if(fg == (CUCUL_COLOR_DEFAULT << 4))
-        fg = ansitab[CUCUL_COLOR_LIGHTGRAY];
-    else if(fg == (CUCUL_COLOR_TRANSPARENT << 4))
-        fg = 0x0fff;
-
-    if(bg == (bg & 0x00f0))
-        bg = ansitab[bg >> 4];
-    else if(bg == (CUCUL_COLOR_DEFAULT << 4))
-        bg = ansitab[CUCUL_COLOR_BLACK];
-    else if(bg == (CUCUL_COLOR_TRANSPARENT << 4))
+    if(bg < 0x0010)
+        bg = ansitab16[bg];
+    else if(bg == CUCUL_DEFAULT)
+        bg = ansitab16[CUCUL_BLACK];
+    else if(bg == CUCUL_TRANSPARENT)
         bg = 0x0fff;
+    else
+        bg = ((bg << 2) & 0xf000) | ((bg << 1) & 0x0fff);
 
     argb[0] = bg >> 12;
     argb[1] = (bg >> 8) & 0xf;
     argb[2] = (bg >> 4) & 0xf;
     argb[3] = bg & 0xf;
+
+    if(fg < 0x0010)
+        fg = ansitab16[fg];
+    else if(fg == CUCUL_DEFAULT)
+        fg = ansitab16[CUCUL_LIGHTGRAY];
+    else if(fg == CUCUL_TRANSPARENT)
+        fg = 0x0fff;
+    else
+        fg = ((fg << 2) & 0xf000) | ((fg << 1) & 0x0fff);
 
     argb[4] = fg >> 12;
     argb[5] = (fg >> 8) & 0xf;

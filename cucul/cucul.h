@@ -42,33 +42,32 @@ typedef struct cucul_font cucul_font_t;
 
 /** \defgroup attributes libcucul attribute definitions
  *
- *  Colours and styles that can be used with cucul_set_attr_ansi() and
- *  cucul_set_attr_argb().
+ *  Colours and styles that can be used with cucul_set_attr().
  *
  *  @{ */
-#define CUCUL_COLOR_BLACK 0x00 /**< The colour index for black. */
-#define CUCUL_COLOR_BLUE 0x01 /**< The colour index for blue. */
-#define CUCUL_COLOR_GREEN 0x02 /**< The colour index for green. */
-#define CUCUL_COLOR_CYAN 0x03 /**< The colour index for cyan. */
-#define CUCUL_COLOR_RED 0x04 /**< The colour index for red. */
-#define CUCUL_COLOR_MAGENTA 0x05 /**< The colour index for magenta. */
-#define CUCUL_COLOR_BROWN 0x06 /**< The colour index for brown. */
-#define CUCUL_COLOR_LIGHTGRAY 0x07 /**< The colour index for light gray. */
-#define CUCUL_COLOR_DARKGRAY 0x08 /**< The colour index for dark gray. */
-#define CUCUL_COLOR_LIGHTBLUE 0x09 /**< The colour index for blue. */
-#define CUCUL_COLOR_LIGHTGREEN 0x0a /**< The colour index for light green. */
-#define CUCUL_COLOR_LIGHTCYAN 0x0b /**< The colour index for light cyan. */
-#define CUCUL_COLOR_LIGHTRED 0x0c /**< The colour index for light red. */
-#define CUCUL_COLOR_LIGHTMAGENTA 0x0d /**< The colour index for light magenta. */
-#define CUCUL_COLOR_YELLOW 0x0e /**< The colour index for yellow. */
-#define CUCUL_COLOR_WHITE 0x0f /**< The colour index for white. */
-#define CUCUL_COLOR_DEFAULT 0x10 /**< The output driver's default colour. */
-#define CUCUL_COLOR_TRANSPARENT 0x20 /**< The transparent colour. */
+#define CUCUL_BLACK 0x00 /**< The colour index for black. */
+#define CUCUL_BLUE 0x01 /**< The colour index for blue. */
+#define CUCUL_GREEN 0x02 /**< The colour index for green. */
+#define CUCUL_CYAN 0x03 /**< The colour index for cyan. */
+#define CUCUL_RED 0x04 /**< The colour index for red. */
+#define CUCUL_MAGENTA 0x05 /**< The colour index for magenta. */
+#define CUCUL_BROWN 0x06 /**< The colour index for brown. */
+#define CUCUL_LIGHTGRAY 0x07 /**< The colour index for light gray. */
+#define CUCUL_DARKGRAY 0x08 /**< The colour index for dark gray. */
+#define CUCUL_LIGHTBLUE 0x09 /**< The colour index for blue. */
+#define CUCUL_LIGHTGREEN 0x0a /**< The colour index for light green. */
+#define CUCUL_LIGHTCYAN 0x0b /**< The colour index for light cyan. */
+#define CUCUL_LIGHTRED 0x0c /**< The colour index for light red. */
+#define CUCUL_LIGHTMAGENTA 0x0d /**< The colour index for light magenta. */
+#define CUCUL_YELLOW 0x0e /**< The colour index for yellow. */
+#define CUCUL_WHITE 0x0f /**< The colour index for white. */
+#define CUCUL_DEFAULT 0x10 /**< The output driver's default colour. */
+#define CUCUL_TRANSPARENT 0x20 /**< The transparent colour. */
 
-#define CUCUL_STYLE_BOLD 0x01 /**< The style mask for bold. */
-#define CUCUL_STYLE_ITALICS 0x02 /**< The style mask for italics. */
-#define CUCUL_STYLE_UNDERLINE 0x04 /**< The style mask for underline. */
-#define CUCUL_STYLE_BLINK 0x08 /**< The style mask for blink. */
+#define CUCUL_BOLD 0x01 /**< The style mask for bold. */
+#define CUCUL_ITALICS 0x02 /**< The style mask for italics. */
+#define CUCUL_UNDERLINE 0x04 /**< The style mask for underline. */
+#define CUCUL_BLINK 0x08 /**< The style mask for blink. */
 /*  @} */
 
 /** \defgroup cucul libcucul basic functions
@@ -105,11 +104,9 @@ int cucul_free_buffer(cucul_buffer_t *);
  *  @{ */
 #define CUCUL_MAGIC_FULLWIDTH 0x000ffffe /**< Used to indicate that the previous character was a fullwidth glyph. */
 int cucul_set_attr(cucul_canvas_t *, unsigned long int);
-int cucul_set_attr_ansi(cucul_canvas_t *, unsigned char, unsigned char,
-                        unsigned char);
-int cucul_set_attr_argb(cucul_canvas_t *, unsigned int, unsigned int,
-                        unsigned char);
 unsigned long int cucul_get_attr(cucul_canvas_t *, int, int);
+unsigned long int cucul_ansi_to_attr(unsigned char, unsigned char);
+unsigned long int cucul_argb_to_attr(unsigned int, unsigned int);
 char const *cucul_get_color_name(unsigned int);
 int cucul_putchar(cucul_canvas_t *, int, int, unsigned long int);
 unsigned long int cucul_getchar(cucul_canvas_t *, int, int);
@@ -239,6 +236,26 @@ char const * const * cucul_get_export_list(void);
 cucul_canvas_t * cucul_import_canvas(cucul_buffer_t *, char const *);
 char const * const * cucul_get_import_list(void);
 /*  @} */
+
+/* Legacy macros */
+#define CUCUL_COLOR_BLACK CUCUL_BLACK
+#define CUCUL_COLOR_BLUE CUCUL_BLUE
+#define CUCUL_COLOR_GREEN CUCUL_GREEN
+#define CUCUL_COLOR_CYAN CUCUL_CYAN
+#define CUCUL_COLOR_RED CUCUL_RED
+#define CUCUL_COLOR_MAGENTA CUCUL_MAGENTA
+#define CUCUL_COLOR_BROWN CUCUL_BROWN
+#define CUCUL_COLOR_LIGHTGRAY CUCUL_LIGHTGRAY
+#define CUCUL_COLOR_DARKGRAY CUCUL_DARKGRAY
+#define CUCUL_COLOR_LIGHTBLUE CUCUL_LIGHTBLUE
+#define CUCUL_COLOR_LIGHTGREEN CUCUL_LIGHTGREEN
+#define CUCUL_COLOR_LIGHTCYAN CUCUL_LIGHTCYAN
+#define CUCUL_COLOR_LIGHTRED CUCUL_LIGHTRED
+#define CUCUL_COLOR_LIGHTMAGENTA CUCUL_LIGHTMAGENTA
+#define CUCUL_COLOR_YELLOW CUCUL_YELLOW
+#define CUCUL_COLOR_WHITE CUCUL_YELLOW
+#define CUCUL_COLOR_DEFAULT CUCUL_DEFAULT
+#define CUCUL_COLOR_TRANSPARENT CUCUL_TRANSPARENT
 
 #ifdef __cplusplus
 }

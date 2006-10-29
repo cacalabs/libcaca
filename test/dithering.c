@@ -27,12 +27,8 @@
 
 unsigned int points[] =
 {
-    CUCUL_COLOR_BLACK,
-    CUCUL_COLOR_DARKGRAY,
-    CUCUL_COLOR_LIGHTGRAY,
-    CUCUL_COLOR_WHITE,
-    CUCUL_COLOR_RED,
-    CUCUL_COLOR_LIGHTRED
+    CUCUL_BLACK, CUCUL_DARKGRAY, CUCUL_LIGHTGRAY,
+    CUCUL_WHITE, CUCUL_RED, CUCUL_LIGHTRED
 };
 
 char density[] = " ',+:;o&%w$W@#";
@@ -120,7 +116,7 @@ int main(int argc, char *argv[])
             ch = density[distb * 2 * 13 / (dista + distb)];
         else
             ch = density[dista * 2 * 13 / (dista + distb)];
-        cucul_set_attr_ansi(cv, points[nearb], points[neara], 0);
+        cucul_set_attr(cv, cucul_ansi_to_attr(points[nearb], points[neara]));
 
         cucul_putchar(cv, x * cucul_get_canvas_width(cv) / 100,
                           (100 - y) * cucul_get_canvas_height(cv) / 100, ch);

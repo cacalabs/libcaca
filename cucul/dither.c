@@ -1000,7 +1000,7 @@ int cucul_dither_bitmap(cucul_canvas_t *cv, int x, int y, int w, int h,
             if(rgba[1] > lum) lum = rgba[1];
             if(rgba[2] > lum) lum = rgba[2];
             outfg = outbg;
-            outbg = CUCUL_COLOR_BLACK;
+            outbg = CUCUL_BLACK;
 
             ch = lum * dchmax / 0x1000;
             if(ch < 0)
@@ -1042,7 +1042,7 @@ int cucul_dither_bitmap(cucul_canvas_t *cv, int x, int y, int w, int h,
         }
 
         /* Now output the character */
-        cucul_set_attr_ansi(cv, outfg, outbg, 0);
+        cucul_set_attr(cv, cucul_ansi_to_attr(outfg, outbg));
         cucul_putchar(cv, x, y, outch);
 
        d->increment_dither();
@@ -1378,16 +1378,16 @@ int _cucul_init_dither(void)
     unsigned int v, s, h;
 
     /* These ones are constant */
-    lookup_colors[0] = CUCUL_COLOR_BLACK;
-    lookup_colors[1] = CUCUL_COLOR_DARKGRAY;
-    lookup_colors[2] = CUCUL_COLOR_LIGHTGRAY;
-    lookup_colors[3] = CUCUL_COLOR_WHITE;
+    lookup_colors[0] = CUCUL_BLACK;
+    lookup_colors[1] = CUCUL_DARKGRAY;
+    lookup_colors[2] = CUCUL_LIGHTGRAY;
+    lookup_colors[3] = CUCUL_WHITE;
 
     /* These ones will be overwritten */
-    lookup_colors[4] = CUCUL_COLOR_MAGENTA;
-    lookup_colors[5] = CUCUL_COLOR_LIGHTMAGENTA;
-    lookup_colors[6] = CUCUL_COLOR_RED;
-    lookup_colors[7] = CUCUL_COLOR_LIGHTRED;
+    lookup_colors[4] = CUCUL_MAGENTA;
+    lookup_colors[5] = CUCUL_LIGHTMAGENTA;
+    lookup_colors[6] = CUCUL_RED;
+    lookup_colors[7] = CUCUL_LIGHTRED;
 
     for(v = 0; v < LOOKUP_VAL; v++)
         for(s = 0; s < LOOKUP_SAT; s++)

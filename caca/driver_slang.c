@@ -222,13 +222,13 @@ static void slang_display(caca_display_t *dp)
 
             if(fgcolor == bgcolor)
             {
-                if(fgcolor == CUCUL_COLOR_BLACK)
-                    fgcolor = CUCUL_COLOR_WHITE;
-                else if(fgcolor == CUCUL_COLOR_WHITE
-                         || fgcolor <= CUCUL_COLOR_LIGHTGRAY)
-                    fgcolor = CUCUL_COLOR_BLACK;
+                if(fgcolor == CUCUL_BLACK)
+                    fgcolor = CUCUL_WHITE;
+                else if(fgcolor == CUCUL_WHITE
+                         || fgcolor <= CUCUL_LIGHTGRAY)
+                    fgcolor = CUCUL_BLACK;
                 else
-                    fgcolor = CUCUL_COLOR_WHITE;
+                    fgcolor = CUCUL_WHITE;
                 SLsmg_set_color(slang_assoc[fgcolor + 16 * bgcolor]);
                 SLsmg_write_char(' ');
                 attrs++;

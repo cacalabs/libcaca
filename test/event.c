@@ -41,7 +41,7 @@ int main(int argc, char **argv)
 
     h = cucul_get_canvas_height(cv) - 1;
 
-    cucul_set_attr_ansi(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE, 0);
+    cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_WHITE, CUCUL_BLUE));
     cucul_draw_line(cv, 0, 0, cucul_get_canvas_width(cv) - 1, 0, " ");
 
     cucul_draw_line(cv, 0, h, cucul_get_canvas_width(cv) - 1, h, " ");
@@ -83,11 +83,11 @@ int main(int argc, char **argv)
         }
         while(ret);
 
-        cucul_set_attr_ansi(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK, 0);
+        cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_LIGHTGRAY, CUCUL_BLACK));
         cucul_clear_canvas(cv);
 
         /* Print current event */
-        cucul_set_attr_ansi(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE, 0);
+        cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_WHITE, CUCUL_BLUE));
         cucul_draw_line(cv, 0, 0, cucul_get_canvas_width(cv) - 1, 0, " ");
         print_event(0, 0, events);
 
@@ -95,7 +95,7 @@ int main(int argc, char **argv)
         cucul_printf(cv, 0, h, "type \"quit\" to exit: %s", quit_string[quit]);
 
         /* Print previous events */
-        cucul_set_attr_ansi(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLACK, 0);
+        cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_WHITE, CUCUL_BLACK));
         for(i = 1; i < h && events[i].type; i++)
             print_event(0, i, events + i);
 

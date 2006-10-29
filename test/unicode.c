@@ -24,6 +24,9 @@
 #include "cucul.h"
 #include "caca.h"
 
+#define ATTR_WHITE_ON_BLUE cucul_ansi_to_attr(CUCUL_WHITE, CUCUL_BLUE)
+#define ATTR_DEFAULT cucul_ansi_to_attr(CUCUL_DEFAULT, CUCUL_TRANSPARENT)
+
 int main(int argc, char *argv[])
 {
     cucul_canvas_t *cv;
@@ -32,52 +35,52 @@ int main(int argc, char *argv[])
     cv = cucul_create_canvas(0, 0);
     dp = caca_create_display(cv);
 
-    cucul_set_attr_ansi(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE, 0);
+    cucul_set_attr(cv, ATTR_WHITE_ON_BLUE);
     cucul_putstr(cv, 1, 1, "Basic Unicode support");
 
-    cucul_set_attr_ansi(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK, 0);
+    cucul_set_attr(cv, ATTR_DEFAULT);
     cucul_putstr(cv, 1, 2, "This is ASCII:    | abc DEF 123 !@# |");
     cucul_putstr(cv, 1, 3, "This is Unicode:  | äßç δεφ ☺♥♀ ╞╬╗ |");
     cucul_putstr(cv, 1, 4, "And this is, too: | ἀβϛ ΔЗҒ ᚴᛒᛯ ♩♔✈ |");
 
     cucul_putstr(cv, 1, 5, "If the three lines do not have the same length, there is a bug somewhere.");
 
-    cucul_set_attr_ansi(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE, 0);
+    cucul_set_attr(cv, ATTR_WHITE_ON_BLUE);
     cucul_putstr(cv, 1, 7, "Gradient glyphs");
 
-    cucul_set_attr_ansi(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK, 0);
+    cucul_set_attr(cv, ATTR_DEFAULT);
     cucul_putstr(cv, 31,  8, "  0%");
     cucul_putstr(cv, 31,  9, " 25%");
     cucul_putstr(cv, 31, 10, " 50%");
     cucul_putstr(cv, 31, 11, " 75%");
     cucul_putstr(cv, 31, 12, "100%");
 
-    cucul_set_attr_ansi(cv, CUCUL_COLOR_LIGHTRED, CUCUL_COLOR_LIGHTGREEN, 0);
+    cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_LIGHTRED, CUCUL_LIGHTGREEN));
     cucul_putstr(cv, 1,  8, "                             ");
     cucul_putstr(cv, 1,  9, "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
     cucul_putstr(cv, 1, 10, "▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒");
     cucul_putstr(cv, 1, 11, "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓");
     cucul_putstr(cv, 1, 12, "█████████████████████████████");
 
-    cucul_set_attr_ansi(cv, CUCUL_COLOR_LIGHTGREEN, CUCUL_COLOR_LIGHTRED, 0);
+    cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_LIGHTGREEN, CUCUL_LIGHTRED));
     cucul_putstr(cv, 36,  8, "█████████████████████████████");
     cucul_putstr(cv, 36,  9, "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓");
     cucul_putstr(cv, 36, 10, "▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒");
     cucul_putstr(cv, 36, 11, "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
     cucul_putstr(cv, 36, 12, "                             ");
 
-    cucul_set_attr_ansi(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE, 0);
+    cucul_set_attr(cv, ATTR_WHITE_ON_BLUE);
     cucul_putstr(cv, 1, 14, "Double width characters");
 
-    cucul_set_attr_ansi(cv, CUCUL_COLOR_LIGHTRED, CUCUL_COLOR_BLACK, 0);
+    cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_LIGHTRED, CUCUL_TRANSPARENT));
     cucul_putstr(cv, 1, 15, "| ドラゴン ボーレ |");
-    cucul_set_attr_ansi(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK, 0);
+    cucul_set_attr(cv, ATTR_DEFAULT);
     cucul_putstr(cv, 1, 16, "| ()()()() ()()() |");
-    cucul_set_attr_ansi(cv, CUCUL_COLOR_YELLOW, CUCUL_COLOR_BLACK, 0);
+    cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_YELLOW, CUCUL_TRANSPARENT));
     cucul_putstr(cv, 1, 17, "| ドラゴン");
     cucul_putstr(cv, 12, 17, "ボーレ |");
 
-    cucul_set_attr_ansi(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK, 0);
+    cucul_set_attr(cv, ATTR_DEFAULT);
     cucul_putstr(cv, 1, 18, "If the three lines do not have the same length, there is a bug somewhere.");
 
     cucul_putstr(cv, 1, 20, "CP437 glyphs: ☺ ☻ ♥ ♦ ♣ ♠ • ◘ ○ ◙ ♂ ♀ ♪ ♫ ☼ ► ◄ ↕ ‼ ¶ § ▬ ↨ ↑ ↓ → ← ∟ ↔ ▲ ▼");

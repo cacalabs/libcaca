@@ -115,10 +115,10 @@ int main(int argc, char *argv[])
                             cucul_get_canvas_height(cv), dither, pixels);
         cucul_free_dither(dither);
 
-        cucul_set_attr_ansi(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLACK, 0);
+        cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_WHITE, CUCUL_BLACK));
         cucul_draw_thin_box(cv, 0, 0, WIDTH - 1, HEIGHT - 1);
 
-        cucul_set_attr_ansi(cv, CUCUL_COLOR_BLACK, CUCUL_COLOR_WHITE, 0);
+        cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_BLACK, CUCUL_WHITE));
         cucul_fill_ellipse(cv, WIDTH / 2, HEIGHT / 2,
                                WIDTH / 4, HEIGHT / 4, " ");
         cucul_putstr(cv, WIDTH / 2 - 5, HEIGHT / 2 - 5, "(\") \\o/ <&>");
@@ -126,12 +126,13 @@ int main(int argc, char *argv[])
         cucul_putstr(cv, WIDTH / 2 - 8, HEIGHT / 2 - 2, "[ドラゴン ボーレ]");
         cucul_putstr(cv, WIDTH / 2 - 7, HEIGHT / 2 + 2, "äβç ░▒▓█▓▒░ ΔЗҒ");
 
-        cucul_set_attr_ansi(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_LIGHTBLUE, 0);
+        cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_WHITE, CUCUL_LIGHTBLUE));
         cucul_putstr(cv, WIDTH / 2 - 7, HEIGHT / 2, "    LIBCACA    ");
 
         for(x = 0; x < 16; x++)
         {
-            cucul_set_attr_argb(cv, 0xff00 | x, 0xf00f | (x << 4), 0);
+            cucul_set_attr(cv, cucul_argb_to_attr(0xff00 | x,
+                                                  0xf00f | (x << 4)));
             cucul_putstr(cv, WIDTH / 2 - 7 + x, HEIGHT / 2 + 5, "#");
         }
     }

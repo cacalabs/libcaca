@@ -59,7 +59,7 @@ cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
 
     cv->refcount = 0;
 
-    cv->curattr = (CUCUL_COLOR_DEFAULT << 20) | (CUCUL_COLOR_TRANSPARENT < 4);
+    cv->curattr = (CUCUL_DEFAULT << 20) | (CUCUL_TRANSPARENT < 4);
 
     cv->width = cv->height = 0;
     cv->chars = NULL;

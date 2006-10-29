@@ -230,9 +230,9 @@ static int export_utf8(cucul_canvas_t *cv, cucul_buffer_t *ex)
             if(ch == CUCUL_MAGIC_FULLWIDTH)
                 continue;
 
-            fg = ((attr & 0xeffe) == (CUCUL_COLOR_DEFAULT << 4)) ?
+            fg = (((attr >> 4) & 0x7ffe) == (CUCUL_DEFAULT << 4)) ?
                      0x10 : palette[_cucul_attr_to_ansi4fg(attr)];
-            bg = (((attr >> 16) & 0xeffe) == (CUCUL_COLOR_TRANSPARENT << 4)) ?
+            bg = (((attr >> 18) & 0x7ffe) == (CUCUL_TRANSPARENT << 4)) ?
                      0x10 : palette[_cucul_attr_to_ansi4bg(attr)];
 
             /* TODO: the [0 could be omitted in some cases */
@@ -537,10 +537,10 @@ static int export_irc(cucul_canvas_t *cv, cucul_buffer_t *ex)
             if(ch == CUCUL_MAGIC_FULLWIDTH)
                 continue;
 
-            if((attr & 0xeffe) == (CUCUL_COLOR_DEFAULT << 4))
+            if(((attr >> 4) & 0x7ffe) == (CUCUL_DEFAULT << 4))
                 fg = 0x10;
 
-            if(((attr >> 16) & 0xeffe) == (CUCUL_COLOR_TRANSPARENT << 4))
+            if(((attr >> 18) & 0x7ffe) == (CUCUL_TRANSPARENT << 4))
                 bg = 0x10;
 
             /* TODO: optimise series of same fg / same bg

@@ -202,7 +202,7 @@ static cucul_canvas_t *import_text(void const *data, unsigned int size)
         return NULL;
     }
 
-    cucul_set_attr_ansi(cv, CUCUL_COLOR_DEFAULT, CUCUL_COLOR_TRANSPARENT, 0);
+    cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_DEFAULT, CUCUL_TRANSPARENT));
 
     for(i = 0; i < size; i++)
     {
@@ -384,8 +384,8 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size,
                 break;
             case 'K': /* EL - Erase In Line */
                 if(width < 80)
-                    cucul_set_attr_ansi(cv, CUCUL_COLOR_DEFAULT,
-                                        CUCUL_COLOR_TRANSPARENT, 0);
+                    cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_DEFAULT,
+                                                          CUCUL_TRANSPARENT));
                     cucul_set_canvas_size(cv, width = 80, height);
                 for(j = x; j < 80; j++)
                     cucul_putchar(cv, j, y, ' ');
@@ -435,28 +435,28 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size,
         /* Make sure the canvas is big enough. */
         if((unsigned int)x + wch > width)
         {
-            cucul_set_attr_ansi(cv, CUCUL_COLOR_DEFAULT,
-                                CUCUL_COLOR_TRANSPARENT, 0);
+            cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_DEFAULT,
+                                                  CUCUL_TRANSPARENT));
             cucul_set_canvas_size(cv, width = x + wch, height);
         }
 
         if((unsigned int)y >= height)
         {
-            cucul_set_attr_ansi(cv, CUCUL_COLOR_DEFAULT,
-                                CUCUL_COLOR_TRANSPARENT, 0);
+            cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_DEFAULT,
+                                                  CUCUL_TRANSPARENT));
             cucul_set_canvas_size(cv, width, height = y + 1);
         }
 
         /* Now paste our character */
-        cucul_set_attr_ansi(cv, grcm.efg, grcm.ebg, 0);
+        cucul_set_attr(cv, cucul_ansi_to_attr(grcm.efg, grcm.ebg));
         cucul_putchar(cv, x, y, ch);
         x += wch;
     }
 
     if((unsigned int)y > height)
     {
-        cucul_set_attr_ansi(cv, CUCUL_COLOR_DEFAULT,
-                            CUCUL_COLOR_TRANSPARENT, 0);
+        cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_DEFAULT,
+                                              CUCUL_TRANSPARENT));
         cucul_set_canvas_size(cv, width, height = y);
     }
 
@@ -470,10 +470,8 @@ static void ansi_parse_grcm(cucul_canvas_t *cv, struct ansi_grcm *g,
 {
     static uint8_t const ansi2cucul[] =
     {
-        CUCUL_COLOR_BLACK, CUCUL_COLOR_RED,
-        CUCUL_COLOR_GREEN, CUCUL_COLOR_BROWN,
-        CUCUL_COLOR_BLUE, CUCUL_COLOR_MAGENTA,
-        CUCUL_COLOR_CYAN, CUCUL_COLOR_LIGHTGRAY
+        CUCUL_BLACK, CUCUL_RED, CUCUL_GREEN, CUCUL_BROWN,
+        CUCUL_BLUE, CUCUL_MAGENTA, CUCUL_CYAN, CUCUL_LIGHTGRAY
     };
 
     unsigned int j;
@@ -492,8 +490,8 @@ static void ansi_parse_grcm(cucul_canvas_t *cv, struct ansi_grcm *g,
         else switch(argv[j])
         {
         case 0: /* default rendition */
-            g->fg = CUCUL_COLOR_DEFAULT;
-            g->bg = CUCUL_COLOR_TRANSPARENT;
+            g->fg = CUCUL_DEFAULT;
+            g->bg = CUCUL_TRANSPARENT;
             g->bold = g->negative = g->concealed = 0;
             break;
         case 1: /* bold or increased intensity */
@@ -516,10 +514,10 @@ static void ansi_parse_grcm(cucul_canvas_t *cv, struct ansi_grcm *g,
             g->concealed = 0;
             break;
         case 39: /* default display colour (implementation-defined) */
-            g->fg = CUCUL_COLOR_DEFAULT;
+            g->fg = CUCUL_DEFAULT;
             break;
         case 49: /* default background colour (implementation-defined) */
-            g->bg = CUCUL_COLOR_TRANSPARENT;
+            g->bg = CUCUL_TRANSPARENT;
             break;
         default:
             fprintf(stderr, "unknown sgr %i\n", argv[j]);
@@ -529,7 +527,7 @@ static void ansi_parse_grcm(cucul_canvas_t *cv, struct ansi_grcm *g,
 
     if(g->concealed)
     {
-        g->efg = g->ebg = CUCUL_COLOR_TRANSPARENT;
+        g->efg = g->ebg = CUCUL_TRANSPARENT;
     }
     else
     {
@@ -540,8 +538,8 @@ static void ansi_parse_grcm(cucul_canvas_t *cv, struct ansi_grcm *g,
         {
             if(g->efg < 8)
                 g->efg += 8;
-            else if(g->efg == CUCUL_COLOR_DEFAULT)
-                g->efg = CUCUL_COLOR_WHITE;
+            else if(g->efg == CUCUL_DEFAULT)
+                g->efg = CUCUL_WHITE;
         }
     }
 }

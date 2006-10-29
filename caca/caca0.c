@@ -29,8 +29,8 @@
 /* These variables are needed to emulate old non-thread safe behaviour */
 cucul_canvas_t *__caca0_cv = NULL;
 caca_display_t *__caca0_dp = NULL;
-unsigned char __caca0_fg = CUCUL_COLOR_LIGHTGRAY;
-unsigned char __caca0_bg = CUCUL_COLOR_BLACK;
+unsigned char __caca0_fg = CUCUL_LIGHTGRAY;
+unsigned char __caca0_bg = CUCUL_BLACK;
 char __caca0_utf8[2] = " ";
 
 /* These functions are needed, too */
@@ -60,8 +60,8 @@ int __caca0_init(void)
         __caca0_cv = NULL;
         return -1;
     }
-    __caca0_fg = CUCUL_COLOR_LIGHTGRAY;
-    __caca0_bg = CUCUL_COLOR_BLACK;
+    __caca0_fg = CUCUL_LIGHTGRAY;
+    __caca0_bg = CUCUL_BLACK;
     return 0;
 }
 

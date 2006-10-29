@@ -240,7 +240,7 @@ drawfire (void)
 paused:
   cucul_dither_bitmap(cv, 0, 0, cucul_get_canvas_width(cv),
                       cucul_get_canvas_height(cv), cucul_dither, bitmap);
-  cucul_set_attr_ansi(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE, 0);
+  cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_WHITE, CUCUL_BLUE));
   if (sloop < 100)
     cucul_putstr(cv, cucul_get_canvas_width(cv) - 30,
 		 cucul_get_canvas_height(cv) - 2,
