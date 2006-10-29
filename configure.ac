@@ -278,6 +278,7 @@ if test "${enable_imlib2}" != "no"; then
   if test "${IMLIB2}" = no; then
     AC_MSG_ERROR([[cannot find Imlib2 development files. Without Imlib2, cacaview will only open BMP files; if this is really what you want, re-run configure with '--disable-imlib2'.]])
   fi
+  AC_DEFINE(USE_IMLIB2, 1, Define to 1 to use Imlib2)
 fi
 
 # Build development tools?

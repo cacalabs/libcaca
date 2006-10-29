@@ -334,7 +334,7 @@ int main(int argc, char **argv)
         }
         else if(!im)
         {
-#if defined(HAVE_IMLIB2_H)
+#if defined(USE_IMLIB2)
 #   define ERROR_STRING " Error loading `%s'. "
 #else
 #   define ERROR_STRING " Error loading `%s'. Only BMP is supported. "

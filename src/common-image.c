@@ -20,7 +20,7 @@
 #   include <stdlib.h>
 #endif
 
-#if defined(HAVE_IMLIB2_H)
+#if defined(USE_IMLIB2)
 #   include <Imlib2.h>
 #else
 #   if !defined(__KERNEL__)
@@ -31,7 +31,7 @@
 #include "cucul.h"
 #include "common-image.h"
 
-#if !defined(HAVE_IMLIB2_H)
+#if !defined(USE_IMLIB2)
 static unsigned int u32fread(FILE *);
 static unsigned int u16fread(FILE *);
 static unsigned int u8fread(FILE *);
@@ -42,7 +42,7 @@ struct image * load_image(char const * name)
     struct image * im = malloc(sizeof(struct image));
     unsigned int depth, bpp, rmask, gmask, bmask, amask;
 
-#if defined(HAVE_IMLIB2_H)
+#if defined(USE_IMLIB2)
     Imlib_Image image;
 
     /* Load the new image */
@@ -264,7 +264,7 @@ struct image * load_image(char const * name)
 
 void unload_image(struct image * im)
 {
-#if defined(HAVE_IMLIB2_H)
+#if defined(USE_IMLIB2)
     /* Imlib_Image image = (Imlib_Image)im->priv; */
     imlib_free_image();
 #else
@@ -273,7 +273,7 @@ void unload_image(struct image * im)
     cucul_free_dither(im->dither);
 }
 
-#if !defined(HAVE_IMLIB2_H)
+#if !defined(USE_IMLIB2)
 static unsigned int u32fread(FILE *fp)
 {
     unsigned char buffer[4];
