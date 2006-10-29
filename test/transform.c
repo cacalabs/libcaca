@@ -58,26 +58,26 @@ int main(int argc, char *argv[])
     flop = cucul_create_canvas(70, 6);
     rotate = cucul_create_canvas(70, 6);
 
-    cucul_set_color(normal, CUCUL_COLOR_LIGHTMAGENTA, CUCUL_COLOR_BLACK);
+    cucul_set_attr_ansi(normal, CUCUL_COLOR_LIGHTMAGENTA, CUCUL_COLOR_BLACK, 0);
     for(i = 0; pig[i]; i++)
         cucul_putstr(normal, 55, i, pig[i]);
 
-    cucul_set_color(normal, CUCUL_COLOR_LIGHTGREEN, CUCUL_COLOR_BLACK);
+    cucul_set_attr_ansi(normal, CUCUL_COLOR_LIGHTGREEN, CUCUL_COLOR_BLACK, 0);
     for(i = 0; duck[i]; i++)
         cucul_putstr(normal, 30, 1 + i, duck[i]);
 
-    cucul_set_color(normal, CUCUL_COLOR_LIGHTCYAN, CUCUL_COLOR_BLACK);
+    cucul_set_attr_ansi(normal, CUCUL_COLOR_LIGHTCYAN, CUCUL_COLOR_BLACK, 0);
     cucul_putstr(normal, 1, 1, "hahaha mais vieux porc immonde !! [⽼ ⾗]");
-    cucul_set_color(normal, CUCUL_COLOR_LIGHTRED, CUCUL_COLOR_BLACK);
+    cucul_set_attr_ansi(normal, CUCUL_COLOR_LIGHTRED, CUCUL_COLOR_BLACK, 0);
     cucul_putchar(normal, 38, 1, '|');
 
-    cucul_set_color(normal, CUCUL_COLOR_YELLOW, CUCUL_COLOR_BLACK);
+    cucul_set_attr_ansi(normal, CUCUL_COLOR_YELLOW, CUCUL_COLOR_BLACK, 0);
     cucul_putstr(normal, 4, 2, "\\o\\ \\o| _o/ \\o_ |o/ /o/");
 
-    cucul_set_color(normal, CUCUL_COLOR_WHITE, CUCUL_COLOR_LIGHTRED);
+    cucul_set_attr_ansi(normal, CUCUL_COLOR_WHITE, CUCUL_COLOR_LIGHTRED, 0);
     cucul_putstr(normal, 7, 3, "▙▘▌▙▘▞▖▞▖▌ ▞▖▌ ▌▌");
     cucul_putstr(normal, 7, 4, "▛▖▌▛▖▚▘▚▘▚▖▚▘▚▖▖▖");
-    cucul_set_color(normal, CUCUL_COLOR_BLACK, CUCUL_COLOR_LIGHTRED);
+    cucul_set_attr_ansi(normal, CUCUL_COLOR_BLACK, CUCUL_COLOR_LIGHTRED, 0);
     cucul_putstr(normal, 4, 3, "▓▒░");
     cucul_putstr(normal, 4, 4, "▓▒░");
     cucul_putstr(normal, 24, 3, "░▒▓");
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
     cucul_rotate(rotate);
 
     /* Blit the transformed canvas onto the main canvas */
-    cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
+    cucul_set_attr_ansi(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE, 0);
     cucul_putstr(cv, 0, 0, "normal");
     cucul_blit(cv, 10, 0, normal, NULL);
     cucul_putstr(cv, 0, 6, "flip");

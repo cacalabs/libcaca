@@ -48,7 +48,7 @@ unsigned int cucul_get_canvas_frame_count(cucul_canvas_t *cv)
  *
  *  Set the active canvas frame. All subsequent drawing operations will
  *  be performed on that frame. The current painting context set by
- *  cucul_set_color() or cucul_set_truecolor() is inherited.
+ *  cucul_set_attr_ansi() or cucul_set_attr_argb() is inherited.
  *
  *  If the frame index is outside the canvas' frame range, nothing happens.
  *

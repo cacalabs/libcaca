@@ -304,7 +304,7 @@ int main(int argc, char **argv)
 
             sprintf(buffer, " Loading `%s'... ", list[current]);
             buffer[ww] = '\0';
-            cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
+            cucul_set_attr_ansi(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE, 0);
             cucul_putstr(cv, (ww - strlen(buffer)) / 2, wh / 2, buffer);
             caca_refresh_display(dp);
             ww = cucul_get_canvas_width(cv);
@@ -324,12 +324,12 @@ int main(int argc, char **argv)
             free(buffer);
         }
 
-        cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLACK);
+        cucul_set_attr_ansi(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLACK, 0);
         cucul_clear_canvas(cv);
 
         if(!items)
         {
-            cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
+            cucul_set_attr_ansi(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE, 0);
             cucul_printf(cv, ww / 2 - 5, wh / 2, " No image. ");
         }
         else if(!im)
@@ -349,7 +349,7 @@ int main(int argc, char **argv)
 
             sprintf(buffer, ERROR_STRING, list[current]);
             buffer[ww] = '\0';
-            cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
+            cucul_set_attr_ansi(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE, 0);
             cucul_putstr(cv, (ww - strlen(buffer)) / 2, wh / 2, buffer);
             free(buffer);
         }
@@ -379,7 +379,8 @@ int main(int argc, char **argv)
             print_status();
 
 #if 0 /* FIXME */
-            cucul_set_color(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
+            cucul_set_attr_ansi(cv, CUCUL_COLOR_LIGHTGRAY,
+                                    CUCUL_COLOR_BLACK, 0);
             switch(status)
             {
                 case STATUS_ANTIALIASING:
@@ -418,7 +419,7 @@ int main(int argc, char **argv)
 
 static void print_status(void)
 {
-    cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
+    cucul_set_attr_ansi(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE, 0);
     cucul_draw_line(cv, 0, 0, ww - 1, 0, " ");
     cucul_draw_line(cv, 0, wh - 2, ww - 1, wh - 2, "-");
     cucul_putstr(cv, 0, 0, "q:Quit  np:Next/Prev  +-x:Zoom  gG:Gamma  "
@@ -428,7 +429,7 @@ static void print_status(void)
     cucul_printf(cv, ww - 30, wh - 2, "(gamma: %#.3g)", GAMMA(g));
     cucul_printf(cv, ww - 14, wh - 2, "(zoom: %s%i)", zoom > 0 ? "+" : "", zoom);
 
-    cucul_set_color(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
+    cucul_set_attr_ansi(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK, 0);
     cucul_draw_line(cv, 0, wh - 1, ww - 1, wh - 1, " ");
 }
 
@@ -456,7 +457,7 @@ static void print_help(int x, int y)
 
     int i;
 
-    cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
+    cucul_set_attr_ansi(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE, 0);
 
     for(i = 0; help[i]; i++)
         cucul_putstr(cv, x, y + i, help[i]);
@@ -517,9 +518,11 @@ static void draw_checkers(int x, int y, int w, int h)
         for(xn = x > 0 ? x : 0; xn < x + w; xn++)
     {
         if((((xn - x) / 5) ^ ((yn - y) / 3)) & 1)
-            cucul_set_color(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_DARKGRAY);
+            cucul_set_attr_ansi(cv, CUCUL_COLOR_LIGHTGRAY,
+                                    CUCUL_COLOR_DARKGRAY, 0);
         else
-            cucul_set_color(cv, CUCUL_COLOR_DARKGRAY, CUCUL_COLOR_LIGHTGRAY);
+            cucul_set_attr_ansi(cv, CUCUL_COLOR_DARKGRAY,
+                                    CUCUL_COLOR_LIGHTGRAY, 0);
         cucul_putchar(cv, xn, yn, ' ');
     }
 }

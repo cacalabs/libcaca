@@ -150,7 +150,8 @@ int main(int argc, char **argv)
 
                 if(demo)
                 {
-                    cucul_set_color(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
+                    cucul_set_attr_ansi(cv, CUCUL_COLOR_LIGHTGRAY,
+                                            CUCUL_COLOR_BLACK, 0);
                     cucul_clear_canvas(cv);
                 }
             }
@@ -171,7 +172,7 @@ int main(int argc, char **argv)
             display_menu();
             if(mouse && !demo)
             {
-                cucul_set_color(cv, CUCUL_COLOR_RED, CUCUL_COLOR_BLACK);
+                cucul_set_attr_ansi(cv, CUCUL_COLOR_RED, CUCUL_COLOR_BLACK, 0);
                 cucul_putstr(cv, xmouse, ymouse,     ".");
                 cucul_putstr(cv, xmouse, ymouse + 1, "|\\");
             }
@@ -183,7 +184,8 @@ int main(int argc, char **argv)
         {
             demo();
 
-            cucul_set_color(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
+            cucul_set_attr_ansi(cv, CUCUL_COLOR_LIGHTGRAY,
+                                    CUCUL_COLOR_BLACK, 0);
             cucul_draw_thin_box(cv, 1, 1, cucul_get_canvas_width(cv) - 2,
                                           cucul_get_canvas_height(cv) - 2);
             cucul_printf(cv, 4, 1, "[%i.%i fps]----",
@@ -208,7 +210,7 @@ static void display_menu(void)
     int xo = cucul_get_canvas_width(cv) - 2;
     int yo = cucul_get_canvas_height(cv) - 2;
 
-    cucul_set_color(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
+    cucul_set_attr_ansi(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK, 0);
     cucul_clear_canvas(cv);
     cucul_draw_thin_box(cv, 1, 1, xo, yo);
 
@@ -250,11 +252,11 @@ static void demo_all(void)
 
     i++;
 
-    cucul_set_color(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
+    cucul_set_attr_ansi(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK, 0);
     cucul_clear_canvas(cv);
 
     /* Draw the sun */
-    cucul_set_color(cv, CUCUL_COLOR_YELLOW, CUCUL_COLOR_BLACK);
+    cucul_set_attr_ansi(cv, CUCUL_COLOR_YELLOW, CUCUL_COLOR_BLACK, 0);
     xo = cucul_get_canvas_width(cv) / 4;
     yo = cucul_get_canvas_height(cv) / 4 + 5 * sin(0.03*i);
 
@@ -266,9 +268,9 @@ static void demo_all(void)
     }
 
     j = 15 + sin(0.03*i) * 8;
-    cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLACK);
+    cucul_set_attr_ansi(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLACK, 0);
     cucul_fill_ellipse(cv, xo, yo, j, j / 2, "#");
-    cucul_set_color(cv, CUCUL_COLOR_YELLOW, CUCUL_COLOR_BLACK);
+    cucul_set_attr_ansi(cv, CUCUL_COLOR_YELLOW, CUCUL_COLOR_BLACK, 0);
     cucul_draw_ellipse(cv, xo, yo, j, j / 2, "#");
 
     /* Draw the pyramid */
@@ -284,19 +286,19 @@ static void demo_all(void)
     xc = cucul_get_canvas_width(cv) / 4 - sin(0.02*i) * 5;
     yc = cucul_get_canvas_height(cv) * 3 / 4 + cos(0.02*i) * 5;
 
-    cucul_set_color(cv, CUCUL_COLOR_GREEN, CUCUL_COLOR_BLACK);
+    cucul_set_attr_ansi(cv, CUCUL_COLOR_GREEN, CUCUL_COLOR_BLACK, 0);
     cucul_fill_triangle(cv, xo, yo, xb, yb, xa, ya, "%");
-    cucul_set_color(cv, CUCUL_COLOR_YELLOW, CUCUL_COLOR_BLACK);
+    cucul_set_attr_ansi(cv, CUCUL_COLOR_YELLOW, CUCUL_COLOR_BLACK, 0);
     cucul_draw_thin_triangle(cv, xo, yo, xb, yb, xa, ya);
 
-    cucul_set_color(cv, CUCUL_COLOR_RED, CUCUL_COLOR_BLACK);
+    cucul_set_attr_ansi(cv, CUCUL_COLOR_RED, CUCUL_COLOR_BLACK, 0);
     cucul_fill_triangle(cv, xa, ya, xb, yb, xc, yc, "#");
-    cucul_set_color(cv, CUCUL_COLOR_YELLOW, CUCUL_COLOR_BLACK);
+    cucul_set_attr_ansi(cv, CUCUL_COLOR_YELLOW, CUCUL_COLOR_BLACK, 0);
     cucul_draw_thin_triangle(cv, xa, ya, xb, yb, xc, yc);
 
-    cucul_set_color(cv, CUCUL_COLOR_BLUE, CUCUL_COLOR_BLACK);
+    cucul_set_attr_ansi(cv, CUCUL_COLOR_BLUE, CUCUL_COLOR_BLACK, 0);
     cucul_fill_triangle(cv, xo, yo, xb, yb, xc, yc, "%");
-    cucul_set_color(cv, CUCUL_COLOR_YELLOW, CUCUL_COLOR_BLACK);
+    cucul_set_attr_ansi(cv, CUCUL_COLOR_YELLOW, CUCUL_COLOR_BLACK, 0);
     cucul_draw_thin_triangle(cv, xo, yo, xb, yb, xc, yc);
 
     /* Draw a background triangle */
@@ -309,7 +311,7 @@ static void demo_all(void)
     xc = cucul_get_canvas_width(cv) / 3;
     yc = cucul_get_canvas_height(cv) - 3;
 
-    cucul_set_color(cv, CUCUL_COLOR_CYAN, CUCUL_COLOR_BLACK);
+    cucul_set_attr_ansi(cv, CUCUL_COLOR_CYAN, CUCUL_COLOR_BLACK, 0);
     cucul_draw_thin_triangle(cv, xa, ya, xb, yb, xc, yc);
 
     xo = cucul_get_canvas_width(cv) / 2 + cos(0.027*i) * cucul_get_canvas_width(cv) / 3;
@@ -328,7 +330,7 @@ static void demo_all(void)
     for(j = i - 60; j < i; j++)
     {
         int delta = cucul_rand(-5, 6);
-        cucul_set_color(cv, cucul_rand(0, 16), cucul_rand(0, 16));
+        cucul_set_attr_ansi(cv, cucul_rand(0, 16), cucul_rand(0, 16), 0);
         cucul_putchar(cv, cucul_get_canvas_width(cv) / 2
                     + cos(0.02*j) * (delta + cucul_get_canvas_width(cv) / 4),
                    cucul_get_canvas_height(cv) / 2
@@ -357,7 +359,7 @@ static void demo_dots(void)
     for(i = 1000; i--;)
     {
         /* Putpixel */
-        cucul_set_color(cv, cucul_rand(0, 16), cucul_rand(0, 16));
+        cucul_set_attr_ansi(cv, cucul_rand(0, 16), cucul_rand(0, 16), 0);
         cucul_putchar(cv, cucul_rand(0, xmax), cucul_rand(0, ymax),
                       chars[cucul_rand(0, 9)]);
     }
@@ -368,16 +370,16 @@ static void demo_color(void)
     int i, j;
     char buf[BUFSIZ];
 
-    cucul_set_color(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
+    cucul_set_attr_ansi(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK, 0);
     cucul_clear_canvas(cv);
     for(i = 0; i < 16; i++)
     {
         sprintf(buf, "'%c': %i (%s)", 'a' + i, i, cucul_get_color_name(i));
-        cucul_set_color(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
+        cucul_set_attr_ansi(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK, 0);
         cucul_putstr(cv, 4, i + (i >= 8 ? 4 : 3), buf);
         for(j = 0; j < 16; j++)
         {
-            cucul_set_color(cv, i, j);
+            cucul_set_attr_ansi(cv, i, j, 0);
             cucul_putstr(cv, (j >= 8 ? 41 : 40) + j * 2, i + (i >= 8 ? 4 : 3), "# ");
         }
     }
@@ -400,7 +402,7 @@ static void demo_lines(void)
         xb = cucul_rand(0, w); yb = cucul_rand(0, h);
     }
 
-    cucul_set_color(cv, cucul_rand(0, 16), CUCUL_COLOR_BLACK);
+    cucul_set_attr_ansi(cv, cucul_rand(0, 16), CUCUL_COLOR_BLACK, 0);
     if(outline > 1)
         cucul_draw_thin_line(cv, xa, ya, xb, yb);
     else
@@ -424,10 +426,10 @@ static void demo_boxes(void)
         xb = cucul_rand(0, w); yb = cucul_rand(0, h);
     }
 
-    cucul_set_color(cv, cucul_rand(0, 16), cucul_rand(0, 16));
+    cucul_set_attr_ansi(cv, cucul_rand(0, 16), cucul_rand(0, 16), 0);
     cucul_fill_box(cv, xa, ya, xb, yb, "#");
 
-    cucul_set_color(cv, cucul_rand(0, 16), CUCUL_COLOR_BLACK);
+    cucul_set_attr_ansi(cv, cucul_rand(0, 16), CUCUL_COLOR_BLACK, 0);
     if(outline == 2)
         cucul_draw_thin_box(cv, xa, ya, xb, yb);
     else if(outline == 1)
@@ -455,10 +457,10 @@ static void demo_ellipses(void)
         } while(x - a < 0 || x + a >= w || y - b < 0 || y + b >= h);
     }
 
-    cucul_set_color(cv, cucul_rand(0, 16), cucul_rand(0, 16));
+    cucul_set_attr_ansi(cv, cucul_rand(0, 16), cucul_rand(0, 16), 0);
     cucul_fill_ellipse(cv, x, y, a, b, "#");
 
-    cucul_set_color(cv, cucul_rand(0, 16), CUCUL_COLOR_BLACK);
+    cucul_set_attr_ansi(cv, cucul_rand(0, 16), CUCUL_COLOR_BLACK, 0);
     if(outline == 2)
         cucul_draw_thin_ellipse(cv, x, y, a, b);
     else if(outline == 1)
@@ -485,10 +487,10 @@ static void demo_triangles(void)
         xc = cucul_rand(0, w); yc = cucul_rand(0, h);
     }
 
-    cucul_set_color(cv, cucul_rand(0, 16), cucul_rand(0, 16));
+    cucul_set_attr_ansi(cv, cucul_rand(0, 16), cucul_rand(0, 16), 0);
     cucul_fill_triangle(cv, xa, ya, xb, yb, xc, yc, "#");
 
-    cucul_set_color(cv, cucul_rand(0, 16), CUCUL_COLOR_BLACK);
+    cucul_set_attr_ansi(cv, cucul_rand(0, 16), CUCUL_COLOR_BLACK, 0);
     if(outline == 2)
         cucul_draw_thin_triangle(cv, xa, ya, xb, yb, xc, yc);
     else if(outline == 1)

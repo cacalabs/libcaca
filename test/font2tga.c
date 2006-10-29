@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 
     /* Create a canvas */
     cv = cucul_create_canvas(WIDTH, (glyphs + WIDTH - 1) / WIDTH);
-    cucul_set_color(cv, CUCUL_COLOR_BLACK, CUCUL_COLOR_WHITE);
+    cucul_set_attr_ansi(cv, CUCUL_COLOR_BLACK, CUCUL_COLOR_WHITE, 0);
 
     /* Put all glyphs on the canvas */
     x = y = 0;

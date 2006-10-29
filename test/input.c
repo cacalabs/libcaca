@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
     cv = cucul_create_canvas(0, 0);
     dp = caca_create_display(cv);
 
-    cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
+    cucul_set_attr_ansi(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE, 0);
     cucul_putstr(cv, 1, 1, "Text entries - press tab to cycle");
 
     for(i = 0; i < TEXT_ENTRIES; i++)
@@ -61,7 +61,8 @@ int main(int argc, char *argv[])
         {
             unsigned int j, start, size;
 
-            cucul_set_color(cv, CUCUL_COLOR_BLACK, CUCUL_COLOR_LIGHTGRAY);
+            cucul_set_attr_ansi(cv, CUCUL_COLOR_BLACK,
+                                    CUCUL_COLOR_LIGHTGRAY, 0);
             cucul_fill_box(cv, 2, 3 * i + 4, 2 + BUFFER_SIZE, 3 * i + 4, " ");
 
             start = 0;
@@ -75,7 +76,7 @@ int main(int argc, char *argv[])
         }
 
         /* Put the cursor on the active textentry */
-        cucul_set_color(cv, CUCUL_COLOR_LIGHTRED, CUCUL_COLOR_LIGHTRED);
+        cucul_set_attr_ansi(cv, CUCUL_COLOR_LIGHTRED, CUCUL_COLOR_LIGHTRED, 0);
         cucul_putchar(cv, 2 + entries[e].cursor, 3 * e + 4, ' ');
 
         caca_refresh_display(dp);

@@ -45,11 +45,11 @@ int main(int argc, char *argv[])
     cv = cucul_create_canvas(8, 2);
 
     /* Draw stuff on our canvas */
-    cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLACK);
+    cucul_set_attr_ansi(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLACK, 0);
     cucul_putstr(cv, 0, 0, "ABcde");
-    cucul_set_color(cv, CUCUL_COLOR_LIGHTRED, CUCUL_COLOR_BLACK);
+    cucul_set_attr_ansi(cv, CUCUL_COLOR_LIGHTRED, CUCUL_COLOR_BLACK, 0);
     cucul_putstr(cv, 5, 0, "\\o/");
-    cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
+    cucul_set_attr_ansi(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE, 0);
     cucul_putstr(cv, 0, 1, "&$âøÿØ?!");
 
     /* Load a libcucul internal font */

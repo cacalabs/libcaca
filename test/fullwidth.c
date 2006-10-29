@@ -42,9 +42,9 @@ int main(int argc, char *argv[])
     /* Line of x's */
     for(i = 0; i < 10; i++)
     {
-        cucul_set_color(caca, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
+        cucul_set_attr_ansi(caca, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE, 0);
         cucul_putstr(caca, 0, i, CACA);
-        cucul_set_color(caca, CUCUL_COLOR_WHITE, CUCUL_COLOR_RED);
+        cucul_set_attr_ansi(caca, CUCUL_COLOR_WHITE, CUCUL_COLOR_RED, 0);
         cucul_putchar(caca, i - 2, i, 'x');
     }
 
@@ -53,20 +53,20 @@ int main(int argc, char *argv[])
     /* Line of ホ's */
     for(i = 0; i < 10; i++)
     {
-        cucul_set_color(caca, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
+        cucul_set_attr_ansi(caca, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE, 0);
         cucul_putstr(caca, 0, i, CACA);
-        cucul_set_color(caca, CUCUL_COLOR_WHITE, CUCUL_COLOR_GREEN);
+        cucul_set_attr_ansi(caca, CUCUL_COLOR_WHITE, CUCUL_COLOR_GREEN, 0);
         cucul_putstr(caca, i - 2, i, "ホ");
     }
 
     cucul_blit(cv, 15, 1, caca, NULL);
 
     /* Line of canvas */
-    cucul_set_color(line, CUCUL_COLOR_WHITE, CUCUL_COLOR_MAGENTA);
+    cucul_set_attr_ansi(line, CUCUL_COLOR_WHITE, CUCUL_COLOR_MAGENTA, 0);
     cucul_putstr(line, 0, 0, "ほ");
     for(i = 0; i < 10; i++)
     {
-        cucul_set_color(caca, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE);
+        cucul_set_attr_ansi(caca, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLUE, 0);
         cucul_putstr(caca, 0, i, CACA);
         cucul_blit(caca, i - 2, i, line, NULL);
     }

@@ -151,7 +151,7 @@ quit:
 
 static int refresh_screen(void)
 {
-    cucul_set_color(cv, CUCUL_COLOR_DEFAULT, CUCUL_COLOR_DEFAULT);
+    cucul_set_attr_ansi(cv, CUCUL_COLOR_DEFAULT, CUCUL_COLOR_DEFAULT, 0);
     cucul_clear_canvas(cv);
 
     cucul_blit(cv, - x, - y, image, NULL);

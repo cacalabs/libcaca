@@ -26,6 +26,10 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
+/* Legacy stuff from old versions */
+int cucul_set_color(cucul_canvas_t *, unsigned char, unsigned char);
+int cucul_set_truecolor(cucul_canvas_t *, unsigned int, unsigned int);
+
 /* RGB colours for the ANSI palette. There is no real standard, so we
  * use the same values as gnome-terminal. The 7th colour (brown) is a bit
  * special: 0xfa50 instead of 0xfaa0. */

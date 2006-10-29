@@ -120,9 +120,6 @@ int cucul_blit(cucul_canvas_t *, int, int, cucul_canvas_t const *,
                cucul_canvas_t const *);
 int cucul_set_canvas_boundaries(cucul_canvas_t *, int, int,
                                 unsigned int, unsigned int);
-/* Legacy stuff */
-int cucul_set_color(cucul_canvas_t *, unsigned char, unsigned char);
-int cucul_set_truecolor(cucul_canvas_t *, unsigned int, unsigned int);
 /*  @} */
 
 /** \defgroup transform libcucul canvas transformation

@@ -512,7 +512,7 @@ static void gl_compute_font(caca_display_t *dp)
 
     /* Allocate a libcucul canvas and print all the glyphs on it */
     cv = cucul_create_canvas(1, b);
-    cucul_set_color(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLACK);
+    cucul_set_attr_ansi(cv, CUCUL_COLOR_WHITE, CUCUL_COLOR_BLACK, 0);
 
     for(b = 0, i = 0; dp->drv.p->blocks[i + 1]; i += 2)
     {

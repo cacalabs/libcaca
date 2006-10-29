@@ -35,16 +35,16 @@ int main(int argc, char **argv)
     if(!dp)
         return 1;
 
-    cucul_set_color(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
+    cucul_set_attr_ansi(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK, 0);
     cucul_clear_canvas(cv);
     for(i = 0; i < 16; i++)
     {
-        cucul_set_color(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK);
+        cucul_set_attr_ansi(cv, CUCUL_COLOR_LIGHTGRAY, CUCUL_COLOR_BLACK, 0);
         cucul_printf(cv, 4, i + (i >= 8 ? 4 : 3), "'%cv': %i (%s)",
                      'a' + i, i, cucul_get_color_name(i));
         for(j = 0; j < 16; j++)
         {
-            cucul_set_color(cv, i, j);
+            cucul_set_attr_ansi(cv, i, j, 0);
             cucul_putstr(cv, (j >= 8 ? 41 : 40) + j * 2, i + (i >= 8 ? 4 : 3),
                          "Aa");
         }
