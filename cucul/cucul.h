@@ -237,25 +237,36 @@ cucul_canvas_t * cucul_import_canvas(cucul_buffer_t *, char const *);
 char const * const * cucul_get_import_list(void);
 /*  @} */
 
-/* Legacy macros */
-#define CUCUL_COLOR_BLACK CUCUL_BLACK
-#define CUCUL_COLOR_BLUE CUCUL_BLUE
-#define CUCUL_COLOR_GREEN CUCUL_GREEN
-#define CUCUL_COLOR_CYAN CUCUL_CYAN
-#define CUCUL_COLOR_RED CUCUL_RED
-#define CUCUL_COLOR_MAGENTA CUCUL_MAGENTA
-#define CUCUL_COLOR_BROWN CUCUL_BROWN
-#define CUCUL_COLOR_LIGHTGRAY CUCUL_LIGHTGRAY
-#define CUCUL_COLOR_DARKGRAY CUCUL_DARKGRAY
-#define CUCUL_COLOR_LIGHTBLUE CUCUL_LIGHTBLUE
-#define CUCUL_COLOR_LIGHTGREEN CUCUL_LIGHTGREEN
-#define CUCUL_COLOR_LIGHTCYAN CUCUL_LIGHTCYAN
-#define CUCUL_COLOR_LIGHTRED CUCUL_LIGHTRED
-#define CUCUL_COLOR_LIGHTMAGENTA CUCUL_LIGHTMAGENTA
-#define CUCUL_COLOR_YELLOW CUCUL_YELLOW
-#define CUCUL_COLOR_WHITE CUCUL_YELLOW
-#define CUCUL_COLOR_DEFAULT CUCUL_DEFAULT
-#define CUCUL_COLOR_TRANSPARENT CUCUL_TRANSPARENT
+#if !defined(_DOXYGEN_SKIP_ME)
+/* Legacy stuff from beta versions */
+#   ifdef __GNUC__
+#       define CUCUL_DEPRECATED __attribute__ ((deprecated))
+#   else
+#       define CUCUL_DEPRECATED
+#   endif
+int cucul_set_color(cucul_canvas_t *, unsigned char,
+                                      unsigned char) CUCUL_DEPRECATED;
+int cucul_set_truecolor(cucul_canvas_t *, unsigned int,
+                                          unsigned int) CUCUL_DEPRECATED;
+#   define CUCUL_COLOR_BLACK CUCUL_BLACK
+#   define CUCUL_COLOR_BLUE CUCUL_BLUE
+#   define CUCUL_COLOR_GREEN CUCUL_GREEN
+#   define CUCUL_COLOR_CYAN CUCUL_CYAN
+#   define CUCUL_COLOR_RED CUCUL_RED
+#   define CUCUL_COLOR_MAGENTA CUCUL_MAGENTA
+#   define CUCUL_COLOR_BROWN CUCUL_BROWN
+#   define CUCUL_COLOR_LIGHTGRAY CUCUL_LIGHTGRAY
+#   define CUCUL_COLOR_DARKGRAY CUCUL_DARKGRAY
+#   define CUCUL_COLOR_LIGHTBLUE CUCUL_LIGHTBLUE
+#   define CUCUL_COLOR_LIGHTGREEN CUCUL_LIGHTGREEN
+#   define CUCUL_COLOR_LIGHTCYAN CUCUL_LIGHTCYAN
+#   define CUCUL_COLOR_LIGHTRED CUCUL_LIGHTRED
+#   define CUCUL_COLOR_LIGHTMAGENTA CUCUL_LIGHTMAGENTA
+#   define CUCUL_COLOR_YELLOW CUCUL_YELLOW
+#   define CUCUL_COLOR_WHITE CUCUL_YELLOW
+#   define CUCUL_COLOR_DEFAULT CUCUL_DEFAULT
+#   define CUCUL_COLOR_TRANSPARENT CUCUL_TRANSPARENT
+#endif
 
 #ifdef __cplusplus
 }

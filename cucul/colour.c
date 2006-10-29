@@ -26,10 +26,6 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
-/* Legacy stuff from old versions */
-int cucul_set_color(cucul_canvas_t *, unsigned char, unsigned char);
-int cucul_set_truecolor(cucul_canvas_t *, unsigned int, unsigned int);
-
 /** \brief Set the default character attribute.
  *
  *  Set the default character attribute for drawing. Attributes define
