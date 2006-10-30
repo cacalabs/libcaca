@@ -5,7 +5,9 @@
   \subsection dep API-dependent stuff
 
   - support for multi-frame canvases in the caca exporter
-  - support for double width glyphs (also needs some libcaca changes)
+  - support for timing information in the caca exporter, for smooth playback
+  - cucul_getchar -> cucul_get_char?
+  - maybe switch back to utf32 arguments for box, ellipse etc.
 
   \subsection indep API-independent stuff
 
