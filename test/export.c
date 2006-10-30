@@ -126,6 +126,19 @@ int main(int argc, char *argv[])
         cucul_putstr(cv, WIDTH / 2 - 8, HEIGHT / 2 - 2, "[ドラゴン ボーレ]");
         cucul_putstr(cv, WIDTH / 2 - 7, HEIGHT / 2 + 2, "äβç ░▒▓█▓▒░ ΔЗҒ");
 
+        cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_BLACK, CUCUL_WHITE)
+                            | CUCUL_BOLD);
+        cucul_putstr(cv, WIDTH / 2 - 16, HEIGHT / 2 + 3, "Bold");
+        cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_BLACK, CUCUL_WHITE)
+                            | CUCUL_BLINK);
+        cucul_putstr(cv, WIDTH / 2 - 9, HEIGHT / 2 + 3, "Blink");
+        cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_BLACK, CUCUL_WHITE)
+                            | CUCUL_ITALICS);
+        cucul_putstr(cv, WIDTH / 2 - 1, HEIGHT / 2 + 3, "Italics");
+        cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_BLACK, CUCUL_WHITE)
+                            | CUCUL_UNDERLINE);
+        cucul_putstr(cv, WIDTH / 2 + 8, HEIGHT / 2 + 3, "Underline");
+
         cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_WHITE, CUCUL_LIGHTBLUE));
         cucul_putstr(cv, WIDTH / 2 - 7, HEIGHT / 2, "    LIBCACA    ");
 
