@@ -273,6 +273,14 @@ static void x11_display(caca_display_t *dp)
         {
             uint32_t *attrs = dp->cv->attrs + x + y * dp->cv->width;
 
+            /* Underline */
+            if(*attrs & CUCUL_UNDERLINE)
+                XFillRectangle(dp->drv.p->dpy, dp->drv.p->pixmap,
+                                   dp->drv.p->gc,
+                                   x * dp->drv.p->font_width,
+                                   (y + 1) * dp->drv.p->font_height - 1,
+                                   dp->drv.p->font_width, 1);
+
             /* Skip spaces */
             if(*chars <= 0x00000020)
                 continue;

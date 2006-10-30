@@ -359,9 +359,10 @@ static int export_html(cucul_canvas_t *cv, cucul_buffer_t *ex)
     /* The HTML header: less than 1000 bytes
      * A line: 7 chars for "<br />\n"
      * A glyph: 47 chars for "<span style="color:#xxx;background-color:#xxx">"
+     *          83 chars for ";font-weight..."
      *          up to 9 chars for "&#xxxxxx;", far less for pure ASCII
      *          7 chars for "</span>" */
-    ex->size = 1000 + cv->height * (7 + cv->width * (47 + 9 + 7));
+    ex->size = 1000 + cv->height * (7 + cv->width * (47 + 83 + 9 + 7));
     ex->data = malloc(ex->size);
 
     cur = ex->data;
@@ -382,9 +383,18 @@ static int export_html(cucul_canvas_t *cv, cucul_buffer_t *ex)
         for(x = 0; x < cv->width; x += len)
         {
             cur += sprintf(cur, "<span style=\"color:#%.03x;"
-                                "background-color:#%.03x\">",
+                                "background-color:#%.03x",
                                 _cucul_attr_to_rgb12fg(lineattr[x]),
                                 _cucul_attr_to_rgb12bg(lineattr[x]));
+            if(lineattr[x] & CUCUL_BOLD)
+                cur += sprintf(cur, ";font-weight:bold");
+            if(lineattr[x] & CUCUL_ITALICS)
+                cur += sprintf(cur, ";font-style:italic");
+            if(lineattr[x] & CUCUL_UNDERLINE)
+                cur += sprintf(cur, ";text-decoration:underline");
+            if(lineattr[x] & CUCUL_BLINK)
+                cur += sprintf(cur, ";text-decoration:blink");
+            cur += sprintf(cur, "\">");
 
             for(len = 0;
                 x + len < cv->width && lineattr[x + len] == lineattr[x];
@@ -428,9 +438,10 @@ static int export_html3(cucul_canvas_t *cv, cucul_buffer_t *ex)
     /* The HTML table markup: less than 1000 bytes
      * A line: 10 chars for "<tr></tr>\n"
      * A glyph: 40 chars for "<td bgcolor=#xxxxxx><font color=#xxxxxx>"
+     *          up to 36 chars for "<b><i><u><blink></blink></u></i></b>"
      *          up to 9 chars for "&#xxxxxx;", far less for pure ASCII
      *          12 chars for "</font></td>" */
-    ex->size = 1000 + cv->height * (10 + cv->width * (40 + 9 + 12));
+    ex->size = 1000 + cv->height * (10 + cv->width * (40 + 36 + 9 + 12));
     ex->data = malloc(ex->size);
 
     cur = ex->data;
@@ -465,6 +476,15 @@ static int export_html3(cucul_canvas_t *cv, cucul_buffer_t *ex)
             cur += sprintf(cur, "><font color=#%.06lx>", (unsigned long int)
                            _cucul_attr_to_rgb24fg(lineattr[x]));
 
+            if(lineattr[x] & CUCUL_BOLD)
+                cur += sprintf(cur, "<b>");
+            if(lineattr[x] & CUCUL_ITALICS)
+                cur += sprintf(cur, "<i>");
+            if(lineattr[x] & CUCUL_UNDERLINE)
+                cur += sprintf(cur, "<u>");
+            if(lineattr[x] & CUCUL_BLINK)
+                cur += sprintf(cur, "<blink>");
+
             for(i = 0; i < len; i++)
             {
                 if(linechar[x + i] == CUCUL_MAGIC_FULLWIDTH)
@@ -476,6 +496,15 @@ static int export_html3(cucul_canvas_t *cv, cucul_buffer_t *ex)
                 else
                     cur += sprintf(cur, "&#%i;", (unsigned int)linechar[x + i]);
             }
+
+            if(lineattr[x] & CUCUL_BLINK)
+                cur += sprintf(cur, "</blink>");
+            if(lineattr[x] & CUCUL_UNDERLINE)
+                cur += sprintf(cur, "</u>");
+            if(lineattr[x] & CUCUL_ITALICS)
+                cur += sprintf(cur, "</i>");
+            if(lineattr[x] & CUCUL_BOLD)
+                cur += sprintf(cur, "</b>");
 
             cur += sprintf(cur, "</font></td>");
         }
