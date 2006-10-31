@@ -238,7 +238,7 @@ char const * const * cucul_get_import_list(void);
 /*  @} */
 
 #if !defined(_DOXYGEN_SKIP_ME)
-/* Legacy stuff from beta versions */
+/* Legacy stuff from beta versions, will probably disappear in 1.0 */
 #   ifdef __GNUC__
 #       define CUCUL_DEPRECATED __attribute__ ((deprecated))
 #   else
@@ -248,7 +248,6 @@ int cucul_set_color(cucul_canvas_t *, unsigned char,
                                       unsigned char) CUCUL_DEPRECATED;
 int cucul_set_truecolor(cucul_canvas_t *, unsigned int,
                                           unsigned int) CUCUL_DEPRECATED;
-char const *cucul_get_color_name(unsigned int) CUCUL_DEPRECATED;
 #   define CUCUL_COLOR_BLACK CUCUL_BLACK
 #   define CUCUL_COLOR_BLUE CUCUL_BLUE
 #   define CUCUL_COLOR_GREEN CUCUL_GREEN

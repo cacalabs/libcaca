@@ -53,8 +53,8 @@ int main(void)
     /* Set window title */
     caca_set_display_title(dp, "Window");
     /* Choose drawing colours */
-    cucul_set_color(cv, CUCUL_COLOR_BLACK,
-                        CUCUL_COLOR_WHITE);
+    cucul_set_color_ansi(cv, CUCUL_BLACK,
+                             CUCUL_WHITE);
     /* Draw a string at (0, 0) */
     cucul_putstr(cv, 0, 0, "Hello world!");
     /* Refresh display */
@@ -141,10 +141,11 @@ int main(void)
 
  \subsection bar3 Character printing
 
- - \b caca_set_color(): use cucul_set_color() or cucul_set_truecolor().
- - \b caca_get_fg_color(): deprecated.
- - \b caca_get_bg_color(): deprecated.
- - \b caca_get_color_name(): use cucul_get_color_name().
+ - \b caca_set_color(): use cucul_set_color_ansi() or cucul_set_color_argb().
+ - \b caca_get_fg_color(): use cucul_get_attr().
+ - \b caca_get_bg_color(): use cucul_get_attr().
+ - \b caca_get_color_name(): this function is now deprecated due to major
+   uselessness.
  - \b caca_putchar(): use cucul_putchar().
  - \b caca_putstr(): use cucul_putstr().
  - \b caca_printf(): use cucul_printf().

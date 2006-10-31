@@ -267,3 +267,31 @@ void __caca0_free_bitmap(cucul_dither_t *d)
     nbitmaps--;
 }
 
+char const *__caca0_get_color_name(unsigned char color)
+{
+    static char const *color_names[] =
+    {
+        "black",
+        "blue",
+        "green",
+        "cyan",
+        "red",
+        "magenta",
+        "brown",
+        "light gray",
+        "dark gray",
+        "light blue",
+        "light green",
+        "light cyan",
+        "light red",
+        "light magenta",
+        "yellow",
+        "white",
+    };
+
+    if(color > 15)
+        return "unknown";
+
+    return color_names[(unsigned int)color];
+}
+

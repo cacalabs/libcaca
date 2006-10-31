@@ -120,10 +120,10 @@ class Cucul
     void setSize(unsigned int w, unsigned int h);
     unsigned int getWidth(void);
     unsigned int getHeight(void);
-    void setColor(unsigned int f, unsigned int b);
-    int  setTruecolor(unsigned int f, unsigned int b);
-    unsigned long int getColor(int, int);
-    char const * getColorName(unsigned int color);
+    unsigned long int getAttr(int, int);
+    int setAttr(unsigned long int);
+    int setColorANSI(unsigned char f, unsigned char b);
+    int setColorARGB(unsigned int f, unsigned int b);
     void Printf(int x , int y , char const * format,...);
     void putChar(int x, int y, char ch);
     unsigned long int getChar(cucul_canvas_t *, int, int);

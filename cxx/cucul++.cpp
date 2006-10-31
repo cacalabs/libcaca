@@ -87,19 +87,14 @@ unsigned int Cucul::getHeight(void)
     return cucul_get_canvas_height(cv);
 }
 
-void Cucul::setColor(unsigned int f, unsigned int b)
+int Cucul::setColorANSI(unsigned char f, unsigned char b)
 {
-    cucul_set_color(cv, f, b);
+    return cucul_set_color_ansi(cv, f, b);
 }
 
-int  Cucul::setTruecolor(unsigned int f, unsigned int b)
+int  Cucul::setColorARGB(unsigned int f, unsigned int b)
 {
-    return cucul_set_truecolor(cv, f, b);
-}
-
-char const * Cucul::getColorName(unsigned int color)
-{
-    return cucul_get_color_name(color);
+    return cucul_set_color_argb(cv, f, b);
 }
 
 void Cucul::putChar(int x, int y, char ch)
@@ -235,9 +230,14 @@ int Cucul::Rand(int min, int max)
     return cucul_rand(min, max);
 }
 
-unsigned long int Cucul::getColor(int x, int y)
+int Cucul::setAttr(unsigned long int attr)
 {
-    return cucul_get_color(cv, x, y);
+    return cucul_set_attr(cv, attr);
+}
+
+unsigned long int Cucul::getAttr(int x, int y)
+{
+    return cucul_get_attr(cv, x, y);
 }
 
 int Cucul::setBoundaries(cucul_canvas_t *, int x, int y,

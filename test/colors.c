@@ -40,13 +40,12 @@ int main(int argc, char **argv)
     for(i = 0; i < 16; i++)
     {
         cucul_set_color_ansi(cv, CUCUL_LIGHTGRAY, CUCUL_BLACK);
-        cucul_printf(cv, 3, i + (i >= 8 ? 3 : 2), "'%cv': %i (%s)",
-                     'a' + i, i, cucul_ansi_to_str(i));
+        cucul_printf(cv, 3, i + (i >= 8 ? 3 : 2), "ANSI %i", i);
         for(j = 0; j < 16; j++)
         {
             cucul_set_color_ansi(cv, i, j);
-            cucul_putstr(cv, (j >= 8 ? 40 : 39) + j * 2, i + (i >= 8 ? 3 : 2),
-                         "Aa");
+            cucul_putstr(cv, (j >= 8 ? 13 : 12) + j * 4, i + (i >= 8 ? 3 : 2),
+                         "Aaホ");
         }
     }
 

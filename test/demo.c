@@ -24,7 +24,6 @@ static void display_menu(void);
 
 static void demo_all(void);
 
-static void demo_color(void);
 static void demo_dots(void);
 static void demo_lines(void);
 static void demo_boxes(void);
@@ -113,9 +112,6 @@ int main(int argc, char **argv)
                     display_menu();
                     break;
 #endif
-                case 'c':
-                    demo = demo_color;
-                    break;
                 case 'f':
                 case 'F':
                     demo = demo_all;
@@ -360,26 +356,6 @@ static void demo_dots(void)
         cucul_set_color_ansi(cv, cucul_rand(0, 16), cucul_rand(0, 16));
         cucul_putchar(cv, cucul_rand(0, xmax), cucul_rand(0, ymax),
                       chars[cucul_rand(0, 9)]);
-    }
-}
-
-static void demo_color(void)
-{
-    int i, j;
-    char buf[BUFSIZ];
-
-    cucul_set_color_ansi(cv, CUCUL_LIGHTGRAY, CUCUL_BLACK);
-    cucul_clear_canvas(cv);
-    for(i = 0; i < 16; i++)
-    {
-        sprintf(buf, "'%c': %i (%s)", 'a' + i, i, cucul_ansi_to_str(i));
-        cucul_set_color_ansi(cv, CUCUL_LIGHTGRAY, CUCUL_BLACK);
-        cucul_putstr(cv, 4, i + (i >= 8 ? 4 : 3), buf);
-        for(j = 0; j < 16; j++)
-        {
-            cucul_set_color_ansi(cv, i, j);
-            cucul_putstr(cv, (j >= 8 ? 41 : 40) + j * 2, i + (i >= 8 ? 4 : 3), "# ");
-        }
     }
 }
 

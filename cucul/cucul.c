@@ -176,51 +176,6 @@ unsigned int cucul_get_canvas_height(cucul_canvas_t *cv)
     return cv->height;
 }
 
-/** \brief Translate an ANSI colour index into the colour's name.
- *
- *  Translate an ANSI colour index such as \e CUCUL_RED or \e CUCUL_WHITE
- *  into a human-readable string describing the corresponding colour.
- *
- *  This function never fails.
- *
- *  \param color The colour value.
- *  \return A static string containing the colour's name, or \c "unknown" if
- *  the colour is unknown.
- */
-char const *cucul_ansi_to_str(unsigned char color)
-{
-    static char const *color_names[] =
-    {
-        "black",
-        "blue",
-        "green",
-        "cyan",
-        "red",
-        "magenta",
-        "brown",
-        "light gray",
-        "dark gray",
-        "light blue",
-        "light green",
-        "light cyan",
-        "light red",
-        "light magenta",
-        "yellow",
-        "white",
-    };
-
-    if(color > 15)
-        return "unknown";
-
-    return color_names[(unsigned int)color];
-}
-
-/* Legacy function for old programs */
-char const *cucul_get_color_name(unsigned int color)
-{
-    return cucul_ansi_to_str(color > 15 ? 15 : color);
-}
-
 /** \brief Uninitialise \e libcucul.
  *
  *  Free all resources allocated by cucul_create_canvas(). After

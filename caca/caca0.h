@@ -39,6 +39,7 @@ extern cucul_dither_t *__caca0_create_bitmap(unsigned int, unsigned int,
           unsigned int, unsigned int, unsigned long int, unsigned long int,
           unsigned long int, unsigned long int);
 extern void __caca0_free_bitmap(cucul_dither_t *);
+extern char const *__caca0_get_color_name(unsigned char);
 
 /* These variables are needed to emulate old non-thread safe behaviour */
 extern cucul_canvas_t *__caca0_cv;
@@ -133,7 +134,7 @@ enum caca_feature
     (__caca0_fg = (x), __caca0_bg = (y), cucul_set_color_ansi(__caca0_cv, x, y))
 #define caca_get_fg_color() __caca0_fg
 #define caca_get_bg_color() __caca0_bg
-#define caca_get_color_name cucul_ansi_to_str
+#define caca_get_color_name __caca0_get_color_name
 #define caca_putchar(x, y, c) cucul_putchar(__caca0_cv, x, y, c)
 #define caca_putstr(x, y, s) cucul_putstr(__caca0_cv, x, y, s)
 #define caca_printf(x, y, f, z...) cucul_printf(__caca0_cv, x, y, f, ##z)
