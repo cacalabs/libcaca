@@ -1,9 +1,9 @@
 /*
- *  cxxtest       libcaca++ rendering test
+ *  cpptest       libcaca++ rendering test
  *  Copyright (c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                All Rights Reserved
  *
- *  $Id: cpptest.cpp 784 2006-06-10 11:35:18Z jylam $
+ *  $Id$
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the Do What The Fuck You Want To
@@ -72,13 +72,13 @@ int main(int argc, char *argv[])
     while(!kk->getEvent(ev.CACA_EVENT_KEY_PRESS, &ev, 0)) {
 
         /* Draw pig */
-        qq->setColor(CUCUL_COLOR_LIGHTMAGENTA, CUCUL_COLOR_BLACK);
+        qq->setColor(CUCUL_LIGHTMAGENTA, CUCUL_BLACK);
 
         for(int i = 0; pig[i]; i++)
             qq->putStr(x, y+i, (char*)pig[i]);
 
         /* printf works */
-        qq->setColor(CUCUL_COLOR_LIGHTBLUE, CUCUL_COLOR_BLACK);
+        qq->setColor(CUCUL_LIGHTBLUE, CUCUL_BLACK);
         qq->Printf(30,15, "Powered by libcaca %s", VERSION);
 
         /* Blit */
