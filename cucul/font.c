@@ -156,7 +156,7 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
 
     f->private = (void *)(uintptr_t)data;
 
-    memcpy(&f->header, f->private + 8, sizeof(struct font_header));
+    memcpy(&f->header, f->private + 4, sizeof(struct font_header));
     f->header.control_size = hton32(f->header.control_size);
     f->header.data_size = hton32(f->header.data_size);
     f->header.version = hton16(f->header.version);
@@ -167,7 +167,7 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
     f->header.height = hton16(f->header.height);
     f->header.flags = hton16(f->header.flags);
 
-    if(size != 8 + f->header.control_size + f->header.data_size
+    if(size != 4 + f->header.control_size + f->header.data_size
         || (f->header.bpp != 8 && f->header.bpp != 4 &&
             f->header.bpp != 2 && f->header.bpp != 1)
         || (f->header.flags & 1) == 0)
@@ -202,7 +202,7 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
     }
 
     memcpy(f->block_list,
-           f->private + 8 + sizeof(struct font_header),
+           f->private + 4 + sizeof(struct font_header),
            f->header.blocks * sizeof(struct block_info));
     for(i = 0; i < f->header.blocks; i++)
     {
@@ -243,7 +243,7 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
     }
 
     memcpy(f->glyph_list,
-           f->private + 8 + sizeof(struct font_header)
+           f->private + 4 + sizeof(struct font_header)
                 + f->header.blocks * sizeof(struct block_info),
            f->header.glyphs * sizeof(struct glyph_info));
     for(i = 0; i < f->header.glyphs; i++)
@@ -268,7 +268,7 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
         }
     }
 
-    f->font_data = f->private + 8 + f->header.control_size;
+    f->font_data = f->private + 4 + f->header.control_size;
 
     return f;
 }
@@ -501,8 +501,8 @@ int cucul_render_canvas(cucul_canvas_t *cv, cucul_font_t *f,
  *
  * struct
  * {
- *    uint8_t caca_header[4];    // "CACA"
- *    uint8_t caca_file_type[4]; // "FONT"
+ *    uint8_t caca_header[2];    // "\xCA\xCA"
+ *    uint8_t caca_file_type[2]; // "FT"
  *
  * font_header:
  *    uint32_t control_size;     // Control size (font_data - font_header)

@@ -171,20 +171,20 @@ int main(int argc, char *argv[])
     printf("\n");
 
     printf("static unsigned int const %s_size = %i;\n",
-           prefix, 8 + control_size + data_size);
+           prefix, 4 + control_size + data_size);
     printf("static struct {\n");
     printf("char ");
     for(i = 0; (i + 1) * STRING_CHUNKS < 8 + control_size + data_size; i++)
         printf("d%x[%i],%c", i, STRING_CHUNKS, (i % 6) == 5 ? '\n' : ' ');
-    printf("d%x[%i];\n", i, 8 + control_size + data_size - i * STRING_CHUNKS);
+    printf("d%x[%i];\n", i, 4 + control_size + data_size - i * STRING_CHUNKS);
     printf("} %s_data = {\n", prefix);
     printf("\n");
 
     printf("/* file: */\n");
-    printf("\"CACA\" /* caca_header */\n");
-    written += 4;
-    printf("\"FONT\" /* caca_file_type */\n");
-    written += 4;
+    printf("\"\\xCA\\xCA\" /* caca_header */\n");
+    written += 2;
+    printf("\"FT\" /* caca_file_type */\n");
+    written += 2;
     printf("\n");
 
     printf("/* font_header: */\n");
