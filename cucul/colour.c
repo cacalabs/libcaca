@@ -74,6 +74,8 @@ unsigned long int cucul_get_attr(cucul_canvas_t *cv, int x, int y)
  *    \e CUCUL_BLINK, \e CUCUL_BOLD and \e CUCUL_ITALICS), in which case
  *    setting the attribute does not modify the current colour information.
  *
+ *  To retrieve the current attribute value, use cucul_get_attr(-1,-1).
+ *
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
  *  - \c EINVAL The attribute value is out of the 32-bit range.
  *
