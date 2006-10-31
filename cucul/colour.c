@@ -38,6 +38,8 @@
  *  or created using cucul_ansi_to_attr() and cucul_argb_to_attr(), optionally
  *  ORed with style values such as CUCUL_UNDERLINE or CUCUL_BLINK.
  *
+ *  Only changing the style does not affect the current colour value.
+ *
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
  *  - \c EINVAL The attribute value is out of the 32-bit range.
  *
@@ -55,9 +57,45 @@ int cucul_set_attr(cucul_canvas_t *cv, unsigned long int attr)
         return -1;
     }
 
+    if(attr < 0x00000010)
+        attr = (cv->curattr & 0xfffffff0) | attr;
+
     cv->curattr = attr;
 
     return 0;
+}
+
+/** \brief Get the text attribute at the given coordinates.
+ *
+ *  Get the internal \e libcucul attribute value of the character at the
+ *  given coordinates. The attribute value has 32 significant bits,
+ *  organised as follows from MSB to LSB:
+ *  - 3 bits for the background alpha
+ *  - 4 bits for the background red component
+ *  - 4 bits for the background green component
+ *  - 3 bits for the background blue component
+ *  - 3 bits for the foreground alpha
+ *  - 4 bits for the foreground red component
+ *  - 4 bits for the foreground green component
+ *  - 3 bits for the foreground blue component
+ *  - 4 bits for the bold, italics, underline and blink flags
+ *
+ *  If the coordinates are outside the canvas boundaries, the current
+ *  attribute is returned.
+ *
+ *  This function never fails.
+ *
+ *  \param cv A handle to the libcucul canvas.
+ *  \param x X coordinate.
+ *  \param y Y coordinate.
+ *  \return The requested attribute.
+ */
+unsigned long int cucul_get_attr(cucul_canvas_t *cv, int x, int y)
+{
+    if(x < 0 || x >= (int)cv->width || y < 0 || y >= (int)cv->height)
+        return (unsigned long int)cv->curattr;
+
+    return (unsigned long int)cv->attrs[x + y * cv->width];
 }
 
 /** \brief Set the default colour pair and text style (ANSI version).
@@ -91,6 +129,9 @@ unsigned long int cucul_ansi_to_attr(unsigned char fg, unsigned char bg)
 #endif
         return 0;
     }
+
+    fg |= 0x40;
+    bg |= 0x40;
 
     return ((unsigned long int)bg << 18) | ((unsigned long int)fg << 4);
 }
@@ -148,39 +189,6 @@ int cucul_set_truecolor(cucul_canvas_t *cv, unsigned int fg, unsigned int bg)
     return cucul_set_attr(cv, cucul_argb_to_attr(fg, bg));
 }
 
-/** \brief Get the text attribute at the given coordinates.
- *
- *  Get the internal \e libcucul attribute value of the character at the
- *  given coordinates. The attribute value has 32 significant bits,
- *  organised as follows from MSB to LSB:
- *  - 3 bits for the background alpha
- *  - 4 bits for the background red component
- *  - 4 bits for the background green component
- *  - 3 bits for the background blue component
- *  - 3 bits for the foreground alpha
- *  - 4 bits for the foreground red component
- *  - 4 bits for the foreground green component
- *  - 3 bits for the foreground blue component
- *  - 4 bits for the bold, italics, underline and blink flags
- *
- *  If the coordinates are outside the canvas boundaries, the current
- *  attribute is returned.
- *
- *  This function never fails.
- *
- *  \param cv A handle to the libcucul canvas.
- *  \param x X coordinate.
- *  \param y Y coordinate.
- *  \return The requested attribute.
- */
-unsigned long int cucul_get_attr(cucul_canvas_t *cv, int x, int y)
-{
-    if(x < 0 || x >= (int)cv->width || y < 0 || y >= (int)cv->height)
-        return (unsigned long int)cv->curattr;
-
-    return (unsigned long int)cv->attrs[x + y * cv->width];
-}
-
 /*
  * XXX: the following functions are local
  */
@@ -205,10 +213,10 @@ static uint8_t nearest_ansi(uint16_t argb14, uint8_t def)
 {
     unsigned int i, best, dist;
 
-    if(argb14 < 0x0010)
-        return argb14;
+    if(argb14 < 0x0050)
+        return argb14 ^ 0x40;
 
-    if(argb14 == CUCUL_DEFAULT || argb14 == CUCUL_TRANSPARENT)
+    if(argb14 == (CUCUL_DEFAULT | 0x40) || argb14 == (CUCUL_TRANSPARENT | 0x40))
         return def;
 
     if(argb14 < 0x0fff) /* too transparent, return default colour */
@@ -266,13 +274,13 @@ uint16_t _cucul_attr_to_rgb12fg(uint32_t attr)
 {
     uint16_t fg = (attr >> 4) & 0x3fff;
 
-    if(fg < 0x0010)
-        return ansitab16[fg] & 0x0fff;
+    if(fg < 0x0050)
+        return ansitab16[fg ^ 0x40] & 0x0fff;
 
-    if(fg == CUCUL_DEFAULT)
+    if(fg == (CUCUL_DEFAULT | 0x40))
         return ansitab16[CUCUL_LIGHTGRAY] & 0x0fff;
 
-    if(fg == CUCUL_TRANSPARENT)
+    if(fg == (CUCUL_TRANSPARENT | 0x40))
         return ansitab16[CUCUL_LIGHTGRAY] & 0x0fff;
 
     return (fg << 1) & 0x0fff;
@@ -282,13 +290,13 @@ uint16_t _cucul_attr_to_rgb12bg(uint32_t attr)
 {
     uint16_t bg = attr >> 18;
 
-    if(bg < 0x0010)
-        return ansitab16[bg] & 0x0fff;
+    if(bg < 0x0050)
+        return ansitab16[bg ^ 0x40] & 0x0fff;
 
-    if(bg == CUCUL_DEFAULT)
+    if(bg == (CUCUL_DEFAULT | 0x40))
         return ansitab16[CUCUL_BLACK] & 0x0fff;
 
-    if(bg == CUCUL_TRANSPARENT)
+    if(bg == (CUCUL_TRANSPARENT | 0x40))
         return ansitab16[CUCUL_BLACK] & 0x0fff;
 
     return (bg << 1) & 0x0fff;
@@ -314,11 +322,11 @@ void _cucul_attr_to_argb4(uint32_t attr, uint8_t argb[8])
     uint16_t fg = (attr >> 4) & 0x3fff;
     uint16_t bg = attr >> 18;
 
-    if(bg < 0x0010)
-        bg = ansitab16[bg];
-    else if(bg == CUCUL_DEFAULT)
+    if(bg < 0x0050)
+        bg = ansitab16[bg ^ 0x40];
+    else if(bg == (CUCUL_DEFAULT | 0x40))
         bg = ansitab16[CUCUL_BLACK];
-    else if(bg == CUCUL_TRANSPARENT)
+    else if(bg == (CUCUL_TRANSPARENT | 0x40))
         bg = 0x0fff;
     else
         bg = ((bg << 2) & 0xf000) | ((bg << 1) & 0x0fff);
@@ -328,11 +336,11 @@ void _cucul_attr_to_argb4(uint32_t attr, uint8_t argb[8])
     argb[2] = (bg >> 4) & 0xf;
     argb[3] = bg & 0xf;
 
-    if(fg < 0x0010)
-        fg = ansitab16[fg];
-    else if(fg == CUCUL_DEFAULT)
+    if(fg < 0x0050)
+        fg = ansitab16[fg ^ 0x40];
+    else if(fg == (CUCUL_DEFAULT | 0x40))
         fg = ansitab16[CUCUL_LIGHTGRAY];
-    else if(fg == CUCUL_TRANSPARENT)
+    else if(fg == (CUCUL_TRANSPARENT | 0x40))
         fg = 0x0fff;
     else
         fg = ((fg << 2) & 0xf000) | ((fg << 1) & 0x0fff);

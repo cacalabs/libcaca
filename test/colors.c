@@ -52,13 +52,13 @@ int main(int argc, char **argv)
 
     cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_LIGHTGRAY, CUCUL_BLACK));
     cucul_putstr(cv, 3, 20, "This is bold    This is blink    This is italics    This is underline");
-    cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_LIGHTGRAY, CUCUL_BLACK) | CUCUL_BOLD);
+    cucul_set_attr(cv, CUCUL_BOLD);
     cucul_putstr(cv, 3 + 8, 20, "bold");
-    cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_LIGHTGRAY, CUCUL_BLACK) | CUCUL_BLINK);
+    cucul_set_attr(cv, CUCUL_BLINK);
     cucul_putstr(cv, 3 + 24, 20, "blink");
-    cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_LIGHTGRAY, CUCUL_BLACK) | CUCUL_ITALICS);
+    cucul_set_attr(cv, CUCUL_ITALICS);
     cucul_putstr(cv, 3 + 41, 20, "italics");
-    cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_LIGHTGRAY, CUCUL_BLACK) | CUCUL_UNDERLINE);
+    cucul_set_attr(cv, CUCUL_UNDERLINE);
     cucul_putstr(cv, 3 + 60, 20, "underline");
 
     caca_refresh_display(dp);
