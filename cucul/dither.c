@@ -1042,7 +1042,7 @@ int cucul_dither_bitmap(cucul_canvas_t *cv, int x, int y, int w, int h,
         }
 
         /* Now output the character */
-        cucul_set_attr(cv, cucul_ansi_to_attr(outfg, outbg));
+        cucul_set_color_ansi(cv, outfg, outbg);
         cucul_putchar(cv, x, y, outch);
 
        d->increment_dither();

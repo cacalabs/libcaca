@@ -176,10 +176,10 @@ unsigned int cucul_get_canvas_height(cucul_canvas_t *cv)
     return cv->height;
 }
 
-/** \brief Translate a colour index into the colour's name.
+/** \brief Translate an ANSI colour index into the colour's name.
  *
- *  Translate a cucul_color enum into a human-readable string describing
- *  the corresponding colour.
+ *  Translate an ANSI colour index such as \e CUCUL_RED or \e CUCUL_WHITE
+ *  into a human-readable string describing the corresponding colour.
  *
  *  This function never fails.
  *
@@ -187,7 +187,7 @@ unsigned int cucul_get_canvas_height(cucul_canvas_t *cv)
  *  \return A static string containing the colour's name, or \c "unknown" if
  *  the colour is unknown.
  */
-char const *cucul_get_color_name(unsigned int color)
+char const *cucul_ansi_to_str(unsigned char color)
 {
     static char const *color_names[] =
     {
@@ -209,10 +209,16 @@ char const *cucul_get_color_name(unsigned int color)
         "white",
     };
 
-    if(color < 0 || color > 15)
+    if(color > 15)
         return "unknown";
 
-    return color_names[color];
+    return color_names[(unsigned int)color];
+}
+
+/* Legacy function for old programs */
+char const *cucul_get_color_name(unsigned int color)
+{
+    return cucul_ansi_to_str(color > 15 ? 15 : color);
 }
 
 /** \brief Uninitialise \e libcucul.

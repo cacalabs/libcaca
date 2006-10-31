@@ -86,9 +86,9 @@ int main(int argc, char *argv[])
                             cucul_get_canvas_height(cw), right, buffer);
 
         /* Draw something on the mask */
-        cucul_set_attr(mask, cucul_ansi_to_attr(CUCUL_LIGHTGRAY, CUCUL_BLACK));
+        cucul_set_color_ansi(mask, CUCUL_LIGHTGRAY, CUCUL_BLACK);
         cucul_clear_canvas(mask);
-        cucul_set_attr(mask, cucul_ansi_to_attr(CUCUL_WHITE, CUCUL_WHITE));
+        cucul_set_color_ansi(mask, CUCUL_WHITE, CUCUL_WHITE);
         cucul_fill_ellipse(mask, (1.0 + sin(0.05 * (float)x))
                                    * 0.5 * cucul_get_canvas_width(mask),
                                  (1.0 + cos(0.05 * (float)x))
@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
         /* Blit the spare canvas onto the first one */
         cucul_blit(cv, 0, 0, cw, mask);
 
-        cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_WHITE, CUCUL_BLUE));
+        cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
         cucul_printf(cv, 2, 1,
                      "gamma=%g - use arrows to change, Esc to quit", gam);
 

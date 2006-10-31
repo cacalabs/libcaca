@@ -102,7 +102,7 @@ int main(int argc, char **argv)
 	}
 
 
-        cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_LIGHTGRAY, CUCUL_BLACK));
+        cucul_set_color_ansi(cv, CUCUL_LIGHTGRAY, CUCUL_BLACK);
         cucul_clear_canvas(cv);
 
         cucul_draw_thin_box(cv, 0, 0, cucul_get_canvas_width(cv) - 1,
@@ -125,9 +125,9 @@ int main(int argc, char **argv)
         ya = -1 - cucul_get_sprite_dy(sprite, frame);
         xb = xa + 1 + cucul_get_sprite_width(sprite, frame);
         yb = ya + 1 + cucul_get_sprite_height(sprite, frame);
-        cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_BLACK, CUCUL_BLACK));
+        cucul_set_color_ansi(cv, CUCUL_BLACK, CUCUL_BLACK);
         cucul_fill_box(cv, 57 + xa, 10 + ya, 57 + xb, 10 + yb, " ");
-        cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_LIGHTGRAY, CUCUL_BLACK));
+        cucul_set_color_ansi(cv, CUCUL_LIGHTGRAY, CUCUL_BLACK);
         cucul_draw_thin_box(cv, 57 + xa, 10 + ya, 57 + xb, 10 + yb);
         cucul_draw_sprite(cv, 57, 10, sprite, frame);
 

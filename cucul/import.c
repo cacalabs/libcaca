@@ -202,7 +202,7 @@ static cucul_canvas_t *import_text(void const *data, unsigned int size)
         return NULL;
     }
 
-    cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_DEFAULT, CUCUL_TRANSPARENT));
+    cucul_set_color_ansi(cv, CUCUL_DEFAULT, CUCUL_TRANSPARENT);
 
     for(i = 0; i < size; i++)
     {
@@ -384,8 +384,7 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size,
                 break;
             case 'K': /* EL - Erase In Line */
                 if(width < 80)
-                    cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_DEFAULT,
-                                                          CUCUL_TRANSPARENT));
+                    cucul_set_color_ansi(cv, CUCUL_DEFAULT, CUCUL_TRANSPARENT);
                     cucul_set_canvas_size(cv, width = 80, height);
                 for(j = x; j < 80; j++)
                     cucul_putchar(cv, j, y, ' ');
@@ -435,28 +434,25 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size,
         /* Make sure the canvas is big enough. */
         if((unsigned int)x + wch > width)
         {
-            cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_DEFAULT,
-                                                  CUCUL_TRANSPARENT));
+            cucul_set_color_ansi(cv, CUCUL_DEFAULT, CUCUL_TRANSPARENT);
             cucul_set_canvas_size(cv, width = x + wch, height);
         }
 
         if((unsigned int)y >= height)
         {
-            cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_DEFAULT,
-                                                  CUCUL_TRANSPARENT));
+            cucul_set_color_ansi(cv, CUCUL_DEFAULT, CUCUL_TRANSPARENT);
             cucul_set_canvas_size(cv, width, height = y + 1);
         }
 
         /* Now paste our character */
-        cucul_set_attr(cv, cucul_ansi_to_attr(grcm.efg, grcm.ebg));
+        cucul_set_color_ansi(cv, grcm.efg, grcm.ebg);
         cucul_putchar(cv, x, y, ch);
         x += wch;
     }
 
     if((unsigned int)y > height)
     {
-        cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_DEFAULT,
-                                              CUCUL_TRANSPARENT));
+        cucul_set_color_ansi(cv, CUCUL_DEFAULT, CUCUL_TRANSPARENT);
         cucul_set_canvas_size(cv, width, height = y);
     }
 

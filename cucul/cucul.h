@@ -103,11 +103,11 @@ int cucul_free_buffer(cucul_buffer_t *);
  *
  *  @{ */
 #define CUCUL_MAGIC_FULLWIDTH 0x000ffffe /**< Used to indicate that the previous character was a fullwidth glyph. */
-int cucul_set_attr(cucul_canvas_t *, unsigned long int);
 unsigned long int cucul_get_attr(cucul_canvas_t *, int, int);
-unsigned long int cucul_ansi_to_attr(unsigned char, unsigned char);
-unsigned long int cucul_argb_to_attr(unsigned int, unsigned int);
-char const *cucul_get_color_name(unsigned int);
+int cucul_set_attr(cucul_canvas_t *, unsigned long int);
+int cucul_set_color_ansi(cucul_canvas_t *, unsigned char, unsigned char);
+int cucul_set_color_argb(cucul_canvas_t *, unsigned int, unsigned int);
+char const *cucul_ansi_to_str(unsigned char);
 int cucul_putchar(cucul_canvas_t *, int, int, unsigned long int);
 unsigned long int cucul_getchar(cucul_canvas_t *, int, int);
 int cucul_putstr(cucul_canvas_t *, int, int, char const *);
@@ -248,6 +248,7 @@ int cucul_set_color(cucul_canvas_t *, unsigned char,
                                       unsigned char) CUCUL_DEPRECATED;
 int cucul_set_truecolor(cucul_canvas_t *, unsigned int,
                                           unsigned int) CUCUL_DEPRECATED;
+char const *cucul_get_color_name(unsigned int) CUCUL_DEPRECATED;
 #   define CUCUL_COLOR_BLACK CUCUL_BLACK
 #   define CUCUL_COLOR_BLUE CUCUL_BLUE
 #   define CUCUL_COLOR_GREEN CUCUL_GREEN

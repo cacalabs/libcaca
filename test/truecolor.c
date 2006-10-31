@@ -40,11 +40,11 @@ int main(int argc, char *argv[])
         uint16_t bgcolor = 0xff00 | (y << 4) | x;
         uint16_t fgcolor = 0xf000 | ((15 - y) << 4) | ((15 - x) << 8);
 
-        cucul_set_attr(cv, cucul_argb_to_attr(fgcolor, bgcolor));
+        cucul_set_color_argb(cv, fgcolor, bgcolor);
         cucul_putstr(cv, x * 2, y, "CA");
     }
 
-    cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_WHITE, CUCUL_LIGHTBLUE));
+    cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_LIGHTBLUE);
     cucul_putstr(cv, 2, 1, " truecolor libcaca ");
 
     caca_refresh_display(dp);

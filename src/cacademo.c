@@ -161,16 +161,15 @@ paused:
         if(next != -1)
         {
             fn[next](RENDER, backcv);
-            cucul_set_attr(mask, cucul_ansi_to_attr(CUCUL_LIGHTGRAY,
-                                                    CUCUL_BLACK));
+            cucul_set_color_ansi(mask, CUCUL_LIGHTGRAY, CUCUL_BLACK);
             cucul_clear_canvas(mask);
-            cucul_set_attr(mask, cucul_ansi_to_attr(CUCUL_WHITE, CUCUL_WHITE));
+            cucul_set_color_ansi(mask, CUCUL_WHITE, CUCUL_WHITE);
             transition(mask, tmode,
                        100 * (frame - next_transition) / TRANSITION_FRAMES);
             cucul_blit(frontcv, 0, 0, backcv, mask);
         }
 
-        cucul_set_attr(frontcv, cucul_ansi_to_attr(CUCUL_WHITE, CUCUL_BLUE));
+        cucul_set_color_ansi(frontcv, CUCUL_WHITE, CUCUL_BLUE);
         if(frame < 100)
             cucul_putstr(frontcv, cucul_get_canvas_width(frontcv) - 30,
                                   cucul_get_canvas_height(frontcv) - 2,
@@ -693,10 +692,9 @@ void langton(enum action action, cucul_canvas_t *cv)
                 uint8_t p = screen[x + width * y];
 
                 if(p & 0x0f)
-                    cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_WHITE, p >> 4));
+                    cucul_set_color_ansi(cv, CUCUL_WHITE, p >> 4);
                 else
-                    cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_BLACK,
-                                                          CUCUL_BLACK));
+                    cucul_set_color_ansi(cv, CUCUL_BLACK, CUCUL_BLACK);
                 cucul_putchar(cv, x, y, gradient[p & 0x0f]);
             }
         }
@@ -760,7 +758,7 @@ void matrix(enum action action, cucul_canvas_t *cv)
         w = cucul_get_canvas_width(cv);
         h = cucul_get_canvas_height(cv);
 
-        cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_BLACK, CUCUL_BLACK));
+        cucul_set_color_ansi(cv, CUCUL_BLACK, CUCUL_BLACK);
         cucul_clear_canvas(cv);
 
         for(i = 0; i < MAXDROPS && i < (w * h / 32); i++)
@@ -782,7 +780,7 @@ void matrix(enum action action, cucul_canvas_t *cv)
                     fg = CUCUL_GREEN;
                 else
                     fg = CUCUL_DARKGRAY;
-                cucul_set_attr(cv, cucul_ansi_to_attr(fg, CUCUL_BLACK));
+                cucul_set_color_ansi(cv, fg, CUCUL_BLACK);
 
                 cucul_putchar(cv, x, y - j,
                               drop[i].str[(y - j) % drop[i].len]);

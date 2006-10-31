@@ -56,7 +56,7 @@ int main(int argc, char **argv)
     lines = cols * i->h * 6 / i->w / 10;
 
     cucul_set_canvas_size(cv, cols, lines);
-    cucul_set_attr(cv, cucul_ansi_to_attr(CUCUL_DEFAULT, CUCUL_TRANSPARENT));
+    cucul_set_color_ansi(cv, CUCUL_DEFAULT, CUCUL_TRANSPARENT);
     cucul_clear_canvas(cv);
     cucul_dither_bitmap(cv, 0, 0, cols, lines, i->dither, i->pixels);
 

@@ -26,45 +26,6 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
-/** \brief Set the default character attribute.
- *
- *  Set the default character attribute for drawing. Attributes define
- *  foreground and background colour, transparency, bold, italics and
- *  underline styles, as well as blink. String functions such as
- *  caca_printf() and graphical primitive functions such as caca_draw_line()
- *  will use this attribute.
- *
- *  The attribute value is a 32-bit integer as returned by cucul_get_attr()
- *  or created using cucul_ansi_to_attr() and cucul_argb_to_attr(), optionally
- *  ORed with style values such as CUCUL_UNDERLINE or CUCUL_BLINK.
- *
- *  Only changing the style does not affect the current colour value.
- *
- *  If an error occurs, -1 is returned and \b errno is set accordingly:
- *  - \c EINVAL The attribute value is out of the 32-bit range.
- *
- *  \param cv A handle to the libcucul canvas.
- *  \param attr The requested attribute value.
- *  \return 0 in case of success, -1 if an error occurred.
- */
-int cucul_set_attr(cucul_canvas_t *cv, unsigned long int attr)
-{
-    if(sizeof(unsigned long int) > sizeof(uint32_t) && attr > 0xffffffff)
-    {
-#if defined(HAVE_ERRNO_H)
-        errno = EINVAL;
-#endif
-        return -1;
-    }
-
-    if(attr < 0x00000010)
-        attr = (cv->curattr & 0xfffffff0) | attr;
-
-    cv->curattr = attr;
-
-    return 0;
-}
-
 /** \brief Get the text attribute at the given coordinates.
  *
  *  Get the internal \e libcucul attribute value of the character at the
@@ -98,55 +59,92 @@ unsigned long int cucul_get_attr(cucul_canvas_t *cv, int x, int y)
     return (unsigned long int)cv->attrs[x + y * cv->width];
 }
 
-/** \brief Set the default colour pair and text style (ANSI version).
+/** \brief Set the default character attribute.
  *
- *  Set the default ANSI colour pair and text style for drawing. String
- *  functions such as caca_printf() and graphical primitive functions such as
- *  caca_draw_line() will use these attributes.
+ *  Set the default character attribute for drawing. Attributes define
+ *  foreground and background colour, transparency, bold, italics and
+ *  underline styles, as well as blink. String functions such as
+ *  caca_printf() and graphical primitive functions such as caca_draw_line()
+ *  will use this attribute.
+ *
+ *  The value of \e attr is either:
+ *  - a 32-bit integer as returned by cucul_get_attr(), in which case it
+ *    also contains colour information,
+ *  - a combination (bitwise OR) of style values (\e CUCUL_UNDERLINE,
+ *    \e CUCUL_BLINK, \e CUCUL_BOLD and \e CUCUL_ITALICS), in which case
+ *    setting the attribute does not modify the current colour information.
+ *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c EINVAL The attribute value is out of the 32-bit range.
+ *
+ *  \param cv A handle to the libcucul canvas.
+ *  \param attr The requested attribute value.
+ *  \return 0 in case of success, -1 if an error occurred.
+ */
+int cucul_set_attr(cucul_canvas_t *cv, unsigned long int attr)
+{
+    if(sizeof(unsigned long int) > sizeof(uint32_t) && attr > 0xffffffff)
+    {
+#if defined(HAVE_ERRNO_H)
+        errno = EINVAL;
+#endif
+        return -1;
+    }
+
+    if(attr < 0x00000010)
+        attr = (cv->curattr & 0xfffffff0) | attr;
+
+    cv->curattr = attr;
+
+    return 0;
+}
+
+/** \brief Set the default colour pair for text (ANSI version).
+ *
+ *  Set the default ANSI colour pair for text drawing. String functions such
+ *  as caca_printf() and graphical primitive functions such as caca_draw_line()
+ *  will use these attributes.
  *
  *  Color values are those defined in cucul.h, such as CUCUL_RED
  *  or CUCUL_TRANSPARENT.
  *
- *  Style values are those defined in cucul.h, such as CUCUL_UNDERLINE
- *  or CUCUL_BLINK. The values can be ORed to set several styles at
- *  the same time.
- *
  *  If an error occurs, 0 is returned and \b errno is set accordingly:
- *  - \c EINVAL The colour values and/or the style mask are invalid.
+ *  - \c EINVAL At least one of the colour values is invalid.
  *
  *  \param cv A handle to the libcucul canvas.
- *  \param fg The requested foreground colour.
- *  \param bg The requested background colour.
- *  \param style The requested text styles.
+ *  \param fg The requested ANSI foreground colour.
+ *  \param bg The requested ANSI background colour.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-unsigned long int cucul_ansi_to_attr(unsigned char fg, unsigned char bg)
+int cucul_set_color_ansi(cucul_canvas_t *cv, unsigned char fg, unsigned char bg)
 {
+    uint32_t attr;
+
     if(fg > 0x20 || bg > 0x20)
     {
 #if defined(HAVE_ERRNO_H)
         errno = EINVAL;
 #endif
-        return 0;
+        return -1;
     }
 
-    fg |= 0x40;
-    bg |= 0x40;
+    attr = ((uint32_t)(bg | 0x40) << 18) | ((uint32_t)(fg | 0x40) << 4);
+    cv->curattr = (cv->curattr & 0x0000000f) | attr;
 
-    return ((unsigned long int)bg << 18) | ((unsigned long int)fg << 4);
+    return 0;
 }
 
 /* Legacy function for old programs */
 int cucul_set_color(cucul_canvas_t *cv, unsigned char fg, unsigned char bg)
 {
-    return cucul_set_attr(cv, cucul_ansi_to_attr(fg, bg));
+    return cucul_set_color_ansi(cv, fg, bg);
 }
 
-/** \brief Set the default colour pair and text style (truecolor version).
+/** \brief Set the default colour pair for text (truecolor version).
  *
- *  Set the default colour pair and text style for drawing. String
- *  functions such as caca_printf() and graphical primitive functions such as
- *  caca_draw_line() will use these attributes.
+ *  Set the default ARGB colour pair for text drawing. String functions such
+ *  as caca_printf() and graphical primitive functions such as caca_draw_line()
+ *  will use these attributes.
  *
  *  Colors are 16-bit ARGB values, each component being coded on 4 bits. For
  *  instance, 0xf088 is solid dark cyan (A=15 R=0 G=8 B=8), and 0x8fff is
@@ -156,13 +154,14 @@ int cucul_set_color(cucul_canvas_t *cv, unsigned char fg, unsigned char bg)
  *  - \c EINVAL At least one of the colour values is invalid.
  *
  *  \param cv A handle to the libcucul canvas.
- *  \param fg The requested foreground colour.
- *  \param bg The requested background colour.
- *  \param style The requested text styles.
+ *  \param fg The requested ARGB foreground colour.
+ *  \param bg The requested ARGB background colour.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-unsigned long int cucul_argb_to_attr(unsigned int fg, unsigned int bg)
+int cucul_set_color_argb(cucul_canvas_t *cv, unsigned int fg, unsigned int bg)
 {
+    uint32_t attr;
+
     if(fg > 0xffff || bg > 0xffff)
     {
 #if defined(HAVE_ERRNO_H)
@@ -180,13 +179,16 @@ unsigned long int cucul_argb_to_attr(unsigned int fg, unsigned int bg)
     fg = ((fg >> 1) & 0x7ff) | ((fg >> 13) << 11);
     bg = ((bg >> 1) & 0x7ff) | ((bg >> 13) << 11);
 
-    return ((unsigned long int)bg << 18) | ((unsigned long int)fg << 4);
+    attr = ((uint32_t)bg << 18) | ((uint32_t)fg << 4);
+    cv->curattr = (cv->curattr & 0x0000000f) | attr;
+
+    return 0;
 }
 
 /* Legacy function for old programs */
 int cucul_set_truecolor(cucul_canvas_t *cv, unsigned int fg, unsigned int bg)
 {
-    return cucul_set_attr(cv, cucul_argb_to_attr(fg, bg));
+    return cucul_set_color_argb(cv, fg, bg);
 }
 
 /*
