@@ -43,7 +43,7 @@ int main(void)
 
 
 What does it do ? (we skip variable definitions, guessing you have a brain) : 
-- Create a cucul canvas. A canvas is where everything happens. Writing characters, sprites, strings, images, everything. It is mandatory and is the reason for libcuculs' beeing. Size is there a width of 0 pixels, and a height of 0 pixels. It'll be resized according to contents you put in it.
+- Create a cucul canvas. A canvas is where everything happens. Writing characters, sprites, strings, images, everything. It is mandatory and is the reason of libcuculs' beeing. Size is there a width of 0 pixels, and a height of 0 pixels. It'll be resized according to contents you put in it.
 
 - Create a caca display. This is basically the window. Physically it can be a window (most of the displays), a console (ncurses, slang) or a real display (VGA). 
 
@@ -61,5 +61,10 @@ What does it do ? (we skip variable definitions, guessing you have a brain) :
 
 - Free canvas (release memory and close window if any)
 
+
+You can then compile this code under UNIX-like systems with following command : (you'll need pkg-config and gcc)
+\code
+gcc `pkg-config --libs --cflags cucul caca` example.c -o example
+\endcode
 
 */
