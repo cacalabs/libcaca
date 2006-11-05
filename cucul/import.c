@@ -22,6 +22,11 @@
 #   if defined(HAVE_ERRNO_H)
 #       include <errno.h>
 #   endif
+#   if defined(HAVE_ARPA_INET_H)
+#       include <arpa/inet.h>
+#   elif defined(HAVE_NETINET_IN_H)
+#       include <netinet/in.h>
+#   endif
 #   include <stdio.h>
 #   include <stdlib.h>
 #   include <string.h>
@@ -29,6 +34,20 @@
 
 #include "cucul.h"
 #include "cucul_internals.h"
+
+static inline uint32_t sscanu32(void const *s)
+{
+    uint32_t x;
+    memcpy(&x, s, 4);
+    return ntohl(x);
+}
+
+static inline uint16_t sscanu16(void const *s)
+{
+    uint16_t x;
+    memcpy(&x, s, 2);
+    return ntohs(x);
+}
 
 /* ANSI Graphic Rendition Combination Mode */
 struct ansi_grcm
@@ -85,8 +104,8 @@ cucul_canvas_t * cucul_import_canvas(cucul_buffer_t *buffer, char const *format)
         unsigned int i;
 
         /* If 4 first letters are CACA */
-        if(buffer->size >= 4 &&
-           buf[0] == 'C' && buf[1] == 'A' && buf[2] == 'C' && buf[3] != 'A')
+        if(buffer->size >= 4 && (uint8_t)buf[0] == 0xca &&
+           (uint8_t)buf[1] == 0xca && buf[2] == 'C' && buf[3] == 'V')
             return import_caca(buffer->data, buffer->size);
 
         /* If we find ESC[ argv, we guess it's an ANSI file */
@@ -137,26 +156,49 @@ static cucul_canvas_t *import_caca(void const *data, unsigned int size)
 {
     cucul_canvas_t *cv;
     uint8_t const *buf = (uint8_t const *)data;
-    unsigned int width, height, n;
+    unsigned int control_size, data_size, full_size, frames, f, n;
+    uint16_t version, flags;
 
-    if(size < 16)
+    if(size < 20)
         goto invalid_caca;
 
-    if(buf[0] != 'C' || buf[1] != 'A' || buf[2] != 'C' || buf[3] != 'A')
+    if(buf[0] != 0xca || buf[1] != 0xca || buf[2] != 'C' || buf[3] != 'V')
         goto invalid_caca;
 
-    if(buf[4] != 'C' || buf[5] != 'A' || buf[6] != 'N' || buf[7] != 'V')
+    control_size = sscanu32(buf + 4);
+    data_size = sscanu32(buf + 8);
+    version = sscanu16(buf + 12);
+    frames = sscanu32(buf + 14);
+    flags = sscanu16(buf + 18);
+
+    if(size != 4 + control_size + data_size)
         goto invalid_caca;
 
-    width = ((uint32_t)buf[8] << 24) | ((uint32_t)buf[9] << 16)
-        | ((uint32_t)buf[10] << 8) | (uint32_t)buf[11];
-    height = ((uint32_t)buf[12] << 24) | ((uint32_t)buf[13] << 16)
-        | ((uint32_t)buf[14] << 8) | (uint32_t)buf[15];
-
-    if(size != 16 + width * height * 8)
+    if(control_size < 16 + frames * 24)
         goto invalid_caca;
 
-    cv = cucul_create_canvas(width, height);
+    for(full_size = 0, f = 0; f < frames; f++)
+    {
+        unsigned int width, height, duration;
+        uint32_t attr;
+        int x, y;
+
+        width = sscanu32(buf + 4 + 16 + f * 24);
+        height = sscanu32(buf + 4 + 16 + f * 24 + 4);
+        duration = sscanu32(buf + 4 + 16 + f * 24 + 8);
+        attr = sscanu32(buf + 4 + 16 + f * 24 + 12);
+        x = (int32_t)sscanu32(buf + 4 + 16 + f * 24 + 16);
+        y = (int32_t)sscanu32(buf + 4 + 16 + f * 24 + 20);
+
+        full_size += width * height * 8;
+    }
+
+    if(full_size != data_size)
+        goto invalid_caca;
+
+    /* FIXME: read all frames, not only the first one */
+    cv = cucul_create_canvas(sscanu32(buf + 4 + 16),
+                             sscanu32(buf + 4 + 16 + 4));
 
     if(!cv)
     {
@@ -166,17 +208,13 @@ static cucul_canvas_t *import_caca(void const *data, unsigned int size)
         return NULL;
     }
 
-    for(n = height * width; n--; )
+    for(n = sscanu32(buf + 4 + 16) * sscanu32(buf + 4 + 16 + 4); n--; )
     {
-        cv->chars[n] = ((uint32_t)buf[16 + 0 + 8 * n] << 24)
-            | ((uint32_t)buf[16 + 1 + 8 * n] << 16)
-            | ((uint32_t)buf[16 + 2 + 8 * n] << 8)
-            | (uint32_t)buf[16 + 3 + 8 * n];
-        cv->attrs[n] = ((uint32_t)buf[16 + 4 + 8 * n] << 24)
-            | ((uint32_t)buf[16 + 5 + 8 * n] << 16)
-            | ((uint32_t)buf[16 + 6 + 8 * n] << 8)
-            | (uint32_t)buf[16 + 7 + 8 * n];
+        cv->chars[n] = sscanu32(buf + 4 + control_size + 8 * n);
+        cv->attrs[n] = sscanu32(buf + 4 + control_size + 8 * n + 4);
     }
+
+    cv->curattr = sscanu32(buf + 4 + 16 + 12);
 
     return cv;
 

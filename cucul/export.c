@@ -31,9 +31,25 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
+static inline int sprintu32(char *s, uint32_t x)
+{
+    s[0] = (uint8_t)(x >> 24);
+    s[1] = (uint8_t)(x >> 16) & 0xff;
+    s[2] = (uint8_t)(x >>  8) & 0xff;
+    s[3] = (uint8_t)(x      ) & 0xff;
+    return 4;
+}
+
+static inline int sprintu16(char *s, uint16_t x)
+{
+    s[0] = (uint8_t)(x >>  8) & 0xff;
+    s[1] = (uint8_t)(x      ) & 0xff;
+    return 2;
+}
+
 static int export_caca(cucul_canvas_t *, cucul_buffer_t *);
 static int export_ansi(cucul_canvas_t *, cucul_buffer_t *);
-static int export_utf8(cucul_canvas_t *, cucul_buffer_t *);
+static int export_utf8(cucul_canvas_t *, cucul_buffer_t *, int);
 static int export_html(cucul_canvas_t *, cucul_buffer_t *);
 static int export_html3(cucul_canvas_t *, cucul_buffer_t *);
 static int export_irc(cucul_canvas_t *, cucul_buffer_t *);
@@ -90,7 +106,9 @@ cucul_buffer_t * cucul_export_canvas(cucul_canvas_t *cv, char const *format)
     else if(!strcasecmp("ansi", format))
         ret = export_ansi(cv, ex);
     else if(!strcasecmp("utf8", format))
-        ret = export_utf8(cv, ex);
+        ret = export_utf8(cv, ex, 0);
+    else if(!strcasecmp("utf8cr", format))
+        ret = export_utf8(cv, ex, 1);
     else if(!strcasecmp("html", format))
         ret = export_html(cv, ex);
     else if(!strcasecmp("html3", format))
@@ -134,6 +152,7 @@ char const * const * cucul_get_export_list(void)
         "caca", "native libcaca format",
         "ansi", "ANSI",
         "utf8", "UTF-8 with ANSI escape codes",
+        "utf8cr", "UTF-8 with ANSI escape codes and MS-DOS \\r",
         "html", "HTML",
         "html3", "backwards-compatible HTML",
         "irc", "IRC with mIRC colours",
@@ -156,45 +175,104 @@ static int export_caca(cucul_canvas_t *cv, cucul_buffer_t *ex)
     uint32_t *attrs = cv->attrs;
     uint32_t *chars = cv->chars;
     char *cur;
-    uint32_t w, h;
     unsigned int n;
 
-    /* 16 bytes for the canvas, 8 bytes for each character cell. */
-    ex->size = 16 + 8 * cv->width * cv->height;
+    /* 44 bytes for the header:
+     *  - 4 bytes for "\xCA\xCA" + "CV"
+     *  - 16 bytes for the canvas header
+     *  - 24 bytes for the frame info
+     * 8 bytes for each character cell */
+    ex->size = 44 + 8 * cv->width * cv->height;
     ex->data = malloc(ex->size);
 
     cur = ex->data;
 
-    w = cv->width;
-    h = cv->height;
+    /* magic */
+    cur += sprintf(cur, "%s", "\xCA\xCA" "CV");
 
-    cur += sprintf(cur, "CACACANV%c%c%c%c%c%c%c%c",
-                   (unsigned char)(w >> 24), (unsigned char)((w >> 16) & 0xff),
-                   (unsigned char)((w >> 8) & 0xff), (unsigned char)(w & 0xff),
-                   (unsigned char)(h >> 24), (unsigned char)((h >> 16) & 0xff),
-                   (unsigned char)((h >> 8) & 0xff), (unsigned char)(h & 0xff));
+    /* canvas_header */
+    cur += sprintu32(cur, 16 + 24);
+    cur += sprintu32(cur, cv->width * cv->height * 8);
+    cur += sprintu16(cur, 0x0001);
+    cur += sprintu32(cur, 1);
+    cur += sprintu16(cur, 0x0000);
 
+    /* frame_info */
+    cur += sprintu32(cur, cv->width);
+    cur += sprintu32(cur, cv->height);
+    cur += sprintu32(cur, 0);
+    cur += sprintu32(cur, cv->curattr);
+    cur += sprintu32(cur, 0);
+    cur += sprintu32(cur, 0);
+
+    /* canvas_data */
     for(n = cv->height * cv->width; n--; )
     {
-        uint32_t ch = *chars++;
-        uint32_t a = *attrs++;
-
-        *cur++ = ch >> 24;
-        *cur++ = (ch >> 16) & 0xff;
-        *cur++ = (ch >> 8) & 0xff;
-        *cur++ = ch & 0xff;
-
-        *cur++ = a >> 24;
-        *cur++ = (a >> 16) & 0xff;
-        *cur++ = (a >> 8) & 0xff;
-        *cur++ = a & 0xff;
+        cur += sprintu32(cur, *chars++);
+        cur += sprintu32(cur, *attrs++);
     }
 
     return 0;
 }
 
+/*
+ * The libcaca canvas format, version 1
+ * ------------------------------------
+ *
+ * All types are big endian.
+ *
+ * struct
+ * {
+ * magic:
+ *    uint8_t caca_header[2];    // "\xCA\xCA"
+ *    uint8_t caca_file_type[2]; // "CV"
+ *
+ * canvas_header:
+ *    uint32_t control_size;     // Control size (canvas_data - canvas_header)
+ *    uint32_t data_size;        // Data size (EOF - canvas_data)
+ *
+ *    uint16_t version;          // Canvas format version
+ *                               //  bit 0: set to 1 if canvas is compatible
+ *                               //         with version 1 of the format
+ *                               //  bits 1-15: unused yet, must be 0
+ *
+ *    uint32_t frames;           // Frame count
+ *
+ *    uint16_t flags;            // Feature flags
+ *                               //  bits 0-15: unused yet, must be 0
+ *
+ * frame_info:
+ *    struct
+ *    {
+ *       uint32_t width;         // Frame width
+ *       uint32_t height;        // Frame height
+ *       uint32_t duration;      // Frame duration in milliseconds, 0 to
+ *                               // not specify a duration
+ *       uint32_t attr;          // Graphics context attribute
+ *       int32_t handle_x;       // Handle X coordinate
+ *       int32_t handle_y;       // Handle Y coordinate
+ *    }
+ *    frame_list[frames];
+ *
+ * control_extension_1:
+ * control_extension_2:
+ *    ...
+ * control_extension_N:
+ *    ...                        // reserved for future use
+ *
+ * canvas_data:
+ *    uint8_t data[data_size];   // canvas data
+ *
+ * data_extension_1:
+ * data_extension_2:
+ *    ...
+ * data_extension_N:
+ *    ...                        // reserved for future use
+ * };
+ */
+
 /* Generate UTF-8 representation of current canvas. */
-static int export_utf8(cucul_canvas_t *cv, cucul_buffer_t *ex)
+static int export_utf8(cucul_canvas_t *cv, cucul_buffer_t *ex, int cr)
 {
     static uint8_t const palette[] =
     {
@@ -262,7 +340,7 @@ static int export_utf8(cucul_canvas_t *cv, cucul_buffer_t *ex)
         if(prevfg != 0x10 || prevbg != 0x10)
             cur += sprintf(cur, "\033[0m");
 
-        cur += sprintf(cur, "\n");
+        cur += sprintf(cur, cr ? "\r\n" : "\n");
     }
 
     /* Crop to really used size */

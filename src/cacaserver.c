@@ -142,7 +142,7 @@ int main(void)
 #endif
     server = malloc(sizeof(struct server));
 
-    server->input = malloc(16);
+    server->input = malloc(12);
     server->read = 0;
 
     server->client_count = 0;
@@ -206,7 +206,7 @@ int main(void)
     {
         cucul_buffer_t *b;
         uint8_t *buf = server->input;
-        uint32_t width, height;
+        uint32_t control_size, data_size;
         unsigned int size;
 
         /* Manage new connections as this function will be called sometimes
@@ -214,22 +214,23 @@ int main(void)
         manage_connections(server);
 
         /* Read data from stdin */
-        read(0, buf, 16);
+        read(0, buf, 12);
 
-        while(buf[0] != 'C' || buf[1] != 'A' || buf[2] != 'C' || buf[3] != 'A')
+        while(buf[0] != 0xca || buf[1] != 0xca
+               || buf[2] != 'C' || buf[3] != 'V')
         {
-            memmove(buf, buf + 1, 15);
-            read(0, buf + 15, 1);
+            memmove(buf, buf + 1, 11);
+            read(0, buf + 11, 1);
         }
 
-        width = ((uint32_t)buf[8] << 24) | ((uint32_t)buf[9] << 16)
+        control_size = ((uint32_t)buf[4] << 24) | ((uint32_t)buf[5] << 16)
+               | ((uint32_t)buf[6] << 8) | (uint32_t)buf[7];
+        data_size = ((uint32_t)buf[8] << 24) | ((uint32_t)buf[9] << 16)
                | ((uint32_t)buf[10] << 8) | (uint32_t)buf[11];
-        height = ((uint32_t)buf[12] << 24) | ((uint32_t)buf[13] << 16)
-                | ((uint32_t)buf[14] << 8) | (uint32_t)buf[15];
 
-        size = 16 + width * height * 8;
+        size = 4 + control_size + data_size;
         buf = server->input = realloc(server->input, size);
-        read(0, buf + 16, size - 16);
+        read(0, buf + 12, size - 12);
 
         /* Free the previous canvas, if any */
         if(server->canvas)
@@ -250,8 +251,8 @@ int main(void)
         }
 
         /* Get ANSI representation of the image and skip the end-of buffer
-         * linefeed ("\r\n", 2 bytes) */
-        server->buffer = cucul_export_canvas(server->canvas, "utf8");
+         * linefeed ("\r\n", 2 byte) */
+        server->buffer = cucul_export_canvas(server->canvas, "utf8cr");
         server->bufdata = cucul_get_buffer_data(server->buffer);
         server->buflen = cucul_get_buffer_size(server->buffer);
         server->buflen -= 2;
