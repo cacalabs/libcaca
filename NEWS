@@ -1,5 +1,13 @@
 /* $Id$ */ /** \page news News
 
+\section news0_99_beta9 Changes between 0.9.beta9 and 0.99.beta8
+
+ - support for blink, bold, italics and underline attributes
+ - allow to import and export zero-sized canvases
+ - fixed Imlib2 support in cacaview
+ - fixed buffer overlows in the file importer
+ - big documentation updates
+
 \section news0_99_beta8 Changes between 0.9.beta8 and 0.99.beta7
 
  - allow to build the X11 and GL drivers as separate plugins
