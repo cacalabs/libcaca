@@ -2,9 +2,17 @@
 
 /** \page tutorial A libcucul and libcaca tutorial
 
- Super short example:
+ Before writing your first libcaca application, you need to know the difference between libcucul and libcaca : 
+- libcucul is the text rendering library. It will do all the work you actually need. From imports (text, ANSI, caca internal format, all of this supporting n-bytes unicode), to exports (sames formats, adding SVG, PostScript, TGA, HTML (both 3 and 4), IRC), it'll cover all your needs.
+- libcaca handle everything that can be hardware related. It includes display (RAW, X11, OpenGL, Windows (GDI), conio (DOS), ncurses, slang, text VGA (IMB-Compatible)), keyboard (same drivers but RAW), mouse (same drivers but RAW and VGA), time and resize events (on windowed drivers).
+
+So, you can write a libcucul only program, but you <b>can't</b> write a libcaca only program, it'll be nonsense. Period.
+
+
+First, a working program, very simple, to check you can compile and run it : 
 
 \code
+
 #include <cucul.h>
 #include <caca.h>
 
@@ -17,7 +25,7 @@ int main(void)
     /* Set window title */
     caca_set_display_title(dp, "Hello!");
     /* Choose drawing colours */
-    cucul_set_color_ansi(cv, CUCUL_BLACK, CUCUL_WHITE);
+    cucul_set_color(cv, CUCUL_COLOR_BLACK, CUCUL_COLOR_WHITE);
     /* Draw a string at coordinates (0, 0) */
     cucul_putstr(cv, 0, 0, "This is a message");
     /* Refresh display */
@@ -30,6 +38,28 @@ int main(void)
 
     return 0;
 }
+
 \endcode
+
+
+What does it do ? (we skip variable definitions, guessing you have a brain) : 
+- Create a cucul canvas. A canvas is where everything happens. Writing characters, sprites, strings, images, everything. It is mandatory and is the reason for libcuculs' beeing. Size is there a width of 0 pixels, and a height of 0 pixels. It'll be resized according to contents you put in it.
+
+- Create a caca display. This is basically the window. Physically it can be a window (most of the displays), a console (ncurses, slang) or a real display (VGA). 
+
+- Set the window name of our display (only available in windowed displays, does nothing otherwise). (so this is libcaca related)
+ 
+- Set current colors to black background, and white foreground of our canvas (so this is libcucul related)
+
+- Put a string "This is a message" with current colors in our libcucul canvas.
+
+- Refresh our caca display, whish was firstly attached to our canvas
+
+- Wait for an event of type "CACA_EVENT_KEY_PRESS", which seems obvious.
+
+- Free display (release memory)
+
+- Free canvas (release memory and close window if any)
+
 
 */
