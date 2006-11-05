@@ -4,10 +4,11 @@
 
   \subsection dep API-dependent stuff
 
-  - support for multi-frame canvases in the caca exporter
-  - support for timing information in the caca exporter, for smooth playback
+  - allow to change the canvas size in a per-frame basis.
+  - allow to import data in feed mode
   - cucul_getchar -> cucul_get_char?
   - maybe switch back to utf32 arguments for box, ellipse etc.
+  - export attribute parsing functions such as attr_to_ansi4fg etc.
 
   \subsection indep API-independent stuff
 
@@ -29,6 +30,8 @@
 \section libcaca libcaca
 
   \subsection dep API-dependent stuff
+
+  - nothing more!
 
   \subsection indep API-independent stuff
 
@@ -82,11 +85,5 @@
 
   - Only a skeleton exists yet. A modern ANSI editor that can also
      do Unicode.
-
-  \section ttyvaders TTYvaders
-
-  - Managed in another repository.
-  - Add ground and air vehicles, make it moon-buggy on steroids!
-  - Provide several sets of sprites (monochrome, ANSI, UTF-8).
 
 */
