@@ -132,7 +132,8 @@ void Cucul::Clear(void)
 
 void Cucul::Blit(int x, int y, Cucul* c1, Cucul* c2)
 {
-    cucul_blit(cv, x, y, c1->get_cucul_canvas_t(), c2->get_cucul_canvas_t());
+    cucul_blit(cv, x, y, c1->get_cucul_canvas_t(),
+                         c2 ? c2->get_cucul_canvas_t() : NULL);
 }
 
 void Cucul::Invert()
