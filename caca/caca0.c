@@ -46,6 +46,7 @@ cucul_dither_t *__caca0_create_bitmap(unsigned int, unsigned int,
           unsigned int, unsigned int, unsigned long int, unsigned long int,
           unsigned long int, unsigned long int);
 void __caca0_free_bitmap(cucul_dither_t *);
+extern char const *__caca0_get_color_name(unsigned char);
 
 /* Emulation functions */
 int __caca0_init(void)
