@@ -97,9 +97,14 @@ int  Cucul::setColorARGB(unsigned int f, unsigned int b)
     return cucul_set_color_argb(cv, f, b);
 }
 
-void Cucul::putChar(int x, int y, char ch)
+void Cucul::putChar(int x, int y, unsigned long int ch)
 {
     cucul_putchar(cv, x, y, ch);
+}
+
+unsigned long int Cucul::getChar(int x, int y)
+{
+    return cucul_getchar(cv, x, y);
 }
 
 void Cucul::putStr(int x, int y, char *str)

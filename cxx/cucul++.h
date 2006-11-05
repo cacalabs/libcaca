@@ -125,7 +125,7 @@ class Cucul
     int setColorANSI(unsigned char f, unsigned char b);
     int setColorARGB(unsigned int f, unsigned int b);
     void Printf(int x , int y , char const * format,...);
-    void putChar(int x, int y, char ch);
+    void putChar(int x, int y, unsigned long int ch);
     unsigned long int getChar(cucul_canvas_t *, int, int);
     void putStr(int x, int y, char *str);
     void Clear(void);
