@@ -501,6 +501,7 @@ int cucul_render_canvas(cucul_canvas_t *cv, cucul_font_t *f,
  *
  * struct
  * {
+ * magic:
  *    uint8_t caca_header[2];    // "\xCA\xCA"
  *    uint8_t caca_file_type[2]; // "FT"
  *
@@ -544,14 +545,20 @@ int cucul_render_canvas(cucul_canvas_t *cv, cucul_font_t *f,
  *    }
  *    glyph_list[glyphs];
  *
- * extension_1:
- * extension_2:
+ * control_extension_1:
+ * control_extension_2:
  *    ...
- * extension_N:
+ * control_extension_N:
  *    ...                        // reserved for future use
  *
  * font_data:
  *    uint8_t data[data_size];   // glyph data
+ *
+ * data_extension_1:
+ * data_extension_2:
+ *    ...
+ * data_extension_N:
+ *    ...                        // reserved for future use
  * };
  */
 
