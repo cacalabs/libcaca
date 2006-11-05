@@ -21,35 +21,30 @@
 using namespace std;
 
 
-static char const *pig[]= {
-    "                                   ",
-    "                             _     ",
-    "    _._ _..._ .-',     _.._(`))    ",
-    "   '-. `     '  /-._.-'    ',/     ",
-    "      )         \\            '.    ",
-    "     / _    _    |             \\   ",
-    "    |  a    a    /              |  ",
-    "    \\   .-.                     ;  " ,
-    "     '-('' ).-'       ,'       ;   ",
-    "        '-;           |      .'    ",
-    "           \\           \\    /      ",
-    "           | 7  .__  _.-\\   \\      ",
-    "           | |  |  ``/  /`  /      ",
-    "      jgs /,_|  |   /,_/   /       ",
-    "             /,_/      '`-'        ",
-    "                                   ",
- NULL
-};
+static char const pigstring[] =
+    "                                   \n"
+    "                             _     \n"
+    "    _._ _..._ .-',     _.._(`))    \n"
+    "   '-. `     '  /-._.-'    ',/     \n"
+    "      )         \\            '.    \n"
+    "     / _    _    |             \\   \n"
+    "    |  a    a    /              |  \n"
+    "    \\   .-.                     ;  \n"
+    "     '-('' ).-'       ,'       ;   \n"
+    "        '-;           |      .'    \n"
+    "           \\           \\    /      \n"
+    "           | 7  .__  _.-\\   \\      \n"
+    "           | |  |  ``/  /`  /      \n"
+    "      jgs /,_|  |   /,_/   /       \n"
+    "             /,_/      '`-'        \n";
 
 int main(int argc, char *argv[])
 {
-    Cucul *qq;
+    Cucul *qq, *pig;
     Caca  *kk;
     Event ev;
 
     int x = 0, y = 0, ix = 1, iy = 1;
-
-
 
     try {
         qq = new Cucul();
@@ -67,35 +62,48 @@ int main(int argc, char *argv[])
         return -1;
     }
 
+    try {
+        // Import buffer into a canvas
+        Buffer *buf = new Buffer();
+        buf->loadMemory((void *)pigstring, strlen(pigstring));
+        pig = new Cucul(buf, "text");
+        delete buf;
+        // Change colour to magenta
+        pig->setColorANSI(CUCUL_LIGHTMAGENTA, CUCUL_TRANSPARENT);
+        for(int y = 0; y < pig->getHeight(); y++)
+            for(int x = 0; x < pig->getWidth(); x++)
+                pig->putChar(x, y, pig->getChar(x, y));
+    }
+    catch(int e) {
+        cerr << "Error while importing image (" << e << ")" << endl;
+        return -1;
+    }
+
     kk->setDisplayTime(20000);
 
     while(!kk->getEvent(ev.CACA_EVENT_KEY_PRESS, &ev, 0)) {
 
-        /* Draw pig */
-        qq->setColorANSI(CUCUL_LIGHTMAGENTA, CUCUL_BLACK);
+        qq->Clear();
 
-        for(int i = 0; pig[i]; i++)
-            qq->putStr(x, y+i, (char*)pig[i]);
+        /* Draw pig */
+        qq->Blit(x, y, pig, NULL);
 
         /* printf works */
         qq->setColorANSI(CUCUL_LIGHTBLUE, CUCUL_BLACK);
-        qq->Printf((qq->getWidth()/2) - 10 ,qq->getHeight()/2, "Powered by libcaca %s", VERSION);
+        qq->Printf(qq->getWidth() / 2 - 10, qq->getHeight() / 2,
+                   "Powered by libcaca %s", VERSION);
 
         /* Blit */
         kk->Display();
-        qq->Clear();
 
-        x+=ix;
-        y+=iy;
+        x += ix;
+        y += iy;
 
-        if(x>=(qq->getWidth()-35)  || x<0 )
-            ix=-ix;
-        if(y>=(qq->getHeight()-15)   || y<0 )
-            iy=-iy;
-
-
+        if(x + pig->getWidth() >= qq->getWidth() || x < 0 )
+            ix = -ix;
+        if(y + pig->getHeight() >= qq->getHeight() || y < 0 )
+            iy = -iy;
     }
-
 
     delete kk;
     delete qq;
