@@ -25,7 +25,7 @@ int main(void)
     /* Set window title */
     caca_set_display_title(dp, "Hello!");
     /* Choose drawing colours */
-    cucul_set_color(cv, CUCUL_COLOR_BLACK, CUCUL_COLOR_WHITE);
+    cucul_set_color_ansi(cv, CUCUL_BLACK, CUCUL_WHITE);
     /* Draw a string at coordinates (0, 0) */
     cucul_putstr(cv, 0, 0, "This is a message");
     /* Refresh display */
