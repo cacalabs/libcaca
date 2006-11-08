@@ -27,7 +27,7 @@ cacaplay_SOURCES = cacaplay.c
 cacaplay_LDADD = ../caca/libcaca.la ../cucul/libcucul.la
 
 cacaserver_SOURCES = cacaserver.c
-cacaserver_LDADD = ../caca/libcaca.la ../cucul/libcucul.la
+cacaserver_LDADD = ../cucul/libcucul.la
 
 img2irc_SOURCES = img2irc.c common-image.c common-image.h
 img2irc_LDADD = ../cucul/libcucul.la

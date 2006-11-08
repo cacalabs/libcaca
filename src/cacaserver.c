@@ -26,24 +26,16 @@
 #   include <winsock2.h>
 #   include <ws2tcpip.h>
 #endif
+#if defined(HAVE_UNISTD_H)
+#   include <unistd.h>
+#endif
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <errno.h>
-
-#include "cucul.h"
-#include "caca.h"
-
-#include "config.h"
-
-#if defined(HAVE_UNISTD_H)
-#   include <unistd.h>
-#endif
-
 #include <stdarg.h>
 
-#include "caca.h"
 #include "cucul.h"
 
 #define BACKLOG 1337     /* Number of pending connections */
