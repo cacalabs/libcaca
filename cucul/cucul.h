@@ -216,7 +216,7 @@ int cucul_free_font(cucul_font_t *);
  *  the current canvas to various text formats.
  *
  *  @{ */
-long int cucul_import_memory(cucul_canvas_t *, unsigned char const *,
+long int cucul_import_memory(cucul_canvas_t *, void const *,
                              unsigned long int, char const *);
 long int cucul_import_file(cucul_canvas_t *, char const *, char const *);
 char const * const * cucul_get_import_list(void);

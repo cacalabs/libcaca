@@ -82,7 +82,7 @@ static void ansi_parse_grcm(cucul_canvas_t *, struct ansi_grcm *,
  *  \param format A string describing the input format.
  *  \return The number of bytes read, or -1 if an error occurred.
  */
-long int cucul_import_memory(cucul_canvas_t *cv, unsigned char const *buf,
+long int cucul_import_memory(cucul_canvas_t *cv, void const *buf,
                              unsigned long int len, char const *format)
 {
     if(!strcasecmp("caca", format))
@@ -97,16 +97,17 @@ long int cucul_import_memory(cucul_canvas_t *cv, unsigned char const *buf,
     /* Autodetection */
     if(!strcasecmp("", format))
     {
+        unsigned char const *str = buf;
         unsigned int i;
 
         /* If 4 first bytes are 0xcaca + 'CV' */
-        if(len >= 4 && buf[0] == 0xca &&
-           buf[1] == 0xca && buf[2] == 'C' && buf[3] == 'V')
+        if(len >= 4 && str[0] == 0xca &&
+           str[1] == 0xca && str[2] == 'C' && str[3] == 'V')
             return import_caca(cv, buf, len);
 
         /* If we find ESC[ argv, we guess it's an ANSI file */
         for(i = 0; i + 1 < len; i++)
-            if((buf[i] == 0x1b) && (buf[i + 1] == '['))
+            if((str[i] == 0x1b) && (str[i + 1] == '['))
                 return import_ansi(cv, buf, len, 0);
 
         /* Otherwise, import it as text */
