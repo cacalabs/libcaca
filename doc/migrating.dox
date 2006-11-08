@@ -186,7 +186,7 @@ int main(void)
  The newly introduced canvases can have several frames. Sprites are hence
  completely deprecated.
 
- - \b caca_load_sprite(): use cucul_import_canvas().
+ - \b caca_load_sprite(): use cucul_import_file().
  - \b caca_get_sprite_frames(): use cucul_get_canvas_frame_count().
  - \b caca_get_sprite_width(): use cucul_get_canvas_width().
  - \b caca_get_sprite_height(): use cucul_get_canvas_height().
