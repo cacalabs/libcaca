@@ -34,8 +34,8 @@
  *  will appear in the buffer.
  *
  *  Keep in mind that buffers are not strings. When loading a C string, the
- *  terminating '\0' must not be part of the buffer, hence \e size should
- *  be computed with strlen(). Conversely, the '\0' is not appended to
+ *  terminating '\\0' must not be part of the buffer, hence \e size should
+ *  be computed with strlen(). Conversely, the '\\0' is not appended to
  *  exported buffers even when they could be parsed as strings.
  *
  *  \param data The memory area to load.
