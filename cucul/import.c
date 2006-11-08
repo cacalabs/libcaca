@@ -18,8 +18,8 @@
 #include "config.h"
 #include "common.h"
 
-#if !defined(__KERNEL__)
-#   if defined(HAVE_ERRNO_H)
+#if !defined __KERNEL__
+#   if defined HAVE_ERRNO_H
 #       include <errno.h>
 #   endif
 #   include <stdio.h>
@@ -82,8 +82,8 @@ static void ansi_parse_grcm(cucul_canvas_t *, struct ansi_grcm *,
  *  \param format A string describing the input format.
  *  \return The number of bytes read, or -1 if an error occurred.
  */
-long int cucul_import(cucul_canvas_t *cv, unsigned char const *buf,
-                      unsigned long int len, char const *format)
+long int cucul_import_memory(cucul_canvas_t *cv, unsigned char const *buf,
+                             unsigned long int len, char const *format)
 {
     if(!strcasecmp("caca", format))
         return import_caca(cv, buf, len);
@@ -113,12 +113,79 @@ long int cucul_import(cucul_canvas_t *cv, unsigned char const *buf,
         return import_text(cv, buf, len);
     }
 
-#if defined(HAVE_ERRNO_H)
+#if defined HAVE_ERRNO_H
     errno = EINVAL;
 #endif
     return -1;
 }
 
+/** \brief Import a file into a canvas
+ *
+ *  Import a file into the given libcucul canvas's current frame. The
+ *  current frame is resized accordingly and its contents are replaced
+ *  with the imported data.
+ *
+ *  Valid values for \c format are:
+ *  - \c "": attempt to autodetect the file format.
+ *  - \c "text": import ASCII text files.
+ *  - \c "ansi": import ANSI files.
+ *  - \c "utf8": import UTF-8 files with ANSI colour codes.
+ *  - \c "caca": import native libcaca files.
+ *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c ENOSYS File access is not implemented on this system.
+ *  - \c ENOMEM Not enough memory to allocate canvas.
+ *  - \c EINVAL Invalid format requested.
+ *  cucul_import_file() may also fail and set \b errno for any of the
+ *  errors specified for the routine fopen().
+ *
+ *  \param A libcucul canvas in which to import the file.
+ *  \param filename The name of the file to load.
+ *  \param format A string describing the input format.
+ *  \return The number of bytes read, or -1 if an error occurred.
+ */
+long int cucul_import_file(cucul_canvas_t *cv, char const *filename,
+                           char const *format)
+{
+#if defined __KERNEL__
+#   if defined HAVE_ERRNO_H
+    errno = ENOSYS;
+#   endif
+    return -1;
+#else
+    FILE *fp;
+    void *data;
+    long int size;
+    int ret;
+
+    fp = fopen(filename, "rb");
+    if(!fp)
+        return -1; /* fopen already set errno */
+
+    fseek(fp, 0, SEEK_END);
+    size = ftell(fp);
+
+    data = malloc(size);
+    if(!data)
+    {
+        fclose(fp);
+#   if defined HAVE_ERRNO_H
+        errno = ENOMEM;
+#   endif
+        return -1;
+    }
+
+    fseek(fp, 0, SEEK_SET);
+    fread(data, size, 1, fp);
+    fclose(fp);
+
+    ret = cucul_import_memory(cv, data, size, format);
+    free(data);
+
+    return ret;
+#endif
+}
+    
 /** \brief Get available import formats
  *
  *  Return a list of available import formats. The list is a NULL-terminated
@@ -211,7 +278,7 @@ static long int import_caca(cucul_canvas_t *cv,
     return size;
 
 invalid_caca:
-#if defined(HAVE_ERRNO_H)
+#if defined HAVE_ERRNO_H
     errno = EINVAL;
 #endif
     return -1;

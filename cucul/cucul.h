@@ -216,11 +216,12 @@ int cucul_free_font(cucul_font_t *);
  *  the current canvas to various text formats.
  *
  *  @{ */
-void *cucul_export(cucul_canvas_t *, char const *, unsigned long int *);
-long int cucul_import(cucul_canvas_t *, unsigned char const *,
-                      unsigned long int, char const *);
-char const * const * cucul_get_export_list(void);
+long int cucul_import_memory(cucul_canvas_t *, unsigned char const *,
+                             unsigned long int, char const *);
+long int cucul_import_file(cucul_canvas_t *, char const *, char const *);
 char const * const * cucul_get_import_list(void);
+void *cucul_export(cucul_canvas_t *, char const *, unsigned long int *);
+char const * const * cucul_get_export_list(void);
 /*  @} */
 
 #if !defined(_DOXYGEN_SKIP_ME)

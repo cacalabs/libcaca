@@ -52,8 +52,8 @@ int cucul_set_truecolor(cucul_canvas_t *cv, unsigned int fg, unsigned int bg)
 cucul_canvas_t * cucul_import_canvas(cucul_buffer_t *buf, char const *format)
 {
     cucul_canvas_t *cv = cucul_create_canvas(0, 0);
-    int ret = cucul_import(cv, (unsigned char const *)buf->data,
-                           buf->size, format);
+    int ret = cucul_import_memory(cv, (unsigned char const *)buf->data,
+                                  buf->size, format);
     if(ret < 0)
     {
         cucul_free_canvas(cv);
