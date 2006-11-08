@@ -213,16 +213,14 @@ char const *__caca0_get_feature_name(int feature)
 
 cucul_canvas_t *__caca0_load_sprite(char const *file)
 {
-    cucul_buffer_t *buf;
     cucul_canvas_t *cv;
 
-    buf = cucul_load_file(file);
-    if(!buf)
+    cv = cucul_create_canvas(0, 0);;
+    if(cucul_import_file(cv, file, "") < 0)
+    {
+        cucul_free_canvas(cv);
         return NULL;
-    cv = cucul_import_canvas(buf, "");
-    cucul_free_buffer(buf);
-    if(!cv)
-        return NULL;
+    }
 
     return cv;
 }

@@ -80,7 +80,7 @@ cucul_buffer_t * cucul_export_canvas(cucul_canvas_t *cv, char const *format)
         return NULL;
     }
 
-    ex->data = cucul_export(cv, format, &ex->size);
+    ex->data = cucul_export_memory(cv, format, &ex->size);
     if(!ex->data)
     {
         free(ex);

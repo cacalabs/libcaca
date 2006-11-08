@@ -84,8 +84,8 @@ static void *export_tga(cucul_canvas_t *, unsigned long int *);
  *         allocated bytes will be written.
  *  \return A pointer to the exported memory area, or NULL in case of error.
  */
-void *cucul_export(cucul_canvas_t *cv, char const *format,
-                   unsigned long int *bytes)
+void *cucul_export_memory(cucul_canvas_t *cv, char const *format,
+                          unsigned long int *bytes)
 {
     if(!strcasecmp("caca", format))
         return export_caca(cv, bytes);
@@ -127,7 +127,7 @@ void *cucul_export(cucul_canvas_t *cv, char const *format,
  *
  *  Return a list of available export formats. The list is a NULL-terminated
  *  array of strings, interleaving a string containing the internal value for
- *  the export format, to be used with cucul_export_canvas(), and a string
+ *  the export format, to be used with cucul_export_memory(), and a string
  *  containing the natural language description for that export format.
  *
  *  This function never fails.

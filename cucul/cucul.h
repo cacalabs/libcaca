@@ -220,7 +220,7 @@ long int cucul_import_memory(cucul_canvas_t *, unsigned char const *,
                              unsigned long int, char const *);
 long int cucul_import_file(cucul_canvas_t *, char const *, char const *);
 char const * const * cucul_get_import_list(void);
-void *cucul_export(cucul_canvas_t *, char const *, unsigned long int *);
+void *cucul_export_memory(cucul_canvas_t *, char const *, unsigned long int *);
 char const * const * cucul_get_export_list(void);
 /*  @} */
 

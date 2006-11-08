@@ -66,13 +66,14 @@ static unsigned int raw_get_display_height(caca_display_t *dp)
 
 static void raw_display(caca_display_t *dp)
 {
-    cucul_buffer_t *buffer;
+    void *buffer;
+    unsigned long int len;
 
-    buffer = cucul_export_canvas(dp->cv, "caca");
-    fwrite(cucul_get_buffer_data(buffer),
-           cucul_get_buffer_size(buffer), 1, stdout);
-    fflush(stdout);
-    cucul_free_buffer(buffer);
+    buffer = cucul_export_memory(dp->cv, "caca", &len);
+    if(!buffer)
+        return;
+    fwrite(buffer, len, 1, stdout);
+    free(buffer);
 }
 
 static void raw_handle_resize(caca_display_t *dp)
