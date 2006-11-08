@@ -17,7 +17,7 @@
  *  function prototypes that are sometimes missing.
  */
 
-#if defined(HAVE_INTTYPES_H) && !defined(__KERNEL__)
+#if defined HAVE_INTTYPES_H && !defined __KERNEL__
 #   include <inttypes.h>
 #else
 typedef signed char int8_t;
@@ -32,22 +32,24 @@ typedef long int intptr_t;
 typedef unsigned long int uintptr_t;
 #endif
 
-#if defined(HAVE_HTONS)
-#   if defined(HAVE_ARPA_INET_H)
+#if defined HAVE_HTONS
+#   if defined __KERNEL__
+        /* Nothing to do */
+#   elif defined HAVE_ARPA_INET_H
 #       include <arpa/inet.h>
-#   elif defined(HAVE_NETINET_IN_H)
+#   elif defined HAVE_NETINET_IN_H
 #       include <netinet/in.h>
 #   endif
 #   define hton16 htons
 #   define hton32 htonl
 #else
-#   if defined(HAVE_ENDIAN_H)
+#   if defined HAVE_ENDIAN_H
 #       include <endian.h>
 #   endif
 static inline uint16_t hton16(uint16_t x)
 {
     /* This is compile-time optimised with at least -O1 or -Os */
-#if defined(HAVE_ENDIAN_H)
+#if defined HAVE_ENDIAN_H
     if(__BYTE_ORDER == __BIG_ENDIAN)
 #else
     uint32_t const dummy = 0x12345678;
@@ -61,7 +63,7 @@ static inline uint16_t hton16(uint16_t x)
 static inline uint32_t hton32(uint32_t x)
 {
     /* This is compile-time optimised with at least -O1 or -Os */
-#if defined(HAVE_ENDIAN_H)
+#if defined HAVE_ENDIAN_H
     if(__BYTE_ORDER == __BIG_ENDIAN)
 #else
     uint32_t const dummy = 0x12345678;
@@ -74,6 +76,7 @@ static inline uint32_t hton32(uint32_t x)
 }
 #endif
 
-#if defined(__KERNEL__)
-#undef HAVE_ERRNO_H
+#if defined __KERNEL__
+#   undef HAVE_ERRNO_H
 #endif
+
