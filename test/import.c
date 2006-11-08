@@ -30,7 +30,6 @@
 int main(int argc, char *argv[])
 {
     cucul_canvas_t *cv;
-    cucul_buffer_t *b;
     caca_display_t *dp;
 
     if(argc < 2)
@@ -40,21 +39,13 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    b = cucul_load_file(argv[1]);
-    if(!b)
+    cv = cucul_create_canvas(0, 0);
+    if(cucul_import_file(cv, argv[1], argc >= 3 ? argv[2] : "") < 0)
     {
 	fprintf(stderr, "%s: could not open `%s'.\n", argv[0], argv[1]);
+        cucul_free_canvas(cv);
         return 1;
     }
-
-    cv = cucul_import_canvas(b, argc >= 3 ? argv[2] : "");
-    if(!cv)
-    {
-	fprintf(stderr, "%s: could not import `%s'.\n", argv[0], argv[1]);
-        return 1;
-    }
-
-    cucul_free_buffer(b);
 
     dp = caca_create_display(cv);
 

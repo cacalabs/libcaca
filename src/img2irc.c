@@ -27,7 +27,8 @@ int main(int argc, char **argv)
 {
     /* libcucul context */
     cucul_canvas_t *cv;
-    cucul_buffer_t *export;
+    void *export;
+    unsigned long int len;
     struct image *i;
     int cols = 56, lines;
 
@@ -62,10 +63,9 @@ int main(int argc, char **argv)
 
     unload_image(i);
 
-    export = cucul_export_canvas(cv, "irc");
-    fwrite(cucul_get_buffer_data(export),
-           cucul_get_buffer_size(export), 1, stdout);
-    cucul_free_buffer(export);
+    export = cucul_export_memory(cv, "irc", &len);
+    fwrite(export, len, 1, stdout);
+    free(export);
 
     cucul_free_canvas(cv);
 

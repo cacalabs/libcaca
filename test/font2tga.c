@@ -32,7 +32,8 @@ int main(int argc, char *argv[])
     cucul_font_t *f;
     char const * const * fonts;
     cucul_canvas_t *cv;
-    cucul_buffer_t *buffer;
+    void *buffer;
+    unsigned long int len;
     unsigned int i, j, x, y, glyphs;
 
     fonts = cucul_get_font_list();
@@ -65,10 +66,9 @@ int main(int argc, char *argv[])
 
     cucul_free_font(f);
 
-    buffer = cucul_export_canvas(cv, "tga");
-    fwrite(cucul_get_buffer_data(buffer),
-           cucul_get_buffer_size(buffer), 1, stdout);
-    cucul_free_buffer(buffer);
+    buffer = cucul_export_memory(cv, "tga", &len);
+    fwrite(buffer, len, 1, stdout);
+    free(buffer);
 
     /* Free everything */
     cucul_free_canvas(cv);

@@ -19,6 +19,7 @@
 #   endif
 #   include <stdio.h>
 #   include <string.h>
+#   include <stdlib.h>
 #endif
 #include "cucul.h"
 
@@ -33,23 +34,22 @@
 int main(int argc, char *argv[])
 {
     cucul_canvas_t *cv;
-    cucul_buffer_t *buffer;
+    void *buffer;
+    unsigned long int len;
 
-    buffer = cucul_load_memory(STRING, strlen(STRING));
-    cv = cucul_import_canvas(buffer, "text");
-    cucul_free_buffer(buffer);
+    cv = cucul_create_canvas(0, 0);
 
-    buffer = cucul_export_canvas(cv, "utf8");
-    fwrite(cucul_get_buffer_data(buffer),
-           cucul_get_buffer_size(buffer), 1, stdout);
-    cucul_free_buffer(buffer);
+    cucul_import_memory(cv, STRING, strlen(STRING), "text");
+
+    buffer = cucul_export_memory(cv, "utf8", &len);
+    fwrite(buffer, len, 1, stdout);
+    free(buffer);
 
     cucul_rotate(cv);
 
-    buffer = cucul_export_canvas(cv, "utf8");
-    fwrite(cucul_get_buffer_data(buffer),
-           cucul_get_buffer_size(buffer), 1, stdout);
-    cucul_free_buffer(buffer);
+    buffer = cucul_export_memory(cv, "utf8", &len);
+    fwrite(buffer, len, 1, stdout);
+    free(buffer);
 
     cucul_free_canvas(cv);
 

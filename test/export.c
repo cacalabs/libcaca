@@ -34,9 +34,10 @@ int main(int argc, char *argv[])
 {
     cucul_canvas_t *cv;
     cucul_dither_t *dither;
-    cucul_buffer_t *buffer;
+    void *buffer;
     char *file, *format;
     char const * const * exports, * const * p;
+    unsigned long int len;
     int x, y;
 
     exports = cucul_get_export_list();
@@ -77,20 +78,12 @@ int main(int argc, char *argv[])
 
     if(file)
     {
-        cucul_buffer_t *tmp;
-        tmp = cucul_load_file(file);
-        if(!tmp)
-        {
-            fprintf(stderr, "%s: could not load `%s'\n", argv[0], file);
-            exit(-1);
-        }
-        cv = cucul_import_canvas(tmp, "");
-        if(!cv)
+        cv = cucul_create_canvas(0, 0);
+        if(cucul_import_file(cv, file, "") < 0)
         {
             fprintf(stderr, "%s: `%s' has unknown format\n", argv[0], file);
             exit(-1);
         }
-        cucul_free_buffer(tmp);
     }
     else
     {
@@ -146,10 +139,9 @@ int main(int argc, char *argv[])
         }
     }
 
-    buffer = cucul_export_canvas(cv, format);
-    fwrite(cucul_get_buffer_data(buffer),
-           cucul_get_buffer_size(buffer), 1, stdout);
-    cucul_free_buffer(buffer);
+    buffer = cucul_export_memory(cv, format, &len);
+    fwrite(buffer, len, 1, stdout);
+    free(buffer);
 
     cucul_free_canvas(cv);
 

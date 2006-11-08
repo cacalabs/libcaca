@@ -55,21 +55,12 @@ int main(int argc, char **argv)
 
         if(!image)
         {
-            cucul_buffer_t *b = cucul_load_file(argv[file]);
-            if(!b)
-            {
-                fprintf(stderr, "%s: could not open `%s'.\n", argv[0], argv[1]);
-                return 1;
-            }
-
-            image = cucul_import_canvas(b, "ansi");
-            if(!image)
+            image = cucul_create_canvas(0, 0);
+            if(cucul_import_file(image, argv[file], "ansi") < 0)
             {
                 fprintf(stderr, "%s: invalid file `%s'.\n", argv[0], argv[1]);
                 return 1;
             }
-
-            cucul_free_buffer(b);
 
             ih = cucul_get_canvas_height(image);
             iw = cucul_get_canvas_width(image);

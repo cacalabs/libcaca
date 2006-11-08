@@ -105,9 +105,8 @@ struct server
     char prefix[sizeof(INIT_PREFIX)];
 
     cucul_canvas_t *canvas;
-    cucul_buffer_t *buffer;
+    void *buffer;
     unsigned long int buflen;
-    void *bufdata;
 
     int client_count;
     struct client *clients;
@@ -184,7 +183,7 @@ int main(void)
         return -1;
     }
 
-    server->canvas = NULL;
+    server->canvas = cucul_create_canvas(0, 0);
     server->buffer = NULL;
 
     /* Ignore SIGPIPE */
@@ -196,7 +195,6 @@ int main(void)
     /* Main loop */
     for(;;)
     {
-        cucul_buffer_t *b;
         uint8_t *buf = server->input;
         uint32_t control_size, data_size;
         unsigned int size;
@@ -224,29 +222,20 @@ int main(void)
         buf = server->input = realloc(server->input, size);
         read(0, buf + 12, size - 12);
 
-        /* Free the previous canvas, if any */
-        if(server->canvas)
-            cucul_free_canvas(server->canvas);
-
-        b = cucul_load_memory(buf, size);
-        server->canvas = cucul_import_canvas(b, "caca");
-        cucul_free_buffer(b);
-
-        if(!server->canvas)
+        if(cucul_import_memory(server->canvas, buf, size, "caca") < 0)
             continue; /* Load error */
 
         /* Free the previous export buffer, if any */
         if(server->buffer)
         {
-            cucul_free_buffer(server->buffer);
+            free(server->buffer);
             server->buffer = NULL;
         }
 
         /* Get ANSI representation of the image and skip the end-of buffer
          * linefeed ("\r\n", 2 byte) */
-        server->buffer = cucul_export_canvas(server->canvas, "utf8cr");
-        server->bufdata = cucul_get_buffer_data(server->buffer);
-        server->buflen = cucul_get_buffer_size(server->buffer);
+        server->buffer = cucul_export_memory(server->canvas, "utf8cr",
+                                             &server->buflen);
         server->buflen -= 2;
 
         for(i = 0; i < server->client_count; i++)
@@ -275,7 +264,9 @@ int main(void)
     }
 
     if(server->buffer)
-        cucul_free_buffer(server->buffer);
+        free(server->buffer);
+
+    cucul_free_canvas(server->canvas);
 
     /* Restore SIGPIPE handler */
     signal(SIGPIPE, server->sigpipe_handler);
@@ -452,7 +443,7 @@ static int send_data(struct server *server, struct client *c)
 
             memcpy(c->outbuf + c->stop, ANSI_PREFIX, strlen(ANSI_PREFIX));
             c->stop += strlen(ANSI_PREFIX);
-            memcpy(c->outbuf + c->stop, server->bufdata, server->buflen);
+            memcpy(c->outbuf + c->stop, server->buffer, server->buflen);
             c->stop += server->buflen;
 
             return 0;
@@ -487,14 +478,14 @@ static int send_data(struct server *server, struct client *c)
 
         memcpy(c->outbuf, ANSI_PREFIX, strlen(ANSI_PREFIX) - ret);
         c->stop = strlen(ANSI_PREFIX) - ret;
-        memcpy(c->outbuf + c->stop, server->bufdata, server->buflen);
+        memcpy(c->outbuf + c->stop, server->buffer, server->buflen);
         c->stop += server->buflen;
 
         return 0;
     }
 
     /* Send actual data */
-    ret = nonblock_write(c->fd, server->bufdata, server->buflen);
+    ret = nonblock_write(c->fd, server->buffer, server->buflen);
     if(ret == -1)
     {
         if(errno == EAGAIN)
@@ -517,7 +508,7 @@ static int send_data(struct server *server, struct client *c)
             return 0;
         }
 
-        memcpy(c->outbuf, server->bufdata, server->buflen - ret);
+        memcpy(c->outbuf, server->buffer, server->buflen - ret);
         c->stop = server->buflen - ret;
 
         return 0;
