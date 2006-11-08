@@ -47,22 +47,21 @@ static inline int sprintu16(char *s, uint16_t x)
     return 2;
 }
 
-static int export_caca(cucul_canvas_t *, cucul_buffer_t *);
-static int export_ansi(cucul_canvas_t *, cucul_buffer_t *);
-static int export_utf8(cucul_canvas_t *, cucul_buffer_t *, int);
-static int export_html(cucul_canvas_t *, cucul_buffer_t *);
-static int export_html3(cucul_canvas_t *, cucul_buffer_t *);
-static int export_irc(cucul_canvas_t *, cucul_buffer_t *);
-static int export_ps(cucul_canvas_t *, cucul_buffer_t *);
-static int export_svg(cucul_canvas_t *, cucul_buffer_t *);
-static int export_tga(cucul_canvas_t *, cucul_buffer_t *);
+static void *export_caca(cucul_canvas_t *, unsigned long int *);
+static void *export_ansi(cucul_canvas_t *, unsigned long int *);
+static void *export_utf8(cucul_canvas_t *, unsigned long int *, int);
+static void *export_html(cucul_canvas_t *, unsigned long int *);
+static void *export_html3(cucul_canvas_t *, unsigned long int *);
+static void *export_irc(cucul_canvas_t *, unsigned long int *);
+static void *export_ps(cucul_canvas_t *, unsigned long int *);
+static void *export_svg(cucul_canvas_t *, unsigned long int *);
+static void *export_tga(cucul_canvas_t *, unsigned long int *);
 
 /** \brief Export a canvas into a foreign format.
  *
  *  This function exports a libcucul canvas into various foreign formats such
- *  as ANSI art, HTML, IRC colours, etc. One should use cucul_get_buffer_data()
- *  and cucul_get_buffer_size() to access the buffer contents. The allocated
- *  data is valid until cucul_free_buffer() is called.
+ *  as ANSI art, HTML, IRC colours, etc. The returned pointer should be passed
+ *  to free() to release the allocated storage when it is no longer needed.
  *
  *  Valid values for \c format are:
  *  - \c "caca": export native libcaca files.
@@ -81,57 +80,47 @@ static int export_tga(cucul_canvas_t *, cucul_buffer_t *);
  *
  *  \param cv A libcucul canvas
  *  \param format A string describing the requested output format.
- *  \return A libcucul buffer, or NULL in case of error.
+ *  \param bytes A pointer to an unsigned long integer where the number of
+ *         allocated bytes will be written.
+ *  \return A pointer to the exported memory area, or NULL in case of error.
  */
-cucul_buffer_t * cucul_export_canvas(cucul_canvas_t *cv, char const *format)
+void *cucul_export(cucul_canvas_t *cv, char const *format,
+                   unsigned long int *bytes)
 {
-    cucul_buffer_t *ex;
-    int ret = -1;
-
-    ex = malloc(sizeof(cucul_buffer_t));
-    if(!ex)
-    {
-#if defined(HAVE_ERRNO_H)
-        errno = ENOMEM;
-#endif
-        return NULL;
-    }
-
-    ex->size = 0;
-    ex->data = NULL;
-    ex->user_data = 0;
-
     if(!strcasecmp("caca", format))
-        ret = export_caca(cv, ex);
-    else if(!strcasecmp("ansi", format))
-        ret = export_ansi(cv, ex);
-    else if(!strcasecmp("utf8", format))
-        ret = export_utf8(cv, ex, 0);
-    else if(!strcasecmp("utf8cr", format))
-        ret = export_utf8(cv, ex, 1);
-    else if(!strcasecmp("html", format))
-        ret = export_html(cv, ex);
-    else if(!strcasecmp("html3", format))
-        ret = export_html3(cv, ex);
-    else if(!strcasecmp("irc", format))
-        ret = export_irc(cv, ex);
-    else if(!strcasecmp("ps", format))
-        ret = export_ps(cv, ex);
-    else if(!strcasecmp("svg", format))
-        ret = export_svg(cv, ex);
-    else if(!strcasecmp("tga", format))
-        ret = export_tga(cv, ex);
+        return export_caca(cv, bytes);
 
-    if(ret < 0)
-    {
-        free(ex);
+    if(!strcasecmp("ansi", format))
+        return export_ansi(cv, bytes);
+
+    if(!strcasecmp("utf8", format))
+        return export_utf8(cv, bytes, 0);
+
+    if(!strcasecmp("utf8cr", format))
+        return export_utf8(cv, bytes, 1);
+
+    if(!strcasecmp("html", format))
+        return export_html(cv, bytes);
+
+    if(!strcasecmp("html3", format))
+        return export_html3(cv, bytes);
+
+    if(!strcasecmp("irc", format))
+        return export_irc(cv, bytes);
+
+    if(!strcasecmp("ps", format))
+        return export_ps(cv, bytes);
+
+    if(!strcasecmp("svg", format))
+        return export_svg(cv, bytes);
+
+    if(!strcasecmp("tga", format))
+        return export_tga(cv, bytes);
+
 #if defined(HAVE_ERRNO_H)
-        errno = EINVAL;
+    errno = EINVAL;
 #endif
-        return NULL;
-    }
-
-    return ex;
+    return NULL;
 }
 
 /** \brief Get available export formats
@@ -170,11 +159,11 @@ char const * const * cucul_get_export_list(void)
  */
 
 /* Generate a native libcaca canvas file. */
-static int export_caca(cucul_canvas_t *cv, cucul_buffer_t *ex)
+static void *export_caca(cucul_canvas_t *cv, unsigned long int *bytes)
 {
     uint32_t *attrs = cv->attrs;
     uint32_t *chars = cv->chars;
-    char *cur;
+    char *data, *cur;
     unsigned int n;
 
     /* 44 bytes for the header:
@@ -182,10 +171,8 @@ static int export_caca(cucul_canvas_t *cv, cucul_buffer_t *ex)
      *  - 16 bytes for the canvas header
      *  - 24 bytes for the frame info
      * 8 bytes for each character cell */
-    ex->size = 44 + 8 * cv->width * cv->height;
-    ex->data = malloc(ex->size);
-
-    cur = ex->data;
+    *bytes = 44 + 8 * cv->width * cv->height;
+    cur = data = malloc(*bytes);
 
     /* magic */
     cur += sprintf(cur, "%s", "\xCA\xCA" "CV");
@@ -212,7 +199,7 @@ static int export_caca(cucul_canvas_t *cv, cucul_buffer_t *ex)
         cur += sprintu32(cur, *attrs++);
     }
 
-    return 0;
+    return data;
 }
 
 /*
@@ -272,7 +259,7 @@ static int export_caca(cucul_canvas_t *cv, cucul_buffer_t *ex)
  */
 
 /* Generate UTF-8 representation of current canvas. */
-static int export_utf8(cucul_canvas_t *cv, cucul_buffer_t *ex, int cr)
+static void *export_utf8(cucul_canvas_t *cv, unsigned long int *bytes, int cr)
 {
     static uint8_t const palette[] =
     {
@@ -280,16 +267,14 @@ static int export_utf8(cucul_canvas_t *cv, cucul_buffer_t *ex, int cr)
         8, 12, 10, 14, 9, 13, 11, 15
     };
 
-    char *cur;
+    char *data, *cur;
     unsigned int x, y;
 
     /* 23 bytes assumed for max length per pixel ('\e[5;1;3x;4y;9x;10ym' plus
      * 4 max bytes for a UTF-8 character).
      * Add height*9 to that (zeroes color at the end and jump to next line) */
-    ex->size = (cv->height * 9) + (cv->width * cv->height * 23);
-    ex->data = malloc(ex->size);
-
-    cur = ex->data;
+    *bytes = (cv->height * 9) + (cv->width * cv->height * 23);
+    cur = data = malloc(*bytes);
 
     for(y = 0; y < cv->height; y++)
     {
@@ -344,14 +329,14 @@ static int export_utf8(cucul_canvas_t *cv, cucul_buffer_t *ex, int cr)
     }
 
     /* Crop to really used size */
-    ex->size = (uintptr_t)(cur - ex->data);
-    ex->data = realloc(ex->data, ex->size);
+    *bytes = (uintptr_t)(cur - data);
+    data = realloc(data, *bytes);
 
-    return 0;
+    return data;
 }
 
 /* Generate ANSI representation of current canvas. */
-static int export_ansi(cucul_canvas_t *cv, cucul_buffer_t *ex)
+static void *export_ansi(cucul_canvas_t *cv, unsigned long int *bytes)
 {
     static uint8_t const palette[] =
     {
@@ -359,7 +344,7 @@ static int export_ansi(cucul_canvas_t *cv, cucul_buffer_t *ex)
         8, 12, 10, 14, 9, 13, 11, 15
     };
 
-    char *cur;
+    char *data, *cur;
     unsigned int x, y;
 
     uint8_t prevfg = -1;
@@ -368,10 +353,8 @@ static int export_ansi(cucul_canvas_t *cv, cucul_buffer_t *ex)
     /* 16 bytes assumed for max length per pixel ('\e[5;1;3x;4ym' plus
      * 1 byte for a CP437 character).
      * Add height*9 to that (zeroes color at the end and jump to next line) */
-    ex->size = (cv->height * 9) + (cv->width * cv->height * 16);
-    ex->data = malloc(ex->size);
-
-    cur = ex->data;
+    *bytes = (cv->height * 9) + (cv->width * cv->height * 16);
+    cur = data = malloc(*bytes);
 
     for(y = 0; y < cv->height; y++)
     {
@@ -422,16 +405,16 @@ static int export_ansi(cucul_canvas_t *cv, cucul_buffer_t *ex)
     }
 
     /* Crop to really used size */
-    ex->size = (uintptr_t)(cur - ex->data);
-    ex->data = realloc(ex->data, ex->size);
+    *bytes = (uintptr_t)(cur - data);
+    data = realloc(data, *bytes);
 
-    return 0;
+    return data;
 }
 
 /* Generate HTML representation of current canvas. */
-static int export_html(cucul_canvas_t *cv, cucul_buffer_t *ex)
+static void *export_html(cucul_canvas_t *cv, unsigned long int *bytes)
 {
-    char *cur;
+    char *data, *cur;
     unsigned int x, y, len;
 
     /* The HTML header: less than 1000 bytes
@@ -440,10 +423,8 @@ static int export_html(cucul_canvas_t *cv, cucul_buffer_t *ex)
      *          83 chars for ";font-weight..."
      *          up to 9 chars for "&#xxxxxx;", far less for pure ASCII
      *          7 chars for "</span>" */
-    ex->size = 1000 + cv->height * (7 + cv->width * (47 + 83 + 9 + 7));
-    ex->data = malloc(ex->size);
-
-    cur = ex->data;
+    *bytes = 1000 + cv->height * (7 + cv->width * (47 + 83 + 9 + 7));
+    cur = data = malloc(*bytes);
 
     /* HTML header */
     cur += sprintf(cur, "<html><head>\n");
@@ -498,19 +479,19 @@ static int export_html(cucul_canvas_t *cv, cucul_buffer_t *ex)
     cur += sprintf(cur, "</div></body></html>\n");
 
     /* Crop to really used size */
-    ex->size = strlen(ex->data) + 1;
-    ex->data = realloc(ex->data, ex->size);
+    *bytes = (uintptr_t)(cur - data);
+    data = realloc(data, *bytes);
 
-    return 0;
+    return data;
 }
 
 /* Export an HTML3 document. This function is way bigger than export_html(),
  * but permits viewing in old browsers (or limited ones such as links). It
  * will not work under gecko (mozilla rendering engine) unless you set a
  * correct header. */
-static int export_html3(cucul_canvas_t *cv, cucul_buffer_t *ex)
+static void *export_html3(cucul_canvas_t *cv, unsigned long int *bytes)
 {
-    char *cur;
+    char *data, *cur;
     unsigned int x, y, len;
 
     /* The HTML table markup: less than 1000 bytes
@@ -519,10 +500,8 @@ static int export_html3(cucul_canvas_t *cv, cucul_buffer_t *ex)
      *          up to 36 chars for "<b><i><u><blink></blink></u></i></b>"
      *          up to 9 chars for "&#xxxxxx;", far less for pure ASCII
      *          12 chars for "</font></td>" */
-    ex->size = 1000 + cv->height * (10 + cv->width * (40 + 36 + 9 + 12));
-    ex->data = malloc(ex->size);
-
-    cur = ex->data;
+    *bytes = 1000 + cv->height * (10 + cv->width * (40 + 36 + 9 + 12));
+    cur = data = malloc(*bytes);
 
     /* Table */
     cur += sprintf(cur, "<table cols='%d' cellpadding='0' cellspacing='0'>\n",
@@ -593,14 +572,14 @@ static int export_html3(cucul_canvas_t *cv, cucul_buffer_t *ex)
     cur += sprintf(cur, "</table>\n");
 
     /* Crop to really used size */
-    ex->size = (uintptr_t)(cur - ex->data);
-    ex->data = realloc(ex->data, ex->size);
+    *bytes = (uintptr_t)(cur - data);
+    data = realloc(data, *bytes);
 
-    return 0;
+    return data;
 }
 
 /* Export a text file with IRC colours */
-static int export_irc(cucul_canvas_t *cv, cucul_buffer_t *ex)
+static void *export_irc(cucul_canvas_t *cv, unsigned long int *bytes)
 {
     static uint8_t const palette[] =
     {
@@ -608,7 +587,7 @@ static int export_irc(cucul_canvas_t *cv, cucul_buffer_t *ex)
         14, 12, 9, 11, 4, 13, 8, 0, /* Light */
     };
 
-    char *cur;
+    char *data, *cur;
     unsigned int x, y;
 
     /* 14 bytes assumed for max length per pixel. Worst case scenario:
@@ -621,10 +600,8 @@ static int export_irc(cucul_canvas_t *cv, cucul_buffer_t *ex)
      * In real life, the average bytes per pixel value will be around 5.
      */
 
-    ex->size = 2 + cv->height * (3 + cv->width * 14);
-    ex->data = malloc(ex->size);
-
-    cur = ex->data;
+    *bytes = 2 + cv->height * (3 + cv->width * 14);
+    cur = data = malloc(*bytes);
 
     for(y = 0; y < cv->height; y++)
     {
@@ -701,14 +678,14 @@ static int export_irc(cucul_canvas_t *cv, cucul_buffer_t *ex)
     }
 
     /* Crop to really used size */
-    ex->size = (uintptr_t)(cur - ex->data);
-    ex->data = realloc(ex->data, ex->size);
+    *bytes = (uintptr_t)(cur - data);
+    data = realloc(data, *bytes);
 
-    return 0;
+    return data;
 }
 
 /* Export a PostScript document. */
-static int export_ps(cucul_canvas_t *cv, cucul_buffer_t *ex)
+static void *export_ps(cucul_canvas_t *cv, unsigned long int *bytes)
 {
     static char const *ps_header =
         "%!\n"
@@ -735,14 +712,12 @@ static int export_ps(cucul_canvas_t *cv, cucul_buffer_t *ex)
         "gsave\n"
         "6 10 scale\n";
 
-    char *cur;
+    char *data, *cur;
     unsigned int x, y;
 
     /* 200 is arbitrary but should be ok */
-    ex->size = strlen(ps_header) + 100 + cv->height * (32 + cv->width * 200);
-    ex->data = malloc(ex->size);
-
-    cur = ex->data;
+    *bytes = strlen(ps_header) + 100 + cv->height * (32 + cv->width * 200);
+    cur = data = malloc(*bytes);
 
     /* Header */
     cur += sprintf(cur, "%s", ps_header);
@@ -810,14 +785,14 @@ static int export_ps(cucul_canvas_t *cv, cucul_buffer_t *ex)
     cur += sprintf(cur, "showpage\n");
 
     /* Crop to really used size */
-    ex->size = (uintptr_t)(cur - ex->data);
-    ex->data = realloc(ex->data, ex->size);
+    *bytes = (uintptr_t)(cur - data);
+    data = realloc(data, *bytes);
 
-    return 0;
+    return data;
 }
 
 /* Export an SVG vector image */
-static int export_svg(cucul_canvas_t *cv, cucul_buffer_t *ex)
+static void *export_svg(cucul_canvas_t *cv, unsigned long int *bytes)
 {
     static char const svg_header[] =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -826,14 +801,12 @@ static int export_svg(cucul_canvas_t *cv, cucul_buffer_t *ex)
         " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
         " xml:space=\"preserve\" version=\"1.1\"  baseProfile=\"full\">\n";
 
-    char *cur;
+    char *data, *cur;
     unsigned int x, y;
 
     /* 200 is arbitrary but should be ok */
-    ex->size = strlen(svg_header) + 128 + cv->width * cv->height * 200;
-    ex->data = malloc(ex->size);
-
-    cur = ex->data;
+    *bytes = strlen(svg_header) + 128 + cv->width * cv->height * 200;
+    cur = data = malloc(*bytes);
 
     /* Header */
     cur += sprintf(cur, svg_header, cv->width * 6, cv->height * 10,
@@ -896,33 +869,36 @@ static int export_svg(cucul_canvas_t *cv, cucul_buffer_t *ex)
     cur += sprintf(cur, "</svg>\n");
 
     /* Crop to really used size */
-    ex->size = (uintptr_t)(cur - ex->data);
-    ex->data = realloc(ex->data, ex->size);
+    *bytes = (uintptr_t)(cur - data);
+    data = realloc(data, *bytes);
 
-    return 0;
+    return data;
 }
 
 /* Export a TGA image */
-static int export_tga(cucul_canvas_t *cv, cucul_buffer_t *ex)
+static void *export_tga(cucul_canvas_t *cv, unsigned long int *bytes)
 {
     char const * const *fontlist;
-    char * cur;
+    char *data, *cur;
     cucul_font_t *f;
     unsigned int i, w, h;
 
     fontlist = cucul_get_font_list();
     if(!fontlist[0])
-        return -1;
+    {
+#if defined(HAVE_ERRNO_H)
+        errno = EINVAL;
+#endif
+        return NULL;
+    }
 
     f = cucul_load_font(fontlist[0], 0);
 
     w = cucul_get_canvas_width(cv) * cucul_get_font_width(f);
     h = cucul_get_canvas_height(cv) * cucul_get_font_height(f);
 
-    ex->size = w * h * 4 + 18; /* 32 bpp + 18 bytes for the header */
-    ex->data = malloc(ex->size);
-
-    cur = ex->data;
+    *bytes = w * h * 4 + 18; /* 32 bpp + 18 bytes for the header */
+    cur = data = malloc(*bytes);
 
     /* ID Length */
     cur += sprintf(cur, "%c", 0);
@@ -957,6 +933,6 @@ static int export_tga(cucul_canvas_t *cv, cucul_buffer_t *ex)
 
     cucul_free_font(f);
 
-    return 0;
+    return data;
 }
 

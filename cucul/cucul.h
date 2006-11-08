@@ -35,8 +35,6 @@ extern "C"
 typedef struct cucul_canvas cucul_canvas_t;
 /** dither structure */
 typedef struct cucul_dither cucul_dither_t;
-/** data buffer structure */
-typedef struct cucul_buffer cucul_buffer_t;
 /** font structure */
 typedef struct cucul_font cucul_font_t;
 
@@ -82,18 +80,6 @@ unsigned int cucul_get_canvas_width(cucul_canvas_t *);
 unsigned int cucul_get_canvas_height(cucul_canvas_t *);
 int cucul_free_canvas(cucul_canvas_t *);
 int cucul_rand(int, int);
-/*  @} */
-
-/** \defgroup buffer libcucul buffer handling
- *
- *  These functions provide methods to handle libcucul buffers.
- *
- *  @{ */
-cucul_buffer_t *cucul_load_memory(void *, unsigned long int);
-cucul_buffer_t *cucul_load_file(char const *);
-unsigned long int cucul_get_buffer_size(cucul_buffer_t *);
-void * cucul_get_buffer_data(cucul_buffer_t *);
-int cucul_free_buffer(cucul_buffer_t *);
 /*  @} */
 
 /** \defgroup canvas libcucul canvas drawing
@@ -230,23 +216,35 @@ int cucul_free_font(cucul_font_t *);
  *  the current canvas to various text formats.
  *
  *  @{ */
-cucul_buffer_t * cucul_export_canvas(cucul_canvas_t *, char const *);
+void *cucul_export(cucul_canvas_t *, char const *, unsigned long int *);
+long int cucul_import(cucul_canvas_t *, unsigned char const *,
+                      unsigned long int, char const *);
 char const * const * cucul_get_export_list(void);
-cucul_canvas_t * cucul_import_canvas(cucul_buffer_t *, char const *);
 char const * const * cucul_get_import_list(void);
 /*  @} */
 
 #if !defined(_DOXYGEN_SKIP_ME)
-/* Legacy stuff from beta versions, will probably disappear in 1.0 */
+    /* Legacy stuff from beta versions, will probably disappear in 1.0 */
+    typedef struct cucul_buffer cucul_buffer_t;
 #   ifdef __GNUC__
 #       define CUCUL_DEPRECATED __attribute__ ((deprecated))
 #   else
 #       define CUCUL_DEPRECATED
 #   endif
-int cucul_set_color(cucul_canvas_t *, unsigned char,
-                                      unsigned char) CUCUL_DEPRECATED;
-int cucul_set_truecolor(cucul_canvas_t *, unsigned int,
-                                          unsigned int) CUCUL_DEPRECATED;
+    int cucul_set_color(cucul_canvas_t *, unsigned char,
+                                          unsigned char) CUCUL_DEPRECATED;
+    int cucul_set_truecolor(cucul_canvas_t *, unsigned int,
+                                              unsigned int) CUCUL_DEPRECATED;
+    cucul_buffer_t *cucul_load_memory(void *,
+                                      unsigned long int) CUCUL_DEPRECATED;
+    cucul_buffer_t *cucul_load_file(char const *) CUCUL_DEPRECATED;
+    unsigned long int cucul_get_buffer_size(cucul_buffer_t *) CUCUL_DEPRECATED;
+    void * cucul_get_buffer_data(cucul_buffer_t *) CUCUL_DEPRECATED;
+    int cucul_free_buffer(cucul_buffer_t *) CUCUL_DEPRECATED;
+    cucul_buffer_t * cucul_export_canvas(cucul_canvas_t *,
+                                         char const *) CUCUL_DEPRECATED;
+    cucul_canvas_t * cucul_import_canvas(cucul_buffer_t *,
+                                         char const *) CUCUL_DEPRECATED;
 #   define CUCUL_COLOR_BLACK CUCUL_BLACK
 #   define CUCUL_COLOR_BLUE CUCUL_BLUE
 #   define CUCUL_COLOR_GREEN CUCUL_GREEN

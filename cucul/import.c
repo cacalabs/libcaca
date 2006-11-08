@@ -57,17 +57,18 @@ struct ansi_grcm
     uint8_t bold, negative, concealed;
 };
 
-static cucul_canvas_t *import_caca(void const *, unsigned int);
-static cucul_canvas_t *import_text(void const *, unsigned int);
-static cucul_canvas_t *import_ansi(void const *, unsigned int, int);
+static long int import_caca(cucul_canvas_t *, void const *, unsigned int);
+static long int import_text(cucul_canvas_t *, void const *, unsigned int);
+static long int import_ansi(cucul_canvas_t *, void const *, unsigned int, int);
 
 static void ansi_parse_grcm(cucul_canvas_t *, struct ansi_grcm *,
                             unsigned int, unsigned int const *);
 
-/** \brief Import a buffer into a canvas
+/** \brief Import a memory buffer into a canvas
  *
- *  Import a libcucul buffer as returned by cucul_load_memory()
- *  or cucul_load_file() into an internal libcucul canvas.
+ *  Import a memory buffer into the given libcucul canvas's current
+ *  frame. The current frame is resized accordingly and its contents are
+ *  replaced with the imported data.
  *
  *  Valid values for \c format are:
  *  - \c "": attempt to autodetect the file format.
@@ -76,51 +77,51 @@ static void ansi_parse_grcm(cucul_canvas_t *, struct ansi_grcm *,
  *  - \c "utf8": import UTF-8 files with ANSI colour codes.
  *  - \c "caca": import native libcaca files.
  *
- *  If an error occurs, NULL is returned and \b errno is set accordingly:
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
  *  - \c ENOMEM Not enough memory to allocate canvas.
  *  - \c EINVAL Invalid format requested.
  *
+ *  \param A libcucul canvas in which to import the file.
  *  \param buffer A \e libcucul buffer containing the data to be loaded
  *         into a canvas.
  *  \param format A string describing the input format.
- *  \return A libcucul canvas, or NULL in case of error.
+ *  \return The number of bytes read, or -1 if an error occurred.
  */
-cucul_canvas_t * cucul_import_canvas(cucul_buffer_t *buffer, char const *format)
+long int cucul_import(cucul_canvas_t *cv, unsigned char const *buf,
+                      unsigned long int len, char const *format)
 {
-    char const *buf = (char const*)buffer->data;
-
     if(!strcasecmp("caca", format))
-        return import_caca(buffer->data, buffer->size);
+        return import_caca(cv, buf, len);
     if(!strcasecmp("utf8", format))
-        return import_ansi(buffer->data, buffer->size, 1);
+        return import_ansi(cv, buf, len, 1);
     if(!strcasecmp("text", format))
-        return import_text(buffer->data, buffer->size);
+        return import_text(cv, buf, len);
     if(!strcasecmp("ansi", format))
-        return import_ansi(buffer->data, buffer->size, 0);
+        return import_ansi(cv, buf, len, 0);
 
     /* Autodetection */
     if(!strcasecmp("", format))
     {
         unsigned int i;
 
-        /* If 4 first letters are CACA */
-        if(buffer->size >= 4 && (uint8_t)buf[0] == 0xca &&
-           (uint8_t)buf[1] == 0xca && buf[2] == 'C' && buf[3] == 'V')
-            return import_caca(buffer->data, buffer->size);
+        /* If 4 first bytes are 0xcaca + 'CV' */
+        if(len >= 4 && buf[0] == 0xca &&
+           buf[1] == 0xca && buf[2] == 'C' && buf[3] == 'V')
+            return import_caca(cv, buf, len);
 
         /* If we find ESC[ argv, we guess it's an ANSI file */
-        for(i = 0; i + 1 < buffer->size; i++)
+        for(i = 0; i + 1 < len; i++)
             if((buf[i] == 0x1b) && (buf[i + 1] == '['))
-                return import_ansi(buffer->data, buffer->size, 0);
+                return import_ansi(cv, buf, len, 0);
 
         /* Otherwise, import it as text */
-        return import_text(buffer->data, buffer->size);
+        return import_text(cv, buf, len);
     }
 
 #if defined(HAVE_ERRNO_H)
     errno = EINVAL;
 #endif
-    return NULL;
+    return -1;
 }
 
 /** \brief Get available import formats
@@ -152,12 +153,14 @@ char const * const * cucul_get_import_list(void)
  * XXX: the following functions are local.
  */
 
-static cucul_canvas_t *import_caca(void const *data, unsigned int size)
+static long int import_caca(cucul_canvas_t *cv,
+                            void const *data, unsigned int size)
 {
-    cucul_canvas_t *cv;
     uint8_t const *buf = (uint8_t const *)data;
     unsigned int control_size, data_size, full_size, frames, f, n;
     uint16_t version, flags;
+
+    cucul_set_canvas_size(cv, 0, 0);
 
     if(size < 20)
         goto invalid_caca;
@@ -197,16 +200,10 @@ static cucul_canvas_t *import_caca(void const *data, unsigned int size)
         goto invalid_caca;
 
     /* FIXME: read all frames, not only the first one */
-    cv = cucul_create_canvas(sscanu32(buf + 4 + 16),
-                             sscanu32(buf + 4 + 16 + 4));
+    cucul_set_canvas_size(cv, sscanu32(buf + 4 + 16),
+                              sscanu32(buf + 4 + 16 + 4));
 
-    if(!cv)
-    {
-#if defined(HAVE_ERRNO_H)
-        errno = ENOMEM;
-#endif
-        return NULL;
-    }
+    /* FIXME: check for return value */
 
     for(n = sscanu32(buf + 4 + 16) * sscanu32(buf + 4 + 16 + 4); n--; )
     {
@@ -216,30 +213,22 @@ static cucul_canvas_t *import_caca(void const *data, unsigned int size)
 
     cv->curattr = sscanu32(buf + 4 + 16 + 12);
 
-    return cv;
+    return size;
 
 invalid_caca:
 #if defined(HAVE_ERRNO_H)
     errno = EINVAL;
 #endif
-    return NULL;
+    return -1;
 }
 
-static cucul_canvas_t *import_text(void const *data, unsigned int size)
+static long int import_text(cucul_canvas_t *cv,
+                            void const *data, unsigned int size)
 {
-    cucul_canvas_t *cv;
     char const *text = (char const *)data;
     unsigned int width = 0, height = 0, x = 0, y = 0, i;
 
-    cv = cucul_create_canvas(width, height);
-    if(!cv)
-    {
-#if defined(HAVE_ERRNO_H)
-        errno = ENOMEM;
-#endif
-        return NULL;
-    }
-
+    cucul_set_canvas_size(cv, width, height);
     cucul_set_color_ansi(cv, CUCUL_DEFAULT, CUCUL_TRANSPARENT);
 
     for(i = 0; i < size; i++)
@@ -274,29 +263,20 @@ static cucul_canvas_t *import_text(void const *data, unsigned int size)
     if(y > height)
         cucul_set_canvas_size(cv, width, height = y);
 
-    return cv;
+    return size;
 }
 
-static cucul_canvas_t *import_ansi(void const *data, unsigned int size,
-                                   int utf8)
+static long int import_ansi(cucul_canvas_t *cv,
+                            void const *data, unsigned int size, int utf8)
 {
     struct ansi_grcm grcm;
     unsigned char const *buffer = (unsigned char const*)data;
-    cucul_canvas_t *cv;
     unsigned int i, j, skip, dummy = 0;
     unsigned int width = 0, height = 0, wch = 1;
     unsigned long int ch;
     int x = 0, y = 0, save_x = 0, save_y = 0;
 
-    cv = cucul_create_canvas(width, height);
-    if(!cv)
-    {
-#if defined(HAVE_ERRNO_H)
-        errno = ENOMEM;
-#endif
-        return NULL;
-    }
-
+    cucul_set_canvas_size(cv, width, height);
     ansi_parse_grcm(cv, &grcm, 1, &dummy);
 
     for(i = 0; i < size; i += skip)
@@ -494,7 +474,7 @@ static cucul_canvas_t *import_ansi(void const *data, unsigned int size,
         cucul_set_canvas_size(cv, width, height = y);
     }
 
-    return cv;
+    return size;
 }
 
 /* XXX : ANSI loader helper */

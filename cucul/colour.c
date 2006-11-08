@@ -136,12 +136,6 @@ int cucul_set_color_ansi(cucul_canvas_t *cv, unsigned char fg, unsigned char bg)
     return 0;
 }
 
-/* Legacy function for old programs */
-int cucul_set_color(cucul_canvas_t *cv, unsigned char fg, unsigned char bg)
-{
-    return cucul_set_color_ansi(cv, fg, bg);
-}
-
 /** \brief Set the default colour pair for text (truecolor version).
  *
  *  Set the default ARGB colour pair for text drawing. String functions such
@@ -185,12 +179,6 @@ int cucul_set_color_argb(cucul_canvas_t *cv, unsigned int fg, unsigned int bg)
     cv->curattr = (cv->curattr & 0x0000000f) | attr;
 
     return 0;
-}
-
-/* Legacy function for old programs */
-int cucul_set_truecolor(cucul_canvas_t *cv, unsigned int fg, unsigned int bg)
-{
-    return cucul_set_color_argb(cv, fg, bg);
 }
 
 /*

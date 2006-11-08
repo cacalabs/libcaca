@@ -12,13 +12,17 @@
  */
 
 /*
- *  This file contains buffer handling functions.
+ *  This file contains legacy functions that we keep around until all
+ *  applications are ported.
  */
 
 #include "config.h"
 #include "common.h"
 
 #if !defined(__KERNEL__)
+#   if defined(HAVE_ERRNO_H)
+#       include <errno.h>
+#   endif
 #   include <stdio.h>
 #   include <stdlib.h>
 #   include <string.h>
@@ -27,22 +31,71 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
-/** \brief Load a memory area into a buffer.
- *
- *  Create a \e libcucul buffer that points to the given memory area. The
- *  data is not duplicated and any changes made to the original memory area
- *  will appear in the buffer.
- *
- *  Keep in mind that buffers are not strings. When loading a C string, the
- *  terminating '\\0' must not be part of the buffer, hence \e size should
- *  be computed with strlen(). Conversely, the '\\0' is not appended to
- *  exported buffers even when they could be parsed as strings.
- *
- *  \param data The memory area to load.
- *  \param size The size of the memory area.
- *  \return A \e libcucul buffer pointing to the memory area, or NULL
- *          if an error occurred.
+/*
+ * Functions from color.c
  */
+
+int cucul_set_color(cucul_canvas_t *cv, unsigned char fg, unsigned char bg)
+{
+    return cucul_set_color_ansi(cv, fg, bg);
+}
+
+int cucul_set_truecolor(cucul_canvas_t *cv, unsigned int fg, unsigned int bg)
+{
+    return cucul_set_color_argb(cv, fg, bg);
+}
+
+/*
+ * Functions from import.c
+ */
+
+cucul_canvas_t * cucul_import_canvas(cucul_buffer_t *buf, char const *format)
+{
+    cucul_canvas_t *cv = cucul_create_canvas(0, 0);
+    int ret = cucul_import(cv, (unsigned char const *)buf->data,
+                           buf->size, format);
+    if(ret < 0)
+    {
+        cucul_free_canvas(cv);
+        return NULL;
+    }
+
+    return cv;
+}
+
+/*
+ * Functions from export.c
+ */
+
+cucul_buffer_t * cucul_export_canvas(cucul_canvas_t *cv, char const *format)
+{
+    cucul_buffer_t *ex;
+
+    ex = malloc(sizeof(cucul_buffer_t));
+    if(!ex)
+    {
+#if defined(HAVE_ERRNO_H)
+        errno = ENOMEM;
+#endif
+        return NULL;
+    }
+
+    ex->data = cucul_export(cv, format, &ex->size);
+    if(!ex->data)
+    {
+        free(ex);
+        return NULL;
+    }
+
+    ex->user_data = 0;
+
+    return ex;
+}
+
+/*
+ * Functions from buffer.c
+ */
+
 cucul_buffer_t *cucul_load_memory(void *data, unsigned long int size)
 {
     cucul_buffer_t *buf;
@@ -58,15 +111,6 @@ cucul_buffer_t *cucul_load_memory(void *data, unsigned long int size)
     return buf;
 }
 
-/** \brief Load a file into a buffer.
- *
- *  Load a file into memory and returns a \e libcucul buffer for use with
- *  other functions.
- *
- *  \param file The filename
- *  \return A \e libcucul buffer containing the file's contents, or NULL
- *          if an error occurred.
- */
 #if !defined(__KERNEL__)
 cucul_buffer_t *cucul_load_file(char const *file)
 {
@@ -105,45 +149,17 @@ cucul_buffer_t *cucul_load_file(char const *file)
     return buf;
 }
 #endif
-/** \brief Get the buffer size.
- *
- *  Return the length (in bytes) of the memory area stored in the given
- *  \e libcucul buffer.
- *
- *  This function never fails.
- *
- *  \param buf A \e libcucul buffer
- *  \return The buffer data length.
- */
+
 unsigned long int cucul_get_buffer_size(cucul_buffer_t *buf)
 {
     return buf->size;
 }
 
-/** \brief Get the buffer data.
- *
- *  Get a pointer to the memory area stored in the given
- *  \e libcucul buffer.
- *
- *  This function never fails.
- *
- *  \param buf A \e libcucul buffer
- *  \return A pointer to the buffer memory area.
- */
 void * cucul_get_buffer_data(cucul_buffer_t *buf)
 {
     return buf->data;
 }
 
-/** \brief Free a buffer.
- *
- *  Free the structures associated with the given \e libcucul buffer.
- *
- *  This function never fails.
- *
- *  \param buf A \e libcucul buffer
- *  \return This function always returns 0.
- */
 int cucul_free_buffer(cucul_buffer_t *buf)
 {
     if(!buf->user_data)

@@ -14,7 +14,7 @@ libcucul_la_SOURCES = \
 	cucul.c \
 	cucul.h \
 	cucul_internals.h \
-	buffer.c \
+	legacy.c \
 	canvas.c \
 	transform.c \
 	charset.c \
