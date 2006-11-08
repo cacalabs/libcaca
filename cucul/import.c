@@ -22,11 +22,6 @@
 #   if defined(HAVE_ERRNO_H)
 #       include <errno.h>
 #   endif
-#   if defined(HAVE_ARPA_INET_H)
-#       include <arpa/inet.h>
-#   elif defined(HAVE_NETINET_IN_H)
-#       include <netinet/in.h>
-#   endif
 #   include <stdio.h>
 #   include <stdlib.h>
 #   include <string.h>
@@ -39,14 +34,14 @@ static inline uint32_t sscanu32(void const *s)
 {
     uint32_t x;
     memcpy(&x, s, 4);
-    return ntohl(x);
+    return hton32(x);
 }
 
 static inline uint16_t sscanu16(void const *s)
 {
     uint16_t x;
     memcpy(&x, s, 2);
-    return ntohs(x);
+    return hton16(x);
 }
 
 /* ANSI Graphic Rendition Combination Mode */

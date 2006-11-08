@@ -33,6 +33,11 @@ typedef unsigned long int uintptr_t;
 #endif
 
 #if defined(HAVE_HTONS)
+#   if defined(HAVE_ARPA_INET_H)
+#       include <arpa/inet.h>
+#   elif defined(HAVE_NETINET_IN_H)
+#       include <netinet/in.h>
+#   endif
 #   define hton16 htons
 #   define hton32 htonl
 #else

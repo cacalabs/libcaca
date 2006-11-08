@@ -22,11 +22,6 @@
 #   if defined(HAVE_ENDIAN_H)
 #       include <endian.h>
 #   endif
-#   if defined(HAVE_ARPA_INET_H)
-#       include <arpa/inet.h>
-#   elif defined(HAVE_NETINET_IN_H)
-#       include <netinet/in.h>
-#   endif
 #   if defined(HAVE_ERRNO_H)
 #       include <errno.h>
 #   endif
