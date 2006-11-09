@@ -195,36 +195,49 @@ int main(void)
     /* Main loop */
     for(;;)
     {
-        uint8_t *buf = server->input;
-        uint32_t control_size, data_size;
-        unsigned int size;
-
+restart:
         /* Manage new connections as this function will be called sometimes
          * more often than display */
         manage_connections(server);
 
         /* Read data from stdin */
-        read(0, buf, 12);
-
-        while(buf[0] != 0xca || buf[1] != 0xca
-               || buf[2] != 'C' || buf[3] != 'V')
+        if(server->read < 12)
         {
-            memmove(buf, buf + 1, 11);
-            read(0, buf + 11, 1);
+            read(0, server->input + server->read, 12 - server->read);
+            server->read = 12;
         }
 
-        control_size = ((uint32_t)buf[4] << 24) | ((uint32_t)buf[5] << 16)
-               | ((uint32_t)buf[6] << 8) | (uint32_t)buf[7];
-        data_size = ((uint32_t)buf[8] << 24) | ((uint32_t)buf[9] << 16)
-               | ((uint32_t)buf[10] << 8) | (uint32_t)buf[11];
+        while(cucul_import_memory(server->canvas, server->input,
+                                  server->read, "caca") < 0)
+        {
+            memmove(server->input, server->input + 1, server->read - 1);
+            read(0, server->input + server->read - 1, 1);
+        }
 
-        size = 4 + control_size + data_size;
-        buf = server->input = realloc(server->input, size);
-        read(0, buf + 12, size - 12);
+        for(;;)
+        {
+            long int needed;
+            ssize_t wanted;
 
-        if(cucul_import_memory(server->canvas, buf, size, "caca") < 0)
-            continue; /* Load error */
+            needed = cucul_import_memory(server->canvas, server->input,
+                                         server->read, "caca");
+            if(needed < 0)
+                goto restart;
 
+            if(needed > 0)
+            {
+                server->read -= needed;
+                memmove(server->input, server->input + needed, server->read);
+                break;
+            }
+
+            server->input = realloc(server->input, server->read + 128);
+            wanted = read(0, server->input + server->read, 128);
+            if(wanted < 0)
+                goto restart;
+            server->read += wanted;
+        }
+            
         /* Free the previous export buffer, if any */
         if(server->buffer)
         {
