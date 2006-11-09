@@ -76,42 +76,42 @@ static void ansi_parse_grcm(cucul_canvas_t *, struct ansi_grcm *,
  *  - \c ENOMEM Not enough memory to allocate canvas.
  *  - \c EINVAL Invalid format requested.
  *
- *  \param A libcucul canvas in which to import the file.
- *  \param buffer A \e libcucul buffer containing the data to be loaded
- *         into a canvas.
+ *  \param cv A libcucul canvas in which to import the file.
+ *  \param data A memory area containing the data to be loaded into the canvas.
+ *  \param len The size in bytes of the memory area.
  *  \param format A string describing the input format.
  *  \return The number of bytes read, or -1 if an error occurred.
  */
-long int cucul_import_memory(cucul_canvas_t *cv, void const *buf,
+long int cucul_import_memory(cucul_canvas_t *cv, void const *data,
                              unsigned long int len, char const *format)
 {
     if(!strcasecmp("caca", format))
-        return import_caca(cv, buf, len);
+        return import_caca(cv, data, len);
     if(!strcasecmp("utf8", format))
-        return import_ansi(cv, buf, len, 1);
+        return import_ansi(cv, data, len, 1);
     if(!strcasecmp("text", format))
-        return import_text(cv, buf, len);
+        return import_text(cv, data, len);
     if(!strcasecmp("ansi", format))
-        return import_ansi(cv, buf, len, 0);
+        return import_ansi(cv, data, len, 0);
 
     /* Autodetection */
     if(!strcasecmp("", format))
     {
-        unsigned char const *str = buf;
+        unsigned char const *str = data;
         unsigned int i;
 
         /* If 4 first bytes are 0xcaca + 'CV' */
         if(len >= 4 && str[0] == 0xca &&
            str[1] == 0xca && str[2] == 'C' && str[3] == 'V')
-            return import_caca(cv, buf, len);
+            return import_caca(cv, data, len);
 
         /* If we find ESC[ argv, we guess it's an ANSI file */
         for(i = 0; i + 1 < len; i++)
             if((str[i] == 0x1b) && (str[i + 1] == '['))
-                return import_ansi(cv, buf, len, 0);
+                return import_ansi(cv, data, len, 0);
 
         /* Otherwise, import it as text */
-        return import_text(cv, buf, len);
+        return import_text(cv, data, len);
     }
 
 #if defined HAVE_ERRNO_H
@@ -140,7 +140,7 @@ long int cucul_import_memory(cucul_canvas_t *cv, void const *buf,
  *  cucul_import_file() may also fail and set \b errno for any of the
  *  errors specified for the routine fopen().
  *
- *  \param A libcucul canvas in which to import the file.
+ *  \param cv A libcucul canvas in which to import the file.
  *  \param filename The name of the file to load.
  *  \param format A string describing the input format.
  *  \return The number of bytes read, or -1 if an error occurred.

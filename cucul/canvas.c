@@ -143,7 +143,6 @@ int cucul_putchar(cucul_canvas_t *cv, int x, int y, unsigned long int ch)
  *  \param cv A handle to the libcucul canvas.
  *  \param x X coordinate.
  *  \param y Y coordinate.
- *  \param ch The requested character value.
  *  \return This function always returns 0.
  */
 unsigned long int cucul_getchar(cucul_canvas_t *cv, int x, int y)
