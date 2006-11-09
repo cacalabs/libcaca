@@ -67,10 +67,13 @@ static void ansi_parse_grcm(cucul_canvas_t *, struct ansi_grcm *,
  *
  *  Valid values for \c format are:
  *  - \c "": attempt to autodetect the file format.
+ *  - \c "caca": import native libcaca files.
  *  - \c "text": import ASCII text files.
  *  - \c "ansi": import ANSI files.
  *  - \c "utf8": import UTF-8 files with ANSI colour codes.
- *  - \c "caca": import native libcaca files.
+ *
+ *  The number of bytes read is returned. If the file format is valid, but
+ *  not enough data was available, 0 is returned.
  *
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
  *  - \c ENOMEM Not enough memory to allocate canvas.
@@ -80,7 +83,8 @@ static void ansi_parse_grcm(cucul_canvas_t *, struct ansi_grcm *,
  *  \param data A memory area containing the data to be loaded into the canvas.
  *  \param len The size in bytes of the memory area.
  *  \param format A string describing the input format.
- *  \return The number of bytes read, or -1 if an error occurred.
+ *  \return The number of bytes read, or 0 if there was not enough data,
+ *  or -1 if an error occurred.
  */
 long int cucul_import_memory(cucul_canvas_t *cv, void const *data,
                              unsigned long int len, char const *format)
@@ -128,10 +132,13 @@ long int cucul_import_memory(cucul_canvas_t *cv, void const *data,
  *
  *  Valid values for \c format are:
  *  - \c "": attempt to autodetect the file format.
+ *  - \c "caca": import native libcaca files.
  *  - \c "text": import ASCII text files.
  *  - \c "ansi": import ANSI files.
  *  - \c "utf8": import UTF-8 files with ANSI colour codes.
- *  - \c "caca": import native libcaca files.
+ *
+ *  The number of bytes read is returned. If the file format is valid, but
+ *  not enough data was available, 0 is returned.
  *
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
  *  - \c ENOSYS File access is not implemented on this system.
@@ -143,7 +150,8 @@ long int cucul_import_memory(cucul_canvas_t *cv, void const *data,
  *  \param cv A libcucul canvas in which to import the file.
  *  \param filename The name of the file to load.
  *  \param format A string describing the input format.
- *  \return The number of bytes read, or -1 if an error occurred.
+ *  \return The number of bytes read, or 0 if there was not enough data,
+ *  or -1 if an error occurred.
  */
 long int cucul_import_file(cucul_canvas_t *cv, char const *filename,
                            char const *format)
@@ -201,13 +209,14 @@ long int cucul_import_file(cucul_canvas_t *cv, char const *filename,
 char const * const * cucul_get_import_list(void)
 {
     static char const * const list[] =
-        {
-            "", "autodetect",
-            "text", "plain text",
-            "caca", "native libcaca format",
-            "ansi", "ANSI coloured text",
-            NULL, NULL
-        };
+    {
+        "", "autodetect",
+        "caca", "native libcaca format",
+        "text", "plain text",
+        "ansi", "ANSI coloured text",
+        "utf8", "UTF-8 files with ANSI colour codes",
+        NULL, NULL
+    };
 
     return list;
 }
@@ -220,13 +229,11 @@ static long int import_caca(cucul_canvas_t *cv,
                             void const *data, unsigned int size)
 {
     uint8_t const *buf = (uint8_t const *)data;
-    unsigned int control_size, data_size, full_size, frames, f, n;
+    unsigned int control_size, data_size, expected_size, frames, f, n;
     uint16_t version, flags;
 
-    cucul_set_canvas_size(cv, 0, 0);
-
     if(size < 20)
-        goto invalid_caca;
+        return 0;
 
     if(buf[0] != 0xca || buf[1] != 0xca || buf[2] != 'C' || buf[3] != 'V')
         goto invalid_caca;
@@ -237,13 +244,13 @@ static long int import_caca(cucul_canvas_t *cv,
     frames = sscanu32(buf + 14);
     flags = sscanu16(buf + 18);
 
-    if(size != 4 + control_size + data_size)
-        goto invalid_caca;
+    if(size < 4 + control_size + data_size)
+        return 0;
 
     if(control_size < 16 + frames * 24)
         goto invalid_caca;
 
-    for(full_size = 0, f = 0; f < frames; f++)
+    for(expected_size = 0, f = 0; f < frames; f++)
     {
         unsigned int width, height, duration;
         uint32_t attr;
@@ -256,13 +263,14 @@ static long int import_caca(cucul_canvas_t *cv,
         x = (int32_t)sscanu32(buf + 4 + 16 + f * 24 + 16);
         y = (int32_t)sscanu32(buf + 4 + 16 + f * 24 + 20);
 
-        full_size += width * height * 8;
+        expected_size += width * height * 8;
     }
 
-    if(full_size != data_size)
+    if(expected_size != data_size)
         goto invalid_caca;
 
     /* FIXME: read all frames, not only the first one */
+    cucul_set_canvas_size(cv, 0, 0);
     cucul_set_canvas_size(cv, sscanu32(buf + 4 + 16),
                               sscanu32(buf + 4 + 16 + 4));
 
@@ -276,7 +284,7 @@ static long int import_caca(cucul_canvas_t *cv,
 
     cv->curattr = sscanu32(buf + 4 + 16 + 12);
 
-    return size;
+    return 4 + control_size + data_size;
 
 invalid_caca:
 #if defined HAVE_ERRNO_H
