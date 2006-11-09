@@ -83,6 +83,16 @@ int main(int argc, char *argv[])
 
     while(!kk->getEvent(ev.CACA_EVENT_KEY_PRESS, &ev, 0)) {
 
+
+        /* In case of resize ...*/
+        if((x + pig->getWidth())-1 >= qq->getWidth() || x < 0 )
+            x = 0;
+        if((y + pig->getHeight())-1 >= qq->getHeight() || y < 0 )
+            y = 0;
+
+
+
+
         qq->Clear();
 
         /* Draw pig */
@@ -103,6 +113,7 @@ int main(int argc, char *argv[])
             ix = -ix;
         if(y + pig->getHeight() >= qq->getHeight() || y < 0 )
             iy = -iy;
+
     }
 
     delete kk;
