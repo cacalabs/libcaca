@@ -91,6 +91,7 @@ int cucul_rand(int, int);
 #define CUCUL_MAGIC_FULLWIDTH 0x000ffffe /**< Used to indicate that the previous character was a fullwidth glyph. */
 unsigned long int cucul_get_attr(cucul_canvas_t *, int, int);
 int cucul_set_attr(cucul_canvas_t *, unsigned long int);
+int cucul_putattr(cucul_canvas_t *, int, int, unsigned long int);
 int cucul_set_color_ansi(cucul_canvas_t *, unsigned char, unsigned char);
 int cucul_set_color_argb(cucul_canvas_t *, unsigned int, unsigned int);
 int cucul_putchar(cucul_canvas_t *, int, int, unsigned long int);

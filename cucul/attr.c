@@ -12,8 +12,8 @@
  */
 
 /*
- *  This file contains functions for converting colour values between
- *  various colourspaces.
+ *  This file contains functions for attribute management and colourspace
+ *  conversions.
  */
 
 #include "config.h"
@@ -97,6 +97,57 @@ int cucul_set_attr(cucul_canvas_t *cv, unsigned long int attr)
         attr = (cv->curattr & 0xfffffff0) | attr;
 
     cv->curattr = attr;
+
+    return 0;
+}
+
+/** \brief Set the character attribute at the given coordinates.
+ *
+ *  Set the character attribute, without changing the character's value. If
+ *  the character at the given coordinates is a fullwidth character, both
+ *  cells' attributes are replaced.
+ *
+ *  The value of \e attr is either:
+ *  - a 32-bit integer as returned by cucul_get_attr(), in which case it
+ *    also contains colour information,
+ *  - a combination (bitwise OR) of style values (\e CUCUL_UNDERLINE,
+ *    \e CUCUL_BLINK, \e CUCUL_BOLD and \e CUCUL_ITALICS), in which case
+ *    setting the attribute does not modify the current colour information.
+ *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c EINVAL The attribute value is out of the 32-bit range.
+ *
+ *  \param cv A handle to the libcucul canvas.
+ *  \param x X coordinate.
+ *  \param y Y coordinate.
+ *  \param attr The requested attribute value.
+ *  \return 0 in case of success, -1 if an error occurred.
+ */
+int cucul_putattr(cucul_canvas_t *cv, int x, int y, unsigned long int attr)
+{
+    uint32_t *curattr, *curchar;
+
+    if(sizeof(unsigned long int) > sizeof(uint32_t) && attr > 0xffffffff)
+    {
+#if defined(HAVE_ERRNO_H)
+        errno = EINVAL;
+#endif
+        return -1;
+    }
+
+    if(x < 0 || x >= (int)cv->width || y < 0 || y >= (int)cv->height)
+        return 0;
+
+    curchar = cv->chars + x + y * cv->width;
+    curattr = cv->attrs + x + y * cv->width;
+
+    if(curattr[0] < 0x00000010)
+        curattr[0] = (cv->curattr & 0xfffffff0) | curattr[0];
+
+    if(x && curchar[0] == CUCUL_MAGIC_FULLWIDTH)
+        curattr[-1] = curattr[0];
+    else if(x + 1 < (int)cv->width && curchar[1] == CUCUL_MAGIC_FULLWIDTH)
+        curattr[1] = curattr[0];
 
     return 0;
 }
