@@ -1,0 +1,30 @@
+.TH cacaserver 1 "2006-11-10" "libcaca"
+.SH NAME
+cacaserver \- telnet server for libcaca
+.SH SYNOPSIS
+.B cacaserver
+.RI
+.SH DESCRIPTION
+.B cacaserver
+reads libcaca animation files in its standard input and serves them as ANSI
+art on network port 51914. These animations can be created by any libcaca
+program by setting the
+.B CACA_DRIVER
+environment variable to
+.B "raw"
+and piping the program's standard output to
+.B cacaserver.
+
+Clients can then connect to port 51914 using
+.B telnet
+or
+.B netcat
+to see the output.
+.SH EXAMPLE
+CACA_DRIVER=raw cacademo | cacaserver
+
+telnet localhost 51914
+.SH SEE ALSO
+cacaplay(1)
+.SH AUTHOR
+This manual page was written by Sam Hocevar <sam@zoy.org>.

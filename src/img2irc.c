@@ -23,6 +23,13 @@
 #include "cucul.h"
 #include "common-image.h"
 
+static void usage(int argc, char **argv)
+{
+    fprintf(stderr, "Usage: %s <image>\n", argv[0]);
+    fprintf(stderr, "       %s <image> <columns>\n", argv[0]);
+    fprintf(stderr, "       %s [-h|--help]\n", argv[0]);
+}
+
 int main(int argc, char **argv)
 {
     /* libcucul context */
@@ -30,12 +37,20 @@ int main(int argc, char **argv)
     void *export;
     unsigned long int len;
     struct image *i;
-    int cols = 56, lines;
+    int cols, lines;
 
-    if(argc != 2)
+    if(argc < 2 || argc > 3)
     {
         fprintf(stderr, "%s: wrong argument count\n", argv[0]);
+        usage(argc, argv);
         return 1;
+    }
+
+    if(!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help"))
+    {
+        fprintf(stderr, "%s: convert images to IRC file data\n", argv[0]);
+        usage(argc, argv);
+        return 0;
     }
 
     cv = cucul_create_canvas(0, 0);
@@ -54,6 +69,8 @@ int main(int argc, char **argv)
     }
 
     /* Assume a 6×10 font */
+    cols = argc == 3 ? atoi(argv[2]) : 0;
+    cols = cols ? cols : 60;
     lines = cols * i->h * 6 / i->w / 10;
 
     cucul_set_canvas_size(cv, cols, lines);

@@ -1,0 +1,27 @@
+.TH img2irc 1 "2006-11-10" "libcaca"
+.SH NAME
+img2irc \- convert images to IRC coloured files
+.SH SYNOPSIS
+.B img2irc IMAGE [COLUMNS]
+.RI
+.SH DESCRIPTION
+.B img2irc
+convert images to colour ASCII characters and outputs them to text using
+mIRC colour codes.
+.PP
+.B img2irc
+can load the most widespread image formats: PNG, JPEG, GIF, PNG, BMP etc.
+By default the output text is 60 columns wide; this value can be changed
+by appending a second argument to the commandline.
+.SH EXAMPLES
+img2irc hello.jpg > hello.txt
+
+img2irc hello.jpg 40 > tinyhello.txt
+.SH BUGS
+This program could be merged into
+.B cacaview
+or expanded to support multiple output formats.
+.SH SEE ALSO
+cacaview(1)
+.SH AUTHOR
+This manual page was written by Sam Hocevar <sam@zoy.org>.
