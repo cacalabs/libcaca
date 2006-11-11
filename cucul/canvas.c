@@ -390,6 +390,9 @@ int cucul_blit(cucul_canvas_t *dst, int x, int y,
         return -1;
     }
 
+    x -= src->frames[src->frame].handlex;
+    y -= src->frames[src->frame].handley;
+
     starti = x < 0 ? -x : 0;
     startj = y < 0 ? -y : 0;
     endi = (x + src->width >= dst->width) ? dst->width - x : src->width;
