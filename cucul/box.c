@@ -34,16 +34,16 @@
  *  \param y1 Y coordinate of the upper-left corner of the box.
  *  \param x2 X coordinate of the lower-right corner of the box.
  *  \param y2 Y coordinate of the lower-right corner of the box.
- *  \param str UTF-8 string containing the character to use to draw the box.
+ *  \param ch UTF-32 character to be used to draw the box.
  *  \return This function always returns 0.
  */
 int cucul_draw_box(cucul_canvas_t *cv, int x1, int y1, int x2, int y2, 
-                   char const *str)
+                   unsigned long int ch)
 {
-    cucul_draw_line(cv, x1, y1, x1, y2, str);
-    cucul_draw_line(cv, x1, y2, x2, y2, str);
-    cucul_draw_line(cv, x2, y2, x2, y1, str);
-    cucul_draw_line(cv, x2, y1, x1, y1, str);
+    cucul_draw_line(cv, x1, y1, x1, y2, ch);
+    cucul_draw_line(cv, x1, y2, x2, y2, ch);
+    cucul_draw_line(cv, x2, y2, x2, y1, ch);
+    cucul_draw_line(cv, x2, y1, x1, y1, ch);
 
     return 0;
 }
@@ -175,14 +175,13 @@ int cucul_draw_cp437_box(cucul_canvas_t *cv, int x1, int y1, int x2, int y2)
  *  \param y1 Y coordinate of the upper-left corner of the box.
  *  \param x2 X coordinate of the lower-right corner of the box.
  *  \param y2 Y coordinate of the lower-right corner of the box.
- *  \param str UTF-8 string containing the character to fill the box with.
+ *  \param ch UTF-32 character to be used to draw the box.
  *  \return This function always returns 0.
  */
 int cucul_fill_box(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
-                   char const *str)
+                   unsigned long int ch)
 {
     int x, y, xmax, ymax;
-    uint32_t ch;
 
     if(x1 > x2)
     {
@@ -206,8 +205,6 @@ int cucul_fill_box(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
     if(y1 < 0) y1 = 0;
     if(x2 > xmax) x2 = xmax;
     if(y2 > ymax) y2 = ymax;
-
-    ch = cucul_utf8_to_utf32(str, NULL);
 
     for(y = y1; y <= y2; y++)
         for(x = x1; x <= x2; x++)

@@ -50,18 +50,18 @@ static void draw_thin_line(cucul_canvas_t*, struct line*);
  *  \param y1 Y coordinate of the first point.
  *  \param x2 X coordinate of the second point.
  *  \param y2 Y coordinate of the second point.
- *  \param str UTF-8 string containing the character to use to draw the line.
+ *  \param ch UTF-32 character to be used to draw the line.
  *  \return This function always returns 0.
  */
 int cucul_draw_line(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
-                    char const *str)
+                    unsigned long int ch)
 {
     struct line s;
     s.x1 = x1;
     s.y1 = y1;
     s.x2 = x2;
     s.y2 = y2;
-    s.ch = cucul_utf8_to_utf32(str, NULL);
+    s.ch = ch;
     s.draw = draw_solid_line;
     clip_line(cv, &s);
 
@@ -81,15 +81,15 @@ int cucul_draw_line(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
  *  \param x Array of X coordinates. Must have \p n + 1 elements.
  *  \param y Array of Y coordinates. Must have \p n + 1 elements.
  *  \param n Number of lines to draw.
- *  \param str UTF-8 string containing the character to use to draw the lines.
+ *  \param ch UTF-32 character to be used to draw the lines.
  *  \return This function always returns 0.
  */
 int cucul_draw_polyline(cucul_canvas_t *cv, int const x[], int const y[],
-                        int n, char const *str)
+                        int n, unsigned long int ch)
 {
     int i;
     struct line s;
-    s.ch = cucul_utf8_to_utf32(str, NULL);
+    s.ch = ch;
     s.draw = draw_solid_line;
 
     for(i = 0; i < n; i++)

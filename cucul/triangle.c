@@ -36,16 +36,15 @@
  *  \param y2 Y coordinate of the second point.
  *  \param x3 X coordinate of the third point.
  *  \param y3 Y coordinate of the third point.
- *  \param str UTF-8 string representing the character that should be used
- *         to draw the triangle outline.
+ *  \param ch UTF-32 character to be used to draw the triangle outline.
  *  \return This function always returns 0.
  */
 int cucul_draw_triangle(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
-                        int x3, int y3, char const *str)
+                        int x3, int y3, unsigned long int ch)
 {
-    cucul_draw_line(cv, x1, y1, x2, y2, str);
-    cucul_draw_line(cv, x2, y2, x3, y3, str);
-    cucul_draw_line(cv, x3, y3, x1, y1, str);
+    cucul_draw_line(cv, x1, y1, x2, y2, ch);
+    cucul_draw_line(cv, x2, y2, x3, y3, ch);
+    cucul_draw_line(cv, x3, y3, x1, y1, ch);
 
     return 0;
 }
@@ -84,25 +83,21 @@ int cucul_draw_thin_triangle(cucul_canvas_t *cv, int x1, int y1,
  *  \param y2 Y coordinate of the second point.
  *  \param x3 X coordinate of the third point.
  *  \param y3 Y coordinate of the third point.
- *  \param str UTF-8 string representing the character that should be used
- *         to fill the triangle.
+ *  \param ch UTF-32 character to be used to fill the triangle.
  *  \return This function always returns 0.
  */
 int cucul_fill_triangle(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
-                        int x3, int y3, char const *str)
+                        int x3, int y3, unsigned long int ch)
 {
     int x, y, xmin, xmax, ymin, ymax;
     long int xx1, xx2, xa, xb, sl21, sl31, sl32;
-    uint32_t ch;
 
     /* Bubble-sort y1 <= y2 <= y3 */
     if(y1 > y2)
-        return cucul_fill_triangle(cv, x2, y2, x1, y1, x3, y3, str);
+        return cucul_fill_triangle(cv, x2, y2, x1, y1, x3, y3, ch);
 
     if(y2 > y3)
-        return cucul_fill_triangle(cv, x1, y1, x3, y3, x2, y2, str);
-
-    ch = cucul_utf8_to_utf32(str, NULL);
+        return cucul_fill_triangle(cv, x1, y1, x3, y3, x2, y2, ch);
 
     /* Compute slopes and promote precision */
     sl21 = (y2 == y1) ? 0 : (x2 - x1) * 0x10000 / (y2 - y1);

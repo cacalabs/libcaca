@@ -46,7 +46,6 @@ extern cucul_canvas_t *__caca0_cv;
 extern caca_display_t *__caca0_dp;
 extern unsigned char __caca0_fg;
 extern unsigned char __caca0_bg;
-extern char __caca0_utf8[];
 
 /* These enums and macros changed names or values */
 enum caca_color
@@ -141,39 +140,33 @@ enum caca_feature
 #define caca_clear() cucul_clear_canvas(__caca0_cv)
 
 #define caca_draw_line(x, y, z, t, c) \
-    (__caca0_utf8[0] = c, \
-     cucul_draw_line(__caca0_cv, x, y, z, t, __caca0_utf8))
+    cucul_draw_line(__caca0_cv, x, y, z, t, c)
 #define caca_draw_polyline(x, y, z, c) \
-    (__caca0_utf8[0] = c, \
-     cucul_draw_polyline(__caca0_cv, x, y, z, __caca0_utf8))
+    cucul_draw_polyline(__caca0_cv, x, y, z, c)
 #define caca_draw_thin_line(x, y, z, t) \
     cucul_draw_thin_line(__caca0_cv, x, y, z, t)
 #define caca_draw_thin_polyline(x, y, z) \
     cucul_draw_thin_polyline(__caca0_cv, x, y, z)
 #define caca_draw_circle(x, y, z, c) \
-    (__caca0_utf8[0] = c, cucul_draw_circle(__caca0_cv, x, y, z, __caca0_utf8))
+    cucul_draw_circle(__caca0_cv, x, y, z, c)
 #define caca_draw_ellipse(x, y, z, t, c) \
-    (__caca0_utf8[0] = c, \
-     cucul_draw_ellipse(__caca0_cv, x, y, z, t, __caca0_utf8))
+    cucul_draw_ellipse(__caca0_cv, x, y, z, t, c)
 #define caca_draw_thin_ellipse(x, y, z, t) \
     cucul_draw_thin_ellipse(__caca0_cv, x, y, z, t)
 #define caca_fill_ellipse(x, y, z, t, c) \
-    (__caca0_utf8[0] = c, \
-     cucul_fill_ellipse(__caca0_cv, x, y, z, t, __caca0_utf8))
+    cucul_fill_ellipse(__caca0_cv, x, y, z, t, c)
 #define caca_draw_box(x, y, z, t, c) \
-    (__caca0_utf8[0] = c, cucul_draw_box(__caca0_cv, x, y, z, t, __caca0_utf8))
+    cucul_draw_box(__caca0_cv, x, y, z, t, c)
 #define caca_draw_thin_box(x, y, z, t) \
     cucul_draw_thin_box(__caca0_cv, x, y, z, t)
 #define caca_fill_box(x, y, z, t, c) \
-    (__caca0_utf8[0] = c, cucul_fill_box(__caca0_cv, x, y, z, t, __caca0_utf8))
+    cucul_fill_box(__caca0_cv, x, y, z, t, c)
 #define caca_draw_triangle(x, y, z, t, u, v, c) \
-    (__caca0_utf8[0] = c, \
-     cucul_draw_triangle(__caca0_cv, x, y, z, t, u, v, __caca0_utf8))
+    cucul_draw_triangle(__caca0_cv, x, y, z, t, u, v, c)
 #define caca_draw_thin_triangle(x, y, z, t, u, v) \
     cucul_draw_thin_triangle(__caca0_cv, x, y, z, t, u, v)
 #define caca_fill_triangle(x, y, z, t, u, v, c) \
-    (__caca0_utf8[0] = c, \
-     cucul_fill_triangle(__caca0_cv, x, y, z, t, u, v, __caca0_utf8))
+    cucul_fill_triangle(__caca0_cv, x, y, z, t, u, v, c)
 
 #define caca_rand(a, b) cucul_rand(a, (b)+1)
 #define caca_sqrt __caca0_sqrt

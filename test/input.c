@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
             unsigned int j, start, size;
 
             cucul_set_color_ansi(cv, CUCUL_BLACK, CUCUL_LIGHTGRAY);
-            cucul_fill_box(cv, 2, 3 * i + 4, 2 + BUFFER_SIZE, 3 * i + 4, " ");
+            cucul_fill_box(cv, 2, 3 * i + 4, 2 + BUFFER_SIZE, 3 * i + 4, ' ');
 
             start = 0;
             size = entries[i].size;

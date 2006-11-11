@@ -42,9 +42,9 @@ int main(int argc, char **argv)
     h = cucul_get_canvas_height(cv) - 1;
 
     cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
-    cucul_draw_line(cv, 0, 0, cucul_get_canvas_width(cv) - 1, 0, " ");
+    cucul_draw_line(cv, 0, 0, cucul_get_canvas_width(cv) - 1, 0, ' ');
 
-    cucul_draw_line(cv, 0, h, cucul_get_canvas_width(cv) - 1, h, " ");
+    cucul_draw_line(cv, 0, h, cucul_get_canvas_width(cv) - 1, h, ' ');
     cucul_putstr(cv, 0, h, "type \"quit\" to exit");
 
     caca_refresh_display(dp);
@@ -88,10 +88,10 @@ int main(int argc, char **argv)
 
         /* Print current event */
         cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
-        cucul_draw_line(cv, 0, 0, cucul_get_canvas_width(cv) - 1, 0, " ");
+        cucul_draw_line(cv, 0, 0, cucul_get_canvas_width(cv) - 1, 0, ' ');
         print_event(0, 0, events);
 
-        cucul_draw_line(cv, 0, h, cucul_get_canvas_width(cv) - 1, h, " ");
+        cucul_draw_line(cv, 0, h, cucul_get_canvas_width(cv) - 1, h, ' ');
         cucul_printf(cv, 0, h, "type \"quit\" to exit: %s", quit_string[quit]);
 
         /* Print previous events */

@@ -36,14 +36,13 @@ static void ellipsepoints(cucul_canvas_t *, int, int, int, int, uint32_t);
  *  \param x Center X coordinate.
  *  \param y Center Y coordinate.
  *  \param r Circle radius.
- *  \param str UTF-8 string representing the character that should be used
- *         to draw the circle outline.
+ *  \param ch UTF-32 character to be used to draw the circle outline.
  *  \return This function always returns 0.
  */
-int cucul_draw_circle(cucul_canvas_t *cv, int x, int y, int r, char const *str)
+int cucul_draw_circle(cucul_canvas_t *cv, int x, int y, int r,
+                      unsigned long int ch)
 {
     int test, dx, dy;
-    uint32_t ch = cucul_utf8_to_utf32(str, NULL);
 
     /* Optimized Bresenham. Kick ass. */
     for(test = 0, dx = 0, dy = r ; dx <= dy ; dx++)
@@ -66,12 +65,11 @@ int cucul_draw_circle(cucul_canvas_t *cv, int x, int y, int r, char const *str)
  *  \param yo Center Y coordinate.
  *  \param a Ellipse X radius.
  *  \param b Ellipse Y radius.
- *  \param str UTF-8 string representing the character that should be used
- *         to fill the ellipse.
+ *  \param ch UTF-32 character to be used to fill the ellipse.
  *  \return This function always returns 0.
  */
 int cucul_fill_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b,
-                       char const *str)
+                       unsigned long int ch)
 {
     int d2;
     int x = 0;
@@ -87,15 +85,15 @@ int cucul_fill_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b,
         else
         {
             d1 += b*b*(2*x*1) + a*a*(-2*y+2);
-            cucul_draw_line(cv, xo - x, yo - y, xo + x, yo - y, str);
-            cucul_draw_line(cv, xo - x, yo + y, xo + x, yo + y, str);
+            cucul_draw_line(cv, xo - x, yo - y, xo + x, yo - y, ch);
+            cucul_draw_line(cv, xo - x, yo + y, xo + x, yo + y, ch);
             y--;
         }
         x++;
     }
 
-    cucul_draw_line(cv, xo - x, yo - y, xo + x, yo - y, str);
-    cucul_draw_line(cv, xo - x, yo + y, xo + x, yo + y, str);
+    cucul_draw_line(cv, xo - x, yo - y, xo + x, yo - y, ch);
+    cucul_draw_line(cv, xo - x, yo + y, xo + x, yo + y, ch);
 
     d2 = b*b*(x+0.5)*(x+0.5) + a*a*(y-1)*(y-1) - a*a*b*b;
     while(y > 0)
@@ -111,8 +109,8 @@ int cucul_fill_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b,
         }
 
         y--;
-        cucul_draw_line(cv, xo - x, yo - y, xo + x, yo - y, str);
-        cucul_draw_line(cv, xo - x, yo + y, xo + x, yo + y, str);
+        cucul_draw_line(cv, xo - x, yo - y, xo + x, yo - y, ch);
+        cucul_draw_line(cv, xo - x, yo + y, xo + x, yo + y, ch);
     }
 
     return 0;
@@ -127,18 +125,16 @@ int cucul_fill_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b,
  *  \param yo Center Y coordinate.
  *  \param a Ellipse X radius.
  *  \param b Ellipse Y radius.
- *  \param str UTF-8 string representing the character that should be used
- *         to draw the ellipse outline.
+ *  \param ch UTF-32 character to be used to draw the ellipse outline.
  *  \return This function always returns 0.
  */
 int cucul_draw_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b,
-                       char const *str)
+                       unsigned long int ch)
 {
     int d2;
     int x = 0;
     int y = b;
     int d1 = b*b - (a*a*b) + (a*a/4);
-    uint32_t ch = cucul_utf8_to_utf32(str, NULL);
 
     ellipsepoints(cv, xo, yo, x, y, ch);
 

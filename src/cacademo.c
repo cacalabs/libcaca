@@ -234,7 +234,7 @@ void transition(cucul_canvas_t *mask, int tmode, int completed)
     cucul_fill_triangle(mask, \
         star_rot[(a)*2] * mulx + w2, star_rot[(a)*2+1] * muly + h2, \
         star_rot[(b)*2] * mulx + w2, star_rot[(b)*2+1] * muly + h2, \
-        star_rot[(c)*2] * mulx + w2, star_rot[(c)*2+1] * muly + h2, "#")
+        star_rot[(c)*2] * mulx + w2, star_rot[(c)*2+1] * muly + h2, '#')
             DO_TRI(0, 1, 9);
             DO_TRI(1, 2, 3);
             DO_TRI(3, 4, 5);
@@ -246,7 +246,7 @@ void transition(cucul_canvas_t *mask, int tmode, int completed)
             break;
 
         case TRANSITION_CIRCLE:
-            cucul_fill_ellipse(mask, w2, h2, mulx, muly, "#");
+            cucul_fill_ellipse(mask, w2, h2, mulx, muly, '#');
             break;
 
     }

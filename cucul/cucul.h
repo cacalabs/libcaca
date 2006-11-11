@@ -134,24 +134,28 @@ extern int cucul_utf32_is_fullwidth(unsigned long int);
  *  boxes, triangles and ellipses.
  *
  *  @{ */
-int cucul_draw_line(cucul_canvas_t *, int, int, int, int, char const *);
-int cucul_draw_polyline(cucul_canvas_t *, int const x[], int const y[], int, char const *);
+int cucul_draw_line(cucul_canvas_t *, int, int, int, int, unsigned long int);
+int cucul_draw_polyline(cucul_canvas_t *, int const x[], int const y[], int,
+                        unsigned long int);
 int cucul_draw_thin_line(cucul_canvas_t *, int, int, int, int);
-int cucul_draw_thin_polyline(cucul_canvas_t *, int const x[], int const y[], int);
+int cucul_draw_thin_polyline(cucul_canvas_t *, int const x[], int const y[],
+                             int);
 
-int cucul_draw_circle(cucul_canvas_t *, int, int, int, char const *);
-int cucul_draw_ellipse(cucul_canvas_t *, int, int, int, int, char const *);
+int cucul_draw_circle(cucul_canvas_t *, int, int, int, unsigned long int);
+int cucul_draw_ellipse(cucul_canvas_t *, int, int, int, int, unsigned long int);
 int cucul_draw_thin_ellipse(cucul_canvas_t *, int, int, int, int);
-int cucul_fill_ellipse(cucul_canvas_t *, int, int, int, int, char const *);
+int cucul_fill_ellipse(cucul_canvas_t *, int, int, int, int, unsigned long int);
 
-int cucul_draw_box(cucul_canvas_t *, int, int, int, int, char const *);
+int cucul_draw_box(cucul_canvas_t *, int, int, int, int, unsigned long int);
 int cucul_draw_thin_box(cucul_canvas_t *, int, int, int, int);
 int cucul_draw_cp437_box(cucul_canvas_t *, int, int, int, int);
-int cucul_fill_box(cucul_canvas_t *, int, int, int, int, char const *);
+int cucul_fill_box(cucul_canvas_t *, int, int, int, int, unsigned long int);
 
-int cucul_draw_triangle(cucul_canvas_t *, int, int, int, int, int, int, char const *);
+int cucul_draw_triangle(cucul_canvas_t *, int, int, int, int, int, int,
+                        unsigned long int);
 int cucul_draw_thin_triangle(cucul_canvas_t *, int, int, int, int, int, int);
-int cucul_fill_triangle(cucul_canvas_t *, int, int, int, int, int, int, char const *);
+int cucul_fill_triangle(cucul_canvas_t *, int, int, int, int, int, int,
+                        unsigned long int);
 /*  @} */
 
 /** \defgroup frame libcucul canvas frame handling
