@@ -288,15 +288,16 @@ static void *export_utf8(cucul_canvas_t *cv, unsigned long int *bytes, int cr)
         {
             uint32_t attr = lineattr[x];
             uint32_t ch = linechar[x];
-            uint8_t fg, bg;
+            uint8_t ansifg, ansibg, fg, bg;
 
             if(ch == CUCUL_MAGIC_FULLWIDTH)
                 continue;
 
-            fg = (((attr >> 4) & 0x3fff) == (CUCUL_DEFAULT | 0x40)) ?
-                     0x10 : palette[_cucul_attr_to_ansi4fg(attr)];
-            bg = (((attr >> 18) & 0x3fff) == (CUCUL_TRANSPARENT | 0x40)) ?
-                     0x10 : palette[_cucul_attr_to_ansi4bg(attr)];
+            ansifg = cucul_attr_to_ansi_fg(attr);
+            ansibg = cucul_attr_to_ansi_bg(attr);
+
+            fg = ansifg < 0x10 ? palette[ansifg] : 0x10;
+            bg = ansibg < 0x10 ? palette[ansibg] : 0x10;
 
             /* TODO: the [0 could be omitted in some cases */
             if(fg != prevfg || bg != prevbg)
@@ -363,8 +364,10 @@ static void *export_ansi(cucul_canvas_t *cv, unsigned long int *bytes)
 
         for(x = 0; x < cv->width; x++)
         {
-            uint8_t fg = palette[_cucul_attr_to_ansi4fg(lineattr[x])];
-            uint8_t bg = palette[_cucul_attr_to_ansi4bg(lineattr[x])];
+            uint8_t ansifg = cucul_attr_to_ansi_fg(lineattr[x]);
+            uint8_t ansibg = cucul_attr_to_ansi_bg(lineattr[x]);
+            uint8_t fg = ansifg < 0x10 ? palette[ansifg] : CUCUL_LIGHTGRAY;
+            uint8_t bg = ansibg < 0x10 ? palette[ansibg] : CUCUL_BLACK;
             uint32_t ch = linechar[x];
 
             if(ch == CUCUL_MAGIC_FULLWIDTH)
@@ -614,18 +617,17 @@ static void *export_irc(cucul_canvas_t *cv, unsigned long int *bytes)
         for(x = 0; x < cv->width; x++)
         {
             uint32_t attr = lineattr[x];
-            uint8_t fg = palette[_cucul_attr_to_ansi4fg(attr)];
-            uint8_t bg = palette[_cucul_attr_to_ansi4bg(attr)];
             uint32_t ch = linechar[x];
+            uint8_t ansifg, ansibg, fg, bg;
 
             if(ch == CUCUL_MAGIC_FULLWIDTH)
                 continue;
 
-            if(((attr >> 4) & 0x3fff) == (CUCUL_DEFAULT | 0x40))
-                fg = 0x10;
+            ansifg = cucul_attr_to_ansi_fg(attr);
+            ansibg = cucul_attr_to_ansi_bg(attr);
 
-            if(((attr >> 18) & 0x3fff) == (CUCUL_TRANSPARENT | 0x40))
-                bg = 0x10;
+            fg = ansifg < 0x10 ? palette[ansifg] : 0x10;
+            bg = ansibg < 0x10 ? palette[ansibg] : 0x10;
 
             /* TODO: optimise series of same fg / same bg
              *       don't change fg value if ch == ' '

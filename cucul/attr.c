@@ -350,26 +350,6 @@ uint8_t _cucul_attr_to_ansi8(uint32_t attr)
     return fg | (bg << 4);
 }
 
-uint8_t _cucul_attr_to_ansi4fg(uint32_t attr)
-{
-    uint8_t c = nearest_ansi((attr >> 4) & 0x3fff);
-
-    if(c == CUCUL_DEFAULT || c == CUCUL_TRANSPARENT)
-        return CUCUL_LIGHTGRAY;
-
-    return c;
-}
-
-uint8_t _cucul_attr_to_ansi4bg(uint32_t attr)
-{
-    uint8_t c = nearest_ansi(attr >> 18);
-
-    if(c == CUCUL_DEFAULT || c == CUCUL_TRANSPARENT)
-        return CUCUL_BLACK;
-
-    return c;
-}
-
 uint16_t _cucul_attr_to_rgb12fg(uint32_t attr)
 {
     uint16_t fg = (attr >> 4) & 0x3fff;

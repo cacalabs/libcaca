@@ -198,6 +198,8 @@ static void win32_display(caca_display_t *dp)
     for(n = dp->cv->height * dp->cv->width; n--; )
     {
         uint32_t ch = *chars++;
+        uint8_t fg = cucul_attr_to_ansi_fg(*attrs);
+        uint8_t bg = cucul_attr_to_ansi_bg(*attrs);
 
 #if 0
         if(ch > 0x00000020 && ch < 0x00000080)
@@ -213,9 +215,8 @@ static void win32_display(caca_display_t *dp)
             buffer->Char.UnicodeChar = (uint16_t)' ';
 #endif
 
-        buffer->Attributes =
-                win32_fg_palette[_cucul_attr_to_ansi4fg(*attrs)]
-                 | win32_bg_palette[_cucul_attr_to_ansi4bg(*attrs)];
+        buffer->Attributes = win32_fg_palette[fg < 0x10 ? fg : CUCUL_LIGHTGRAY]
+                              | win32_bg_palette[bg < 0x10 ? bg : CUCUL_BLACK];
         attrs++;
         buffer++;
     }

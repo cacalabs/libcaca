@@ -217,8 +217,14 @@ static void slang_display(caca_display_t *dp)
              * here for, and in cases where SLang does not render
              * bright backgrounds, it's just fucked up. */
 #if 0
-            uint8_t fgcolor = _cucul_attr_to_ansi4fg(*attrs);
-            uint8_t bgcolor = _cucul_attr_to_ansi4bg(*attrs);
+            uint8_t fgcolor = cucul_attr_to_ansi_fg(*attrs);
+            uint8_t bgcolor = cucul_attr_to_ansi_bg(*attrs);
+
+            if(fgcolor >= 0x10)
+                fgcolor = CUCUL_LIGHTGRAY;
+
+            if(bgcolor >= 0x10)
+                bgcolor = CUCUL_BLACK; /* FIXME: handle transparency */
 
             if(fgcolor == bgcolor)
             {
