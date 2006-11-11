@@ -1,5 +1,5 @@
 /*
- *  unicode       libcaca Unicode rendering test program
+ *  blit          libcaca blit test program
  *  Copyright (c) 2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
