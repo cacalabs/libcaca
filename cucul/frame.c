@@ -81,8 +81,8 @@ int cucul_set_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
 
 /** \brief Add a frame to a canvas.
  *
- *  Create a new frame within the given canvas. Its contents are copied
- *  from the currently active frame.
+ *  Create a new frame within the given canvas. Its contents and attributes
+ *  are copied from the currently active frame.
  *
  *  The frame index indicates where the frame should be inserted. Valid
  *  values range from 0 to the current canvas frame count. If the frame
@@ -99,30 +99,30 @@ int cucul_set_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
  *  \param frame The index where to insert the new frame
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_create_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
+int cucul_create_canvas_frame(cucul_canvas_t *cv, unsigned int id)
 {
-    unsigned int size = cv->width * cv->height * sizeof(uint32_t);
+    unsigned int size = cv->width * cv->height;
     unsigned int f;
 
-    if(frame > cv->framecount)
-        frame = cv->framecount;
+    if(id > cv->framecount)
+        id = cv->framecount;
 
     cv->framecount++;
     cv->frames = realloc(cv->frames,
                          sizeof(struct cucul_frame) * cv->framecount);
 
-    for(f = cv->framecount - 1; f > frame; f--)
+    for(f = cv->framecount - 1; f > id; f--)
         cv->frames[f] = cv->frames[f - 1];
 
-    cv->frames[frame].width = cv->width;
-    cv->frames[frame].height = cv->height;
-    cv->frames[frame].chars = malloc(size);
-    memcpy(cv->frames[frame].chars, cv->chars, size);
-    cv->frames[frame].attrs = malloc(size);
-    memcpy(cv->frames[frame].attrs, cv->attrs, size);
-    cv->frames[frame].curattr = cv->curattr;
+    cv->frames[id].width = cv->width;
+    cv->frames[id].height = cv->height;
+    cv->frames[id].chars = malloc(size * sizeof(uint32_t));
+    memcpy(cv->frames[id].chars, cv->chars, size * sizeof(uint32_t));
+    cv->frames[id].attrs = malloc(size * sizeof(uint32_t));
+    memcpy(cv->frames[id].attrs, cv->attrs, size * sizeof(uint32_t));
+    cv->frames[id].curattr = cv->curattr;
 
-    if(cv->frame >= frame)
+    if(cv->frame >= id)
         cv->frame++;
 
     return 0;
@@ -149,11 +149,11 @@ int cucul_create_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
  *  \param frame The index of the frame to delete
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_free_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
+int cucul_free_canvas_frame(cucul_canvas_t *cv, unsigned int id)
 {
     unsigned int f;
 
-    if(frame >= cv->framecount)
+    if(id >= cv->framecount)
     {
 #if defined(HAVE_ERRNO_H)
         errno = EINVAL;
@@ -169,19 +169,19 @@ int cucul_free_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
         return -1;
     }
 
-    free(cv->frames[frame].chars);
-    free(cv->frames[frame].attrs);
+    free(cv->frames[id].chars);
+    free(cv->frames[id].attrs);
 
-    for(f = frame + 1; f < cv->framecount; f++)
+    for(f = id + 1; f < cv->framecount; f++)
         cv->frames[f - 1] = cv->frames[f];
 
     cv->framecount--;
     cv->frames = realloc(cv->frames,
                          sizeof(struct cucul_frame) * cv->framecount);
 
-    if(cv->frame > frame)
+    if(cv->frame > id)
         cv->frame--;
-    else if(cv->frame == frame)
+    else if(cv->frame == id)
     {
         cv->frame = 0;
         load_frame_info(cv);

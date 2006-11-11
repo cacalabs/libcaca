@@ -5,10 +5,9 @@
   \subsection dep API-dependent stuff
 
   - allow to change the canvas size in a per-frame basis.
-  - allow to import data in feed mode
-  - cucul_getchar -> cucul_get_char?
-  - maybe switch back to utf32 arguments for box, ellipse etc.
   - export attribute parsing functions such as attr_to_ansi4fg etc.
+  - add cursor support in the canvas, so that we can load ANSI files
+    in stream mode.
 
   \subsection indep API-independent stuff
 

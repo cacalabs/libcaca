@@ -348,7 +348,8 @@ int cucul_blit(cucul_canvas_t *dst, int x, int y,
 /** \brief Set a canvas' new boundaries.
  *
  *  Set new boundaries for a canvas. This function can be used to crop a
- *  canvas, to expand it or for combinations of both actions.
+ *  canvas, to expand it or for combinations of both actions. All frames
+ *  are affected by this function.
  *
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
  *  - \c EBUSY The canvas is in use by a display driver and cannot be resized.
