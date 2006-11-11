@@ -23,7 +23,7 @@ libcucul_la_SOURCES = \
 	box.c \
 	conic.c \
 	triangle.c \
-	sprite.c \
+	frame.c \
 	dither.c \
 	font.c \
 	font_mono9.h \
