@@ -26,6 +26,8 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
+static uint8_t nearest_ansi(uint16_t);
+
 /** \brief Get the text attribute at the given coordinates.
  *
  *  Get the internal \e libcucul attribute value of the character at the
@@ -232,6 +234,46 @@ int cucul_set_color_argb(cucul_canvas_t *cv, unsigned int fg, unsigned int bg)
     return 0;
 }
 
+/** \brief Get ANSI foreground information from attribute.
+ *
+ *  Get the ANSI foreground colour value for a given attribute. The returned
+ *  value is either one of the \e CUCUL_RED, \e CUCUL_BLACK etc. predefined
+ *  colours, or the special value \e CUCUL_DEFAULT meaning the media's
+ *  default foreground value, or the special value \e CUCUL_TRANSPARENT.
+ *
+ *  If the attribute has ARGB colours, the nearest colour is returned.
+ *
+ *  This function never fails. If the attribute value is outside the expected
+ *  32-bit range, higher order bits are simply ignored.
+ *
+ *  \param attr The requested attribute value.
+ *  \return The corresponding ANSI foreground value.
+ */
+unsigned char cucul_attr_to_ansi_fg(unsigned long int attr)
+{
+    return nearest_ansi(((uint16_t)attr >> 4) & 0x3fff);
+}
+
+/** \brief Get ANSI background information from attribute.
+ *
+ *  Get the ANSI background colour value for a given attribute. The returned
+ *  value is either one of the \e CUCUL_RED, \e CUCUL_BLACK etc. predefined
+ *  colours, or the special value \e CUCUL_DEFAULT meaning the media's
+ *  default background value, or the special value \e CUCUL_TRANSPARENT.
+ *
+ *  If the attribute has ARGB colours, the nearest colour is returned.
+ *
+ *  This function never fails. If the attribute value is outside the expected
+ *  32-bit range, higher order bits are simply ignored.
+ *
+ *  \param attr The requested attribute value.
+ *  \return The corresponding ANSI background value.
+ */
+unsigned char cucul_attr_to_ansi_bg(unsigned long int attr)
+{
+    return nearest_ansi(attr >> 18);
+}
+
 /*
  * XXX: the following functions are local
  */
@@ -252,20 +294,20 @@ static const uint16_t ansitab14[16] =
     0x3aaa, 0x3aaf, 0x3afa, 0x3aff, 0x3faa, 0x3faf, 0x3ffa, 0x3fff,
 };
 
-static uint8_t nearest_ansi(uint16_t argb14, uint8_t def)
+static uint8_t nearest_ansi(uint16_t argb14)
 {
     unsigned int i, best, dist;
 
-    if(argb14 < 0x0050)
+    if(argb14 < (0x10 | 0x40))
         return argb14 ^ 0x40;
 
     if(argb14 == (CUCUL_DEFAULT | 0x40) || argb14 == (CUCUL_TRANSPARENT | 0x40))
-        return def;
+        return argb14 ^ 0x40;
 
-    if(argb14 < 0x0fff) /* too transparent, return default colour */
-        return def;
+    if(argb14 < 0x0fff) /* too transparent */
+        return CUCUL_TRANSPARENT;
 
-    best = def;
+    best = CUCUL_DEFAULT;
     dist = 0x3fff;
     for(i = 0; i < 16; i++)
     {
@@ -296,28 +338,43 @@ static uint8_t nearest_ansi(uint16_t argb14, uint8_t def)
 
 uint8_t _cucul_attr_to_ansi8(uint32_t attr)
 {
-    uint16_t fg = (attr >> 4) & 0x3fff;
-    uint16_t bg = attr >> 18;
+    uint8_t fg = nearest_ansi((attr >> 4) & 0x3fff);
+    uint8_t bg = nearest_ansi(attr >> 18);
 
-    return nearest_ansi(fg, CUCUL_LIGHTGRAY)
-            | (nearest_ansi(bg, CUCUL_BLACK) << 4);
+    if(fg == CUCUL_DEFAULT || fg == CUCUL_TRANSPARENT)
+        fg = CUCUL_LIGHTGRAY;
+
+    if(bg == CUCUL_DEFAULT || bg == CUCUL_TRANSPARENT)
+        bg = CUCUL_BLACK;
+
+    return fg | (bg << 4);
 }
 
 uint8_t _cucul_attr_to_ansi4fg(uint32_t attr)
 {
-    return nearest_ansi((attr >> 4) & 0x3fff, CUCUL_LIGHTGRAY);
+    uint8_t c = nearest_ansi((attr >> 4) & 0x3fff);
+
+    if(c == CUCUL_DEFAULT || c == CUCUL_TRANSPARENT)
+        return CUCUL_LIGHTGRAY;
+
+    return c;
 }
 
 uint8_t _cucul_attr_to_ansi4bg(uint32_t attr)
 {
-    return nearest_ansi(attr >> 18, CUCUL_BLACK);
+    uint8_t c = nearest_ansi(attr >> 18);
+
+    if(c == CUCUL_DEFAULT || c == CUCUL_TRANSPARENT)
+        return CUCUL_BLACK;
+
+    return c;
 }
 
 uint16_t _cucul_attr_to_rgb12fg(uint32_t attr)
 {
     uint16_t fg = (attr >> 4) & 0x3fff;
 
-    if(fg < 0x0050)
+    if(fg < (0x10 | 0x40))
         return ansitab16[fg ^ 0x40] & 0x0fff;
 
     if(fg == (CUCUL_DEFAULT | 0x40))
@@ -333,7 +390,7 @@ uint16_t _cucul_attr_to_rgb12bg(uint32_t attr)
 {
     uint16_t bg = attr >> 18;
 
-    if(bg < 0x0050)
+    if(bg < (0x10 | 0x40))
         return ansitab16[bg ^ 0x40] & 0x0fff;
 
     if(bg == (CUCUL_DEFAULT | 0x40))
@@ -365,7 +422,7 @@ void _cucul_attr_to_argb4(uint32_t attr, uint8_t argb[8])
     uint16_t fg = (attr >> 4) & 0x3fff;
     uint16_t bg = attr >> 18;
 
-    if(bg < 0x0050)
+    if(bg < (0x10 | 0x40))
         bg = ansitab16[bg ^ 0x40];
     else if(bg == (CUCUL_DEFAULT | 0x40))
         bg = ansitab16[CUCUL_BLACK];
@@ -379,7 +436,7 @@ void _cucul_attr_to_argb4(uint32_t attr, uint8_t argb[8])
     argb[2] = (bg >> 4) & 0xf;
     argb[3] = bg & 0xf;
 
-    if(fg < 0x0050)
+    if(fg < (0x10 | 0x40))
         fg = ansitab16[fg ^ 0x40];
     else if(fg == (CUCUL_DEFAULT | 0x40))
         fg = ansitab16[CUCUL_LIGHTGRAY];
