@@ -168,8 +168,8 @@ int main(int argc, char **argv)
             if(mouse && !demo)
             {
                 cucul_set_color_ansi(cv, CUCUL_RED, CUCUL_BLACK);
-                cucul_putstr(cv, xmouse, ymouse,     ".");
-                cucul_putstr(cv, xmouse, ymouse + 1, "|\\");
+                cucul_put_str(cv, xmouse, ymouse,     ".");
+                cucul_put_str(cv, xmouse, ymouse + 1, "|\\");
             }
             caca_refresh_display(dp);
             mouse = menu = 0;
@@ -208,24 +208,24 @@ static void display_menu(void)
     cucul_clear_canvas(cv);
     cucul_draw_thin_box(cv, 1, 1, xo, yo);
 
-    cucul_putstr(cv, (xo - strlen("libcaca demo")) / 2, 3, "libcaca demo");
-    cucul_putstr(cv, (xo - strlen("==============")) / 2, 4, "==============");
+    cucul_put_str(cv, (xo - strlen("libcaca demo")) / 2, 3, "libcaca demo");
+    cucul_put_str(cv, (xo - strlen("==============")) / 2, 4, "==============");
 
-    cucul_putstr(cv, 4, 6, "demos:");
-    cucul_putstr(cv, 4, 7, "'f': full");
-    cucul_putstr(cv, 4, 8, "'1': dots");
-    cucul_putstr(cv, 4, 9, "'2': lines");
-    cucul_putstr(cv, 4, 10, "'3': boxes");
-    cucul_putstr(cv, 4, 11, "'4': triangles");
-    cucul_putstr(cv, 4, 12, "'5': ellipses");
-    cucul_putstr(cv, 4, 13, "'c': colour");
-    cucul_putstr(cv, 4, 14, "'r': render");
+    cucul_put_str(cv, 4, 6, "demos:");
+    cucul_put_str(cv, 4, 7, "'f': full");
+    cucul_put_str(cv, 4, 8, "'1': dots");
+    cucul_put_str(cv, 4, 9, "'2': lines");
+    cucul_put_str(cv, 4, 10, "'3': boxes");
+    cucul_put_str(cv, 4, 11, "'4': triangles");
+    cucul_put_str(cv, 4, 12, "'5': ellipses");
+    cucul_put_str(cv, 4, 13, "'c': colour");
+    cucul_put_str(cv, 4, 14, "'r': render");
 #if 0
     if(sprite)
-        cucul_putstr(cv, 4, 15, "'s': sprites");
+        cucul_put_str(cv, 4, 15, "'s': sprites");
 #endif
 
-    cucul_putstr(cv, 4, 16, "settings:");
+    cucul_put_str(cv, 4, 16, "settings:");
     cucul_printf(cv, 4, 17, "'o': outline: %s",
                  outline == 0 ? "none" : outline == 1 ? "solid" : "thin");
     cucul_printf(cv, 4, 18, "'b': drawing boundaries: %s",
@@ -233,7 +233,7 @@ static void display_menu(void)
     //cucul_printf(cv, 4, 19, "'d': dithering (%s)",
     //             cucul_get_feature_name(dithering));
 
-    cucul_putstr(cv, 4, yo - 2, "'q': quit");
+    cucul_put_str(cv, 4, yo - 2, "'q': quit");
 
     caca_refresh_display(dp);
 }
@@ -325,7 +325,7 @@ static void demo_all(void)
     {
         int delta = cucul_rand(-5, 6);
         cucul_set_color_ansi(cv, cucul_rand(0, 16), cucul_rand(0, 16));
-        cucul_putchar(cv, cucul_get_canvas_width(cv) / 2
+        cucul_put_char(cv, cucul_get_canvas_width(cv) / 2
                     + cos(0.02*j) * (delta + cucul_get_canvas_width(cv) / 4),
                    cucul_get_canvas_height(cv) / 2
                     + sin(0.02*j) * (delta + cucul_get_canvas_height(cv) / 3),
@@ -354,7 +354,7 @@ static void demo_dots(void)
     {
         /* Putpixel */
         cucul_set_color_ansi(cv, cucul_rand(0, 16), cucul_rand(0, 16));
-        cucul_putchar(cv, cucul_rand(0, xmax), cucul_rand(0, ymax),
+        cucul_put_char(cv, cucul_rand(0, xmax), cucul_rand(0, ymax),
                       chars[cucul_rand(0, 9)]);
     }
 }

@@ -92,14 +92,14 @@ int cucul_rand(int, int);
 int cucul_gotoxy(cucul_canvas_t *, int, int);
 int cucul_get_cursor_x(cucul_canvas_t *);
 int cucul_get_cursor_y(cucul_canvas_t *);
+int cucul_put_char(cucul_canvas_t *, int, int, unsigned long int);
+unsigned long int cucul_get_char(cucul_canvas_t *, int, int);
+int cucul_put_str(cucul_canvas_t *, int, int, char const *);
 unsigned long int cucul_get_attr(cucul_canvas_t *, int, int);
 int cucul_set_attr(cucul_canvas_t *, unsigned long int);
-int cucul_putattr(cucul_canvas_t *, int, int, unsigned long int);
+int cucul_put_attr(cucul_canvas_t *, int, int, unsigned long int);
 int cucul_set_color_ansi(cucul_canvas_t *, unsigned char, unsigned char);
 int cucul_set_color_argb(cucul_canvas_t *, unsigned int, unsigned int);
-int cucul_putchar(cucul_canvas_t *, int, int, unsigned long int);
-unsigned long int cucul_getchar(cucul_canvas_t *, int, int);
-int cucul_putstr(cucul_canvas_t *, int, int, char const *);
 int cucul_printf(cucul_canvas_t *, int, int, char const *, ...);
 int cucul_clear_canvas(cucul_canvas_t *);
 int cucul_set_canvas_handle(cucul_canvas_t *, int, int);
@@ -254,10 +254,14 @@ char const * const * cucul_get_export_list(void);
 #   else
 #       define CUCUL_DEPRECATED
 #   endif
+    int cucul_putchar(cucul_canvas_t *, int, int,
+                      unsigned long int) CUCUL_DEPRECATED;
+    int cucul_putstr(cucul_canvas_t *, int, int,
+                     char const *) CUCUL_DEPRECATED;
     int cucul_set_color(cucul_canvas_t *, unsigned char,
-                                          unsigned char) CUCUL_DEPRECATED;
+                        unsigned char) CUCUL_DEPRECATED;
     int cucul_set_truecolor(cucul_canvas_t *, unsigned int,
-                                              unsigned int) CUCUL_DEPRECATED;
+                            unsigned int) CUCUL_DEPRECATED;
     cucul_buffer_t *cucul_load_memory(void *,
                                       unsigned long int) CUCUL_DEPRECATED;
     cucul_buffer_t *cucul_load_file(char const *) CUCUL_DEPRECATED;

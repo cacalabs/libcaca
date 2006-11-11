@@ -108,17 +108,17 @@ int main(int argc, char **argv)
         cucul_draw_thin_box(cv, 0, 0, cucul_get_canvas_width(cv) - 1,
                             cucul_get_canvas_height(cv) - 1);
 
-        cucul_putstr(cv, 3, 0, "[ Sprite editor for libcaca ]");
+        cucul_put_str(cv, 3, 0, "[ Sprite editor for libcaca ]");
 
         sprintf(buf, "sprite `%s'", argv[1]);
-        cucul_putstr(cv, 3, 2, buf);
+        cucul_put_str(cv, 3, 2, buf);
         sprintf(buf, "frame %i/%i", frame, cucul_get_sprite_frames(sprite) - 1);
-        cucul_putstr(cv, 3, 3, buf);
+        cucul_put_str(cv, 3, 3, buf);
 
         /* Crosshair */
         cucul_draw_thin_line(cv, 57, 2, 57, 18);
         cucul_draw_thin_line(cv, 37, 10, 77, 10);
-        cucul_putchar(cv, 57, 10, '+');
+        cucul_put_char(cv, 57, 10, '+');
 
         /* Boxed sprite */
         xa = -1 - cucul_get_sprite_dx(sprite, frame);

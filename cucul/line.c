@@ -260,7 +260,7 @@ static void draw_solid_line(cucul_canvas_t *cv, struct line* s)
 
         for(; dx>=0; dx--)
         {
-            cucul_putchar(cv, x1, y1, s->ch);
+            cucul_put_char(cv, x1, y1, s->ch);
             if(delta > 0)
             {
                 x1 += xinc;
@@ -282,7 +282,7 @@ static void draw_solid_line(cucul_canvas_t *cv, struct line* s)
 
         for(; dy >= 0; dy--)
         {
-            cucul_putchar(cv, x1, y1, s->ch);
+            cucul_put_char(cv, x1, y1, s->ch);
             if(delta > 0)
             {
                 x1 += xinc;
@@ -347,7 +347,7 @@ static void draw_thin_line(cucul_canvas_t *cv, struct line* s)
         {
             if(delta > 0)
             {
-                cucul_putchar(cv, x1, y1, charmapy[1]);
+                cucul_put_char(cv, x1, y1, charmapy[1]);
                 x1++;
                 y1 += yinc;
                 delta += dpru;
@@ -356,9 +356,9 @@ static void draw_thin_line(cucul_canvas_t *cv, struct line* s)
             else
             {
                 if(prev)
-                    cucul_putchar(cv, x1, y1, charmapy[0]);
+                    cucul_put_char(cv, x1, y1, charmapy[0]);
                 else
-                    cucul_putchar(cv, x1, y1, '-');
+                    cucul_put_char(cv, x1, y1, '-');
                 x1++;
                 delta += dpr;
                 prev = 0;
@@ -375,15 +375,15 @@ static void draw_thin_line(cucul_canvas_t *cv, struct line* s)
         {
             if(delta > 0)
             {
-                cucul_putchar(cv, x1, y1, charmapx[0]);
-                cucul_putchar(cv, x1 + 1, y1, charmapx[1]);
+                cucul_put_char(cv, x1, y1, charmapx[0]);
+                cucul_put_char(cv, x1 + 1, y1, charmapx[1]);
                 x1++;
                 y1 += yinc;
                 delta += dpru;
             }
             else
             {
-                cucul_putchar(cv, x1, y1, '|');
+                cucul_put_char(cv, x1, y1, '|');
                 y1 += yinc;
                 delta += dpr;
             }

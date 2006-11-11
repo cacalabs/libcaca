@@ -60,38 +60,38 @@ int main(int argc, char *argv[])
     cucul_blit(image, 30, 1, sprite, NULL);
 
     cucul_set_color_ansi(image, CUCUL_LIGHTCYAN, CUCUL_BLACK);
-    cucul_putstr(image, 1, 1, "hahaha mais vieux porc immonde !! [⽼ ⾗]");
+    cucul_put_str(image, 1, 1, "hahaha mais vieux porc immonde !! [⽼ ⾗]");
     cucul_set_color_ansi(image, CUCUL_LIGHTRED, CUCUL_BLACK);
-    cucul_putchar(image, 38, 1, '|');
+    cucul_put_char(image, 38, 1, '|');
 
     cucul_set_color_ansi(image, CUCUL_YELLOW, CUCUL_BLACK);
-    cucul_putstr(image, 4, 2, "\\o\\ \\o| _o/ \\o_ |o/ /o/");
+    cucul_put_str(image, 4, 2, "\\o\\ \\o| _o/ \\o_ |o/ /o/");
 
     cucul_set_color_ansi(image, CUCUL_WHITE, CUCUL_LIGHTRED);
-    cucul_putstr(image, 7, 3, "▙▘▌▙▘▞▖▞▖▌ ▞▖▌ ▌▌");
-    cucul_putstr(image, 7, 4, "▛▖▌▛▖▚▘▚▘▚▖▚▘▚▖▖▖");
+    cucul_put_str(image, 7, 3, "▙▘▌▙▘▞▖▞▖▌ ▞▖▌ ▌▌");
+    cucul_put_str(image, 7, 4, "▛▖▌▛▖▚▘▚▘▚▖▚▘▚▖▖▖");
     cucul_set_color_ansi(image, CUCUL_BLACK, CUCUL_LIGHTRED);
-    cucul_putstr(image, 4, 3, "▓▒░");
-    cucul_putstr(image, 4, 4, "▓▒░");
-    cucul_putstr(image, 24, 3, "░▒▓");
-    cucul_putstr(image, 24, 4, "░▒▓");
+    cucul_put_str(image, 4, 3, "▓▒░");
+    cucul_put_str(image, 4, 4, "▓▒░");
+    cucul_put_str(image, 24, 3, "░▒▓");
+    cucul_put_str(image, 24, 4, "░▒▓");
 
     /* Blit the transformed canvas onto the main canvas */
     cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
-    cucul_putstr(cv, 0, 0, "normal");
+    cucul_put_str(cv, 0, 0, "normal");
     cucul_blit(cv, 10, 0, image, NULL);
 
-    cucul_putstr(cv, 0, 6, "flip");
+    cucul_put_str(cv, 0, 6, "flip");
     cucul_blit(tmp, 0, 0, image, NULL);
     cucul_flip(tmp);
     cucul_blit(cv, 10, 6, tmp, NULL);
 
-    cucul_putstr(cv, 0, 12, "flop");
+    cucul_put_str(cv, 0, 12, "flop");
     cucul_blit(tmp, 0, 0, image, NULL);
     cucul_flop(tmp);
     cucul_blit(cv, 10, 12, tmp, NULL);
 
-    cucul_putstr(cv, 0, 18, "rotate");
+    cucul_put_str(cv, 0, 18, "rotate");
     cucul_blit(tmp, 0, 0, image, NULL);
     cucul_rotate(tmp);
     cucul_blit(cv, 10, 18, tmp, NULL);

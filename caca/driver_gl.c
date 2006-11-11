@@ -519,7 +519,7 @@ static void gl_compute_font(caca_display_t *dp)
         int j, n = (int)(dp->drv.p->blocks[i + 1] - dp->drv.p->blocks[i]);
 
         for(j = 0; j < n; j++)
-            cucul_putchar(cv, 0, b + j, dp->drv.p->blocks[i] + j);
+            cucul_put_char(cv, 0, b + j, dp->drv.p->blocks[i] + j);
 
         b += n;
     }

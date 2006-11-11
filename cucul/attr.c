@@ -125,7 +125,7 @@ int cucul_set_attr(cucul_canvas_t *cv, unsigned long int attr)
  *  \param attr The requested attribute value.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_putattr(cucul_canvas_t *cv, int x, int y, unsigned long int attr)
+int cucul_put_attr(cucul_canvas_t *cv, int x, int y, unsigned long int attr)
 {
     uint32_t *curattr, *curchar;
 

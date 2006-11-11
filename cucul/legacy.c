@@ -32,6 +32,20 @@
 #include "cucul_internals.h"
 
 /*
+ * Functions from canvas.c
+ */
+
+int cucul_putchar(cucul_canvas_t *cv, int x, int y, unsigned long int ch)
+{
+    return cucul_put_char(cv, x, y, ch);
+}
+
+int cucul_putstr(cucul_canvas_t *cv, int x, int y, char const *s)
+{
+    return cucul_put_str(cv, x, y, s);
+}
+
+/*
  * Functions from color.c
  */
 

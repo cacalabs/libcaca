@@ -244,15 +244,15 @@ static void ellipsepoints(cucul_canvas_t *cv, int xo, int yo, int x, int y,
         b |= 0x8;
 
     if((b & (0x1|0x4)) == (0x1|0x4))
-        cucul_putchar(cv, xo + x, yo + y, ch);
+        cucul_put_char(cv, xo + x, yo + y, ch);
 
     if((b & (0x2|0x4)) == (0x2|0x4))
-        cucul_putchar(cv, xo - x, yo + y, ch);
+        cucul_put_char(cv, xo - x, yo + y, ch);
 
     if((b & (0x1|0x8)) == (0x1|0x8))
-        cucul_putchar(cv, xo + x, yo - y, ch);
+        cucul_put_char(cv, xo + x, yo - y, ch);
 
     if((b & (0x2|0x8)) == (0x2|0x8))
-        cucul_putchar(cv, xo - x, yo - y, ch);
+        cucul_put_char(cv, xo - x, yo - y, ch);
 }
 

@@ -114,28 +114,28 @@ int main(int argc, char *argv[])
         cucul_set_color_ansi(cv, CUCUL_BLACK, CUCUL_WHITE);
         cucul_fill_ellipse(cv, WIDTH / 2, HEIGHT / 2,
                                WIDTH / 4, HEIGHT / 4, ' ');
-        cucul_putstr(cv, WIDTH / 2 - 5, HEIGHT / 2 - 5, "(\") \\o/ <&>");
-        cucul_putstr(cv, WIDTH / 2 - 8, HEIGHT / 2 - 3, "[<><><><> <>--<>]");
-        cucul_putstr(cv, WIDTH / 2 - 8, HEIGHT / 2 - 2, "[ドラゴン ボーレ]");
-        cucul_putstr(cv, WIDTH / 2 - 7, HEIGHT / 2 + 2, "äβç ░▒▓█▓▒░ ΔЗҒ");
+        cucul_put_str(cv, WIDTH / 2 - 5, HEIGHT / 2 - 5, "(\") \\o/ <&>");
+        cucul_put_str(cv, WIDTH / 2 - 8, HEIGHT / 2 - 3, "[<><><><> <>--<>]");
+        cucul_put_str(cv, WIDTH / 2 - 8, HEIGHT / 2 - 2, "[ドラゴン ボーレ]");
+        cucul_put_str(cv, WIDTH / 2 - 7, HEIGHT / 2 + 2, "äβç ░▒▓█▓▒░ ΔЗҒ");
 
         cucul_set_attr(cv, CUCUL_BOLD);
-        cucul_putstr(cv, WIDTH / 2 - 16, HEIGHT / 2 + 3, "Bold");
+        cucul_put_str(cv, WIDTH / 2 - 16, HEIGHT / 2 + 3, "Bold");
         cucul_set_attr(cv, CUCUL_BLINK);
-        cucul_putstr(cv, WIDTH / 2 - 9, HEIGHT / 2 + 3, "Blink");
+        cucul_put_str(cv, WIDTH / 2 - 9, HEIGHT / 2 + 3, "Blink");
         cucul_set_attr(cv, CUCUL_ITALICS);
-        cucul_putstr(cv, WIDTH / 2 - 1, HEIGHT / 2 + 3, "Italics");
+        cucul_put_str(cv, WIDTH / 2 - 1, HEIGHT / 2 + 3, "Italics");
         cucul_set_attr(cv, CUCUL_UNDERLINE);
-        cucul_putstr(cv, WIDTH / 2 + 8, HEIGHT / 2 + 3, "Underline");
+        cucul_put_str(cv, WIDTH / 2 + 8, HEIGHT / 2 + 3, "Underline");
         cucul_set_attr(cv, 0);
 
         cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_LIGHTBLUE);
-        cucul_putstr(cv, WIDTH / 2 - 7, HEIGHT / 2, "    LIBCACA    ");
+        cucul_put_str(cv, WIDTH / 2 - 7, HEIGHT / 2, "    LIBCACA    ");
 
         for(x = 0; x < 16; x++)
         {
             cucul_set_color_argb(cv, 0xff00 | x, 0xf00f | (x << 4));
-            cucul_putstr(cv, WIDTH / 2 - 7 + x, HEIGHT / 2 + 5, "#");
+            cucul_put_str(cv, WIDTH / 2 - 7 + x, HEIGHT / 2 + 5, "#");
         }
     }
 

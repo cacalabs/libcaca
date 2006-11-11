@@ -102,7 +102,7 @@ int cucul_get_cursor_y(cucul_canvas_t *cv)
  *
  *  The behaviour when printing non-printable characters or invalid UTF-32
  *  characters is undefined. To print a sequence of bytes forming an UTF-8
- *  character instead of an UTF-32 character, use the cucul_putstr() function.
+ *  character instead of an UTF-32 character, use the cucul_put_str() function.
  *
  *  This function never fails.
  *
@@ -112,7 +112,7 @@ int cucul_get_cursor_y(cucul_canvas_t *cv)
  *  \param ch The character to print.
  *  \return This function always returns 0.
  */
-int cucul_putchar(cucul_canvas_t *cv, int x, int y, unsigned long int ch)
+int cucul_put_char(cucul_canvas_t *cv, int x, int y, unsigned long int ch)
 {
     uint32_t *curchar, *curattr, attr;
     int fullwidth;
@@ -194,7 +194,7 @@ int cucul_putchar(cucul_canvas_t *cv, int x, int y, unsigned long int ch)
  *  \param y Y coordinate.
  *  \return This function always returns 0.
  */
-unsigned long int cucul_getchar(cucul_canvas_t *cv, int x, int y)
+unsigned long int cucul_get_char(cucul_canvas_t *cv, int x, int y)
 {
     if(x < 0 || x >= (int)cv->width || y < 0 || y >= (int)cv->height)
         return ' ';
@@ -209,7 +209,7 @@ unsigned long int cucul_getchar(cucul_canvas_t *cv, int x, int y)
  *  canvas boundaries (eg. a negative Y coordinate) and the string will
  *  be cropped accordingly if it is too long.
  *
- *  See cucul_putchar() for more information on how fullwidth characters
+ *  See cucul_put_char() for more information on how fullwidth characters
  *  are handled when overwriting each other or at the canvas' boundaries.
  *
  *  This function never fails.
@@ -220,7 +220,7 @@ unsigned long int cucul_getchar(cucul_canvas_t *cv, int x, int y)
  *  \param s The string to print.
  *  \return This function always returns 0.
  */
-int cucul_putstr(cucul_canvas_t *cv, int x, int y, char const *s)
+int cucul_put_str(cucul_canvas_t *cv, int x, int y, char const *s)
 {
     unsigned int read;
 
@@ -236,7 +236,7 @@ int cucul_putstr(cucul_canvas_t *cv, int x, int y, char const *s)
     while(*s && x < (int)cv->width)
     {
         uint32_t ch = cucul_utf8_to_utf32(s, &read);
-        cucul_putchar(cv, x, y, ch);
+        cucul_put_char(cv, x, y, ch);
         x += cucul_utf32_is_fullwidth(ch) ? 2 : 1;
         s += read;
     }
@@ -282,7 +282,7 @@ int cucul_printf(cucul_canvas_t *cv, int x, int y, char const *format, ...)
     buf[cv->width - x] = '\0';
     va_end(args);
 
-    cucul_putstr(cv, x, y, buf);
+    cucul_put_str(cv, x, y, buf);
 
     if(buf != tmp)
         free(buf);

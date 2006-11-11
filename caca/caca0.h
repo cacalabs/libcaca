@@ -134,8 +134,8 @@ enum caca_feature
 #define caca_get_fg_color() __caca0_fg
 #define caca_get_bg_color() __caca0_bg
 #define caca_get_color_name __caca0_get_color_name
-#define caca_putchar(x, y, c) cucul_putchar(__caca0_cv, x, y, c)
-#define caca_putstr(x, y, s) cucul_putstr(__caca0_cv, x, y, s)
+#define caca_putchar(x, y, c) cucul_put_char(__caca0_cv, x, y, c)
+#define caca_putstr(x, y, s) cucul_put_str(__caca0_cv, x, y, s)
 #define caca_printf(x, y, f, z...) cucul_printf(__caca0_cv, x, y, f, ##z)
 #define caca_clear() cucul_clear_canvas(__caca0_cv)
 

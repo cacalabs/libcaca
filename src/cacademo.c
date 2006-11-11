@@ -171,9 +171,9 @@ paused:
 
         cucul_set_color_ansi(frontcv, CUCUL_WHITE, CUCUL_BLUE);
         if(frame < 100)
-            cucul_putstr(frontcv, cucul_get_canvas_width(frontcv) - 30,
-                                  cucul_get_canvas_height(frontcv) - 2,
-                                  " -=[ Powered by libcaca ]=- ");
+            cucul_put_str(frontcv, cucul_get_canvas_width(frontcv) - 30,
+                                   cucul_get_canvas_height(frontcv) - 2,
+                                   " -=[ Powered by libcaca ]=- ");
         caca_refresh_display(dp);
     }
 end:
@@ -695,7 +695,7 @@ void langton(enum action action, cucul_canvas_t *cv)
                     cucul_set_color_ansi(cv, CUCUL_WHITE, p >> 4);
                 else
                     cucul_set_color_ansi(cv, CUCUL_BLACK, CUCUL_BLACK);
-                cucul_putchar(cv, x, y, gradient[p & 0x0f]);
+                cucul_put_char(cv, x, y, gradient[p & 0x0f]);
             }
         }
         break;
@@ -782,8 +782,8 @@ void matrix(enum action action, cucul_canvas_t *cv)
                     fg = CUCUL_DARKGRAY;
                 cucul_set_color_ansi(cv, fg, CUCUL_BLACK);
 
-                cucul_putchar(cv, x, y - j,
-                              drop[i].str[(y - j) % drop[i].len]);
+                cucul_put_char(cv, x, y - j,
+                               drop[i].str[(y - j) % drop[i].len]);
             }
         }
         break;

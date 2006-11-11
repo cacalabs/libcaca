@@ -44,21 +44,21 @@ int main(int argc, char **argv)
         for(j = 0; j < 16; j++)
         {
             cucul_set_color_ansi(cv, i, j);
-            cucul_putstr(cv, (j >= 8 ? 13 : 12) + j * 4, i + (i >= 8 ? 3 : 2),
-                         "Aaホ");
+            cucul_put_str(cv, (j >= 8 ? 13 : 12) + j * 4, i + (i >= 8 ? 3 : 2),
+                          "Aaホ");
         }
     }
 
     cucul_set_color_ansi(cv, CUCUL_LIGHTGRAY, CUCUL_BLACK);
-    cucul_putstr(cv, 3, 20, "This is bold    This is blink    This is italics    This is underline");
+    cucul_put_str(cv, 3, 20, "This is bold    This is blink    This is italics    This is underline");
     cucul_set_attr(cv, CUCUL_BOLD);
-    cucul_putstr(cv, 3 + 8, 20, "bold");
+    cucul_put_str(cv, 3 + 8, 20, "bold");
     cucul_set_attr(cv, CUCUL_BLINK);
-    cucul_putstr(cv, 3 + 24, 20, "blink");
+    cucul_put_str(cv, 3 + 24, 20, "blink");
     cucul_set_attr(cv, CUCUL_ITALICS);
-    cucul_putstr(cv, 3 + 41, 20, "italics");
+    cucul_put_str(cv, 3 + 41, 20, "italics");
     cucul_set_attr(cv, CUCUL_UNDERLINE);
-    cucul_putstr(cv, 3 + 60, 20, "underline");
+    cucul_put_str(cv, 3 + 60, 20, "underline");
 
     caca_refresh_display(dp);
     caca_get_event(dp, CACA_EVENT_KEY_PRESS, NULL, -1);

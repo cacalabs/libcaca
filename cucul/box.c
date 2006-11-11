@@ -84,25 +84,25 @@ int cucul_draw_thin_box(cucul_canvas_t *cv, int x1, int y1, int x2, int y2)
     /* Draw edges */
     if(y1 >= 0)
         for(x = x1 < 0 ? 1 : x1 + 1; x < x2 && x < xmax; x++)
-            cucul_putchar(cv, x, y1, '-');
+            cucul_put_char(cv, x, y1, '-');
 
     if(y2 <= ymax)
         for(x = x1 < 0 ? 1 : x1 + 1; x < x2 && x < xmax; x++)
-            cucul_putchar(cv, x, y2, '-');
+            cucul_put_char(cv, x, y2, '-');
 
     if(x1 >= 0)
         for(y = y1 < 0 ? 1 : y1 + 1; y < y2 && y < ymax; y++)
-            cucul_putchar(cv, x1, y, '|');
+            cucul_put_char(cv, x1, y, '|');
 
     if(x2 <= xmax)
         for(y = y1 < 0 ? 1 : y1 + 1; y < y2 && y < ymax; y++)
-            cucul_putchar(cv, x2, y, '|');
+            cucul_put_char(cv, x2, y, '|');
 
     /* Draw corners */
-    cucul_putchar(cv, x1, y1, ',');
-    cucul_putchar(cv, x1, y2, '`');
-    cucul_putchar(cv, x2, y1, '.');
-    cucul_putchar(cv, x2, y2, '\'');
+    cucul_put_char(cv, x1, y1, ',');
+    cucul_put_char(cv, x1, y2, '`');
+    cucul_put_char(cv, x2, y1, '.');
+    cucul_put_char(cv, x2, y2, '\'');
 
     return 0;
 }
@@ -143,25 +143,25 @@ int cucul_draw_cp437_box(cucul_canvas_t *cv, int x1, int y1, int x2, int y2)
     /* Draw edges */
     if(y1 >= 0)
         for(x = x1 < 0 ? 1 : x1 + 1; x < x2 && x < xmax; x++)
-            cucul_putchar(cv, x, y1, 0x2500); /* ─ */
+            cucul_put_char(cv, x, y1, 0x2500); /* ─ */
 
     if(y2 <= ymax)
         for(x = x1 < 0 ? 1 : x1 + 1; x < x2 && x < xmax; x++)
-            cucul_putchar(cv, x, y2, 0x2500); /* ─ */
+            cucul_put_char(cv, x, y2, 0x2500); /* ─ */
 
     if(x1 >= 0)
         for(y = y1 < 0 ? 1 : y1 + 1; y < y2 && y < ymax; y++)
-            cucul_putchar(cv, x1, y, 0x2502); /* │ */
+            cucul_put_char(cv, x1, y, 0x2502); /* │ */
 
     if(x2 <= xmax)
         for(y = y1 < 0 ? 1 : y1 + 1; y < y2 && y < ymax; y++)
-            cucul_putchar(cv, x2, y, 0x2502); /* │ */
+            cucul_put_char(cv, x2, y, 0x2502); /* │ */
 
     /* Draw corners */
-    cucul_putchar(cv, x1, y1, 0x250c); /* ┌ */
-    cucul_putchar(cv, x1, y2, 0x2514); /* └ */
-    cucul_putchar(cv, x2, y1, 0x2510); /* ┐ */
-    cucul_putchar(cv, x2, y2, 0x2518); /* ┘ */
+    cucul_put_char(cv, x1, y1, 0x250c); /* ┌ */
+    cucul_put_char(cv, x1, y2, 0x2514); /* └ */
+    cucul_put_char(cv, x2, y1, 0x2510); /* ┐ */
+    cucul_put_char(cv, x2, y2, 0x2518); /* ┘ */
 
     return 0;
 }
@@ -208,7 +208,7 @@ int cucul_fill_box(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
 
     for(y = y1; y <= y2; y++)
         for(x = x1; x <= x2; x++)
-            cucul_putchar(cv, x, y, ch);
+            cucul_put_char(cv, x, y, ch);
 
     return 0;
 }

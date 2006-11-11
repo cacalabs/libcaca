@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
                                     cucul_get_canvas_height(sprite) / 2);
 
     cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
-    cucul_putstr(cv, 0, 0, "Centered sprite");
+    cucul_put_str(cv, 0, 0, "Centered sprite");
 
     cucul_blit(cv, cucul_get_canvas_width(cv) / 2,
                    cucul_get_canvas_height(cv) / 2, sprite, NULL);

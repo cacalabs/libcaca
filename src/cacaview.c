@@ -305,7 +305,7 @@ int main(int argc, char **argv)
             sprintf(buffer, " Loading `%s'... ", list[current]);
             buffer[ww] = '\0';
             cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
-            cucul_putstr(cv, (ww - strlen(buffer)) / 2, wh / 2, buffer);
+            cucul_put_str(cv, (ww - strlen(buffer)) / 2, wh / 2, buffer);
             caca_refresh_display(dp);
             ww = cucul_get_canvas_width(cv);
             wh = cucul_get_canvas_height(cv);
@@ -350,7 +350,7 @@ int main(int argc, char **argv)
             sprintf(buffer, ERROR_STRING, list[current]);
             buffer[ww] = '\0';
             cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
-            cucul_putstr(cv, (ww - strlen(buffer)) / 2, wh / 2, buffer);
+            cucul_put_str(cv, (ww - strlen(buffer)) / 2, wh / 2, buffer);
             free(buffer);
         }
         else
@@ -421,9 +421,9 @@ static void print_status(void)
     cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
     cucul_draw_line(cv, 0, 0, ww - 1, 0, ' ');
     cucul_draw_line(cv, 0, wh - 2, ww - 1, wh - 2, '-');
-    cucul_putstr(cv, 0, 0, "q:Quit  np:Next/Prev  +-x:Zoom  gG:Gamma  "
-                           "hjkl:Move  d:Dither  a:Antialias");
-    cucul_putstr(cv, ww - strlen("?:Help"), 0, "?:Help");
+    cucul_put_str(cv, 0, 0, "q:Quit  np:Next/Prev  +-x:Zoom  gG:Gamma  "
+                            "hjkl:Move  d:Dither  a:Antialias");
+    cucul_put_str(cv, ww - strlen("?:Help"), 0, "?:Help");
     cucul_printf(cv, 3, wh - 2, "cacaview %s", VERSION);
     cucul_printf(cv, ww - 30, wh - 2, "(gamma: %#.3g)", GAMMA(g));
     cucul_printf(cv, ww - 14, wh - 2, "(zoom: %s%i)", zoom > 0 ? "+" : "", zoom);
@@ -459,7 +459,7 @@ static void print_help(int x, int y)
     cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
 
     for(i = 0; help[i]; i++)
-        cucul_putstr(cv, x, y + i, help[i]);
+        cucul_put_str(cv, x, y + i, help[i]);
 }
 
 static void set_zoom(int new_zoom)
@@ -520,7 +520,7 @@ static void draw_checkers(int x, int y, int w, int h)
             cucul_set_color_ansi(cv, CUCUL_LIGHTGRAY, CUCUL_DARKGRAY);
         else
             cucul_set_color_ansi(cv, CUCUL_DARKGRAY, CUCUL_LIGHTGRAY);
-        cucul_putchar(cv, xn, yn, ' ');
+        cucul_put_char(cv, xn, yn, ' ');
     }
 }
 

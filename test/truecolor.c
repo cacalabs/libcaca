@@ -41,11 +41,11 @@ int main(int argc, char *argv[])
         uint16_t fgcolor = 0xf000 | ((15 - y) << 4) | ((15 - x) << 8);
 
         cucul_set_color_argb(cv, fgcolor, bgcolor);
-        cucul_putstr(cv, x * 2, y, "CA");
+        cucul_put_str(cv, x * 2, y, "CA");
     }
 
     cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_LIGHTBLUE);
-    cucul_putstr(cv, 2, 1, " truecolor libcaca ");
+    cucul_put_str(cv, 2, 1, " truecolor libcaca ");
 
     caca_refresh_display(dp);
 

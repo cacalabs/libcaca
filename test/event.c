@@ -45,7 +45,7 @@ int main(int argc, char **argv)
     cucul_draw_line(cv, 0, 0, cucul_get_canvas_width(cv) - 1, 0, ' ');
 
     cucul_draw_line(cv, 0, h, cucul_get_canvas_width(cv) - 1, h, ' ');
-    cucul_putstr(cv, 0, h, "type \"quit\" to exit");
+    cucul_put_str(cv, 0, h, "type \"quit\" to exit");
 
     caca_refresh_display(dp);
 

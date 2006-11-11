@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
             ch = density[dista * 2 * 13 / (dista + distb)];
         cucul_set_color_ansi(cv, points[nearb], points[neara]);
 
-        cucul_putchar(cv, x * cucul_get_canvas_width(cv) / 100,
+        cucul_put_char(cv, x * cucul_get_canvas_width(cv) / 100,
                           (100 - y) * cucul_get_canvas_height(cv) / 100, ch);
     }
 

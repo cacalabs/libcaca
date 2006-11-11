@@ -332,7 +332,7 @@ static long int import_text(cucul_canvas_t *cv,
             cucul_set_canvas_size(cv, width, height);
         }
 
-        cucul_putchar(cv, x, y, ch);
+        cucul_put_char(cv, x, y, ch);
         x++;
     }
 
@@ -481,7 +481,7 @@ static long int import_ansi(cucul_canvas_t *cv,
                     cucul_set_color_ansi(cv, CUCUL_DEFAULT, CUCUL_TRANSPARENT);
                     cucul_set_canvas_size(cv, width = 80, height);
                 for(j = x; j < 80; j++)
-                    cucul_putchar(cv, j, y, ' ');
+                    cucul_put_char(cv, j, y, ' ');
                 x = 80;
                 break;
             case 'm': /* SGR - Select Graphic Rendition */
@@ -540,7 +540,7 @@ static long int import_ansi(cucul_canvas_t *cv,
 
         /* Now paste our character */
         cucul_set_color_ansi(cv, grcm.efg, grcm.ebg);
-        cucul_putchar(cv, x, y, ch);
+        cucul_put_char(cv, x, y, ch);
         x += wch;
     }
 

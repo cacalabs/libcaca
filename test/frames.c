@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
         cucul_set_color_ansi(cv, CUCUL_WHITE, frame);
         cucul_fill_box(cv, 0, 0, 40, 15, ':');
         cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
-        cucul_putstr(cv, frame * 5 / 2, frame, "カカ");
+        cucul_put_str(cv, frame * 5 / 2, frame, "カカ");
         cucul_set_color_ansi(cv, CUCUL_DEFAULT, CUCUL_TRANSPARENT);
     }
 
