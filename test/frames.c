@@ -52,6 +52,7 @@ int main(int argc, char *argv[])
         cucul_fill_box(cv, 0, 0, 40, 15, ':');
         cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
         cucul_putstr(cv, frame * 5 / 2, frame, "カカ");
+        cucul_set_color_ansi(cv, CUCUL_DEFAULT, CUCUL_TRANSPARENT);
     }
 
     /* Resize it to a more decent size */
@@ -60,7 +61,6 @@ int main(int argc, char *argv[])
     fprintf(stderr, "canvas shrinked, size is %ix%i\n",
             cucul_get_canvas_width(cv), cucul_get_canvas_height(cv));
 
-    cucul_set_color_ansi(cv, CUCUL_DEFAULT, CUCUL_TRANSPARENT);
     dp = caca_create_display(cv);
     caca_set_display_time(dp, 50000);
 
