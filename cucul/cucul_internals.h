@@ -18,24 +18,32 @@
 #   include <inttypes.h>
 #endif
 
-struct cucul_canvas
+struct cucul_frame
 {
-    /* Canvas size */
+    /* Frame size */
     unsigned int width, height;
 
-    /* Shortcut to the active frame */
+    /* Cell information */
     uint32_t *chars;
     uint32_t *attrs;
 
-    /* Frame information */
-    unsigned int frame, framecount;
-    uint32_t **allchars;
-    uint32_t **allattrs;
-
     /* Painting context */
     uint32_t curattr;
+};
+
+struct cucul_canvas
+{
+    /* Frame information */
+    unsigned int frame, framecount;
+    struct cucul_frame *frames;
 
     unsigned int refcount;
+
+    /* Shortcut to the active frame information */
+    unsigned int width, height;
+    uint32_t *chars;
+    uint32_t *attrs;
+    uint32_t curattr;
 };
 
 struct cucul_buffer

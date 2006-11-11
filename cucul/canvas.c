@@ -390,11 +390,10 @@ int cucul_set_canvas_boundaries(cucul_canvas_t *cv, int x, int y,
         cucul_set_canvas_frame(new, f);
         cucul_blit(new, -x, -y, cv, NULL);
 
-        free(cv->allchars[f]);
-        free(cv->allattrs[f]);
+        free(cv->frames[f].chars);
+        free(cv->frames[f].attrs);
     }
-    free(cv->allchars);
-    free(cv->allattrs);
+    free(cv->frames);
 
     memcpy(cv, new, sizeof(cucul_canvas_t));
     free(new);

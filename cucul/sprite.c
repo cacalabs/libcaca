@@ -30,6 +30,9 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
+static void save_frame_info(cucul_canvas_t *);
+static void load_frame_info(cucul_canvas_t *);
+
 /** \brief Get the number of frames in a canvas.
  *
  *  Return the current canvas' frame count.
@@ -69,10 +72,9 @@ int cucul_set_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
         return -1;
     }
 
+    save_frame_info(cv);
     cv->frame = frame;
-
-    cv->chars = cv->allchars[cv->frame];
-    cv->attrs = cv->allattrs[cv->frame];
+    load_frame_info(cv);
 
     return 0;
 }
@@ -84,7 +86,7 @@ int cucul_set_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
  *
  *  The frame index indicates where the frame should be inserted. Valid
  *  values range from 0 to the current canvas frame count. If the frame
- *  index is greater the or equals the current canvas frame count, the new
+ *  index is greater than or equals the current canvas frame count, the new
  *  frame is appended at the end of the canvas.
  *
  *  The active frame does not change, but its index may be renumbered due
@@ -106,25 +108,22 @@ int cucul_create_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
         frame = cv->framecount;
 
     cv->framecount++;
-    cv->allchars = realloc(cv->allchars, sizeof(uint32_t *) * cv->framecount);
-    cv->allattrs = realloc(cv->allattrs, sizeof(uint32_t *) * cv->framecount);
+    cv->frames = realloc(cv->frames,
+                         sizeof(struct cucul_frame) * cv->framecount);
 
     for(f = cv->framecount - 1; f > frame; f--)
-    {
-        cv->allchars[f] = cv->allchars[f - 1];
-        cv->allattrs[f] = cv->allattrs[f - 1];
-    }
+        cv->frames[f] = cv->frames[f - 1];
 
-    cv->allchars[frame] = malloc(size);
-    memcpy(cv->allchars[frame], cv->chars, size);
-    cv->allattrs[frame] = malloc(size);
-    memcpy(cv->allattrs[frame], cv->attrs, size);
+    cv->frames[frame].width = cv->width;
+    cv->frames[frame].height = cv->height;
+    cv->frames[frame].chars = malloc(size);
+    memcpy(cv->frames[frame].chars, cv->chars, size);
+    cv->frames[frame].attrs = malloc(size);
+    memcpy(cv->frames[frame].attrs, cv->attrs, size);
+    cv->frames[frame].curattr = cv->curattr;
 
     if(cv->frame >= frame)
         cv->frame++;
-
-    cv->chars = cv->allchars[cv->frame];
-    cv->attrs = cv->allattrs[cv->frame];
 
     return 0;
 }
@@ -170,27 +169,47 @@ int cucul_free_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
         return -1;
     }
 
-    free(cv->allchars[frame]);
-    free(cv->allattrs[frame]);
+    free(cv->frames[frame].chars);
+    free(cv->frames[frame].attrs);
 
     for(f = frame + 1; f < cv->framecount; f++)
-    {
-        cv->allchars[f - 1] = cv->allchars[f];
-        cv->allattrs[f - 1] = cv->allattrs[f];
-    }
+        cv->frames[f - 1] = cv->frames[f];
 
     cv->framecount--;
-    cv->allchars = realloc(cv->allchars, sizeof(uint32_t *) * cv->framecount);
-    cv->allattrs = realloc(cv->allattrs, sizeof(uint32_t *) * cv->framecount);
+    cv->frames = realloc(cv->frames,
+                         sizeof(struct cucul_frame) * cv->framecount);
 
     if(cv->frame > frame)
         cv->frame--;
     else if(cv->frame == frame)
+    {
         cv->frame = 0;
-
-    cv->chars = cv->allchars[cv->frame];
-    cv->attrs = cv->allattrs[cv->frame];
+        load_frame_info(cv);
+    }
 
     return 0;
+}
+
+/*
+ * XXX: the following functions are local.
+ */
+
+static void save_frame_info(cucul_canvas_t *cv)
+{
+    cv->frames[cv->frame].width = cv->width;
+    cv->frames[cv->frame].height = cv->height;
+
+    cv->frames[cv->frame].curattr = cv->curattr;
+}
+
+static void load_frame_info(cucul_canvas_t *cv)
+{
+    cv->width = cv->frames[cv->frame].width;
+    cv->height = cv->frames[cv->frame].height;
+
+    cv->chars = cv->frames[cv->frame].chars;
+    cv->attrs = cv->frames[cv->frame].attrs;
+
+    cv->curattr = cv->frames[cv->frame].curattr;
 }
 

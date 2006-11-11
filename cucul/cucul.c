@@ -68,29 +68,24 @@ cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
 
     cv->frame = 0;
     cv->framecount = 1;
-    cv->allchars = malloc(sizeof(uint32_t *));
-    if(!cv->allchars)
+    cv->frames = malloc(sizeof(struct cucul_frame));
+    if(!cv->frames)
     {
         free(cv);
         goto nomem;
     }
-    cv->allattrs = malloc(sizeof(uint32_t *));
-    if(!cv->allattrs)
-    {
-        free(cv->allchars);
-        free(cv);
-        goto nomem;
-    }
-    cv->allchars[0] = NULL;
-    cv->allattrs[0] = NULL;
+
+    cv->frames[0].width = cv->frames[0].height = 0;
+    cv->frames[0].chars = NULL;
+    cv->frames[0].attrs = NULL;
+    cv->frames[0].curattr = cv->curattr;
 
     if(_cucul_set_canvas_size(cv, width, height) < 0)
     {
 #if defined(HAVE_ERRNO_H)
         int saved_errno = errno;
 #endif
-        free(cv->allattrs);
-        free(cv->allchars);
+        free(cv->frames);
         free(cv);
 #if defined(HAVE_ERRNO_H)
         errno = saved_errno;
@@ -200,12 +195,11 @@ int cucul_free_canvas(cucul_canvas_t *cv)
 
     for(f = 0; f < cv->framecount; f++)
     {
-        free(cv->allchars[f]);
-        free(cv->allattrs[f]);
+        free(cv->frames[f].chars);
+        free(cv->frames[f].attrs);
     }
 
-    free(cv->allchars);
-    free(cv->allattrs);
+    free(cv->frames);
     free(cv);
 
     return 0;
@@ -257,11 +251,11 @@ int _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
     {
         for(f = 0; f < cv->framecount; f++)
         {
-            cv->allchars[f] = realloc(cv->allchars[f],
-                                      new_size * sizeof(uint32_t));
-            cv->allattrs[f] = realloc(cv->allattrs[f],
-                                      new_size * sizeof(uint32_t));
-            if(new_size && (!cv->allchars[f] || !cv->allattrs[f]))
+            cv->frames[f].chars = realloc(cv->frames[f].chars,
+                                          new_size * sizeof(uint32_t));
+            cv->frames[f].attrs = realloc(cv->frames[f].attrs,
+                                          new_size * sizeof(uint32_t));
+            if(new_size && (!cv->frames[f].chars || !cv->frames[f].attrs))
             {
 #if defined(HAVE_ERRNO_H)
                 errno = ENOMEM;
@@ -284,12 +278,12 @@ int _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
          * we will overwrite information. */
         for(f = 0; f < cv->framecount; f++)
         {
-            uint32_t *chars = cv->allchars[f];
-            uint32_t *attrs = cv->allattrs[f];
+            uint32_t *chars = cv->frames[f].chars;
+            uint32_t *attrs = cv->frames[f].attrs;
 
             for(y = height < old_height ? height : old_height; y--; )
             {
-                uint32_t attr = cv->curattr;
+                uint32_t attr = cv->frames[f].curattr;
 
                 for(x = old_width; x--; )
                 {
@@ -314,8 +308,8 @@ int _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
 
         for(f = 0; f < cv->framecount; f++)
         {
-            uint32_t *chars = cv->allchars[f];
-            uint32_t *attrs = cv->allattrs[f];
+            uint32_t *chars = cv->frames[f].chars;
+            uint32_t *attrs = cv->frames[f].attrs;
 
             for(y = 1; y < lines; y++)
             {
@@ -333,9 +327,9 @@ int _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
     {
         for(f = 0; f < cv->framecount; f++)
         {
-            uint32_t *chars = cv->allchars[f];
-            uint32_t *attrs = cv->allattrs[f];
-            uint32_t attr = cv->curattr;
+            uint32_t *chars = cv->frames[f].chars;
+            uint32_t *attrs = cv->frames[f].attrs;
+            uint32_t attr = cv->frames[f].curattr;
 
             /* Zero the bottom of the screen */
             for(x = (height - old_height) * width; x--; )
@@ -347,15 +341,15 @@ int _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
     }
 
     /* Step 4: if new area is smaller, resize memory area now. */
-    if(new_size <= old_size)
+    if(new_size < old_size)
     {
         for(f = 0; f < cv->framecount; f++)
         {
-            cv->allchars[f] = realloc(cv->allchars[f],
-                                      new_size * sizeof(uint32_t));
-            cv->allattrs[f] = realloc(cv->allattrs[f],
-                                      new_size * sizeof(uint32_t));
-            if(new_size && (!cv->allchars[f] || !cv->allattrs[f]))
+            cv->frames[f].chars = realloc(cv->frames[f].chars,
+                                          new_size * sizeof(uint32_t));
+            cv->frames[f].attrs = realloc(cv->frames[f].attrs,
+                                          new_size * sizeof(uint32_t));
+            if(new_size && (!cv->frames[f].chars || !cv->frames[f].attrs))
             {
 #if defined(HAVE_ERRNO_H)
                 errno = ENOMEM;
@@ -365,9 +359,16 @@ int _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
         }
     }
 
-    /* Reset the current frame shortcut */
-    cv->chars = cv->allchars[cv->frame];
-    cv->attrs = cv->allattrs[cv->frame];
+    /* Set new size */
+    for(f = 0; f < cv->framecount; f++)
+    {
+        cv->frames[f].width = width;
+        cv->frames[f].height = height;
+    }
+
+    /* Reset the current frame shortcuts */
+    cv->chars = cv->frames[cv->frame].chars;
+    cv->attrs = cv->frames[cv->frame].attrs;
 
     return 0;
 }
