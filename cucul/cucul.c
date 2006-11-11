@@ -259,8 +259,8 @@ int _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
             cv->allchars[f] = realloc(cv->allchars[f],
                                       new_size * sizeof(uint32_t));
             cv->allattrs[f] = realloc(cv->allattrs[f],
-                                     new_size * sizeof(uint32_t));
-            if(!cv->allchars[f] || !cv->allattrs[f])
+                                      new_size * sizeof(uint32_t));
+            if(new_size && (!cv->allchars[f] || !cv->allattrs[f]))
             {
 #if defined(HAVE_ERRNO_H)
                 errno = ENOMEM;
@@ -353,8 +353,8 @@ int _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
             cv->allchars[f] = realloc(cv->allchars[f],
                                       new_size * sizeof(uint32_t));
             cv->allattrs[f] = realloc(cv->allattrs[f],
-                                     new_size * sizeof(uint32_t));
-            if(!cv->allchars[f] || !cv->allattrs[f])
+                                      new_size * sizeof(uint32_t));
+            if(new_size && (!cv->allchars[f] || !cv->allattrs[f]))
             {
 #if defined(HAVE_ERRNO_H)
                 errno = ENOMEM;
