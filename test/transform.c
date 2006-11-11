@@ -102,6 +102,7 @@ int main(int argc, char *argv[])
 
     caca_free_display(dp);
     cucul_free_canvas(tmp);
+    cucul_free_canvas(sprite);
     cucul_free_canvas(image);
     cucul_free_canvas(cv);
 
