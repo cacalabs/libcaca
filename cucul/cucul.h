@@ -146,6 +146,7 @@ int cucul_fill_ellipse(cucul_canvas_t *, int, int, int, int, char const *);
 
 int cucul_draw_box(cucul_canvas_t *, int, int, int, int, char const *);
 int cucul_draw_thin_box(cucul_canvas_t *, int, int, int, int);
+int cucul_draw_cp437_box(cucul_canvas_t *, int, int, int, int);
 int cucul_fill_box(cucul_canvas_t *, int, int, int, int, char const *);
 
 int cucul_draw_triangle(cucul_canvas_t *, int, int, int, int, int, int, char const *);
