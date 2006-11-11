@@ -97,9 +97,6 @@ cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
         return NULL;
     }
 
-    /* FIXME: this shouldn't happen here */
-    _cucul_init_dither();
-
     return cv;
 
 nomem:
@@ -199,9 +196,6 @@ int cucul_free_canvas(cucul_canvas_t *cv)
 #endif
         return -1;
     }
-
-    /* FIXME: this shouldn't be here either (see above) */
-    _cucul_end_dither();
 
     for(f = 0; f < cv->framecount; f++)
     {

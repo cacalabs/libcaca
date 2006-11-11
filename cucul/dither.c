@@ -46,6 +46,7 @@
 #endif
 static unsigned char hsv_distances[LOOKUP_VAL][LOOKUP_SAT][LOOKUP_HUE];
 static uint16_t lookup_colors[8];
+static int lookup_initialised = 0;
 
 static int const hsv_palette[] =
 {
@@ -171,6 +172,7 @@ static float gammapow(float x, float y);
 
 static void get_rgba_default(cucul_dither_t const *, uint8_t *, int, int,
                              unsigned int *);
+static int init_lookup(void);
 
 /* Dithering methods */
 static void init_no_dither(int);
@@ -282,6 +284,15 @@ cucul_dither_t *cucul_create_dither(unsigned int bpp, unsigned int w,
         errno = ENOMEM;
 #endif
         return NULL;
+    }
+
+    if(!lookup_initialised)
+    {
+        /* XXX: because we do not wish to be thread-safe, there is a slight
+         * chance that the following code will be executed twice. It is
+         * totally harmless. */
+        init_lookup();
+        lookup_initialised = 1;
     }
 
     d->bpp = bpp;
@@ -1372,8 +1383,10 @@ static void increment_random_dither(void)
     return;
 }
 
-#if !defined(_DOXYGEN_SKIP_ME)
-int _cucul_init_dither(void)
+/*
+ * Lookup tables
+ */
+static int init_lookup(void)
 {
     unsigned int v, s, h;
 
@@ -1430,11 +1443,4 @@ int _cucul_init_dither(void)
 
     return 0;
 }
-
-int _cucul_end_dither(void)
-{
-    return 0;
-}
-#endif /* _DOXYGEN_SKIP_ME */
-
 

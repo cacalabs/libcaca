@@ -45,10 +45,6 @@ struct cucul_buffer
     int user_data;
 };
 
-/* Bitmap functions */
-extern int _cucul_init_dither(void);
-extern int _cucul_end_dither(void);
-
 /* Canvas functions */
 extern int _cucul_set_canvas_size(cucul_canvas_t *, unsigned int, unsigned int);
 
