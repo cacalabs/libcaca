@@ -285,10 +285,10 @@ static long int import_caca(cucul_canvas_t *cv,
     }
 
     cv->curattr = sscanu32(buf + 4 + 16 + 12);
-    cv->frames[0].x = (int32_t)sscanu32(buf + 4 + 16 + f * 24 + 16);
-    cv->frames[0].y = (int32_t)sscanu32(buf + 4 + 16 + f * 24 + 20);
-    cv->frames[0].handlex = (int32_t)sscanu32(buf + 4 + 16 + f * 24 + 24);
-    cv->frames[0].handley = (int32_t)sscanu32(buf + 4 + 16 + f * 24 + 28);
+    cv->frames[0].x = (int32_t)sscanu32(buf + 4 + 16 + 0 * 24 + 16);
+    cv->frames[0].y = (int32_t)sscanu32(buf + 4 + 16 + 0 * 24 + 20);
+    cv->frames[0].handlex = (int32_t)sscanu32(buf + 4 + 16 + 0 * 24 + 24);
+    cv->frames[0].handley = (int32_t)sscanu32(buf + 4 + 16 + 0 * 24 + 28);
 
     return 4 + control_size + data_size;
 
