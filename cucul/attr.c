@@ -234,6 +234,32 @@ int cucul_set_color_argb(cucul_canvas_t *cv, unsigned int fg, unsigned int bg)
     return 0;
 }
 
+/** \brief Get DOS ANSI information from attribute.
+ *
+ *  Get the ANSI colour pair for a given attribute. The returned value is
+ *  an 8-bit value whose higher 4 bits are the background colour and lower
+ *  4 bits are the foreground colour.
+ *
+ *  If the attribute has ARGB colours, the nearest colour is used. Special
+ *  attributes such as \e CUCUL_DEFAULT and \e CUCUL_TRANSPARENT are not
+ *  handled and are both replaced with \e CUCUL_LIGHTGRAY for the foreground
+ *  colour and \e CUCUL_BLACK for the background colour.
+ *
+ *  This function never fails. If the attribute value is outside the expected
+ *  32-bit range, higher order bits are simply ignored.
+ *
+ *  \param attr The requested attribute value.
+ *  \return The corresponding DOS ANSI value.
+ */
+unsigned char cucul_attr_to_ansi(unsigned long int attr)
+{
+    uint8_t fg = nearest_ansi((attr >> 4) & 0x3fff);
+    uint8_t bg = nearest_ansi(attr >> 18);
+
+    return (fg < 0x10 ? fg : CUCUL_LIGHTGRAY)
+            | ((bg < 0x10 ? bg : CUCUL_BLACK) << 4);
+}
+
 /** \brief Get ANSI foreground information from attribute.
  *
  *  Get the ANSI foreground colour value for a given attribute. The returned
@@ -334,20 +360,6 @@ static uint8_t nearest_ansi(uint16_t argb14)
     }
 
     return best;
-}
-
-uint8_t _cucul_attr_to_ansi8(uint32_t attr)
-{
-    uint8_t fg = nearest_ansi((attr >> 4) & 0x3fff);
-    uint8_t bg = nearest_ansi(attr >> 18);
-
-    if(fg == CUCUL_DEFAULT || fg == CUCUL_TRANSPARENT)
-        fg = CUCUL_LIGHTGRAY;
-
-    if(bg == CUCUL_DEFAULT || bg == CUCUL_TRANSPARENT)
-        bg = CUCUL_BLACK;
-
-    return fg | (bg << 4);
 }
 
 uint16_t _cucul_attr_to_rgb12fg(uint32_t attr)

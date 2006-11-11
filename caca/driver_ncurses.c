@@ -203,7 +203,7 @@ static void ncurses_display(caca_display_t *dp)
         move(y, 0);
         for(x = dp->cv->width; x--; )
         {
-            attrset(dp->drv.p->attr[_cucul_attr_to_ansi8(*attrs++)]);
+            attrset(dp->drv.p->attr[cucul_attr_to_ansi(*attrs++)]);
             ncurses_write_utf32(*chars++);
         }
     }

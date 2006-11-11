@@ -121,6 +121,7 @@ int cucul_rotate(cucul_canvas_t *);
  *  These functions perform conversions between attribute values.
  *
  *  @{ */
+unsigned char cucul_attr_to_ansi(unsigned long int);
 unsigned char cucul_attr_to_ansi_fg(unsigned long int);
 unsigned char cucul_attr_to_ansi_bg(unsigned long int);
 /*  @} */

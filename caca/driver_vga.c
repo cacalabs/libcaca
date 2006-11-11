@@ -125,13 +125,13 @@ static void vga_display(caca_display_t *dp)
         if(n && *chars == CUCUL_MAGIC_FULLWIDTH)
         {
             *screen++ = '[';
-            *screen++ = _cucul_attr_to_ansi8(*attrs++);
+            *screen++ = cucul_attr_to_ansi(*attrs++);
             ch = ']';
             chars++;
             n--;
         }
         *screen++ = ch;
-        *screen++ = _cucul_attr_to_ansi8(*attrs++);
+        *screen++ = cucul_attr_to_ansi(*attrs++);
     }
 }
 

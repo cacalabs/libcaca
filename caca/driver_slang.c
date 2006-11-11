@@ -242,11 +242,11 @@ static void slang_display(caca_display_t *dp)
             else
 #endif
             {
-                SLsmg_set_color(slang_assoc[_cucul_attr_to_ansi8(*attrs++)]);
+                SLsmg_set_color(slang_assoc[cucul_attr_to_ansi(*attrs++)]);
                 slang_write_utf32(ch);
             }
 #else
-            SLsmg_set_color(_cucul_attr_to_ansi8(*attrs++));
+            SLsmg_set_color(cucul_attr_to_ansi(*attrs++));
             slang_write_utf32(ch);
 #endif
         }
