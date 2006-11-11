@@ -306,7 +306,6 @@ static long int import_text(cucul_canvas_t *cv,
     unsigned int width = 0, height = 0, x = 0, y = 0, i;
 
     cucul_set_canvas_size(cv, width, height);
-    cucul_set_color_ansi(cv, CUCUL_DEFAULT, CUCUL_TRANSPARENT);
 
     for(i = 0; i < size; i++)
     {
