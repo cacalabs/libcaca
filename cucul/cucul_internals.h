@@ -28,6 +28,8 @@ struct cucul_frame
     uint32_t *attrs;
 
     /* Painting context */
+    int x, y;
+    int handlex, handley;
     uint32_t curattr;
 };
 

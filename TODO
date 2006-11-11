@@ -6,8 +6,6 @@
 
   - allow to change the canvas size in a per-frame basis.
   - export attribute parsing functions such as attr_to_ansi4fg etc.
-  - add cursor support in the canvas, so that we can load ANSI files
-    in stream mode.
 
   \subsection indep API-independent stuff
 

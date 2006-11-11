@@ -114,6 +114,9 @@ int cucul_create_canvas_frame(cucul_canvas_t *cv, unsigned int id)
     for(f = cv->framecount - 1; f > id; f--)
         cv->frames[f] = cv->frames[f - 1];
 
+    if(cv->frame >= id)
+        cv->frame++;
+
     cv->frames[id].width = cv->width;
     cv->frames[id].height = cv->height;
     cv->frames[id].chars = malloc(size * sizeof(uint32_t));
@@ -122,8 +125,10 @@ int cucul_create_canvas_frame(cucul_canvas_t *cv, unsigned int id)
     memcpy(cv->frames[id].attrs, cv->attrs, size * sizeof(uint32_t));
     cv->frames[id].curattr = cv->curattr;
 
-    if(cv->frame >= id)
-        cv->frame++;
+    cv->frames[id].x = cv->frames[cv->frame].x;
+    cv->frames[id].y = cv->frames[cv->frame].y;
+    cv->frames[id].handlex = cv->frames[cv->frame].handlex;
+    cv->frames[id].handley = cv->frames[cv->frame].handley;
 
     return 0;
 }

@@ -43,6 +43,9 @@
  *  \e libcucul function to be called in a function. cucul_free_canvas()
  *  should be called at the end of the program to free all allocated resources.
  *
+ *  Both the cursor and the canvas' handle are initialised at the top-left
+ *  corner.
+ *
  *  If an error occurs, NULL is returned and \b errno is set accordingly:
  *  - \c ENOMEM Not enough memory for the requested canvas size.
  *
@@ -78,6 +81,8 @@ cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
     cv->frames[0].width = cv->frames[0].height = 0;
     cv->frames[0].chars = NULL;
     cv->frames[0].attrs = NULL;
+    cv->frames[0].x = cv->frames[0].y = 0;
+    cv->frames[0].handlex = cv->frames[0].handley = 0;
     cv->frames[0].curattr = cv->curattr;
 
     if(_cucul_set_canvas_size(cv, width, height) < 0)

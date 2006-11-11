@@ -247,14 +247,14 @@ static long int import_caca(cucul_canvas_t *cv,
     if(size < 4 + control_size + data_size)
         return 0;
 
-    if(control_size < 16 + frames * 24)
+    if(control_size < 16 + frames * 32)
         goto invalid_caca;
 
     for(expected_size = 0, f = 0; f < frames; f++)
     {
         unsigned int width, height, duration;
         uint32_t attr;
-        int x, y;
+        int x, y, handlex, handley;
 
         width = sscanu32(buf + 4 + 16 + f * 24);
         height = sscanu32(buf + 4 + 16 + f * 24 + 4);
@@ -262,6 +262,8 @@ static long int import_caca(cucul_canvas_t *cv,
         attr = sscanu32(buf + 4 + 16 + f * 24 + 12);
         x = (int32_t)sscanu32(buf + 4 + 16 + f * 24 + 16);
         y = (int32_t)sscanu32(buf + 4 + 16 + f * 24 + 20);
+        handlex = (int32_t)sscanu32(buf + 4 + 16 + f * 24 + 24);
+        handley = (int32_t)sscanu32(buf + 4 + 16 + f * 24 + 28);
 
         expected_size += width * height * 8;
     }
@@ -283,6 +285,10 @@ static long int import_caca(cucul_canvas_t *cv,
     }
 
     cv->curattr = sscanu32(buf + 4 + 16 + 12);
+    cv->frames[0].x = (int32_t)sscanu32(buf + 4 + 16 + f * 24 + 16);
+    cv->frames[0].y = (int32_t)sscanu32(buf + 4 + 16 + f * 24 + 20);
+    cv->frames[0].handlex = (int32_t)sscanu32(buf + 4 + 16 + f * 24 + 24);
+    cv->frames[0].handley = (int32_t)sscanu32(buf + 4 + 16 + f * 24 + 28);
 
     return 4 + control_size + data_size;
 

@@ -171,14 +171,14 @@ static void *export_caca(cucul_canvas_t *cv, unsigned long int *bytes)
      *  - 16 bytes for the canvas header
      *  - 24 bytes for the frame info
      * 8 bytes for each character cell */
-    *bytes = 44 + 8 * cv->width * cv->height;
+    *bytes = 52 + 8 * cv->width * cv->height;
     cur = data = malloc(*bytes);
 
     /* magic */
     cur += sprintf(cur, "%s", "\xCA\xCA" "CV");
 
     /* canvas_header */
-    cur += sprintu32(cur, 16 + 24);
+    cur += sprintu32(cur, 16 + 32 * 1);
     cur += sprintu32(cur, cv->width * cv->height * 8);
     cur += sprintu16(cur, 0x0001);
     cur += sprintu32(cur, 1);
@@ -189,8 +189,10 @@ static void *export_caca(cucul_canvas_t *cv, unsigned long int *bytes)
     cur += sprintu32(cur, cv->height);
     cur += sprintu32(cur, 0);
     cur += sprintu32(cur, cv->curattr);
-    cur += sprintu32(cur, 0);
-    cur += sprintu32(cur, 0);
+    cur += sprintu32(cur, cv->frames[0].x);
+    cur += sprintu32(cur, cv->frames[0].y);
+    cur += sprintu32(cur, cv->frames[0].handlex);
+    cur += sprintu32(cur, cv->frames[0].handley);
 
     /* canvas_data */
     for(n = cv->height * cv->width; n--; )
@@ -236,6 +238,8 @@ static void *export_caca(cucul_canvas_t *cv, unsigned long int *bytes)
  *       uint32_t duration;      // Frame duration in milliseconds, 0 to
  *                               // not specify a duration
  *       uint32_t attr;          // Graphics context attribute
+ *       int32_t cursor_x;       // Cursor X coordinate
+ *       int32_t cursor_y;       // Cursor Y coordinate
  *       int32_t handle_x;       // Handle X coordinate
  *       int32_t handle_y;       // Handle Y coordinate
  *    }

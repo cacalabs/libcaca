@@ -89,6 +89,9 @@ int cucul_rand(int, int);
  *
  *  @{ */
 #define CUCUL_MAGIC_FULLWIDTH 0x000ffffe /**< Used to indicate that the previous character was a fullwidth glyph. */
+int cucul_gotoxy(cucul_canvas_t *, int, int);
+int cucul_get_cursor_x(cucul_canvas_t *);
+int cucul_get_cursor_y(cucul_canvas_t *);
 unsigned long int cucul_get_attr(cucul_canvas_t *, int, int);
 int cucul_set_attr(cucul_canvas_t *, unsigned long int);
 int cucul_putattr(cucul_canvas_t *, int, int, unsigned long int);
@@ -99,6 +102,9 @@ unsigned long int cucul_getchar(cucul_canvas_t *, int, int);
 int cucul_putstr(cucul_canvas_t *, int, int, char const *);
 int cucul_printf(cucul_canvas_t *, int, int, char const *, ...);
 int cucul_clear_canvas(cucul_canvas_t *);
+int cucul_set_canvas_handle(cucul_canvas_t *, int, int);
+int cucul_get_canvas_handle_x(cucul_canvas_t *);
+int cucul_get_canvas_handle_y(cucul_canvas_t *);
 int cucul_blit(cucul_canvas_t *, int, int, cucul_canvas_t const *,
                cucul_canvas_t const *);
 int cucul_set_canvas_boundaries(cucul_canvas_t *, int, int,

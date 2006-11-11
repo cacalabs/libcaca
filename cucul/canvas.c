@@ -41,6 +41,55 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
+/** \brief Set cursor position.
+ *
+ *  Put the cursor at the given coordinates. Functions making use of the
+ *  cursor will use the new values. Setting the cursor position outside the
+ *  canvas is legal but the cursor will not be shown.
+ *
+ *  This function never fails.
+ *
+ *  \param cv A handle to the libcucul canvas.
+ *  \param x X cursor coordinate.
+ *  \param y Y cursor coordinate.
+ *  \return This function always returns 0.
+ */
+int cucul_gotoxy(cucul_canvas_t *cv, int x, int y)
+{
+    cv->frames[cv->frame].x = x;
+    cv->frames[cv->frame].y = y;
+
+    return 0;
+}
+
+/** \brief Get X cursor position.
+ *
+ *  Retrieve the X coordinate of the cursor's position.
+ *
+ *  This function never fails.
+ *
+ *  \param cv A handle to the libcucul canvas.
+ *  \return The cursor's X coordinate.
+ */
+int cucul_get_cursor_x(cucul_canvas_t *cv)
+{
+    return cv->frames[cv->frame].x;
+}
+
+/** \brief Get Y cursor position.
+ *
+ *  Retrieve the Y coordinate of the cursor's position.
+ *
+ *  This function never fails.
+ *
+ *  \param cv A handle to the libcucul canvas.
+ *  \return The cursor's Y coordinate.
+ */
+int cucul_get_cursor_y(cucul_canvas_t *cv)
+{
+    return cv->frames[cv->frame].y;
+}
+
 /** \brief Print an ASCII or Unicode character.
  *
  *  Print an ASCII or Unicode character at the given coordinates, using
@@ -262,6 +311,54 @@ int cucul_clear_canvas(cucul_canvas_t *cv)
     }
 
     return 0;
+}
+
+/** \brief Set cursor handle.
+ *
+ *  Set the canvas' handle. Blitting functions will use the handle value
+ *  to put the canvas at the proper coordinates.
+ *
+ *  This function never fails.
+ *
+ *  \param cv A handle to the libcucul canvas.
+ *  \param x X handle coordinate.
+ *  \param y Y handle coordinate.
+ *  \return This function always returns 0.
+ */
+int cucul_set_canvas_handle(cucul_canvas_t *cv, int x, int y)
+{
+    cv->frames[cv->frame].handlex = x;
+    cv->frames[cv->frame].handley = y;
+
+    return 0;
+}
+
+/** \brief Get X handle position.
+ *
+ *  Retrieve the X coordinate of the canvas' handle.
+ *
+ *  This function never fails.
+ *
+ *  \param cv A handle to the libcucul canvas.
+ *  \return The canvas' handle's X coordinate.
+ */
+int cucul_get_canvas_handle_x(cucul_canvas_t *cv)
+{
+    return cv->frames[cv->frame].handlex;
+}
+
+/** \brief Get Y handle position.
+ *
+ *  Retrieve the Y coordinate of the canvas' handle.
+ *
+ *  This function never fails.
+ *
+ *  \param cv A handle to the libcucul canvas.
+ *  \return The canvas' handle's Y coordinate.
+ */
+int cucul_get_canvas_handle_y(cucul_canvas_t *cv)
+{
+    return cv->frames[cv->frame].handley;
 }
 
 /** \brief Blit a canvas onto another one.
