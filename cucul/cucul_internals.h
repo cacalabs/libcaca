@@ -48,10 +48,6 @@ struct cucul_buffer
 /* Canvas functions */
 extern int _cucul_set_canvas_size(cucul_canvas_t *, unsigned int, unsigned int);
 
-/* Charset functions */
-extern unsigned int _cucul_strlen_utf8(char const *);
-extern char const *_cucul_skip_utf8(char const *, unsigned int);
-
 /* Colour functions */
 extern uint16_t _cucul_attr_to_rgb12fg(uint32_t);
 extern uint16_t _cucul_attr_to_rgb12bg(uint32_t);
