@@ -26,9 +26,6 @@
 #   include <stdlib.h>
 #   include <limits.h>
 #   include <string.h>
-#   if defined(HAVE_ERRNO_H)
-#       include <errno.h>
-#   endif
 #endif
 
 #include "cucul.h"
@@ -271,18 +268,14 @@ cucul_dither_t *cucul_create_dither(unsigned int bpp, unsigned int w,
     /* Minor sanity test */
     if(!w || !h || !pitch || bpp > 32 || bpp < 8)
     {
-#if defined(HAVE_ERRNO_H)
-        errno = EINVAL;
-#endif
+        seterrno(EINVAL);
         return NULL;
     }
 
     d = malloc(sizeof(cucul_dither_t));
     if(!d)
     {
-#if defined(HAVE_ERRNO_H)
-        errno = ENOMEM;
-#endif
+        seterrno(ENOMEM);
         return NULL;
     }
 
@@ -377,9 +370,7 @@ int cucul_set_dither_palette(cucul_dither_t *d,
 
     if(d->bpp != 8)
     {
-#if defined(HAVE_ERRNO_H)
-        errno = EINVAL;
-#endif
+        seterrno(EINVAL);
         return -1;
     }
 
@@ -387,9 +378,7 @@ int cucul_set_dither_palette(cucul_dither_t *d,
     {
         if((red[i] | green[i] | blue[i] | alpha[i]) >= 0x1000)
         {
-#if defined(HAVE_ERRNO_H)
-            errno = EINVAL;
-#endif
+            seterrno(EINVAL);
             return -1;
         }
     }
@@ -448,9 +437,7 @@ int cucul_set_dither_gamma(cucul_dither_t *d, float gamma)
 
     if(gamma <= 0.0)
     {
-#if defined(HAVE_ERRNO_H)
-        errno = EINVAL;
-#endif
+        seterrno(EINVAL);
         return -1;
     }
 
@@ -520,9 +507,7 @@ int cucul_set_dither_antialias(cucul_dither_t *d, char const *str)
         d->antialias = 1;
     else
     {
-#if defined(HAVE_ERRNO_H)
-        errno = EINVAL;
-#endif
+        seterrno(EINVAL);
         return -1;
     }
 
@@ -596,9 +581,7 @@ int cucul_set_dither_color(cucul_dither_t *d, char const *str)
         d->color_mode = COLOR_MODE_FULL16;
     else
     {
-#if defined(HAVE_ERRNO_H)
-        errno = EINVAL;
-#endif
+        seterrno(EINVAL);
         return -1;
     }
 
@@ -675,9 +658,7 @@ int cucul_set_dither_charset(cucul_dither_t *d, char const *str)
     }
     else
     {
-#if defined(HAVE_ERRNO_H)
-        errno = EINVAL;
-#endif
+        seterrno(EINVAL);
         return -1;
     }
 
@@ -770,9 +751,7 @@ int cucul_set_dither_mode(cucul_dither_t *d, char const *str)
     }
     else
     {
-#if defined(HAVE_ERRNO_H)
-        errno = EINVAL;
-#endif
+        seterrno(EINVAL);
         return -1;
     }
 

@@ -18,12 +18,6 @@
 #include "config.h"
 #include "common.h"
 
-#if !defined(__KERNEL__)
-#   if defined(HAVE_ERRNO_H)
-#       include <errno.h>
-#   endif
-#endif
-
 #include "caca.h"
 #include "caca_internals.h"
 #include "cucul.h"
@@ -45,10 +39,8 @@ int caca_set_display_title(caca_display_t *dp, char const *title)
 {
     int ret = dp->drv.set_display_title(dp, title);
 
-#if defined(HAVE_ERRNO_H)
     if(ret)
-        errno = ENOSYS;
-#endif
+        seterrno(ENOSYS);
 
     return ret;
 }
@@ -195,9 +187,7 @@ int caca_set_mouse(caca_display_t *dp, int flag)
 {
     if(!dp->drv.set_mouse)
     {
-#if defined(HAVE_ERRNO_H)
-        errno = ENOSYS;
-#endif
+        seterrno(ENOSYS);
         return -1;
     }
 

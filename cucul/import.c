@@ -19,9 +19,6 @@
 #include "common.h"
 
 #if !defined __KERNEL__
-#   if defined HAVE_ERRNO_H
-#       include <errno.h>
-#   endif
 #   include <stdio.h>
 #   include <stdlib.h>
 #   include <string.h>
@@ -118,9 +115,7 @@ long int cucul_import_memory(cucul_canvas_t *cv, void const *data,
         return import_text(cv, data, len);
     }
 
-#if defined HAVE_ERRNO_H
-    errno = EINVAL;
-#endif
+    seterrno(EINVAL);
     return -1;
 }
 
@@ -157,9 +152,7 @@ long int cucul_import_file(cucul_canvas_t *cv, char const *filename,
                            char const *format)
 {
 #if defined __KERNEL__
-#   if defined HAVE_ERRNO_H
-    errno = ENOSYS;
-#   endif
+    seterrno(ENOSYS);
     return -1;
 #else
     FILE *fp;
@@ -178,9 +171,7 @@ long int cucul_import_file(cucul_canvas_t *cv, char const *filename,
     if(!data)
     {
         fclose(fp);
-#   if defined HAVE_ERRNO_H
-        errno = ENOMEM;
-#   endif
+        seterrno(ENOMEM);
         return -1;
     }
 
@@ -236,7 +227,10 @@ static long int import_caca(cucul_canvas_t *cv,
         return 0;
 
     if(buf[0] != 0xca || buf[1] != 0xca || buf[2] != 'C' || buf[3] != 'V')
+    {
+        debug("caca import error: expected \\xca\\xcaCV header");
         goto invalid_caca;
+    }
 
     control_size = sscanu32(buf + 4);
     data_size = sscanu32(buf + 8);
@@ -248,7 +242,11 @@ static long int import_caca(cucul_canvas_t *cv,
         return 0;
 
     if(control_size < 16 + frames * 32)
+    {
+        debug("caca import error: control size %lu < expected %lu",
+              (unsigned long int)control_size, 16 + frames * 32);
         goto invalid_caca;
+    }
 
     for(expected_size = 0, f = 0; f < frames; f++)
     {
@@ -269,7 +267,11 @@ static long int import_caca(cucul_canvas_t *cv,
     }
 
     if(expected_size != data_size)
+    {
+        debug("caca import error: data size %lu < expected %lu",
+              (unsigned long int)data_size, (unsigned long int)expected_size);
         goto invalid_caca;
+    }
 
     /* FIXME: read all frames, not only the first one */
     cucul_set_canvas_size(cv, 0, 0);
@@ -293,9 +295,7 @@ static long int import_caca(cucul_canvas_t *cv,
     return 4 + control_size + data_size;
 
 invalid_caca:
-#if defined HAVE_ERRNO_H
-    errno = EINVAL;
-#endif
+    seterrno(EINVAL);
     return -1;
 }
 

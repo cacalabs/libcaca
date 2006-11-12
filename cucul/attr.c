@@ -19,10 +19,6 @@
 #include "config.h"
 #include "common.h"
 
-#if defined(HAVE_ERRNO_H)
-#   include <errno.h>
-#endif
-
 #include "cucul.h"
 #include "cucul_internals.h"
 
@@ -89,9 +85,7 @@ int cucul_set_attr(cucul_canvas_t *cv, unsigned long int attr)
 {
     if(sizeof(unsigned long int) > sizeof(uint32_t) && attr > 0xffffffff)
     {
-#if defined(HAVE_ERRNO_H)
-        errno = EINVAL;
-#endif
+        seterrno(EINVAL);
         return -1;
     }
 
@@ -131,9 +125,7 @@ int cucul_put_attr(cucul_canvas_t *cv, int x, int y, unsigned long int attr)
 
     if(sizeof(unsigned long int) > sizeof(uint32_t) && attr > 0xffffffff)
     {
-#if defined(HAVE_ERRNO_H)
-        errno = EINVAL;
-#endif
+        seterrno(EINVAL);
         return -1;
     }
 
@@ -177,9 +169,7 @@ int cucul_set_color_ansi(cucul_canvas_t *cv, unsigned char fg, unsigned char bg)
 
     if(fg > 0x20 || bg > 0x20)
     {
-#if defined(HAVE_ERRNO_H)
-        errno = EINVAL;
-#endif
+        seterrno(EINVAL);
         return -1;
     }
 
@@ -213,9 +203,7 @@ int cucul_set_color_argb(cucul_canvas_t *cv, unsigned int fg, unsigned int bg)
 
     if(fg > 0xffff || bg > 0xffff)
     {
-#if defined(HAVE_ERRNO_H)
-        errno = EINVAL;
-#endif
+        seterrno(EINVAL);
         return -1;
     }
 

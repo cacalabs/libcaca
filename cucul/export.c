@@ -20,9 +20,6 @@
 #include "common.h"
 
 #if !defined(__KERNEL__)
-#   if defined(HAVE_ERRNO_H)
-#       include <errno.h>
-#   endif
 #   include <stdlib.h>
 #   include <stdio.h>
 #   include <string.h>
@@ -117,9 +114,7 @@ void *cucul_export_memory(cucul_canvas_t *cv, char const *format,
     if(!strcasecmp("tga", format))
         return export_tga(cv, bytes);
 
-#if defined(HAVE_ERRNO_H)
-    errno = EINVAL;
-#endif
+    seterrno(EINVAL);
     return NULL;
 }
 
@@ -276,8 +271,8 @@ static void *export_utf8(cucul_canvas_t *cv, unsigned long int *bytes, int cr)
     }
 
     /* Crop to really used size */
-    debug("utf8 export: alloc %li bytes, realloc %li\n",
-          (long int)*bytes, (long int)(uintptr_t)(cur - data));
+    debug("utf8 export: alloc %lu bytes, realloc %lu",
+          (unsigned long int)*bytes, (unsigned long int)(cur - data));
     *bytes = (uintptr_t)(cur - data);
     data = realloc(data, *bytes);
 
@@ -356,8 +351,8 @@ static void *export_ansi(cucul_canvas_t *cv, unsigned long int *bytes)
     }
 
     /* Crop to really used size */
-    debug("ansi export: alloc %li bytes, realloc %li\n",
-          (long int)*bytes, (long int)(uintptr_t)(cur - data));
+    debug("ansi export: alloc %lu bytes, realloc %lu",
+          (unsigned long int)*bytes, (unsigned long int)(cur - data));
     *bytes = (uintptr_t)(cur - data);
     data = realloc(data, *bytes);
 
@@ -432,8 +427,8 @@ static void *export_html(cucul_canvas_t *cv, unsigned long int *bytes)
     cur += sprintf(cur, "</div></body></html>\n");
 
     /* Crop to really used size */
-    debug("html export: alloc %li bytes, realloc %li\n",
-          (long int)*bytes, (long int)(uintptr_t)(cur - data));
+    debug("html export: alloc %lu bytes, realloc %lu",
+          (unsigned long int)*bytes, (unsigned long int)(cur - data));
     *bytes = (uintptr_t)(cur - data);
     data = realloc(data, *bytes);
 
@@ -527,8 +522,8 @@ static void *export_html3(cucul_canvas_t *cv, unsigned long int *bytes)
     cur += sprintf(cur, "</table>\n");
 
     /* Crop to really used size */
-    debug("html3 export: alloc %li bytes, realloc %li\n",
-          (long int)*bytes, (long int)(uintptr_t)(cur - data));
+    debug("html3 export: alloc %lu bytes, realloc %lu",
+          (unsigned long int)*bytes, (unsigned long int)(cur - data));
     *bytes = (uintptr_t)(cur - data);
     data = realloc(data, *bytes);
 
@@ -634,8 +629,8 @@ static void *export_irc(cucul_canvas_t *cv, unsigned long int *bytes)
     }
 
     /* Crop to really used size */
-    debug("IRC export: alloc %li bytes, realloc %li\n",
-          (long int)*bytes, (long int)(uintptr_t)(cur - data));
+    debug("IRC export: alloc %lu bytes, realloc %lu",
+          (unsigned long int)*bytes, (unsigned long int)(cur - data));
     *bytes = (uintptr_t)(cur - data);
     data = realloc(data, *bytes);
 
@@ -743,8 +738,8 @@ static void *export_ps(cucul_canvas_t *cv, unsigned long int *bytes)
     cur += sprintf(cur, "showpage\n");
 
     /* Crop to really used size */
-    debug("PS export: alloc %li bytes, realloc %li\n",
-          (long int)*bytes, (long int)(uintptr_t)(cur - data));
+    debug("PS export: alloc %lu bytes, realloc %lu",
+          (unsigned long int)*bytes, (unsigned long int)(cur - data));
     *bytes = (uintptr_t)(cur - data);
     data = realloc(data, *bytes);
 
@@ -829,8 +824,8 @@ static void *export_svg(cucul_canvas_t *cv, unsigned long int *bytes)
     cur += sprintf(cur, "</svg>\n");
 
     /* Crop to really used size */
-    debug("SVG export: alloc %li bytes, realloc %li\n",
-          (long int)*bytes, (long int)(uintptr_t)(cur - data));
+    debug("SVG export: alloc %lu bytes, realloc %lu",
+          (unsigned long int)*bytes, (unsigned long int)(cur - data));
     *bytes = (uintptr_t)(cur - data);
     data = realloc(data, *bytes);
 
@@ -848,9 +843,7 @@ static void *export_tga(cucul_canvas_t *cv, unsigned long int *bytes)
     fontlist = cucul_get_font_list();
     if(!fontlist[0])
     {
-#if defined(HAVE_ERRNO_H)
-        errno = EINVAL;
-#endif
+        seterrno(EINVAL);
         return NULL;
     }
 

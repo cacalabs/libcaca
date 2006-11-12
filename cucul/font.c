@@ -22,9 +22,6 @@
 #   if defined(HAVE_ENDIAN_H)
 #       include <endian.h>
 #   endif
-#   if defined(HAVE_ERRNO_H)
-#       include <errno.h>
-#   endif
 #   include <stdio.h>
 #   include <stdlib.h>
 #   include <string.h>
@@ -126,26 +123,22 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
         if(!strcasecmp(data, "Monospace Bold 12"))
             return cucul_load_font((char *)&monobold12_data, monobold12_size);
 
-#if defined(HAVE_ERRNO_H)
-        errno = ENOENT;
-#endif
+        seterrno(ENOENT);
         return NULL;
     }
 
     if(size < sizeof(struct font_header))
     {
-#if defined(HAVE_ERRNO_H)
-        errno = EINVAL;
-#endif
+        debug("font error: data size %i < header size %i",
+              size, (int)sizeof(struct font_header));
+        seterrno(EINVAL);
         return NULL;
     }
 
     f = malloc(sizeof(cucul_font_t));
     if(!f)
     {
-#if defined(HAVE_ERRNO_H)
-        errno = ENOMEM;
-#endif
+        seterrno(ENOMEM);
         return NULL;
     }
 
@@ -167,10 +160,18 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
             f->header.bpp != 2 && f->header.bpp != 1)
         || (f->header.flags & 1) == 0)
     {
-        free(f);
-#if defined(HAVE_ERRNO_H)
-        errno = EINVAL;
+#if defined DEBUG
+        if(size != 4 + f->header.control_size + f->header.data_size)
+            debug("font error: data size %i < expected size %i",
+                  size, 4 + f->header.control_size + f->header.data_size);
+        else if(f->header.bpp != 8 && f->header.bpp != 4 &&
+                f->header.bpp != 2 && f->header.bpp != 1)
+            debug("font error: invalid bpp %i", f->header.bpp);
+        else if((f->header.flags & 1) == 0)
+            debug("font error: invalid flags %.04x", f->header.flags);
 #endif
+        free(f);
+        seterrno(EINVAL);
         return NULL;
     }
 
@@ -178,9 +179,7 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
     if(!f->block_list)
     {
         free(f);
-#if defined(HAVE_ERRNO_H)
-        errno = ENOMEM;
-#endif
+        seterrno(ENOMEM);
         return NULL;
     }
 
@@ -190,9 +189,7 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
     {
         free(f->block_list);
         free(f);
-#if defined(HAVE_ERRNO_H)
-        errno = ENOMEM;
-#endif
+        seterrno(ENOMEM);
         return NULL;
     }
 
@@ -209,12 +206,21 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
             || (i > 0 && f->block_list[i].start < f->block_list[i - 1].stop)
             || f->block_list[i].index >= f->header.glyphs)
         {
+#if defined DEBUG
+            if(f->block_list[i].start > f->block_list[i].stop)
+                debug("font error: block %i has start %i > stop %i",
+                      i, f->block_list[i].start, f->block_list[i].stop);
+            else if(i > 0 && f->block_list[i].start < f->block_list[i - 1].stop)
+                debug("font error: block %i has start %i < previous stop %i",
+                      f->block_list[i].start, f->block_list[i - 1].stop);
+            else if(f->block_list[i].index >= f->header.glyphs)
+                debug("font error: block %i has index >= glyph count %i",
+                      f->block_list[i].index, f->header.glyphs);
+#endif
             free(f->user_block_list);
             free(f->block_list);
             free(f);
-#if defined(HAVE_ERRNO_H)
-            errno = EINVAL;
-#endif
+            seterrno(EINVAL);
             return NULL;
         }
 
@@ -231,9 +237,7 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
         free(f->user_block_list);
         free(f->block_list);
         free(f);
-#if defined(HAVE_ERRNO_H)
-        errno = ENOMEM;
-#endif
+        seterrno(ENOMEM);
         return NULL;
     }
 
@@ -252,13 +256,24 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
                 + (f->glyph_list[i].width * f->glyph_list[i].height *
                    f->header.bpp + 7) / 8 > f->header.data_size)
         {
+#if defined DEBUG
+            if(f->glyph_list[i].data_offset >= f->header.data_size)
+                debug("font error: glyph %i has data start %i > "
+                      "data end %i",
+                      f->glyph_list[i].data_offset, f->header.data_size);
+            else if(f->glyph_list[i].data_offset
+                     + (f->glyph_list[i].width * f->glyph_list[i].height *
+                        f->header.bpp + 7) / 8 > f->header.data_size)
+                debug("font error: glyph %i has data end %i > "
+                      "data end %i", f->glyph_list[i].data_offset
+                       + (f->glyph_list[i].width * f->glyph_list[i].height *
+                          f->header.bpp + 7) / 8, f->header.data_size);
+#endif
             free(f->glyph_list);
             free(f->user_block_list);
             free(f->block_list);
             free(f);
-#if defined(HAVE_ERRNO_H)
-            errno = EINVAL;
-#endif
+            seterrno(EINVAL);
             return NULL;
         }
     }

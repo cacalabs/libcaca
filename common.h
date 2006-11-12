@@ -17,6 +17,7 @@
  *  function prototypes that are sometimes missing.
  */
 
+/* C99 types */
 #if defined HAVE_INTTYPES_H && !defined __KERNEL__
 #   include <inttypes.h>
 #else
@@ -32,31 +33,36 @@ typedef long int intptr_t;
 typedef unsigned long int uintptr_t;
 #endif
 
+/* errno handling */
+#if defined HAVE_ERRNO_H && !defined __KERNEL__
+#   include <errno.h>
+static inline void seterrno(int e) { errno = e; }
+static inline int geterrno(void) { return errno; }
+#else
+#   define seterrno(x) do {} while(0)
+#   define geterrno(x) 0
+#endif
+
+/* debug messages */
 #if defined DEBUG && !defined __KERNEL__
 #   include <stdio.h>
 #   include <stdarg.h>
-#   if defined(HAVE_ERRNO_H)
-#       include <errno.h>
-#   endif
 static inline void debug(const char *format, ...)
 {
-#   if defined(HAVE_ERRNO_H)
-    int saved_errno = errno;
-#   endif
+    int saved_errno = geterrno();
     va_list args;
     va_start(args, format);
     fprintf(stderr, "** libcaca debug ** ");
     vfprintf(stderr, format, args);
     fprintf(stderr, "\n");
     va_end(args);
-#   if defined(HAVE_ERRNO_H)
-    errno = saved_errno;
-#   endif
+    seterrno(saved_errno);
 }
 #else
 #   define debug(format, ...) do {} while(0)
 #endif
 
+/* hton16() and hton32() */
 #if defined HAVE_HTONS
 #   if defined __KERNEL__
         /* Nothing to do */
@@ -99,9 +105,5 @@ static inline uint32_t hton32(uint32_t x)
         return (x >> 24) | ((x >> 8) & 0x0000ff00)
                 | ((x << 8) & 0x00ff0000) | (x << 24);
 }
-#endif
-
-#if defined __KERNEL__
-#   undef HAVE_ERRNO_H
 #endif
 

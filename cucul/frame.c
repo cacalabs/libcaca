@@ -22,9 +22,6 @@
 #   include <stdio.h>
 #   include <stdlib.h>
 #   include <string.h>
-#   if defined(HAVE_ERRNO_H)
-#       include <errno.h>
-#   endif
 #endif
 
 #include "cucul.h"
@@ -66,9 +63,7 @@ int cucul_set_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
 {
     if(frame >= cv->framecount)
     {
-#if defined(HAVE_ERRNO_H)
-        errno = EINVAL;
-#endif
+        seterrno(EINVAL);
         return -1;
     }
 
@@ -160,17 +155,13 @@ int cucul_free_canvas_frame(cucul_canvas_t *cv, unsigned int id)
 
     if(id >= cv->framecount)
     {
-#if defined(HAVE_ERRNO_H)
-        errno = EINVAL;
-#endif
+        seterrno(EINVAL);
         return -1;
     }
 
     if(cv->framecount == 1)
     {
-#if defined(HAVE_ERRNO_H)
-        errno = EINVAL;
-#endif
+        seterrno(EINVAL);
         return -1;
     }
 

@@ -24,9 +24,6 @@
 #   include <stdlib.h>
 #   include <string.h>
 #   include <stdio.h>
-#   if defined(HAVE_ERRNO_H)
-#       include <errno.h>
-#   endif
 #   if defined(USE_PLUGINS)
 #       if defined(HAVE_DLFCN_H)
 #           include <dlfcn.h>
@@ -69,9 +66,7 @@ caca_display_t * caca_create_display(cucul_canvas_t * cv)
 
     if(!dp)
     {
-#if defined(HAVE_ERRNO_H)
-        errno = ENOMEM;
-#endif
+        seterrno(ENOMEM);
         return NULL;
     }
 
@@ -87,9 +82,7 @@ caca_display_t * caca_create_display(cucul_canvas_t * cv)
             dlclose(dp->plugin);
 #endif
         free(dp);
-#if defined(HAVE_ERRNO_H)
-        errno = ENODEV;
-#endif
+        seterrno(ENODEV);
         return NULL;
     }
 
@@ -100,9 +93,7 @@ caca_display_t * caca_create_display(cucul_canvas_t * cv)
             dlclose(dp->plugin);
 #endif
         free(dp);
-#if defined(HAVE_ERRNO_H)
-        errno = ENODEV;
-#endif
+        seterrno(ENODEV);
         return NULL;
     }
 

@@ -24,9 +24,6 @@
 #   include <stdlib.h>
 #   include <string.h>
 #   include <time.h>
-#   if defined(HAVE_ERRNO_H)
-#       include <errno.h>
-#   endif
 #   include <sys/types.h>
 #   if defined(HAVE_UNISTD_H)
 #       include <unistd.h>
@@ -87,23 +84,17 @@ cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
 
     if(_cucul_set_canvas_size(cv, width, height) < 0)
     {
-#if defined(HAVE_ERRNO_H)
-        int saved_errno = errno;
-#endif
+        int saved_errno = geterrno();
         free(cv->frames);
         free(cv);
-#if defined(HAVE_ERRNO_H)
-        errno = saved_errno;
-#endif
+        seterrno(saved_errno);
         return NULL;
     }
 
     return cv;
 
 nomem:
-#if defined(HAVE_ERRNO_H)
-    errno = ENOMEM;
-#endif
+    seterrno(ENOMEM);
     return NULL;
 }
 
@@ -137,9 +128,7 @@ int cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
 {
     if(cv->refcount)
     {
-#if defined(HAVE_ERRNO_H)
-        errno = EBUSY;
-#endif
+        seterrno(EBUSY);
         return -1;
     }
 
@@ -192,9 +181,7 @@ int cucul_free_canvas(cucul_canvas_t *cv)
 
     if(cv->refcount)
     {
-#if defined(HAVE_ERRNO_H)
-        errno = EBUSY;
-#endif
+        seterrno(EBUSY);
         return -1;
     }
 
@@ -262,9 +249,7 @@ int _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
                                           new_size * sizeof(uint32_t));
             if(new_size && (!cv->frames[f].chars || !cv->frames[f].attrs))
             {
-#if defined(HAVE_ERRNO_H)
-                errno = ENOMEM;
-#endif
+                seterrno(ENOMEM);
                 return -1;
             }
         }
@@ -356,9 +341,7 @@ int _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
                                           new_size * sizeof(uint32_t));
             if(new_size && (!cv->frames[f].chars || !cv->frames[f].attrs))
             {
-#if defined(HAVE_ERRNO_H)
-                errno = ENOMEM;
-#endif
+                seterrno(ENOMEM);
                 return -1;
             }
         }

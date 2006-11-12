@@ -20,9 +20,6 @@
 #include "common.h"
 
 #if !defined(__KERNEL__)
-#   if defined(HAVE_ERRNO_H)
-#       include <errno.h>
-#   endif
 #   include <stdio.h>
 #   include <stdlib.h>
 #   include <string.h>
@@ -88,9 +85,7 @@ cucul_buffer_t * cucul_export_canvas(cucul_canvas_t *cv, char const *format)
     ex = malloc(sizeof(cucul_buffer_t));
     if(!ex)
     {
-#if defined(HAVE_ERRNO_H)
-        errno = ENOMEM;
-#endif
+        seterrno(ENOMEM);
         return NULL;
     }
 

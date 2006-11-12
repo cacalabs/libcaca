@@ -24,9 +24,6 @@
 #   include <string.h>
 #   include <stdlib.h>
 #   include <stdarg.h>
-#   if defined(HAVE_ERRNO_H)
-#       include <errno.h>
-#   endif
 #   if defined(HAVE_UNISTD_H)
 #       include <unistd.h>
 #   endif
@@ -384,9 +381,7 @@ int cucul_blit(cucul_canvas_t *dst, int x, int y,
 
     if(mask && (src->width != mask->width || src->height != mask->height))
     {
-#if defined(HAVE_ERRNO_H)
-        errno = EINVAL;
-#endif
+        seterrno(EINVAL);
         return -1;
     }
 
@@ -471,9 +466,7 @@ int cucul_set_canvas_boundaries(cucul_canvas_t *cv, int x, int y,
 
     if(cv->refcount)
     {
-#if defined(HAVE_ERRNO_H)
-        errno = EBUSY;
-#endif
+        seterrno(EBUSY);
         return -1;
     }
 
