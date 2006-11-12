@@ -4,6 +4,8 @@
 
   \subsection dep API-dependent stuff
 
+  - support for holes in canvas (eg. not full EOL)
+  - support for TAB
   - allow to change the canvas size in a per-frame basis.
   - export attribute parsing functions such as attr_to_ansi4fg etc.
 
@@ -28,7 +30,7 @@
 
   \subsection dep API-dependent stuff
 
-  - nothing more!
+  - beep support
 
   \subsection indep API-independent stuff
 

@@ -166,10 +166,10 @@ static void *export_caca(cucul_canvas_t *cv, unsigned long int *bytes)
     char *data, *cur;
     unsigned int n;
 
-    /* 44 bytes for the header:
+    /* 52 bytes for the header:
      *  - 4 bytes for "\xCA\xCA" + "CV"
      *  - 16 bytes for the canvas header
-     *  - 24 bytes for the frame info
+     *  - 32 bytes for the frame info
      * 8 bytes for each character cell */
     *bytes = 52 + 8 * cv->width * cv->height;
     cur = data = malloc(*bytes);
