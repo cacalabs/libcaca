@@ -27,37 +27,41 @@ int main(int argc, char **argv)
     char cmd[BUFSIZ];
     static cucul_canvas_t *cv, *app;
     static caca_display_t *dp;
-    unsigned char *buf[2];
-    long int bytes[2], total[2];
-    FILE *f[2];
+    unsigned char *buf[4];
+    long int bytes[4], total[4];
+    FILE *f[4];
     int w, h, i;
 
-    buf[0] = buf[1] = NULL;
-    total[0] = total[1] = 0;
-
-    if(argc < 3)
+    if(argc < 5)
+    {
+        fprintf(stderr, "usage: %s <cmd1> <cmd2> <cmd3> <cmd4>\n", argv[0]);
         return 1;
+    }
 
     cv = cucul_create_canvas(0, 0);
     app = cucul_create_canvas(0, 0);
     w = 38;
-    h = 26;
+    h = 13;
 
     dp = caca_create_display(cv);
     if(!dp)
         return 1;
 
     cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
-    cucul_printf(cv, 1, h + 4, "libcaca multiplexer");
+    cucul_draw_line(cv, 0, 0, 80, 0, ' ');
+    cucul_printf(cv, 30, 0, "libcaca multiplexer");
 
-    for(i = 0; i < 2; i++)
+    for(i = 0; i < 4; i++)
     {
+        buf[i] = NULL;
+        total[i] = bytes[i] = 0;
         sprintf(cmd, "CACA_DRIVER=raw CACA_GEOMETRY=%ix%i %s",
                      w, h, argv[i + 1]);
         f[i] = popen(cmd, "r");
         if(!f[i])
             return 1;
-        cucul_printf(cv, 40 * i + 1, 1, "%s", argv[i + 1]);
+        cucul_printf(cv, 40 * (i / 2) + 1,
+                         (h + 2) * (i % 2) + h + 2, "%s", argv[i + 1]);
     }
 
     for(;;)
@@ -68,7 +72,7 @@ int main(int argc, char **argv)
         if(ret && ev.type & CACA_EVENT_KEY_PRESS)
             break;
 
-        for(i = 0; i < 2; i++)
+        for(i = 0; i < 4; i++)
         {
             bytes[i] = cucul_import_memory(app, buf[i], total[i], "caca");
 
@@ -77,7 +81,8 @@ int main(int argc, char **argv)
                 total[i] -= bytes[i];
                 memmove(buf[i], buf[i] + bytes[i], total[i]);
 
-                cucul_blit(cv, 1 + i * (w + 2), 3, app, NULL);
+                cucul_blit(cv, 1 + (i / 2) * (w + 2),
+                               (h + 2) * (i % 2) + 2, app, NULL);
                 caca_refresh_display(dp);
             }
             else if(bytes[i] == 0)
@@ -88,7 +93,7 @@ int main(int argc, char **argv)
             }
             else
             {
-                fprintf(stderr, "%s: corrupted input\n", argv[0]);
+                fprintf(stderr, "%s: corrupted input %i\n", argv[0], i);
                 return -1;
             }
         }

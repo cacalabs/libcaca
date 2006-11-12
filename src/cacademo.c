@@ -48,7 +48,7 @@ void (*fn[])(enum action, cucul_canvas_t *) =
 };
 #define DEMOS (sizeof(fn)/sizeof(*fn))
 
-#define DEMO_FRAMES 1000
+#define DEMO_FRAMES cucul_rand(500, 1000)
 #define TRANSITION_FRAMES 40
 
 #define TRANSITION_COUNT  2
