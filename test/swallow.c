@@ -28,7 +28,7 @@ int main(int argc, char **argv)
     static cucul_canvas_t *cv, *app;
     static caca_display_t *dp;
     unsigned char *buf[2];
-    unsigned long int bytes[2], total[2];
+    long int bytes[2], total[2];
     FILE *f[2];
     int w, h, i;
 
@@ -85,6 +85,11 @@ int main(int argc, char **argv)
                 buf[i] = realloc(buf[i], total[i] + 128);
                 fread(buf[i] + total[i], 128, 1, f[i]);
                 total[i] += 128;
+            }
+            else
+            {
+                fprintf(stderr, "%s: corrupted input\n", argv[0]);
+                return -1;
             }
         }
     }
