@@ -8,3 +8,11 @@ AUTOMAKE_OPTIONS = dist-bzip2
 
 bin_SCRIPTS = caca-config
 
+webhost = poulet.zoy.org
+webdir = /srv/libcaca.zoy.org/var/www/
+
+upload: doc/html FORCE
+	scp $(distdir).tar.gz $(webhost):$(webdir)/files/
+	scp -r doc/html/* $(webhost):$(webdir)/manual/
+
+FORCE:
