@@ -41,7 +41,7 @@ struct font_header
     uint32_t control_size, data_size;
     uint16_t version, blocks;
     uint32_t glyphs;
-    uint16_t bpp, width, height, flags;
+    uint16_t bpp, width, height, maxwidth, maxheight, flags;
 };
 
 struct block_info
@@ -153,6 +153,8 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
     f->header.bpp = hton16(f->header.bpp);
     f->header.width = hton16(f->header.width);
     f->header.height = hton16(f->header.height);
+    f->header.maxwidth = hton16(f->header.maxwidth);
+    f->header.maxheight = hton16(f->header.maxheight);
     f->header.flags = hton16(f->header.flags);
 
     if(size != 4 + f->header.control_size + f->header.data_size
@@ -254,7 +256,9 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
         if(f->glyph_list[i].data_offset >= f->header.data_size
             || f->glyph_list[i].data_offset
                 + (f->glyph_list[i].width * f->glyph_list[i].height *
-                   f->header.bpp + 7) / 8 > f->header.data_size)
+                   f->header.bpp + 7) / 8 > f->header.data_size
+            || f->glyph_list[i].width > f->header.maxwidth
+            || f->glyph_list[i].height > f->header.maxheight)
         {
 #if defined DEBUG
             if(f->glyph_list[i].data_offset >= f->header.data_size)
@@ -268,6 +272,12 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
                       "data end %i", f->glyph_list[i].data_offset
                        + (f->glyph_list[i].width * f->glyph_list[i].height *
                           f->header.bpp + 7) / 8, f->header.data_size);
+            else if(f->glyph_list[i].width > f->header.maxwidth)
+                debug("font error: glyph %i has width %i > max width %i",
+                      f->glyph_list[i].width, f->header.maxwidth);
+            else if(f->glyph_list[i].height > f->header.maxheight)
+                debug("font error: glyph %i has height %i > max height %i",
+                      f->glyph_list[i].height, f->header.maxheight);
 #endif
             free(f->glyph_list);
             free(f->user_block_list);
@@ -304,28 +314,30 @@ char const * const * cucul_get_font_list(void)
     return list;
 }
 
-/** \brief Get a font's maximum glyph width.
+/** \brief Get a font's standard glyph width.
  *
- *  This function returns the maximum value for the current font's glyphs
+ *  Return the standard value for the current font's glyphs. Most glyphs in
+ *  the font will have this width, except fullwidth characters.
  *
  *  This function never fails.
  *
  *  \param f The font, as returned by cucul_load_font()
- *  \return The maximum glyph width.
+ *  \return The standard glyph width.
  */
 unsigned int cucul_get_font_width(cucul_font_t *f)
 {
     return f->header.width;
 }
 
-/** \brief Get a font's maximum glyph height.
+/** \brief Get a font's standard glyph height.
  *
- *  This function returns the maximum value for the current font's glyphs
+ *  Returns the standard value for the current font's glyphs. Most glyphs in
+ *  the font will have this height.
  *
  *  This function never fails.
  *
  *  \param f The font, as returned by cucul_load_font()
- *  \return The maximum glyph height.
+ *  \return The standard glyph height.
  */
 unsigned int cucul_get_font_height(cucul_font_t *f)
 {
@@ -340,10 +352,10 @@ unsigned int cucul_get_font_height(cucul_font_t *f)
  *
  *  \code
  *  {
- *       0x0,  0x80,   // Basic latin: A, B, C, a, b, c
- *      0x80, 0x100,   // Latin-1 supplement: "A, 'e, ^u
- *     0x530, 0x590,   // Armenian
- *       0x0,   0x0,   // END
+ *     0x0000, 0x0080,   // Basic latin: A, B, C, a, b, c
+ *     0x0080, 0x0100,   // Latin-1 supplement: "A, 'e, ^u
+ *     0x0530, 0x0590,   // Armenian
+ *     0x0000, 0x0000,   // END
  *  };
  *  \endcode
  *

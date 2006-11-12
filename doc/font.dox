@@ -25,8 +25,10 @@ font_header:
 
    uint16_t bpp;              // Bits per pixel for glyph data (valid
                               // Values are 1, 2, 4 and 8)
-   uint16_t width;            // Maximum glyph width
-   uint16_t height;           // Maximum glyph height
+   uint16_t width;            // Standard glyph width
+   uint16_t height;           // Standard glyph height
+   uint16_t maxwidth;         // Maximum glyph width
+   uint16_t maxheight;        // Maximum glyph height
 
    uint16_t flags;            // Feature flags
                               //  bit 0: set to 1 if font is fixed width
