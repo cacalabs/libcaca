@@ -33,40 +33,23 @@ extern "C"
 {
 #endif
 
-/** \e libcaca context */
+/** \e libcaca display context */
 typedef struct caca_display caca_display_t;
-/** event structure */
+/** \e libcaca event structure */
 typedef struct caca_event caca_event_t;
 
-/** \brief User events.
+/** \brief Handling of user events.
  *
  *  This structure is filled by caca_get_event() when an event is received.
- *  The \e type field is always valid. The validity of the \e data union
- *  depends on the value of the \e type field:
- *  - \b CACA_EVENT_NONE: no other field is valid.
- *  - \b CACA_EVENT_KEY_PRESS, \b CACA_EVENT_KEY_RELEASE: the \e data.key.ch
- *      field is valid and contains either the ASCII value for the key, or
- *      an \e enum \e caca_key value. If the value is a printable ASCII
- *      character, the \e data.key.utf32 and \e data.key.utf8 fields are
- *      also filled and contain respectively the UTF-32/UCS-4 and the UTF-8
- *      representations of the character. Otherwise, their content is
- *      undefined.
- *  - \b CACA_EVENT_MOUSE_PRESS, \b CACA_EVENT_MOUSE_RELEASE: the
- *      \e data.mouse.button field is valid and contains the index of the
- *      mouse button that was pressed.
- *  - \b CACA_EVENT_MOUSE_MOTION: the \e data.mouse.x and \e data.mouse.y
- *      fields are valid and contain the mouse coordinates in character
- *      cells.
- *  - \b CACA_EVENT_RESIZE: the \e data.resize.w and \e data.resize.h
- *      fields are valid and contain the new width and height values of
- *      the \e libcucul canvas attached to \e libcaca.
- *  - \b CACA_EVENT_QUIT: no other field is valid.
- *
- *  The result of accessing data members outside the above conditions is
- *  undefined.
- */
+ *  The \e type field is always valid. */
 struct caca_event
 {
+    /** \brief User event type enumeration.
+     *
+     *  This enum serves two purposes:
+     *  - Build listening masks for caca_get_event().
+     *  - Define the type of a \e caca_event_t.
+     */
     enum caca_event_type
     {
         CACA_EVENT_NONE =          0x0000, /**< No event. */
@@ -80,8 +63,39 @@ struct caca_event
         CACA_EVENT_QUIT =          0x0040, /**< The user requested to quit. */
 
         CACA_EVENT_ANY =           0xffff  /**< Bitmask for any event. */
-    } type;
+    }
+    /** \brief User event type member.
+     *
+     *  This field is always valid when caca_get_event() returns.
+     */
+    type;
 
+    /** \brief User event data member.
+     *
+     *  The validity of the \e data union depends on the value of the \e type
+     *  field:
+     *  - \c CACA_EVENT_NONE: no field is valid.
+     *  - \c CACA_EVENT_KEY_PRESS, \c CACA_EVENT_KEY_RELEASE: the
+     *  \e data.key.ch field is valid and contains either the ASCII value for
+     *  the key, or an \e enum \e caca_key value. If the value is a printable
+     *  ASCII character, the \e data.key.utf32 and \e data.key.utf8 fields are
+     *  also filled and contain respectively the UTF-32/UCS-4 and the UTF-8
+     *  representations of the character. Otherwise, their content is
+     *  undefined.
+     *  - \c CACA_EVENT_MOUSE_PRESS, \c CACA_EVENT_MOUSE_RELEASE: the
+     *  \e data.mouse.button field is valid and contains the index of the
+     *  mouse button that was pressed.
+     *  - \c CACA_EVENT_MOUSE_MOTION: the \e data.mouse.x and \e data.mouse.y
+     *  fields are valid and contain the mouse coordinates in character
+     *  cells.
+     *  - \c CACA_EVENT_RESIZE: the \e data.resize.w and \e data.resize.h
+     *  fields are valid and contain the new width and height values of
+     *  the \e libcucul canvas attached to \e libcaca.
+     *  - \c CACA_EVENT_QUIT: no other field is valid.
+     *
+     *  The result of accessing data members outside the above conditions is
+     *  undefined.
+     */
     union
     {
         struct { unsigned int x, y, button; } mouse;
