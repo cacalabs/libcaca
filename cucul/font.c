@@ -395,7 +395,7 @@ int cucul_render_canvas(cucul_canvas_t *cv, cucul_font_t *f,
     unsigned int x, y, xmax, ymax;
 
     if(f->header.bpp != 8)
-        glyph = malloc(f->header.width * f->header.height);
+        glyph = malloc(f->header.width * 2 * f->header.height);
 
     if(width < cv->width * f->header.width)
         xmax = width / f->header.width;
@@ -476,7 +476,7 @@ int cucul_render_canvas(cucul_canvas_t *cv, cucul_font_t *f,
                     q = 0xff - p;
 
                     for(t = 0; t < 4; t++)
-                       pixel[t] = (((q * argb[t]) + (p * argb[4 + t])) / 0xf);
+                        pixel[t] = (((q * argb[t]) + (p * argb[4 + t])) / 0xf);
                 }
             }
         }

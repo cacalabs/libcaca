@@ -56,6 +56,8 @@ static unsigned int const blocklist[] =
     0x2300, 0x2400, /* Miscellaneous Technical: ⌐ ⌂ ⌠ ⌡ */
     0x2500, 0x2580, /* Box Drawing: ═ ║ ╗ ╔ ╩ */
     0x2580, 0x25a0, /* Block Elements: ▛ ▞ ░ ▒ ▓ */
+    0x3040, 0x30a0, /* Hiragana: で す */
+    0x30a0, 0x3100, /* Katakana: ロ ル */
     0, 0
 };
 
@@ -64,7 +66,9 @@ struct glyph
     uint32_t unicode;
     char buf[10];
     unsigned int same_as;
-    unsigned int data_index;
+    unsigned int data_offset;
+    unsigned int data_width;
+    unsigned int data_size;
 };
 
 static void fix_glyph(FT_Bitmap *, uint32_t, unsigned int, unsigned int);
@@ -85,8 +89,9 @@ int main(int argc, char *argv[])
     PangoRectangle r;
 
     FT_Bitmap img;
-    int width, height, blocks, glyphs;
-    unsigned int n, b, i, index, glyph_size, control_size, data_size;
+    int width, height, blocks, glyphs, fullwidth;
+    unsigned int n, b, i, index;
+    unsigned int glyph_size, control_size, data_size, current_offset;
     uint8_t *glyph_data;
     struct glyph *gtab;
 
@@ -149,14 +154,18 @@ int main(int argc, char *argv[])
     /* Compute blocks and glyphs count */
     blocks = 0;
     glyphs = 0;
+    fullwidth = 0;
     for(b = 0; blocklist[b + 1]; b += 2)
     {
         blocks++;
         glyphs += blocklist[b + 1] - blocklist[b];
+        for(i = blocklist[b]; i < blocklist[b + 1]; i++)
+            if(cucul_utf32_is_fullwidth(i))
+                fullwidth++;
     }
 
     control_size = 24 + 12 * blocks + 8 * glyphs;
-    data_size = glyph_size * glyphs;
+    data_size = glyph_size * (glyphs + fullwidth);
 
     gtab = malloc(glyphs * sizeof(struct glyph));
     glyph_data = malloc(data_size);
@@ -211,14 +220,19 @@ int main(int argc, char *argv[])
     printf("\n");
 
     /* Render all glyphs, so that we can know their offset */
-    n = index = 0;
+    current_offset = n = index = 0;
     for(b = 0; blocklist[b + 1]; b += 2)
     {
         for(i = blocklist[b]; i < blocklist[b + 1]; i++)
         {
-            int x, y, bytes;
-            unsigned int k;
+            int x, y, bytes, current_width = width;
+            unsigned int k, current_size = glyph_size;
 
+            if(cucul_utf32_is_fullwidth(i))
+            {
+                current_width *= 2;
+                current_size *= 2;
+            }
             gtab[n].unicode = i;
             bytes = cucul_utf32_to_utf8(gtab[n].buf, gtab[n].unicode);
             gtab[n].buf[bytes] = '\0';
@@ -229,19 +243,19 @@ int main(int argc, char *argv[])
             pango_ft2_render_layout(&img, l, 0, 0);
 
             /* Fix glyphs that we know how to handle better */
-            fix_glyph(&img, gtab[n].unicode, width, height);
+            fix_glyph(&img, gtab[n].unicode, current_width, height);
 
             /* Write bitmap as an escaped C string */
-            memset(glyph_data + n * glyph_size, 0, glyph_size);
+            memset(glyph_data + current_offset, 0, current_size);
             k = 0;
             for(y = 0; y < height; y++)
             {
-                for(x = 0; x < width; x++)
+                for(x = 0; x < current_width; x++)
                 {
                     uint8_t pixel = img.buffer[y * img.pitch + x];
 
                     pixel >>= (8 - bpp);
-                    glyph_data[n * glyph_size + k / 8]
+                    glyph_data[current_offset + k / 8]
                         |= pixel << (8 - bpp - (k % 8));
                     k += bpp;
                 }
@@ -252,16 +266,22 @@ int main(int argc, char *argv[])
              * our data is small enough for this to work. */
             for(k = 0; k < n; k++)
             {
-                if(!memcmp(glyph_data + k * glyph_size,
-                           glyph_data + n * glyph_size, glyph_size))
+                if(gtab[k].data_size != current_size)
+                    continue;
+#if 0
+                if(!memcmp(glyph_data + gtab[k].data_offset,
+                           glyph_data + current_offset, current_size))
                     break;
+#endif
             }
 
-            gtab[n].data_index = index;
+            gtab[n].data_offset = current_offset;
+            gtab[n].data_width = current_width;
+            gtab[n].data_size = current_size;
             gtab[n].same_as = k;
 
             if(k == n)
-                index++;
+                current_offset += current_size;
 
             n++;
         }
@@ -273,9 +293,9 @@ int main(int argc, char *argv[])
     {
         for(i = blocklist[b]; i < blocklist[b + 1]; i++)
         {
-            printf_u16("\"%s", width);
+            printf_u16("\"%s", gtab[n].data_width);
             printf_u16("%s", height);
-            printf_u32("%s\"\n", gtab[gtab[n].same_as].data_index * glyph_size);
+            printf_u32("%s\"\n", gtab[gtab[n].same_as].data_offset);
             n++;
         }
     }
@@ -293,7 +313,7 @@ int main(int argc, char *argv[])
 
             if(gtab[n].same_as == n)
                 printf_hex(" */ \"%s\"\n",
-                           glyph_data + n * glyph_size, glyph_size);
+                           glyph_data + gtab[n].data_offset, gtab[n].data_size);
             else
             {
                 printf(" is ");
