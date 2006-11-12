@@ -24,8 +24,6 @@
 
 #include "cucul.h"
 
-#define WIDTH 64
-
 int main(int argc, char *argv[])
 {
     unsigned long int const *blocks;
@@ -34,7 +32,7 @@ int main(int argc, char *argv[])
     cucul_canvas_t *cv;
     void *buffer;
     unsigned long int len;
-    unsigned int i, j, x, y, cells;
+    unsigned int i, j, x, y, cells, width;
 
     fonts = cucul_get_font_list();
     f = cucul_load_font(fonts[0], 0);
@@ -48,8 +46,11 @@ int main(int argc, char *argv[])
                 cells++;
     }
 
+    for(width = 64; width * width < cells; width *= 2)
+        ;
+
     /* Create a canvas */
-    cv = cucul_create_canvas(WIDTH, (cells + WIDTH - 1) / (WIDTH - 1));
+    cv = cucul_create_canvas(width, (cells + width - 1) / (width - 1));
     cucul_set_color_ansi(cv, CUCUL_RED, CUCUL_RED);
     cucul_clear_canvas(cv);
     cucul_set_color_ansi(cv, CUCUL_BLACK, CUCUL_WHITE);
@@ -66,7 +67,7 @@ int main(int argc, char *argv[])
             if(cucul_utf32_is_fullwidth(j))
                 ++x;
 
-            if(++x >= WIDTH - 1)
+            if(++x >= width - 1)
             {
                 x = 0;
                 y++;
