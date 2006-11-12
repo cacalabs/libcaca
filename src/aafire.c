@@ -274,6 +274,8 @@ game (void)
         {
           switch(ev.data.key.ch)
             {
+                case 0x03: /* Ctrl-C */
+                case 0x1a: /* Ctrl-Z */
                 case CACA_KEY_ESCAPE: return;
                 case ' ': pause = !pause;
             }
