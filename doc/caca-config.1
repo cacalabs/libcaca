@@ -7,12 +7,18 @@ caca-config \- script to get information about the installed version of libcaca
 .IR DIR ]
 [ --exec-prefix=
 .IR DIR ]
-[ --version ] [ --libs | --plugin-libs ] [ --cflags ]
+[ --version ] [ --libs ] [ --cflags ]
 .SH DESCRIPTION
 .B caca-config
 is a tool that is used to configure and determine the compiler and linker
 flags that should be used to compile and link progams, libraries, and
 plugins that use libcaca.
+
+The use of
+.B caca-config
+is deprecated. The more generic tool
+.B pkg-config
+should be used instead.
 .SH OPTIONS
 .TP
 .B --cflags
@@ -23,29 +29,19 @@ that uses libcaca.
 If specified, use
 .I DIR
 instead of the installation exec prefix that libcaca was build with when
-computing the output for the --cflags, --libs, and --plugin-libs options.
-This option must be specified before any of the --cflags, --libs, and
---plugin-libs options.
+computing the output for the --cflags and --libs options.
+This option must be specified before any of the --cflags and --libs options.
 .TP
 .B --libs
-Print the linker flags that are necessary to link a program that uses
-libcaca.
-.TP
-.B --plugin-libs
-Print the linker flags that are necessary to link a libcaca-using object that
-is to be accessed via
-.IR dlopen (3).
-This may include static objects with PIC symbol information.  This option
-should
-.B not
-be used for standalone applications.
+Print the linker flags that are necessary to link a program or library
+that uses libcaca.
 .TP
 .BI --prefix= DIR
 If specified, use PREFIX instead of the installation prefix that libcaca
-was built with when computing the output for the --cflags, --libs,
-and --plugin-libs options.  This option is also used for the exec prefix
-if --exec-prefix was not specified.  This option must be specified before
-any of the --cflags, --libs, and --plugin-libs options.
+was built with when computing the output for the --cflags and --libs
+options.  This option is also used for the exec prefix if --exec-prefix
+was not specified.  This option must be specified before any of the --cflags
+and --libs options.
 .TP
 .B --version
 Prints the currently installed version of libcaca on standard output.
@@ -60,11 +56,8 @@ gcc -o my_app $(caca-config --libs) main.o util.o
 is how you might use
 .B caca-config
 to link compiled objects into an executable program.
-.TP
-gcc -o libcaca_plugin.so $(caca-config --plugin-libs) caca_plugin.o stubs.o
-is how you might use
-.B caca-config
-to link compiled objects into a plugin for use by another program.
+.SH SEE ALSO
+pkg-config(1)
 .SH AUTHOR
 The libcaca library was written by Sam Hocevar <sam@zoy.org>.
 .PP
