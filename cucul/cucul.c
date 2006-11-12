@@ -59,13 +59,6 @@ cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
 
     cv->refcount = 0;
 
-    cv->curattr = 0x00000000;
-    cucul_set_color_ansi(cv, CUCUL_DEFAULT, CUCUL_TRANSPARENT);
-
-    cv->width = cv->height = 0;
-    cv->chars = NULL;
-    cv->attrs = NULL;
-
     cv->frame = 0;
     cv->framecount = 1;
     cv->frames = malloc(sizeof(struct cucul_frame));
@@ -80,7 +73,10 @@ cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
     cv->frames[0].attrs = NULL;
     cv->frames[0].x = cv->frames[0].y = 0;
     cv->frames[0].handlex = cv->frames[0].handley = 0;
-    cv->frames[0].curattr = cv->curattr;
+    cv->frames[0].curattr = 0;
+
+    _cucul_load_frame_info(cv);
+    cucul_set_color_ansi(cv, CUCUL_DEFAULT, CUCUL_TRANSPARENT);
 
     if(_cucul_set_canvas_size(cv, width, height) < 0)
     {
@@ -234,6 +230,8 @@ int _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
     old_height = cv->height;
     old_size = old_width * old_height;
 
+    _cucul_save_frame_info(cv);
+
     cv->width = width;
     cv->height = height;
     new_size = width * height;
@@ -355,8 +353,7 @@ int _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
     }
 
     /* Reset the current frame shortcuts */
-    cv->chars = cv->frames[cv->frame].chars;
-    cv->attrs = cv->frames[cv->frame].attrs;
+    _cucul_load_frame_info(cv);
 
     return 0;
 }

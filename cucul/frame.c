@@ -27,9 +27,6 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
-static void save_frame_info(cucul_canvas_t *);
-static void load_frame_info(cucul_canvas_t *);
-
 /** \brief Get the number of frames in a canvas.
  *
  *  Return the current canvas' frame count.
@@ -67,9 +64,9 @@ int cucul_set_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
         return -1;
     }
 
-    save_frame_info(cv);
+    _cucul_save_frame_info(cv);
     cv->frame = frame;
-    load_frame_info(cv);
+    _cucul_load_frame_info(cv);
 
     return 0;
 }
@@ -180,7 +177,7 @@ int cucul_free_canvas_frame(cucul_canvas_t *cv, unsigned int id)
     else if(cv->frame == id)
     {
         cv->frame = 0;
-        load_frame_info(cv);
+        _cucul_load_frame_info(cv);
     }
 
     return 0;
@@ -190,7 +187,7 @@ int cucul_free_canvas_frame(cucul_canvas_t *cv, unsigned int id)
  * XXX: the following functions are local.
  */
 
-static void save_frame_info(cucul_canvas_t *cv)
+void _cucul_save_frame_info(cucul_canvas_t *cv)
 {
     cv->frames[cv->frame].width = cv->width;
     cv->frames[cv->frame].height = cv->height;
@@ -198,7 +195,7 @@ static void save_frame_info(cucul_canvas_t *cv)
     cv->frames[cv->frame].curattr = cv->curattr;
 }
 
-static void load_frame_info(cucul_canvas_t *cv)
+void _cucul_load_frame_info(cucul_canvas_t *cv)
 {
     cv->width = cv->frames[cv->frame].width;
     cv->height = cv->frames[cv->frame].height;
