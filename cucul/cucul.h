@@ -256,6 +256,8 @@ char const * const * cucul_get_export_list(void);
 #   endif
     int cucul_putchar(cucul_canvas_t *, int, int,
                       unsigned long int) CUCUL_DEPRECATED;
+    unsigned long int cucul_getchar(cucul_canvas_t *,
+                                    int, int) CUCUL_DEPRECATED;
     int cucul_putstr(cucul_canvas_t *, int, int,
                      char const *) CUCUL_DEPRECATED;
     int cucul_set_color(cucul_canvas_t *, unsigned char,

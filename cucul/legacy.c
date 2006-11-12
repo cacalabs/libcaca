@@ -37,6 +37,11 @@ int cucul_putchar(cucul_canvas_t *cv, int x, int y, unsigned long int ch)
     return cucul_put_char(cv, x, y, ch);
 }
 
+unsigned long int cucul_getchar(cucul_canvas_t *cv, int x, int y)
+{
+    return cucul_get_char(cv, x, y);
+}
+
 int cucul_putstr(cucul_canvas_t *cv, int x, int y, char const *s)
 {
     return cucul_put_str(cv, x, y, s);
