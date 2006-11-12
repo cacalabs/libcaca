@@ -56,7 +56,7 @@ int main(void)
     cucul_set_color_ansi(cv, CUCUL_BLACK,
                              CUCUL_WHITE);
     /* Draw a string at (0, 0) */
-    cucul_putstr(cv, 0, 0, "Hello world!");
+    cucul_put_str(cv, 0, 0, "Hello world!");
     /* Refresh display */
     caca_refresh_display();
     /* Wait for a key press event */
@@ -146,8 +146,8 @@ int main(void)
  - \b caca_get_bg_color(): use cucul_get_attr().
  - \b caca_get_color_name(): this function is now deprecated due to major
    uselessness.
- - \b caca_putchar(): use cucul_putchar().
- - \b caca_putstr(): use cucul_putstr().
+ - \b caca_putchar(): use cucul_put_char().
+ - \b caca_putstr(): use cucul_put_str().
  - \b caca_printf(): use cucul_printf().
  - \b caca_clear(): use cucul_clear_canvas().
 
@@ -167,7 +167,7 @@ int main(void)
  - \b caca_fill_ellipse(): use cucul_fill_ellipse().
 
  - \b caca_draw_box(): use cucul_draw_box().
- - \b caca_draw_thin_box(): use cucul_draw_thin_box().
+ - \b caca_draw_thin_box(): use cucul_draw_thin_box() or cucul_draw_cp437_box().
  - \b caca_fill_box(): use cucul_fill_box().
 
  - \b caca_draw_triangle(): use cucul_draw_triangle().
@@ -190,8 +190,8 @@ int main(void)
  - \b caca_get_sprite_frames(): use cucul_get_canvas_frame_count().
  - \b caca_get_sprite_width(): use cucul_get_canvas_width().
  - \b caca_get_sprite_height(): use cucul_get_canvas_height().
- - \b caca_get_sprite_dx(): this function is now deprecated.
- - \b caca_get_sprite_dy(): this function is now deprecated.
+ - \b caca_get_sprite_dx(): use cucul_get_canvas_handle_x().
+ - \b caca_get_sprite_dy(): use cucul_get_canvas_handle_y().
  - \b caca_draw_sprite(): use cucul_set_canvas_frame() and cucul_blit().
  - \b caca_free_sprite(): use cucul_free_canvas().
 
@@ -215,7 +215,7 @@ gcc -c foobar.c -o foobar.o `pkg-config --cflags caca`
 gcc foobar.o -o foobar `pkg-config --libs caca`
 \endcode
 
- \c caca-config is still provided as a convenience tool but will be removed
+ \c caca-config is still provided as a convenience tool but may be removed
  in the future.
 
 */
