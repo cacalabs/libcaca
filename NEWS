@@ -5,7 +5,7 @@
  - new debug mode
  - blitting canvases now makes use of the canvas' handle coordinates
  - import functions can read streamed data
- - attribute to colorspace
+ - attribute to colorspace transformations
  - added katakana and hiragana glyphs to the built-in font
  - many bugfixes and documentation changes
 
