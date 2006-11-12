@@ -1,5 +1,14 @@
 /* $Id$ */ /** \page news News
 
+\section news0_99_beta10 Changes between 0.9.beta10 and 0.99.beta9
+
+ - new debug mode
+ - blitting canvases now makes use of the canvas' handle coordinates
+ - import functions can read streamed data
+ - attribute to colorspace
+ - added katakana and hiragana glyphs to the built-in font
+ - many bugfixes and documentation changes
+
 \section news0_99_beta9 Changes between 0.9.beta9 and 0.99.beta8
 
  - support for blink, bold, italics and underline attributes

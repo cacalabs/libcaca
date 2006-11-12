@@ -1,4 +1,582 @@
 ------------------------------------------------------------------------
+r1045 | sam | 2006-11-12 18:45:14 +0100 (Sun, 12 Nov 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/cucul.h
+   M /trunk/cucul/legacy.c
+
+  * Re-added cucul_getchar() to the legacy functions. Debian's current version
+    of toilet needs it.
+
+------------------------------------------------------------------------
+r1044 | sam | 2006-11-12 18:30:08 +0100 (Sun, 12 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/font.c
+   M /trunk/cucul/font_mono9.h
+   M /trunk/cucul/font_monobold12.h
+   M /trunk/doc/font.dox
+   M /trunk/tools/makefont.c
+
+  * Add maxwidth and maxheight members to the font format.
+
+------------------------------------------------------------------------
+r1043 | sam | 2006-11-12 16:54:50 +0100 (Sun, 12 Nov 2006) | 3 lines
+Changed paths:
+   M /trunk/src/cacademo.c
+   M /trunk/test/swallow.c
+
+  * Random transition times in cacademo.
+  * Swallow 4 applications instead of 2 in the swallow test.
+
+------------------------------------------------------------------------
+r1042 | sam | 2006-11-12 16:35:04 +0100 (Sun, 12 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/src/aafire.c
+   M /trunk/src/cacademo.c
+
+  * Ctrl-C and Ctrl-Z quit cacafire and cacademo.
+
+------------------------------------------------------------------------
+r1041 | sam | 2006-11-12 16:26:13 +0100 (Sun, 12 Nov 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/caca.c
+   M /trunk/caca/graphics.c
+   M /trunk/common.h
+   M /trunk/cucul/attr.c
+   M /trunk/cucul/canvas.c
+   M /trunk/cucul/cucul.c
+   M /trunk/cucul/dither.c
+   M /trunk/cucul/export.c
+   M /trunk/cucul/font.c
+   M /trunk/cucul/frame.c
+   M /trunk/cucul/import.c
+   M /trunk/cucul/legacy.c
+
+  * Got rid of HAVE_ERRNO_H ifdefs by defining seterrno()/geterrno() functions.
+  * More debugging information in the import/export and font functions.
+
+------------------------------------------------------------------------
+r1040 | sam | 2006-11-12 15:42:58 +0100 (Sun, 12 Nov 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/font_mono9.h
+   M /trunk/cucul/font_monobold12.h
+   M /trunk/test/font2tga.c
+   M /trunk/tools/makefont.c
+
+  * Add CJK punctuation to the default fonts.
+  * Minor changes to the font2tga test program.
+
+------------------------------------------------------------------------
+r1039 | sam | 2006-11-12 14:11:01 +0100 (Sun, 12 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/common.h
+   M /trunk/configure.ac
+   M /trunk/cucul/export.c
+
+  * Add a debug() function and a --enable-debug configure flag.
+
+------------------------------------------------------------------------
+r1038 | sam | 2006-11-12 13:26:48 +0100 (Sun, 12 Nov 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/font.c
+   M /trunk/cucul/font_mono9.h
+   M /trunk/cucul/font_monobold12.h
+   M /trunk/test/font2tga.c
+   M /trunk/tools/makefont.c
+
+  * Support fullwidth fonts.
+  * Add Katakanas and Hiraganas to the default fonts.
+
+------------------------------------------------------------------------
+r1037 | sam | 2006-11-12 12:06:34 +0100 (Sun, 12 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/caca.h
+
+  * Documented caca_event_t members.
+
+------------------------------------------------------------------------
+r1036 | sam | 2006-11-12 11:42:14 +0100 (Sun, 12 Nov 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/cucul.h
+   M /trunk/cucul/export.c
+   M /trunk/cucul/font.c
+   M /trunk/cucul/frame.c
+   M /trunk/doc/Makefile.am
+   A /trunk/doc/canvas.dox (from /trunk/cucul/export.c:1033)
+   A /trunk/doc/font.dox (from /trunk/cucul/font.c:1028)
+   M /trunk/doc/libcaca.dox
+
+  * Documentation updates. Moved the canvas and font format definitions to
+    the Doxygen documentation.
+
+------------------------------------------------------------------------
+r1035 | sam | 2006-11-12 11:32:38 +0100 (Sun, 12 Nov 2006) | 4 lines
+Changed paths:
+   M /trunk/doc/caca-config.1
+
+  * Mention caca-config being deprecated in its manpage, and removed mention
+    of --plugin-libs from it. The option is still here but does the same as
+    --libs.
+
+------------------------------------------------------------------------
+r1034 | sam | 2006-11-12 11:06:35 +0100 (Sun, 12 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/src/cacaplay.c
+
+  * Properly handle EOF in cacaplay.
+
+------------------------------------------------------------------------
+r1033 | sam | 2006-11-12 11:04:23 +0100 (Sun, 12 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/TODO
+   M /trunk/cucul/export.c
+
+  * Documentation fixes and TODO updates.
+
+------------------------------------------------------------------------
+r1032 | sam | 2006-11-12 11:02:51 +0100 (Sun, 12 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_raw.c
+
+  * Flush stdout after writing the data in the raw driver.
+
+------------------------------------------------------------------------
+r1031 | sam | 2006-11-12 10:48:37 +0100 (Sun, 12 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/doc/cacaplay.1
+   M /trunk/src/cacaplay.c
+
+  * Allow cacaplay to play streams and updated its manpage.
+
+------------------------------------------------------------------------
+r1030 | sam | 2006-11-12 10:46:10 +0100 (Sun, 12 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/test/swallow.c
+
+  * Fix infinite loop due to signed/unsigned mistake.
+
+------------------------------------------------------------------------
+r1029 | sam | 2006-11-11 19:07:58 +0100 (Sat, 11 Nov 2006) | 3 lines
+Changed paths:
+   M /trunk/test
+   M /trunk/test/Makefile.am
+   A /trunk/test/swallow.c
+
+  * libcaca multiplexer: swallows two libcaca applications, for instance
+    cacademo and cacafire, and displays them in a canvas.
+
+------------------------------------------------------------------------
+r1028 | sam | 2006-11-11 18:55:11 +0100 (Sat, 11 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+  * Fixed a bug in the caca importer.
+
+------------------------------------------------------------------------
+r1027 | sam | 2006-11-11 18:13:16 +0100 (Sat, 11 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/test/blit.c
+
+  * Fix program header.
+
+------------------------------------------------------------------------
+r1026 | sam | 2006-11-11 17:29:39 +0100 (Sat, 11 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/caca0.h
+   M /trunk/caca/driver_gl.c
+   M /trunk/cucul/attr.c
+   M /trunk/cucul/box.c
+   M /trunk/cucul/canvas.c
+   M /trunk/cucul/conic.c
+   M /trunk/cucul/cucul.h
+   M /trunk/cucul/dither.c
+   M /trunk/cucul/import.c
+   M /trunk/cucul/legacy.c
+   M /trunk/cucul/line.c
+   M /trunk/cucul/triangle.c
+   M /trunk/src/aafire.c
+   M /trunk/src/cacademo.c
+   M /trunk/src/cacaview.c
+   M /trunk/test/blit.c
+   M /trunk/test/colors.c
+   M /trunk/test/demo.c
+   M /trunk/test/dithering.c
+   M /trunk/test/event.c
+   M /trunk/test/export.c
+   M /trunk/test/font.c
+   M /trunk/test/font2tga.c
+   M /trunk/test/frames.c
+   M /trunk/test/fullwidth.c
+   M /trunk/test/input.c
+   M /trunk/test/spritedit.c
+   M /trunk/test/transform.c
+   M /trunk/test/truecolor.c
+   M /trunk/test/unicode.c
+
+  * Rename cucul_put*() into cucul_put_*(). Updated all code to reflect that.
+
+------------------------------------------------------------------------
+r1025 | sam | 2006-11-11 16:38:40 +0100 (Sat, 11 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/canvas.c
+   M /trunk/test/Makefile.am
+   A /trunk/test/blit.c
+
+  * Made cucul_blit() handle-aware. Added a blit test for that.
+
+------------------------------------------------------------------------
+r1024 | sam | 2006-11-11 16:17:16 +0100 (Sat, 11 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/test/transform.c
+
+  * Free all memory upon exit in the transform test.
+
+------------------------------------------------------------------------
+r1023 | sam | 2006-11-11 16:10:38 +0100 (Sat, 11 Nov 2006) | 3 lines
+Changed paths:
+   M /trunk/test/transform.c
+
+  * Update transform.c so that it uses import functions instead of blitting
+    lines.
+
+------------------------------------------------------------------------
+r1022 | sam | 2006-11-11 15:51:04 +0100 (Sat, 11 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+  * Do not force the text colour when importing a text file.
+
+------------------------------------------------------------------------
+r1021 | sam | 2006-11-11 15:24:35 +0100 (Sat, 11 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/TODO
+   M /trunk/cucul/canvas.c
+   M /trunk/cucul/cucul.c
+   M /trunk/cucul/cucul.h
+   M /trunk/cucul/cucul_internals.h
+   M /trunk/cucul/export.c
+   M /trunk/cucul/frame.c
+   M /trunk/cucul/import.c
+
+  * Add cursor and handle support to canvases. Unused yet.
+
+------------------------------------------------------------------------
+r1020 | sam | 2006-11-11 14:29:03 +0100 (Sat, 11 Nov 2006) | 3 lines
+Changed paths:
+   M /trunk/TODO
+   M /trunk/cucul/canvas.c
+   M /trunk/cucul/frame.c
+
+  * Cosmetic code and documentation changes here and there.
+  * Updated TODO.
+
+------------------------------------------------------------------------
+r1019 | sam | 2006-11-11 14:03:19 +0100 (Sat, 11 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/test/frames.c
+
+  * Restore attribute settings before resizing the canvas in the frame test.
+
+------------------------------------------------------------------------
+r1018 | sam | 2006-11-11 14:00:36 +0100 (Sat, 11 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/Makefile.am
+   A /trunk/cucul/frame.c (from /trunk/cucul/sprite.c:1017)
+   D /trunk/cucul/sprite.c
+
+  * Rename sprite.c into frame.c.
+
+------------------------------------------------------------------------
+r1017 | sam | 2006-11-11 13:57:03 +0100 (Sat, 11 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/canvas.c
+   M /trunk/cucul/cucul.c
+   M /trunk/cucul/cucul_internals.h
+   M /trunk/cucul/sprite.c
+
+  * Prepare the way for per-frame width/height information.
+
+------------------------------------------------------------------------
+r1016 | sam | 2006-11-11 13:27:37 +0100 (Sat, 11 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/cucul.c
+
+  * Fix minor uninitialised data bug in cucul_canvas_create().
+
+------------------------------------------------------------------------
+r1015 | sam | 2006-11-11 13:11:20 +0100 (Sat, 11 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/cucul.c
+
+  * Allow to resize canvases back to (0,0).
+
+------------------------------------------------------------------------
+r1014 | sam | 2006-11-11 10:22:10 +0100 (Sat, 11 Nov 2006) | 4 lines
+Changed paths:
+   M /trunk/cucul/charset.c
+   M /trunk/cucul/cucul_internals.h
+
+  * Got rid of the now unused _cucul_strlen_utf8() and _cucul_skip_utf8()
+    functions. They're obsoleted by cucul_utf8_to_utf32() and rendered useless
+    by fullwidth character support.
+
+------------------------------------------------------------------------
+r1013 | sam | 2006-11-11 10:18:42 +0100 (Sat, 11 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/cucul.c
+   M /trunk/cucul/cucul_internals.h
+   M /trunk/cucul/dither.c
+
+  * Got rid of very old _cucul_init_dither() function call.
+
+------------------------------------------------------------------------
+r1012 | sam | 2006-11-11 10:10:17 +0100 (Sat, 11 Nov 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/driver_conio.c
+   M /trunk/caca/driver_ncurses.c
+   M /trunk/caca/driver_slang.c
+   M /trunk/caca/driver_vga.c
+   M /trunk/cucul/attr.c
+   M /trunk/cucul/cucul.h
+   M /trunk/cucul/cucul_internals.h
+
+  * Replace _cucul_attr_to_ansi8() with a now documented cucul_attr_to_ansi()
+    function.
+
+------------------------------------------------------------------------
+r1011 | sam | 2006-11-11 09:44:14 +0100 (Sat, 11 Nov 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/driver_slang.c
+   M /trunk/caca/driver_win32.c
+   M /trunk/cucul/attr.c
+   M /trunk/cucul/export.c
+
+  * Get rid of _cucul_attr_to_ansi4[fb]g() and replace all calls with
+    the now official cucul_attr_to_ansi_[fb]g().
+
+------------------------------------------------------------------------
+r1010 | sam | 2006-11-11 09:34:41 +0100 (Sat, 11 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/attr.c
+   M /trunk/cucul/cucul.h
+
+  * Export cucul_attr_to_ansi_fg() and cucul_attr_to_ansi_bg().
+
+------------------------------------------------------------------------
+r1009 | sam | 2006-11-11 09:11:26 +0100 (Sat, 11 Nov 2006) | 4 lines
+Changed paths:
+   M /trunk/caca/caca0.h
+   M /trunk/cucul/box.c
+   M /trunk/cucul/conic.c
+   M /trunk/cucul/cucul.h
+   M /trunk/cucul/line.c
+   M /trunk/cucul/triangle.c
+   M /trunk/src/cacademo.c
+   M /trunk/src/cacaview.c
+   M /trunk/test/demo.c
+   M /trunk/test/event.c
+   M /trunk/test/export.c
+   M /trunk/test/frames.c
+   M /trunk/test/gamma.c
+   M /trunk/test/input.c
+
+  * Switch back to UTF-32 arguments for drawing primitives, now that we
+    properly export cucul_utf8_to_utf32(). Evil API breakage, but no one
+    uses these functions anyway.
+
+------------------------------------------------------------------------
+r1008 | sam | 2006-11-11 08:56:30 +0100 (Sat, 11 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/box.c
+   M /trunk/cucul/cucul.h
+
+  * Implemented cucul_draw_cp437_box().
+
+------------------------------------------------------------------------
+r1007 | sam | 2006-11-10 16:38:09 +0100 (Fri, 10 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/doc/Makefile.am
+   A /trunk/doc/cacaplay.1
+   A /trunk/doc/cacaserver.1
+   M /trunk/doc/cacaview.1
+   A /trunk/doc/img2irc.1
+   M /trunk/src/img2irc.c
+
+  * Wrote manual pages for img2irc, cacaplay and cacaserver.
+
+------------------------------------------------------------------------
+r1006 | sam | 2006-11-10 11:29:54 +0100 (Fri, 10 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/Makefile.am
+   A /trunk/cucul/attr.c (from /trunk/cucul/colour.c:994)
+   D /trunk/cucul/colour.c
+   M /trunk/cucul/cucul.h
+
+  * Implemented cucul_putattr(), cucul_putchar()'s attribute equivalent.
+
+------------------------------------------------------------------------
+r1005 | sam | 2006-11-09 18:24:29 +0100 (Thu, 09 Nov 2006) | 3 lines
+Changed paths:
+   M /trunk/src/cacaserver.c
+
+  * Don't try to guess the file format in cacaserver, instead feed the data
+    to cucul_import_memory() and try again later if it says "not enough data".
+
+------------------------------------------------------------------------
+r1004 | sam | 2006-11-09 18:20:47 +0100 (Thu, 09 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+  * If not enough data is available for import, return 0 instead of an error.
+
+------------------------------------------------------------------------
+r1003 | sam | 2006-11-09 12:14:57 +0100 (Thu, 09 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/canvas.c
+   M /trunk/cucul/import.c
+
+  * Minor documentation fixes.
+
+------------------------------------------------------------------------
+r1002 | jylam | 2006-11-09 10:27:35 +0100 (Thu, 09 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/cxx/cxxtest.cpp
+
+ * Fixed behaviour of the pig while resizing window
+
+------------------------------------------------------------------------
+r1001 | sam | 2006-11-08 18:27:48 +0100 (Wed, 08 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/doc/migrating.dox
+
+  * Slight documentation update.
+
+------------------------------------------------------------------------
+r1000 | sam | 2006-11-08 18:26:57 +0100 (Wed, 08 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/src/cacadraw.c
+   M /trunk/src/cacaplay.c
+   M /trunk/src/cacaserver.c
+   M /trunk/src/img2irc.c
+   M /trunk/test/export.c
+   M /trunk/test/font2tga.c
+   M /trunk/test/import.c
+   M /trunk/test/text.c
+
+  * Convert all programs and tests to the new import/export API.
+
+------------------------------------------------------------------------
+r999 | sam | 2006-11-08 18:18:23 +0100 (Wed, 08 Nov 2006) | 8 lines
+Changed paths:
+   M /trunk/cucul/cucul.h
+   M /trunk/cucul/import.c
+
+  * Set the cucul_import_memory() buffer type to void const * instead of
+    unsigned char const * so that C++ programs won't complain.
+                   ___  __  __  ____    ___   ___   ___
+                  / _ \|  \/  |/ ___|  / _ \ / _ \ / _ \
+                 | | | | |\/| | |  _  | (_) | (_) | (_) |
+                 | |_| | |  | | |_| |  \__, |\__, |\__, |
+                  \___/|_|  |_|\____|    /_/   /_/   /_/
+
+------------------------------------------------------------------------
+r998 | sam | 2006-11-08 17:43:59 +0100 (Wed, 08 Nov 2006) | 4 lines
+Changed paths:
+   M /trunk/caca/caca0.c
+   M /trunk/caca/driver_raw.c
+   M /trunk/cucul/cucul.h
+   M /trunk/cucul/export.c
+   M /trunk/cucul/legacy.c
+
+  * Renamed cucul_export() to cucul_export_memory(), paves the way for a
+    cucul_export_file() but I'm not sure yet this is a good idea.
+  * Use the new import/export API in libcaca.
+
+------------------------------------------------------------------------
+r997 | sam | 2006-11-08 17:34:43 +0100 (Wed, 08 Nov 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/cucul.h
+   M /trunk/cucul/import.c
+   M /trunk/cucul/legacy.c
+
+  * Renamed cucul_import() to cucul_import_memory() and implemented
+    cucul_import_file().
+
+------------------------------------------------------------------------
+r996 | sam | 2006-11-08 14:12:06 +0100 (Wed, 08 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/common.h
+
+  * Don't try to include arpa/inet.h in kernel mode.
+
+------------------------------------------------------------------------
+r995 | sam | 2006-11-08 14:05:42 +0100 (Wed, 08 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/common.h
+   M /trunk/cucul/font.c
+   M /trunk/cucul/import.c
+
+  * Don't use htonl() directly, use common.h's hton32() wrapper.
+
+------------------------------------------------------------------------
+r994 | sam | 2006-11-08 13:11:07 +0100 (Wed, 08 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/Makefile.am
+   D /trunk/cucul/buffer.c
+   M /trunk/cucul/colour.c
+   M /trunk/cucul/cucul.h
+   M /trunk/cucul/export.c
+   M /trunk/cucul/import.c
+   A /trunk/cucul/legacy.c (from /trunk/cucul/buffer.c:993)
+
+  * Deprecate buffer management. We're back to standard void* memory areas.
+
+------------------------------------------------------------------------
+r993 | sam | 2006-11-08 08:59:23 +0100 (Wed, 08 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/buffer.c
+
+  * Minor syntax fix in the doxygen documentation.
+
+------------------------------------------------------------------------
+r992 | sam | 2006-11-08 08:58:03 +0100 (Wed, 08 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/src/Makefile.am
+   M /trunk/src/cacaserver.c
+
+  * Do not link cacaserver with libcaca, it only uses libcucul.
+
+------------------------------------------------------------------------
+r991 | sam | 2006-11-06 12:06:44 +0100 (Mon, 06 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/doc/tutorial.dox
+
+  * Replace CUCUL_COLOR_* with CUCUL_*.
+
+------------------------------------------------------------------------
+r990 | sam | 2006-11-06 12:04:37 +0100 (Mon, 06 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/test/font2tga.c
+
+  * Use cucul_get_font_blocks() instead of hardcoding the glyph list.
+
+------------------------------------------------------------------------
+r989 | sam | 2006-11-06 00:59:06 +0100 (Mon, 06 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/caca0.c
+
+  * Fix a harmless warning in caca0.c.
+
+------------------------------------------------------------------------
+r987 | sam | 2006-11-05 23:51:04 +0100 (Sun, 05 Nov 2006) | 3 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/NEWS
+   M /trunk/configure.ac
+
+  * Set version to 0.99.beta9.
+  * Updated NEWS and ChangeLog.
+
+------------------------------------------------------------------------
 r986 | sam | 2006-11-05 23:45:10 +0100 (Sun, 05 Nov 2006) | 2 lines
 Changed paths:
    M /trunk/TODO
