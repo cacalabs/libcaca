@@ -1,0 +1,60 @@
+/* $Id$ */
+
+/** \page canvas The libcaca canvas format (version 1)
+
+ All types are big endian.
+
+ \code
+struct
+{
+magic:
+   uint8_t caca_header[2];    // "\xCA\xCA"
+   uint8_t caca_file_type[2]; // "CV"
+
+canvas_header:
+   uint32_t control_size;     // Control size (canvas_data - canvas_header)
+   uint32_t data_size;        // Data size (EOF - canvas_data)
+
+   uint16_t version;          // Canvas format version
+                              //  bit 0: set to 1 if canvas is compatible
+                              //         with version 1 of the format
+                              //  bits 1-15: unused yet, must be 0
+
+   uint32_t frames;           // Frame count
+
+   uint16_t flags;            // Feature flags
+                              //  bits 0-15: unused yet, must be 0
+
+frame_info:
+   struct
+   {
+      uint32_t width;         // Frame width
+      uint32_t height;        // Frame height
+      uint32_t duration;      // Frame duration in milliseconds, 0 to
+                              // not specify a duration
+      uint32_t attr;          // Graphics context attribute
+      int32_t cursor_x;       // Cursor X coordinate
+      int32_t cursor_y;       // Cursor Y coordinate
+      int32_t handle_x;       // Handle X coordinate
+      int32_t handle_y;       // Handle Y coordinate
+   }
+   frame_list[frames];
+
+control_extension_1:
+control_extension_2:
+   ...
+control_extension_N:
+   ...                        // reserved for future use
+
+canvas_data:
+   uint8_t data[data_size];   // canvas data
+
+data_extension_1:
+data_extension_2:
+   ...
+data_extension_N:
+   ...                        // reserved for future use
+};
+ \endcode
+
+*/

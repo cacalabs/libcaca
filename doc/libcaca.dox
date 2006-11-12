@@ -40,6 +40,8 @@
 
  There is also information specially targeted at \e libcaca developers:
 
+ - \subpage font
+ - \subpage canvas
  - \subpage style
 
  \section user User's documentation

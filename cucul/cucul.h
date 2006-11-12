@@ -38,7 +38,7 @@ typedef struct cucul_dither cucul_dither_t;
 /** font structure */
 typedef struct cucul_font cucul_font_t;
 
-/** \defgroup attributes libcucul attribute definitions
+/** \defgroup attr_defines libcucul attribute definitions
  *
  *  Colours and styles that can be used with cucul_set_attr().
  *

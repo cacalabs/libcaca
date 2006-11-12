@@ -96,7 +96,7 @@ int cucul_set_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
  *  - \c ENOMEM Not enough memory to allocate new frame.
  *
  *  \param cv A libcucul canvas
- *  \param frame The index where to insert the new frame
+ *  \param id The index where to insert the new frame
  *  \return 0 in case of success, -1 if an error occurred.
  */
 int cucul_create_canvas_frame(cucul_canvas_t *cv, unsigned int id)
@@ -151,7 +151,7 @@ int cucul_create_canvas_frame(cucul_canvas_t *cv, unsigned int id)
  *    last frame of the canvas.
  *
  *  \param cv A libcucul canvas
- *  \param frame The index of the frame to delete
+ *  \param id The index of the frame to delete
  *  \return 0 in case of success, -1 if an error occurred.
  */
 int cucul_free_canvas_frame(cucul_canvas_t *cv, unsigned int id)
