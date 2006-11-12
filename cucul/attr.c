@@ -135,8 +135,10 @@ int cucul_put_attr(cucul_canvas_t *cv, int x, int y, unsigned long int attr)
     curchar = cv->chars + x + y * cv->width;
     curattr = cv->attrs + x + y * cv->width;
 
-    if(curattr[0] < 0x00000010)
-        curattr[0] = (cv->curattr & 0xfffffff0) | curattr[0];
+    if(attr < 0x00000010)
+        curattr[0] = (curattr[0] & 0xfffffff0) | attr;
+    else
+        curattr[0] = attr;
 
     if(x && curchar[0] == CUCUL_MAGIC_FULLWIDTH)
         curattr[-1] = curattr[0];
