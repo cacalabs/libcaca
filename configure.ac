@@ -62,6 +62,8 @@ AC_ARG_ENABLE(imlib2,
   [  --enable-imlib2         Imlib2 graphics support (default enabled)])
 
 dnl conditional builds
+AC_ARG_ENABLE(debug,
+  [  --enable-debug          build debug versions of the library])
 AC_ARG_ENABLE(plugins,
   [  --enable-plugins        build X11 and GL drivers as plugins])
 AC_ARG_ENABLE(doc,
@@ -225,6 +227,10 @@ if test "${enable_vga}" = "yes"; then
   CACA_DRIVERS="${CACA_DRIVERS} vga"
 fi
 AM_CONDITIONAL(USE_KERNEL, test "${ac_cv_my_have_vga}" = "yes")
+
+if test "${enable_debug}" = "yes"; then
+  AC_DEFINE(DEBUG, 1, Define to 1 to activate debug)
+fi
 
 if test "${enable_plugins}" = "yes"; then
   ac_cv_my_have_plugins="yes"

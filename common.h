@@ -32,6 +32,31 @@ typedef long int intptr_t;
 typedef unsigned long int uintptr_t;
 #endif
 
+#if defined DEBUG && !defined __KERNEL__
+#   include <stdio.h>
+#   include <stdarg.h>
+#   if defined(HAVE_ERRNO_H)
+#       include <errno.h>
+#   endif
+static inline void debug(const char *format, ...)
+{
+#   if defined(HAVE_ERRNO_H)
+    int saved_errno = errno;
+#   endif
+    va_list args;
+    va_start(args, format);
+    fprintf(stderr, "** libcaca debug ** ");
+    vfprintf(stderr, format, args);
+    fprintf(stderr, "\n");
+    va_end(args);
+#   if defined(HAVE_ERRNO_H)
+    errno = saved_errno;
+#   endif
+}
+#else
+#   define debug(format, ...) do {} while(0)
+#endif
+
 #if defined HAVE_HTONS
 #   if defined __KERNEL__
         /* Nothing to do */
