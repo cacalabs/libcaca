@@ -12,14 +12,14 @@ program by setting the
 environment variable to
 .B "raw"
 and storing the program's standard output.
-.SH EXAMPLE
-cacaplay file.caca
-.SH BUGS
-As of now,
+
+If no file argument is provided or '\-' is used,
 .B cacaplay
-can only play single-image canvases, rendering it pretty useless. See
-.B cacaserver
-for a more usable alternative.
+will read its data from the standard input.
+.SH EXAMPLES
+cacaplay file.caca
+
+CACA_DRIVER=raw CACA_GEOMETRY=80x32 cacademo | cacaplay
 .SH SEE ALSO
 cacaserver(1)
 .SH AUTHOR

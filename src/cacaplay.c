@@ -15,8 +15,13 @@
 #include "common.h"
 
 #if !defined(__KERNEL__)
-  #include <stdio.h>
-  #include <stdlib.h>
+#   include <stdio.h>
+#   include <stdlib.h>
+#   include <sys/types.h>
+#   include <sys/stat.h>
+#   include <fcntl.h>
+#   include <string.h>
+#   include <unistd.h>
 #endif
 
 #include "cucul.h"
@@ -24,34 +29,71 @@
 
 int main(int argc, char **argv)
 {
-    caca_event_t ev;
-    cucul_canvas_t *cv;
+    cucul_canvas_t *cv, *app;
     caca_display_t *dp;
+    unsigned char *buf = NULL;
+    long int bytes, total = 0;
+    int fd;
 
-    if(argc < 2)
+    if(argc < 2 || !strcmp(argv[1], "-"))
     {
-        fprintf(stderr, "%s: missing argument (filename).\n", argv[0]);
-        return 1;
+        fd = 0; /* use stdin */
+    }
+    else
+    {
+        fd = open(argv[1], O_RDONLY);
+        if(fd < 0)
+        {
+            fprintf(stderr, "%s: could not open `%s'.\n", argv[0], argv[1]);
+            return 1;
+        }
     }
 
     cv = cucul_create_canvas(0, 0);
-    if(cucul_import_file(cv, argv[1], "caca") < 0)
-    {
-        fprintf(stderr, "%s: could not import file %s.\n", argv[0], argv[1]);
-        return 1;
-    }
+    app = cucul_create_canvas(0, 0);
 
     dp = caca_create_display(cv);
 
-    caca_refresh_display(dp);
-
-    while(caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1))
+    for(;;)
     {
-        if(ev.data.key.ch == CACA_KEY_ESCAPE)
+        caca_event_t ev;
+        int ret = caca_get_event(dp, CACA_EVENT_ANY, &ev, 0);
+
+        if(ret && ev.type & CACA_EVENT_KEY_PRESS)
             break;
+
+        bytes = cucul_import_memory(app, buf, total, "caca");
+
+        if(bytes > 0)
+        {
+            total -= bytes;
+            memmove(buf, buf + bytes, total);
+
+            cucul_blit(cv, 0, 0, app, NULL);
+            caca_refresh_display(dp);
+        }
+        else if(bytes == 0)
+        {
+            ssize_t n;
+            buf = realloc(buf, total + 128);
+            n = read(fd, buf + total, 128);
+            if(n < 0)
+            {
+                fprintf(stderr, "%s: read error\n", argv[0]);
+                return -1;
+            }
+            total += n;
+        }
+        else /* bytes < 0 */
+        {
+            fprintf(stderr, "%s: corrupted caca file\n", argv[0]);
+            return -1;
+        }
     }
 
     /* Clean up */
+    close(fd);
+
     caca_free_display(dp);
     cucul_free_canvas(cv);
 
