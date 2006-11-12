@@ -73,6 +73,7 @@ static void raw_display(caca_display_t *dp)
     if(!buffer)
         return;
     fwrite(buffer, len, 1, stdout);
+    fflush(stdout);
     free(buffer);
 }
 
