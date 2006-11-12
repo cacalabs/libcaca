@@ -32,7 +32,7 @@ int main(int argc, char **argv)
     cucul_canvas_t *cv, *app;
     caca_display_t *dp;
     unsigned char *buf = NULL;
-    long int bytes, total = 0;
+    long int bytes = 0, total = 0;
     int fd;
 
     if(argc < 2 || !strcmp(argv[1], "-"))
@@ -58,9 +58,27 @@ int main(int argc, char **argv)
     {
         caca_event_t ev;
         int ret = caca_get_event(dp, CACA_EVENT_ANY, &ev, 0);
+        int eof = 0;
 
         if(ret && ev.type & CACA_EVENT_KEY_PRESS)
             break;
+
+        if(bytes == 0)
+        {
+            ssize_t n;
+            buf = realloc(buf, total + 1);
+            n = read(fd, buf + total, 1);
+            if(n < 0)
+            {
+                fprintf(stderr, "%s: read error\n", argv[0]);
+                return -1;
+            }
+            else if(n == 0)
+            {
+                eof = 1;
+            }
+            total += n;
+        }
 
         bytes = cucul_import_memory(app, buf, total, "caca");
 
@@ -72,24 +90,17 @@ int main(int argc, char **argv)
             cucul_blit(cv, 0, 0, app, NULL);
             caca_refresh_display(dp);
         }
-        else if(bytes == 0)
-        {
-            ssize_t n;
-            buf = realloc(buf, total + 128);
-            n = read(fd, buf + total, 128);
-            if(n < 0)
-            {
-                fprintf(stderr, "%s: read error\n", argv[0]);
-                return -1;
-            }
-            total += n;
-        }
-        else /* bytes < 0 */
+        else if(bytes < 0)
         {
             fprintf(stderr, "%s: corrupted caca file\n", argv[0]);
-            return -1;
+            break;
         }
+
+        if(eof)
+            break;
     }
+
+    caca_get_event(dp, CACA_EVENT_KEY_PRESS, NULL, -1);
 
     /* Clean up */
     close(fd);
