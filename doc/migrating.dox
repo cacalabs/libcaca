@@ -187,12 +187,12 @@ int main(void)
  completely deprecated.
 
  - \b caca_load_sprite(): use cucul_import_file().
- - \b caca_get_sprite_frames(): use cucul_get_canvas_frame_count().
+ - \b caca_get_sprite_frames(): use cucul_get_frame_count().
  - \b caca_get_sprite_width(): use cucul_get_canvas_width().
  - \b caca_get_sprite_height(): use cucul_get_canvas_height().
  - \b caca_get_sprite_dx(): use cucul_get_canvas_handle_x().
  - \b caca_get_sprite_dy(): use cucul_get_canvas_handle_y().
- - \b caca_draw_sprite(): use cucul_set_canvas_frame() and cucul_blit().
+ - \b caca_draw_sprite(): use cucul_set_frame() and cucul_blit().
  - \b caca_free_sprite(): use cucul_free_canvas().
 
  \subsection bar7 Bitmap handling

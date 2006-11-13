@@ -26,7 +26,7 @@
 /** \brief Set the display title.
  *
  *  If libcaca runs in a window, try to change its title. This works with
- *  the OpenGL, X11 and Win32 drivers.
+ *  the ncurses, S-Lang, OpenGL, X11 and Win32 drivers.
  *
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
  *  - \c ENOSYS Display driver does not support setting the window title.

@@ -59,6 +59,7 @@ static caca_display_t *sigwinch_d; /* FIXME: we ought to get rid of this */
 #if defined HAVE_GETENV && defined HAVE_PUTENV
 static void ncurses_check_terminal(void);
 #endif
+static void ncurses_set_title(char const *);
 static void ncurses_write_utf32(uint32_t);
 
 struct driver_private
@@ -108,6 +109,8 @@ static int ncurses_init_graphics(caca_display_t *dp)
 #if defined HAVE_LOCALE_H
     setlocale(LC_ALL, "");
 #endif
+
+    ncurses_set_title("caca for ncurses");
 
     initscr();
     keypad(stdscr, TRUE);
@@ -166,6 +169,7 @@ static int ncurses_init_graphics(caca_display_t *dp)
 
 static int ncurses_end_graphics(caca_display_t *dp)
 {
+    ncurses_set_title("");
     mousemask(dp->drv.p->oldmask, NULL);
     curs_set(1);
     noraw();
@@ -178,7 +182,9 @@ static int ncurses_end_graphics(caca_display_t *dp)
 
 static int ncurses_set_display_title(caca_display_t *dp, char const *title)
 {
-    return -1;
+    ncurses_set_title(title);
+
+    return 0;
 }
 
 static unsigned int ncurses_get_display_width(caca_display_t *dp)
@@ -428,6 +434,12 @@ static void ncurses_check_terminal(void)
     }
 }
 #endif
+
+static void ncurses_set_title(char const *str)
+{
+    fprintf(stdout, "\x1b]0;%s\x07\n", str);
+    fflush(stdout);
+}
 
 static void ncurses_write_utf32(uint32_t ch)
 {
