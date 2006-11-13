@@ -25,9 +25,7 @@
 
 #include <cucul.h>
 
-
 class Cucul;
-
 
 class Charset
 {
@@ -36,10 +34,6 @@ class Charset
     unsigned char utf32ToCp437(unsigned long int);
     unsigned long int cp437ToUtf32(unsigned char);
 };
-
-
-
-
 
 /* Ugly, I know */
 class Font
@@ -50,21 +44,23 @@ class Font
     char const *const * getList(void);
     unsigned int getWidth();
     unsigned int getHeight();
-    void renderCanvas(Cucul *, unsigned char *, unsigned int, unsigned int, unsigned int);
+    void renderCanvas(Cucul *, unsigned char *, unsigned int,
+                               unsigned int, unsigned int);
     unsigned long int const *getBlocks();
 
  private:
     cucul_font *font;
-
 };
 
 class Dither
 {
  public:
-    Dither(unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);
+    Dither(unsigned int, unsigned int, unsigned int, unsigned int,
+           unsigned int, unsigned int, unsigned int, unsigned int);
     ~Dither();
 
-    void setPalette(unsigned int r[], unsigned int g[], unsigned int b[], unsigned int a[]);
+    void setPalette(unsigned int r[], unsigned int g[],
+                    unsigned int b[], unsigned int a[]);
     void setBrightness(float);
     void setGamma(float);
     void setContrast(float);
@@ -81,40 +77,16 @@ class Dither
 
  private:
     cucul_dither *dither;
-
 };
-
-class Buffer
-{
-    friend class Cucul;
- public:
-    Buffer();
-    ~Buffer();
-    char const *const * getExportList(void);
-    void *getData(void);
-    void loadMemory(void *buf, unsigned long int size);
-    void loadFile(char const *filename);
-    unsigned long int getSize();
-
- protected:
-    cucul_buffer *get_buffer();
-
- private:
-    cucul_buffer *buffer_;
-    cucul_buffer *getBuffer();
-};
-
 
 class Cucul
 {
     friend class Caca;
     friend class Dither;
     friend class Font;
-    friend class Buffer;
  public:
     Cucul();
     Cucul(int width, int height);
-    Cucul(Buffer *, char const *);
     ~Cucul();
 
     void setSize(unsigned int w, unsigned int h);
@@ -124,7 +96,7 @@ class Cucul
     int setAttr(unsigned long int);
     int setColorANSI(unsigned char f, unsigned char b);
     int setColorARGB(unsigned int f, unsigned int b);
-    void Printf(int x , int y , char const * format,...);
+    void Printf(int x, int y , char const * format, ...);
     void putChar(int x, int y, unsigned long int ch);
     unsigned long int getChar(int, int);
     void putStr(int x, int y, char *str);
@@ -134,27 +106,33 @@ class Cucul
     void Flip();
     void Flop();
     void Rotate();
-    void drawLine(int, int, int, int, char const *);
-    void drawPolyline(int const x[], int const y[], int, char const *);
+    void drawLine(int, int, int, int, unsigned long int);
+    void drawPolyline(int const x[], int const y[], int, unsigned long int);
     void drawThinLine(int, int, int, int);
     void drawThinPolyline(int const x[], int const y[], int);
-    void drawCircle(int, int, int, char const *);
-    void drawEllipse(int, int, int, int, char const *);
+    void drawCircle(int, int, int, unsigned long int);
+    void drawEllipse(int, int, int, int, unsigned long int);
     void drawThinEllipse(int, int, int, int);
-    void fillEllipse(int, int, int, int, char const *);
-    void drawBox(int, int, int, int, char const *);
+    void fillEllipse(int, int, int, int, unsigned long int);
+    void drawBox(int, int, int, int, unsigned long int);
     void drawThinBox(int, int, int, int);
-    void fillBox(int, int, int, int, char const *);
-    void drawTriangle(int, int, int, int, int, int, char const *);
+    void drawCP437Box(int, int, int, int);
+    void fillBox(int, int, int, int, unsigned long int);
+    void drawTriangle(int, int, int, int, int, int, unsigned long int);
     void drawThinTriangle(int, int, int, int, int, int);
-    void fillTriangle(int, int, int, int, int, int, char const *);
+    void fillTriangle(int, int, int, int, int, int, unsigned long int);
     int Rand(int, int);
-    int setBoundaries(cucul_canvas_t *, int, int,
-                                unsigned int, unsigned int);
+    int setBoundaries(cucul_canvas_t *, int, int, unsigned int, unsigned int);
     unsigned int getFrameCount();
     int setFrame(unsigned int);
     int createFrame(unsigned int);
     int freeFrame(unsigned int);
+
+    char const * const * getImportList(void);
+    long int importMemory(void const *, unsigned long int, char const *);
+    long int importFile(char const *, char const *);
+    char const * const * getExportList(void);
+    void *exportMemory(char const *, unsigned long int *);
 
  protected:
     cucul_canvas_t *get_cucul_canvas_t();
@@ -162,6 +140,5 @@ class Cucul
  private:
     cucul_canvas_t *cv;
 };
-
 
 #endif /* _CUCUL_PP_H */

@@ -55,12 +55,6 @@ Cucul::Cucul(int width, int height)
     if(!cv) throw -1;
 }
 
-Cucul::Cucul(Buffer *b, char const *format)
-{
-    cv = cucul_import_canvas(b->getBuffer(), format);
-    if(!cv) throw -1;
-}
-
 Cucul::~Cucul()
 {
     if(cv)
@@ -99,20 +93,20 @@ int  Cucul::setColorARGB(unsigned int f, unsigned int b)
 
 void Cucul::putChar(int x, int y, unsigned long int ch)
 {
-    cucul_putchar(cv, x, y, ch);
+    cucul_put_char(cv, x, y, ch);
 }
 
 unsigned long int Cucul::getChar(int x, int y)
 {
-    return cucul_getchar(cv, x, y);
+    return cucul_get_char(cv, x, y);
 }
 
 void Cucul::putStr(int x, int y, char *str)
 {
-    cucul_putstr(cv, x, y, str);
+    cucul_put_str(cv, x, y, str);
 }
 
-void Cucul::Printf(int x, int y, char const * format,...)
+void Cucul::Printf(int x, int y, char const * format, ...)
 {
     char tmp[BUFSIZ];
     char *buf = tmp;
@@ -161,12 +155,12 @@ void Cucul::Rotate()
     cucul_rotate(cv);
 }
 
-void Cucul::drawLine(int x1, int y1, int x2, int y2, char const *ch)
+void Cucul::drawLine(int x1, int y1, int x2, int y2, unsigned long int ch)
 {
     cucul_draw_line(cv, x1, y1, x2, y2, ch);
 }
 
-void Cucul::drawPolyline(int const x[], int const y[], int f, char const *ch)
+void Cucul::drawPolyline(int const x[], int const y[], int f, unsigned long int ch)
 {
     cucul_draw_polyline(cv, x, y, f, ch);
 }
@@ -181,12 +175,12 @@ void Cucul::drawThinPolyline(int const x[], int const y[], int f)
     cucul_draw_thin_polyline(cv, x, y, f);
 }
 
-void Cucul::drawCircle(int x, int y, int d, char const *ch)
+void Cucul::drawCircle(int x, int y, int d, unsigned long int ch)
 {
     cucul_draw_circle(cv, x, y, d, ch);
 }
 
-void Cucul::drawEllipse(int x, int y, int d1, int d2, char const *ch)
+void Cucul::drawEllipse(int x, int y, int d1, int d2, unsigned long int ch)
 {
     cucul_draw_ellipse(cv, x, y, d1, d2, ch);
 }
@@ -196,12 +190,12 @@ void Cucul::drawThinEllipse(int x, int y, int d1, int d2)
     cucul_draw_thin_ellipse(cv, x, y, d1, d2);
 }
 
-void Cucul::fillEllipse(int x, int y, int d1, int d2, char const *ch)
+void Cucul::fillEllipse(int x, int y, int d1, int d2, unsigned long int ch)
 {
     cucul_fill_ellipse(cv, x, y, d1, d2, ch);
 }
 
-void Cucul::drawBox(int x, int y, int w, int h, char const *ch)
+void Cucul::drawBox(int x, int y, int w, int h, unsigned long int ch)
 {
     cucul_draw_box(cv, x, y, w, h, ch);
 }
@@ -211,12 +205,17 @@ void Cucul::drawThinBox(int x, int y, int w, int h)
     cucul_draw_thin_box(cv, x, y, w, h);
 }
 
-void Cucul::fillBox(int x, int y, int w, int h, char const *ch)
+void Cucul::drawCP437Box(int x, int y, int w, int h)
+{
+    cucul_draw_cp437_box(cv, x, y, w, h);
+}
+
+void Cucul::fillBox(int x, int y, int w, int h, unsigned long int ch)
 {
     cucul_fill_box(cv, x, y, w, h, ch);
 }
 
-void Cucul::drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, char const *ch)
+void Cucul::drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, unsigned long int ch)
 {
     cucul_draw_triangle(cv, x1, y1, x2, y2, x3, y3, ch);
 }
@@ -226,7 +225,7 @@ void Cucul::drawThinTriangle(int x1, int y1, int x2, int y2, int x3, int y3)
     cucul_draw_thin_triangle(cv, x1, y1, x2, y2, x3, y3);
 }
 
-void Cucul::fillTriangle(int x1, int y1, int x2, int y2, int x3, int y3, const char *ch)
+void Cucul::fillTriangle(int x1, int y1, int x2, int y2, int x3, int y3, unsigned long int ch)
 {
     cucul_fill_triangle(cv, x1, y1, x2, y2, x3, y3, ch);
 }
@@ -267,6 +266,31 @@ int Cucul::createFrame(unsigned int f)
 int Cucul::freeFrame(unsigned int f)
 {
     return cucul_create_canvas_frame(cv, f);
+}
+
+char const *const * Cucul::getImportList(void)
+{
+    return cucul_get_import_list();
+}
+
+long int Cucul::importMemory(void const *buf, unsigned long int len, char const *fmt)
+{
+    return cucul_import_memory(cv, buf, len, fmt);
+}
+
+long int Cucul::importFile(char const *file, char const *fmt)
+{
+    return cucul_import_file(cv, file, fmt);
+}
+
+char const *const * Cucul::getExportList(void)
+{
+    return cucul_get_export_list();
+}
+
+void *Cucul::exportMemory(char const *fmt, unsigned long int *len)
+{
+    return cucul_export_memory(cv, fmt, len);
 }
 
 Dither::Dither(unsigned int v1, unsigned int v2, unsigned int v3, unsigned int v4, unsigned int v5, unsigned int v6, unsigned int v7, unsigned int v8)
@@ -384,47 +408,3 @@ Font::~Font()
     cucul_free_font(font);
 }
 
-Buffer::Buffer()
-{
-    buffer_ = NULL;
-}
-
-Buffer::~Buffer()
-{
-    if(buffer_)
-        cucul_free_buffer(buffer_);
-}
-
-char const *const * Buffer::getExportList(void)
-{
-    return cucul_get_export_list();
-}
-
-void *Buffer::getData(void)
-{
-    return cucul_get_buffer_data(buffer_);
-}
-
-void Buffer::loadMemory(void *buf, unsigned long int size)
-{
-    buffer_ = cucul_load_memory(buf, size);
-    if(buffer_ == NULL)
-        throw -1;
-}
-
-void Buffer::loadFile(char const *filename)
-{
-    buffer_ = cucul_load_file(filename);
-    if(buffer_ == NULL)
-        throw -1;
-}
-
-unsigned long int Buffer::getSize()
-{
-    return cucul_get_buffer_size(buffer_);
-}
-
-cucul_buffer *Buffer::getBuffer()
-{
-    return buffer_;
-}

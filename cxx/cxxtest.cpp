@@ -64,15 +64,9 @@ int main(int argc, char *argv[])
 
     try {
         // Import buffer into a canvas
-        Buffer *buf = new Buffer();
-        buf->loadMemory((void *)pigstring, strlen(pigstring));
-        pig = new Cucul(buf, "text");
-        delete buf;
-        // Change colour to magenta
+        pig = new Cucul();
         pig->setColorANSI(CUCUL_LIGHTMAGENTA, CUCUL_TRANSPARENT);
-        for(int y = 0; y < pig->getHeight(); y++)
-            for(int x = 0; x < pig->getWidth(); x++)
-                pig->putChar(x, y, pig->getChar(x, y));
+        pig->importMemory(pigstring, strlen(pigstring), "text");
     }
     catch(int e) {
         cerr << "Error while importing image (" << e << ")" << endl;
