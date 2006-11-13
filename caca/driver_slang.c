@@ -103,7 +103,6 @@ static int const slang_assoc[16*16] =
  * Local functions
  */
 static void slang_init_palette(void);
-static void slang_set_title(char const *);
 static void slang_write_utf32(uint32_t);
 
 #if defined(HAVE_SIGNAL)
@@ -125,7 +124,7 @@ static int slang_init_graphics(caca_display_t *dp)
     signal(SIGWINCH, sigwinch_handler);
 #endif
 
-    slang_set_title("caca for S-Lang");
+    _caca_set_term_title("caca for S-Lang");
 
     /* Initialise slang library */
     SLsig_block_signals();
@@ -175,7 +174,7 @@ static int slang_init_graphics(caca_display_t *dp)
 
 static int slang_end_graphics(caca_display_t *dp)
 {
-    slang_set_title("");
+    _caca_set_term_title("");
     SLtt_set_mouse_mode(0, 0);
     SLtt_set_cursor_visibility(1);
     SLang_reset_tty();
@@ -186,7 +185,7 @@ static int slang_end_graphics(caca_display_t *dp)
 
 static int slang_set_display_title(caca_display_t *dp, char const *title)
 {
-    slang_set_title(title);
+    _caca_set_term_title(title);
 
     return 0;
 }
@@ -445,12 +444,6 @@ static void slang_init_palette(void)
             SLtt_set_color(i, NULL, slang_colors[fg], slang_colors[bg]);
         }
 #endif
-}
-
-static void slang_set_title(char const *str)
-{
-    fprintf(stdout, "\x1b]0;%s\x07\n", str);
-    fflush(stdout);
 }
 
 static void slang_write_utf32(uint32_t ch)

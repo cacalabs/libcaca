@@ -18,6 +18,12 @@
 #include "config.h"
 #include "common.h"
 
+#if !defined(__KERNEL__)
+#   include <stdio.h>
+#   include <stdlib.h>
+#   include <string.h>
+#endif
+
 #include "caca.h"
 #include "caca_internals.h"
 #include "cucul.h"
@@ -206,5 +212,20 @@ void _caca_handle_resize(caca_display_t *dp)
     /* Tell libcucul we changed size */
     if(dp->resize.w != dp->cv->width || dp->resize.h != dp->cv->height)
         _cucul_set_canvas_size(dp->cv, dp->resize.w, dp->resize.h);
+}
+
+void _caca_set_term_title(char const *str)
+{
+#if defined(HAVE_GETENV)
+    char *term;
+
+    term = getenv("TERM");
+
+    if(!term || !strcmp(term, "linux"))
+        return;
+#endif
+
+    fprintf(stdout, "\x1b]0;%s\x07", str);
+    fflush(stdout);
 }
 

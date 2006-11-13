@@ -156,4 +156,7 @@ extern void _push_event(caca_display_t *, caca_event_t *);
 extern int _pop_event(caca_display_t *, caca_event_t *);
 #endif
 
+/* Internal window functions */
+extern void _caca_set_term_title(char const *);
+
 #endif /* __CACA_INTERNALS_H__ */
