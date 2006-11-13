@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
     /* Create a canvas with 200 frames */
     cv = cucul_create_canvas(0, 0);
     for(frame = 1; frame < 200; frame++)
-        cucul_create_canvas_frame(cv, frame);
+        cucul_create_frame(cv, frame);
 
     fprintf(stderr, "canvas created, size is %ix%i\n",
             cucul_get_canvas_width(cv), cucul_get_canvas_height(cv));
@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
     /* Fill the first 16 frames with a different colour */
     for(frame = 0; frame < 16; frame++)
     {
-        cucul_set_canvas_frame(cv, frame);
+        cucul_set_frame(cv, frame);
         cucul_set_color_ansi(cv, CUCUL_WHITE, frame);
         cucul_fill_box(cv, 0, 0, 40, 15, ':');
         cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
     n = 0;
     while(!caca_get_event(dp, CACA_EVENT_KEY_PRESS, NULL, 0))
     {
-        cucul_set_canvas_frame(cv, n % 16);
+        cucul_set_frame(cv, n % 16);
         caca_refresh_display(dp);
         n++;
     }

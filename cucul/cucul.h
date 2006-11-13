@@ -180,10 +180,12 @@ int cucul_fill_triangle(cucul_canvas_t *, int, int, int, int, int, int,
  *  removal, copying etc.
  *
  *  @{ */
-unsigned int cucul_get_canvas_frame_count(cucul_canvas_t *);
-int cucul_set_canvas_frame(cucul_canvas_t *, unsigned int);
-int cucul_create_canvas_frame(cucul_canvas_t *, unsigned int);
-int cucul_free_canvas_frame(cucul_canvas_t *, unsigned int);
+unsigned int cucul_get_frame_count(cucul_canvas_t *);
+int cucul_set_frame(cucul_canvas_t *, unsigned int);
+char const *cucul_get_frame_name(cucul_canvas_t *);
+int cucul_set_frame_name(cucul_canvas_t *, char const *);
+int cucul_create_frame(cucul_canvas_t *, unsigned int);
+int cucul_free_frame(cucul_canvas_t *, unsigned int);
 /*  @} */
 
 /** \defgroup dither libcucul bitmap dithering
@@ -264,6 +266,14 @@ char const * const * cucul_get_export_list(void);
                         unsigned char) CUCUL_DEPRECATED;
     int cucul_set_truecolor(cucul_canvas_t *, unsigned int,
                             unsigned int) CUCUL_DEPRECATED;
+    unsigned int cucul_get_canvas_frame_count(cucul_canvas_t *)
+                                              CUCUL_DEPRECATED;
+    int cucul_set_canvas_frame(cucul_canvas_t *,
+                               unsigned int) CUCUL_DEPRECATED;
+    int cucul_create_canvas_frame(cucul_canvas_t *,
+                                  unsigned int) CUCUL_DEPRECATED;
+    int cucul_free_canvas_frame(cucul_canvas_t *,
+                                unsigned int) CUCUL_DEPRECATED;
     cucul_buffer_t *cucul_load_memory(void *,
                                       unsigned long int) CUCUL_DEPRECATED;
     cucul_buffer_t *cucul_load_file(char const *) CUCUL_DEPRECATED;

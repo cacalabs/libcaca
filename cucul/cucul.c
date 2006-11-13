@@ -58,6 +58,7 @@ cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
         goto nomem;
 
     cv->refcount = 0;
+    cv->autoinc = 0;
 
     cv->frame = 0;
     cv->framecount = 1;
@@ -74,6 +75,7 @@ cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
     cv->frames[0].x = cv->frames[0].y = 0;
     cv->frames[0].handlex = cv->frames[0].handley = 0;
     cv->frames[0].curattr = 0;
+    cv->frames[0].name = strdup("frame#00000000");
 
     _cucul_load_frame_info(cv);
     cucul_set_color_ansi(cv, CUCUL_DEFAULT, CUCUL_TRANSPARENT);
@@ -81,6 +83,7 @@ cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
     if(_cucul_set_canvas_size(cv, width, height) < 0)
     {
         int saved_errno = geterrno();
+        free(cv->frames[0].name);
         free(cv->frames);
         free(cv);
         seterrno(saved_errno);
@@ -185,6 +188,7 @@ int cucul_free_canvas(cucul_canvas_t *cv)
     {
         free(cv->frames[f].chars);
         free(cv->frames[f].attrs);
+        free(cv->frames[f].name);
     }
 
     free(cv->frames);

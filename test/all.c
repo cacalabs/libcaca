@@ -16,19 +16,19 @@
 
 #if !defined(__KERNEL__)
 #   include <stdio.h>
+#   include <string.h>
 #endif
 
 #include "cucul.h"
 #include "caca.h"
 
-#define ITER 1000
+#define ITER 128
 
 int main(int argc, char *argv[])
 {
     cucul_canvas_t *cv;
-    unsigned int i, w, h;
+    unsigned int i, j, w, h;
 
-    /* cucul_create_canvas */
     fprintf(stderr, "testing cucul_create_canvas()\n");
     for(i = 0; i < ITER; i++)
     {
@@ -40,6 +40,22 @@ int main(int argc, char *argv[])
             fprintf(stderr, "  failed (%ux%u)\n", w, h);
         cucul_free_canvas(cv);
     }
+
+    fprintf(stderr, "testing cucul_set_frame_name()\n");
+    cv = cucul_create_canvas(1, 1);
+    for(i = 0; i < ITER; i++)
+    {
+        cucul_create_frame(cv, 0);
+        for(j = 0; j < ITER; j++)
+        {
+            char buf[BUFSIZ];
+            w = cucul_rand(1, 1000);
+            memset(buf, 'x', w);
+            buf[w] = '\0';
+            cucul_set_frame_name(cv, buf);
+        }
+    }
+    cucul_free_canvas(cv);
 
     fprintf(stderr, "all tests passed\n");
     return 0;

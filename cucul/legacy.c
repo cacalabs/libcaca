@@ -107,6 +107,30 @@ cucul_buffer_t * cucul_export_canvas(cucul_canvas_t *cv, char const *format)
 }
 
 /*
+ * Functions from frame.c
+ */
+
+unsigned int cucul_get_canvas_frame_count(cucul_canvas_t *cv)
+{
+    return cucul_get_frame_count(cv);
+}
+
+int cucul_set_canvas_frame(cucul_canvas_t *cv, unsigned int id)
+{
+    return cucul_set_frame(cv, id);
+}
+
+int cucul_create_canvas_frame(cucul_canvas_t *cv, unsigned int id)
+{
+    return cucul_create_frame(cv, id);
+}
+
+int cucul_free_canvas_frame(cucul_canvas_t *cv, unsigned int id)
+{
+    return cucul_free_frame(cv, id);
+}
+
+/*
  * Functions from buffer.c
  */
 

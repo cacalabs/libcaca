@@ -253,19 +253,19 @@ int Cucul::setBoundaries(cucul_canvas_t *, int x, int y,
 
 unsigned int Cucul::getFrameCount()
 {
-    return cucul_get_canvas_frame_count(cv);
+    return cucul_get_frame_count(cv);
 }
 int Cucul::setFrame(unsigned int f)
 {
-    return cucul_set_canvas_frame(cv, f);
+    return cucul_set_frame(cv, f);
 }
 int Cucul::createFrame(unsigned int f)
 {
-    return cucul_create_canvas_frame(cv, f);
+    return cucul_create_frame(cv, f);
 }
 int Cucul::freeFrame(unsigned int f)
 {
-    return cucul_create_canvas_frame(cv, f);
+    return cucul_create_frame(cv, f);
 }
 
 char const *const * Cucul::getImportList(void)

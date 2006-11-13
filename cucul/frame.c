@@ -36,7 +36,7 @@
  *  \param cv A libcucul canvas
  *  \return The frame count
  */
-unsigned int cucul_get_canvas_frame_count(cucul_canvas_t *cv)
+unsigned int cucul_get_frame_count(cucul_canvas_t *cv)
 {
     return cv->framecount;
 }
@@ -53,20 +53,64 @@ unsigned int cucul_get_canvas_frame_count(cucul_canvas_t *cv)
  *  - \c EINVAL Requested frame is out of range.
  *
  *  \param cv A libcucul canvas
- *  \param frame The canvas frame to activate
+ *  \param id The canvas frame to activate
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_set_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
+int cucul_set_frame(cucul_canvas_t *cv, unsigned int id)
 {
-    if(frame >= cv->framecount)
+    if(id >= cv->framecount)
     {
         seterrno(EINVAL);
         return -1;
     }
 
     _cucul_save_frame_info(cv);
-    cv->frame = frame;
+    cv->frame = id;
     _cucul_load_frame_info(cv);
+
+    return 0;
+}
+
+/** \brief Get the current frame's name.
+ *
+ *  Return the current frame's name. The returned string is valid until
+ *  the frame is deleted or cucul_set_frame_name() is called to change
+ *  the frame name again.
+ *
+ *  This function never fails.
+ *
+ *  \param cv A libcucul canvas.
+ *  \return The current frame's name.
+ */
+char const *cucul_get_frame_name(cucul_canvas_t *cv)
+{
+    return cv->frames[cv->frame].name;
+}
+
+/** \brief Set the current frame's name.
+ *
+ *  Set the current frame's name. Upon creation, a frame has a default name
+ *  of \rc "frame#xxxxxxxx" where \c xxxxxxxx is a self-incrementing
+ *  hexadecimal number.
+ *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c ENOMEM Not enough memory to allocate new frame.
+ *
+ *  \param cv A libcucul canvas.
+ *  \return 0 in case of success, -1 if an error occurred.
+ */
+int cucul_set_frame_name(cucul_canvas_t *cv, char const *name)
+{
+    char *newname = strdup(name);
+
+    if(!newname)
+    {
+        seterrno(ENOMEM);
+        return -1;
+    }
+
+    free(cv->frames[cv->frame].name);
+    cv->frames[cv->frame].name = newname;
 
     return 0;
 }
@@ -91,7 +135,7 @@ int cucul_set_canvas_frame(cucul_canvas_t *cv, unsigned int frame)
  *  \param id The index where to insert the new frame
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_create_canvas_frame(cucul_canvas_t *cv, unsigned int id)
+int cucul_create_frame(cucul_canvas_t *cv, unsigned int id)
 {
     unsigned int size = cv->width * cv->height;
     unsigned int f;
@@ -122,6 +166,9 @@ int cucul_create_canvas_frame(cucul_canvas_t *cv, unsigned int id)
     cv->frames[id].handlex = cv->frames[cv->frame].handlex;
     cv->frames[id].handley = cv->frames[cv->frame].handley;
 
+    cv->frames[id].name = strdup("frame#--------");
+    sprintf(cv->frames[id].name + 6, "%.08x", cv->autoinc++);
+
     return 0;
 }
 
@@ -146,7 +193,7 @@ int cucul_create_canvas_frame(cucul_canvas_t *cv, unsigned int id)
  *  \param id The index of the frame to delete
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_free_canvas_frame(cucul_canvas_t *cv, unsigned int id)
+int cucul_free_frame(cucul_canvas_t *cv, unsigned int id)
 {
     unsigned int f;
 
@@ -164,6 +211,7 @@ int cucul_free_canvas_frame(cucul_canvas_t *cv, unsigned int id)
 
     free(cv->frames[id].chars);
     free(cv->frames[id].attrs);
+    free(cv->frames[id].name);
 
     for(f = id + 1; f < cv->framecount; f++)
         cv->frames[f - 1] = cv->frames[f];

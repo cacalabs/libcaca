@@ -472,16 +472,16 @@ int cucul_set_canvas_boundaries(cucul_canvas_t *cv, int x, int y,
 
     new = cucul_create_canvas(w, h);
 
-    framecount = cucul_get_canvas_frame_count(cv);
+    framecount = cucul_get_frame_count(cv);
     saved_f = cv->frame;
 
     for(f = 0; f < framecount; f++)
     {
         if(f)
-            cucul_create_canvas_frame(new, framecount);
+            cucul_create_frame(new, framecount);
 
-        cucul_set_canvas_frame(cv, f);
-        cucul_set_canvas_frame(new, f);
+        cucul_set_frame(cv, f);
+        cucul_set_frame(new, f);
         cucul_blit(new, -x, -y, cv, NULL);
 
         free(cv->frames[f].chars);
@@ -492,7 +492,7 @@ int cucul_set_canvas_boundaries(cucul_canvas_t *cv, int x, int y,
     memcpy(cv, new, sizeof(cucul_canvas_t));
     free(new);
 
-    cucul_set_canvas_frame(cv, saved_f);
+    cucul_set_frame(cv, saved_f);
 
     return 0;
 }

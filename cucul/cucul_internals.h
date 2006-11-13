@@ -31,6 +31,9 @@ struct cucul_frame
     int x, y;
     int handlex, handley;
     uint32_t curattr;
+
+    /* Frame name */
+    char *name;
 };
 
 struct cucul_canvas
@@ -40,6 +43,7 @@ struct cucul_canvas
     struct cucul_frame *frames;
 
     unsigned int refcount;
+    unsigned int autoinc;
 
     /* Shortcut to the active frame information */
     unsigned int width, height;
