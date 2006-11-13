@@ -109,8 +109,8 @@ int main(int argc, char **argv)
             switch(ev.data.key.ch)
             {
                 case CACA_KEY_ESCAPE:
-                case 0x03: /* Ctrl-C */
-                case 0x1a: /* Ctrl-Z */
+                case CACA_KEY_CTRL_C:
+                case CACA_KEY_CTRL_Z:
                     goto end;
                 case ' ':
                     pause = !pause;

@@ -114,10 +114,32 @@ enum caca_key
     CACA_KEY_UNKNOWN = 0x00, /**< Unknown key. */
 
     /* The following keys have ASCII equivalents */
+    CACA_KEY_CTRL_A =    0x01, /**< The Ctrl-A key. */
+    CACA_KEY_CTRL_B =    0x02, /**< The Ctrl-B key. */
+    CACA_KEY_CTRL_C =    0x03, /**< The Ctrl-C key. */
+    CACA_KEY_CTRL_D =    0x04, /**< The Ctrl-D key. */
+    CACA_KEY_CTRL_E =    0x05, /**< The Ctrl-E key. */
+    CACA_KEY_CTRL_F =    0x06, /**< The Ctrl-F key. */
+    CACA_KEY_CTRL_G =    0x07, /**< The Ctrl-G key. */
     CACA_KEY_BACKSPACE = 0x08, /**< The backspace key. */
     CACA_KEY_TAB =       0x09, /**< The tabulation key. */
+    CACA_KEY_CTRL_J =    0x0a, /**< The Ctrl-J key. */
+    CACA_KEY_CTRL_K =    0x0b, /**< The Ctrl-K key. */
+    CACA_KEY_CTRL_L =    0x0c, /**< The Ctrl-L key. */
     CACA_KEY_RETURN =    0x0d, /**< The return key. */
+    CACA_KEY_CTRL_N =    0x0e, /**< The Ctrl-N key. */
+    CACA_KEY_CTRL_O =    0x0f, /**< The Ctrl-O key. */
+    CACA_KEY_CTRL_P =    0x10, /**< The Ctrl-P key. */
+    CACA_KEY_CTRL_Q =    0x11, /**< The Ctrl-Q key. */
+    CACA_KEY_CTRL_R =    0x12, /**< The Ctrl-R key. */
     CACA_KEY_PAUSE =     0x13, /**< The pause key. */
+    CACA_KEY_CTRL_T =    0x14, /**< The Ctrl-T key. */
+    CACA_KEY_CTRL_U =    0x15, /**< The Ctrl-U key. */
+    CACA_KEY_CTRL_V =    0x16, /**< The Ctrl-V key. */
+    CACA_KEY_CTRL_W =    0x17, /**< The Ctrl-W key. */
+    CACA_KEY_CTRL_X =    0x18, /**< The Ctrl-X key. */
+    CACA_KEY_CTRL_Y =    0x19, /**< The Ctrl-Y key. */
+    CACA_KEY_CTRL_Z =    0x1a, /**< The Ctrl-Z key. */
     CACA_KEY_ESCAPE =    0x1b, /**< The escape key. */
     CACA_KEY_DELETE =    0x7f, /**< The delete key. */
 
