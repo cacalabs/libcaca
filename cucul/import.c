@@ -350,21 +350,24 @@ static long int import_ansi(cucul_canvas_t *cv,
     unsigned char const *buffer = (unsigned char const*)data;
     unsigned int i, j, skip, dummy = 0;
     unsigned int width = 0, height = 0, wch = 1;
+    uint32_t savedattr, resizeattr;
     unsigned long int ch;
     int x = 0, y = 0, save_x = 0, save_y = 0;
 
-    cucul_set_canvas_size(cv, width, height);
+    cucul_set_canvas_size(cv, 0, 0);
     if(utf8)
     {
-        grcm.dfg = cucul_attr_to_ansi_fg(cv->curattr);
-        grcm.dbg = cucul_attr_to_ansi_bg(cv->curattr);
+        grcm.dfg = CUCUL_DEFAULT;
+        grcm.dbg = CUCUL_TRANSPARENT;
     }
     else
     {
         grcm.dfg = CUCUL_LIGHTGRAY;
         grcm.dbg = CUCUL_BLACK;
-        cucul_set_color_ansi(cv, grcm.dfg, grcm.dbg);
+        cucul_set_color_ansi(cv, CUCUL_LIGHTGRAY, CUCUL_BLACK);
     }
+
+    resizeattr = cucul_get_attr(cv, -1, -1);
 
     ansi_parse_grcm(cv, &grcm, 1, &dummy);
 
@@ -491,8 +494,12 @@ static long int import_ansi(cucul_canvas_t *cv,
                 break;
             case 'K': /* EL - Erase In Line */
                 if(width < 80)
-                    cucul_set_color_ansi(cv, grcm.dfg, grcm.dbg);
+                {
+                    savedattr = cucul_get_attr(cv, -1, -1);
+                    cucul_set_attr(cv, resizeattr);
                     cucul_set_canvas_size(cv, width = 80, height);
+                    cucul_set_attr(cv, savedattr);
+                }
                 for(j = x; j < 80; j++)
                     cucul_put_char(cv, j, y, ' ');
                 x = 80;
@@ -541,26 +548,31 @@ static long int import_ansi(cucul_canvas_t *cv,
         /* Make sure the canvas is big enough. */
         if((unsigned int)x + wch > width)
         {
-            cucul_set_color_ansi(cv, grcm.dfg, grcm.dbg);
+            savedattr = cucul_get_attr(cv, -1, -1);
+            cucul_set_attr(cv, resizeattr);
             cucul_set_canvas_size(cv, width = x + wch, height);
+            cucul_set_attr(cv, savedattr);
         }
 
         if((unsigned int)y >= height)
         {
-            cucul_set_color_ansi(cv, grcm.dfg, grcm.dbg);
+            savedattr = cucul_get_attr(cv, -1, -1);
+            cucul_set_attr(cv, resizeattr);
             cucul_set_canvas_size(cv, width, height = y + 1);
+            cucul_set_attr(cv, savedattr);
         }
 
         /* Now paste our character */
-        cucul_set_color_ansi(cv, grcm.efg, grcm.ebg);
         cucul_put_char(cv, x, y, ch);
         x += wch;
     }
 
     if((unsigned int)y > height)
     {
-        cucul_set_color_ansi(cv, grcm.dfg, grcm.dbg);
+        savedattr = cucul_get_attr(cv, -1, -1);
+        cucul_set_attr(cv, resizeattr);
         cucul_set_canvas_size(cv, width, height = y);
+        cucul_set_attr(cv, savedattr);
     }
 
     return size;
@@ -645,5 +657,7 @@ static void ansi_parse_grcm(cucul_canvas_t *cv, struct ansi_grcm *g,
                 g->efg = CUCUL_WHITE;
         }
     }
+
+    cucul_set_color_ansi(cv, g->efg, g->ebg);
 }
 
