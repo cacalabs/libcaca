@@ -306,8 +306,8 @@ void plasma(enum action action, cucul_canvas_t *cv)
             double z = ((double)i) / 256 * 6 * M_PI;
 
             red[i] = (1.0 + sin(z + r[1] * frame)) / 2 * 0xfff;
-            blue[i] = (1.0 + cos(z + r[0] * frame)) / 2 * 0xfff;
-            green[i] = (1.0 + cos(z + r[2] * frame)) / 2 * 0xfff;
+            blue[i] = (1.0 + cos(z + r[0] * (frame + 100))) / 2 * 0xfff;
+            green[i] = (1.0 + cos(z + r[2] * (frame + 200))) / 2 * 0xfff;
         }
 
         /* Set the palette */
@@ -378,6 +378,7 @@ void metaballs(enum action action, cucul_canvas_t *cv)
     static unsigned int x[METABALLS], y[METABALLS];
     static float i = 10.0, j = 17.0, k = 11.0;
     static double offset[360 + 80];
+    static unsigned int angleoff;
 
     int n, angle;
 
@@ -400,6 +401,8 @@ void metaballs(enum action action, cucul_canvas_t *cv)
             dk[n] = (float)cucul_rand(500, 4000) / 6000.0;
         }
 
+        angleoff = cucul_rand(0, 360);
+
         for(n = 0; n < 360 + 80; n++)
             offset[n] = 1.0 + sin((double)(n * M_PI / 60));
         break;
@@ -413,7 +416,7 @@ void metaballs(enum action action, cucul_canvas_t *cv)
         break;
 
     case UPDATE:
-        angle = frame % 360;
+        angle = (frame + angleoff) % 360;
 
         /* Crop the palette */
         for(n = CROPBALL; n < 255; n++)
@@ -521,6 +524,7 @@ void moire(enum action action, cucul_canvas_t *cv)
 {
     static cucul_dither_t *dither;
     static uint8_t *screen;
+    static float d[6];
     static unsigned int red[256], green[256], blue[256], alpha[256];
 
     int i, x, y;
@@ -532,6 +536,9 @@ void moire(enum action action, cucul_canvas_t *cv)
         for(i = 0 ; i < 256; i++)
             red[i] = green[i] = blue[i] = alpha[i] = 0;
 
+        for(i = 0; i < 6; i++)
+            d[i] = ((float)cucul_rand(50, 70)) / 1000.0;
+
         red[0] = green[0] = blue[0] = 0x777;
         red[1] = green[1] = blue[1] = 0xfff;
 
@@ -542,8 +549,8 @@ void moire(enum action action, cucul_canvas_t *cv)
 
             for(t = 0, dx = 0, dy = i; dx <= dy; dx++)
             {
-                draw_line(dx / 3,   dy / 3, (i / DISCTHICKNESS) % 2);
-                draw_line(dy / 3,   dx / 3, (i / DISCTHICKNESS) % 2);
+                draw_line(dx / 3, dy / 3, (i / DISCTHICKNESS) % 2);
+                draw_line(dy / 3, dx / 3, (i / DISCTHICKNESS) % 2);
         
                 t += t > 0 ? dx - dy-- : dx;
             }
@@ -560,23 +567,23 @@ void moire(enum action action, cucul_canvas_t *cv)
         memset(screen, 0, XSIZ * YSIZ);
 
         /* Set the palette */
-        red[0] = 0.5 * (1 + sin(0.05 * frame)) * 0xfff;
-        green[0] = 0.5 * (1 + cos(0.07 * frame)) * 0xfff;
-        blue[0] = 0.5 * (1 + cos(0.06 * frame)) * 0xfff;
+        red[0] = 0.5 * (1 + sin(d[0] * (frame + 1000))) * 0xfff;
+        green[0] = 0.5 * (1 + cos(d[1] * frame)) * 0xfff;
+        blue[0] = 0.5 * (1 + cos(d[2] * (frame + 3000))) * 0xfff;
 
-        red[1] = 0.5 * (1 + sin(0.07 * frame + 5.0)) * 0xfff;
-        green[1] = 0.5 * (1 + cos(0.06 * frame + 5.0)) * 0xfff;
-        blue[1] = 0.5 * (1 + cos(0.05 * frame + 5.0)) * 0xfff;
+        red[1] = 0.5 * (1 + sin(d[3] * (frame + 2000))) * 0xfff;
+        green[1] = 0.5 * (1 + cos(d[4] * frame + 5.0)) * 0xfff;
+        blue[1] = 0.5 * (1 + cos(d[5] * (frame + 4000))) * 0xfff;
 
         cucul_set_dither_palette(dither, red, green, blue, alpha);
 
         /* Draw circles */
-        x = cos(0.07 * frame + 5.0) * 128.0 + (XSIZ / 2);
+        x = cos(d[0] * (frame + 1000)) * 128.0 + (XSIZ / 2);
         y = sin(0.11 * frame) * 128.0 + (YSIZ / 2);
         put_disc(screen, x, y);
 
         x = cos(0.13 * frame + 2.0) * 64.0 + (XSIZ / 2);
-        y = sin(0.09 * frame + 1.0) * 64.0 + (YSIZ / 2);
+        y = sin(d[1] * (frame + 2000)) * 64.0 + (YSIZ / 2);
         put_disc(screen, x, y);
         break;
 
