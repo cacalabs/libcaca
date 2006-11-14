@@ -162,10 +162,13 @@ static int caca_select_driver(caca_display_t *dp)
 {
 #if defined(HAVE_GETENV) && defined(HAVE_STRCASECMP)
     char *var = getenv("CACA_DRIVER");
-    
+
     /* If the environment variable was set, use it */
     if(var && *var)
     {
+#if defined(USE_COCOA)
+        if(!strcasecmp(var, "cocoa")) return cocoa_install(dp);
+#endif
 #if defined(USE_WIN32)
         if(!strcasecmp(var, "win32")) return win32_install(dp);
 #endif
@@ -194,6 +197,9 @@ static int caca_select_driver(caca_display_t *dp)
     }
 #endif
 
+#if defined(USE_COCOA)
+    if(cocoa_install(dp) == 0) return 0;
+#endif
 #if defined(USE_WIN32)
     if(win32_install(dp) == 0) return 0;
 #endif

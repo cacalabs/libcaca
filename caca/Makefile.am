@@ -27,7 +27,8 @@ libcaca_la_SOURCES = \
 	driver_slang.c \
 	driver_vga.c \
 	driver_win32.c \
-	$(extra_drivers) \
+	$(cocoa_source) \
+	$(extra_source) \
 	$(NULL)
 libcaca_la_LDFLAGS = -no-undefined -version-info @LT_VERSION@
 libcaca_la_LIBADD = ../cucul/libcucul.la @CACA_LIBS@
@@ -44,6 +45,10 @@ libgl_plugin_la_SOURCES = driver_gl.c
 libgl_plugin_la_LDFLAGS = -no-undefined -module -no-version
 libgl_plugin_la_LIBADD = libcaca.la ../cucul/libcucul.la @GL_LIBS@
 else
-extra_drivers = driver_x11.c driver_gl.c
+extra_source = driver_x11.c driver_gl.c
+endif
+
+if USE_COCOA
+cocoa_source = driver_cocoa.m
 endif
 

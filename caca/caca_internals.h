@@ -29,30 +29,36 @@ enum caca_driver
 {
     CACA_DRIVER_NONE = 0,
     CACA_DRIVER_RAW = 1,
+#if defined(USE_COCOA)
+    CACA_DRIVER_COCOA = 2,
+#endif
 #if defined(USE_CONIO)
-    CACA_DRIVER_CONIO = 2,
+    CACA_DRIVER_CONIO = 3,
 #endif
 #if defined(USE_GL)
-    CACA_DRIVER_GL = 3,
+    CACA_DRIVER_GL = 4,
 #endif
 #if defined(USE_NCURSES)
-    CACA_DRIVER_NCURSES = 4,
+    CACA_DRIVER_NCURSES = 5,
 #endif
 #if defined(USE_SLANG)
-    CACA_DRIVER_SLANG = 5,
+    CACA_DRIVER_SLANG = 6,
 #endif
 #if defined(USE_VGA)
-    CACA_DRIVER_VGA = 6,
+    CACA_DRIVER_VGA = 7,
 #endif
 #if defined(USE_WIN32)
-    CACA_DRIVER_WIN32 = 7,
+    CACA_DRIVER_WIN32 = 8,
 #endif
 #if defined(USE_X11)
-    CACA_DRIVER_X11 = 8,
+    CACA_DRIVER_X11 = 9,
 #endif
 };
 
 /* Available external drivers */
+#if defined(USE_COCOA)
+int cocoa_install(caca_display_t *);
+#endif
 #if defined(USE_CONIO)
 int conio_install(caca_display_t *);
 #endif

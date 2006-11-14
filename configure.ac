@@ -15,6 +15,10 @@ AM_PROG_CC_C_O
 AC_PROG_CPP
 AC_PROG_CXX
 AC_PROG_CXXCPP
+_AM_DEPENDENCIES([OBJC])
+OBJC="${CXX}"
+AC_SUBST(OBJC)
+AC_SUBST(OBJCFLAGS)
 AM_PROG_AS
 
 AC_LIBTOOL_WIN32_DLL
@@ -48,6 +52,8 @@ AC_ARG_ENABLE(x11,
   [  --enable-x11            X11 support (autodetected)])
 AC_ARG_ENABLE(gl,
   [  --enable-gl             OpenGL support (autodetected)])
+AC_ARG_ENABLE(cocoa,
+  [  --enable-cocoa          Cocoa support (autodetected)])
 AC_ARG_ENABLE(network,
   [  --enable-network        Network support (autodetected)])
 AC_ARG_ENABLE(vga,
@@ -190,6 +196,25 @@ if test "${enable_gl}" != "no"; then
     AC_MSG_ERROR([cannot find OpenGL+FreeGLUT development files])
   fi
 fi
+
+if test "${enable_cocoa}" != "no"; then
+  ac_cv_my_have_cocoa="no"
+  AC_LANG_PUSH(C++)
+  savedCPPFLAGS="${CPPFLAGS}"
+  CPPFLAGS="${CPPFLAGS} -ObjC"
+  AC_CHECK_HEADERS(Cocoa/Cocoa.h,
+   [ac_cv_my_have_cocoa="yes"])
+  if test "${ac_cv_my_have_cocoa}" = "yes"; then
+    AC_DEFINE(USE_COCOA, 1, Define to 1 to activate the Cocoa backend driver)
+    CACA_LIBS="${CACA_LIBS} -Wl,-framework,Cocoa"
+    CACA_DRIVERS="${CACA_DRIVERS} cocoa"
+  elif test "${enable_cocoa}" = "yes"; then
+    AC_MSG_ERROR([cannot find Cocoa development files])
+  fi
+  CPPFLAGS="${savedCPPFLAGS}"
+  AC_LANG_POP(C++)
+fi
+AM_CONDITIONAL(USE_COCOA, test "${ac_cv_my_have_cocoa}" = "yes")
 
 if test "${enable_ncurses}" != "no"; then
   ac_cv_my_have_ncurses="no"
