@@ -90,13 +90,14 @@ char const *cucul_get_frame_name(cucul_canvas_t *cv)
 /** \brief Set the current frame's name.
  *
  *  Set the current frame's name. Upon creation, a frame has a default name
- *  of \rc "frame#xxxxxxxx" where \c xxxxxxxx is a self-incrementing
+ *  of \c "frame#xxxxxxxx" where \c xxxxxxxx is a self-incrementing
  *  hexadecimal number.
  *
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
  *  - \c ENOMEM Not enough memory to allocate new frame.
  *
  *  \param cv A libcucul canvas.
+ *  \param name The name to give to the current frame.
  *  \return 0 in case of success, -1 if an error occurred.
  */
 int cucul_set_frame_name(cucul_canvas_t *cv, char const *name)
