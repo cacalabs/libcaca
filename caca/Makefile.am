@@ -39,11 +39,11 @@ plugindir = $(libdir)/caca
 
 libx11_plugin_la_SOURCES = driver_x11.c
 libx11_plugin_la_LDFLAGS = -no-undefined -module -no-version
-libx11_plugin_la_LIBADD = libcaca.la ../cucul/libcucul.la @X11_LIBS@
+libx11_plugin_la_LIBADD = libcaca.la ../cucul/libcucul.la $(X11_LIBS)
 
 libgl_plugin_la_SOURCES = driver_gl.c
 libgl_plugin_la_LDFLAGS = -no-undefined -module -no-version
-libgl_plugin_la_LIBADD = libcaca.la ../cucul/libcucul.la @GL_LIBS@
+libgl_plugin_la_LIBADD = libcaca.la ../cucul/libcucul.la $(GL_LIBS)
 else
 extra_source = driver_x11.c driver_gl.c
 endif
