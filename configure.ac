@@ -65,7 +65,7 @@ AC_ARG_ENABLE(cxx,
 
 dnl example programs features
 AC_ARG_ENABLE(imlib2,
-  [  --enable-imlib2         Imlib2 graphics support (default enabled)])
+  [  --enable-imlib2         Imlib2 graphics support (autodetected)])
 
 dnl conditional builds
 AC_ARG_ENABLE(debug,
@@ -306,10 +306,9 @@ AM_CONDITIONAL(USE_NETWORK, test "${ac_cv_my_have_network}" = "yes")
 if test "${enable_imlib2}" != "no"; then
   IMLIB2="no"
   PKG_CHECK_MODULES(IMLIB2, imlib2, [IMLIB2="yes"], [AC_MSG_RESULT(no)])
-  if test "${IMLIB2}" = no; then
-    AC_MSG_ERROR([[cannot find Imlib2 development files. Without Imlib2, cacaview will only open BMP files; if this is really what you want, re-run configure with '--disable-imlib2'.]])
+  if test "${IMLIB2}" != "no"; then
+    AC_DEFINE(USE_IMLIB2, 1, Define to 1 to use Imlib2)
   fi
-  AC_DEFINE(USE_IMLIB2, 1, Define to 1 to use Imlib2)
 fi
 
 # Build development tools?
@@ -322,24 +321,22 @@ DOXYGEN="no"
 LATEX="no"
 if test "${enable_doc}" != "no"; then
   AC_PATH_PROG(DOXYGEN, doxygen, no)
-  if test "${DOXYGEN}" = "no"; then
-    AC_MSG_ERROR([[cannot find doxygen, which is needed to build the libcaca documentation; if this is really what you want, re-run configure with '--disable-doc'.]])
-  fi
-
-  # Build LaTeX documentation?
-  AC_PATH_PROG(LATEX, pdflatex, no)
-  AC_PATH_PROG(DVIPS, dvips, no)
-  if test "${DVIPS}" = "no"; then
-    LATEX="no"
-  fi
-  AC_MSG_CHECKING(for a4wide.sty)
-  if test -f /usr/share/texmf/tex/latex/misc/a4wide.sty; then
-    AC_MSG_RESULT(yes)
-  elif test -f /usr/share/texmf-tetex/tex/latex/a4wide/a4wide.sty; then
-    AC_MSG_RESULT(yes)
-  else
-    LATEX="no"
-    AC_MSG_RESULT(no)
+  if test "${DOXYGEN}" != "no"; then
+    # Build LaTeX documentation?
+    AC_PATH_PROG(LATEX, pdflatex, no)
+    AC_PATH_PROG(DVIPS, dvips, no)
+    if test "${DVIPS}" = "no"; then
+      LATEX="no"
+    fi
+    AC_MSG_CHECKING(for a4wide.sty)
+    if test -f /usr/share/texmf/tex/latex/misc/a4wide.sty; then
+      AC_MSG_RESULT(yes)
+    elif test -f /usr/share/texmf-tetex/tex/latex/a4wide/a4wide.sty; then
+      AC_MSG_RESULT(yes)
+    else
+      LATEX="no"
+      AC_MSG_RESULT(no)
+    fi
   fi
 fi
 AM_CONDITIONAL(BUILD_DOCUMENTATION, test "${DOXYGEN}" != "no")
