@@ -2,16 +2,16 @@
 
 AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/cucul -I$(top_srcdir)/caca -DDATADIR=\"$(pkgdatadir)\"
 
-noinst_PROGRAMS = all blit colors demo demo0 dithering event export font font2tga frames fullwidth gamma hsv input spritedit swallow text transform truecolor unicode import
-
-all_SOURCES = all.c
-all_LDADD = ../caca/libcaca.la ../cucul/libcucul.la
+noinst_PROGRAMS = blit colors cucul demo demo0 dithering event export font font2tga frames fullwidth gamma hsv input spritedit swallow text transform truecolor unicode import
 
 blit_SOURCES = blit.c
 blit_LDADD = ../caca/libcaca.la ../cucul/libcucul.la
 
 colors_SOURCES = colors.c
 colors_LDADD = ../caca/libcaca.la ../cucul/libcucul.la
+
+cucul_SOURCES = cucul.c
+cucul_LDADD = ../cucul/libcucul.la
 
 demo_SOURCES = demo.c
 demo_LDADD = ../caca/libcaca.la ../cucul/libcucul.la
