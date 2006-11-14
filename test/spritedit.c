@@ -19,7 +19,7 @@
 #include "cucul.h"
 #include "caca.h"
 
-#define DELAY 100
+#define MYDELAY 100
 
 int main(int argc, char **argv)
 {
@@ -96,7 +96,7 @@ int main(int argc, char **argv)
 		}
 	    }
 	    delay++;
-	    if(delay>=DELAY) {
+	    if(delay>=MYDELAY) {
 		delay = 0;
 	    }
 	}
