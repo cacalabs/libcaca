@@ -55,7 +55,9 @@ int cucul_invert(cucul_canvas_t *cv)
 /** \brief Flip a canvas horizontally.
  *
  *  Flip a canvas horizontally, choosing characters that look like the
- *  mirrored version wherever possible.
+ *  mirrored version wherever possible. Some characters will stay
+ *  unchanged by the process, but the operation is guaranteed to be
+ *  involutive: performing it again gives back the original canvas.
  *
  *  This function never fails.
  *
@@ -112,7 +114,9 @@ int cucul_flip(cucul_canvas_t *cv)
 /** \brief Flip a canvas vertically.
  *
  *  Flip a canvas vertically, choosing characters that look like the
- *  mirrored version wherever possible.
+ *  mirrored version wherever possible. Some characters will stay
+ *  unchanged by the process, but the operation is guaranteed to be
+ *  involutive: performing it again gives back the original canvas.
  *
  *  This function never fails.
  *
@@ -155,7 +159,10 @@ int cucul_flop(cucul_canvas_t *cv)
 /** \brief Rotate a canvas.
  *
  *  Apply a 180-degree transformation to a canvas, choosing characters
- *  that look like the upside-down version wherever possible.
+ *  that look like the upside-down version wherever possible. Some
+ *  characters will stay unchanged by the process, but the operation is
+ *  guaranteed to be involutive: performing it again gives back the
+ *  original canvas.
  *
  *  This function never fails.
  *
