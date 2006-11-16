@@ -1,5 +1,12 @@
 /* $Id$ */ /** \page news News
 
+\section news0_99_beta11 Changes between 0.9.beta11 and 0.99.beta10
+
+ - fixed compilation of the C++ bindings
+ - fixed bugs in cucul_import_memory(), cucul_set_canvas_size()
+ - implemented caca_set_display_title() for ncurses and S-Lang
+ - minor bugfixes
+
 \section news0_99_beta10 Changes between 0.9.beta10 and 0.99.beta9
 
  - new debug mode

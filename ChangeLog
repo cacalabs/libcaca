@@ -1,4 +1,238 @@
 ------------------------------------------------------------------------
+r1079 | sam | 2006-11-16 16:01:31 +0100 (Thu, 16 Nov 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/export.c
+   M /trunk/test/export.c
+
+  * Support for CUCUL_DEFAULT and CUCUL_TRANSPARENT in the HTML exporters.
+  * Updated export test accordingly.
+
+------------------------------------------------------------------------
+r1078 | sam | 2006-11-16 12:26:22 +0100 (Thu, 16 Nov 2006) | 3 lines
+Changed paths:
+   M /trunk/common.h
+
+  * Fix a compilation warning by pretending to use seterrno()'s argument
+    even when it isn't.
+
+------------------------------------------------------------------------
+r1077 | sam | 2006-11-16 12:23:56 +0100 (Thu, 16 Nov 2006) | 3 lines
+Changed paths:
+   M /trunk/kernel/kernel.c
+   M /trunk/kernel/kernel.h
+
+  * Implemented strcmp() and strdup() and added an fflush() stub to the
+    kernel code.
+
+------------------------------------------------------------------------
+r1076 | sam | 2006-11-16 03:08:05 +0100 (Thu, 16 Nov 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/transform.c
+
+  * Added some box drawing glyphs that are used by TOIlet's future.tlf font
+    to the flip/flop/rotation filters.
+
+------------------------------------------------------------------------
+r1072 | sam | 2006-11-14 21:14:38 +0100 (Tue, 14 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/Makefile.am
+   M /trunk/src/Makefile.am
+   M /trunk/tools/Makefile.am
+
+  * Don't rely on pkg-config macros for variable substitution. Just in case.
+
+------------------------------------------------------------------------
+r1071 | sam | 2006-11-14 19:22:31 +0100 (Tue, 14 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+
+  * No longer bail out with an error if Imlib2 or Doxygen were not found.
+
+------------------------------------------------------------------------
+r1070 | sam | 2006-11-14 19:05:02 +0100 (Tue, 14 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/frame.c
+
+  * Minor documentation fix.
+
+------------------------------------------------------------------------
+r1069 | sam | 2006-11-14 19:02:29 +0100 (Tue, 14 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/Makefile.am
+   M /trunk/caca/caca.c
+   M /trunk/caca/caca_internals.h
+   A /trunk/caca/driver_cocoa.m
+   M /trunk/configure.ac
+
+  * Added all the glue needed for a Cocoa output driver.
+
+------------------------------------------------------------------------
+r1068 | sam | 2006-11-14 17:27:15 +0100 (Tue, 14 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/test/spritedit.c
+
+  * Minor compilation warning fix. OS X x86 defines "DELAY".
+
+------------------------------------------------------------------------
+r1067 | sam | 2006-11-14 08:59:52 +0100 (Tue, 14 Nov 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/transform.c
+   M /trunk/test/text.c
+
+  * Documented flip/flop/rotate as being involutive.
+  * Updated text test.
+
+------------------------------------------------------------------------
+r1066 | sam | 2006-11-14 08:46:51 +0100 (Tue, 14 Nov 2006) | 3 lines
+Changed paths:
+   M /trunk/test
+   M /trunk/test/Makefile.am
+   D /trunk/test/all.c
+   A /trunk/test/cucul.c (from /trunk/test/all.c:1063)
+
+  * Renamed the "all" test to "cucul" because it otherwise conflicted with
+    the automake "all" rule.
+
+------------------------------------------------------------------------
+r1065 | sam | 2006-11-14 00:42:43 +0100 (Tue, 14 Nov 2006) | 3 lines
+Changed paths:
+   M /trunk/caca/caca_internals.h
+   M /trunk/caca/driver_ncurses.c
+   M /trunk/caca/driver_slang.c
+   M /trunk/caca/graphics.c
+
+  * Factored terminal title setting code.
+  * Do not try to set the terminal title if TERM=linux.
+
+------------------------------------------------------------------------
+r1064 | sam | 2006-11-14 00:33:49 +0100 (Tue, 14 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/driver_ncurses.c
+   M /trunk/caca/driver_slang.c
+   M /trunk/caca/graphics.c
+   M /trunk/doc/migrating.dox
+
+  * Implemented caca_set_display_title() for ncurses and S-Lang.
+
+------------------------------------------------------------------------
+r1063 | sam | 2006-11-14 00:16:35 +0100 (Tue, 14 Nov 2006) | 4 lines
+Changed paths:
+   M /trunk/cucul/canvas.c
+   M /trunk/cucul/cucul.c
+   M /trunk/cucul/cucul.h
+   M /trunk/cucul/cucul_internals.h
+   M /trunk/cucul/frame.c
+   M /trunk/cucul/legacy.c
+   M /trunk/cxx/cucul++.cpp
+   M /trunk/test/all.c
+   M /trunk/test/frames.c
+
+  * Implemented cucul_get_frame_name() and cucul_set_frame_name().
+  * Renamed cucul_*_canvas_frame() to cucul_*_frame() because we bloody well
+    know that a frame belongs to a canvas.
+
+------------------------------------------------------------------------
+r1062 | sam | 2006-11-14 00:00:02 +0100 (Tue, 14 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/test
+   M /trunk/test/Makefile.am
+   A /trunk/test/all.c
+   M /trunk/test/blit.c
+
+  * Started writing a full API test. Not sure where it'll lead.
+
+------------------------------------------------------------------------
+r1061 | sam | 2006-11-13 22:42:15 +0100 (Mon, 13 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/cxx/cucul++.cpp
+   M /trunk/cxx/cucul++.h
+   M /trunk/cxx/cxxtest.cpp
+
+  * Updated C++ bindings so that they build, at least.
+
+------------------------------------------------------------------------
+r1060 | sam | 2006-11-13 14:34:06 +0100 (Mon, 13 Nov 2006) | 3 lines
+Changed paths:
+   M /trunk/src/cacademo.c
+   M /trunk/test/swallow.c
+
+  * Add more randomness to the cacademo effects.
+  * Adapt the swallow test to the display's size.
+
+------------------------------------------------------------------------
+r1059 | sam | 2006-11-13 09:55:36 +0100 (Mon, 13 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/caca/caca.h
+   M /trunk/src/aafire.c
+   M /trunk/src/cacademo.c
+
+  * Added CACA_KEY_* values for Ctrl-C, Ctrl-V, etc.
+
+------------------------------------------------------------------------
+r1058 | sam | 2006-11-13 01:19:18 +0100 (Mon, 13 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+  * Improved ANSI import, especially wrt. drawing context persistence.
+
+------------------------------------------------------------------------
+r1057 | sam | 2006-11-13 00:09:17 +0100 (Mon, 13 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/cucul/attr.c
+
+  * Fix a bug in cucul_put_attr. This function was simply not working.
+
+------------------------------------------------------------------------
+r1056 | sam | 2006-11-12 23:26:36 +0100 (Sun, 12 Nov 2006) | 3 lines
+Changed paths:
+   M /trunk/cucul/cucul.c
+   M /trunk/cucul/cucul_internals.h
+   M /trunk/cucul/frame.c
+
+  * Fix a bug in cucul_set_canvas_size() that caused the default attribute
+    to be ignored.
+
+------------------------------------------------------------------------
+r1054 | sam | 2006-11-12 22:29:31 +0100 (Sun, 12 Nov 2006) | 4 lines
+Changed paths:
+   M /trunk/cucul/import.c
+
+  * When importing an utf-8 file, set background and foreground colours to
+    the nearest ANSI values for the current attribute. When importing an ANSI
+    file, force them to lightgray on black.
+
+------------------------------------------------------------------------
+r1053 | sam | 2006-11-12 21:39:27 +0100 (Sun, 12 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+
+  * Oops, fixed NEW entry.
+
+------------------------------------------------------------------------
+r1048 | sam | 2006-11-12 20:29:43 +0100 (Sun, 12 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/Makefile.am
+
+  * Added a "make upload" rule for releases.
+
+------------------------------------------------------------------------
+r1047 | sam | 2006-11-12 19:26:40 +0100 (Sun, 12 Nov 2006) | 3 lines
+Changed paths:
+   M /trunk/ChangeLog
+   M /trunk/NEWS
+   M /trunk/configure.ac
+
+  * Set version to 0.99.beta10.
+  * Updated NEWS and ChangeLog.
+
+------------------------------------------------------------------------
+r1046 | sam | 2006-11-12 19:23:29 +0100 (Sun, 12 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/doc/migrating.dox
+
+  * Documentation updates.
+
+------------------------------------------------------------------------
 r1045 | sam | 2006-11-12 18:45:14 +0100 (Sun, 12 Nov 2006) | 3 lines
 Changed paths:
    M /trunk/cucul/cucul.h
