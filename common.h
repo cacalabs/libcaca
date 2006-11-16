@@ -39,7 +39,7 @@ typedef unsigned long int uintptr_t;
 static inline void seterrno(int e) { errno = e; }
 static inline int geterrno(void) { return errno; }
 #else
-#   define seterrno(x) do {} while(0)
+#   define seterrno(x) do { (void)(x); } while(0)
 #   define geterrno(x) 0
 #endif
 
