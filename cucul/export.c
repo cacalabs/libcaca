@@ -389,10 +389,13 @@ static void *export_html(cucul_canvas_t *cv, unsigned long int *bytes)
 
         for(x = 0; x < cv->width; x += len)
         {
-            cur += sprintf(cur, "<span style=\"color:#%.03x;"
-                                "background-color:#%.03x",
-                                _cucul_attr_to_rgb12fg(lineattr[x]),
-                                _cucul_attr_to_rgb12bg(lineattr[x]));
+            cur += sprintf(cur, "<span style=\"");
+            if(cucul_attr_to_ansi_fg(lineattr[x]) < 0x10)
+                cur += sprintf(cur, ";color:#%.03x",
+                               _cucul_attr_to_rgb12fg(lineattr[x]));
+            if(cucul_attr_to_ansi_bg(lineattr[x]) < 0x10)
+                cur += sprintf(cur, ";background-color:#%.03x",
+                               _cucul_attr_to_rgb12bg(lineattr[x]));
             if(lineattr[x] & CUCUL_BOLD)
                 cur += sprintf(cur, ";font-weight:bold");
             if(lineattr[x] & CUCUL_ITALICS)
@@ -466,7 +469,7 @@ static void *export_html3(cucul_canvas_t *cv, unsigned long int *bytes)
 
         for(x = 0; x < cv->width; x += len)
         {
-            unsigned int i;
+            unsigned int i, needfont;
 
             /* Use colspan option to factor cells with same attributes
              * (see below) */
@@ -474,14 +477,22 @@ static void *export_html3(cucul_canvas_t *cv, unsigned long int *bytes)
             while(x + len < cv->width && lineattr[x + len] == lineattr[x])
                 len++;
 
-            cur += sprintf(cur, "<td bgcolor=#%.06lx", (unsigned long int)
-                           _cucul_attr_to_rgb24bg(lineattr[x]));
+            cur += sprintf(cur, "<td");
+
+            if(cucul_attr_to_ansi_fg(lineattr[x]) < 0x10)
+                cur += sprintf(cur, " bgcolor=#%.06lx", (unsigned long int)
+                               _cucul_attr_to_rgb24bg(lineattr[x]));
 
             if(len > 1)
                 cur += sprintf(cur, " colspan=%d", len);
 
-            cur += sprintf(cur, "><font color=#%.06lx>", (unsigned long int)
-                           _cucul_attr_to_rgb24fg(lineattr[x]));
+            cur += sprintf(cur, ">");
+
+            needfont = cucul_attr_to_ansi_bg(lineattr[x]) < 0x10;
+
+            if(needfont)
+                cur += sprintf(cur, "<font color=#%.06lx>", (unsigned long int)
+                               _cucul_attr_to_rgb24fg(lineattr[x]));
 
             if(lineattr[x] & CUCUL_BOLD)
                 cur += sprintf(cur, "<b>");
@@ -513,7 +524,9 @@ static void *export_html3(cucul_canvas_t *cv, unsigned long int *bytes)
             if(lineattr[x] & CUCUL_BOLD)
                 cur += sprintf(cur, "</b>");
 
-            cur += sprintf(cur, "</font></td>");
+            if(needfont)
+                cur += sprintf(cur, "</font>");
+            cur += sprintf(cur, "</td>");
         }
         cur += sprintf(cur, "</tr>\n");
     }
