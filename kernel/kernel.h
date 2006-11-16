@@ -82,8 +82,10 @@ FILE *stdin, *stdout, *stderr;
 void *memset(void *s, int c, size_t n);
 void *memcpy(void *dest, const void *src, size_t n);
 size_t strlen(const char *s);
+int strcmp(const char *s1, const char *s2);
 int strcasecmp(const char *s1, const char *s2);
 int memcmp(const void *s1, const void *s2, size_t n);
+char *strdup(const char *s);
 
 /* stdarg.h functions */
 typedef void * va_list;
@@ -99,6 +101,7 @@ size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);
 int fclose(FILE *fp);
 int printf(const char *format, ...);
 int fprintf(FILE *stream, const char *format, ...);
+int fflush(FILE *stream);
 int sprintf(char *str, const char *format, ...);
 int sscanf(const char *str, const char *format, ...);
 

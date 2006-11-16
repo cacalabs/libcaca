@@ -164,6 +164,17 @@ size_t strlen(const char *s)
     return len;
 }
 
+int strcmp(const char *s1, const char *s2)
+{
+    while(*s1 && *s1 == *s2)
+    {
+        s1++;
+        s2++;
+    }
+
+    return (int)*s1 - (int)*s2;
+}
+
 int strcasecmp(const char *s1, const char *s2)
 {
     while(*s1 && *s2 && UPPER(*s1) == UPPER(*s2))
@@ -187,6 +198,17 @@ int memcmp(const void *_s1, const void *_s2, size_t n)
         s2++;
     }
     return 0;
+}
+
+char *strdup(const char *s)
+{
+    char *new;
+    unsigned int len = strlen(s);
+
+    new = malloc(len + 1);
+    memcpy(new, s, len + 1);
+
+    return new;
 }
 
 /* stdarg.h functions */
@@ -233,6 +255,12 @@ int printf(const char *format, ...)
 }
 
 int fprintf(FILE *stream, const char *format, ...)
+{
+    /* FIXME */
+    return 0;
+}
+
+int fflush(FILE *stream)
 {
     /* FIXME */
     return 0;
