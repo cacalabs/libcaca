@@ -206,7 +206,7 @@ if test "${enable_cocoa}" != "no"; then
    [ac_cv_my_have_cocoa="yes"])
   if test "${ac_cv_my_have_cocoa}" = "yes"; then
     AC_DEFINE(USE_COCOA, 1, Define to 1 to activate the Cocoa backend driver)
-    CACA_LIBS="${CACA_LIBS} -Wl,-framework,Cocoa"
+    CACA_LIBS="${CACA_LIBS} -Wl,-framework,Carbon,-framework,Cocoa"
     CACA_DRIVERS="${CACA_DRIVERS} cocoa"
   elif test "${enable_cocoa}" = "yes"; then
     AC_MSG_ERROR([cannot find Cocoa development files])
