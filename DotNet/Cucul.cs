@@ -319,11 +319,6 @@ namespace libCucul
             }
 
 
-
-
-
-
-
         /* Privates methods, are not meant to be called by user*/
         
         public IntPtr get_cucul_t()
@@ -331,5 +326,132 @@ namespace libCucul
             return qq;
             }
     }
+
+
+
+    public unsafe class Dither : IDisposable
+    {
+    [DllImport("libCucul.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]   
+      public static extern IntPtr cucul_create_dither(Int32 bpp, Int32 w,
+                                                      Int32 h, Int32 pitch,
+                                                      Int64 rmask,
+                                                      Int64 gmask,
+                                                      Int64 bmask,
+                                                      Int64 amask);
+
+
+    [DllImport("libCucul.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]  
+      public static extern Int32 cucul_set_dither_palette(IntPtr d,
+                             Int32[] r, Int32[] g,
+                             Int32[] b, Int32[] a);
+    [DllImport("libCucul.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]  
+      public static extern Int32 cucul_set_dither_brightness(IntPtr d, float b);
+    [DllImport("libCucul.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]  
+      public static extern Int32 cucul_set_dither_gamma(IntPtr d, float g);
+    [DllImport("libCucul.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]  
+      public static extern Int32 cucul_set_dither_contrast(IntPtr d, float c);
+    [DllImport("libCucul.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]  
+      public static extern Int32 cucul_set_dither_invert(IntPtr d, int i);
+    [DllImport("libCucul.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]  
+      public static extern Int32 cucul_set_dither_antialias(IntPtr d, string s);
+    [DllImport("libCucul.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]  
+      public static extern string[] cucul_get_dither_antialias_list(IntPtr d);
+    [DllImport("libCucul.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]  
+      public static extern Int32 cucul_set_dither_color(IntPtr d, string s);
+    [DllImport("libCucul.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]  
+      public static extern string[] cucul_get_dither_color_list(IntPtr d);
+    [DllImport("libCucul.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]  
+      public static extern Int32 cucul_set_dither_charset(IntPtr d, string s);
+    [DllImport("libCucul.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]  
+      public static extern string[] cucul_get_dither_charset_list(IntPtr d);
+    [DllImport("libCucul.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]  
+      public static extern Int32 cucul_set_dither_mode(IntPtr d, string s);
+    [DllImport("libCucul.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]  
+      public static extern string[] cucul_get_dither_mode_list(IntPtr d);
+    [DllImport("libCucul.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]  
+      public static extern Int32 cucul_free_dither(IntPtr d);
+
+  /* FIXME  [DllImport("libCucul.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]  
+      Int32 cucul_dither_bitmap(Cucul c,Int32  x, Int32 y, Int32 w , Int32 y,
+                         IntPtr d2, void *);*/
+
+
+
+        IntPtr dither;
+
+        public Dither(Int32 bpp, Int32 w,Int32 h, Int32 pitch,
+                      Int64 rmask, Int64 gmask,Int64 bmask, Int64 amask)
+            {
+               dither = cucul_create_dither(bpp, w, h, pitch, rmask, gmask, bmask, amask);
+            }
+        public void Dispose()
+            {
+               cucul_free_dither(dither);
+               GC.SuppressFinalize(this);
+            }
+        public Int32 setBrightness(float b)
+            {
+            return cucul_set_dither_brightness(dither, b);
+            }
+        public Int32 setGamma(float g)
+            {
+            return cucul_set_dither_gamma(dither, g);
+            }
+        public Int32 setContrast(float c)
+            {
+            return cucul_set_dither_contrast(dither, c);
+            }
+       public Int32 setInvert(Int32 i)
+            {
+            return cucul_set_dither_invert(dither, i);
+            }
+       public Int32 setAntialias(string s)
+            {
+            return cucul_set_dither_antialias(dither, s);
+            }
+       public Int32 setColor(string s)
+            {
+            return cucul_set_dither_color(dither, s);
+            }
+       public Int32 setCharset(string s)
+            {
+            return cucul_set_dither_charset(dither, s);
+            }
+       public Int32 setMode(string s)
+            {
+            return cucul_set_dither_mode(dither, s);
+            }
+       /* <FIXME> */
+       public string[] getAntialiasList() 
+            {
+                return cucul_get_dither_antialias_list(dither);
+            }
+       public string[] getColorList() 
+            {
+                return cucul_get_dither_color_list(dither);
+            }
+       public string[] getCharsetList() 
+            {
+                return cucul_get_dither_charset_list(dither);
+            }
+       public string[] getModeList() 
+            {
+                return cucul_get_dither_mode_list(dither);
+            }
+       /* </FIXME> */
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
   }
 

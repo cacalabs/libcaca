@@ -26,7 +26,7 @@ class Test {
         
         /* Instanciate a cucul canvas */
         Cucul qq = new Cucul();
-        
+
         /* Get size, and change it */
         Console.WriteLine("Old size : {0}x{1}", qq.getWidth(), qq.getHeight());
         qq.setSize(80,50);
@@ -36,18 +36,21 @@ class Test {
            not to be used with previous instance */
         Console.WriteLine("A random number : {0}", Cucul.Rand(0, 1337));
 
-
+        /* Draw stuff on our canvas */
         qq.putChar(0,0, 'J');
-
         qq.setColor(Cucul.CUCUL_BLUE, Cucul.CUCUL_RED);
         qq.drawLine(10, 15, 45, 27, "#");
-
         qq.putStr(10, 10, "Hello from .NET");
-
-
         Console.WriteLine("Char at 0,0 : {0}", qq.getChar(0,0));
-
         qq.Flip();
+
+
+        /* Create a Dither instance */
+        Dither dither = new Dither(32, 320, 200, 320, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+        dither.setBrightness((float)0.7);
+        string[] aalist = dither.getAntialiasList();
+        Console.WriteLine("List : '{0}'", aalist[1]);
+
 
         /* We have a proper canvas, let's display it using Caca */
         Caca kk = new Caca(qq);
