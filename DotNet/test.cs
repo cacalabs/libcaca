@@ -39,9 +39,15 @@ class Test {
 
         qq.putChar(0,0, 'J');
 
+        qq.setColor(Cucul.CUCUL_BLUE, Cucul.CUCUL_RED);
         qq.drawLine(10, 15, 45, 27, "#");
 
+        qq.putStr(10, 10, "Hello from .NET");
 
+
+        Console.WriteLine("Char at 0,0 : {0}", qq.getChar(0,0));
+
+        qq.Flip();
 
         /* We have a proper canvas, let's display it using Caca */
         Caca kk = new Caca(qq);
