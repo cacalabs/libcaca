@@ -106,6 +106,18 @@ namespace libCucul
     [DllImport("libCucul.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
       public static extern Int32 cucul_attr_to_ansi_bg(Int64 a);
 
+    [DllImport("libCucul.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
+       public static extern Int32 cucul_get_frame_count(IntPtr qq);
+    [DllImport("libCucul.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
+       public static extern Int32 cucul_set_frame(IntPtr qq, Int32 f);
+    [DllImport("libCucul.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
+       public static extern string cucul_get_frame_name(IntPtr qq);
+    [DllImport("libCucul.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
+       public static extern Int32 cucul_set_frame_name(IntPtr qq, string n);
+    [DllImport("libCucul.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
+       public static extern Int32 cucul_create_frame(IntPtr qq, Int32 f);
+    [DllImport("libCucul.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
+       public static extern Int32 cucul_free_frame(IntPtr qq, Int32 f);
 
 
     /* Constants */
@@ -280,6 +292,31 @@ namespace libCucul
 
 
 
+
+        public Int32 getFrameCount()
+            {
+            return cucul_get_frame_count(qq);
+            }
+        public Int32 setFrame(Int32 f)
+            {
+            return cucul_set_frame(qq, f);
+            }
+        public string getFrameName()
+            {
+            return cucul_get_frame_name(qq);
+            }
+        public Int32 setFrameName(string n)
+            {
+            return cucul_set_frame_name(qq, n);
+            }
+        public Int32 createFrame(Int32 f)
+            {
+            return cucul_create_frame(qq, f);
+            }
+        public Int32 freeFrame(Int32 f)
+            {
+            return cucul_free_frame(qq, f);
+            }
 
 
 
