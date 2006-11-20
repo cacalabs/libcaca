@@ -8,6 +8,7 @@
   - support for TAB
   - allow to change the canvas size in a per-frame basis.
   - export attribute parsing functions such as attr_to_ansi4fg etc.
+  - add attributes such as "can grow X-wise" to frames.
 
   \subsection indep API-independent stuff
 
@@ -31,6 +32,7 @@
   \subsection dep API-dependent stuff
 
   - beep support
+  - check that the libcucul version matches on init
 
   \subsection indep API-independent stuff
 
@@ -41,6 +43,8 @@
   - fix Unicode support for ncurses (look at the nano source, it gets it right)
   - and Jylam wants a framebuffer output
   - write sample code for a text edit widget with cursor support
+  - optimise renderers by having dirty lines support (requires libcucul
+    changes)
 
 
 \section bindings Language bindings
