@@ -75,7 +75,7 @@ AC_ARG_ENABLE(plugins,
 AC_ARG_ENABLE(doc,
   [  --enable-doc            build documentation (needs doxygen and LaTeX)])
 
-AC_CHECK_HEADERS(stdio.h stdarg.h signal.h sys/ioctl.h sys/time.h inttypes.h endian.h unistd.h arpa/inet.h netinet/in.h winsock2.h errno.h locale.h getopt.h dlfcn.h)
+AC_CHECK_HEADERS(stdio.h stdarg.h signal.h sys/ioctl.h sys/time.h inttypes.h endian.h unistd.h arpa/inet.h netinet/in.h winsock2.h errno.h locale.h getopt.h dlfcn.h pty.h)
 AC_CHECK_FUNCS(signal ioctl vsnprintf getenv putenv strcasecmp htons)
 AC_CHECK_FUNCS(usleep gettimeofday)
 
@@ -105,6 +105,7 @@ AC_TRY_COMPILE([],[asm("fldln2; fldln2; fxch; fyl2x");],
  [AC_MSG_RESULT(no)])
 
 AC_CHECK_LIB(m, sin, MATH_LIBS="${MATH_LIBS} -lm")
+AC_CHECK_LIB(util, forkpty, UTIL_LIBS="${UTIL_LIBS} -lutil")
 
 CACA_DRIVERS="" 
 
@@ -277,6 +278,7 @@ fi
 
 
 AC_SUBST(MATH_LIBS)
+AC_SUBST(UTIL_LIBS)
 AC_SUBST(GETOPT_LIBS)
 AC_SUBST(CACA_LIBS)
 AC_SUBST(X11_LIBS)
