@@ -21,53 +21,66 @@ class Test {
 
 
 	public static void Main() {
+        int barCount = 6;
         Console.WriteLine("libcaca .NET test");
 		Console.WriteLine("(c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>");
         
         /* Instanciate a cucul canvas */
         Cucul qq = new Cucul();
 
-        /* Get size, and change it */
-        Console.WriteLine("Old size : {0}x{1}", qq.getWidth(), qq.getHeight());
-        qq.setSize(80,50);
-        Console.WriteLine("Newsize  : {0}x{1}", qq.getWidth(), qq.getHeight());
-
+ 
         /* Random number. This is a static method, 
            not to be used with previous instance */
         Console.WriteLine("A random number : {0}", Cucul.Rand(0, 1337));
 
-        /* Draw stuff on our canvas */
-        qq.putChar(0,0, 'J');
-        qq.setColor(Cucul.CUCUL_BLUE, Cucul.CUCUL_RED);
-        qq.drawLine(10, 15, 45, 27, "#");
-        qq.putStr(10, 10, "Hello from .NET");
-        Console.WriteLine("Char at 0,0 : {0}", qq.getChar(0,0));
-        qq.Flip();
-
-
-        /* Create a Dither instance */
-        Dither dither = new Dither(32, 320, 200, 320, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
-        dither.setBrightness((float)0.7);
-        string[] aalist = dither.getAntialiasList();
-        Console.WriteLine("List : '{0}'", aalist[1]);
 
 
         /* We have a proper canvas, let's display it using Caca */
         Caca kk = new Caca(qq);
-        kk.setDisplayTime(2000000); // Refresh every 2 seconds
+        kk.setDisplayTime(20000); // Refresh every 20 ms
 
         kk.setDisplayTitle("libcaca .NET Bindings test suite");
 
+        double v;
+        Int32 y = 0;
         Event e = new Event();
-        int startTime = kk.getDisplayTime();
+        Int32 i;
+        
+        DateTime startTime = DateTime.Now;
         while(kk.getEvent(Event.type.KEY_RELEASE, e, 10) == 0)
           {
-          kk.Refresh();
-          Console.WriteLine("Render time : {0}", kk.getDisplayTime()-startTime);
+            TimeSpan curTime = DateTime.Now - startTime;
+            double t = curTime.TotalMilliseconds;
+            qq.setColor(Cucul.CUCUL_WHITE, Cucul.CUCUL_BLACK);
+            for(i=0; i<barCount;i++) 
+             {
+                v = ((Math.Sin((t/500.0)+(i/((double)barCount)))+1)/2)*qq.getHeight();
+                y = (Int32) v;
+
+ 
+
+                qq.setColor(i+1, Cucul.CUCUL_BLACK);
+                /* drawLine is already clipped, we don't care about overflows */
+                qq.drawLine(0, y-2, qq.getWidth(), y-2, '-'); 
+                qq.drawLine(0, y-1, qq.getWidth(), y-1, '*');
+                qq.drawLine(0, y, qq.getWidth(), y, '#');
+                qq.drawLine(0, y+1, qq.getWidth(), y+1, '*');
+                qq.drawLine(0, y+2, qq.getWidth(), y+2, '-');
+             }
+
+             qq.setColor(Cucul.CUCUL_WHITE, Cucul.CUCUL_BLUE);   
+             qq.putStr(qq.getWidth() - 30,qq.getHeight() - 2," -=[ Powered by libcaca ]=- ");
+             qq.setColor(Cucul.CUCUL_WHITE, Cucul.CUCUL_BLACK);   
+ 
+
+            kk.Refresh();
+            qq.Clear();
+            
           }
 
-        /* Force deletion of our instance for fun */
+        /* Force deletion of our instances for fun */
         qq.Dispose();
+        kk.Dispose();
 	}
 
 }

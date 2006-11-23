@@ -50,7 +50,7 @@ namespace libCucul
     [DllImport("libCucul.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
       public static extern Int32  cucul_blit(IntPtr qq, Int32 x, Int32 y, IntPtr qq1, IntPtr qq2);
     [DllImport("libCucul.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
-      public static extern Int32 cucul_draw_line(IntPtr qq, Int32 x1, Int32 y1, Int32 x2, Int32 y2, string c);
+      public static extern Int32 cucul_draw_line(IntPtr qq, Int32 x1, Int32 y1, Int32 x2, Int32 y2, Int32 c);
     [DllImport("libCucul.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
       public static extern Int32 cucul_draw_polyline(IntPtr qq, Int32[] x, Int32[] y, Int32 n, IntPtr c);
     [DllImport("libCucul.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
@@ -190,7 +190,7 @@ namespace libCucul
             {
             return cucul_putchar(qq, x, y, c);
             }
-        public Int32 clearCanvas()
+        public Int32 Clear()
             {
             return cucul_clear_canvas(qq);
             }
@@ -198,7 +198,7 @@ namespace libCucul
             {
             return cucul_blit(qq, x, y, qq1.get_cucul_t(), qq2.get_cucul_t());
             }
-        public Int32 drawLine(Int32 x1, Int32 y1, Int32 x2, Int32 y2, string c)
+        public Int32 drawLine(Int32 x1, Int32 y1, Int32 x2, Int32 y2, Int32 c)
             {
             return cucul_draw_line(qq, x1, y1, x2, y2, c);
             }
