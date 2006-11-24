@@ -449,7 +449,12 @@ static void ncurses_write_utf32(uint32_t ch)
     buf[bytes] = '\0';
     addstr(buf);
 #else
-    addch(ch < 0x80 ? ch : '?');
+    if(ch < 0x80)
+        addch(ch)
+    else if(cucul_utf32_is_fullwidth(ch))
+        addstr("? ");
+    else
+        addch('?');
 #endif
 }
 
