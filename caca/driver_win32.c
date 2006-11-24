@@ -351,6 +351,7 @@ int win32_install(caca_display_t *dp)
     dp->drv.handle_resize = win32_handle_resize;
     dp->drv.get_event = win32_get_event;
     dp->drv.set_mouse = NULL;
+    dp->drv.set_cursor = NULL;
 
     return 0;
 }

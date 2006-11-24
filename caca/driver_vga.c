@@ -166,6 +166,7 @@ int vga_install(caca_display_t *dp)
     dp->drv.handle_resize = vga_handle_resize;
     dp->drv.get_event = vga_get_event;
     dp->drv.set_mouse = NULL;
+    dp->drv.set_cursor = NULL;
 
     return 0;
 }

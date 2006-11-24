@@ -590,6 +590,7 @@ int gl_install(caca_display_t *dp)
     dp->drv.handle_resize = gl_handle_resize;
     dp->drv.get_event = gl_get_event;
     dp->drv.set_mouse = gl_set_mouse;
+    dp->drv.set_cursor = NULL;
 
     return 0;
 }

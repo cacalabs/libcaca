@@ -105,6 +105,7 @@ int raw_install(caca_display_t *dp)
     dp->drv.handle_resize = raw_handle_resize;
     dp->drv.get_event = raw_get_event;
     dp->drv.set_mouse = NULL;
+    dp->drv.set_cursor = NULL;
 
     return 0;
 }

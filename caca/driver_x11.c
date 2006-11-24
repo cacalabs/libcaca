@@ -643,6 +643,7 @@ int x11_install(caca_display_t *dp)
     dp->drv.handle_resize = x11_handle_resize;
     dp->drv.get_event = x11_get_event;
     dp->drv.set_mouse = x11_set_mouse;
+    dp->drv.set_cursor = NULL;
 
     return 0;
 }

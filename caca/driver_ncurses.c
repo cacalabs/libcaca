@@ -475,6 +475,7 @@ int ncurses_install(caca_display_t *dp)
     dp->drv.handle_resize = ncurses_handle_resize;
     dp->drv.get_event = ncurses_get_event;
     dp->drv.set_mouse = NULL;
+    dp->drv.set_cursor = NULL;
 
     return 0;
 }

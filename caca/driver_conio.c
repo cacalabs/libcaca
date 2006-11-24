@@ -172,6 +172,7 @@ int conio_install(caca_display_t *dp)
     dp->drv.handle_resize = conio_handle_resize;
     dp->drv.get_event = conio_get_event;
     dp->drv.set_mouse = NULL;
+    dp->drv.set_cursor = NULL;
 
     return 0;
 }

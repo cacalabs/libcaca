@@ -199,6 +199,7 @@ int caca_get_event(caca_display_t *, unsigned int, caca_event_t *, int);
 unsigned int caca_get_mouse_x(caca_display_t *);
 unsigned int caca_get_mouse_y(caca_display_t *);
 int caca_set_mouse(caca_display_t *, int);
+int caca_set_cursor(caca_display_t *, int);
 /*  @} */
 
 #ifdef __cplusplus

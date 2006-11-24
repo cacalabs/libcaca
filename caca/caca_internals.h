@@ -113,6 +113,7 @@ struct caca_display
         void (* handle_resize) (caca_display_t *);
         int (* get_event) (caca_display_t *, caca_event_t *);
         void (* set_mouse) (caca_display_t *, int);
+        void (* set_cursor) (caca_display_t *, int);
     } drv;
 
     /* Mouse position */

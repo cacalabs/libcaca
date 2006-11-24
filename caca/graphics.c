@@ -177,6 +177,31 @@ int caca_refresh_display(caca_display_t *dp)
     return 0;
 }
 
+/** \brief Show or hide the cursor.
+ *
+ *  Show or hide the cursor, for devices that support such a feature.
+ *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c ENOSYS Display driver does not support showing the cursor.
+ *
+ *  \param dp The libcaca display context.
+ *  \param flag 0 hides the cursor, 1 shows the system's default cursor
+ *              (usually a white rectangle). Other values are reserved for
+ *              future use.
+ *  \return 0 upon success, -1 if an error occurred.
+ */
+int caca_set_cursor(caca_display_t *dp, int flag)
+{
+    if(!dp->drv.set_cursor)
+    {
+        seterrno(ENOSYS);
+        return -1;
+    }
+
+    dp->drv.set_cursor(dp, flag);
+    return 0;
+}
+
 /** \brief Show or hide the mouse pointer.
  *
  *  Show or hide the mouse pointer, for devices that support such a feature.
