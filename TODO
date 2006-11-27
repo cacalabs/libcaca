@@ -4,11 +4,37 @@
 
   \subsection dep API-dependent stuff
 
+  - big change: support several internal formats for canvases, for instance
+    support the old ASCII canvas that only has 8-bit values, support the old
+    ANSI color-only canvas, and add features to canvases, such as auto-adapt so
+    that the canvas' format is automatically upgraded. Also, separate attribute
+    stuff from colour stuff. List of attributes we support:
+    - bold
+    - blink
+    - underline
+    - italics
+    list of attributes we may want to support:
+    - faint
+    - concealed
+    - double underline
+    - strike through
+    - inverse video (not that stupid, canceling it is a bitwise op)
+    - rapidly blinking / slowly blinking
+    - fraktur (gothic) (wtf is that?)
+    - alternate fonts 1 to 9 (wtf is that?) (probably not wanted)
+    - proportional spacing (yeah)
+    - framed
+    - encircled
+    - overlined
+
+  - add a caca_unset_attr() and a caca_toggle_attr() ?
+
   - support for holes in canvas (eg. not full EOL)
   - support for TAB
   - allow to change the canvas size in a per-frame basis.
   - export attribute parsing functions such as attr_to_ansi4fg etc.
   - add attributes such as "can grow X-wise" to frames.
+  - handle frame name in caca export
 
   \subsection indep API-independent stuff
 
