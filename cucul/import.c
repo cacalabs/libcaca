@@ -41,20 +41,22 @@ static inline uint16_t sscanu16(void const *s)
     return hton16(x);
 }
 
-/* ANSI Graphic Rendition Combination Mode */
-struct ansi_grcm
+struct import
 {
+    uint32_t clearattr;
+
+    /* ANSI Graphic Rendition Combination Mode */
     uint8_t fg, bg;   /* ANSI-context fg/bg */
-    uint8_t efg, ebg; /* Effective (libcucul) fg/bg */
     uint8_t dfg, dbg; /* Default fg/bg */
     uint8_t bold, blink, italics, negative, concealed, underline;
+    uint8_t faint, strike, proportional; /* unsupported */
 };
 
 static long int import_caca(cucul_canvas_t *, void const *, unsigned int);
 static long int import_text(cucul_canvas_t *, void const *, unsigned int);
 static long int import_ansi(cucul_canvas_t *, void const *, unsigned int, int);
 
-static void ansi_parse_grcm(cucul_canvas_t *, struct ansi_grcm *,
+static void ansi_parse_grcm(cucul_canvas_t *, struct import *,
                             unsigned int, unsigned int const *);
 
 /** \brief Import a memory buffer into a canvas
@@ -346,12 +348,22 @@ static long int import_text(cucul_canvas_t *cv,
 static long int import_ansi(cucul_canvas_t *cv,
                             void const *data, unsigned int size, int utf8)
 {
-    struct ansi_grcm grcm;
+    struct import *im;
     unsigned char const *buffer = (unsigned char const*)data;
-    unsigned int i, j, skip, growx = 0, growy = 0, dummy = 0;
+    unsigned int i, j, init, skip, growx = 0, growy = 0, dummy = 0;
     unsigned int width, height;
-    uint32_t savedattr, clearattr;
+    uint32_t savedattr;
     int x = 0, y = 0, save_x = 0, save_y = 0;
+
+    init = !!cv->frames[cv->frame].import;
+
+    if(!init)
+    {
+        cv->frames[cv->frame].import = malloc(sizeof(struct import));
+        memset(cv->frames[cv->frame].import, 0, sizeof(struct import));
+    }
+
+    im = (struct import *)cv->frames[cv->frame].import;
 
     if(utf8)
     {
@@ -361,28 +373,32 @@ static long int import_ansi(cucul_canvas_t *cv,
         growy = !height;
         x = cv->frames[cv->frame].x;
         y = cv->frames[cv->frame].y;
-        grcm.dfg = CUCUL_DEFAULT;
-        grcm.dbg = CUCUL_TRANSPARENT;
     }
     else
     {
         cucul_set_canvas_size(cv, width = 80, height = 0);
         growx = 0;
         growy = 1;
-        grcm.dfg = CUCUL_LIGHTGRAY;
-        grcm.dbg = CUCUL_BLACK;
     }
 
-    savedattr = cucul_get_attr(cv, -1, -1);
-    cucul_set_color_ansi(cv, grcm.dfg, grcm.dbg);
-    clearattr = cucul_get_attr(cv, -1, -1);
+    if(!init)
+    {
+        if(utf8)
+        {
+            im->dfg = CUCUL_DEFAULT;
+            im->dbg = CUCUL_TRANSPARENT;
+        }
+        else
+        {
+            im->dfg = CUCUL_LIGHTGRAY;
+            im->dbg = CUCUL_BLACK;
+        }
 
-    if(utf8)
-        cucul_set_attr(cv, savedattr);
+        cucul_set_color_ansi(cv, im->dfg, im->dbg);
+        im->clearattr = cucul_get_attr(cv, -1, -1);
 
-    /* FIXME: this is not right, we should store the grcm information as a
-     * persistent structure within the canvas. */
-    ansi_parse_grcm(cv, &grcm, 1, &dummy);
+        ansi_parse_grcm(cv, im, 1, &dummy);
+    }
 
     for(i = 0; i < size; i += skip)
     {
@@ -415,25 +431,6 @@ static long int import_ansi(cucul_canvas_t *cv,
         {
             if(x > 0)
                 x--;
-        }
-
-        else if(buffer[i] == '\x1b' && buffer[i + 1] == ']'
-                 && buffer[i + 2] == '0' && buffer[i + 3] == ';')
-        {
-            for(j = i + 4; j < size; j++)
-                if(buffer[j] == '\x07' || buffer[j] == '\x1b'
-                   || buffer[j] == '\r' || buffer[j] == '\n')
-                    break;
-
-            if(j < size && buffer[j] == '\x07')
-            {
-                char *title = malloc(j - i - 4 + 1);
-                memcpy(title, buffer + i + 4, j - i - 4);
-                title[j - i - 4] = '\0';
-                debug("ansi import: got display title '%s'", title);
-                skip += j - i;
-                free(title);
-            }
         }
 
         /* If there are not enough characters to parse the escape sequence,
@@ -538,7 +535,7 @@ static long int import_ansi(cucul_canvas_t *cv,
                 break;
             case 'J': /* ED (0x4a) - Erase In Page */
                 savedattr = cucul_get_attr(cv, -1, -1);
-                cucul_set_attr(cv, clearattr);
+                cucul_set_attr(cv, im->clearattr);
                 if(!argc || argv[0] == 0)
                 {
                     cucul_draw_line(cv, x, y, width, y, ' ');
@@ -576,7 +573,7 @@ static long int import_ansi(cucul_canvas_t *cv,
                 }
 #if 0
                 savedattr = cucul_get_attr(cv, -1, -1);
-                cucul_set_attr(cv, clearattr);
+                cucul_set_attr(cv, im->clearattr);
                 for( ; (unsigned int)j < width; j++)
                     cucul_put_char(cv, j, y, ' ');
                 cucul_set_attr(cv, savedattr);
@@ -585,7 +582,7 @@ static long int import_ansi(cucul_canvas_t *cv,
                 if(argc && argv[0])
                 {
                     savedattr = cucul_get_attr(cv, -1, -1);
-                    cucul_set_attr(cv, clearattr);
+                    cucul_set_attr(cv, im->clearattr);
                     cucul_draw_line(cv, x, y, x + argv[0] - 1, y, ' ');
                     cucul_set_attr(cv, savedattr);
                 }
@@ -603,7 +600,10 @@ static long int import_ansi(cucul_canvas_t *cv,
                 debug("ansi import: reset mode %i", argc ? (int)argv[0] : -1);
                 break;
             case 'm': /* SGR (0x6d) - Select Graphic Rendition */
-                ansi_parse_grcm(cv, &grcm, argc, argv);
+                if(argc)
+                    ansi_parse_grcm(cv, im, argc, argv);
+                else
+                    ansi_parse_grcm(cv, im, 1, &dummy);
                 break;
             case 's': /* Private (save cursor position) */
                 save_x = x;
@@ -618,6 +618,43 @@ static long int import_ansi(cucul_canvas_t *cv,
                       final - param + 1, buffer + i + param);
                 break;
             }
+        }
+
+        /* Parse OSC stuff. */
+        else if(buffer[i] == '\x1b' && buffer[i + 1] == ']')
+        {
+            char *string;
+            unsigned int command = 0;
+            unsigned int mode = 2, semicolon, final;
+
+            for(semicolon = mode; i + semicolon < size; semicolon++)
+            {
+                if(buffer[i + semicolon] < '0' || buffer[i + semicolon] > '9')
+                    break;
+                command = 10 * command + (buffer[i + semicolon] - '0');
+            }
+
+            if(i + semicolon >= size || buffer[i + semicolon] != ';')
+                break; /* Invalid Mode */
+
+            for(final = semicolon + 1; i + final < size; final++)
+                if(buffer[i + final] < 0x20)
+                    break;
+
+            if(i + final >= size || buffer[i + final] != '\a')
+                break; /* Not enough data or no bell found */
+                /* FIXME: XTerm also reacts to <ESC><backslash> and <ST> */
+                /* FIXME: differenciate between not enough data (try again)
+                 *        and invalid data (print shit) */
+
+            skip += final;
+
+            string = malloc(final - (semicolon + 1) + 1);
+            memcpy(string, buffer + (semicolon + 1), final - (semicolon + 1));
+            string[final - (semicolon + 1)] = '\0';
+            debug("ansi import: got OSC command %i string '%s'", command,
+                  string);
+            free(string);
         }
 
         /* Get the character we’re going to paste */
@@ -657,7 +694,7 @@ static long int import_ansi(cucul_canvas_t *cv,
             if(growx)
             {
                 savedattr = cucul_get_attr(cv, -1, -1);
-                cucul_set_attr(cv, clearattr);
+                cucul_set_attr(cv, im->clearattr);
                 cucul_set_canvas_size(cv, width = x + wch, height);
                 cucul_set_attr(cv, savedattr);
             }
@@ -672,7 +709,7 @@ static long int import_ansi(cucul_canvas_t *cv,
         if((unsigned int)y >= height)
         {
             savedattr = cucul_get_attr(cv, -1, -1);
-            cucul_set_attr(cv, clearattr);
+            cucul_set_attr(cv, im->clearattr);
             if(growy)
             {
                 cucul_set_canvas_size(cv, width, height = y + 1);
@@ -706,7 +743,7 @@ static long int import_ansi(cucul_canvas_t *cv,
     if(growy && (unsigned int)y > height)
     {
         savedattr = cucul_get_attr(cv, -1, -1);
-        cucul_set_attr(cv, clearattr);
+        cucul_set_attr(cv, im->clearattr);
         cucul_set_canvas_size(cv, width, height = y);
         cucul_set_attr(cv, savedattr);
     }
@@ -714,15 +751,15 @@ static long int import_ansi(cucul_canvas_t *cv,
     cv->frames[cv->frame].x = x;
     cv->frames[cv->frame].y = y;
 
-    if(utf8)
-        cucul_set_attr(cv, savedattr);
+//    if(utf8)
+//        cucul_set_attr(cv, savedattr);
 
     return i;
 }
 
 /* XXX : ANSI loader helper */
 
-static void ansi_parse_grcm(cucul_canvas_t *cv, struct ansi_grcm *g,
+static void ansi_parse_grcm(cucul_canvas_t *cv, struct import *im,
                             unsigned int argc, unsigned int const *argv)
 {
     static uint8_t const ansi2cucul[] =
@@ -732,93 +769,100 @@ static void ansi_parse_grcm(cucul_canvas_t *cv, struct ansi_grcm *g,
     };
 
     unsigned int j;
+    uint8_t efg, ebg; /* Effective (libcucul) fg/bg */
 
     for(j = 0; j < argc; j++)
     {
         /* Defined in ECMA-48 8.3.117: SGR - SELECT GRAPHIC RENDITION */
         if(argv[j] >= 30 && argv[j] <= 37)
-            g->fg = ansi2cucul[argv[j] - 30];
+            im->fg = ansi2cucul[argv[j] - 30];
         else if(argv[j] >= 40 && argv[j] <= 47)
-            g->bg = ansi2cucul[argv[j] - 40];
+            im->bg = ansi2cucul[argv[j] - 40];
         else if(argv[j] >= 90 && argv[j] <= 97)
-            g->fg = ansi2cucul[argv[j] - 90] + 8;
+            im->fg = ansi2cucul[argv[j] - 90] + 8;
         else if(argv[j] >= 100 && argv[j] <= 107)
-            g->bg = ansi2cucul[argv[j] - 100] + 8;
+            im->bg = ansi2cucul[argv[j] - 100] + 8;
         else switch(argv[j])
         {
         case 0: /* default rendition */
-            g->fg = g->dfg;
-            g->bg = g->dbg;
-            g->bold = g->blink = g->italics = 0;
-            g->negative = g->concealed = g->underline = 0;
+            im->fg = im->dfg;
+            im->bg = im->dbg;
+            im->bold = im->blink = im->italics = im->negative
+             = im->concealed = im->underline = im->faint = im->strike
+             = im->proportional = 0;
             break;
         case 1: /* bold or increased intensity */
-            g->bold = 1;
+            im->bold = 1;
             break;
         case 2: /* faint, decreased intensity or second colour */
+            im->faint = 1;
             break;
         case 3: /* italicized */
-            g->italics = 1;
+            im->italics = 1;
             break;
         case 4: /* singly underlined */
-            g->underline = 1;
+            im->underline = 1;
             break;
         case 5: /* slowly blinking (less then 150 per minute) */
         case 6: /* rapidly blinking (150 per minute or more) */
-            g->blink = 1;
+            im->blink = 1;
             break;
         case 7: /* negative image */
-            g->negative = 1;
+            im->negative = 1;
             break;
         case 8: /* concealed characters */
-            g->concealed = 1;
+            im->concealed = 1;
             break;
         case 9: /* crossed-out (characters still legible but marked as to be
                  * deleted */
+            im->strike = 1;
             break;
         case 21: /* doubly underlined */
-            g->underline = 1;
+            im->underline = 1;
             break;
         case 22: /* normal colour or normal intensity (neither bold nor
                   * faint) */
-            g->bold = 0;
+            im->bold = im->faint = 0;
             break;
         case 23: /* not italicized, not fraktur */
-            g->italics = 0;
+            im->italics = 0;
             break;
         case 24: /* not underlined (neither singly nor doubly) */
-            g->underline = 0;
+            im->underline = 0;
             break;
         case 25: /* steady (not blinking) */
-            g->blink = 0;
+            im->blink = 0;
             break;
         case 26: /* (reserved for proportional spacing as specified in CCITT
                   * Recommendation T.61) */
+            im->proportional = 1;
             break;
         case 27: /* positive image */
-            g->negative = 0;
+            im->negative = 0;
             break;
         case 28: /* revealed characters */
-            g->concealed = 0;
+            im->concealed = 0;
             break;
         case 29: /* not crossed out */
+            im->strike = 0;
             break;
         case 38: /* (reserved for future standardization, intended for setting
                   * character foreground colour as specified in ISO 8613-6
                   * [CCITT Recommendation T.416]) */
             break;
         case 39: /* default display colour (implementation-defined) */
-            g->fg = g->dfg;
+            im->fg = im->dfg;
             break;
         case 48: /* (reserved for future standardization, intended for setting
                   * character background colour as specified in ISO 8613-6
                   * [CCITT Recommendation T.416]) */
             break;
         case 49: /* default background colour (implementation-defined) */
-            g->bg = g->dbg;
+            im->bg = im->dbg;
             break;
         case 50: /* (reserved for cancelling the effect of the rendering
                   * aspect established by parameter value 26) */
+            im->proportional = 0;
             break;
         default:
             debug("ansi import: unknown sgr %i", argv[j]);
@@ -826,24 +870,24 @@ static void ansi_parse_grcm(cucul_canvas_t *cv, struct ansi_grcm *g,
         }
     }
 
-    if(g->concealed)
+    if(im->concealed)
     {
-        g->efg = g->ebg = CUCUL_TRANSPARENT;
+        efg = ebg = CUCUL_TRANSPARENT;
     }
     else
     {
-        g->efg = g->negative ? g->bg : g->fg;
-        g->ebg = g->negative ? g->fg : g->bg;
+        efg = im->negative ? im->bg : im->fg;
+        ebg = im->negative ? im->fg : im->bg;
 
-        if(g->bold)
+        if(im->bold)
         {
-            if(g->efg < 8)
-                g->efg += 8;
-            else if(g->efg == CUCUL_DEFAULT)
-                g->efg = CUCUL_WHITE;
+            if(efg < 8)
+                efg += 8;
+            else if(efg == CUCUL_DEFAULT)
+                efg = CUCUL_WHITE;
         }
     }
 
-    cucul_set_color_ansi(cv, g->efg, g->ebg);
+    cucul_set_color_ansi(cv, efg, ebg);
 }
 

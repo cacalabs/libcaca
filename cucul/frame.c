@@ -168,7 +168,9 @@ int cucul_create_frame(cucul_canvas_t *cv, unsigned int id)
     cv->frames[id].handley = cv->frames[cv->frame].handley;
 
     cv->frames[id].name = strdup("frame#--------");
-    sprintf(cv->frames[id].name + 6, "%.08x", cv->autoinc++);
+    sprintf(cv->frames[id].name + 6, "%.08x", ++cv->autoinc);
+
+    cv->frames[id].import = NULL;
 
     return 0;
 }
@@ -179,7 +181,7 @@ int cucul_create_frame(cucul_canvas_t *cv, unsigned int id)
  *
  *  The frame index indicates the frame to delete. Valid values range from
  *  0 to the current canvas frame count minus 1. If the frame index is
- *  greater the or equals the current canvas frame count, the last frame
+ *  greater than or equals the current canvas frame count, the last frame
  *  is deleted.
  *
  *  If the active frame is deleted, frame 0 becomes the new active frame.
@@ -213,6 +215,8 @@ int cucul_free_frame(cucul_canvas_t *cv, unsigned int id)
     free(cv->frames[id].chars);
     free(cv->frames[id].attrs);
     free(cv->frames[id].name);
+    if(cv->frames[id].import)
+        free(cv->frames[id].import);
 
     for(f = id + 1; f < cv->framecount; f++)
         cv->frames[f - 1] = cv->frames[f];
