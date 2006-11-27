@@ -219,23 +219,23 @@ unsigned long int cucul_get_char(cucul_canvas_t *cv, int x, int y)
  */
 int cucul_put_str(cucul_canvas_t *cv, int x, int y, char const *s)
 {
-    unsigned int read;
+    unsigned int rd;
 
     if(y < 0 || y >= (int)cv->height || x >= (int)cv->width)
         return 0;
 
     while(*s && x < -1)
     {
-        x += cucul_utf32_is_fullwidth(cucul_utf8_to_utf32(s, &read)) ? 2 : 1;
-        s += read;
+        x += cucul_utf32_is_fullwidth(cucul_utf8_to_utf32(s, &rd)) ? 2 : 1;
+        s += rd;
     }
 
     while(*s && x < (int)cv->width)
     {
-        uint32_t ch = cucul_utf8_to_utf32(s, &read);
+        uint32_t ch = cucul_utf8_to_utf32(s, &rd);
         cucul_put_char(cv, x, y, ch);
         x += cucul_utf32_is_fullwidth(ch) ? 2 : 1;
-        s += read;
+        s += rd;
     }
 
     return 0;

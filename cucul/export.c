@@ -894,9 +894,9 @@ static void *export_tga(cucul_canvas_t *cv, unsigned long int *bytes)
     /* Swap bytes. What a waste of time. */
     for(i = 0; i < w * h * 4; i += 4)
     {
-        char w;
-        w = cur[i]; cur[i] = cur[i + 3]; cur[i + 3] = w;
-        w = cur[i + 1]; cur[i + 1] = cur[i + 2]; cur[i + 2] = w;
+        char c;
+        c = cur[i]; cur[i] = cur[i + 3]; cur[i + 3] = c;
+        c = cur[i + 1]; cur[i + 1] = cur[i + 2]; cur[i + 2] = c;
     }
 
     cucul_free_font(f);

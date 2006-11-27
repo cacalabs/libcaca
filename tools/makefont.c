@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
 
     FT_Bitmap img;
     int stdwidth, fullwidth, height, blocks, glyphs, fullglyphs;
-    unsigned int n, b, i, index;
+    unsigned int n, b, i;
     unsigned int stdsize, fullsize, control_size, data_size, current_offset;
     uint8_t *glyph_data;
     struct glyph *gtab;
@@ -225,7 +225,7 @@ int main(int argc, char *argv[])
     printf("\n");
 
     /* Render all glyphs, so that we can know their offset */
-    current_offset = n = index = 0;
+    current_offset = n = 0;
     for(b = 0; blocklist[b + 1]; b += 2)
     {
         for(i = blocklist[b]; i < blocklist[b + 1]; i++)
@@ -419,16 +419,16 @@ static void fix_glyph(FT_Bitmap *i, uint32_t ch,
 
 static int printf_unicode(struct glyph *g)
 {
-    int written = 0;
+    int wr = 0;
 
-    written += printf("U+%.04X: \"", g->unicode);
+    wr += printf("U+%.04X: \"", g->unicode);
 
     if(g->unicode < 0x20 || (g->unicode >= 0x7f && g->unicode <= 0xa0))
-        written += printf("\\x%.02x\"", g->unicode);
+        wr += printf("\\x%.02x\"", g->unicode);
     else
-        written += printf("%s\"", g->buf);
+        wr += printf("%s\"", g->buf);
 
-    return written;
+    return wr;
 }
 
 static int printf_u32(char const *fmt, uint32_t i)
@@ -447,8 +447,8 @@ static int printf_hex(char const *fmt, uint8_t *data, int bytes)
 {
     char buf[BUFSIZ];
     char *parser = buf;
-    int rewind = 0; /* we use this variable to rewind 2 bytes after \000
-                     * was printed when the next char starts with "\", too. */
+    int rev = 0; /* we use this variable to rewind 2 bytes after \000
+                  * was printed when the next char starts with "\", too. */
 
     while(bytes--)
     {
@@ -458,31 +458,31 @@ static int printf_hex(char const *fmt, uint8_t *data, int bytes)
         {
             parser += sprintf(parser, "\", \"");
             written = 0;
-            rewind = 0;
+            rev = 0;
         }
 
         if(ch == '\\' || ch == '"')
         {
-            parser -= rewind;
+            parser -= rev;
             parser += sprintf(parser, "\\%c", ch);
-            rewind = 0;
+            rev = 0;
         }
         else if(ch >= 0x20 && ch < 0x7f)
         {
             parser += sprintf(parser, "%c", ch);
-            rewind = 0;
+            rev = 0;
         }
         else
         {
-            parser -= rewind;
+            parser -= rev;
             parser += sprintf(parser, "\\%.03o", ch);
-            rewind = ch ? 0 : 2;
+            rev = ch ? 0 : 2;
         }
 
         written++;
     }
 
-    parser -= rewind;
+    parser -= rev;
     parser[0] = '\0';
 
     return printf(fmt, buf);
