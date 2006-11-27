@@ -450,7 +450,7 @@ static void ncurses_write_utf32(uint32_t ch)
     addstr(buf);
 #else
     if(ch < 0x80)
-        addch(ch)
+        addch(ch);
     else if(cucul_utf32_is_fullwidth(ch))
         addstr("? ");
     else

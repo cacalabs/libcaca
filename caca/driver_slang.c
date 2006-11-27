@@ -462,7 +462,7 @@ static void slang_write_utf32(uint32_t ch)
     SLsmg_write_string(buf);
 #else
     if(ch < 0x80)
-        SLsmg_write_char(ch)
+        SLsmg_write_char(ch);
     else if(cucul_utf32_is_fullwidth(ch))
         SLsmg_write_string("? ");
     else
