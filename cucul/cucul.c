@@ -76,7 +76,6 @@ cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
     cv->frames[0].handlex = cv->frames[0].handley = 0;
     cv->frames[0].curattr = 0;
     cv->frames[0].name = strdup("frame#00000000");
-    cv->frames[0].import = NULL;
 
     _cucul_load_frame_info(cv);
     cucul_set_color_ansi(cv, CUCUL_DEFAULT, CUCUL_TRANSPARENT);
@@ -190,8 +189,6 @@ int cucul_free_canvas(cucul_canvas_t *cv)
         free(cv->frames[f].chars);
         free(cv->frames[f].attrs);
         free(cv->frames[f].name);
-        if(cv->frames[f].import)
-            free(cv->frames[f].import);
     }
 
     free(cv->frames);

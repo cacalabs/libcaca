@@ -170,8 +170,6 @@ int cucul_create_frame(cucul_canvas_t *cv, unsigned int id)
     cv->frames[id].name = strdup("frame#--------");
     sprintf(cv->frames[id].name + 6, "%.08x", ++cv->autoinc);
 
-    cv->frames[id].import = NULL;
-
     return 0;
 }
 
@@ -215,8 +213,6 @@ int cucul_free_frame(cucul_canvas_t *cv, unsigned int id)
     free(cv->frames[id].chars);
     free(cv->frames[id].attrs);
     free(cv->frames[id].name);
-    if(cv->frames[id].import)
-        free(cv->frames[id].import);
 
     for(f = id + 1; f < cv->framecount; f++)
         cv->frames[f - 1] = cv->frames[f];

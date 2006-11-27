@@ -348,22 +348,12 @@ static long int import_text(cucul_canvas_t *cv,
 static long int import_ansi(cucul_canvas_t *cv,
                             void const *data, unsigned int size, int utf8)
 {
-    struct import *im;
+    struct import im;
     unsigned char const *buffer = (unsigned char const*)data;
-    unsigned int i, j, init, skip, growx = 0, growy = 0, dummy = 0;
+    unsigned int i, j, skip, growx = 0, growy = 0, dummy = 0;
     unsigned int width, height;
     uint32_t savedattr;
     int x = 0, y = 0, save_x = 0, save_y = 0;
-
-    init = !!cv->frames[cv->frame].import;
-
-    if(!init)
-    {
-        cv->frames[cv->frame].import = malloc(sizeof(struct import));
-        memset(cv->frames[cv->frame].import, 0, sizeof(struct import));
-    }
-
-    im = (struct import *)cv->frames[cv->frame].import;
 
     if(utf8)
     {
@@ -381,24 +371,21 @@ static long int import_ansi(cucul_canvas_t *cv,
         growy = 1;
     }
 
-    if(!init)
+    if(utf8)
     {
-        if(utf8)
-        {
-            im->dfg = CUCUL_DEFAULT;
-            im->dbg = CUCUL_TRANSPARENT;
-        }
-        else
-        {
-            im->dfg = CUCUL_LIGHTGRAY;
-            im->dbg = CUCUL_BLACK;
-        }
-
-        cucul_set_color_ansi(cv, im->dfg, im->dbg);
-        im->clearattr = cucul_get_attr(cv, -1, -1);
-
-        ansi_parse_grcm(cv, im, 1, &dummy);
+        im.dfg = CUCUL_DEFAULT;
+        im.dbg = CUCUL_TRANSPARENT;
     }
+    else
+    {
+        im.dfg = CUCUL_LIGHTGRAY;
+        im.dbg = CUCUL_BLACK;
+    }
+
+    cucul_set_color_ansi(cv, im.dfg, im.dbg);
+    im.clearattr = cucul_get_attr(cv, -1, -1);
+
+    ansi_parse_grcm(cv, &im, 1, &dummy);
 
     for(i = 0; i < size; i += skip)
     {
@@ -535,7 +522,7 @@ static long int import_ansi(cucul_canvas_t *cv,
                 break;
             case 'J': /* ED (0x4a) - Erase In Page */
                 savedattr = cucul_get_attr(cv, -1, -1);
-                cucul_set_attr(cv, im->clearattr);
+                cucul_set_attr(cv, im.clearattr);
                 if(!argc || argv[0] == 0)
                 {
                     cucul_draw_line(cv, x, y, width, y, ' ');
@@ -573,7 +560,7 @@ static long int import_ansi(cucul_canvas_t *cv,
                 }
 #if 0
                 savedattr = cucul_get_attr(cv, -1, -1);
-                cucul_set_attr(cv, im->clearattr);
+                cucul_set_attr(cv, im.clearattr);
                 for( ; (unsigned int)j < width; j++)
                     cucul_put_char(cv, j, y, ' ');
                 cucul_set_attr(cv, savedattr);
@@ -582,7 +569,7 @@ static long int import_ansi(cucul_canvas_t *cv,
                 if(argc && argv[0])
                 {
                     savedattr = cucul_get_attr(cv, -1, -1);
-                    cucul_set_attr(cv, im->clearattr);
+                    cucul_set_attr(cv, im.clearattr);
                     cucul_draw_line(cv, x, y, x + argv[0] - 1, y, ' ');
                     cucul_set_attr(cv, savedattr);
                 }
@@ -601,9 +588,9 @@ static long int import_ansi(cucul_canvas_t *cv,
                 break;
             case 'm': /* SGR (0x6d) - Select Graphic Rendition */
                 if(argc)
-                    ansi_parse_grcm(cv, im, argc, argv);
+                    ansi_parse_grcm(cv, &im, argc, argv);
                 else
-                    ansi_parse_grcm(cv, im, 1, &dummy);
+                    ansi_parse_grcm(cv, &im, 1, &dummy);
                 break;
             case 's': /* Private (save cursor position) */
                 save_x = x;
@@ -694,7 +681,7 @@ static long int import_ansi(cucul_canvas_t *cv,
             if(growx)
             {
                 savedattr = cucul_get_attr(cv, -1, -1);
-                cucul_set_attr(cv, im->clearattr);
+                cucul_set_attr(cv, im.clearattr);
                 cucul_set_canvas_size(cv, width = x + wch, height);
                 cucul_set_attr(cv, savedattr);
             }
@@ -709,7 +696,7 @@ static long int import_ansi(cucul_canvas_t *cv,
         if((unsigned int)y >= height)
         {
             savedattr = cucul_get_attr(cv, -1, -1);
-            cucul_set_attr(cv, im->clearattr);
+            cucul_set_attr(cv, im.clearattr);
             if(growy)
             {
                 cucul_set_canvas_size(cv, width, height = y + 1);
@@ -743,7 +730,7 @@ static long int import_ansi(cucul_canvas_t *cv,
     if(growy && (unsigned int)y > height)
     {
         savedattr = cucul_get_attr(cv, -1, -1);
-        cucul_set_attr(cv, im->clearattr);
+        cucul_set_attr(cv, im.clearattr);
         cucul_set_canvas_size(cv, width, height = y);
         cucul_set_attr(cv, savedattr);
     }

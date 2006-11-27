@@ -34,9 +34,6 @@ struct cucul_frame
 
     /* Frame name */
     char *name;
-
-    /* Private information */
-    void *import;
 };
 
 struct cucul_canvas
