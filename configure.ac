@@ -16,7 +16,7 @@ AC_PROG_CPP
 AC_PROG_CXX
 AC_PROG_CXXCPP
 _AM_DEPENDENCIES([OBJC])
-OBJC="${CXX}"
+OBJC="${CC}"
 AC_SUBST(OBJC)
 AC_SUBST(OBJCFLAGS)
 AM_PROG_AS
@@ -199,20 +199,41 @@ fi
 
 if test "${enable_cocoa}" != "no"; then
   ac_cv_my_have_cocoa="no"
-  AC_LANG_PUSH(C++)
-  savedCPPFLAGS="${CPPFLAGS}"
-  CPPFLAGS="${CPPFLAGS} -ObjC"
   AC_CHECK_HEADERS(Cocoa/Cocoa.h,
    [ac_cv_my_have_cocoa="yes"])
   if test "${ac_cv_my_have_cocoa}" = "yes"; then
+    case x${target} in
+    xpowerpc*darwin*)
+      # 10.3 needed to link with X11
+      MACOSX_SDK=/Developer/SDKs/MacOSX10.3.9.sdk
+      GCC_VERSION=3.3
+      ARCH="-arch ppc"
+      MACOSX_SDK_CFLAGS="-nostdinc -isystem ${MACOSX_SDK}/usr/include/gcc/darwin/${GCC_VERSION} -isystem ${MACOSX_SDK}/usr/include"
+      MACOSX_SDK_CXXFLAGS="-nostdinc++ -I${MACOSX_SDK}/usr/include/gcc/darwin/${GCC_VERSION}/c++ -I${MACOSX_SDK}/usr/include/gcc/darwin/${GCC_VERSION}/c++/ppc-darwin -I${MACOSX_SDK}/usr/include/gcc/darwin/${GCC_VERSION}/c++/backward"
+      MACOSX_SDK_LDFLAGS="-L${MACOSX_SDK}/usr/lib/gcc/darwin -L${MACOSX_SDK}/usr/lib/gcc/darwin/${GCC_VERSION} -L${MACOSX_SDK}/usr/lib"
+      ;;
+    x*86*darwin*)
+      MACOSX_SDK=/Developer/SDKs/MacOSX10.4u.sdk
+      GCC_VERSION=4.0
+      ARCH="-arch i386"
+      MACOSX_SDK_CFLAGS="-isysroot ${MACOSX_SDK}"
+      MACOSX_SDK_CXXFLAGS="${MACOSX_SDK_CFLAGS}"
+      ;;
+    esac
+    CC=gcc-${GCC_VERSION}
+    CXX=g++-${GCC_VERSION}
+    MACOSX_SDK_FRAMEWORKS="-F${MACOSX_SDK}/System/Library/Frameworks"
+    CPPFLAGS="${CPPFLAGS} ${ARCH} ${MACOSX_SDK_FRAMEWORKS}"
+    CFLAGS="${CFLAGS} ${MACOSX_SDK_CFLAGS}"
+    CXXFLAGS="${CXXFLAGS} ${MACOSX_SDK_CXXFLAGS}"
+    OBJCFLAGS="${OBJCFLAGS} ${MACOSX_SDK_CFLAGS}"
+    LDFLAGS="${ARCH} ${MACOSX_SDK_LDFLAGS} ${LDFLAGS}"
     AC_DEFINE(USE_COCOA, 1, Define to 1 to activate the Cocoa backend driver)
-    CACA_LIBS="${CACA_LIBS} -Wl,-framework,Carbon,-framework,Cocoa"
+    CACA_LIBS="${CACA_LIBS} -Wl,-syslibroot,${MACOSX_SDK},-framework,Cocoa"
     CACA_DRIVERS="${CACA_DRIVERS} cocoa"
   elif test "${enable_cocoa}" = "yes"; then
     AC_MSG_ERROR([cannot find Cocoa development files])
   fi
-  CPPFLAGS="${savedCPPFLAGS}"
-  AC_LANG_POP(C++)
 fi
 AM_CONDITIONAL(USE_COCOA, test "${ac_cv_my_have_cocoa}" = "yes")
 
@@ -286,7 +307,7 @@ AC_SUBST(GL_LIBS)
 CFLAGS="${CFLAGS} -g -O2 -fno-strength-reduce -fomit-frame-pointer"
 # Code qui fait des warnings == code de porc == deux baffes dans ta gueule
 # [Jylam] Removed -Wshadow in order to avoid ncurses/gl conflict
-# (Comme quoi on est pas les seuls porcs)
+# (Comme quoi on n'est pas les seuls porcs)
 CFLAGS="${CFLAGS} -Wall -Wpointer-arith -Wcast-align -Wcast-qual -Wstrict-prototypes -Wshadow -Waggregate-return -Wmissing-prototypes -Wnested-externs -Wsign-compare"
 
 # Build the C++ bindings?
