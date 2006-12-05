@@ -227,7 +227,7 @@ static void ncurses_handle_resize(caca_display_t *dp)
 #if defined HAVE_RESIZE_TERM
         resize_term(dp->resize.h, dp->resize.w);
 #else
-        resizeterm(*dp->resize.h, *dp->resize.w);
+        resizeterm(dp->resize.h, dp->resize.w);
 #endif
         wrefresh(curscr);
         return;
