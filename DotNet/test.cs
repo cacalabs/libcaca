@@ -5,9 +5,10 @@
  *
  *  $Id$
  *
- *  This library is free software; you can redistribute it and/or
- *  modify it under the terms of the Do What The Fuck You Want To
- *  Public License, Version 2, as published by Sam Hocevar. See
+ *  This program is free software. It commes without any warranty, to
+ *  the extent permitted by applicable law. You can redistribute it
+ *  and/or modify it under the terms of the Do What The Fuck You Want
+ *  To Public License, Version 2, as published by Sam Hocevar. See
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
@@ -59,7 +60,7 @@ class Test {
 
  
 
-                qq.setColor(i+1, Cucul.CUCUL_BLACK);
+                qq.setColor(i+9, Cucul.CUCUL_BLACK);
                 /* drawLine is already clipped, we don't care about overflows */
                 qq.drawLine(0, y-2, qq.getWidth(), y-2, '-'); 
                 qq.drawLine(0, y-1, qq.getWidth(), y-1, '*');
