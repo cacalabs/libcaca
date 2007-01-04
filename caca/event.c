@@ -34,7 +34,7 @@ static int _lowlevel_event(caca_display_t *, caca_event_t *);
 #if !defined(_DOXYGEN_SKIP_ME)
 /* If no new key was pressed after AUTOREPEAT_THRESHOLD usec, assume the
  * key was released */
-#define AUTOREPEAT_THRESHOLD 200000
+#define AUTOREPEAT_THRESHOLD 100000
 /* Start repeating key after AUTOREPEAT_TRIGGER usec and send keypress
  * events every AUTOREPEAT_RATE usec. */
 #define AUTOREPEAT_TRIGGER 300000
