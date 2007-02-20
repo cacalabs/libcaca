@@ -251,6 +251,7 @@ static uint32_t flipchar(uint32_t ch)
          ',', 0x02ce, /* , ˎ */
          'C', 0x03fd, /* C Ͻ */
          'E', 0x018e, /* E Ǝ */
+         'L', 0x2143, /* L ⅃ */
          'N', 0x0418, /* N И */
          'R', 0x042f, /* R Я */
          'S', 0x01a7, /* S Ƨ */
@@ -332,6 +333,7 @@ static uint32_t flopchar(uint32_t ch)
          'S', 0x01a7, /* S Ƨ */
          'U', 0x0548, /* U Ո */
          'V', 0x039b, /* V Λ */
+         'Y', 0x2144, /* Y ⅄ */
          'h', 0x03bc, /* h μ */
          'i', 0x1d09, /* i ᴉ */
          'v', 0x028c, /* v ʌ */
@@ -413,8 +415,10 @@ static uint32_t rotatechar(uint32_t ch)
          'C', 0x03fd, /* C Ͻ */
          'E', 0x018e, /* E Ǝ */
          'F', 0x2132, /* F Ⅎ */
+         'L', 0x2142, /* L ⅂ */
          'U', 0x0548, /* U Ո */
          'V', 0x039b, /* V Λ */
+         'Y', 0x2144, /* Y ⅄ */
          'a', 0x0250, /* a ɐ */
          'c', 0x0254, /* c ɔ */
          'e', 0x0259, /* e ə */
@@ -431,6 +435,9 @@ static uint32_t rotatechar(uint32_t ch)
          'y', 0x028e, /* y ʎ */
          /* Not perfect, but better than nothing */
          '"', 0x201e, /* " „ */
+         /* Misc Unicode */
+         0x00e6, 0x1d02, /* æ ᴂ */
+         0x0153, 0x1d14, /* œ ᴔ */
          /* CP437 */
          0x258c, 0x2590, /* ▌ ▐ */
          0x2584, 0x2580, /* ▄ ▀ */
