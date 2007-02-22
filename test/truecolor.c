@@ -33,7 +33,18 @@ int main(int argc, char *argv[])
     int x, y;
 
     cv = cucul_create_canvas(32, 16);
+    if(cv == NULL)
+    {
+        printf("Failed to create canvas\n");
+        return 1;
+    }
+
     dp = caca_create_display(cv);
+    if(dp == NULL)
+    {
+        printf("Failed to create display\n");
+        return 1;
+    }
 
     for(y = 0; y < 16; y++)
         for(x = 0; x < 16; x++)
