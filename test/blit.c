@@ -43,8 +43,19 @@ int main(int argc, char *argv[])
     cucul_canvas_t *cv, *sprite;
     caca_display_t *dp;
 
-    cv = cucul_create_canvas(0, 0);
+    cv = cucul_create_canvas(32, 16);
+    if(cv == NULL)
+    {
+        printf("Failed to create canvas\n");
+        return 1;
+    }
+
     dp = caca_create_display(cv);
+    if(dp == NULL)
+    {
+        printf("Failed to create display\n");
+        return 1;
+    }
 
     sprite = cucul_create_canvas(0, 0);
     cucul_set_color_ansi(sprite, CUCUL_LIGHTRED, CUCUL_BLACK);

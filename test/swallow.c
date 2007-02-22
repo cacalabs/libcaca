@@ -42,8 +42,17 @@ int main(int argc, char **argv)
     cv = cucul_create_canvas(0, 0);
     app = cucul_create_canvas(0, 0);
     dp = caca_create_display(cv);
-    if(!dp)
-        return 1;
+
+    if(cv == NULL || app == NULL )
+    {
+        printf("Can't created canvas\n");
+        return -1;
+    }
+    if(dp == NULL)
+    {
+        printf("Can't create display\n");
+        return -1;
+    }
 
     w = (cucul_get_canvas_width(cv) - 4) / 2;
     h = (cucul_get_canvas_height(cv) - 6) / 2;

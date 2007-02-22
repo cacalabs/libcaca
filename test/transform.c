@@ -46,7 +46,17 @@ int main(int argc, char *argv[])
     caca_display_t *dp;
 
     cv = cucul_create_canvas(0, 0);
+    if(cv == NULL)
+    {
+        printf("Can't created canvas\n");
+        return -1;
+    }
     dp = caca_create_display(cv);
+    if(dp == NULL)
+    {
+        printf("Can't create display\n");
+        return -1;
+    }
 
     image = cucul_create_canvas(70, 6);
     tmp = cucul_create_canvas(70, 6);

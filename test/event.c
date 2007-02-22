@@ -33,12 +33,19 @@ int main(int argc, char **argv)
     caca_event_t *events;
     int i, h, quit;
 
-    cv = cucul_create_canvas(0, 0);
-    if(!cv)
+    cv = cucul_create_canvas(32, 16);
+    if(cv == NULL)
+    {
+        printf("Failed to create canvas\n");
         return 1;
+    }
+
     dp = caca_create_display(cv);
-    if(!dp)
+    if(dp == NULL)
+    {
+        printf("Failed to create display\n");
         return 1;
+    }
 
     h = cucul_get_canvas_height(cv) - 1;
 

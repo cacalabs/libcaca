@@ -44,6 +44,12 @@ int main(int argc, char *argv[])
 
     fprintf(stderr, "testing cucul_set_frame_name()\n");
     cv = cucul_create_canvas(1, 1);
+    if(cv == NULL)
+    {
+        printf("Failed to create canvas\n");
+        return 1;
+    }
+
     for(i = 0; i < ITER; i++)
     {
         cucul_create_frame(cv, 0);

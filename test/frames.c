@@ -33,6 +33,12 @@ int main(int argc, char *argv[])
 
     /* Create a canvas with 200 frames */
     cv = cucul_create_canvas(0, 0);
+    if(cv == NULL)
+    {
+        printf("Can't create canvas\n");
+        return -1;
+    }
+
     for(frame = 1; frame < 200; frame++)
         cucul_create_frame(cv, frame);
 

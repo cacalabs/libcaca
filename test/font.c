@@ -44,6 +44,12 @@ int main(int argc, char *argv[])
 
     /* Create a canvas */
     cv = cucul_create_canvas(8, 2);
+    if(cv == NULL)
+    {
+        printf("Can't create canvas\n");
+        return -1;
+    }
+
 
     /* Draw stuff on our canvas */
     cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLACK);

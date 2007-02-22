@@ -44,6 +44,12 @@ int main(int argc, char *argv[])
     cv = cucul_create_canvas(cucul_get_canvas_width(pig) * 2,
                              cucul_get_canvas_height(pig) * 2);
 
+    if(cv == NULL || pig == NULL)
+    {
+        printf("Can't created canvas\n");
+        return -1;
+    }
+
     cucul_blit(cv, 0, 0, pig, NULL);
     cucul_flip(pig);
     cucul_blit(cv, cucul_get_canvas_width(pig), 0, pig, NULL);

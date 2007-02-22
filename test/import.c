@@ -41,6 +41,12 @@ int main(int argc, char *argv[])
     }
 
     cv = cucul_create_canvas(0, 0);
+    if(cv == NULL)
+    {
+        printf("Can't create canvas\n");
+        return -1;
+    }
+
     if(cucul_import_file(cv, argv[1], argc >= 3 ? argv[2] : "") < 0)
     {
 	fprintf(stderr, "%s: could not open `%s'.\n", argv[0], argv[1]);
@@ -49,6 +55,11 @@ int main(int argc, char *argv[])
     }
 
     dp = caca_create_display(cv);
+    if(dp == NULL)
+    {
+        printf("Can't create display\n");
+        return -1;
+    }
 
     caca_refresh_display(dp);
 

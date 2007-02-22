@@ -31,8 +31,17 @@ int main(int argc, char *argv[])
     caca_display_t *dp;
 
     cv = cucul_create_canvas(0, 0);
+    if(cv == NULL)
+    {
+        printf("Can't created canvas\n");
+        return -1;
+    }
     dp = caca_create_display(cv);
-
+    if(dp == NULL)
+    {
+        printf("Can't create display\n");
+        return -1;
+    }
     cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
     cucul_put_str(cv, 1, 1, "Basic Unicode support");
 

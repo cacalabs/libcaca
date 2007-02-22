@@ -35,7 +35,17 @@ int main(int argc, char *argv[])
     unsigned int i;
 
     cv = cucul_create_canvas(0, 0);
+    if(cv == NULL)
+    {
+        printf("Can't created canvas\n");
+        return -1;
+    }
     dp = caca_create_display(cv);
+    if(dp == NULL)
+    {
+        printf("Can't create display\n");
+        return -1;
+    }
 
     caca = cucul_create_canvas(6, 10);
     line = cucul_create_canvas(2, 1);

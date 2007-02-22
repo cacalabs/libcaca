@@ -28,13 +28,19 @@ int main(int argc, char **argv)
     caca_display_t *dp;
     int i, j;
 
-    cv = cucul_create_canvas(0, 0);
-    if(!cv)
+    cv = cucul_create_canvas(32, 16);
+    if(cv == NULL)
+    {
+        printf("Failed to create canvas\n");
         return 1;
+    }
 
     dp = caca_create_display(cv);
-    if(!dp)
+    if(dp == NULL)
+    {
+        printf("Failed to create display\n");
         return 1;
+    }
 
     cucul_set_color_ansi(cv, CUCUL_LIGHTGRAY, CUCUL_BLACK);
     cucul_clear_canvas(cv);

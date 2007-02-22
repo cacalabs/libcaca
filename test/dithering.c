@@ -41,8 +41,21 @@ int main(int argc, char *argv[])
     int neara, dista, nearb, distb, dist;
     int x, y;
 
-    cv = cucul_create_canvas(0, 0);
+    cv = cucul_create_canvas(32, 16);
+    if(cv == NULL)
+    {
+        printf("Failed to create canvas\n");
+        return 1;
+    }
+
     dp = caca_create_display(cv);
+    if(dp == NULL)
+    {
+        printf("Failed to create display\n");
+        return 1;
+    }
+
+
 
     for(x = 0; x < 100; x++)
         for(y = 0; y < 100; y++)
