@@ -52,10 +52,10 @@ void (*fn[])(enum action, cucul_canvas_t *) =
 #define DEMO_FRAMES cucul_rand(500, 1000)
 #define TRANSITION_FRAMES 40
 
-#define TRANSITION_COUNT  2
+#define TRANSITION_COUNT  3
 #define TRANSITION_CIRCLE 0
 #define TRANSITION_STAR   1
-
+#define TRANSITION_SQUARE 2
 
 /* Common macros for dither-based demos */
 #define XSIZ 256
@@ -210,6 +210,16 @@ void transition(cucul_canvas_t *mask, int tmode, int completed)
     };
     static float star_rot[sizeof(star)/sizeof(*star)];
 
+
+    static float const square[] =
+    {
+        -1, -1,
+        1, -1,
+        1, 1,
+        -1, 1
+    };
+    static float square_rot[sizeof(square)/sizeof(*square)];
+
     float mulx = 0.0075f * completed * cucul_get_canvas_width(mask);
     float muly = 0.0075f * completed * cucul_get_canvas_height(mask);
     int w2 = cucul_get_canvas_width(mask) / 2;
@@ -219,6 +229,30 @@ void transition(cucul_canvas_t *mask, int tmode, int completed)
 
     switch(tmode)
     {
+        case TRANSITION_SQUARE:
+            /* Compute rotated coordinates */
+            for(i = 0; i < (sizeof(square) / sizeof(*square)) / 2; i++)
+            {
+                x = square[i * 2];
+                y = square[i * 2 + 1];
+
+                square_rot[i * 2] = x * cos(angle) - y * sin(angle);
+                square_rot[i * 2 + 1] = y * cos(angle) + x * sin(angle);
+            }
+
+            mulx *= 1.8;
+            muly *= 1.8;
+            cucul_fill_triangle(mask,
+                                square_rot[0*2] * mulx + w2, square_rot[0*2+1] * muly + h2, \
+                                square_rot[1*2] * mulx + w2, square_rot[1*2+1] * muly + h2, \
+                                square_rot[2*2] * mulx + w2, square_rot[2*2+1] * muly + h2, '#');
+            cucul_fill_triangle(mask,
+                                square_rot[0*2] * mulx + w2, square_rot[0*2+1] * muly + h2, \
+                                square_rot[2*2] * mulx + w2, square_rot[2*2+1] * muly + h2, \
+                                square_rot[3*2] * mulx + w2, square_rot[3*2+1] * muly + h2, '#');
+            break;
+
+
         case TRANSITION_STAR:
             /* Compute rotated coordinates */
             for(i = 0; i < (sizeof(star) / sizeof(*star)) / 2; i++)
@@ -552,7 +586,7 @@ void moire(enum action action, cucul_canvas_t *cv)
             {
                 draw_line(dx / 3, dy / 3, (i / DISCTHICKNESS) % 2);
                 draw_line(dy / 3, dx / 3, (i / DISCTHICKNESS) % 2);
-        
+
                 t += t > 0 ? dx - dy-- : dx;
             }
         }
