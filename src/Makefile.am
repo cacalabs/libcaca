@@ -8,7 +8,7 @@ AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/cucul -I$(top_srcdir)/caca -DLIBCA
 bin_PROGRAMS = cacademo cacafire cacaplay cacaview img2irc $(fcntl_programs)
 noinst_PROGRAMS = cacadraw
 
-cacademo_SOURCES = cacademo.c
+cacademo_SOURCES = cacademo.c texture.h
 cacademo_LDADD = ../caca/libcaca.la ../cucul/libcucul.la
 cacademo_LDFLAGS = @MATH_LIBS@
 

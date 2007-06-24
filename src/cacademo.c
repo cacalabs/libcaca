@@ -38,14 +38,16 @@ void metaballs(enum action, cucul_canvas_t *);
 void moire(enum action, cucul_canvas_t *);
 void langton(enum action, cucul_canvas_t *);
 void matrix(enum action, cucul_canvas_t *);
+void rotozoom(enum action, cucul_canvas_t *);
 
 void (*fn[])(enum action, cucul_canvas_t *) =
 {
     plasma,
     metaballs,
     moire,
-    //langton,
+    /*langton,*/
     matrix,
+    rotozoom,
 };
 #define DEMOS (sizeof(fn)/sizeof(*fn))
 
@@ -838,3 +840,113 @@ void matrix(enum action action, cucul_canvas_t *cv)
 }
 
 
+#define TEXTURE_SIZE 256
+#define TABLE_SIZE 65536
+
+/* 24:8 Fixed point stuff */
+#define PRECISION 8
+
+#define FMUL(a, b) (((a)*(b))>>PRECISION)
+#define TOFIX(d)   ((int)( (d)*(double)(1<<PRECISION) ))
+#define TOINT(a)   (a>>PRECISION);
+
+
+#include "texture.h"
+
+void rotozoom(enum action action, cucul_canvas_t *canvas)
+{
+    static cucul_dither_t *dither;
+    static unsigned int *screen, *save;
+    static int alphaF, tF;
+    int scaleF;
+    static int *texture;
+    static int *cosTable;
+    static int *sinTable;
+    static int *yTable;
+
+
+
+    /* register is quite a bad idea on CISC, but not on RISC */
+    register unsigned int x, y;
+    register unsigned int xxF, yyF, uF, vF, uF_, vF_;
+    register unsigned int  vu, vv;
+
+    switch(action)
+    {
+    case INIT:
+
+        screen = (unsigned int*)malloc(4 * XSIZ * YSIZ
+                                       * sizeof(unsigned char));
+        dither = cucul_create_dither(32,
+                                     XSIZ, YSIZ,
+                                     XSIZ*4,
+                                     0x00FF0000,
+                                     0x0000FF00,
+                                     0x000000FF,
+                                     0x00000000);
+        save = screen;
+        texture = (int*) textureByte;
+
+        cosTable = malloc(TABLE_SIZE*sizeof(int));
+        sinTable = malloc(TABLE_SIZE*sizeof(int));
+        yTable = malloc(TEXTURE_SIZE*sizeof(int));
+
+        for(x=0; x<TABLE_SIZE; x++) {   /* Cos and Sin tables*/
+            cosTable[x] = TOFIX(cos(x*(360.0f/(float)TABLE_SIZE)));
+            sinTable[x] = TOFIX(sin(x*(360.0f/(float)TABLE_SIZE)));
+        }
+        for(x=0; x<TEXTURE_SIZE; x++) { /* start of lines offsets */
+            yTable[x] = x*TEXTURE_SIZE;
+        }
+
+        break;
+    case PREPARE:
+        break;
+    case UPDATE:
+
+        alphaF +=   4;
+        tF     +=   3;
+        scaleF =    (FMUL(sinTable[tF&0xFFFF], TOFIX(3)) + (TOFIX(5)));
+        xxF    =    FMUL(cosTable[(alphaF)&0xFFFF], scaleF);
+        yyF    =    FMUL(sinTable[(alphaF)&0xFFFF], scaleF);
+        uF  = vF  = 0;
+        uF_ = vF_ = 0;
+        screen = save;
+
+        y = YSIZ;
+        while(y--) {
+
+            x = XSIZ;
+            while(x--) {
+
+                uF+=xxF;
+                vF+=yyF;
+
+                vu = TOINT(uF);
+                vv = TOINT(vF);
+                vu&=0xFF;       /* ARM doesn't like    */
+                vv&=0xFF;       /* chars as local vars */
+
+                *screen++ = texture[vu+yTable[vv]];
+              }
+
+            uF = uF_ -= yyF;
+            vF = vF_ += xxF;
+        }
+
+        break;
+    case RENDER:
+        cucul_dither_bitmap(canvas, 0, 0,
+                            cucul_get_canvas_width(canvas),
+                            cucul_get_canvas_height(canvas),
+                            dither, save);
+        break;
+    case FREE:
+        free(cosTable);
+        free(sinTable);
+        free(save);
+        cucul_free_dither(dither);
+        break;
+    }
+
+}
