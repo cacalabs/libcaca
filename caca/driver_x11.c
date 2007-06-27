@@ -1,6 +1,7 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2002-2007 Sam Hocevar <sam@zoy.org>
+ *                2007 Ben Wiley Sittler <bsittler@gmail.com>
  *                All Rights Reserved
  *
  *  $Id$
@@ -30,6 +31,7 @@
 
 #include <stdio.h> /* BUFSIZ */
 #include <stdlib.h>
+#include <string.h>
 
 #include "caca.h"
 #include "caca_internals.h"
@@ -40,6 +42,8 @@
  * Local functions
  */
 static int x11_error_handler(Display *, XErrorEvent *);
+static void x11_put_glyph(caca_display_t *, int, int, int, int, int,
+                          uint32_t, uint32_t);
 
 struct driver_private
 {
@@ -59,7 +63,11 @@ struct driver_private
 #if defined(HAVE_X11_XKBLIB_H)
     Bool autorepeat;
 #endif
+    uint32_t max_char;
 };
+
+#define UNICODE_XLFD_SUFFIX "-iso10646-1"
+#define LATIN_1_XLFD_SUFFIX "-iso8859-1"
 
 static int x11_init_graphics(caca_display_t *dp)
 {
@@ -99,6 +107,8 @@ static int x11_init_graphics(caca_display_t *dp)
     /* Parse our font list */
     for( ; ; parser++)
     {
+        unsigned int font_max_char;
+
         if(!*parser)
         {
             XSetErrorHandler(old_error_handler);
@@ -117,13 +127,47 @@ static int x11_init_graphics(caca_display_t *dp)
             continue;
         }
 
+        if((strlen(*parser) > sizeof(UNICODE_XLFD_SUFFIX))
+             && !strcasecmp(*parser + strlen(*parser)
+                          - strlen(UNICODE_XLFD_SUFFIX), UNICODE_XLFD_SUFFIX))
+            dp->drv.p->max_char = 0xffff;
+        else if((strlen(*parser) > sizeof(LATIN_1_XLFD_SUFFIX))
+                 && !strcasecmp(*parser + strlen(*parser)
+                        - strlen(LATIN_1_XLFD_SUFFIX), LATIN_1_XLFD_SUFFIX))
+            dp->drv.p->max_char = 0xff;
+        else
+            dp->drv.p->max_char = 0x7f;
+
+        font_max_char = 
+            (((unsigned int)dp->drv.p->font_struct->max_byte1) << 8)
+             | dp->drv.p->font_struct->max_char_or_byte2;
+        if(font_max_char && (font_max_char < dp->drv.p->max_char))
+            dp->drv.p->max_char = font_max_char;
+
         break;
     }
 
     /* Reset the default X11 error handler */
     XSetErrorHandler(old_error_handler);
+    
+    dp->drv.p->font_width = 0;
+    if(dp->drv.p->font_struct->per_char
+        && !dp->drv.p->font_struct->min_byte1
+        && dp->drv.p->font_struct->min_char_or_byte2 <= 0x21
+        && dp->drv.p->font_struct->max_char_or_byte2 >= 0x7e)
+    {
+        for(i = 0x21; i < 0x7f; i++)
+        {
+            int cw = dp->drv.p->font_struct->per_char[i
+                           - dp->drv.p->font_struct->min_char_or_byte2].width;
+            if(cw > dp->drv.p->font_width)
+                dp->drv.p->font_width = cw;
+        }
+    }
 
-    dp->drv.p->font_width = dp->drv.p->font_struct->max_bounds.width;
+    if(!dp->drv.p->font_width)
+        dp->drv.p->font_width = dp->drv.p->font_struct->max_bounds.width;
+
     dp->drv.p->font_height = dp->drv.p->font_struct->max_bounds.ascent
                          + dp->drv.p->font_struct->max_bounds.descent;
     dp->drv.p->font_offset = dp->drv.p->font_struct->max_bounds.descent;
@@ -173,7 +217,7 @@ static int x11_init_graphics(caca_display_t *dp)
     {
         XEvent xevent;
         XNextEvent(dp->drv.p->dpy, &xevent);
-        if (xevent.type == MapNotify)
+        if(xevent.type == MapNotify)
             break;
     }
 
@@ -258,8 +302,10 @@ static void x11_display(caca_display_t *dp)
             XSetForeground(dp->drv.p->dpy, dp->drv.p->gc,
                            dp->drv.p->colors[bg]);
             XFillRectangle(dp->drv.p->dpy, dp->drv.p->pixmap, dp->drv.p->gc,
-                           x * dp->drv.p->font_width, y * dp->drv.p->font_height,
-                           len * dp->drv.p->font_width, dp->drv.p->font_height);
+                           x * dp->drv.p->font_width,
+                           y * dp->drv.p->font_height,
+                           len * dp->drv.p->font_width,
+                           dp->drv.p->font_height);
         }
     }
 
@@ -269,139 +315,17 @@ static void x11_display(caca_display_t *dp)
         unsigned int yoff = (y + 1) * dp->drv.p->font_height
                                     - dp->drv.p->font_offset;
         uint32_t *chars = dp->cv->chars + y * dp->cv->width;
+        uint32_t *attrs = dp->cv->attrs + y * dp->cv->width;
 
-        for(x = 0; x < dp->cv->width; x++, chars++)
+        for(x = 0; x < dp->cv->width; x++, chars++, attrs++)
         {
-            uint32_t *attrs = dp->cv->attrs + x + y * dp->cv->width;
-
-            /* Underline */
-            if(*attrs & CUCUL_UNDERLINE)
-                XFillRectangle(dp->drv.p->dpy, dp->drv.p->pixmap,
-                                   dp->drv.p->gc,
-                                   x * dp->drv.p->font_width,
-                                   (y + 1) * dp->drv.p->font_height - 1,
-                                   dp->drv.p->font_width, 1);
-
-            /* Skip spaces */
-            if(*chars <= 0x00000020)
-                continue;
-
-            if(*chars == CUCUL_MAGIC_FULLWIDTH)
-                continue;
-
             XSetForeground(dp->drv.p->dpy, dp->drv.p->gc,
                            dp->drv.p->colors[_cucul_attr_to_rgb12fg(*attrs)]);
 
-            /* Plain ASCII, no problem. */
-            if(*chars > 0x00000020 && *chars < 0x00000080)
-            {
-                char ch = (uint8_t)*chars;
-                XDrawString(dp->drv.p->dpy, dp->drv.p->pixmap, dp->drv.p->gc,
-                            x * dp->drv.p->font_width, yoff, &ch, 1);
-                continue;
-            }
-
-            /* We want to be able to print a few special Unicode characters
-             * such as the CP437 gradients and half blocks. For unknown
-             * characters, just print '?'. */
-            switch(*chars)
-            {
-                case 0x000000b7: /* · */
-                    XFillRectangle(dp->drv.p->dpy, dp->drv.p->pixmap,
-                                   dp->drv.p->gc,
-                                   x * dp->drv.p->font_width
-                                     + dp->drv.p->font_width / 2,
-                                   y * dp->drv.p->font_height
-                                     + dp->drv.p->font_height / 2, 2, 2);
-                    break;
-                case 0x00002500: /* ─ */
-                    XFillRectangle(dp->drv.p->dpy, dp->drv.p->pixmap,
-                                   dp->drv.p->gc,
-                                   x * dp->drv.p->font_width,
-                                   y * dp->drv.p->font_height
-                                     + dp->drv.p->font_height / 2 + 1,
-                                   dp->drv.p->font_width, 1);
-                    break;
-                case 0x00002580: /* ▀ */
-                    XFillRectangle(dp->drv.p->dpy, dp->drv.p->pixmap,
-                                   dp->drv.p->gc,
-                                   x * dp->drv.p->font_width,
-                                   y * dp->drv.p->font_height,
-                                   dp->drv.p->font_width,
-                                   dp->drv.p->font_height / 2);
-                    break;
-                case 0x00002584: /* ▄ */
-                    XFillRectangle(dp->drv.p->dpy, dp->drv.p->pixmap,
-                                   dp->drv.p->gc,
-                                   x * dp->drv.p->font_width,
-                                   (y + 1) * dp->drv.p->font_height
-                                           - dp->drv.p->font_height / 2,
-                                   dp->drv.p->font_width,
-                                   dp->drv.p->font_height / 2);
-                    break;
-                case 0x00002588: /* █ */
-                    XFillRectangle(dp->drv.p->dpy, dp->drv.p->pixmap,
-                                   dp->drv.p->gc,
-                                   x * dp->drv.p->font_width,
-                                   y * dp->drv.p->font_height,
-                                   dp->drv.p->font_width,
-                                   dp->drv.p->font_height);
-                    break;
-                case 0x0000258c: /* ▌ */
-                    XFillRectangle(dp->drv.p->dpy, dp->drv.p->pixmap,
-                                   dp->drv.p->gc,
-                                   x * dp->drv.p->font_width,
-                                   y * dp->drv.p->font_height,
-                                   dp->drv.p->font_width / 2,
-                                   dp->drv.p->font_height);
-                    break;
-                case 0x00002590: /* ▐ */
-                    XFillRectangle(dp->drv.p->dpy, dp->drv.p->pixmap,
-                                   dp->drv.p->gc,
-                                   (x + 1) * dp->drv.p->font_width
-                                           - dp->drv.p->font_width / 2,
-                                   y * dp->drv.p->font_height,
-                                   dp->drv.p->font_width / 2,
-                                   dp->drv.p->font_height);
-                    break;
-                case 0x000025a0: /* ■ */
-                    XFillRectangle(dp->drv.p->dpy, dp->drv.p->pixmap,
-                                   dp->drv.p->gc,
-                                   x * dp->drv.p->font_width,
-                                   y * dp->drv.p->font_height
-                                     + dp->drv.p->font_height / 4,
-                                   dp->drv.p->font_width,
-                                   dp->drv.p->font_height / 2);
-                    break;
-                case 0x00002593: /* ▓ */
-                case 0x00002592: /* ▒ */
-                case 0x00002591: /* ░ */
-                {
-                    /* FIXME: this sucks utterly */
-                    int i, j, k = *chars - 0x00002591;
-                    for(j = dp->drv.p->font_height; j--; )
-                        for(i = dp->drv.p->font_width; i--; )
-                    {
-                        if(((i + 2 * (j & 1)) & 3) > k)
-                            continue;
-
-                        XDrawPoint(dp->drv.p->dpy, dp->drv.p->pixmap,
-                                   dp->drv.p->gc,
-                                   x * dp->drv.p->font_width + i,
-                                   y * dp->drv.p->font_height + j);
-                    }
-                    break;
-                }
-                default:
-                {
-                    char ch;
-                    ch = '?';
-                    XDrawString(dp->drv.p->dpy, dp->drv.p->pixmap,
-                                dp->drv.p->gc,
-                                x * dp->drv.p->font_width, yoff, &ch, 1);
-                    break;
-                }
-            }
+            x11_put_glyph(dp, x * dp->drv.p->font_width,
+                          y * dp->drv.p->font_height, yoff,
+                          dp->drv.p->font_width, dp->drv.p->font_height,
+                          *attrs, *chars);
         }
     }
 
@@ -620,6 +544,212 @@ static int x11_error_handler(Display *dpy, XErrorEvent *xevent)
 {
     /* Ignore the error */
     return 0;
+}
+
+static void x11_put_glyph(caca_display_t *dp, int x, int y, int yoff,
+                          int w, int h, uint32_t attr, uint32_t ch)
+{
+    Display *dpy = dp->drv.p->dpy;
+    Pixmap px = dp->drv.p->pixmap;
+    GC gc = dp->drv.p->gc;
+    int fw;
+    XChar2b ch16;
+
+    /* Underline */
+    if(attr & CUCUL_UNDERLINE)
+        XFillRectangle(dpy, px, gc, x, y + h - 1, w, 1);
+
+    /* Skip spaces and magic stuff */
+    if(ch <= 0x00000020)
+        return;
+
+    if(ch == CUCUL_MAGIC_FULLWIDTH)
+        return;
+
+    fw = w;
+    if(cucul_utf32_is_fullwidth(ch))
+        fw *= 2;
+
+    /* We want to be able to print a few special Unicode characters
+     * such as the CP437 gradients and half blocks. For unknown
+     * characters, print what cucul_utf32_to_ascii() returns. */
+
+    if(ch >= 0x2500 && ch <= 0x256c)
+    {
+        static uint8_t const udlr[] =
+        {
+            /* 0x2500 - 0x250f: ─ . │ . . . . . . . . . ┌ . . . */
+            0x05, 0x00, 0x50, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x11, 0x00, 0x00, 0x00,
+            /* 0x2510 - 0x251f: ┐ . . . └ . . . ┘ . . . ├ . . . */
+            0x14, 0x00, 0x00, 0x00, 0x41, 0x00, 0x00, 0x00,
+            0x44, 0x00, 0x00, 0x00, 0x54, 0x00, 0x00, 0x00,
+            /* 0x2520 - 0x252f: . . . . ┤ . . . . . . . ┬ . . . */
+            0x00, 0x00, 0x00, 0x00, 0x51, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x15, 0x00, 0x00, 0x00,
+            /* 0x2530 - 0x253f: . . . . ┴ . . . . . . . ┼ . . . */
+            0x00, 0x00, 0x00, 0x00, 0x45, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x55, 0x00, 0x00, 0x00,
+            /* 0x2540 - 0x254f: . . . . . . . . . . . . . . . . */
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            /* 0x2550 - 0x255f: ═ ║ ╒ ╓ ╔ ╕ ╖ ╗ ╘ ╙ ╚ ╛ ╜ ╝ ╞ ╟ */
+            0x0a, 0xa0, 0x12, 0x21, 0x22, 0x18, 0x24, 0x28,
+            0x42, 0x81, 0x82, 0x48, 0x84, 0x88, 0x52, 0xa1,
+            /* 0x2560 - 0x256c: ╠ ╡ ╢ ╣ ╤ ╥ ╦ ╧ ╨ ╩ ╪ ╫ ╬ */
+            0xa2, 0x58, 0xa4, 0xa8, 0x1a, 0x25, 0x2a, 0x4a,
+            0x85, 0x8a, 0x5a, 0xa5, 0xaa,
+        };
+
+        uint16_t D = udlr[ch - 0x2500];
+
+        if(!D)
+            goto next_try;
+
+        if(D & 0x04)
+            XFillRectangle(dpy, px, gc, x, y + h / 2, fw / 2 + 1, 1);
+
+        if(D & 0x01)
+            XFillRectangle(dpy, px, gc,
+                           x + fw / 2, y + h / 2, (fw + 1) / 2, 1);
+
+        if(D & 0x40)
+            XFillRectangle(dpy, px, gc, x + fw / 2, y, 1, h / 2 + 1);
+
+        if(D & 0x10)
+            XFillRectangle(dpy, px, gc, x + fw / 2, y + h / 2, 1, (h + 1) / 2);
+
+#define STEPIF(a,b) (D&(a)?-1:(D&(b))?1:0)
+
+        if(D & 0x08)
+        {
+            XFillRectangle(dpy, px, gc, x, y - 1 + h / 2,
+                           fw / 2 + 1 + STEPIF(0xc0,0x20), 1);
+            XFillRectangle(dpy, px, gc, x, y + 1 + h / 2,
+                           fw / 2 + 1 + STEPIF(0x30,0x80), 1);
+        }
+
+        if(D & 0x02)
+        {
+            XFillRectangle(dpy, px, gc, x - STEPIF(0xc0,0x20) + fw / 2,
+                           y - 1 + h / 2, (fw + 1) / 2 + STEPIF(0xc0,0x20), 1);
+            XFillRectangle(dpy, px, gc, x - STEPIF(0x30,0x80) + fw / 2,
+                           y + 1 + h / 2, (fw + 1) / 2 + STEPIF(0x30,0x80), 1);
+        }
+
+        if(D & 0x80)
+        {
+            XFillRectangle(dpy, px, gc, x - 1 + fw / 2, y,
+                           1, h / 2 + 1 + STEPIF(0x0c,0x02));
+            XFillRectangle(dpy, px, gc, x + 1 + fw / 2, y,
+                           1, h / 2 + 1 + STEPIF(0x03,0x08));
+        }
+
+        if(D & 0x20)
+        {
+            XFillRectangle(dpy, px, gc, x - 1 + fw / 2,
+                           y - STEPIF(0x0c,0x02) + h / 2,
+                           1, (h + 1) / 2 + STEPIF(0x0c,0x02));
+            XFillRectangle(dpy, px, gc, x + 1 + fw / 2,
+                           y - STEPIF(0x03,0x08) + h / 2,
+                           1, (h + 1) / 2 + STEPIF(0x03,0x08));
+        }
+
+        return;
+    }
+next_try:
+
+    switch(ch)
+    {
+        case 0x000000b7: /* · */
+        case 0x00002219: /* ∙ */
+        case 0x000030fb: /* ・ */
+            XFillRectangle(dpy, px, gc, x + fw / 2 - 1, y + h / 2 - 1, 2, 2);
+            return;
+
+        case 0x00002261: /* ≡ */
+            XFillRectangle(dpy, px, gc, x + 1, y - 2 + h / 2, fw - 1, 1);
+            XFillRectangle(dpy, px, gc, x + 1, y + h / 2, fw - 1, 1);
+            XFillRectangle(dpy, px, gc, x + 1, y + 2 + h / 2, fw - 1, 1);
+            return;
+
+        case 0x00002580: /* ▀ */
+            XFillRectangle(dpy, px, gc, x, y, fw, h / 2);
+            return;
+
+        case 0x00002584: /* ▄ */
+            XFillRectangle(dpy, px, gc, x, y + h - h / 2, fw, h / 2);
+            return;
+
+        case 0x00002588: /* █ */
+        case 0x000025ae: /* ▮ */
+            XFillRectangle(dpy, px, gc, x, y, fw, h);
+            return;
+
+        case 0x0000258c: /* ▌ */
+            XFillRectangle(dpy, px, gc, x, y, fw / 2, h);
+            return;
+
+        case 0x00002590: /* ▐ */
+            XFillRectangle(dpy, px, gc, x + fw - fw / 2, y, fw / 2, h);
+            return;
+
+        case 0x000025a0: /* ■ */
+        case 0x000025ac: /* ▬ */
+            XFillRectangle(dpy, px, gc, x, y + h / 4, fw, h / 2);
+            return;
+
+        case 0x00002593: /* ▓ */
+        case 0x00002592: /* ▒ */
+        case 0x00002591: /* ░ */
+        {
+            /* FIXME: this sucks utterly */
+            int i, j, k = ch - 0x00002591;
+            for(j = h; j--; )
+                for(i = fw; i--; )
+            {
+                if(((i + 2 * (j & 1)) & 3) > k)
+                    continue;
+
+                XDrawPoint(dpy, px, gc, x + i, y + j);
+            }
+            return;
+        }
+
+        case 0x000025cb: /* ○ */
+        case 0x00002022: /* • */
+        case 0x000025cf: /* ● */
+        {
+            int d, xo, yo;
+
+            d = fw;
+            if(h < fw)
+                d = h;
+            if(d < 1)
+                d = 1;
+            xo = (fw - d) / 2;
+            yo = (h - d) / 2;
+            if(ch == 0x000025cb)
+                XDrawArc(dpy, px, gc, x + xo, y + yo, d, d, 0, 64 * 360);
+            else
+                XFillArc(dpy, px, gc, x + xo, y + yo, d, d, 0, 64 * 360);
+            return;
+        }
+    }
+
+    if(ch >= 0x00000020 && ch <= dp->drv.p->max_char)
+    {
+        /* ascii, latin-1 or unicode font (might draw a blank square) */
+        ch16.byte1 = (ch) >> 8;
+        ch16.byte2 = (ch) & 0xff;
+    }
+    else
+    {
+        ch16.byte1 = 0;
+        ch16.byte2 = cucul_utf32_to_ascii(ch);
+    }
+
+    XDrawString16(dpy, px, gc, x + (ch16.byte1 ? 0 : (fw - w) / 2), yoff, &ch16, 1);
 }
 
 /*
