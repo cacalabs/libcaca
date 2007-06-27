@@ -1,6 +1,8 @@
 /*
  *  libcaca       Colour ASCII-Art library
  *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
+ *                2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
+ *                2007 Ben Wiley Sittler <bsittler@gmail.com>
  *                All Rights Reserved
  *
  *  $Id$
@@ -281,9 +283,9 @@ static void gl_display(caca_display_t *dp)
                 glTexCoord2f(0, dp->drv.p->sh);
                 glVertex2f(x, y);
                 glTexCoord2f(dp->drv.p->sw, dp->drv.p->sh);
-                glVertex2f(x + dp->drv.p->font_width, y);
+                glVertex2f(x + dp->drv.p->font_width * (fullwidth ? 2 : 1), y);
                 glTexCoord2f(dp->drv.p->sw, 0);
-                glVertex2f(x + dp->drv.p->font_width,
+                glVertex2f(x + dp->drv.p->font_width * (fullwidth ? 2 : 1),
                            y + dp->drv.p->font_height);
                 glTexCoord2f(0, 0);
                 glVertex2f(x, y + dp->drv.p->font_height);
@@ -512,7 +514,7 @@ static void gl_compute_font(caca_display_t *dp)
         b += (int)(dp->drv.p->blocks[i + 1] - dp->drv.p->blocks[i]);
 
     /* Allocate a libcucul canvas and print all the glyphs on it */
-    cv = cucul_create_canvas(1, b);
+    cv = cucul_create_canvas(2, b);
     cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLACK);
 
     for(b = 0, i = 0; dp->drv.p->blocks[i + 1]; i += 2)
@@ -526,10 +528,10 @@ static void gl_compute_font(caca_display_t *dp)
     }
 
     /* Draw the cucul canvas onto an image buffer */
-    image = malloc(b * dp->drv.p->font_height
-                     * dp->drv.p->font_width * sizeof(uint32_t));
-    cucul_render_canvas(cv, dp->drv.p->f, image, dp->drv.p->font_width,
-                        b * dp->drv.p->font_height, 4 * dp->drv.p->font_width);
+    image = malloc(b * dp->drv.p->font_height *
+                   2 * dp->drv.p->font_width * sizeof(uint32_t));
+    cucul_render_canvas(cv, dp->drv.p->f, image, 2 * dp->drv.p->font_width,
+                        b * dp->drv.p->font_height, 8 * dp->drv.p->font_width);
     cucul_free_canvas(cv);
 
     /* Convert all glyphs in the image buffer to GL textures */
@@ -538,32 +540,43 @@ static void gl_compute_font(caca_display_t *dp)
     w = dp->drv.p->font_width <= 16 ? dp->drv.p->font_width : 16;
     h = dp->drv.p->font_height <= 16 ? dp->drv.p->font_height : 16;
 
-    for(i = 0; i < b; i++)
+    for(b = 0, i = 0; dp->drv.p->blocks[i + 1]; i += 2)
     {
-        uint8_t tmp[16 * 4 * 16];
-        uint32_t *glyph = image + (int)(i * dp->drv.p->font_width
-                                          * dp->drv.p->font_height);
-        memset(tmp, 0, 16 * 4 * 16);
+        int j, n = (int)(dp->drv.p->blocks[i + 1] - dp->drv.p->blocks[i]);
 
-        for(y = 0; y < h; y++)
+        for(j = 0; j < n; j++)
         {
-            for(x = 0; x < w; x++)
+            uint8_t tmp[16 * 8 * 16];
+            uint32_t *glyph = image + (int)((b + j) * dp->drv.p->font_width * 2
+                                            * dp->drv.p->font_height);
+            int fullwidth =
+                    cucul_utf32_is_fullwidth(dp->drv.p->blocks[i] + j);
+
+            memset(tmp, 0, 16 * 8 * 16);
+            
+            for(y = 0; y < h; y++)
             {
-                uint32_t offset = x + (15 - y) * 16;
-                uint8_t c = glyph[x + y * (int)dp->drv.p->font_width] >> 8;
-                tmp[offset * 4] = c;
-                tmp[offset * 4 + 1] = c;
-                tmp[offset * 4 + 2] = c;
-                tmp[offset * 4 + 3] = c;
+                for(x = 0; x < w * (fullwidth ? 2 : 1); x++)
+                {
+                    int offset = x + (15 - y) * (fullwidth ? 32 : 16);
+                    uint8_t c = glyph[x + y * 2 * (int)dp->drv.p->font_width]
+                                 >> 8;
+                    tmp[offset * 4] = c;
+                    tmp[offset * 4 + 1] = c;
+                    tmp[offset * 4 + 2] = c;
+                    tmp[offset * 4 + 3] = c;
+                }
             }
+            
+            glGenTextures(1, (GLuint*)&dp->drv.p->txid[b + j]);
+            glBindTexture(GL_TEXTURE_2D, dp->drv.p->txid[b + j]);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexImage2D(GL_TEXTURE_2D, 0, 4, (fullwidth ? 32 : 16), 16, 0,
+                         GL_RGBA, GL_UNSIGNED_BYTE, tmp);
         }
 
-        glGenTextures(1, (GLuint*)&dp->drv.p->txid[i]);
-        glBindTexture(GL_TEXTURE_2D, dp->drv.p->txid[i]);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexImage2D(GL_TEXTURE_2D, 0, 4, 16, 16, 0,
-                     GL_RGBA, GL_UNSIGNED_BYTE, tmp);
+        b += n;
     }
 
     free(image);
