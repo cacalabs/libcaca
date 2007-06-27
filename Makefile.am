@@ -15,4 +15,8 @@ upload: doc/html FORCE
 	scp $(distdir).tar.gz $(webhost):$(webdir)/files/
 	scp -r doc/html/* $(webhost):$(webdir)/manual/
 
+fonts: tools/makefont
+	tools/makefont mono9 "Monospace 9" 96 4 >| $(srcdir)/cucul/font_mono9.h
+	tools/makefont monobold12 "Monospace Bold 12" 96 4 >| $(srcdir)/cucul/font_monobold12.h
+
 FORCE:
