@@ -159,9 +159,11 @@ static int slang_init_graphics(caca_display_t *dp)
 
     slang_init_palette();
 
+#if defined(VMS) || defined(REAL_UNIX_SYSTEM)
     /* Disable alt charset support so that we get a chance to have all
      * 256 colour pairs */
     SLtt_Has_Alt_Charset = 0;
+#endif
 
 #ifdef HAVE_SLSMG_UTF8_ENABLE
     SLsmg_utf8_enable(1); /* 1 == force, 0 == disable, -1 == autodetect */
