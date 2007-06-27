@@ -57,9 +57,12 @@ static unsigned int const blocklist[] =
     0x2300, 0x2400, /* Miscellaneous Technical: ⌐ ⌂ ⌠ ⌡ */
     0x2500, 0x2580, /* Box Drawing: ═ ║ ╗ ╔ ╩ */
     0x2580, 0x25a0, /* Block Elements: ▛ ▞ ░ ▒ ▓ */
+    0x25a0, 0x2600, /* Geometric Shapes: ◆ ○ ● */
+    0x2600, 0x2700, /* Miscellaneous Symbols: ♥ ★ ☭ */
     0x3000, 0x3040, /* CJK Symbols and Punctuation: 。「」 */
     0x3040, 0x30a0, /* Hiragana: で す */
     0x30a0, 0x3100, /* Katakana: ロ ル */
+    0xff00, 0xfff0, /* Halfwidth and Fullwidth Forms: Ａ, Ｂ, Ｃ, ａ, ｂ, ｃ */
     0, 0
 };
 
