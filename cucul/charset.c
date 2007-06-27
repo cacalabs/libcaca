@@ -1,6 +1,7 @@
 /*
  *  libcucul      Canvas for ultrafast compositing of Unicode letters
- *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2002-2007 Sam Hocevar <sam@zoy.org>
+ *                2007 Ben Wiley Sittler <bsittler@gmail.com>
  *                All Rights Reserved
  *
  *  $Id$
@@ -234,6 +235,143 @@ unsigned long int cucul_cp437_to_utf32(unsigned char ch)
         return cp437_lookup1[ch - 0x01];
 
     return 0x00000000;
+}
+
+/** \brief Convert a UTF-32 character to ASCII.
+ *
+ *  Convert a UTF-32 character into an ASCII character. When no equivalent
+ *  exists, a graphically close equivalent is sought.
+ *
+ *  This function never fails, but its behaviour with illegal UTF-32 characters
+ *  is undefined.
+ *
+ *  \param ch The UTF-32 character.
+ *  \return The corresponding ASCII character, or a graphically close
+ *  equivalent if found, or "?" if not representable.
+ */
+char cucul_utf32_to_ascii(unsigned long int ch)
+{
+    /* Standard ASCII */
+    if(ch < 0x80)
+        return ch;
+
+    /* Fullwidth Forms */
+    if(ch > 0x0000ff00 && ch < 0x0000ff5f)
+        return ' ' + (ch - 0x0000ff00);
+
+    switch (ch)
+    {
+    case 0x000000a0: /*   (nbsp) */
+    case 0x00003000: /* 　 (ideographic space) */
+        return ' ';
+    case 0x000000a3: /* £ */
+        return 'f';
+    case 0x000000b0: /* ° */
+        return '\'';
+    case 0x000000b1: /* ± */
+        return '#';
+    case 0x000000b7: /* · */
+    case 0x00002219: /* ∙ */
+    case 0x000030fb: /* ・ */
+        return '.';
+    case 0x000003c0: /* π */
+        return '*';
+    case 0x00002018: /* ‘ */
+    case 0x00002019: /* ’ */
+        return '\'';
+    case 0x0000201c: /* “ */
+    case 0x0000201d: /* ” */
+        return '"';
+    case 0x00002190: /* ← */
+        return '<';
+    case 0x00002191: /* ↑ */
+        return '^';
+    case 0x00002192: /* → */
+        return '>';
+    case 0x00002193: /* ↓ */
+        return 'v';
+    case 0x00002260: /* ≠ */
+        return '!';
+    case 0x00002261: /* ≡ */
+        return '=';
+    case 0x00002264: /* ≤ */
+        return '<';
+    case 0x00002265: /* ≥ */
+        return '>';
+    case 0x000023ba: /* ⎺ */
+    case 0x000023bb: /* ⎻ */
+    case 0x000023bc: /* ⎼ */
+    case 0x000023bd: /* ⎽ */
+    case 0x00002500: /* ─ */
+    case 0x00002550: /* ═ */
+        return '-';
+    case 0x00002502: /* │ */
+    case 0x00002551: /* ║ */
+        return '|';
+    case 0x0000250c: /* ┌ */
+    case 0x00002552: /* ╒ */
+    case 0x00002553: /* ╓ */
+    case 0x00002554: /* ╔ */
+    case 0x00002514: /* └ */
+    case 0x00002558: /* ╘ */
+    case 0x00002559: /* ╙ */
+    case 0x0000255a: /* ╚ */
+    case 0x0000251c: /* ├ */
+    case 0x0000255e: /* ╞ */
+    case 0x0000255f: /* ╟ */
+    case 0x00002560: /* ╠ */
+    case 0x0000252c: /* ┬ */
+    case 0x00002564: /* ╤ */
+    case 0x00002565: /* ╥ */
+    case 0x00002566: /* ╦ */
+    case 0x00002534: /* ┴ */
+    case 0x00002567: /* ╧ */
+    case 0x00002568: /* ╨ */
+    case 0x00002569: /* ╩ */
+    case 0x0000253c: /* ┼ */
+    case 0x0000256a: /* ╪ */
+    case 0x0000256b: /* ╫ */
+    case 0x0000256c: /* ╬ */
+        return '+';
+    case 0x00002510: /* ┐ */
+    case 0x00002555: /* ╕ */
+    case 0x00002556: /* ╖ */
+    case 0x00002557: /* ╗ */
+    case 0x00002518: /* ┘ */
+    case 0x0000255b: /* ╛ */
+    case 0x0000255c: /* ╜ */
+    case 0x0000255d: /* ╝ */
+    case 0x00002524: /* ┤ */
+    case 0x00002561: /* ╡ */
+    case 0x00002562: /* ╢ */
+    case 0x00002563: /* ╣ */
+        return '+';
+    case 0x00002591: /* ░ */
+    case 0x00002592: /* ▒ */
+    case 0x00002593: /* ▓ */
+    case 0x00002580: /* ▀ */
+    case 0x00002584: /* ▄ */
+    case 0x00002588: /* █ */
+    case 0x0000258c: /* ▌ */
+    case 0x00002590: /* ▐ */
+    case 0x000025a0: /* ■ */
+    case 0x000025ac: /* ▬ */
+    case 0x000025ae: /* ▮ */
+        return '#';
+    case 0x000025c6: /* ◆ */
+    case 0x00002666: /* ♦ */
+        return '+';
+    case 0x00002022: /* • */
+    case 0x000025cb: /* ○ */
+    case 0x000025cf: /* ● */
+    case 0x00002603: /* ☃ */
+    case 0x0000263c: /* ☼ */
+        return 'o';
+    case 0x0000301c: /* 〜 */
+        return '~';
+    }
+
+    return '?';
 }
 
 /** \brief Tell whether a UTF-32 character is fullwidth.

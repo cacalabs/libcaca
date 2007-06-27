@@ -142,6 +142,7 @@ unsigned long int cucul_utf8_to_utf32(char const *, unsigned int *);
 unsigned int cucul_utf32_to_utf8(char *, unsigned long int);
 unsigned char cucul_utf32_to_cp437(unsigned long int);
 unsigned long int cucul_cp437_to_utf32(unsigned char);
+char cucul_utf32_to_ascii(unsigned long int);
 int cucul_utf32_is_fullwidth(unsigned long int);
 /*  @} */
 
