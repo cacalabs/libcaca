@@ -44,7 +44,7 @@
 // build a complete color table cache for the view
 #define PRECACHE_WHOLE_COLOR_TABLE 1
 
-#define USE_RGB12_FGBG 1
+//#define USE_RGB12_FGBG 1
 
 //#define USE_GLOBAL_AUTORELEASE_POOL 1
 
@@ -267,13 +267,13 @@ static BOOL s_quitting = NO;
             {
                 attrs = _attrs + x + y * _w;
                 NSColor* color = nil;
-            #if USE_RGB12_FGBG
+#if USE_RGB12_FGBG
                 uint16_t bg = _cucul_attr_to_rgb12bg(*attrs);
                 if(bg)
                 {
-                #ifdef PRECACHE_WHOLE_COLOR_TABLE
+#   ifdef PRECACHE_WHOLE_COLOR_TABLE
                     color = _colorCache[bg];
-                #else
+#   else
                     NSNumber* numberBg = [NSNumber numberWithInt:bg];
                     color = [_colorCache objectForKey:numberBg];
                     if(!color)
@@ -282,16 +282,16 @@ static BOOL s_quitting = NO;
                         if(color)
                             [_colorCache setObject:color forKey:numberBg];
                     }
-                #endif
+#   endif
                 }
-            #else
+#else
                 uint8_t argb[8];
                 _cucul_attr_to_argb4(*attrs, argb);
                 color =  [NSColor colorWithCalibratedRed:((float)argb[1]) / 15.0
                                   green:((float)argb[2]) / 15.0
                                   blue:((float)argb[3]) / 15.0
                                   alpha:1.0];
-            #endif
+#endif
                 if(color)
                 {
                     _bkg_colors[arrayLength] = color;
@@ -325,11 +325,11 @@ static BOOL s_quitting = NO;
                 if(NSIntersectsRect(r, rect))
                 {
                     NSColor* color = nil;
-                #if USE_RGB12_FGBG
+#if USE_RGB12_FGBG
                     uint16_t fg = _cucul_attr_to_rgb12fg(*attrs);
-                #ifdef PRECACHE_WHOLE_COLOR_TABLE
+#   ifdef PRECACHE_WHOLE_COLOR_TABLE
                     color = _colorCache[fg];
-                #else // PRECACHE_WHOLE_COLOR_TABLE
+#   else // PRECACHE_WHOLE_COLOR_TABLE
                     NSNumber* numberFg = [NSNumber numberWithInt:fg];
                     color = [_colorCache objectForKey:numberFg];
                     if(!color)
@@ -338,8 +338,8 @@ static BOOL s_quitting = NO;
                         if(color)
                             [_colorCache setObject:color forKey:numberFg];
                     }
-                #endif // PRECACHE_WHOLE_COLOR_TABLE
-                #else // USE_RGB12_FGBG
+#   endif // PRECACHE_WHOLE_COLOR_TABLE
+#else // USE_RGB12_FGBG
                     uint8_t argb[8];
                     _cucul_attr_to_argb4(*attrs, argb);
                     debug_log(@"x,y=[%d,%d] r,g,b back=[%u %u %u] front=[%u %u %u]", 
@@ -348,7 +348,7 @@ static BOOL s_quitting = NO;
                                       green:((float)argb[6]) / 15.0
                                       blue:((float)argb[7]) / 15.0
                                       alpha:1.0];
-                #endif // USE_RGB12_FGBG
+#endif // USE_RGB12_FGBG
 
                     if(color)
                     {
@@ -359,13 +359,13 @@ static BOOL s_quitting = NO;
                         unichar ch = *chars;
                         NSString* str = [[NSString alloc] initWithCharacters:&ch length:1];
 
-                    #ifdef USE_LOWLEVEL_COCOA
+#ifdef USE_LOWLEVEL_COCOA
                         [[_textStorage mutableString] setString:str];
                         [_textStorage setAttributes:attrDict range:NSMakeRange(0, 1)];
                         [_layoutManager drawGlyphsForGlyphRange:NSMakeRange(0, 1) atPoint:r.origin];
-                    #else
+#else
                         [str drawInRect:r withAttributes:attrDict];
-                    #endif
+#endif
                         [str release];
                     }
                 }
