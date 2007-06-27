@@ -30,6 +30,7 @@
 #elif defined(HAVE_WINSOCK2_H)
 #   include <winsock2.h>
 #   include <ws2tcpip.h>
+#   define USE_WINSOCK 1
 #endif
 #if defined(HAVE_UNISTD_H)
 #   include <unistd.h>
@@ -40,6 +41,10 @@
 #include <signal.h>
 #include <errno.h>
 #include <stdarg.h>
+
+#ifndef USE_WINSOCK
+#   define USE_WINSOCK 0
+#endif
 
 #include "cucul.h"
 
@@ -129,12 +134,12 @@ int main(void)
     struct server *server;
     char *tmp;
 
-#ifdef HAVE_WINDOWS_H
-	WORD winsockVersion;
-	WSADATA wsaData;
-	winsockVersion = MAKEWORD(1, 1);
+#if USE_WINSOCK
+    WORD winsockVersion;
+    WSADATA wsaData;
+    winsockVersion = MAKEWORD(1, 1);
 
-	WSAStartup(winsockVersion, &wsaData);
+    WSAStartup(winsockVersion, &wsaData);
 #endif
     server = malloc(sizeof(struct server));
 
@@ -291,7 +296,7 @@ restart:
 
     free(server);
 
-#ifdef HAVE_WINDOWS_H
+#if USE_WINSOCK
     WSACleanup();
 #endif
     return 0;
