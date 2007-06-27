@@ -454,6 +454,8 @@ static void slang_write_utf32(uint32_t ch)
 #ifdef HAVE_SLSMG_UTF8_ENABLE
     char buf[10];
     int bytes;
+#else
+    char ascii;
 #endif
 
     if(ch == CUCUL_MAGIC_FULLWIDTH)
@@ -464,12 +466,10 @@ static void slang_write_utf32(uint32_t ch)
     buf[bytes] = '\0';
     SLsmg_write_string(buf);
 #else
-    if(ch < 0x80)
-        SLsmg_write_char(ch);
-    else if(cucul_utf32_is_fullwidth(ch))
-        SLsmg_write_string("? ");
-    else
-        SLsmg_write_char('?');
+    ascii = cucul_utf32_to_ascii(ch);
+    SLsmg_write_char(ascii);
+    if(cucul_utf32_is_fullwidth(ch))
+        SLsmg_write_char(ascii);
 #endif
 }
 
