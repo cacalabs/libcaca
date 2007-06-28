@@ -226,6 +226,8 @@ static long int import_caca(cucul_canvas_t *cv,
     uint8_t const *buf = (uint8_t const *)data;
     unsigned int control_size, data_size, expected_size, frames, f, n;
     uint16_t version, flags;
+    unsigned int offset;
+    int32_t xmin = 0, ymin = 0, xmax = 0, ymax = 0;
 
     if(size < 20)
         return 0;
@@ -258,16 +260,23 @@ static long int import_caca(cucul_canvas_t *cv,
         uint32_t attr;
         int x, y, handlex, handley;
 
-        width = sscanu32(buf + 4 + 16 + f * 24);
-        height = sscanu32(buf + 4 + 16 + f * 24 + 4);
-        duration = sscanu32(buf + 4 + 16 + f * 24 + 8);
-        attr = sscanu32(buf + 4 + 16 + f * 24 + 12);
-        x = (int32_t)sscanu32(buf + 4 + 16 + f * 24 + 16);
-        y = (int32_t)sscanu32(buf + 4 + 16 + f * 24 + 20);
-        handlex = (int32_t)sscanu32(buf + 4 + 16 + f * 24 + 24);
-        handley = (int32_t)sscanu32(buf + 4 + 16 + f * 24 + 28);
-
+        width = sscanu32(buf + 4 + 16 + f * 32);
+        height = sscanu32(buf + 4 + 16 + f * 32 + 4);
+        duration = sscanu32(buf + 4 + 16 + f * 32 + 8);
+        attr = sscanu32(buf + 4 + 16 + f * 32 + 12);
+        x = (int32_t)sscanu32(buf + 4 + 16 + f * 32 + 16);
+        y = (int32_t)sscanu32(buf + 4 + 16 + f * 32 + 20);
+        handlex = (int32_t)sscanu32(buf + 4 + 16 + f * 32 + 24);
+        handley = (int32_t)sscanu32(buf + 4 + 16 + f * 32 + 28);
         expected_size += width * height * 8;
+        if(-handlex < xmin)
+            xmin = -handlex;
+        if(-handley < ymin)
+            ymin = -handley;
+        if((((int32_t) width) - handlex) > xmax)
+            xmax = ((int32_t) width) - handlex;
+        if((((int32_t) height) - handley) > ymax)
+            ymax = ((int32_t) height) - handley;
     }
 
     if(expected_size != data_size)
@@ -277,24 +286,50 @@ static long int import_caca(cucul_canvas_t *cv,
         goto invalid_caca;
     }
 
-    /* FIXME: read all frames, not only the first one */
     cucul_set_canvas_size(cv, 0, 0);
-    cucul_set_canvas_size(cv, sscanu32(buf + 4 + 16),
-                              sscanu32(buf + 4 + 16 + 4));
+    cucul_set_canvas_size(cv, xmax - xmin, ymax - ymin);
 
-    /* FIXME: check for return value */
-
-    for(n = sscanu32(buf + 4 + 16) * sscanu32(buf + 4 + 16 + 4); n--; )
+    for (f = cucul_get_frame_count(cv); f--; )
     {
-        cv->chars[n] = sscanu32(buf + 4 + control_size + 8 * n);
-        cv->attrs[n] = sscanu32(buf + 4 + control_size + 8 * n + 4);
+        cucul_free_frame(cv, f);
     }
 
-    cv->curattr = sscanu32(buf + 4 + 16 + 12);
-    cv->frames[0].x = (int32_t)sscanu32(buf + 4 + 16 + 0 * 24 + 16);
-    cv->frames[0].y = (int32_t)sscanu32(buf + 4 + 16 + 0 * 24 + 20);
-    cv->frames[0].handlex = (int32_t)sscanu32(buf + 4 + 16 + 0 * 24 + 24);
-    cv->frames[0].handley = (int32_t)sscanu32(buf + 4 + 16 + 0 * 24 + 28);
+    for (offset = 0, f = 0; f < frames; f ++)
+    {
+        unsigned int width, height;
+
+        width = sscanu32(buf + 4 + 16 + f * 32);
+        height = sscanu32(buf + 4 + 16 + f * 32 + 4);
+        cucul_create_frame(cv, f);
+        cucul_set_frame(cv, f);
+
+        cv->curattr = sscanu32(buf + 4 + 16 + f * 32 + 12);
+        cv->frames[f].x = (int32_t)sscanu32(buf + 4 + 16 + f * 32 + 16);
+        cv->frames[f].y = (int32_t)sscanu32(buf + 4 + 16 + f * 32 + 20);
+        cv->frames[f].handlex = (int32_t)sscanu32(buf + 4 + 16 + f * 32 + 24);
+        cv->frames[f].handley = (int32_t)sscanu32(buf + 4 + 16 + f * 32 + 28);
+
+        /* FIXME: check for return value */
+
+        for(n = width * height; n--; )
+        {
+            int x = (n % width) - cv->frames[f].handlex - xmin;
+            int y = (n / width) - cv->frames[f].handley - ymin;
+
+            cucul_put_char(cv, x, y, sscanu32(buf + 4 + control_size
+                                               + offset + 8 * n));
+            cucul_put_attr(cv, x, y, sscanu32(buf + 4 + control_size
+                                               + offset + 8 * n + 4));
+        }
+        offset += width * height * 8;
+
+        cv->frames[f].x -= cv->frames[f].handlex;
+        cv->frames[f].y -= cv->frames[f].handley;
+        cv->frames[f].handlex = -xmin;
+        cv->frames[f].handley = -ymin;
+    }
+
+    cucul_set_frame(cv, 0);
 
     return 4 + control_size + data_size;
 
