@@ -718,7 +718,7 @@ static void x11_put_glyph(caca_display_t *dp, int x, int y, int yoff,
         {
             int d, xo, yo;
 
-            d = fw;
+            d = fw >> (~ch & 0x1); /* XXX: hack */
             if(h < fw)
                 d = h;
             if(d < 1)
