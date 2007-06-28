@@ -20,6 +20,7 @@
 #include "common.h"
 
 #if !defined(__KERNEL__)
+#   include <stdlib.h>
 #endif
 
 #include "cucul.h"
@@ -28,6 +29,8 @@
 static uint32_t flipchar(uint32_t ch);
 static uint32_t flopchar(uint32_t ch);
 static uint32_t rotatechar(uint32_t ch);
+static uint32_t leftchar(uint32_t ch);
+static uint32_t rightchar(uint32_t ch);
 
 /** \brief Invert a canvas' colours.
  *
@@ -210,6 +213,182 @@ int cucul_rotate(cucul_canvas_t *cv)
             }
         }
     }
+
+    return 0;
+}
+
+/** \brief Rotate a canvas, 90 degrees counterclockwise.
+ *
+ *  Apply a 90-degree transformation to a canvas, choosing characters
+ *  that look like the rotated version wherever possible. Some characters
+ *  will stay unchanged by the process, some others will be replaced by
+ *  close equivalents. Fullwidth characters will be lost. The operation is
+ *  not guaranteed to be reversible at all.
+ *
+ *  Note that the width and height of the canvas are swapped.
+ *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c EBUSY The canvas is in use by a display driver and cannot be rotated.
+ *  - \c ENOMEM Not enough memory to allocate the new canvas size. If this
+ *    happens, the previous canvas handle is still valid.
+ *
+ *  \param cv The canvas to rotate left.
+ *  \return 0 in case of success, -1 if an error occurred.
+ */
+int cucul_left(cucul_canvas_t *cv)
+{
+    uint32_t *newchars, *newattrs;
+    unsigned int x, y;
+
+    if(cv->refcount)
+    {
+        seterrno(EBUSY);
+        return -1;
+    }
+
+    /* Save the current frame shortcuts */
+    _cucul_save_frame_info(cv);
+
+    newchars = malloc(cv->width * cv->height * sizeof(uint32_t));
+    if(!newchars)
+        return -1;
+
+    newattrs = malloc(cv->width * cv->height * sizeof(uint32_t));
+    if(!newattrs)
+    {
+        free(newchars);
+        return -1;
+    }
+
+    for(y = 0; y < cv->height; y++)
+    {
+        for(x = 0; x < cv->width; x++)
+        {
+            uint32_t ch, attr;
+
+            ch = cv->chars[cv->width * y + x];
+            attr = cv->attrs[cv->width * y + x];
+
+            /* FIXME: do something about fullwidth characters */
+            ch = leftchar(ch);
+
+            newchars[cv->height * (cv->width - 1 - x) + y] = ch;
+            newattrs[cv->height * (cv->width - 1 - x) + y] = attr;
+        }
+    }
+
+    free(cv->chars);
+    free(cv->attrs);
+
+    /* Swap X and Y information */
+    x = cv->frames[cv->frame].x;
+    y = cv->frames[cv->frame].y;
+    cv->frames[cv->frame].x = y;
+    cv->frames[cv->frame].y = cv->width - 1 - x;
+
+    x = cv->frames[cv->frame].handlex;
+    y = cv->frames[cv->frame].handley;
+    cv->frames[cv->frame].handlex = y;
+    cv->frames[cv->frame].handley = cv->width - 1 - x;
+
+    cv->frames[cv->frame].width = cv->height;
+    cv->frames[cv->frame].height = cv->width;
+
+    cv->frames[cv->frame].chars = newchars;
+    cv->frames[cv->frame].attrs = newattrs;
+
+    /* Reset the current frame shortcuts */
+    _cucul_load_frame_info(cv);
+
+    return 0;
+}
+
+/** \brief Rotate a canvas, 90 degrees clockwise.
+ *
+ *  Apply a 270-degree transformation to a canvas, choosing characters
+ *  that look like the rotated version wherever possible. Some characters
+ *  will stay unchanged by the process, some others will be replaced by
+ *  close equivalents. Fullwidth characters will be lost. The operation is
+ *  not guaranteed to be reversible at all.
+ *
+ *  Note that the width and height of the canvas are swapped.
+ *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c EBUSY The canvas is in use by a display driver and cannot be rotated.
+ *  - \c ENOMEM Not enough memory to allocate the new canvas size. If this
+ *    happens, the previous canvas handle is still valid.
+ *
+ *  \param cv The canvas to rotate right.
+ *  \return 0 in case of success, -1 if an error occurred.
+ */
+int cucul_right(cucul_canvas_t *cv)
+{
+    uint32_t *newchars, *newattrs;
+    unsigned int x, y;
+
+    if(cv->refcount)
+    {
+        seterrno(EBUSY);
+        return -1;
+    }
+
+    /* Save the current frame shortcuts */
+    _cucul_save_frame_info(cv);
+
+    newchars = malloc(cv->width * cv->height * sizeof(uint32_t));
+    if(!newchars)
+    {
+        seterrno(ENOMEM);
+        return -1;
+    }
+
+    newattrs = malloc(cv->width * cv->height * sizeof(uint32_t));
+    if(!newattrs)
+    {
+        free(newchars);
+        seterrno(ENOMEM);
+        return -1;
+    }
+
+    for(y = 0; y < cv->height; y++)
+    {
+        for(x = 0; x < cv->width; x++)
+        {
+            uint32_t ch, attr;
+
+            ch = cv->chars[cv->width * y + x];
+            attr = cv->attrs[cv->width * y + x];
+
+            /* FIXME: do something about fullwidth characters */
+            ch = rightchar(ch);
+
+            newchars[cv->height * x + cv->height - 1 - y] = ch;
+            newattrs[cv->height * x + cv->height - 1 - y] = attr;
+        }
+    }
+
+    free(cv->chars);
+    free(cv->attrs);
+
+    /* Swap X and Y information */
+    x = cv->frames[cv->frame].x;
+    y = cv->frames[cv->frame].y;
+    cv->frames[cv->frame].x = cv->height - 1 - y;
+    cv->frames[cv->frame].y = x;
+
+    x = cv->frames[cv->frame].handlex;
+    y = cv->frames[cv->frame].handley;
+    cv->frames[cv->frame].handlex = cv->height - 1 - y;
+    cv->frames[cv->frame].handley = x;
+
+    cv->frames[cv->frame].width = cv->height;
+    cv->frames[cv->frame].height = cv->width;
+
+    cv->frames[cv->frame].chars = newchars;
+    cv->frames[cv->frame].attrs = newattrs;
+
+    /* Reset the current frame shortcuts */
+    _cucul_load_frame_info(cv);
 
     return 0;
 }
@@ -492,6 +671,80 @@ static uint32_t rotatechar(uint32_t ch)
     for(i = 0; pairs[i]; i++)
         if(ch == pairs[i])
             return pairs[i ^ 1];
+
+    return ch;
+}
+
+static uint32_t const leftright2[] =
+{
+    /* ASCII */
+    '/', '\\',
+    '|', '-',
+    '|', '_', /* This is all right because there was already a '|' before */
+    /* ASCII-Unicode */
+    '|', 0x203e, /* | ‾ */
+    /* Misc Unicode */
+    0x2571, 0x2572, /* ╱ ╲ */
+    /* Box drawing */
+    0x2500, 0x2502, /* ─ │ */
+    0x2501, 0x2503, /* ━ ┃ */
+    0x2550, 0x2551, /* ═ ║ */
+    0, 0
+};
+
+static uint32_t const leftright4[] =
+{
+    /* ASCII */
+    '<', 'v', '>', '^',
+    ',', '.', '\'', '`',
+    /* Misc Unicode */
+    0x256d, 0x2570, 0x256f, 0x256e, /* ╭ ╰ ╯ ╮ */
+    /* CP437 */
+    0x258c, 0x2584, 0x2590, 0x2580, /* ▌ ▄ ▐ ▀ */
+    0x2596, 0x2597, 0x259d, 0x2598, /* ▖ ▗ ▝ ▘ */
+    0x2599, 0x259f, 0x259c, 0x259b, /* ▙ ▟ ▜ ▛ */
+    /* Box drawing */
+    0x250c, 0x2514, 0x2518, 0x2510, /* ┌ └ ┘ ┐ */
+    0x250f, 0x2517, 0x251b, 0x2513, /* ┏ ┗ ┛ ┓ */
+    0x251c, 0x2534, 0x2524, 0x252c, /* ├ ┴ ┤ ┬ */
+    0x2523, 0x253b, 0x252b, 0x2533, /* ┣ ┻ ┫ ┳ */
+    0x2552, 0x2559, 0x255b, 0x2556, /* ╒ ╙ ╛ ╖ */
+    0x2553, 0x2558, 0x255c, 0x2555, /* ╓ ╘ ╜ ╕ */
+    0x2554, 0x255a, 0x255d, 0x2557, /* ╔ ╚ ╝ ╗ */
+    0x255e, 0x2568, 0x2561, 0x2565, /* ╞ ╨ ╡ ╥ */
+    0x255f, 0x2567, 0x2562, 0x2564, /* ╟ ╧ ╢ ╤ */
+    0x2560, 0x2569, 0x2563, 0x2566, /* ╠ ╩ ╣ ╦ */
+    0x2574, 0x2577, 0x2576, 0x2575, /* ╴ ╷ ╶ ╵ */
+    0x2578, 0x257b, 0x257a, 0x2579, /* ╸ ╻ ╺ ╹ */
+    0, 0, 0, 0
+};
+
+static uint32_t leftchar(uint32_t ch)
+{
+    int i;
+
+    for(i = 0; leftright2[i]; i++)
+        if(ch == leftright2[i])
+            return leftright2[(i & ~1) | ((i + 1) & 1)];
+
+    for(i = 0; leftright4[i]; i++)
+        if(ch == leftright4[i])
+            return leftright4[(i & ~3) | ((i + 1) & 3)];
+
+    return ch;
+}
+
+static uint32_t rightchar(uint32_t ch)
+{
+    int i;
+
+    for(i = 0; leftright2[i]; i++)
+        if(ch == leftright2[i])
+            return leftright2[(i & ~1) | ((i - 1) & 1)];
+
+    for(i = 0; leftright4[i]; i++)
+        if(ch == leftright4[i])
+            return leftright4[(i & ~3) | ((i - 1) & 3)];
 
     return ch;
 }

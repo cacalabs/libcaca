@@ -121,6 +121,8 @@ int cucul_invert(cucul_canvas_t *);
 int cucul_flip(cucul_canvas_t *);
 int cucul_flop(cucul_canvas_t *);
 int cucul_rotate(cucul_canvas_t *);
+int cucul_left(cucul_canvas_t *);
+int cucul_right(cucul_canvas_t *);
 /*  @} */
 
 /** \defgroup attributes libcucul attribute conversions
