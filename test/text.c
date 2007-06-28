@@ -25,12 +25,15 @@
 #include "cucul.h"
 
 #define STRING \
-  "  _,----._  \n" \
-  " (/ @  @ \\) \n" \
-  "  |  OO  |  \n" \
-  "  \\ `--' /  \n" \
-  "   `----'   \n" \
-  "Hello world!\n"
+  "              \n" \
+  "   _,----._   \n" \
+  "  (/ @  @ \\)  \n" \
+  "   |  OO  |   \n" \
+  "   \\ `--' /   \n" \
+  "    `----'    \n" \
+  "              \n" \
+  " Hello world! \n" \
+  "              \n"
 
 int main(int argc, char *argv[])
 {
@@ -61,6 +64,11 @@ int main(int argc, char *argv[])
     cucul_blit(cv, cucul_get_canvas_width(pig),
                    cucul_get_canvas_height(pig), pig, NULL);
 
+    buffer = cucul_export_memory(cv, "utf8", &len);
+    fwrite(buffer, len, 1, stdout);
+    free(buffer);
+
+    cucul_left(cv);
     buffer = cucul_export_memory(cv, "utf8", &len);
     fwrite(buffer, len, 1, stdout);
     free(buffer);
