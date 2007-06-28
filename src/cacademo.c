@@ -864,8 +864,6 @@ void rotozoom(enum action action, cucul_canvas_t *canvas)
     static int *sinTable;
     static int *yTable;
 
-
-
     /* register is quite a bad idea on CISC, but not on RISC */
     register unsigned int x, y;
     register unsigned int xxF, yyF, uF, vF, uF_, vF_;
@@ -874,7 +872,6 @@ void rotozoom(enum action action, cucul_canvas_t *canvas)
     switch(action)
     {
     case INIT:
-
         screen = (unsigned int*)malloc(4 * XSIZ * YSIZ
                                        * sizeof(unsigned char));
         dither = cucul_create_dither(32,
@@ -898,15 +895,15 @@ void rotozoom(enum action action, cucul_canvas_t *canvas)
         for(x=0; x<TEXTURE_SIZE; x++) { /* start of lines offsets */
             yTable[x] = x*TEXTURE_SIZE;
         }
-
         break;
+
     case PREPARE:
         break;
-    case UPDATE:
 
+    case UPDATE:
         alphaF +=   4;
         tF     +=   3;
-        scaleF =    (FMUL(sinTable[tF&0xFFFF], TOFIX(3)) + (TOFIX(5)));
+        scaleF =    FMUL(sinTable[tF&0xFFFF], TOFIX(3)) + TOFIX(4);
         xxF    =    FMUL(cosTable[(alphaF)&0xFFFF], scaleF);
         yyF    =    FMUL(sinTable[(alphaF)&0xFFFF], scaleF);
         uF  = vF  = 0;
@@ -933,7 +930,6 @@ void rotozoom(enum action action, cucul_canvas_t *canvas)
             uF = uF_ -= yyF;
             vF = vF_ += xxF;
         }
-
         break;
     case RENDER:
         cucul_dither_bitmap(canvas, 0, 0,
@@ -941,6 +937,7 @@ void rotozoom(enum action action, cucul_canvas_t *canvas)
                             cucul_get_canvas_height(canvas),
                             dither, save);
         break;
+
     case FREE:
         free(cosTable);
         free(sinTable);
