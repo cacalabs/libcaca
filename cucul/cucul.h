@@ -120,9 +120,9 @@ int cucul_set_canvas_boundaries(cucul_canvas_t *, int, int,
 int cucul_invert(cucul_canvas_t *);
 int cucul_flip(cucul_canvas_t *);
 int cucul_flop(cucul_canvas_t *);
-int cucul_rotate(cucul_canvas_t *);
-int cucul_left(cucul_canvas_t *);
-int cucul_right(cucul_canvas_t *);
+int cucul_rotate_180(cucul_canvas_t *);
+int cucul_rotate_left(cucul_canvas_t *);
+int cucul_rotate_right(cucul_canvas_t *);
 /*  @} */
 
 /** \defgroup attributes libcucul attribute conversions
@@ -288,6 +288,7 @@ char const * const * cucul_get_export_list(void);
                                          char const *) CUCUL_DEPRECATED;
     cucul_canvas_t * cucul_import_canvas(cucul_buffer_t *,
                                          char const *) CUCUL_DEPRECATED;
+    int cucul_rotate(cucul_canvas_t *) CUCUL_DEPRECATED;
 #   define CUCUL_COLOR_BLACK CUCUL_BLACK
 #   define CUCUL_COLOR_BLUE CUCUL_BLUE
 #   define CUCUL_COLOR_GREEN CUCUL_GREEN

@@ -209,3 +209,12 @@ int cucul_free_buffer(cucul_buffer_t *buf)
     return 0;
 }
 
+/*
+ * Functions from transform.c
+ */
+
+int cucul_rotate(cucul_canvas_t *cv)
+{
+    return cucul_rotate_180(cv);
+}
+

@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
 
     cucul_put_str(cv, 0, 18, "rotate");
     cucul_blit(tmp, 0, 0, image, NULL);
-    cucul_rotate(tmp);
+    cucul_rotate_180(tmp);
     cucul_blit(cv, 10, 18, tmp, NULL);
 
     caca_refresh_display(dp);

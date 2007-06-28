@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
     cucul_flop(pig);
     cucul_blit(cv, 0, cucul_get_canvas_height(pig), pig, NULL);
     cucul_flop(pig);
-    cucul_rotate(pig);
+    cucul_rotate_180(pig);
     cucul_blit(cv, cucul_get_canvas_width(pig),
                    cucul_get_canvas_height(pig), pig, NULL);
 
@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
     fwrite(buffer, len, 1, stdout);
     free(buffer);
 
-    cucul_left(cv);
+    cucul_rotate_left(cv);
     buffer = cucul_export_memory(cv, "utf8", &len);
     fwrite(buffer, len, 1, stdout);
     free(buffer);

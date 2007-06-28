@@ -173,7 +173,7 @@ int cucul_flop(cucul_canvas_t *cv)
  *  \param cv The canvas to rotate.
  *  \return This function always returns 0.
  */
-int cucul_rotate(cucul_canvas_t *cv)
+int cucul_rotate_180(cucul_canvas_t *cv)
 {
     uint32_t *cbegin = cv->chars;
     uint32_t *cend = cbegin + cv->width * cv->height - 1;
@@ -235,7 +235,7 @@ int cucul_rotate(cucul_canvas_t *cv)
  *  \param cv The canvas to rotate left.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_left(cucul_canvas_t *cv)
+int cucul_rotate_left(cucul_canvas_t *cv)
 {
     uint32_t *newchars, *newattrs;
     unsigned int x, y;
@@ -321,7 +321,7 @@ int cucul_left(cucul_canvas_t *cv)
  *  \param cv The canvas to rotate right.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_right(cucul_canvas_t *cv)
+int cucul_rotate_right(cucul_canvas_t *cv)
 {
     uint32_t *newchars, *newattrs;
     unsigned int x, y;
