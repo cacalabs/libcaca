@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
     fwrite(buffer, len, 1, stdout);
     free(buffer);
 
-    cucul_rotate_left(cv);
+    cucul_rotate_left_wide(cv);
     buffer = cucul_export_memory(cv, "utf8", &len);
     fwrite(buffer, len, 1, stdout);
     free(buffer);
