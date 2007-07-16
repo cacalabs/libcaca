@@ -17,9 +17,10 @@
 
 #if !defined(__KERNEL__)
 #   if defined(HAVE_INTTYPES_H)
-#   include <inttypes.h>
+#       include <inttypes.h>
 #   endif
 #   include <string.h>
+#   include <stdio.h>
 #endif
 
 #include "cucul.h"
@@ -44,7 +45,7 @@ int main(int argc, char *argv[])
     cv = cucul_create_canvas(0, 0);
     if(cv == NULL)
     {
-        printf("Can't created canvas\n");
+        printf("Can't create canvas\n");
         return -1;
     }
     dp = caca_create_display(cv);
