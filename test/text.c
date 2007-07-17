@@ -25,21 +25,22 @@
 #include "cucul.h"
 
 #define STRING \
-  "              \n" \
-  "   _,----._   \n" \
-  "  (/ @  @ \\)  \n" \
-  "   |  OO  |   \n" \
-  "   \\ `--' /   \n" \
-  "    `----'    \n" \
-  "              \n" \
-  " Hello world! \n" \
-  "              \n"
+  "              |_| \n" \
+  "   _,----._   | | \n" \
+  "  (/ @  @ \\)   __ \n" \
+  "   |  OO  |   |_  \n" \
+  "   \\ `--' /   |__ \n" \
+  "    `----'        \n" \
+  "              |_| \n" \
+  " Hello world!  |  \n" \
+  "                  \n"
 
 int main(int argc, char *argv[])
 {
     cucul_canvas_t *cv, *pig;
     void *buffer;
     unsigned long int len;
+    unsigned int i, j;
 
     pig = cucul_create_canvas(0, 0);
     cucul_import_memory(pig, STRING, strlen(STRING), "text");
@@ -63,6 +64,19 @@ int main(int argc, char *argv[])
     cucul_rotate_180(pig);
     cucul_blit(cv, cucul_get_canvas_width(pig),
                    cucul_get_canvas_height(pig), pig, NULL);
+
+    for(j = 0; j < cucul_get_canvas_height(cv); j++)
+    {
+        for(i = 0; i < cucul_get_canvas_width(cv); i += 2)
+        {
+            unsigned long int a;
+            cucul_set_color_ansi(cv, CUCUL_LIGHTBLUE + (i + j) % 6,
+                                 CUCUL_DEFAULT);
+            a = cucul_get_attr(cv, -1, -1);
+            cucul_put_attr(cv, i, j, a);
+            cucul_put_attr(cv, i + 1, j, a);
+        }
+    }
 
     buffer = cucul_export_memory(cv, "utf8", &len);
     fwrite(buffer, len, 1, stdout);

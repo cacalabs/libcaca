@@ -31,6 +31,8 @@ static uint32_t flopchar(uint32_t ch);
 static uint32_t rotatechar(uint32_t ch);
 static uint32_t leftchar(uint32_t ch);
 static uint32_t rightchar(uint32_t ch);
+static void leftpair(uint32_t pair[2]);
+static void rightpair(uint32_t pair[2]);
 
 /** \brief Invert a canvas' colours.
  *
@@ -363,16 +365,18 @@ int cucul_rotate_left_wide(cucul_canvas_t *cv)
     {
         for(x = 0; x < subwidth; x++)
         {
-            uint32_t ch1, ch2, attr1, attr2;
+            uint32_t pair[2], attr1, attr2;
 
-            ch1 = cv->chars[(subwidth * y + x) * 2];
+            pair[0] = cv->chars[(subwidth * y + x) * 2];
             attr1 = cv->attrs[(subwidth * y + x) * 2];
-            ch2 = cv->chars[(subwidth * y + x) * 2 + 1];
+            pair[1] = cv->chars[(subwidth * y + x) * 2 + 1];
             attr2 = cv->attrs[(subwidth * y + x) * 2 + 1];
 
-            newchars[(subheight * (subwidth - 1 - x) + y) * 2] = ch1;
+            leftpair(pair);
+
+            newchars[(subheight * (subwidth - 1 - x) + y) * 2] = pair[0];
             newattrs[(subheight * (subwidth - 1 - x) + y) * 2] = attr1;
-            newchars[(subheight * (subwidth - 1 - x) + y) * 2 + 1] = ch2;
+            newchars[(subheight * (subwidth - 1 - x) + y) * 2 + 1] = pair[1];
             newattrs[(subheight * (subwidth - 1 - x) + y) * 2 + 1] = attr2;
         }
     }
@@ -553,16 +557,18 @@ int cucul_rotate_right_wide(cucul_canvas_t *cv)
     {
         for(x = 0; x < subwidth; x++)
         {
-            uint32_t ch1, ch2, attr1, attr2;
+            uint32_t pair[2], attr1, attr2;
 
-            ch1 = cv->chars[(subwidth * y + x) * 2];
+            pair[0] = cv->chars[(subwidth * y + x) * 2];
             attr1 = cv->attrs[(subwidth * y + x) * 2];
-            ch2 = cv->chars[(subwidth * y + x) * 2 + 1];
+            pair[1] = cv->chars[(subwidth * y + x) * 2 + 1];
             attr2 = cv->attrs[(subwidth * y + x) * 2 + 1];
 
-            newchars[(subheight * x + subheight - 1 - y) * 2] = ch1;
+            rightpair(pair);
+
+            newchars[(subheight * x + subheight - 1 - y) * 2] = pair[0];
             newattrs[(subheight * x + subheight - 1 - y) * 2] = attr1;
-            newchars[(subheight * x + subheight - 1 - y) * 2 + 1] = ch2;
+            newchars[(subheight * x + subheight - 1 - y) * 2 + 1] = pair[1];
             newattrs[(subheight * x + subheight - 1 - y) * 2 + 1] = attr2;
         }
     }
@@ -901,6 +907,8 @@ static uint32_t const leftright4[] =
     /* ASCII */
     '<', 'v', '>', '^',
     ',', '.', '\'', '`',
+    /* ASCII / Unicode */
+    '(', 0x203f, ')', 0x2040,       /* ( ‿ ) ⁀ */
     /* Misc Unicode */
     0x256d, 0x2570, 0x256f, 0x256e, /* ╭ ╰ ╯ ╮ */
     /* CP437 */
@@ -951,5 +959,78 @@ static uint32_t rightchar(uint32_t ch)
             return leftright4[(i & ~3) | ((i - 1) & 3)];
 
     return ch;
+}
+
+static uint32_t const leftright2x2[] =
+{
+    /* ASCII / Unicode */
+    '-', '-', 0x4e28, CUCUL_MAGIC_FULLWIDTH, /* -- 丨 */
+    0, 0, 0, 0
+};
+
+static uint32_t const leftright2x4[] =
+{
+    /* ASCII */
+    ':', ' ', '.', '.', ' ', ':', '\'', '\'',
+    /* ASCII / Unicode */
+    ' ', '`', 0x00b4, ' ', 0x02ce, ' ', ' ', ',',    /*  ` ´  ˎ   , */
+    ' ', '`', '\'',   ' ', '.',    ' ', ' ', ',',
+    '`', ' ', ',', ' ', ' ', 0x00b4, ' ', 0x02ce,    /*  ` ,   ˎ  ´ */
+    '`', ' ', ',', ' ', ' ', '.',    ' ', '\'',
+    '/', ' ', '-', 0x02ce, ' ', '/', '`', '-',       /* /  -ˎ  / `- */
+    '/', ' ', '-', '.',    ' ', '/', '\'', '-',    
+    '\\', ' ', ',', '-', ' ', '\\', '-', 0x00b4,     /* \  ,-  \ -´ */
+    '\\', ' ', '.', '-', ' ', '\\', '-', '\'',
+    '|', ' ', '_', '_', ' ', '|', 0x203e, 0x203e,    /* |  __  | ‾‾ */
+    '_', '|', 0x203e, '|', '|', 0x203e, '|', '_',    /* _| ‾| |‾ |_ */
+    '|', '_', '_', '|', 0x203e, '|', '|', 0x203e,    /* |_ _| ‾| |‾ */
+    '_', ' ', ' ', 0x2577, ' ', 0x203e, 0x2575, ' ', /* _   ╷  ‾ ╵  */
+    ' ', '_', ' ', 0x2575, 0x203e, ' ', 0x2577, ' ', /*  _  ╵ ‾  ╷  */
+    /* Not perfect, but better than nothing */
+    ' ', '`', '\'', ' ', '.', ' ', ' ', ',',
+    '`', ' ', ',', ' ', ' ', '.', ' ', '\'',
+    0, 0, 0, 0, 0, 0, 0, 0
+};
+
+static void leftpair(uint32_t pair[2])
+{
+    int i;
+
+    for(i = 0; leftright2x2[i]; i += 2)
+        if(pair[0] == leftright2x2[i] && pair[1] == leftright2x2[i + 1])
+        {
+            pair[0] = leftright2x2[(i & ~3) | ((i + 2) & 3)];
+            pair[1] = leftright2x2[((i & ~3) | ((i + 2) & 3)) + 1];
+            return;
+        }
+
+    for(i = 0; leftright2x4[i]; i += 2)
+        if(pair[0] == leftright2x4[i] && pair[1] == leftright2x4[i + 1])
+        {
+            pair[0] = leftright2x4[(i & ~7) | ((i + 2) & 7)];
+            pair[1] = leftright2x4[((i & ~7) | ((i + 2) & 7)) + 1];
+            return;
+        }
+}
+
+static void rightpair(uint32_t pair[2])
+{
+    int i;
+
+    for(i = 0; leftright2x2[i]; i += 2)
+        if(pair[0] == leftright2x2[i] && pair[1] == leftright2x2[i + 1])
+        {
+            pair[0] = leftright2x2[(i & ~3) | ((i - 2) & 3)];
+            pair[1] = leftright2x2[((i & ~3) | ((i - 2) & 3)) + 1];
+            return;
+        }
+
+    for(i = 0; leftright2x4[i]; i += 2)
+        if(pair[0] == leftright2x4[i] && pair[1] == leftright2x4[i + 1])
+        {
+            pair[0] = leftright2x4[(i & ~7) | ((i - 2) & 7)];
+            pair[1] = leftright2x4[((i & ~7) | ((i - 2) & 7)) + 1];
+            return;
+        }
 }
 
