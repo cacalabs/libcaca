@@ -222,92 +222,6 @@ int cucul_rotate_180(cucul_canvas_t *cv)
 /** \brief Rotate a canvas, 90 degrees counterclockwise.
  *
  *  Apply a 90-degree transformation to a canvas, choosing characters
- *  that look like the rotated version wherever possible. Some characters
- *  will stay unchanged by the process, some others will be replaced by
- *  close equivalents. Fullwidth characters will be lost. The operation is
- *  not guaranteed to be reversible at all.
- *
- *  Note that the width and height of the canvas are swapped.
- *
- *  If an error occurs, -1 is returned and \b errno is set accordingly:
- *  - \c EBUSY The canvas is in use by a display driver and cannot be rotated.
- *  - \c ENOMEM Not enough memory to allocate the new canvas size. If this
- *    happens, the previous canvas handle is still valid.
- *
- *  \param cv The canvas to rotate left.
- *  \return 0 in case of success, -1 if an error occurred.
- */
-int cucul_rotate_left(cucul_canvas_t *cv)
-{
-    uint32_t *newchars, *newattrs;
-    unsigned int x, y;
-
-    if(cv->refcount)
-    {
-        seterrno(EBUSY);
-        return -1;
-    }
-
-    /* Save the current frame shortcuts */
-    _cucul_save_frame_info(cv);
-
-    newchars = malloc(cv->width * cv->height * sizeof(uint32_t));
-    if(!newchars)
-        return -1;
-
-    newattrs = malloc(cv->width * cv->height * sizeof(uint32_t));
-    if(!newattrs)
-    {
-        free(newchars);
-        return -1;
-    }
-
-    for(y = 0; y < cv->height; y++)
-    {
-        for(x = 0; x < cv->width; x++)
-        {
-            uint32_t ch, attr;
-
-            ch = cv->chars[cv->width * y + x];
-            attr = cv->attrs[cv->width * y + x];
-
-            /* FIXME: do something about fullwidth characters */
-            ch = leftchar(ch);
-
-            newchars[cv->height * (cv->width - 1 - x) + y] = ch;
-            newattrs[cv->height * (cv->width - 1 - x) + y] = attr;
-        }
-    }
-
-    free(cv->chars);
-    free(cv->attrs);
-
-    /* Swap X and Y information */
-    x = cv->frames[cv->frame].x;
-    y = cv->frames[cv->frame].y;
-    cv->frames[cv->frame].x = y;
-    cv->frames[cv->frame].y = cv->width - 1 - x;
-
-    x = cv->frames[cv->frame].handlex;
-    y = cv->frames[cv->frame].handley;
-    cv->frames[cv->frame].handlex = y;
-    cv->frames[cv->frame].handley = cv->width - 1 - x;
-
-    cv->frames[cv->frame].width = cv->height;
-    cv->frames[cv->frame].height = cv->width;
-
-    cv->frames[cv->frame].chars = newchars;
-    cv->frames[cv->frame].attrs = newattrs;
-
-    /* Reset the current frame shortcuts */
-    _cucul_load_frame_info(cv);
-
-    return 0;
-}
-
-/** \brief Rotate a canvas, 90 degrees counterclockwise (widechar version).
- *
- *  Apply a 90-degree transformation to a canvas, choosing characters
  *  that look like the rotated version wherever possible. Characters cells
  *  are rotated two-by-two. Some characters will stay unchanged by the
  *  process, some others will be replaced by close equivalents. Fullwidth
@@ -327,7 +241,7 @@ int cucul_rotate_left(cucul_canvas_t *cv)
  *  \param cv The canvas to rotate left.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_rotate_left_wide(cucul_canvas_t *cv)
+int cucul_rotate_left(cucul_canvas_t *cv)
 {
     uint32_t *newchars, *newattrs;
     unsigned int x, y, subwidth, subheight;
@@ -407,97 +321,7 @@ int cucul_rotate_left_wide(cucul_canvas_t *cv)
     return 0;
 }
 
-/** \brief Rotate a canvas, 90 degrees clockwise.
- *
- *  Apply a 270-degree transformation to a canvas, choosing characters
- *  that look like the rotated version wherever possible. Some characters
- *  will stay unchanged by the process, some others will be replaced by
- *  close equivalents. Fullwidth characters will be lost. The operation is
- *  not guaranteed to be reversible at all.
- *
- *  Note that the width and height of the canvas are swapped.
- *
- *  If an error occurs, -1 is returned and \b errno is set accordingly:
- *  - \c EBUSY The canvas is in use by a display driver and cannot be rotated.
- *  - \c ENOMEM Not enough memory to allocate the new canvas size. If this
- *    happens, the previous canvas handle is still valid.
- *
- *  \param cv The canvas to rotate right.
- *  \return 0 in case of success, -1 if an error occurred.
- */
-int cucul_rotate_right(cucul_canvas_t *cv)
-{
-    uint32_t *newchars, *newattrs;
-    unsigned int x, y;
-
-    if(cv->refcount)
-    {
-        seterrno(EBUSY);
-        return -1;
-    }
-
-    /* Save the current frame shortcuts */
-    _cucul_save_frame_info(cv);
-
-    newchars = malloc(cv->width * cv->height * sizeof(uint32_t));
-    if(!newchars)
-    {
-        seterrno(ENOMEM);
-        return -1;
-    }
-
-    newattrs = malloc(cv->width * cv->height * sizeof(uint32_t));
-    if(!newattrs)
-    {
-        free(newchars);
-        seterrno(ENOMEM);
-        return -1;
-    }
-
-    for(y = 0; y < cv->height; y++)
-    {
-        for(x = 0; x < cv->width; x++)
-        {
-            uint32_t ch, attr;
-
-            ch = cv->chars[cv->width * y + x];
-            attr = cv->attrs[cv->width * y + x];
-
-            /* FIXME: do something about fullwidth characters */
-            ch = rightchar(ch);
-
-            newchars[cv->height * x + cv->height - 1 - y] = ch;
-            newattrs[cv->height * x + cv->height - 1 - y] = attr;
-        }
-    }
-
-    free(cv->chars);
-    free(cv->attrs);
-
-    /* Swap X and Y information */
-    x = cv->frames[cv->frame].x;
-    y = cv->frames[cv->frame].y;
-    cv->frames[cv->frame].x = cv->height - 1 - y;
-    cv->frames[cv->frame].y = x;
-
-    x = cv->frames[cv->frame].handlex;
-    y = cv->frames[cv->frame].handley;
-    cv->frames[cv->frame].handlex = cv->height - 1 - y;
-    cv->frames[cv->frame].handley = x;
-
-    cv->frames[cv->frame].width = cv->height;
-    cv->frames[cv->frame].height = cv->width;
-
-    cv->frames[cv->frame].chars = newchars;
-    cv->frames[cv->frame].attrs = newattrs;
-
-    /* Reset the current frame shortcuts */
-    _cucul_load_frame_info(cv);
-
-    return 0;
-}
-
-/** \brief Rotate a canvas, 90 degrees counterclockwise (widechar version).
+/** \brief Rotate a canvas, 90 degrees counterclockwise.
  *
  *  Apply a 90-degree transformation to a canvas, choosing characters
  *  that look like the rotated version wherever possible. Characters cells
@@ -519,7 +343,7 @@ int cucul_rotate_right(cucul_canvas_t *cv)
  *  \param cv The canvas to rotate right.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_rotate_right_wide(cucul_canvas_t *cv)
+int cucul_rotate_right(cucul_canvas_t *cv)
 {
     uint32_t *newchars, *newattrs;
     unsigned int x, y, subwidth, subheight;
@@ -589,6 +413,184 @@ int cucul_rotate_right_wide(cucul_canvas_t *cv)
 
     cv->frames[cv->frame].width = cv->height * 2;
     cv->frames[cv->frame].height = cv->width / 2;
+
+    cv->frames[cv->frame].chars = newchars;
+    cv->frames[cv->frame].attrs = newattrs;
+
+    /* Reset the current frame shortcuts */
+    _cucul_load_frame_info(cv);
+
+    return 0;
+}
+
+/** \brief Rotate and stretch a canvas, 90 degrees counterclockwise.
+ *
+ *  Apply a 90-degree transformation to a canvas, choosing characters
+ *  that look like the rotated version wherever possible. Some characters
+ *  will stay unchanged by the process, some others will be replaced by
+ *  close equivalents. Fullwidth characters will be lost. The operation is
+ *  not guaranteed to be reversible at all.
+ *
+ *  Note that the width and height of the canvas are swapped, causing its
+ *  aspect ratio to look stretched.
+ *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c EBUSY The canvas is in use by a display driver and cannot be rotated.
+ *  - \c ENOMEM Not enough memory to allocate the new canvas size. If this
+ *    happens, the previous canvas handle is still valid.
+ *
+ *  \param cv The canvas to rotate left.
+ *  \return 0 in case of success, -1 if an error occurred.
+ */
+int cucul_stretch_left(cucul_canvas_t *cv)
+{
+    uint32_t *newchars, *newattrs;
+    unsigned int x, y;
+
+    if(cv->refcount)
+    {
+        seterrno(EBUSY);
+        return -1;
+    }
+
+    /* Save the current frame shortcuts */
+    _cucul_save_frame_info(cv);
+
+    newchars = malloc(cv->width * cv->height * sizeof(uint32_t));
+    if(!newchars)
+        return -1;
+
+    newattrs = malloc(cv->width * cv->height * sizeof(uint32_t));
+    if(!newattrs)
+    {
+        free(newchars);
+        return -1;
+    }
+
+    for(y = 0; y < cv->height; y++)
+    {
+        for(x = 0; x < cv->width; x++)
+        {
+            uint32_t ch, attr;
+
+            ch = cv->chars[cv->width * y + x];
+            attr = cv->attrs[cv->width * y + x];
+
+            /* FIXME: do something about fullwidth characters */
+            ch = leftchar(ch);
+
+            newchars[cv->height * (cv->width - 1 - x) + y] = ch;
+            newattrs[cv->height * (cv->width - 1 - x) + y] = attr;
+        }
+    }
+
+    free(cv->chars);
+    free(cv->attrs);
+
+    /* Swap X and Y information */
+    x = cv->frames[cv->frame].x;
+    y = cv->frames[cv->frame].y;
+    cv->frames[cv->frame].x = y;
+    cv->frames[cv->frame].y = cv->width - 1 - x;
+
+    x = cv->frames[cv->frame].handlex;
+    y = cv->frames[cv->frame].handley;
+    cv->frames[cv->frame].handlex = y;
+    cv->frames[cv->frame].handley = cv->width - 1 - x;
+
+    cv->frames[cv->frame].width = cv->height;
+    cv->frames[cv->frame].height = cv->width;
+
+    cv->frames[cv->frame].chars = newchars;
+    cv->frames[cv->frame].attrs = newattrs;
+
+    /* Reset the current frame shortcuts */
+    _cucul_load_frame_info(cv);
+
+    return 0;
+}
+
+/** \brief Rotate and stretch a canvas, 90 degrees clockwise.
+ *
+ *  Apply a 270-degree transformation to a canvas, choosing characters
+ *  that look like the rotated version wherever possible. Some characters
+ *  will stay unchanged by the process, some others will be replaced by
+ *  close equivalents. Fullwidth characters will be lost. The operation is
+ *  not guaranteed to be reversible at all.
+ *
+ *  Note that the width and height of the canvas are swapped, causing its
+ *  aspect ratio to look stretched.
+ *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c EBUSY The canvas is in use by a display driver and cannot be rotated.
+ *  - \c ENOMEM Not enough memory to allocate the new canvas size. If this
+ *    happens, the previous canvas handle is still valid.
+ *
+ *  \param cv The canvas to rotate right.
+ *  \return 0 in case of success, -1 if an error occurred.
+ */
+int cucul_stretch_right(cucul_canvas_t *cv)
+{
+    uint32_t *newchars, *newattrs;
+    unsigned int x, y;
+
+    if(cv->refcount)
+    {
+        seterrno(EBUSY);
+        return -1;
+    }
+
+    /* Save the current frame shortcuts */
+    _cucul_save_frame_info(cv);
+
+    newchars = malloc(cv->width * cv->height * sizeof(uint32_t));
+    if(!newchars)
+    {
+        seterrno(ENOMEM);
+        return -1;
+    }
+
+    newattrs = malloc(cv->width * cv->height * sizeof(uint32_t));
+    if(!newattrs)
+    {
+        free(newchars);
+        seterrno(ENOMEM);
+        return -1;
+    }
+
+    for(y = 0; y < cv->height; y++)
+    {
+        for(x = 0; x < cv->width; x++)
+        {
+            uint32_t ch, attr;
+
+            ch = cv->chars[cv->width * y + x];
+            attr = cv->attrs[cv->width * y + x];
+
+            /* FIXME: do something about fullwidth characters */
+            ch = rightchar(ch);
+
+            newchars[cv->height * x + cv->height - 1 - y] = ch;
+            newattrs[cv->height * x + cv->height - 1 - y] = attr;
+        }
+    }
+
+    free(cv->chars);
+    free(cv->attrs);
+
+    /* Swap X and Y information */
+    x = cv->frames[cv->frame].x;
+    y = cv->frames[cv->frame].y;
+    cv->frames[cv->frame].x = cv->height - 1 - y;
+    cv->frames[cv->frame].y = x;
+
+    x = cv->frames[cv->frame].handlex;
+    y = cv->frames[cv->frame].handley;
+    cv->frames[cv->frame].handlex = cv->height - 1 - y;
+    cv->frames[cv->frame].handley = x;
+
+    cv->frames[cv->frame].width = cv->height;
+    cv->frames[cv->frame].height = cv->width;
 
     cv->frames[cv->frame].chars = newchars;
     cv->frames[cv->frame].attrs = newattrs;
