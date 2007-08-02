@@ -106,10 +106,15 @@ nomem:
  *  canvas size. Newly allocated character cells at the right and/or at
  *  the bottom of the canvas are filled with spaces.
  *
+ *  If as a result of the resize the cursor coordinates fall outside the
+ *  new canvas boundaries, they are readjusted. For instance, if the
+ *  current X cursor coordinate is 11 and the requested width is 10, the
+ *  new X cursor coordinate will be 10.
+ *
  *  It is an error to try to resize the canvas if an output driver has
  *  been attached to the canvas using caca_create_display(). You need to
  *  remove the output driver using caca_free_display() before you can change
- *  the  canvas size again. However, the caca output driver can cause a
+ *  the canvas size again. However, the caca output driver can cause a
  *  canvas resize through user interaction. See the caca_event() documentation
  *  for more about this.
  *
@@ -353,6 +358,11 @@ int _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
     /* Set new size */
     for(f = 0; f < cv->framecount; f++)
     {
+        if(cv->frames[f].x > (int)width)
+            cv->frames[f].x = width;
+        if(cv->frames[f].y > (int)height)
+            cv->frames[f].y = height;
+
         cv->frames[f].width = width;
         cv->frames[f].height = height;
     }
