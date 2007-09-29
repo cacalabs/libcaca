@@ -229,12 +229,11 @@ int cucul_rotate_180(cucul_canvas_t *cv)
  *  not guaranteed to be reversible at all.
  *
  *  Note that the width of the canvas is divided by two and becomes the
- *  new height. Height is multiplied by two and becomes the new width. It
- *  is illegal to pass a canvas with an odd width to this function.
+ *  new height. Height is multiplied by two and becomes the new width. If
+ *  the original width is an odd number, the division is rounded up.
  *
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
  *  - \c EBUSY The canvas is in use by a display driver and cannot be rotated.
- *  - \c EINVAL The canvas' width is odd.
  *  - \c ENOMEM Not enough memory to allocate the new canvas size. If this
  *    happens, the previous canvas handle is still valid.
  *
@@ -244,7 +243,7 @@ int cucul_rotate_180(cucul_canvas_t *cv)
 int cucul_rotate_left(cucul_canvas_t *cv)
 {
     uint32_t *newchars, *newattrs;
-    unsigned int x, y, subwidth, subheight;
+    unsigned int x, y, w2, h2;
 
     if(cv->refcount)
     {
@@ -252,46 +251,55 @@ int cucul_rotate_left(cucul_canvas_t *cv)
         return -1;
     }
 
-    if(cv->width & 1)
-    {
-        seterrno(EINVAL);
-        return -1;
-    }
-
     /* Save the current frame shortcuts */
     _cucul_save_frame_info(cv);
 
-    newchars = malloc(cv->width * cv->height * sizeof(uint32_t));
-    if(!newchars)
-        return -1;
+    w2 = (cv->width + 1) / 2;
+    h2 = cv->height;
 
-    newattrs = malloc(cv->width * cv->height * sizeof(uint32_t));
-    if(!newattrs)
+    newchars = malloc(w2 * h2 * 2 * sizeof(uint32_t));
+    if(!newchars)
     {
-        free(newchars);
+        seterrno(ENOMEM);
         return -1;
     }
 
-    subwidth = cv->width / 2;
-    subheight = cv->height;
-
-    for(y = 0; y < subheight; y++)
+    newattrs = malloc(w2 * h2 * 2 * sizeof(uint32_t));
+    if(!newattrs)
     {
-        for(x = 0; x < subwidth; x++)
+        free(newchars);
+        seterrno(ENOMEM);
+        return -1;
+    }
+
+    for(y = 0; y < h2; y++)
+    {
+        for(x = 0; x < w2; x++)
         {
             uint32_t pair[2], attr1, attr2;
 
-            pair[0] = cv->chars[(subwidth * y + x) * 2];
-            attr1 = cv->attrs[(subwidth * y + x) * 2];
-            pair[1] = cv->chars[(subwidth * y + x) * 2 + 1];
-            attr2 = cv->attrs[(subwidth * y + x) * 2 + 1];
+            pair[0] = cv->chars[cv->width * y + x * 2];
+            attr1 = cv->attrs[cv->width * y + x * 2];
+
+            if((cv->width & 1) && x == w2 - 1)
+            {
+                /* Special case: odd column */
+                pair[1] = ' ';
+                attr2 = attr1;
+            }
+            else
+            {
+                pair[1] = cv->chars[cv->width * y + x * 2 + 1];
+                attr2 = cv->attrs[cv->width * y + x * 2 + 1];
+            }
+
 
             leftpair(pair);
 
-            newchars[(subheight * (subwidth - 1 - x) + y) * 2] = pair[0];
-            newattrs[(subheight * (subwidth - 1 - x) + y) * 2] = attr1;
-            newchars[(subheight * (subwidth - 1 - x) + y) * 2 + 1] = pair[1];
-            newattrs[(subheight * (subwidth - 1 - x) + y) * 2 + 1] = attr2;
+            newchars[(h2 * (w2 - 1 - x) + y) * 2] = pair[0];
+            newattrs[(h2 * (w2 - 1 - x) + y) * 2] = attr1;
+            newchars[(h2 * (w2 - 1 - x) + y) * 2 + 1] = pair[1];
+            newattrs[(h2 * (w2 - 1 - x) + y) * 2 + 1] = attr2;
         }
     }
 
@@ -310,7 +318,7 @@ int cucul_rotate_left(cucul_canvas_t *cv)
     cv->frames[cv->frame].handley = (cv->width - 1 - x) / 2;
 
     cv->frames[cv->frame].width = cv->height * 2;
-    cv->frames[cv->frame].height = cv->width / 2;
+    cv->frames[cv->frame].height = (cv->width + 1) / 2;
 
     cv->frames[cv->frame].chars = newchars;
     cv->frames[cv->frame].attrs = newattrs;
@@ -331,12 +339,11 @@ int cucul_rotate_left(cucul_canvas_t *cv)
  *  not guaranteed to be reversible at all.
  *
  *  Note that the width of the canvas is divided by two and becomes the
- *  new height. Height is multiplied by two and becomes the new width. It
- *  is illegal to pass a canvas with an odd width to this function.
+ *  new height. Height is multiplied by two and becomes the new width. If
+ *  the original width is an odd number, the division is rounded up.
  *
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
  *  - \c EBUSY The canvas is in use by a display driver and cannot be rotated.
- *  - \c EINVAL The canvas' width is odd.
  *  - \c ENOMEM Not enough memory to allocate the new canvas size. If this
  *    happens, the previous canvas handle is still valid.
  *
@@ -346,7 +353,7 @@ int cucul_rotate_left(cucul_canvas_t *cv)
 int cucul_rotate_right(cucul_canvas_t *cv)
 {
     uint32_t *newchars, *newattrs;
-    unsigned int x, y, subwidth, subheight;
+    unsigned int x, y, w2, h2;
 
     if(cv->refcount)
     {
@@ -354,46 +361,54 @@ int cucul_rotate_right(cucul_canvas_t *cv)
         return -1;
     }
 
-    if(cv->width & 1)
-    {
-        seterrno(EINVAL);
-        return -1;
-    }
-
     /* Save the current frame shortcuts */
     _cucul_save_frame_info(cv);
 
-    newchars = malloc(cv->width * cv->height * sizeof(uint32_t));
-    if(!newchars)
-        return -1;
+    w2 = (cv->width + 1) / 2;
+    h2 = cv->height;
 
-    newattrs = malloc(cv->width * cv->height * sizeof(uint32_t));
-    if(!newattrs)
+    newchars = malloc(w2 * h2 * 2 * sizeof(uint32_t));
+    if(!newchars)
     {
-        free(newchars);
+        seterrno(ENOMEM);
         return -1;
     }
 
-    subwidth = cv->width / 2;
-    subheight = cv->height;
-
-    for(y = 0; y < subheight; y++)
+    newattrs = malloc(w2 * h2 * 2 * sizeof(uint32_t));
+    if(!newattrs)
     {
-        for(x = 0; x < subwidth; x++)
+        free(newchars);
+        seterrno(ENOMEM);
+        return -1;
+    }
+
+    for(y = 0; y < h2; y++)
+    {
+        for(x = 0; x < w2; x++)
         {
             uint32_t pair[2], attr1, attr2;
 
-            pair[0] = cv->chars[(subwidth * y + x) * 2];
-            attr1 = cv->attrs[(subwidth * y + x) * 2];
-            pair[1] = cv->chars[(subwidth * y + x) * 2 + 1];
-            attr2 = cv->attrs[(subwidth * y + x) * 2 + 1];
+            pair[0] = cv->chars[cv->width * y + x * 2];
+            attr1 = cv->attrs[cv->width * y + x * 2];
+
+            if((cv->width & 1) && x == w2 - 1)
+            {
+                /* Special case: odd column */
+                pair[1] = ' ';
+                attr2 = attr1;
+            }
+            else
+            {
+                pair[1] = cv->chars[cv->width * y + x * 2 + 1];
+                attr2 = cv->attrs[cv->width * y + x * 2 + 1];
+            }
 
             rightpair(pair);
 
-            newchars[(subheight * x + subheight - 1 - y) * 2] = pair[0];
-            newattrs[(subheight * x + subheight - 1 - y) * 2] = attr1;
-            newchars[(subheight * x + subheight - 1 - y) * 2 + 1] = pair[1];
-            newattrs[(subheight * x + subheight - 1 - y) * 2 + 1] = attr2;
+            newchars[(h2 * x + h2 - 1 - y) * 2] = pair[0];
+            newattrs[(h2 * x + h2 - 1 - y) * 2] = attr1;
+            newchars[(h2 * x + h2 - 1 - y) * 2 + 1] = pair[1];
+            newattrs[(h2 * x + h2 - 1 - y) * 2 + 1] = attr2;
         }
     }
 
@@ -412,7 +427,7 @@ int cucul_rotate_right(cucul_canvas_t *cv)
     cv->frames[cv->frame].handley = x / 2;
 
     cv->frames[cv->frame].width = cv->height * 2;
-    cv->frames[cv->frame].height = cv->width / 2;
+    cv->frames[cv->frame].height = (cv->width + 1) / 2;
 
     cv->frames[cv->frame].chars = newchars;
     cv->frames[cv->frame].attrs = newattrs;
@@ -458,12 +473,16 @@ int cucul_stretch_left(cucul_canvas_t *cv)
 
     newchars = malloc(cv->width * cv->height * sizeof(uint32_t));
     if(!newchars)
+    {
+        seterrno(ENOMEM);
         return -1;
+    }
 
     newattrs = malloc(cv->width * cv->height * sizeof(uint32_t));
     if(!newattrs)
     {
         free(newchars);
+        seterrno(ENOMEM);
         return -1;
     }
 
@@ -967,6 +986,7 @@ static uint32_t const leftright2x2[] =
 {
     /* ASCII / Unicode */
     '-', '-', 0x4e28, CUCUL_MAGIC_FULLWIDTH, /* -- 丨 */
+    '|', '|', 0x2f06, CUCUL_MAGIC_FULLWIDTH, /* || ⼆ */
     /* Unicode */
     0x2584, 0x2580, 0x2580, 0x2584, /* ▄▀ ▀▄ */
     0, 0, 0, 0
@@ -987,19 +1007,31 @@ static uint32_t const leftright2x4[] =
     '\\', ' ', '.', '-', ' ', '\\', '-', '\'',         /* fallback ASCII */
     '\\', ' ', '_', ',', ' ', '\\', 0x00b4, 0x203e,    /* \  _,  \ ´‾ */
     '\\', '_', '_', '/', 0x203e, '\\', '/', 0x203e,    /* \_ _/ ‾\ /‾ */
+    '_', '\\', 0x203e, '/', '\\', 0x203e, '/', '_',    /* _\ ‾/ \‾ /_ */
     '|', ' ', '_', '_', ' ', '|', 0x203e, 0x203e,      /* |  __  | ‾‾ */
     '_', '|', 0x203e, '|', '|', 0x203e, '|', '_',      /* _| ‾| |‾ |_ */
     '|', '_', '_', '|', 0x203e, '|', '|', 0x203e,      /* |_ _| ‾| |‾ */
     '_', ' ', ' ', 0x2577, ' ', 0x203e, 0x2575, ' ',   /* _   ╷  ‾ ╵  */
     ' ', '_', ' ', 0x2575, 0x203e, ' ', 0x2577, ' ',   /*  _  ╵ ‾  ╷  */
     '.', '_', '.', 0x2575, 0x203e, '\'', 0x2577, '\'', /* ._ .╵ ‾' ╷' */
+    '(', '_', 0x203f, '|', 0x203e, ')', '|', 0x2040,   /* (_ ‿| ‾) |⁀ */
+    '(', 0x203e, '|', 0x203f, '_', ')', 0x2040, '|',   /* (‾ |‿ _) ⁀| */
     '\\', '/', 0xff1e, CUCUL_MAGIC_FULLWIDTH,
             '/', '\\', 0xff1c, CUCUL_MAGIC_FULLWIDTH,  /* \/ ＞ /\ ＜ */
+    ')', ' ', 0xfe35, CUCUL_MAGIC_FULLWIDTH,
+            ' ', '(', 0xfe36, CUCUL_MAGIC_FULLWIDTH,   /* )  ︵  ( ︶ */
+    '}', ' ', 0xfe37, CUCUL_MAGIC_FULLWIDTH,
+            ' ', '{', 0xfe38, CUCUL_MAGIC_FULLWIDTH,   /* }  ︷  { ︸ */
     /* Not perfect, but better than nothing */
     '(', ' ', 0x02ce, ',', ' ', ')', 0x00b4, '`',      /* (  ˎ,  ) ´` */
-    ')', ' ', ',', 0x02ce, ' ', '(', '`', 0x00b4,      /* )  ,ˎ  ( `´ */
+    ' ', 'v', '>', ' ', 0x028c, ' ', ' ', '<',         /*  v >  ʌ   < */
     ' ', 'V', '>', ' ', 0x039b, ' ', ' ', '<',         /*  V >  Λ   < */
+    'v', ' ', '>', ' ', ' ', 0x028c, ' ', '<',         /* v  >   ʌ  < */
     'V', ' ', '>', ' ', ' ', 0x039b, ' ', '<',         /* V  >   Λ  < */
+    '\\', '|', 0xff1e, CUCUL_MAGIC_FULLWIDTH,
+            '|', '\\', 0xff1c, CUCUL_MAGIC_FULLWIDTH,  /* \| ＞ |\ ＜ */
+    '|', '/', 0xff1e, CUCUL_MAGIC_FULLWIDTH,
+            '/', '|', 0xff1c, CUCUL_MAGIC_FULLWIDTH,   /* |/ ＞ /| ＜ */
     /* Unicode */
     0x2584, ' ', ' ', 0x2584, ' ', 0x2580, 0x2580, ' ',       /* ▄   ▄  ▀ ▀  */
     0x2588, ' ', 0x2584, 0x2584, ' ', 0x2588, 0x2580, 0x2580, /* █  ▄▄  █ ▀▀ */
