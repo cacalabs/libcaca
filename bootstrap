@@ -31,11 +31,13 @@ header="`grep -q '^[ \t]*A._CONFIG_HEADER' $conffile && echo yes || echo no`"
 
 # Check for automake
 amvers="no"
-for v in "-1.9" "19" "-1.8" "18" "-1.7" "17" "-1.6" "16" "-1.5" "15"; do
-  if automake${v} --version >/dev/null 2>&1; then
-    amvers="${v}"
-    break
-  fi
+for n in 10 9 8 7 6 5; do
+  for v in "-1.${n}" "1${n}"; do
+    if automake${v} --version >/dev/null 2>&1; then
+      amvers="${v}"
+      break
+    fi
+  done
 done
 
 if test "${amvers}" = "no" && automake --version > /dev/null 2>&1; then

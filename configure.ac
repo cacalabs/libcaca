@@ -349,13 +349,16 @@ if test "${enable_doc}" != "no"; then
     if test "${DVIPS}" = "no"; then
       LATEX="no"
     fi
-    AC_MSG_CHECKING(for a4wide.sty)
-    if test -f /usr/share/texmf/tex/latex/misc/a4wide.sty; then
+    AC_MSG_CHECKING(for a4.sty)
+    if test "$(find /usr/share/texmf* -name 'a4.sty')" != ""; then
       AC_MSG_RESULT(yes)
-    elif test -f /usr/share/texmf-tetex/tex/latex/a4wide/a4wide.sty; then
-      AC_MSG_RESULT(yes)
-    elif test -f /usr/share/texmf-texlive/tex/latex/ltxmisc/a4wide.sty; then
-      AC_MSG_RESULT(yes)
+      AC_MSG_CHECKING(for a4wide.sty)
+      if test "$(find /usr/share/texmf* -name 'a4wide.sty')" != ""; then
+        AC_MSG_RESULT(yes)
+      else
+        LATEX="no"
+        AC_MSG_RESULT(no)
+      fi
     else
       LATEX="no"
       AC_MSG_RESULT(no)
