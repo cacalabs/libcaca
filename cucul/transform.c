@@ -293,6 +293,13 @@ int cucul_rotate_left(cucul_canvas_t *cv)
                 attr2 = cv->attrs[cv->width * y + x * 2 + 1];
             }
 
+            /* If one of the characters is a space, we simply ignore
+             * its colour attributes. Otherwise the resulting characters
+             * may have totally wrong colours. */
+            if(pair[0] == ' ')
+                attr1 = attr2;
+            else if(pair[1] == ' ')
+                attr2 = attr1;
 
             leftpair(pair);
 
@@ -402,6 +409,14 @@ int cucul_rotate_right(cucul_canvas_t *cv)
                 pair[1] = cv->chars[cv->width * y + x * 2 + 1];
                 attr2 = cv->attrs[cv->width * y + x * 2 + 1];
             }
+
+            /* If one of the characters is a space, we simply ignore
+             * its colour attributes. Otherwise the resulting characters
+             * may have totally wrong colours. */
+            if(pair[0] == ' ')
+                attr1 = attr2;
+            else if(pair[1] == ' ')
+                attr2 = attr1;
 
             rightpair(pair);
 
