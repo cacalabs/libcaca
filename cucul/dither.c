@@ -808,12 +808,15 @@ int cucul_dither_bitmap(cucul_canvas_t *cv, int x, int y, int w, int h,
                         cucul_dither_t const *d, void *pixels)
 {
     int *floyd_steinberg, *fs_r, *fs_g, *fs_b;
+    uint32_t savedattr;
     int fs_length;
     int x1, y1, x2, y2, pitch, deltax, deltay;
     unsigned int dchmax;
 
     if(!d || !pixels)
         return 0;
+
+    savedattr = cucul_get_attr(cv, -1, -1);
 
     x1 = x; x2 = x + w - 1;
     y1 = y; y2 = y + h - 1;
@@ -1036,12 +1039,14 @@ int cucul_dither_bitmap(cucul_canvas_t *cv, int x, int y, int w, int h,
         cucul_set_color_ansi(cv, outfg, outbg);
         cucul_put_char(cv, x, y, outch);
 
-       d->increment_dither();
+        d->increment_dither();
     }
         /* end loop */
     }
 
     free(floyd_steinberg);
+
+    cucul_set_attr(cv, savedattr);
 
     return 0;
 }
