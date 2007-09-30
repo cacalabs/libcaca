@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
     cucul_canvas_t *cv, *sprite;
     caca_display_t *dp;
 
-    cv = cucul_create_canvas(32, 16);
+    cv = cucul_create_canvas(80, 24);
     if(cv == NULL)
     {
         printf("Failed to create canvas\n");

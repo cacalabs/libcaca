@@ -48,7 +48,7 @@ int main(int argc, char **argv)
     void (*demo)(void) = NULL;
     int quit = 0;
 
-    cv = cucul_create_canvas(32, 16);
+    cv = cucul_create_canvas(80, 24);
     if(cv == NULL)
     {
         printf("Failed to create canvas\n");
@@ -99,6 +99,7 @@ int main(int argc, char **argv)
                 {
                 case 'q':
                 case 'Q':
+                case CACA_KEY_ESCAPE:
                     demo = NULL;
                     quit = 1;
                     break;

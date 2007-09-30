@@ -92,6 +92,7 @@ int main(int argc, char **argv)
                 {
                 case 'q':
                 case 'Q':
+                case CACA_KEY_ESCAPE:
                     demo = NULL;
                     quit = 1;
                     break;

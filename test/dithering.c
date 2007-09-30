@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     int neara, dista, nearb, distb, dist;
     int x, y;
 
-    cv = cucul_create_canvas(32, 16);
+    cv = cucul_create_canvas(80, 24);
     if(cv == NULL)
     {
         printf("Failed to create canvas\n");
