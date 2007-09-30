@@ -354,6 +354,8 @@ if test "${enable_doc}" != "no"; then
       AC_MSG_RESULT(yes)
     elif test -f /usr/share/texmf-tetex/tex/latex/a4wide/a4wide.sty; then
       AC_MSG_RESULT(yes)
+    elif test -f /usr/share/texmf-texlive/tex/latex/ltxmisc/a4wide.sty; then
+      AC_MSG_RESULT(yes)
     else
       LATEX="no"
       AC_MSG_RESULT(no)
