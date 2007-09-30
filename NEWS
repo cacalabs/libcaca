@@ -1,5 +1,16 @@
 /* $Id$ */ /** \page news News
 
+\section news0_99_beta12 Changes between 0.9.beta12 and 0.99.beta11
+
+ - support for 90-degree canvas rotation
+ - better behaviour when trying to output Unicode on an ASCII terminal
+ - the built-in font now supports the Geometric Shapes, Halfwidth and Fullwidth
+   Forms and Miscellaneous Symbols Unicode blocks
+ - new rotozoom effect in cacademo
+ - Cocoa output driver for Mac OS X
+ - preliminary .NET bindings
+ - many bugfixes and documentation changes
+
 \section news0_99_beta11 Changes between 0.9.beta11 and 0.99.beta10
 
  - fixed compilation of the C++ bindings
