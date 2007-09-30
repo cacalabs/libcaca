@@ -153,7 +153,7 @@ void Cucul::Flop()
 
 void Cucul::Rotate()
 {
-    cucul_rotate(cv);
+    cucul_rotate_180(cv);
 }
 
 void Cucul::drawLine(int x1, int y1, int x2, int y2, unsigned long int ch)
