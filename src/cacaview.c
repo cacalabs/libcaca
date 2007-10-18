@@ -64,6 +64,9 @@ int zoom = 0, g = 0, fullscreen = 0, mode, ww, wh;
 
 int main(int argc, char **argv)
 {
+    char const * const * dithers = cucul_get_dither_mode_list(NULL);
+    int dither_mode = 0;
+
     int quit = 0, update = 1, help = 0, status = 0;
     int reload = 0;
 
@@ -201,21 +204,24 @@ int main(int argc, char **argv)
                 new_status = STATUS_ANTIALIASING;
                 update = 1;
                 break;
+#endif
             case 'd':
-                i = 1 + cucul_get_feature(cv, CUCUL_DITHERING);
-                if(i > CUCUL_DITHERING_MAX) i = CUCUL_DITHERING_MIN;
-                cucul_set_feature(cv, i);
+                dither_mode++;
+                if(dithers[dither_mode * 2] == NULL)
+                    dither_mode = 0;
+                cucul_set_dither_mode(im->dither, dithers[dither_mode * 2]);
                 new_status = STATUS_DITHERING;
                 update = 1;
                 break;
             case 'D':
-                i = -1 + cucul_get_feature(cv, CUCUL_DITHERING);
-                if(i < CUCUL_DITHERING_MIN) i = CUCUL_DITHERING_MAX;
-                cucul_set_feature(cv, i);
+                dither_mode--;
+                if(dither_mode < 0)
+                    while(dithers[dither_mode * 2 + 2] != NULL)
+                        dither_mode++;
+                cucul_set_dither_mode(im->dither, dithers[dither_mode * 2]);
                 new_status = STATUS_DITHERING;
                 update = 1;
                 break;
-#endif
             case '+':
                 update = 1;
                 set_zoom(zoom + 1);
