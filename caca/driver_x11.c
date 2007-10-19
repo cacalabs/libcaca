@@ -64,6 +64,7 @@ struct driver_private
     Bool autorepeat;
 #endif
     uint32_t max_char;
+    int cursor_flags;
 };
 
 #define UNICODE_XLFD_SUFFIX "-iso10646-1"
@@ -243,6 +244,8 @@ static int x11_init_graphics(caca_display_t *dp)
                                             DefaultScreen(dp->drv.p->dpy)));
     dp->drv.p->pointer = None;
 
+    dp->drv.p->cursor_flags = 0;
+
     return 0;
 }
 
@@ -327,6 +330,18 @@ static void x11_display(caca_display_t *dp)
                           dp->drv.p->font_width, dp->drv.p->font_height,
                           *attrs, *chars);
         }
+    }
+
+    /* Print the cursor if necessary */
+    if(dp->drv.p->cursor_flags)
+    {
+        XSetForeground(dp->drv.p->dpy, dp->drv.p->gc,
+                       dp->drv.p->colors[0xfff]);
+        x = cucul_get_cursor_x(dp->cv);
+        y = cucul_get_cursor_y(dp->cv);
+        XFillRectangle(dp->drv.p->dpy, dp->drv.p->pixmap, dp->drv.p->gc,
+                       x * dp->drv.p->font_width, y * dp->drv.p->font_height,
+                       dp->drv.p->font_width, dp->drv.p->font_height);
     }
 
     XCopyArea(dp->drv.p->dpy, dp->drv.p->pixmap, dp->drv.p->window,
@@ -534,6 +549,11 @@ static void x11_set_mouse(caca_display_t *dp, int flags)
     XFreeColors(dp->drv.p->dpy, colormap, &black.pixel, 1, 0);
 
     XSync(dp->drv.p->dpy, False);
+}
+
+static void x11_set_cursor(caca_display_t *dp, int flags)
+{
+    dp->drv.p->cursor_flags = flags;
 }
 
 /*
@@ -770,7 +790,7 @@ int x11_install(caca_display_t *dp)
     dp->drv.handle_resize = x11_handle_resize;
     dp->drv.get_event = x11_get_event;
     dp->drv.set_mouse = x11_set_mouse;
-    dp->drv.set_cursor = NULL;
+    dp->drv.set_cursor = x11_set_cursor;
 
     return 0;
 }

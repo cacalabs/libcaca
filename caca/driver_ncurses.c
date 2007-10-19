@@ -350,6 +350,11 @@ static void ncurses_display(caca_display_t *dp)
             ncurses_write_utf32(*chars++);
         }
     }
+    
+    x = cucul_get_cursor_x(dp->cv);
+    y = cucul_get_cursor_y(dp->cv);
+    move(y, x);
+
     refresh();
 }
 
@@ -529,6 +534,11 @@ static int ncurses_get_event(caca_display_t *dp, caca_event_t *ev)
     ev->data.key.utf32 = 0;
     ev->data.key.utf8[0] = '\0';
     return 1;
+}
+
+static void ncurses_set_cursor(caca_display_t *dp, int flags)
+{
+    curs_set(flags ? 2 : 0);
 }
 
 /*
@@ -803,7 +813,7 @@ int ncurses_install(caca_display_t *dp)
     dp->drv.handle_resize = ncurses_handle_resize;
     dp->drv.get_event = ncurses_get_event;
     dp->drv.set_mouse = NULL;
-    dp->drv.set_cursor = NULL;
+    dp->drv.set_cursor = ncurses_set_cursor;
 
     return 0;
 }

@@ -54,6 +54,7 @@ int main(int argc, char *argv[])
         printf("Can't create display\n");
         return -1;
     }
+    caca_set_cursor(dp, 1);
 
     cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
     cucul_put_str(cv, 1, 1, "Text entries - press tab to cycle");
@@ -87,8 +88,7 @@ int main(int argc, char *argv[])
         }
 
         /* Put the cursor on the active textentry */
-        cucul_set_color_ansi(cv, CUCUL_LIGHTRED, CUCUL_LIGHTRED);
-        cucul_put_char(cv, 2 + entries[e].cursor, 3 * e + 4, ' ');
+        cucul_gotoxy(cv, 2 + entries[e].cursor, 3 * e + 4);
 
         caca_refresh_display(dp);
 

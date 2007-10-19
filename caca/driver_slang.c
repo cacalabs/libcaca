@@ -258,6 +258,7 @@ static void slang_display(caca_display_t *dp)
 #endif
         }
     }
+    SLsmg_gotorc(cucul_get_cursor_y(dp->cv), cucul_get_cursor_x(dp->cv));
     SLsmg_refresh();
 }
 
@@ -402,6 +403,11 @@ static int slang_get_event(caca_display_t *dp, caca_event_t *ev)
     return 1;
 }
 
+static void slang_set_cursor(caca_display_t *dp, int flags)
+{
+    SLtt_set_cursor_visibility(flags ? 1 : 0);
+}
+
 /*
  * XXX: following functions are local
  */
@@ -522,7 +528,7 @@ int slang_install(caca_display_t *dp)
     dp->drv.handle_resize = slang_handle_resize;
     dp->drv.get_event = slang_get_event;
     dp->drv.set_mouse = NULL;
-    dp->drv.set_cursor = NULL;
+    dp->drv.set_cursor = slang_set_cursor;
 
     return 0;
 }
