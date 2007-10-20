@@ -205,7 +205,8 @@ int caca_set_cursor(caca_display_t *dp, int flag)
 
 /** \brief Show or hide the mouse pointer.
  *
- *  Show or hide the mouse pointer, for devices that support such a feature.
+ *  Show or hide the mouse pointer. This function works with the ncurses,
+ *  S-Lang and X11 drivers.
  *
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
  *  - \c ENOSYS Display driver does not support hiding the mouse pointer.
