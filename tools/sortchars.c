@@ -25,7 +25,7 @@
 #include "cucul.h"
 
 #define GLYPHS 0x7f
-#define FONT 1 /* 0 or 1 */
+#define FONT 0 /* 0 or 1 */
 #define DX 2
 #define DY 3
 #define RANGEBITS 2
@@ -39,9 +39,11 @@ int bestchar[FULLRANGE];
 static int curve[17] = /* 17 instead of 16 */
 {
     0, 4, 6, 8, 9, 10, 11, 12, 12, 13, 13, 14, 14, 15, 15, 15, 15
+    //0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 15
 };
 
 static int distance(uint16_t, uint16_t);
+static void testcircle(void);
 
 int main(int argc, char *argv[])
 {
@@ -174,21 +176,78 @@ int main(int argc, char *argv[])
 
     cucul_free_canvas(cv);
 
+    testcircle();
+
     return 0;
 }
 
-static int distance(uint16_t a, uint16_t b)
+static int distance(uint16_t mychar, uint16_t x)
 {
     int i, d = 0;
 
     for(i = 0; i < DX * DY; i++)
     {
-        int x = (int)(a & (RANGE - 1)) - (int)(b & (RANGE - 1));
-        d += x * x;
-        a /= RANGE;
-        b /= RANGE;
+        int t = (int)(mychar & (RANGE - 1)) - (int)(x & (RANGE - 1));
+        d += t > 0 ? 1 * t : -2 * t;
+        mychar /= RANGE;
+        x /= RANGE;
     }
 
     return d;
+}
+
+#define WIDTH 40
+#define HEIGHT 18
+
+static void testcircle(void)
+{
+    char utf8[7];
+    uint8_t *buf = malloc(256 * 256);
+    uint16_t *dst = malloc(WIDTH * DX * HEIGHT * DY * sizeof(uint16_t));
+    int x, y, ret;
+
+    memset(buf, 0, 256 * 256);
+    memset(dst, 0, WIDTH * DX * HEIGHT * DY);
+
+    /* Fill image */
+    for(y = 0; y < 256; y++)
+        for(x = 0; x < 256; x++)
+        {
+            int dist2 = (x - 128) * (x - 128) + (y - 128) * (y - 128);
+            if(dist2 < 25000 && dist2 > 18000)
+                buf[y * 256 + x] = 255;
+            else if(dist2 < 14000 && dist2 > 9000)
+                buf[y * 256 + x] = 204;
+            else if(dist2 < 6000 && dist2 > 3000)
+                buf[y * 256 + x] = 153;
+            else if(dist2 < 1600 && dist2 > 300)
+                buf[y * 256 + x] = 102;
+        }
+
+    /* Parse image */
+    for(y = 0; y < HEIGHT * DY; y++)
+        for(x = 0; x < WIDTH * DX; x++)
+            dst[y * WIDTH * DX + x] = (int)buf[(y * 256 / (HEIGHT * DY)) * 256 + (x * 256 / (WIDTH * DX))] * RANGE / 256;
+
+    for(y = 0; y < HEIGHT; y++)
+    {
+        for(x = 0; x < WIDTH; x++)
+        {
+            uint16_t bits = 0;
+            int i, j;
+            for(j = 0; j < DY; j++)
+                for(i = 0; i < DX; i++)
+                {
+                    bits *= RANGE;
+                    bits |= dst[(y * DY + j) * WIDTH * DX + x * DX + i];
+                }
+
+            ret = cucul_utf32_to_utf8(utf8, bestchar[bits]);
+            utf8[ret] = '\0';
+            printf("%s", utf8);
+        }
+
+        printf("\n");
+    }
 }
 
