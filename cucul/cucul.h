@@ -257,8 +257,8 @@ char const * const * cucul_get_export_list(void);
 #if !defined(_DOXYGEN_SKIP_ME)
     /* Legacy stuff from beta versions, will probably disappear in 1.0 */
     typedef struct cucul_buffer cucul_buffer_t;
-#   ifdef __GNUC__
-#       define CUCUL_DEPRECATED __attribute__ ((deprecated))
+#   if defined __GNUC__ && __GNUC__ >= 3
+#       define CUCUL_DEPRECATED __attribute__ ((__deprecated__))
 #   else
 #       define CUCUL_DEPRECATED
 #   endif
