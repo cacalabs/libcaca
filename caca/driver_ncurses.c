@@ -35,6 +35,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if defined HAVE_UNISTD_H
+#   include <unistd.h>
+#endif
 #if defined HAVE_SIGNAL_H
 #   include <signal.h>
 #endif
@@ -44,8 +47,7 @@
 #if defined HAVE_LOCALE_H
 #   include <locale.h>
 #endif
-
-#ifndef TIOCGWINSZ
+#if defined HAVE_TERMIOS_H
 #   include <termios.h>
 #endif
 
