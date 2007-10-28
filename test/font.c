@@ -85,18 +85,20 @@ int main(int argc, char *argv[])
     cucul_set_canvas_size(cv, 80, 32);
     dp = caca_create_display(cv);
 
+    {
 #if defined(HAVE_ENDIAN_H)
-    if(__BYTE_ORDER == __BIG_ENDIAN)
+        if(__BYTE_ORDER == __BIG_ENDIAN)
 #else
-    /* This is compile-time optimised with at least -O1 or -Os */
-    uint32_t const tmp = 0x12345678;
-    if(*(uint8_t const *)&tmp == 0x12)
+        /* This is compile-time optimised with at least -O1 or -Os */
+        uint32_t const tmp = 0x12345678;
+        if(*(uint8_t const *)&tmp == 0x12)
 #endif
-        d = cucul_create_dither(32, w, h, 4 * w,
-                                0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
-    else
-        d = cucul_create_dither(32, w, h, 4 * w,
-                                0x0000ff00, 0x00ff0000, 0xff000000, 0x000000ff);
+            d = cucul_create_dither(32, w, h, 4 * w,
+                                    0xff0000, 0xff00, 0xff, 0xff000000);
+        else
+            d = cucul_create_dither(32, w, h, 4 * w,
+                                    0xff00, 0xff0000, 0xff000000, 0xff);
+    }
 
     cucul_dither_bitmap(cv, 0, 0, cucul_get_canvas_width(cv),
                                   cucul_get_canvas_height(cv), d, buf);
