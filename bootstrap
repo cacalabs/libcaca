@@ -1,11 +1,14 @@
 #! /bin/sh
+# $Id$
 
-# bootstrap: the ultimate bootstrap/autogen.sh script for autotools projects
-# Copyright (c) 2002, 2003, 2004, 2005, 2006 Sam Hocevar <sam@zoy.org>
+# bootstrap: generic bootstrap/autogen.sh script for autotools projects
 #
-#    This program is free software; you can redistribute it and/or
-#    modify it under the terms of the Do What The Fuck You Want To
-#    Public License, Version 2, as published by Sam Hocevar. See
+# Copyright (c) 2002-2007 Sam Hocevar <sam@zoy.org>
+#
+#    This program is free software. It comes without any warranty, to
+#    the extent permitted by applicable law. You can redistribute it
+#    and/or modify it under the terms of the Do What The Fuck You Want
+#    To Public License, Version 2, as published by Sam Hocevar. See
 #    http://sam.zoy.org/wtfpl/COPYING for more details.
 #
 # The latest version of this script can be found at the following place:
@@ -25,19 +28,21 @@ else
 fi
 
 # Check for needed features
-auxdir="`sed -ne 's/^[ \t]*A._CONFIG_AUX_DIR *( *\([^ )]*\).*/\1/p' $conffile`"
+auxdir="`sed -ne 's/^[ \t]*A._CONFIG_AUX_DIR *([[ ]*\([^] )]*\).*/\1/p' $conffile`"
 libtool="`grep -q '^[ \t]*A._PROG_LIBTOOL' $conffile && echo yes || echo no`"
 header="`grep -q '^[ \t]*A._CONFIG_HEADER' $conffile && echo yes || echo no`"
+aclocalflags="`sed -ne 's/^[ \t]*ACLOCAL_AMFLAGS[ \t]*=//p' Makefile.am`"
 
 # Check for automake
 amvers="no"
 for n in 10 9 8 7 6 5; do
-  for v in "-1.${n}" "1${n}"; do
-    if automake${v} --version >/dev/null 2>&1; then
-      amvers="${v}"
-      break
-    fi
-  done
+  if automake-1.${v} --version >/dev/null 2>&1; then
+    amvers="-1.${v}"
+    break
+  elif automake1.${v} --version >/dev/null 2>&1; then
+    amvers="1.${v}"
+    break
+  fi
 done
 
 if test "${amvers}" = "no" && automake --version > /dev/null 2>&1; then
@@ -91,7 +96,12 @@ fi
 # Remove old cruft
 for x in aclocal.m4 configure config.guess config.log config.sub config.cache config.h.in config.h compile libtool.m4 ltoptions.m4 ltsugar.m4 ltversion.m4 ltmain.sh libtool ltconfig missing mkinstalldirs depcomp install-sh; do rm -f $x autotools/$x; if test -n "$auxdir"; then rm -f "$auxdir/$x"; fi; done
 rm -Rf autom4te.cache
-if test -n "$auxdir" -a ! -d "$auxdir"; then mkdir "$auxdir"; fi
+if test -n "$auxdir"; then
+  if test ! -d "$auxdir"; then
+    mkdir "$auxdir"
+  fi
+  aclocalflags="${aclocalflags} -I $auxdir -I ."
+fi
 
 # Explain what we are doing from now
 set -x
@@ -99,17 +109,13 @@ set -x
 # Bootstrap package
 if test "$libtool" = "yes"; then
   ${libtoolize} --copy --force
-  if test -n "$auxdir" -a -f "ltmain.sh"; then
+  if test -n "$auxdir" -a ! "$auxdir" = "." -a -f "ltmain.sh"; then
     echo "$0: working around a minor libtool issue"
     mv ltmain.sh "$auxdir/"
   fi
 fi
 
-if test -n "$auxdir"; then
-  aclocal${amvers} -I autotools
-else
-  aclocal${amvers}
-fi
+aclocal${amvers} ${aclocalflags}
 autoconf${acvers}
 if test "$header" = "yes"; then
   autoheader${acvers}
