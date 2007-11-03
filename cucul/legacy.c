@@ -63,6 +63,19 @@ int cucul_set_truecolor(cucul_canvas_t *cv, unsigned int fg, unsigned int bg)
 }
 
 /*
+ * Functions from dither.c
+ */
+int cucul_set_dither_invert(cucul_dither_t *d, int value)
+{
+    float gamma = cucul_get_dither_gamma(d);
+
+    if(gamma * (value ? -1 : 1) < 0)
+        cucul_set_dither_gamma(d, -gamma);
+
+    return 0;
+}
+
+/*
  * Functions from import.c
  */
 

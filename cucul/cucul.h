@@ -208,9 +208,11 @@ int cucul_set_dither_palette(cucul_dither_t *,
                              unsigned int r[], unsigned int g[],
                              unsigned int b[], unsigned int a[]);
 int cucul_set_dither_brightness(cucul_dither_t *, float);
+float cucul_get_dither_brightness(cucul_dither_t *);
 int cucul_set_dither_gamma(cucul_dither_t *, float);
+float cucul_get_dither_gamma(cucul_dither_t *);
 int cucul_set_dither_contrast(cucul_dither_t *, float);
-int cucul_set_dither_invert(cucul_dither_t *, int);
+float cucul_get_dither_contrast(cucul_dither_t *);
 int cucul_set_dither_antialias(cucul_dither_t *, char const *);
 char const * const * cucul_get_dither_antialias_list(cucul_dither_t const *);
 int cucul_set_dither_color(cucul_dither_t *, char const *);
@@ -291,6 +293,7 @@ char const * const * cucul_get_export_list(void);
     cucul_canvas_t * cucul_import_canvas(cucul_buffer_t *,
                                          char const *) CUCUL_DEPRECATED;
     int cucul_rotate(cucul_canvas_t *) CUCUL_DEPRECATED;
+    int cucul_set_dither_invert(cucul_dither_t *, int) CUCUL_DEPRECATED;
 #   define CUCUL_COLOR_BLACK CUCUL_BLACK
 #   define CUCUL_COLOR_BLUE CUCUL_BLUE
 #   define CUCUL_COLOR_GREEN CUCUL_GREEN

@@ -418,9 +418,25 @@ int cucul_set_dither_brightness(cucul_dither_t *d, float brightness)
     return 0;
 }
 
+/** \brief Get the brightness of a dither object.
+ *
+ *  Get the brightness of the given dither object.
+ *
+ *  This function never fails.
+ *
+ *  \param d Dither object.
+ *  \return Brightness value.
+ */
+float cucul_get_dither_brightness(cucul_dither_t *d)
+{
+    /* FIXME */
+    return 0.0;
+}
+
 /** \brief Set the gamma of a dither object.
  *
- *  Set the gamma of dither.
+ *  Set the gamma of the given dither object. A negative value causes
+ *  colour inversion.
  *
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
  *  - \c EINVAL Gamma value was out of range.
@@ -432,11 +448,16 @@ int cucul_set_dither_brightness(cucul_dither_t *d, float brightness)
 int cucul_set_dither_gamma(cucul_dither_t *d, float gamma)
 {
     /* FIXME: we don't need 4096 calls to gammapow(), we could just compute
-     * 128 of them and do linear interpolation for the rest. This will
+     * a few of them and do linear interpolation for the rest. This will
      * probably speed up things a lot. */
     int i;
 
-    if(gamma <= 0.0)
+    if(gamma < 0.0)
+    {
+        d->invert = 1;
+        gamma = -gamma;
+    }
+    else if(gamma == 0.0)
     {
         seterrno(EINVAL);
         return -1;
@@ -450,21 +471,18 @@ int cucul_set_dither_gamma(cucul_dither_t *d, float gamma)
     return 0;
 }
 
-/** \brief Invert colors of dither
+/** \brief Get the gamma of a dither object.
  *
- *  Invert colors of dither.
+ *  Get the gamma of the given dither object.
  *
  *  This function never fails.
  *
  *  \param d Dither object.
- *  \param value 0 for normal behaviour, 1 for invert
- *  \return This function always returns 0.
+ *  \return Gamma value.
  */
-int cucul_set_dither_invert(cucul_dither_t *d, int value)
+float cucul_get_dither_gamma(cucul_dither_t *d)
 {
-    d->invert = value ? 1 : 0;
-
-    return 0;
+    return d->gamma;
 }
 
 /** \brief Set the contrast of a dither object.
