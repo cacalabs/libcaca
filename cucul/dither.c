@@ -137,7 +137,7 @@ struct cucul_dither
     char const *color_name;
     enum color_mode color;
 
-    char const *dither_name;
+    char const *algo_name;
     void (*init_dither) (int);
     unsigned int (*get_dither) (void);
     void (*increment_dither) (void);
@@ -177,7 +177,7 @@ static void get_rgba_default(cucul_dither_t const *, uint8_t *, int, int,
                              unsigned int *);
 static int init_lookup(void);
 
-/* Dithering methods */
+/* Dithering algorithms */
 static void init_no_dither(int);
 static unsigned int get_no_dither(void);
 static void increment_no_dither(void);
@@ -349,7 +349,7 @@ cucul_dither_t *cucul_create_dither(unsigned int bpp, unsigned int w,
     d->glyphs = ascii_glyphs;
     d->glyph_count = sizeof(ascii_glyphs) / sizeof(*ascii_glyphs);
 
-    d->dither_name = "fstein";
+    d->algo_name = "fstein";
     d->init_dither = init_fstein_dither;
     d->get_dither = get_fstein_dither;
     d->increment_dither = increment_fstein_dither;
@@ -811,9 +811,9 @@ char const * cucul_get_dither_charset(cucul_dither_t const *d)
     return d->glyph_name;
 }
 
-/** \brief Set dithering method
+/** \brief Set dithering algorithm
  *
- *  Tell the renderer which dithering method should be used. Dithering is
+ *  Tell the renderer which dithering algorithm should be used. Dithering is
  *  necessary because the picture being rendered has usually far more colours
  *  than the available palette. Valid values for \c str are:
  *  - \c "none": no dithering is used, the nearest matching colour is used.
@@ -827,50 +827,50 @@ char const * cucul_get_dither_charset(cucul_dither_t const *d)
  *  - \c EINVAL Unknown dithering mode.
  *
  *  \param d Dither object.
- *  \param str A string describing the method that needs to be used
+ *  \param str A string describing the algorithm that needs to be used
  *         for the dithering.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_set_dither_mode(cucul_dither_t *d, char const *str)
+int cucul_set_dither_algorithm(cucul_dither_t *d, char const *str)
 {
     if(!strcasecmp(str, "none"))
     {
-        d->dither_name = "none";
+        d->algo_name = "none";
         d->init_dither = init_no_dither;
         d->get_dither = get_no_dither;
         d->increment_dither = increment_no_dither;
     }
     else if(!strcasecmp(str, "ordered2"))
     {
-        d->dither_name = "ordered2";
+        d->algo_name = "ordered2";
         d->init_dither = init_ordered2_dither;
         d->get_dither = get_ordered2_dither;
         d->increment_dither = increment_ordered2_dither;
     }
     else if(!strcasecmp(str, "ordered4"))
     {
-        d->dither_name = "ordered4";
+        d->algo_name = "ordered4";
         d->init_dither = init_ordered4_dither;
         d->get_dither = get_ordered4_dither;
         d->increment_dither = increment_ordered4_dither;
     }
     else if(!strcasecmp(str, "ordered8"))
     {
-        d->dither_name = "ordered8";
+        d->algo_name = "ordered8";
         d->init_dither = init_ordered8_dither;
         d->get_dither = get_ordered8_dither;
         d->increment_dither = increment_ordered8_dither;
     }
     else if(!strcasecmp(str, "random"))
     {
-        d->dither_name = "random";
+        d->algo_name = "random";
         d->init_dither = init_random_dither;
         d->get_dither = get_random_dither;
         d->increment_dither = increment_random_dither;
     }
     else if(!strcasecmp(str, "fstein") || !strcasecmp(str, "default"))
     {
-        d->dither_name = "fstein";
+        d->algo_name = "fstein";
         d->init_dither = init_fstein_dither;
         d->get_dither = get_fstein_dither;
         d->increment_dither = increment_fstein_dither;
@@ -884,20 +884,20 @@ int cucul_set_dither_mode(cucul_dither_t *d, char const *str)
     return 0;
 }
 
-/** \brief Get dithering methods
+/** \brief Get dithering algorithms
  *
- *  Return a list of available dithering methods for a given dither. The list
- *  is a NULL-terminated array of strings, interleaving a string containing
- *  the internal value for the dithering method, to be used with
- *  cucul_set_dither_dithering(), and a string containing the natural
- *  language description for that dithering method.
+ *  Return a list of available dithering algorithms for a given dither. The
+ *  list is a NULL-terminated array of strings, interleaving a string
+ *  containing the internal value for the dithering algorithm, to be used
+ *  with cucul_set_dither_dithering(), and a string containing the natural
+ *  language description for that algorithm.
  *
  *  This function never fails.
  *
  *  \param d Dither object.
  *  \return An array of strings.
  */
-char const * const * cucul_get_dither_mode_list(cucul_dither_t const *d)
+char const * const * cucul_get_dither_algorithm_list(cucul_dither_t const *d)
 {
     static char const * const list[] =
     {
@@ -913,18 +913,18 @@ char const * const * cucul_get_dither_mode_list(cucul_dither_t const *d)
     return list;
 }
 
-/** \brief Get current dithering method
+/** \brief Get current dithering algorithm
  *
- *  Return the given dither's current dithering method.
+ *  Return the given dither's current dithering algorithm.
  *
  *  This function never fails.
  *
  *  \param d Dither object.
  *  \return A static string.
  */
-char const * cucul_get_dither_mode(cucul_dither_t const *d)
+char const * cucul_get_dither_algorithm(cucul_dither_t const *d)
 {
-    return d->dither_name;
+    return d->algo_name;
 }
 
 /** \brief Dither a bitmap on the canvas.

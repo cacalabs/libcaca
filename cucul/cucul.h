@@ -222,9 +222,9 @@ char const * cucul_get_dither_color(cucul_dither_t const *);
 int cucul_set_dither_charset(cucul_dither_t *, char const *);
 char const * const * cucul_get_dither_charset_list(cucul_dither_t const *);
 char const * cucul_get_dither_charset(cucul_dither_t const *);
-int cucul_set_dither_mode(cucul_dither_t *, char const *);
-char const * const * cucul_get_dither_mode_list(cucul_dither_t const *);
-char const * cucul_get_dither_mode(cucul_dither_t const *);
+int cucul_set_dither_algorithm(cucul_dither_t *, char const *);
+char const * const * cucul_get_dither_algorithm_list(cucul_dither_t const *);
+char const * cucul_get_dither_algorithm(cucul_dither_t const *);
 int cucul_dither_bitmap(cucul_canvas_t *, int, int, int, int,
                          cucul_dither_t const *, void *);
 int cucul_free_dither(cucul_dither_t *);
@@ -299,6 +299,9 @@ char const * const * cucul_get_export_list(void);
                                          char const *) CUCUL_DEPRECATED;
     int cucul_rotate(cucul_canvas_t *) CUCUL_DEPRECATED;
     int cucul_set_dither_invert(cucul_dither_t *, int) CUCUL_DEPRECATED;
+    int cucul_set_dither_mode(cucul_dither_t *, char const *) CUCUL_DEPRECATED;
+    char const * const * cucul_get_dither_mode_list(cucul_dither_t
+                                                    const *) CUCUL_DEPRECATED;
 #   define CUCUL_COLOR_BLACK CUCUL_BLACK
 #   define CUCUL_COLOR_BLUE CUCUL_BLUE
 #   define CUCUL_COLOR_GREEN CUCUL_GREEN

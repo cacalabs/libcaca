@@ -75,6 +75,16 @@ int cucul_set_dither_invert(cucul_dither_t *d, int value)
     return 0;
 }
 
+int cucul_set_dither_mode(cucul_dither_t *d, char const *s)
+{
+    return cucul_set_dither_algorithm(d, s);
+}
+
+char const * const * cucul_get_dither_mode_list(cucul_dither_t const *d)
+{
+    return cucul_get_dither_algorithm_list(d);
+}
+
 /*
  * Functions from import.c
  */
