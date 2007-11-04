@@ -65,7 +65,6 @@ class Dither
     void setBrightness(float);
     void setGamma(float);
     void setContrast(float);
-    void setInvert(int);
     void setAntialias(char const *);
     char const *const * getAntialiasList();
     void setColor(char const *);

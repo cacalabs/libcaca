@@ -323,11 +323,6 @@ void Dither::setContrast(float f)
     cucul_set_dither_contrast(dither, f);
 }
 
-void Dither::setInvert(int i)
-{
-    cucul_set_dither_invert(dither, i);
-}
-
 void Dither::setAntialias(char const *cv)
 {
     cucul_set_dither_antialias(dither, cv);
