@@ -125,7 +125,9 @@ struct cucul_dither
     int rleft, gleft, bleft, aleft;
     void (*get_hsv)(cucul_dither_t *, char *, int, int);
     int red[256], green[256], blue[256], alpha[256];
-    float gamma;
+
+    /* Colour features */
+    float gamma, brightness, contrast;
     int gammatab[4097];
 
     /* Bitmap features */
@@ -324,13 +326,18 @@ cucul_dither_t *cucul_create_dither(unsigned int bpp, unsigned int w,
         }
     }
 
+    /* Default gamma value */
+    d->gamma = 1.0;
+    for(i = 0; i < 4096; i++)
+        d->gammatab[i] = i;
+
+    /* Default colour properties */
+    d->brightness = 1.0;
+    d->contrast = 1.0;
+
     /* Default features */
     d->invert = 0;
     d->antialias = 1;
-
-    /* Default gamma value */
-    for(i = 0; i < 4096; i++)
-        d->gammatab[i] = i;
 
     /* Default colour mode */
     d->color_mode = COLOR_MODE_FULL16;
@@ -415,6 +422,8 @@ int cucul_set_dither_palette(cucul_dither_t *d,
 int cucul_set_dither_brightness(cucul_dither_t *d, float brightness)
 {
     /* FIXME */
+    d->brightness = brightness;
+
     return 0;
 }
 
@@ -429,8 +438,7 @@ int cucul_set_dither_brightness(cucul_dither_t *d, float brightness)
  */
 float cucul_get_dither_brightness(cucul_dither_t *d)
 {
-    /* FIXME */
-    return 0.0;
+    return d->brightness;
 }
 
 /** \brief Set the gamma of a dither object.
@@ -499,7 +507,23 @@ float cucul_get_dither_gamma(cucul_dither_t *d)
 int cucul_set_dither_contrast(cucul_dither_t *d, float contrast)
 {
     /* FIXME */
+    d->contrast = contrast;
+
     return 0;
+}
+
+/** \brief Get the contrast of a dither object.
+ *
+ *  Get the contrast of the given dither object.
+ *
+ *  This function never fails.
+ *
+ *  \param d Dither object.
+ *  \return Contrast value.
+ */
+float cucul_get_dither_contrast(cucul_dither_t *d)
+{
+    return d->contrast;
 }
 
 /** \brief Set dither antialiasing
