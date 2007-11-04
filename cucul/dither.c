@@ -130,23 +130,23 @@ struct cucul_dither
     float gamma, brightness, contrast;
     int gammatab[4097];
 
-    /* Bitmap features */
-    struct
-    {
-        char const *name;
-        int value;
-    }
-    antialias, color;
-    int invert;
+    /* Dithering features */
+    char const *antialias_name;
+    int antialias;
 
-    /* Glyphs used for rendering */
-    uint32_t const * glyphs;
-    unsigned glyph_count;
+    char const *color_name;
+    enum color_mode color;
 
-    /* Current dithering method */
+    char const *dither_name;
     void (*init_dither) (int);
     unsigned int (*get_dither) (void);
     void (*increment_dither) (void);
+
+    char const *glyph_name;
+    uint32_t const * glyphs;
+    unsigned glyph_count;
+
+    int invert;
 };
 
 #define HSV_XRATIO 6
@@ -339,20 +339,22 @@ cucul_dither_t *cucul_create_dither(unsigned int bpp, unsigned int w,
     d->contrast = 1.0;
 
     /* Default features */
-    d->antialias.name = "prefilter";
-    d->antialias.value = 1;
-    d->color.name = "full16";
-    d->color.value = COLOR_MODE_FULL16;
-    d->invert = 0;
+    d->antialias_name = "prefilter";
+    d->antialias = 1;
 
-    /* Default character set */
+    d->color_name = "full16";
+    d->color = COLOR_MODE_FULL16;
+
+    d->glyph_name = "ascii";
     d->glyphs = ascii_glyphs;
     d->glyph_count = sizeof(ascii_glyphs) / sizeof(*ascii_glyphs);
 
-    /* Default dithering mode */
+    d->dither_name = "fstein";
     d->init_dither = init_fstein_dither;
     d->get_dither = get_fstein_dither;
     d->increment_dither = increment_fstein_dither;
+
+    d->invert = 0;
 
     return d;
 }
@@ -549,13 +551,13 @@ int cucul_set_dither_antialias(cucul_dither_t *d, char const *str)
 {
     if(!strcasecmp(str, "none"))
     {
-        d->antialias.name = "none";
-        d->antialias.value = 0;
+        d->antialias_name = "none";
+        d->antialias = 0;
     }
     else if(!strcasecmp(str, "prefilter") || !strcasecmp(str, "default"))
     {
-        d->antialias.name = "prefilter";
-        d->antialias.value = 1;
+        d->antialias_name = "prefilter";
+        d->antialias = 1;
     }
     else
     {
@@ -603,7 +605,7 @@ char const * const *
  */
 char const * cucul_get_dither_antialias(cucul_dither_t const *d)
 {
-    return d->antialias.name;
+    return d->antialias_name;
 }
 
 /** \brief Choose colours used for dithering
@@ -633,38 +635,38 @@ int cucul_set_dither_color(cucul_dither_t *d, char const *str)
 {
     if(!strcasecmp(str, "mono"))
     {
-        d->color.name = "mono";
-        d->color.value = COLOR_MODE_MONO;
+        d->color_name = "mono";
+        d->color = COLOR_MODE_MONO;
     }
     else if(!strcasecmp(str, "gray"))
     {
-        d->color.name = "gray";
-        d->color.value = COLOR_MODE_GRAY;
+        d->color_name = "gray";
+        d->color = COLOR_MODE_GRAY;
     }
     else if(!strcasecmp(str, "8"))
     {
-        d->color.name = "8";
-        d->color.value = COLOR_MODE_8;
+        d->color_name = "8";
+        d->color = COLOR_MODE_8;
     }
     else if(!strcasecmp(str, "16"))
     {
-        d->color.name = "16";
-        d->color.value = COLOR_MODE_16;
+        d->color_name = "16";
+        d->color = COLOR_MODE_16;
     }
     else if(!strcasecmp(str, "fullgray"))
     {
-        d->color.name = "fullgray";
-        d->color.value = COLOR_MODE_FULLGRAY;
+        d->color_name = "fullgray";
+        d->color = COLOR_MODE_FULLGRAY;
     }
     else if(!strcasecmp(str, "full8"))
     {
-        d->color.name = "full8";
-        d->color.value = COLOR_MODE_FULL8;
+        d->color_name = "full8";
+        d->color = COLOR_MODE_FULL8;
     }
     else if(!strcasecmp(str, "full16") || !strcasecmp(str, "default"))
     {
-        d->color.name = "full16";
-        d->color.value = COLOR_MODE_FULL16;
+        d->color_name = "full16";
+        d->color = COLOR_MODE_FULL16;
     }
     else
     {
@@ -717,7 +719,7 @@ char const * const *
  */
 char const * cucul_get_dither_color(cucul_dither_t const *d)
 {
-    return d->color.name;
+    return d->color_name;
 }
 
 /** \brief Choose characters used for dithering
@@ -744,16 +746,19 @@ int cucul_set_dither_charset(cucul_dither_t *d, char const *str)
 {
     if(!strcasecmp(str, "shades"))
     {
+        d->glyph_name = "shades";
         d->glyphs = shades_glyphs;
         d->glyph_count = sizeof(shades_glyphs) / sizeof(*shades_glyphs);
     }
     else if(!strcasecmp(str, "blocks"))
     {
+        d->glyph_name = "blocks";
         d->glyphs = blocks_glyphs;
         d->glyph_count = sizeof(blocks_glyphs) / sizeof(*blocks_glyphs);
     }
     else if(!strcasecmp(str, "ascii") || !strcasecmp(str, "default"))
     {
+        d->glyph_name = "ascii";
         d->glyphs = ascii_glyphs;
         d->glyph_count = sizeof(ascii_glyphs) / sizeof(*ascii_glyphs);
     }
@@ -792,6 +797,20 @@ char const * const * cucul_get_dither_charset_list(cucul_dither_t const *d)
     return list;
 }
 
+/** \brief Get current character set
+ *
+ *  Return the given dither's current character set.
+ *
+ *  This function never fails.
+ *
+ *  \param d Dither object.
+ *  \return A static string.
+ */
+char const * cucul_get_dither_charset(cucul_dither_t const *d)
+{
+    return d->glyph_name;
+}
+
 /** \brief Set dithering method
  *
  *  Tell the renderer which dithering method should be used. Dithering is
@@ -816,36 +835,42 @@ int cucul_set_dither_mode(cucul_dither_t *d, char const *str)
 {
     if(!strcasecmp(str, "none"))
     {
+        d->dither_name = "none";
         d->init_dither = init_no_dither;
         d->get_dither = get_no_dither;
         d->increment_dither = increment_no_dither;
     }
     else if(!strcasecmp(str, "ordered2"))
     {
+        d->dither_name = "ordered2";
         d->init_dither = init_ordered2_dither;
         d->get_dither = get_ordered2_dither;
         d->increment_dither = increment_ordered2_dither;
     }
     else if(!strcasecmp(str, "ordered4"))
     {
+        d->dither_name = "ordered4";
         d->init_dither = init_ordered4_dither;
         d->get_dither = get_ordered4_dither;
         d->increment_dither = increment_ordered4_dither;
     }
     else if(!strcasecmp(str, "ordered8"))
     {
+        d->dither_name = "ordered8";
         d->init_dither = init_ordered8_dither;
         d->get_dither = get_ordered8_dither;
         d->increment_dither = increment_ordered8_dither;
     }
     else if(!strcasecmp(str, "random"))
     {
+        d->dither_name = "random";
         d->init_dither = init_random_dither;
         d->get_dither = get_random_dither;
         d->increment_dither = increment_random_dither;
     }
     else if(!strcasecmp(str, "fstein") || !strcasecmp(str, "default"))
     {
+        d->dither_name = "fstein";
         d->init_dither = init_fstein_dither;
         d->get_dither = get_fstein_dither;
         d->increment_dither = increment_fstein_dither;
@@ -886,6 +911,20 @@ char const * const * cucul_get_dither_mode_list(cucul_dither_t const *d)
     };
 
     return list;
+}
+
+/** \brief Get current dithering method
+ *
+ *  Return the given dither's current dithering method.
+ *
+ *  This function never fails.
+ *
+ *  \param d Dither object.
+ *  \return A static string.
+ */
+char const * cucul_get_dither_mode(cucul_dither_t const *d)
+{
+    return d->dither_name;
 }
 
 /** \brief Dither a bitmap on the canvas.
@@ -958,7 +997,7 @@ int cucul_dither_bitmap(cucul_canvas_t *cv, int x, int y, int w, int h,
         rgba[0] = rgba[1] = rgba[2] = rgba[3] = 0;
 
         /* First get RGB */
-        if(d->antialias.value)
+        if(d->antialias)
         {
             fromx = (x - x1) * w / deltax;
             fromy = (y - y1) * h / deltay;
@@ -1041,7 +1080,7 @@ int cucul_dither_bitmap(cucul_canvas_t *cv, int x, int y, int w, int h,
         bg_b = rgb_palette[outbg * 3 + 2];
 
         /* FIXME: we currently only honour "full16" */
-        if(d->color.value == COLOR_MODE_FULL16)
+        if(d->color == COLOR_MODE_FULL16)
         {
             distmin = INT_MAX;
             for(i = 0; i < 16; i++)

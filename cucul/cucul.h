@@ -221,8 +221,10 @@ char const * const * cucul_get_dither_color_list(cucul_dither_t const *);
 char const * cucul_get_dither_color(cucul_dither_t const *);
 int cucul_set_dither_charset(cucul_dither_t *, char const *);
 char const * const * cucul_get_dither_charset_list(cucul_dither_t const *);
+char const * cucul_get_dither_charset(cucul_dither_t const *);
 int cucul_set_dither_mode(cucul_dither_t *, char const *);
 char const * const * cucul_get_dither_mode_list(cucul_dither_t const *);
+char const * cucul_get_dither_mode(cucul_dither_t const *);
 int cucul_dither_bitmap(cucul_canvas_t *, int, int, int, int,
                          cucul_dither_t const *, void *);
 int cucul_free_dither(cucul_dither_t *);
