@@ -32,8 +32,8 @@
 #include "cucul_internals.h"
 
 /* Internal fonts */
-#include "font_mono9.h"
-#include "font_monobold12.h"
+#include "mono9.data"
+#include "monobold12.data"
 
 /* Helper structures for font loading */
 #if !defined(_DOXYGEN_SKIP_ME)

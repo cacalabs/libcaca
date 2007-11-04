@@ -16,7 +16,7 @@ upload: doc/html FORCE
 	scp -r doc/html/* $(webhost):$(webdir)/manual/
 
 fonts: tools/makefont
-	tools/makefont mono9 "Monospace 9" 96 4 >| $(srcdir)/cucul/font_mono9.h
-	tools/makefont monobold12 "Monospace Bold 12" 96 4 >| $(srcdir)/cucul/font_monobold12.h
+	tools/makefont mono9 "Monospace 9" 96 4 >| $(srcdir)/cucul/mono9.data
+	tools/makefont monobold12 "Monospace Bold 12" 96 4 >| $(srcdir)/cucul/monobold12.data
 
 FORCE:

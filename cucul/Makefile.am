@@ -1,6 +1,6 @@
 # $Id$
 
-EXTRA_DIST = cucul.pc.in
+EXTRA_DIST = cucul.pc.in mono9.data monobold12.data
 DISTCLEANFILES = cucul.pc
 
 pkgconfig_DATA = cucul.pc
@@ -26,10 +26,12 @@ libcucul_la_SOURCES = \
 	frame.c \
 	dither.c \
 	font.c \
-	font_mono9.h \
-	font_monobold12.h \
 	import.c \
 	export.c \
+	$(NULL)
+libcucul_la_DEPENDENCIES = \
+	mono9.data \
+	monobold12.data \
 	$(NULL)
 AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/cucul
 libcucul_la_LDFLAGS = -no-undefined -version-info @LT_VERSION@
