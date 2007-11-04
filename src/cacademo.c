@@ -54,10 +54,12 @@ void (*fn[])(enum action, cucul_canvas_t *) =
 #define DEMO_FRAMES cucul_rand(500, 1000)
 #define TRANSITION_FRAMES 40
 
-#define TRANSITION_COUNT  3
+#define TRANSITION_COUNT  5
 #define TRANSITION_CIRCLE 0
 #define TRANSITION_STAR   1
 #define TRANSITION_SQUARE 2
+#define TRANSITION_VLINES 3
+#define TRANSITION_HLINES 4
 
 /* Common macros for dither-based demos */
 #define XSIZ 256
@@ -288,6 +290,27 @@ void transition(cucul_canvas_t *mask, int tmode, int completed)
             cucul_fill_ellipse(mask, w2, h2, mulx, muly, '#');
             break;
 
+        case TRANSITION_VLINES:
+            for(i = 0; i < 8; i++)
+            {
+                int w = cucul_get_canvas_width(mask);
+                int h = cucul_get_canvas_height(mask);
+                int z = ((i & 1) ? h : -h) * (100 - completed) / 100;
+
+                cucul_fill_box(mask, i * w / 8, z, (i + 1) * w / 8, z + h, '#');
+            }
+            break;
+
+        case TRANSITION_HLINES:
+            for(i = 0; i < 6; i++)
+            {
+                int w = cucul_get_canvas_width(mask);
+                int h = cucul_get_canvas_height(mask);
+                int z = ((i & 1) ? w : -w) * (100 - completed) / 100;
+
+                cucul_fill_box(mask, z, i * h / 6, z + w, (i + 1) * h / 6, '#');
+            }
+            break;
     }
 }
 
