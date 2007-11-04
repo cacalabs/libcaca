@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** \page canvas The libcaca canvas format (version 1)
+/** \page libcaca-canvas The libcaca canvas format (version 1)
 
  All types are big endian.
 

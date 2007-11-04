@@ -39,7 +39,7 @@ typedef struct cucul_dither cucul_dither_t;
 /** font structure */
 typedef struct cucul_font cucul_font_t;
 
-/** \defgroup attr_defines libcucul attribute definitions
+/** \defgroup cucul_attr libcucul attribute definitions
  *
  *  Colours and styles that can be used with cucul_set_attr().
  *
@@ -69,7 +69,7 @@ typedef struct cucul_font cucul_font_t;
 #define CUCUL_BLINK 0x08 /**< The style mask for blink. */
 /*  @} */
 
-/** \defgroup cucul libcucul basic functions
+/** \defgroup libcucul libcucul basic functions
  *
  *  These functions provide the basic \e libcaca routines for library
  *  initialisation, system information retrieval and configuration.
@@ -83,7 +83,7 @@ int cucul_free_canvas(cucul_canvas_t *);
 int cucul_rand(int, int);
 /*  @} */
 
-/** \defgroup canvas libcucul canvas drawing
+/** \defgroup cucul_canvas libcucul canvas drawing
  *
  *  These functions provide low-level character printing routines and
  *  higher level graphics functions.
@@ -112,7 +112,7 @@ int cucul_set_canvas_boundaries(cucul_canvas_t *, int, int,
                                 unsigned int, unsigned int);
 /*  @} */
 
-/** \defgroup transform libcucul canvas transformation
+/** \defgroup cucul_transform libcucul canvas transformation
  *
  *  These functions perform horizontal and vertical canvas flipping.
  *
@@ -127,7 +127,7 @@ int cucul_stretch_left(cucul_canvas_t *);
 int cucul_stretch_right(cucul_canvas_t *);
 /*  @} */
 
-/** \defgroup attributes libcucul attribute conversions
+/** \defgroup cucul_attributes libcucul attribute conversions
  *
  *  These functions perform conversions between attribute values.
  *
@@ -137,7 +137,7 @@ unsigned char cucul_attr_to_ansi_fg(unsigned long int);
 unsigned char cucul_attr_to_ansi_bg(unsigned long int);
 /*  @} */
 
-/** \defgroup charset libcucul character set conversions
+/** \defgroup cucul_charset libcucul character set conversions
  *
  *  These functions perform conversions between usual character sets.
  *
@@ -150,7 +150,7 @@ char cucul_utf32_to_ascii(unsigned long int);
 int cucul_utf32_is_fullwidth(unsigned long int);
 /*  @} */
 
-/** \defgroup prim libcucul primitives drawing
+/** \defgroup cucul_primitives libcucul primitives drawing
  *
  *  These functions provide routines for primitive drawing, such as lines,
  *  boxes, triangles and ellipses.
@@ -180,7 +180,7 @@ int cucul_fill_triangle(cucul_canvas_t *, int, int, int, int, int, int,
                         unsigned long int);
 /*  @} */
 
-/** \defgroup frame libcucul canvas frame handling
+/** \defgroup cucul_frame libcucul canvas frame handling
  *
  *  These functions provide high level routines for canvas frame insertion,
  *  removal, copying etc.
@@ -194,7 +194,7 @@ int cucul_create_frame(cucul_canvas_t *, unsigned int);
 int cucul_free_frame(cucul_canvas_t *, unsigned int);
 /*  @} */
 
-/** \defgroup dither libcucul bitmap dithering
+/** \defgroup cucul_dither libcucul bitmap dithering
  *
  *  These functions provide high level routines for dither allocation and
  *  rendering.
@@ -228,7 +228,7 @@ int cucul_dither_bitmap(cucul_canvas_t *, int, int, int, int,
 int cucul_free_dither(cucul_dither_t *);
 /*  @} */
 
-/** \defgroup font libcucul font handling
+/** \defgroup cucul_font libcucul font handling
  *
  *  These functions provide font handling routines and high quality
  *  canvas to bitmap rendering.
@@ -244,7 +244,8 @@ int cucul_render_canvas(cucul_canvas_t *, cucul_font_t *, void *,
 int cucul_free_font(cucul_font_t *);
 /*  @} */
 
-/** \defgroup importexport libcucul importers/exporters from/to various formats
+/** \defgroup cucul_importexport libcucul importers/exporters from/to various
+ *  formats
  *
  *  These functions import various file formats into a new canvas, or export
  *  the current canvas to various text formats.

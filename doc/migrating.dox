@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** \page migrating Migrating from libcaca 0.x to the 1.0 API
+/** \page libcaca-migrating Migrating from libcaca 0.x to the 1.0 API
 
  This section will guide you through the migration of a \e libcaca 0.x
  application to the latest API version.

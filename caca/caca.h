@@ -174,7 +174,7 @@ enum caca_key
     CACA_KEY_F15 = 0x128  /**< The F15 key. */
 };
 
-/** \defgroup caca libcaca basic functions
+/** \defgroup libcaca libcaca basic functions
  *
  *  These functions provide the basic \e libcaca routines for driver
  *  initialisation, system information retrieval and configuration.
@@ -190,7 +190,7 @@ unsigned int caca_get_display_height(caca_display_t *);
 int caca_set_display_title(caca_display_t *, char const *);
 /*  @} */
 
-/** \defgroup event libcaca event handling
+/** \defgroup caca_event libcaca event handling
  *
  *  These functions handle user events such as keyboard input and mouse
  *  clicks.

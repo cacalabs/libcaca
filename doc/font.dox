@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** \page font The libcaca font format (version 1)
+/** \page libcaca-font The libcaca font format (version 1)
 
  All types are big endian.
 

@@ -35,25 +35,25 @@
 
  Some other topics are covered by specific sections:
 
- - \subpage tutorial
- - \subpage migrating
+ - \subpage libcaca-tutorial
+ - \subpage libcaca-migrating
 
  There is also information specially targeted at \e libcaca developers:
 
- - \subpage font
- - \subpage canvas
- - \subpage style
+ - \subpage libcaca-font
+ - \subpage libcaca-canvas
+ - \subpage libcaca-style
 
  \section user User's documentation
 
- - \subpage env
+ - \subpage libcaca-env
 
  \section misc Misc
 
- - \subpage news
- - \subpage authors
- - \subpage thanks
- - \subpage todo
+ - \subpage libcaca-news
+ - \subpage libcaca-authors
+ - \subpage libcaca-thanks
+ - \subpage libcaca-todo
 
  \section license License
 

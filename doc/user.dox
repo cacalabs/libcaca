@@ -1,6 +1,6 @@
 /* $Id$ */
 
-/** \page env Environment variables
+/** \page libcaca-env Libcaca environment variables
 
  Some environment variables can be used to change the behaviour of
  \e libcaca without having to modify the program which uses them. These
