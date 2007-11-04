@@ -131,10 +131,13 @@ struct cucul_dither
     int gammatab[4097];
 
     /* Bitmap features */
-    int invert, antialias;
-
-    /* Colour mode used for rendering */
-    enum color_mode color_mode;
+    struct
+    {
+        char const *name;
+        int value;
+    }
+    antialias, color;
+    int invert;
 
     /* Glyphs used for rendering */
     uint32_t const * glyphs;
@@ -336,11 +339,11 @@ cucul_dither_t *cucul_create_dither(unsigned int bpp, unsigned int w,
     d->contrast = 1.0;
 
     /* Default features */
+    d->antialias.name = "prefilter";
+    d->antialias.value = 1;
+    d->color.name = "full16";
+    d->color.value = COLOR_MODE_FULL16;
     d->invert = 0;
-    d->antialias = 1;
-
-    /* Default colour mode */
-    d->color_mode = COLOR_MODE_FULL16;
 
     /* Default character set */
     d->glyphs = ascii_glyphs;
@@ -545,9 +548,15 @@ float cucul_get_dither_contrast(cucul_dither_t *d)
 int cucul_set_dither_antialias(cucul_dither_t *d, char const *str)
 {
     if(!strcasecmp(str, "none"))
-        d->antialias = 0;
+    {
+        d->antialias.name = "none";
+        d->antialias.value = 0;
+    }
     else if(!strcasecmp(str, "prefilter") || !strcasecmp(str, "default"))
-        d->antialias = 1;
+    {
+        d->antialias.name = "prefilter";
+        d->antialias.value = 1;
+    }
     else
     {
         seterrno(EINVAL);
@@ -583,6 +592,20 @@ char const * const *
     return list;
 }
 
+/** \brief Get current antialiasing method
+ *
+ *  Return the given dither's current antialiasing method.
+ *
+ *  This function never fails.
+ *
+ *  \param d Dither object.
+ *  \return A static string.
+ */
+char const * cucul_get_dither_antialias(cucul_dither_t const *d)
+{
+    return d->antialias.name;
+}
+
 /** \brief Choose colours used for dithering
  *
  *  Tell the renderer which colours should be used to render the
@@ -609,19 +632,40 @@ char const * const *
 int cucul_set_dither_color(cucul_dither_t *d, char const *str)
 {
     if(!strcasecmp(str, "mono"))
-        d->color_mode = COLOR_MODE_MONO;
+    {
+        d->color.name = "mono";
+        d->color.value = COLOR_MODE_MONO;
+    }
     else if(!strcasecmp(str, "gray"))
-        d->color_mode = COLOR_MODE_GRAY;
+    {
+        d->color.name = "gray";
+        d->color.value = COLOR_MODE_GRAY;
+    }
     else if(!strcasecmp(str, "8"))
-        d->color_mode = COLOR_MODE_8;
+    {
+        d->color.name = "8";
+        d->color.value = COLOR_MODE_8;
+    }
     else if(!strcasecmp(str, "16"))
-        d->color_mode = COLOR_MODE_16;
+    {
+        d->color.name = "16";
+        d->color.value = COLOR_MODE_16;
+    }
     else if(!strcasecmp(str, "fullgray"))
-        d->color_mode = COLOR_MODE_FULLGRAY;
+    {
+        d->color.name = "fullgray";
+        d->color.value = COLOR_MODE_FULLGRAY;
+    }
     else if(!strcasecmp(str, "full8"))
-        d->color_mode = COLOR_MODE_FULL8;
+    {
+        d->color.name = "full8";
+        d->color.value = COLOR_MODE_FULL8;
+    }
     else if(!strcasecmp(str, "full16") || !strcasecmp(str, "default"))
-        d->color_mode = COLOR_MODE_FULL16;
+    {
+        d->color.name = "full16";
+        d->color.value = COLOR_MODE_FULL16;
+    }
     else
     {
         seterrno(EINVAL);
@@ -660,6 +704,20 @@ char const * const *
     };
 
     return list;
+}
+
+/** \brief Get current colour mode
+ *
+ *  Return the given dither's current colour mode.
+ *
+ *  This function never fails.
+ *
+ *  \param d Dither object.
+ *  \return A static string.
+ */
+char const * cucul_get_dither_color(cucul_dither_t const *d)
+{
+    return d->color.name;
 }
 
 /** \brief Choose characters used for dithering
@@ -900,7 +958,7 @@ int cucul_dither_bitmap(cucul_canvas_t *cv, int x, int y, int w, int h,
         rgba[0] = rgba[1] = rgba[2] = rgba[3] = 0;
 
         /* First get RGB */
-        if(d->antialias)
+        if(d->antialias.value)
         {
             fromx = (x - x1) * w / deltax;
             fromy = (y - y1) * h / deltay;
@@ -983,7 +1041,7 @@ int cucul_dither_bitmap(cucul_canvas_t *cv, int x, int y, int w, int h,
         bg_b = rgb_palette[outbg * 3 + 2];
 
         /* FIXME: we currently only honour "full16" */
-        if(d->color_mode == COLOR_MODE_FULL16)
+        if(d->color.value == COLOR_MODE_FULL16)
         {
             distmin = INT_MAX;
             for(i = 0; i < 16; i++)
