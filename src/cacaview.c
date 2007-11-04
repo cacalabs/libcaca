@@ -64,8 +64,8 @@ int zoom = 0, g = 0, fullscreen = 0, mode, ww, wh;
 
 int main(int argc, char **argv)
 {
-    char const * const * dithers = cucul_get_dither_mode_list(NULL);
-    int dither_mode = 0;
+    char const * const * algos = cucul_get_dither_algorithm_list(NULL);
+    int dither_algorithm = 0;
 
     int quit = 0, update = 1, help = 0, status = 0;
     int reload = 0;
@@ -206,19 +206,21 @@ int main(int argc, char **argv)
                 break;
 #endif
             case 'd':
-                dither_mode++;
-                if(dithers[dither_mode * 2] == NULL)
-                    dither_mode = 0;
-                cucul_set_dither_mode(im->dither, dithers[dither_mode * 2]);
+                dither_algorithm++;
+                if(algos[dither_algorithm * 2] == NULL)
+                    dither_algorithm = 0;
+                cucul_set_dither_algorithm(im->dither,
+                                           algos[dither_algorithm * 2]);
                 new_status = STATUS_DITHERING;
                 update = 1;
                 break;
             case 'D':
-                dither_mode--;
-                if(dither_mode < 0)
-                    while(dithers[dither_mode * 2 + 2] != NULL)
-                        dither_mode++;
-                cucul_set_dither_mode(im->dither, dithers[dither_mode * 2]);
+                dither_algorithm--;
+                if(dither_algorithm < 0)
+                    while(algos[dither_algorithm * 2 + 2] != NULL)
+                        dither_algorithm++;
+                cucul_set_dither_algorithm(im->dither,
+                                           algos[dither_algorithm * 2]);
                 new_status = STATUS_DITHERING;
                 update = 1;
                 break;
@@ -385,24 +387,24 @@ int main(int argc, char **argv)
         {
             print_status();
 
-#if 0 /* FIXME */
             cucul_set_color_ansi(cv, CUCUL_LIGHTGRAY, CUCUL_BLACK);
             switch(status)
             {
+                case STATUS_DITHERING:
+                    cucul_printf(cv, 0, wh - 1, "Dithering: %s",
+                                 cucul_get_dither_algorithm(im->dither));
+                    break;
+#if 0 /* FIXME */
                 case STATUS_ANTIALIASING:
                     cucul_printf(cv, 0, wh - 1, "Antialiasing: %s",
                   cucul_get_feature_name(cucul_get_feature(cv, CUCUL_ANTIALIASING)));
-                    break;
-                case STATUS_DITHERING:
-                    cucul_printf(cv, 0, wh - 1, "Dithering: %s",
-                  cucul_get_feature_name(cucul_get_feature(cv, CUCUL_DITHERING)));
                     break;
                 case STATUS_BACKGROUND:
                     cucul_printf(cv, 0, wh - 1, "Background: %s",
                   cucul_get_feature_name(cucul_get_feature(cv, CUCUL_BACKGROUND)));
                     break;
-            }
 #endif
+            }
         }
 
         if(help)

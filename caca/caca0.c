@@ -187,7 +187,7 @@ void __caca0_set_feature(int feature)
         case 0x31: case 0x32: case 0x33: case 0x34: case 0x35:
             dithering = feature;
             for(i = 0; i < nbitmaps; i++)
-                cucul_set_dither_mode(bitmaps[i], features[feature]);
+                cucul_set_dither_algorithm(bitmaps[i], features[feature]);
             break;
     }
 }
@@ -239,7 +239,7 @@ cucul_dither_t *__caca0_create_bitmap(unsigned int bpp, unsigned int w,
 
     cucul_set_dither_color(d, features[background]);
     cucul_set_dither_antialias(d, features[antialiasing]);
-    cucul_set_dither_mode(d, features[dithering]);
+    cucul_set_dither_algorithm(d, features[dithering]);
 
     /* Store bitmap in our list */
     nbitmaps++;
