@@ -378,7 +378,6 @@ AC_CONFIG_FILES([
   tools/Makefile
   cxx/Makefile
   doc/Makefile
-  autotools/Makefile
   msvc/Makefile
 ])
 AC_CONFIG_FILES([
