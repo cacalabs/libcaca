@@ -24,6 +24,11 @@
 #   include <inttypes.h>
 #endif
 
+/* DOS / Kernel driver */
+#ifndef __intptr_t_defined
+    unsigned int		uintptr_t;
+#endif
+
 #include <stdio.h>
 #include <string.h>
 
