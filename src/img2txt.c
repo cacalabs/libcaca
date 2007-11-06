@@ -1,5 +1,5 @@
 /*
- *  pic2irc       image to IRC converter
+ *  img2txt       image to text converter
  *  Copyright (c) 2006 Sam Hocevar <sam@zoy.org>
  *                2007 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                All Rights Reserved
@@ -99,7 +99,7 @@ int main(int argc, char **argv)
         case 'H': /* --height */
             lines = atoi(myoptarg);
             break;
-        case 'f': /* --help */
+        case 'f': /* --format */
             format = myoptarg;
             break;
         case 'h': /* --help */
