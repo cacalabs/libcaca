@@ -135,7 +135,7 @@ int main(int argc, char **argv)
     i = load_image(argv[argc-1]);
     if(!i)
     {
-        fprintf(stderr, "%s: unable to load %s\n", argv[0], argv[1]);
+        fprintf(stderr, "%s: unable to load %s\n", argv[0], argv[argc-1]);
         cucul_free_canvas(cv);
         return 1;
     }
@@ -161,7 +161,7 @@ int main(int argc, char **argv)
     cucul_clear_canvas(cv);
     if(cucul_set_dither_algorithm(i->dither, dither?dither:"fstein"))
     {
-        fprintf(stderr, "Can't dither image with algorithm '%s'\n", dither);
+        fprintf(stderr, "%s: Can't dither image with algorithm '%s'\n", argv[0], dither);
         unload_image(i);
         cucul_free_canvas(cv);
         return -1;
@@ -173,7 +173,7 @@ int main(int argc, char **argv)
     export = cucul_export_memory(cv, format?format:"ansi", &len);
     if(!export)
     {
-        fprintf(stderr, "Can't export to format '%s'\n", format);
+        fprintf(stderr, "%s: Can't export to format '%s'\n", argv[0], format);
     }
     else
     {
