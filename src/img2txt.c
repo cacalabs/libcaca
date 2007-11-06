@@ -67,6 +67,10 @@ static void usage(int argc, char **argv)
     fprintf(stderr, "\t\t\tps   : Postscript\n");
     fprintf(stderr, "\t\t\tsvg  : Scalable Vector Graphics\n");
     fprintf(stderr, "\t\t\ttga  : Targa Image\n\n");
+
+#if !defined(USE_IMLIB2)
+    fprintf(stderr, "NOTE: This program has NOT been built with Imlib2 support. Only BMP loading is supported.\n");
+#endif
 }
 
 int main(int argc, char **argv)
