@@ -43,17 +43,20 @@ static void usage(int argc, char **argv)
     fprintf(stderr, "Convert IMAGE to any text based available format.\n");
     fprintf(stderr, "Example : %s -w 80 -f ansi ./caca.png\n\n", argv[0]);
     fprintf(stderr, "Options:\n");
-    fprintf(stderr, "  -h, --help\tThis help\n");
-    fprintf(stderr, "  -W, --width=WIDTH\tWidth of resulting image\n");
-    fprintf(stderr, "  -H, --height=HEIGHT\tHeight of resulting image\n");
-    fprintf(stderr, "  -d, --dither=DITHER\tDithering algorithm to use :\n");
+    fprintf(stderr, "  -h, --help\t\t\tThis help\n");
+    fprintf(stderr, "  -W, --width=WIDTH\t\tWidth of resulting image\n");
+    fprintf(stderr, "  -H, --height=HEIGHT\t\tHeight of resulting image\n");
+    fprintf(stderr, "  -b, --brightness=BRIGHTNESS\tBrightness of resulting image\n");
+    fprintf(stderr, "  -c, --contrast=CONTRAST\tContrast of resulting image\n");
+    fprintf(stderr, "  -g, --gamma=GAMMA\t\tGamma of resulting image\n");
+    fprintf(stderr, "  -d, --dither=DITHER\t\tDithering algorithm to use :\n");
     fprintf(stderr, "\t\t\tnone     : Nearest color\n");
     fprintf(stderr, "\t\t\tordered2 : Ordered 2x2\n");
     fprintf(stderr, "\t\t\tordered4 : Ordered 4x4\n");
     fprintf(stderr, "\t\t\tordered8 : Ordered 8x8\n");
     fprintf(stderr, "\t\t\trandom   : Random\n");
     fprintf(stderr, "\t\t\tfstein   : Floyd Steinberg (default)\n");
-    fprintf(stderr, "  -f, --format=FORMAT\tFormat of the resulting image :\n");
+    fprintf(stderr, "  -f, --format=FORMAT\t\tFormat of the resulting image :\n");
     fprintf(stderr, "\t\t\tansi : coulored ANSI (default)\n");
     fprintf(stderr, "\t\t\tcaca : internal libcaca format\n");
     fprintf(stderr, "\t\t\tutf8 : UTF8 with CR\n");
@@ -76,7 +79,7 @@ int main(int argc, char **argv)
     unsigned int cols = 0, lines = 0;
     char *format = NULL;
     char *dither = NULL;
-
+    float gamma = -1, brightness = -1, contrast = -1;
 
     if(argc < 2)
     {
@@ -90,13 +93,16 @@ int main(int argc, char **argv)
         int option_index = 0;
         static struct myoption long_options[] =
         {
-            { "width",  1, NULL, 'W' },
-            { "height", 1, NULL, 'H' },
-            { "format", 1, NULL, 'f' },
-            { "dither", 1, NULL, 'd' },
-            { "help",   0, NULL, 'h' },
+            { "width",       1, NULL, 'W' },
+            { "height",      1, NULL, 'H' },
+            { "format",      1, NULL, 'f' },
+            { "dither",      1, NULL, 'd' },
+            { "gamma",       1, NULL, 'g' },
+            { "brightness",  1, NULL, 'b' },
+            { "contrast",    1, NULL, 'c' },
+            { "help",        0, NULL, 'h' },
         };
-        int c = mygetopt(argc, argv, "W:H:f:d:h", long_options, &option_index);
+        int c = mygetopt(argc, argv, "W:H:f:d:g:b:c:h", long_options, &option_index);
         if(c == -1)
             break;
 
@@ -117,6 +123,15 @@ int main(int argc, char **argv)
         case 'h': /* --help */
             usage(argc, argv);
             return 0;
+            break;
+        case 'g': /* --gamma */
+            gamma = atof(myoptarg);
+            break;
+        case 'b': /* --brightness */
+            brightness = atof(myoptarg);
+            break;
+        case 'c': /* --contrast */
+            contrast = atof(myoptarg);
             break;
         default:
             return 1;
@@ -166,6 +181,11 @@ int main(int argc, char **argv)
         cucul_free_canvas(cv);
         return -1;
     }
+
+    if(brightness!=-1) cucul_set_dither_brightness (i->dither, brightness);
+    if(contrast!=-1) cucul_set_dither_contrast (i->dither, contrast);
+    if(gamma!=-1) cucul_set_dither_gamma (i->dither, gamma);
+
     cucul_dither_bitmap(cv, 0, 0, cols, lines, i->dither, i->pixels);
 
     unload_image(i);
