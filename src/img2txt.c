@@ -47,7 +47,7 @@ static void usage(int argc, char **argv)
     fprintf(stderr, "  -W, --width=WIDTH\tWidth of resulting image\n");
     fprintf(stderr, "  -H, --height=HEIGHT\tHeight of resulting image\n");
     fprintf(stderr, "  -d, --dither=DITHER\tDithering algorithm to use :\n");
-    fprintf(stderr, "\t\t\tnone : Nearest color\n");
+    fprintf(stderr, "\t\t\tnone     : Nearest color\n");
     fprintf(stderr, "\t\t\tordered2 : Ordered 2x2\n");
     fprintf(stderr, "\t\t\tordered4 : Ordered 4x4\n");
     fprintf(stderr, "\t\t\tordered8 : Ordered 8x8\n");
@@ -159,7 +159,13 @@ int main(int argc, char **argv)
     cucul_set_canvas_size(cv, cols, lines);
     cucul_set_color_ansi(cv, CUCUL_DEFAULT, CUCUL_TRANSPARENT);
     cucul_clear_canvas(cv);
-    cucul_set_dither_algorithm(i->dither, dither?dither:"fstein");
+    if(cucul_set_dither_algorithm(i->dither, dither?dither:"fstein"))
+    {
+        fprintf(stderr, "Can't dither image with algorithm '%s'\n", dither);
+        unload_image(i);
+        cucul_free_canvas(cv);
+        return -1;
+    }
     cucul_dither_bitmap(cv, 0, 0, cols, lines, i->dither, i->pixels);
 
     unload_image(i);
