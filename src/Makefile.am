@@ -29,7 +29,7 @@ cacaplay_LDADD = ../caca/libcaca.la ../cucul/libcucul.la
 cacaserver_SOURCES = cacaserver.c
 cacaserver_LDADD = ../cucul/libcucul.la
 
-img2irc_SOURCES = img2irc.c common-image.c common-image.h
+img2irc_SOURCES = img2irc.c mygetopt.c mygetopt.h common-image.c common-image.h
 img2irc_LDADD = ../cucul/libcucul.la
 img2irc_CFLAGS = $(IMLIB2_CFLAGS)
 img2irc_LDFLAGS = $(IMLIB2_LIBS)
