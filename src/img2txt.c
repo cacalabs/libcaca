@@ -62,7 +62,7 @@ static void usage(int argc, char **argv)
     fprintf(stderr, "\t\t\tutf8 : UTF8 with CR\n");
     fprintf(stderr, "\t\t\tutf8 : UTF8 with CRLF (MS Windows)\n");
     fprintf(stderr, "\t\t\thtml : HTML with CSS and DIV support\n");
-    fprintf(stderr, "\t\t\thtml : Pure HTML3 with tables\n");
+    fprintf(stderr, "\t\t\thtml3 : Pure HTML3 with tables\n");
     fprintf(stderr, "\t\t\tirc  : IRC with ctrl-k codes\n");
     fprintf(stderr, "\t\t\tps   : Postscript\n");
     fprintf(stderr, "\t\t\tsvg  : Scalable Vector Graphics\n");
