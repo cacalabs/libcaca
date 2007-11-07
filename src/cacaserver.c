@@ -21,10 +21,6 @@
 #include <stdlib.h>
 #if defined(HAVE_ARPA_INET_H)
 #   include <arpa/inet.h>
-#   if defined(USE_COCOA) && defined(HAVE_NETINET_IN_H)
-/* for sockaddr_in (not included from arpa/inet.h in 10.3.9 SDK) */
-#       include <netinet/in.h>
-#   endif
 #elif defined(HAVE_WINSOCK2_H)
 #   include <winsock2.h>
 #   include <ws2tcpip.h>
