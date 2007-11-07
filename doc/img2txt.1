@@ -11,6 +11,14 @@ img2txt \- convert images to various text-based coloured files
 .B \-H
 .I height
 ]
+[
+.B \-x
+.I font-width
+]
+[
+.B \-y
+.I font-height
+]
 .PD 0
 .IP
 .PD
@@ -59,6 +67,12 @@ Change output column count. If not given, the default is set to 60.
 .TP
 .B \-H, \-\-height=<height>
 Change output line count. If not given, the height is computed to match correct aspect ratio.
+.TP
+.B \-x, \-\-font-width=<width>
+Change output font width. If not given, the default is set to 6. This value will be used for computing aspect ratio.
+.TP
+.B \-y, \-\-font-height=<height>
+Change output font height. If not given, the default is set to 10. This value will be used for computing aspect ratio.
 .TP
 .B \-b, \-\-brightness=<brightness>
 Change image brightness. Default to 1.0.

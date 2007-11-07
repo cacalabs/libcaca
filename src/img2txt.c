@@ -49,6 +49,8 @@ static void usage(int argc, char **argv)
     fprintf(stderr, "  -v, --version\t\t\tVersion of the program\n");
     fprintf(stderr, "  -W, --width=WIDTH\t\tWidth of resulting image\n");
     fprintf(stderr, "  -H, --height=HEIGHT\t\tHeight of resulting image\n");
+    fprintf(stderr, "  -x, --font-width=WIDTH\t\tWidth of output font\n");
+    fprintf(stderr, "  -y, --font-height=HEIGHT\t\tHeight of output font\n");
     fprintf(stderr, "  -b, --brightness=BRIGHTNESS\tBrightness of resulting image\n");
     fprintf(stderr, "  -c, --contrast=CONTRAST\tContrast of resulting image\n");
     fprintf(stderr, "  -g, --gamma=GAMMA\t\tGamma of resulting image\n");
@@ -96,7 +98,7 @@ int main(int argc, char **argv)
     void *export;
     unsigned long int len;
     struct image *i;
-    unsigned int cols = 0, lines = 0;
+    unsigned int cols = 0, lines = 0, font_width = 6, font_height = 10;
     char *format = NULL;
     char *dither = NULL;
     float gamma = -1, brightness = -1, contrast = -1;
@@ -115,15 +117,17 @@ int main(int argc, char **argv)
         {
             { "width",       1, NULL, 'W' },
             { "height",      1, NULL, 'H' },
+            { "font-width",  1, NULL, 'x' },
+            { "font-height", 1, NULL, 'y' },
             { "format",      1, NULL, 'f' },
             { "dither",      1, NULL, 'd' },
             { "gamma",       1, NULL, 'g' },
             { "brightness",  1, NULL, 'b' },
             { "contrast",    1, NULL, 'c' },
             { "help",        0, NULL, 'h' },
-            { "version",        0, NULL, 'v' },
+            { "version",     0, NULL, 'v' },
         };
-        int c = mygetopt(argc, argv, "W:H:f:d:g:b:c:h:v", long_options, &option_index);
+        int c = mygetopt(argc, argv, "W:H:f:d:g:b:c:h:v:x:y:", long_options, &option_index);
         if(c == -1)
             break;
 
@@ -134,6 +138,12 @@ int main(int argc, char **argv)
             break;
         case 'H': /* --height */
             lines = atoi(myoptarg);
+            break;
+        case 'x': /* --width */
+            font_width = atoi(myoptarg);
+            break;
+        case 'y': /* --height */
+            font_height = atoi(myoptarg);
             break;
         case 'f': /* --format */
             format = myoptarg;
@@ -184,15 +194,15 @@ int main(int argc, char **argv)
     if(!cols && !lines)
     {
         cols = 60;
-        lines = cols * i->h * 6 / i->w / 10;
+        lines = cols * i->h * font_width / i->w / font_height;
     }
     else if(cols && !lines)
     {
-        lines = cols * i->h * 6 / i->w / 10;
+        lines = cols * i->h * font_width / i->w / font_height;
     }
     else if(!cols && lines)
     {
-        cols = lines * i->w * 10 / i->h / 6;
+        cols = lines * i->w * font_height / i->h / font_width;
     }
 
 
