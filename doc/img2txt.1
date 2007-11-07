@@ -1,0 +1,112 @@
+.TH img2txt 1 "2007-11-07" "libcaca"
+.SH NAME
+img2txt \- convert images to various text-based coloured files
+.SH SYNOPSIS
+.B img2txt 
+[
+.B \-W
+.I width
+]
+[
+.B \-H
+.I height
+]
+.PD 0
+.IP
+.PD
+ [
+.B \-b
+.I brightness
+]
+[
+.B \-c
+.I contrast
+]
+[
+.B \-g
+.I gamma
+]
+.PD 0
+.IP
+.PD
+ [
+.B \-d
+.I dither
+]
+[
+.B \-f
+.I format
+] 
+.I FILE
+.RI
+.SH DESCRIPTION
+.B img2txt
+converts images to colour ASCII characters and outputs them to text-based
+coloured files.
+.PP
+.B img2txt
+can load the most widespread image formats: PNG, JPEG, GIF, PNG, BMP etc (see 
+.B NOTES
+for details).
+By default the output text is 60 columns wide, and the line count is 
+computed accordingly to respect aspect ratio of original file. 
+The default output format is standard ANSI coloured text.
+
+.SH OPTIONS
+.TP
+.B \-W, \-\-width=<width>
+Change output column count. If not given, the default is set to 60.
+.TP
+.B \-H, \-\-height=<height>
+Change output line count. If not given, the height is computed to match correct aspect ratio.
+.TP
+.B \-b, \-\-brightness=<brightness>
+Change image brightness. Default to 1.0.
+.TP
+.B \-c, \-\-contrast=<contrast>
+Change image contrast. Default to 1.0.
+.TP
+.B \-g, \-\-gamma=<gamma>
+Change image gamma. Default to 1.0.
+.TP
+.B \-d, \-\-dither=<dither>
+Change dithering algorithm. This can be one of the following (default to fstein) :
+  none     : Nearest color
+  ordered2 : Ordered 2x2
+  ordered4 : Ordered 4x4
+  ordered8 : Ordered 8x8
+  random   : Random
+  fstein   : Floyd Steinberg
+.TP
+.B \-f, \-\-format=<format>
+Change output format. This can be one of the following (default to ansi) :
+  ansi  : coloured ANSI 
+  caca  : internal libcaca format
+  utf8  : UTF8 with CR
+  utf8  : UTF8 with CRLF (MS Windows)
+  html  : HTML with CSS and DIV support
+  html3 : Pure HTML3 with tables
+  irc   : IRC with ctrl-k codes
+  ps    : Postscript
+  svg   : Scalable Vector Graphics
+  tga   : Targa Image
+
+.SH EXAMPLES
+img2txt hello.jpg > hello.ans
+
+img2txt \-\-width=40 \-\-format=svg hello.jpg > tinyhello.svg
+
+.SH NOTES
+Setting both column and line count (using 
+\-\-width
+and
+\-\-height) will let you choose the exact output size without taking aspect ratio in account.
+
+You must compile libcaca package with support of
+.I Imlib2
+to be able to load a wide variety of image formats. Otherwise you will only  be able to load regular BMP files.
+
+.SH SEE ALSO
+cacaview(1)
+.SH AUTHOR
+This manual page was written by Sam Hocevar <sam@zoy.org> and Jean-Yves Lamoureux <jylam@lnxscene.org>.
