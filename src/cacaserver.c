@@ -25,12 +25,13 @@
 /* for sockaddr_in (not included from arpa/inet.h in 10.3.9 SDK) */
 #       include <netinet/in.h>
 #   endif
-#elif defined(HAVE_NETINET_IN_H)
-#   include <netinet/in.h>
 #elif defined(HAVE_WINSOCK2_H)
 #   include <winsock2.h>
 #   include <ws2tcpip.h>
 #   define USE_WINSOCK 1
+#endif
+#if defined(HAVE_NETINET_IN_H)
+#   include <netinet/in.h>
 #endif
 #if defined(HAVE_UNISTD_H)
 #   include <unistd.h>
