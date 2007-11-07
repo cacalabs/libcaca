@@ -345,23 +345,24 @@ if test "${enable_doc}" != "no"; then
   if test "${DOXYGEN}" != "no"; then
     # Build LaTeX documentation?
     AC_PATH_PROG(LATEX, pdflatex, no)
+    AC_PATH_PROG(KPSEWHICH, kpsewhich, no)
     AC_PATH_PROG(DVIPS, dvips, no)
-    if test "${DVIPS}" = "no"; then
+    if test "${DVIPS}" = "no" -o "${KPSEWHICH}" = "no"; then
       LATEX="no"
     fi
-    AC_MSG_CHECKING(for a4.sty)
-    if test "$(find /usr/share/texmf* -name 'a4.sty')" != ""; then
-      AC_MSG_RESULT(yes)
-      AC_MSG_CHECKING(for a4wide.sty)
-      if test "$(find /usr/share/texmf* -name 'a4wide.sty')" != ""; then
-        AC_MSG_RESULT(yes)
+    if test "${LATEX}" != "no"; then
+      AC_MSG_CHECKING(for a4.sty and a4wide.sty)
+      if "${KPSEWHICH}" a4.sty >/dev/null 2>&1; then
+        if "${KPSEWHICH}" a4wide.sty >/dev/null 2>&1; then
+          AC_MSG_RESULT(yes)
+        else
+          LATEX="no"
+          AC_MSG_RESULT(no)
+        fi
       else
         LATEX="no"
         AC_MSG_RESULT(no)
       fi
-    else
-      LATEX="no"
-      AC_MSG_RESULT(no)
     fi
   fi
 fi
