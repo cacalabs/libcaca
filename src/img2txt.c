@@ -37,6 +37,8 @@
 #include "cucul.h"
 #include "common-image.h"
 
+#define IMG2TXTVERSION "0.1"
+
 static void usage(int argc, char **argv)
 {
     fprintf(stderr, "Usage: %s [OPTIONS]... <IMAGE>\n", argv[0]);
@@ -44,6 +46,7 @@ static void usage(int argc, char **argv)
     fprintf(stderr, "Example : %s -w 80 -f ansi ./caca.png\n\n", argv[0]);
     fprintf(stderr, "Options:\n");
     fprintf(stderr, "  -h, --help\t\t\tThis help\n");
+    fprintf(stderr, "  -v, --version\t\t\tVersion of the program\n");
     fprintf(stderr, "  -W, --width=WIDTH\t\tWidth of resulting image\n");
     fprintf(stderr, "  -H, --height=HEIGHT\t\tHeight of resulting image\n");
     fprintf(stderr, "  -b, --brightness=BRIGHTNESS\tBrightness of resulting image\n");
@@ -73,6 +76,19 @@ static void usage(int argc, char **argv)
 #endif
 }
 
+static void version(void)
+{
+    printf(
+    "img2txt Copyright 2006-2007 Sam Hocevar and Jean-Yves Lamoureux\n"
+    "Internet: <sam@zoy.org> <jylam@lnxscene.org> Version: %s, date: %s\n"
+    "\n"
+    "img2txt, along with its documentation, may be freely copied and distributed.\n"
+    "\n"
+    "The latest version of img2txt is available from the web site,\n"
+    "        http://libcaca.zoy.org/ in the libcaca package.\n"
+    "\n"
+    , VERSION, __DATE__);
+}
 int main(int argc, char **argv)
 {
     /* libcucul context */
@@ -105,8 +121,9 @@ int main(int argc, char **argv)
             { "brightness",  1, NULL, 'b' },
             { "contrast",    1, NULL, 'c' },
             { "help",        0, NULL, 'h' },
+            { "version",        0, NULL, 'v' },
         };
-        int c = mygetopt(argc, argv, "W:H:f:d:g:b:c:h", long_options, &option_index);
+        int c = mygetopt(argc, argv, "W:H:f:d:g:b:c:h:v", long_options, &option_index);
         if(c == -1)
             break;
 
@@ -124,10 +141,6 @@ int main(int argc, char **argv)
         case 'd': /* --dither */
             dither = myoptarg;
             break;
-        case 'h': /* --help */
-            usage(argc, argv);
-            return 0;
-            break;
         case 'g': /* --gamma */
             gamma = atof(myoptarg);
             break;
@@ -136,6 +149,14 @@ int main(int argc, char **argv)
             break;
         case 'c': /* --contrast */
             contrast = atof(myoptarg);
+            break;
+        case 'h': /* --help */
+            usage(argc, argv);
+            return 0;
+            break;
+        case 'v': /* --version */
+            version();
+            return 0;
             break;
         default:
             return 1;
