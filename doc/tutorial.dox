@@ -27,7 +27,7 @@ int main(void)
     /* Choose drawing colours */
     cucul_set_color_ansi(cv, CUCUL_BLACK, CUCUL_WHITE);
     /* Draw a string at coordinates (0, 0) */
-    cucul_putstr(cv, 0, 0, "This is a message");
+    cucul_put_str(cv, 0, 0, "This is a message");
     /* Refresh display */
     caca_refresh_display(dp);
     /* Wait for a key press event */
