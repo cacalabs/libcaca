@@ -355,12 +355,12 @@ char const *const * Dither::getCharsetList()
 
 void Dither::setMode(char const *cv)
 {
-    cucul_set_dither_mode(dither, cv);
+    cucul_set_dither_algorithm(dither, cv);
 }
 
 char const *const * Dither::getModeList(void)
 {
-    return cucul_get_dither_mode_list(dither);
+    return cucul_get_dither_algorithm_list(dither);
 }
 
 void Dither::Bitmap(Cucul *cv, int x, int y, int w, int h, void *v)
