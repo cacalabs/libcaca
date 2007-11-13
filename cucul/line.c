@@ -71,7 +71,7 @@ int cucul_draw_line(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
 
 /** \brief Draw a polyline.
  *
- *  Draw a plyline on the canvas using the given character and coordinate
+ *  Draw a polyline on the canvas using the given character and coordinate
  *  arrays. The first and last points are not connected, hence in order to
  *  draw a polygon you need to specify the starting point at the end of the
  *  list as well.
