@@ -9,7 +9,7 @@
 So, you can write a libcucul only program, but you <b>can't</b> write a libcaca only program, it'll be nonsense. Period.
 
 
-First, a working program, very simple, to check you can compile and run it : 
+First, a working program, very simple, to check you can compile and run it:
 
 \code
 
@@ -21,7 +21,9 @@ int main(void)
     /* Initialise libcaca */
     cucul_canvas_t *cv; caca_display_t *dp; caca_event_t ev;
     cv = cucul_create_canvas(0, 0);
+    if(!cv) return 1;
     dp = caca_create_display(cv);
+    if(!dp) return 1;
     /* Set window title */
     caca_set_display_title(dp, "Hello!");
     /* Choose drawing colours */
