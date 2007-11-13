@@ -1,6 +1,6 @@
 # $Id$
 
-SUBDIRS = kernel cucul caca src test tools cxx ruby doc
+SUBDIRS = kernel cucul caca src test tools cxx DotNet ruby doc
 DIST_SUBDIRS = $(SUBDIRS) msvc
 
 EXTRA_DIST = NOTES COPYING.GPL COPYING.LGPL bootstrap build-dos build-kernel build-win32 caca-config.in common.h libcaca.spec

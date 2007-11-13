@@ -62,6 +62,8 @@ AC_ARG_ENABLE(vga,
 dnl language bindings
 AC_ARG_ENABLE(cxx,
   [  --enable-cxx            C++ bindings (default enabled)])
+AC_ARG_ENABLE(dotnet,
+  [  --enable-dotnet         .NET bindings (autodetected)])
 AC_ARG_ENABLE(ruby,
   [  --enable-ruby           Ruby bindings (autodetected)])
 
@@ -319,6 +321,16 @@ if test "${enable_cxx}" != "no"; then
 fi
 AM_CONDITIONAL(USE_CXX, test "${ac_cv_my_have_cxx}" = "yes")
 
+# Build the DotNet bindings?
+ac_cv_my_have_dotnet="no"
+if test "${enable_dotnet}" != "no"; then
+  AC_PATH_PROG(GMCS, gmcs, no)
+  if test "${GMCS}" != "no"; then
+    ac_cv_my_have_dotnet="yes"
+  fi
+fi
+AM_CONDITIONAL(USE_DOTNET, test "${ac_cv_my_have_dotnet}" = "yes")
+
 # Build the Ruby bindings?
 ac_cv_my_have_ruby="no"
 if test "${enable_ruby}" != "no"; then
@@ -396,6 +408,7 @@ AC_CONFIG_FILES([
   test/Makefile
   tools/Makefile
   cxx/Makefile
+  DotNet/Makefile
   ruby/Makefile
   doc/Makefile
   msvc/Makefile
