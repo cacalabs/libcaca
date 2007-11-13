@@ -62,6 +62,8 @@ AC_ARG_ENABLE(vga,
 dnl language bindings
 AC_ARG_ENABLE(cxx,
   [  --enable-cxx            C++ bindings (default disabled)])
+AC_ARG_ENABLE(ruby,
+  [  --enable-ruby           Ruby bindings (default disabled)])
 
 dnl example programs features
 AC_ARG_ENABLE(imlib2,
@@ -317,6 +319,22 @@ if test "${enable_cxx}" = "yes"; then
 fi
 AM_CONDITIONAL(USE_CXX, test "${ac_cv_my_have_cxx}" = "yes")
 
+# Build the Ruby bindings?
+ac_cv_my_have_ruby="no"
+if test "${enable_ruby}" = "yes"; then
+  AC_PATH_PROG(RUBY, ruby, no)
+  if test "${RUBY}" != "no"; then
+    AC_MSG_CHECKING(for mkmf.rb)
+    if "${RUBY}" -e 'require "mkmf"' >/dev/null 2>&1; then
+      AC_MSG_RESULT(yes)
+      ac_cv_my_have_ruby="yes"
+    else
+      AC_MSG_RESULT(no)
+    fi
+  fi
+fi
+AM_CONDITIONAL(USE_RUBY, test "${ac_cv_my_have_ruby}" = "yes")
+
 # Build cacaserver?
 ac_cv_my_have_network="no"
 AC_CHECK_HEADERS(sys/socket.h,
@@ -378,6 +396,7 @@ AC_CONFIG_FILES([
   test/Makefile
   tools/Makefile
   cxx/Makefile
+  ruby/Makefile
   doc/Makefile
   msvc/Makefile
 ])
