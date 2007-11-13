@@ -61,9 +61,9 @@ AC_ARG_ENABLE(vga,
 
 dnl language bindings
 AC_ARG_ENABLE(cxx,
-  [  --enable-cxx            C++ bindings (default disabled)])
+  [  --enable-cxx            C++ bindings (default enabled)])
 AC_ARG_ENABLE(ruby,
-  [  --enable-ruby           Ruby bindings (default disabled)])
+  [  --enable-ruby           Ruby bindings (autodetected)])
 
 dnl example programs features
 AC_ARG_ENABLE(imlib2,
@@ -314,14 +314,14 @@ CFLAGS="${CFLAGS} -Wall -Wpointer-arith -Wcast-align -Wcast-qual -Wstrict-protot
 
 # Build the C++ bindings?
 ac_cv_my_have_cxx="no"
-if test "${enable_cxx}" = "yes"; then
+if test "${enable_cxx}" != "no"; then
   ac_cv_my_have_cxx="yes"
 fi
 AM_CONDITIONAL(USE_CXX, test "${ac_cv_my_have_cxx}" = "yes")
 
 # Build the Ruby bindings?
 ac_cv_my_have_ruby="no"
-if test "${enable_ruby}" = "yes"; then
+if test "${enable_ruby}" != "no"; then
   AC_PATH_PROG(RUBY, ruby, no)
   if test "${RUBY}" != "no"; then
     AC_MSG_CHECKING(for mkmf.rb)
