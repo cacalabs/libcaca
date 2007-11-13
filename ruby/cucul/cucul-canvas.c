@@ -244,16 +244,14 @@ static VALUE draw_line(VALUE self, VALUE x1, VALUE y1, VALUE x2, VALUE y2, VALUE
     return self;
 }
 
-static VALUE draw_polyline(VALUE self, VALUE x, VALUE y, VALUE ch)
+static VALUE draw_polyline(VALUE self, VALUE points, VALUE ch)
 {
     int i, n;
     int *ax, *ay;
-    
-    n = RARRAY(x)->len;
+    int error = 0;
+    VALUE v, x, y;
 
-    /* Ensure x and y have the same number of elements */
-    if(n != RARRAY(y)->len)
-        rb_raise(rb_eArgError, "Arguments do not have the same number of elements");
+    n = RARRAY(points)->len;
 
     ax = (int*)malloc(n*sizeof(int));
     if(!ax)
@@ -268,8 +266,28 @@ static VALUE draw_polyline(VALUE self, VALUE x, VALUE y, VALUE ch)
 
     for(i=0; i<n; i++)
     {
-        ax[i] = NUM2INT(rb_ary_entry(x, i));
-        ay[i] = NUM2INT(rb_ary_entry(y, i));
+        v = rb_ary_entry(points, i);
+        if((TYPE(v) == T_ARRAY) && (RARRAY(v)->len == 2))
+        {
+            x = rb_ary_entry(v,0);
+            y = rb_ary_entry(v,1);
+            if(rb_obj_is_kind_of(x, rb_cInteger) &&
+               rb_obj_is_kind_of(y, rb_cInteger))
+            {
+                ax[i] = NUM2INT(x);
+                ay[i] = NUM2INT(y);
+            } else
+                error = 1;
+        }
+	else
+            error = 1;
+    }
+
+    if(error)
+    {
+        free(ax);
+        free(ay);
+        rb_raise(rb_eArgError, "Invalid list of points");
     }
 
     n--;
@@ -288,17 +306,14 @@ static VALUE draw_thin_line(VALUE self, VALUE x1, VALUE y1, VALUE x2, VALUE y2)
     return self;
 }
 
-
-static VALUE draw_thin_polyline(VALUE self, VALUE x, VALUE y)
+static VALUE draw_thin_polyline(VALUE self, VALUE points)
 {
     int i, n;
     int *ax, *ay;
-    
-    n = RARRAY(x)->len;
+    int error = 0;
+    VALUE v, x, y;
 
-    /* Ensure x and y have the same number of elements */
-    if(n != RARRAY(y)->len)
-        rb_raise(rb_eArgError, "Arguments do not have the same number of elements");
+    n = RARRAY(points)->len;
 
     ax = (int*)malloc(n*sizeof(int));
     if(!ax)
@@ -313,8 +328,28 @@ static VALUE draw_thin_polyline(VALUE self, VALUE x, VALUE y)
 
     for(i=0; i<n; i++)
     {
-        ax[i] = NUM2INT(rb_ary_entry(x, i));
-        ay[i] = NUM2INT(rb_ary_entry(y, i));
+        v = rb_ary_entry(points, i);
+        if((TYPE(v) == T_ARRAY) && (RARRAY(v)->len == 2))
+        {
+            x = rb_ary_entry(v,0);
+            y = rb_ary_entry(v,1);
+            if(rb_obj_is_kind_of(x, rb_cInteger) &&
+               rb_obj_is_kind_of(y, rb_cInteger))
+            {
+                ax[i] = NUM2INT(x);
+                ay[i] = NUM2INT(y);
+            } else
+                error = 1;
+        }
+	else
+            error = 1;
+    }
+
+    if(error)
+    {
+        free(ax);
+        free(ay);
+        rb_raise(rb_eArgError, "Invalid list of points");
     }
 
     n--;
@@ -574,9 +609,9 @@ void Init_cucul_canvas(VALUE mCucul)
     rb_define_method(cCanvas, "stretch_right", stretch_right, 0);
 
     rb_define_method(cCanvas, "draw_line", draw_line, 5);
-    rb_define_method(cCanvas, "draw_polyline", draw_polyline, 3);
+    rb_define_method(cCanvas, "draw_polyline", draw_polyline, 2);
     rb_define_method(cCanvas, "draw_thin_line", draw_thin_line, 4);
-    rb_define_method(cCanvas, "draw_thin_polyline", draw_thin_polyline, 2);
+    rb_define_method(cCanvas, "draw_thin_polyline", draw_thin_polyline, 1);
     rb_define_method(cCanvas, "draw_circle", draw_circle, 4);
     rb_define_method(cCanvas, "draw_ellipse", draw_ellipse, 5);
     rb_define_method(cCanvas, "draw_thin_ellipse", draw_thin_ellipse, 4);
