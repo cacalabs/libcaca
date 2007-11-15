@@ -30,6 +30,7 @@ class Cucul;
 
 class Charset
 {
+ public:
     unsigned long int utf8ToUtf32(char const *, unsigned int *);
     unsigned int utf32ToUtf8(char *, unsigned long int);
     unsigned char utf32ToCp437(unsigned long int);
