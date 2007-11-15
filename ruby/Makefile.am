@@ -7,6 +7,7 @@ endif
 EXTRA_DIST = cucul/extconf.rb \
              cucul/cucul.c \
              cucul/cucul-canvas.c \
+             cucul/cucul-canvas.h \
              cucul/test.rb \
              cucul/t/tc_frame.rb \
              caca/extconf.rb

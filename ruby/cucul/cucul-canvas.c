@@ -12,6 +12,7 @@
 #include <ruby.h>
 #include <cucul.h>
 #include <errno.h>
+#include "cucul-canvas.h"
 
 #define _SELF  (DATA_PTR(self))
 
@@ -514,7 +515,7 @@ static VALUE export_memory(VALUE self, VALUE format)
     return ret;
 }
 
-static VALUE export_list()
+static VALUE export_list(void)
 {
     VALUE ary, ary2;
     
@@ -537,7 +538,7 @@ static VALUE export_list()
     return ary;
 }
 
-static VALUE import_list()
+static VALUE import_list(void)
 {
     VALUE ary, ary2;
     

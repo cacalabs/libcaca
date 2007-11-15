@@ -12,9 +12,9 @@
 #include <ruby.h>
 #include <cucul.h>
 
-static VALUE mCucul;
+#include "cucul-canvas.h"
 
-extern void Init_cucul_canvas(VALUE);
+static VALUE mCucul;
 
 void Init_cucul()
 {
