@@ -4,3 +4,5 @@ require 'test/unit'
 Dir.glob("t/tc*.rb").each{ |t|
 	require t
 }
+
+exit Test::Unit::AutoRunner.run
