@@ -22,8 +22,8 @@ caca/caca.so: cucul/cucul.so
 	make -C caca
 
 clean-local:
-	make -C cucul clean
-	make -C caca clean
+	[ ! -f cucul/Makefile ] || make -C cucul clean
+	[ ! -f caca/Makefile ] || make -C caca clean
 
 distclean-local:
 	rm -f cucul/Makefile caca/Makefile
