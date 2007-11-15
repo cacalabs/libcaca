@@ -3,6 +3,7 @@ rubylibdir=$(RUBY_SITEARCHDIR)
 
 if USE_RUBY
 rubylib_LTLIBRARIES = cucul.la
+TESTS = test
 endif
 
 cucul_la_CPPFLAGS = -I$(top_srcdir)/cucul -I$(RUBY_ARCHDIR)
