@@ -1,30 +1,17 @@
 # $Id: $
+rubylibdir=$(RUBY_SITEARCHDIR)
 
 if USE_RUBY
-noinst_DATA = cucul/cucul.so caca/caca.so
+rubylib_LTLIBRARIES = cucul.la
 endif
 
-EXTRA_DIST = cucul/extconf.rb \
-             cucul/cucul.c \
-             cucul/cucul-canvas.c \
-             cucul/cucul-canvas.h \
-             cucul/test.rb \
-             cucul/t/tc_frame.rb \
-             caca/extconf.rb
+cucul_la_CPPFLAGS = -I$(top_srcdir)/cucul -I$(RUBY_ARCHDIR)
+cucul_la_SOURCES = cucul.c cucul-canvas.c
+cucul_la_LDFLAGS = -module -avoid-version -shared -L$(RUBY_LIBDIR) -l$(RUBY_SO_NAME)
+cucul_la_LIBADD = ../cucul/libcucul.la
 
-DISTCLEANFILES = cucul/Makefile caca/Makefile
+EXTRA_DIST = cucul-canvas.h \
+	     test.rb \
+             t/tc_frame.rb
 
-cucul/cucul.so:
-	ruby -C cucul extconf.rb
-	make -C cucul
-
-caca/caca.so: cucul/cucul.so
-	ruby -C caca extconf.rb
-	make -C caca
-
-clean-local:
-	[ ! -f cucul/Makefile ] || make -C cucul clean
-	[ ! -f caca/Makefile ] || make -C caca clean
-
-distclean-local:
-	rm -f cucul/Makefile caca/Makefile
+CFLAGS+=-Wno-strict-prototypes -Wno-missing-prototypes

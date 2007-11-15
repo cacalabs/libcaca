@@ -1,3 +1,5 @@
+#!/usr/bin/ruby -I.libs
+
 require 'test/unit'
 Dir.glob("t/tc*.rb").each{ |t|
 	require t
