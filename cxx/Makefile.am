@@ -13,7 +13,7 @@ libcucul___la_LIBADD = ../cucul/libcucul.la
 
 libcaca___la_SOURCES = caca++.cpp caca++.h
 libcaca___la_LDFLAGS = -no-undefined -version-info @LT_VERSION@
-libcaca___la_LIBADD = ../caca/libcaca.la
+libcaca___la_LIBADD = libcucul++.la ../caca/libcaca.la
 
 if USE_CXX
 noinst_PROGRAMS = cxxtest
