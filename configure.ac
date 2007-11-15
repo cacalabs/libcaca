@@ -336,13 +336,15 @@ ac_cv_my_have_ruby="no"
 if test "${enable_ruby}" != "no"; then
   AC_PATH_PROG(RUBY, ruby, no)
   if test "${RUBY}" != "no"; then
-    AC_MSG_CHECKING(for mkmf.rb)
-    if "${RUBY}" -e 'require "mkmf"' >/dev/null 2>&1; then
-      AC_MSG_RESULT(yes)
-      ac_cv_my_have_ruby="yes"
-    else
-      AC_MSG_RESULT(no)
-    fi
+    RUBY_ARCHDIR=`ruby -r rbconfig -e 'print Config::CONFIG@<:@"archdir"@:>@'`
+    RUBY_SITEARCHDIR=`ruby -r rbconfig -e 'print Config::CONFIG@<:@"sitearchdir"@:>@'`
+    RUBY_LIBDIR=`ruby -r rbconfig -e 'print Config::CONFIG@<:@"libdir"@:>@'`
+    RUBY_SO_NAME=`ruby -r rbconfig -e 'print Config::CONFIG@<:@"RUBY_SO_NAME"@:>@'`
+    AC_SUBST(RUBY_ARCHDIR)
+    AC_SUBST(RUBY_SITEARCHDIR)
+    AC_SUBST(RUBY_LIBDIR)
+    AC_SUBST(RUBY_SO_NAME)
+    AC_CHECK_HEADERS($RUBY_ARCHDIR/ruby.h, [ac_cv_my_have_ruby="yes"])
   fi
 fi
 AM_CONDITIONAL(USE_RUBY, test "${ac_cv_my_have_ruby}" = "yes")
