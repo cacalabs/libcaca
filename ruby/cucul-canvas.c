@@ -573,8 +573,8 @@ void Init_cucul_canvas(VALUE mCucul)
     rb_define_method(cCanvas, "width=", set_canvas_width, 1);
     rb_define_method(cCanvas, "set_width", set_canvas_width2, 1);
     rb_define_method(cCanvas, "height", get_canvas_height, 0);
-    rb_define_method(cCanvas, "height=", set_canvas_height, 0);
-    rb_define_method(cCanvas, "set_height", set_canvas_height2, 0);
+    rb_define_method(cCanvas, "height=", set_canvas_height, 1);
+    rb_define_method(cCanvas, "set_height", set_canvas_height2, 1);
     rb_define_method(cCanvas, "set_size", set_canvas_size, 2);
         
     rb_define_method(cCanvas, "gotoxy", gotoxy, 2);
