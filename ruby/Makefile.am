@@ -12,9 +12,11 @@ cucul_la_LDFLAGS = -module -avoid-version -shared -L$(RUBY_LIBDIR) -l$(RUBY_SO_N
 cucul_la_LIBADD = ../cucul/libcucul.la
 
 EXTRA_DIST = cucul-canvas.h \
-	     cucul-canvas.h \
-	     common.h \
-	     test.rb \
+             cucul-canvas.h \
+             common.h \
+             test.rb \
+             t/tc_canvas.rb \
+             t/tc_font.rb \
              t/tc_frame.rb \
              README
 
