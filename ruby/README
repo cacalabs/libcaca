@@ -2,12 +2,16 @@ This a Ruby binding for libcucul, libcaca will be added later.
 
 There is no real documentation but "methods" on any object should help you :)
 
-The only object available for now is Cucul::Canvas (meaning that only
-functions that have a cucul_canvas_t* as first argument except
-cucul_dither_bitmap are available).
+The objects available for now are :
+
+- Cucul::Canvas (functions that have a cucul_canvas_t* as first argument)
+ * dither_bitmap is missing as Cucul::Dither is not yet implemented
+
+- Cucul::Font (functions that have a cucul_font_t* as first argument)
+ * The constructor can currently only accept the name of a builtin font
 
 I tried to follow Ruby spirit meaning that :
-- most of the Cucul::Canvas methods return self
+- most of the methods return self
 - the methods set_foo with only an argument are also available as foo=
 (returning the value instead of self)
 - the methods originally named get_foo are available only as foo
@@ -19,7 +23,7 @@ irb(main):001:0> Cucul.constants
 => ["BROWN", "BOLD", "GREEN", "LIGHTMAGENTA", "LIGHTBLUE", "BLINK",
 "MAGENTA", "DEFAULT", "TRANSPARENT", "BLUE", "LIGHTRED", "DARKGRAY",
 "UNDERLINE", "RED", "WHITE", "BLACK", "LIGHTCYAN", "LIGHTGRAY",
-"ITALICS", "CYAN", "YELLOW", "LIGHTGREEN", "Canvas"]
+"ITALICS", "CYAN", "YELLOW", "LIGHTGREEN", "Canvas", "Font"]
 
 irb(main):002:0> Cucul::Canvas.methods.sort -
 Cucul::Canvas.ancestors[1].methods
@@ -40,6 +44,14 @@ Cucul::Canvas.ancestors[1].instance_methods
 "set_boundaries", "set_color_ansi", "set_color_argb", "set_frame",
 "set_frame_name", "set_handle", "set_height", "set_size", "set_width",
 "stretch_left", "stretch_right", "width", "width="]
+
+irb(main):004:0> Cucul::Font.methods.sort -
+Cucul::Font.ancestors[1].methods
+=> ["list"]
+
+irb(main):005:0> Cucul::Font.instance_methods.sort -
+Cucul::Font.ancestors[1].instance_methods
+=> ["blocks", "height", "width"]
 
 And here are sample uses :
 
@@ -62,3 +74,6 @@ with ANSI escape codes"], ["utf8cr", "UTF-8 with ANSI escape codes and
 MS-DOS \\r"], ["html", "HTML"], ["html3", "backwards-compatible HTML"],
 ["irc", "IRC with mIRC colours"], ["ps", "PostScript document"], ["svg",
 "SVG vector image"], ["tga", "TGA image"]]
+
+$ ruby -rcucul -e 'p Cucul::Font.list'
+["Monospace 9", "Monospace Bold 12"]
