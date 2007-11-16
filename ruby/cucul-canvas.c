@@ -12,9 +12,10 @@
 #include <ruby.h>
 #include <cucul.h>
 #include <errno.h>
-#include "cucul-canvas.h"
+#include "cucul-font.h"
+#include "common.h"
 
-#define _SELF  (DATA_PTR(self))
+VALUE cCanvas;
 
 #define simple_func(x)                                  \
 static VALUE x (VALUE self)                             \
@@ -201,10 +202,12 @@ static VALUE blit(int argc, VALUE* argv, VALUE self) {
 
     Check_Type(x, T_FIXNUM);
     Check_Type(y, T_FIXNUM);
+    //FIXME rather check that class is cCanvas
     Check_Type(src, TYPE(self));
     Data_Get_Struct(src, cucul_canvas_t, csrc);
     if(!NIL_P(mask))
     {
+        //FIXME rather check that class is cCanvas
         Check_Type(mask, TYPE(self));
         Data_Get_Struct(mask, cucul_canvas_t, cmask);
     }
@@ -484,6 +487,29 @@ static VALUE free_frame(VALUE self, VALUE id)
 
 /****/
 
+static VALUE render_canvas(VALUE self, VALUE font, VALUE width, VALUE height, VALUE pitch)
+{
+    void *buf;
+    cucul_font_t *f;
+    VALUE b;
+
+    //FIXME rather check that class is cFont
+    Check_Type(font, TYPE(self));
+
+    buf = malloc(width*height*4);
+    if(buf == NULL)
+    {
+        rb_raise(rb_eNoMemError, "Out of memory");
+    }
+
+    f = DATA_PTR(font);
+    cucul_render_canvas(_SELF, f, buf, NUM2UINT(width), NUM2UINT(height), NUM2UINT(pitch));
+
+    b = rb_str_new(buf, width*height*4);
+    free(buf);
+    return b;
+}
+
 static VALUE import_memory(VALUE self, VALUE data, VALUE format)
 {
     long int bytes;
@@ -565,7 +591,7 @@ static VALUE import_list(void)
 
 void Init_cucul_canvas(VALUE mCucul)
 {
-    VALUE cCanvas = rb_define_class_under(mCucul, "Canvas", rb_cObject);
+    cCanvas = rb_define_class_under(mCucul, "Canvas", rb_cObject);
     rb_define_alloc_func(cCanvas, canvas_alloc);
 
     rb_define_method(cCanvas, "initialize", canvas_initialize, 2);
@@ -634,6 +660,7 @@ void Init_cucul_canvas(VALUE mCucul)
     rb_define_method(cCanvas, "create_frame", create_frame, 1);
     rb_define_method(cCanvas, "free_frame", free_frame, 1);
 
+    rb_define_method(cCanvas, "render", render_canvas, 4);
     rb_define_method(cCanvas, "import_memory", import_memory, 2);
     rb_define_method(cCanvas, "import_file", import_file, 2);
     rb_define_method(cCanvas, "export_memory", export_memory, 1);

@@ -13,12 +13,11 @@
 #include <cucul.h>
 
 #include "cucul-canvas.h"
-
-static VALUE mCucul;
+#include "cucul-font.h"
 
 void Init_cucul()
 {
-    mCucul = rb_define_module("Cucul");
+    VALUE mCucul = rb_define_module("Cucul");
 
     rb_define_const(mCucul, "BLACK", INT2FIX(CUCUL_BLACK));
     rb_define_const(mCucul, "BLUE", INT2FIX(CUCUL_BLUE));
@@ -45,4 +44,5 @@ void Init_cucul()
     rb_define_const(mCucul, "BLINK", INT2FIX(CUCUL_BLINK));
 
     Init_cucul_canvas(mCucul);
+    Init_cucul_font(mCucul);
 }

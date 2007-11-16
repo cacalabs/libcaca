@@ -44,4 +44,10 @@ class TC_Canvas < Test::Unit::TestCase
         @c.put_char(1, 1, 42)
         assert_equal(42, @c.get_char(1,1))
     end
+    def test_render
+        c = Cucul::Canvas.new(4,4)
+	c.put_str(0,0,"plop")
+	f = Cucul::Font.new(Cucul::Font.list[0])
+	assert_not_nil(c.render(f, c.width*f.width, c.height*f.height, c.width*f.width*4))
+    end
 end
