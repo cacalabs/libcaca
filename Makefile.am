@@ -11,8 +11,12 @@ bin_SCRIPTS = caca-config
 webhost = poulet.zoy.org
 webdir = /srv/libcaca.zoy.org/var/www/
 
-upload: doc/html FORCE
+upload: upload-source upload-doc
+
+upload-source: FORCE
 	scp $(distdir).tar.gz $(webhost):$(webdir)/files/
+
+upload-doc: doc/html FORCE
 	scp -r doc/html/* $(webhost):$(webdir)/manual/
 
 fonts: tools/makefont
