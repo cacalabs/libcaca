@@ -13,6 +13,7 @@ cucul_la_LIBADD = ../cucul/libcucul.la
 
 EXTRA_DIST = cucul-canvas.h \
 	     test.rb \
-             t/tc_frame.rb
+             t/tc_frame.rb \
+             README
 
 CFLAGS+=-Wno-strict-prototypes -Wno-missing-prototypes

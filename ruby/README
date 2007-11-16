@@ -1,0 +1,64 @@
+This a Ruby binding for libcucul, libcaca will be added later.
+
+There is no real documentation but "methods" on any object should help you :)
+
+The only object available for now is Cucul::Canvas (meaning that only
+functions that have a cucul_canvas_t* as first argument except
+cucul_dither_bitmap are available).
+
+I tried to follow Ruby spirit meaning that :
+- most of the Cucul::Canvas methods return self
+- the methods set_foo with only an argument are also available as foo=
+(returning the value instead of self)
+- the methods originally named get_foo are available only as foo
+
+What is currently available is :
+
+$ irb -rcucul
+irb(main):001:0> Cucul.constants
+=> ["BROWN", "BOLD", "GREEN", "LIGHTMAGENTA", "LIGHTBLUE", "BLINK",
+"MAGENTA", "DEFAULT", "TRANSPARENT", "BLUE", "LIGHTRED", "DARKGRAY",
+"UNDERLINE", "RED", "WHITE", "BLACK", "LIGHTCYAN", "LIGHTGRAY",
+"ITALICS", "CYAN", "YELLOW", "LIGHTGREEN", "Canvas"]
+
+irb(main):002:0> Cucul::Canvas.methods.sort -
+Cucul::Canvas.ancestors[1].methods
+=> ["export_list", "import_list"]
+
+irb(main):003:0> Cucul::Canvas.instance_methods.sort -
+Cucul::Canvas.ancestors[1].instance_methods
+=> ["attr=", "blit", "clear", "create_frame", "cursor_x", "cursor_y",
+"draw_box", "draw_circle", "draw_cp437_box", "draw_ellipse",
+"draw_line", "draw_polyline", "draw_thin_box", "draw_thin_ellipse",
+"draw_thin_line", "draw_thin_polyline", "draw_thin_triangle",
+"draw_triangle", "export_memory", "fill_box", "fill_ellipse",
+"fill_triangle", "flip", "flop", "frame=", "frame_count", "frame_name",
+"frame_name=", "free_frame", "get_attr", "get_char", "gotoxy",
+"handle_x", "handle_y", "height", "height=", "import_file",
+"import_memory", "invert", "printf", "put_attr", "put_char", "put_str",
+"rotate_180", "rotate_left", "rotate_right", "set_attr",
+"set_boundaries", "set_color_ansi", "set_color_argb", "set_frame",
+"set_frame_name", "set_handle", "set_height", "set_size", "set_width",
+"stretch_left", "stretch_right", "width", "width="]
+
+And here are sample uses :
+
+$ ruby -rcucul -e 'c=Cucul::Canvas.new(6, 3).fill_box(0,0,2,2,"#"[0]);
+c2=Cucul::Canvas.new(1, 1).put_str(0,0,"x"); c.blit(1,1,c2); puts
+c.export_memory("irc")'
+###   
+#x#   
+###  
+
+$ ruby -e 'puts Cucul::Canvas.new(6,3).draw_thin_polyline([[0,0], [2,0],
+[5,2],[0,0]]).export_memory("irc")' 
+-.    
+| `.  
+----`-
+
+$ ruby -rcucul -e 'p Cucul::Canvas.export_list'
+[["caca", "native libcaca format"], ["ansi", "ANSI"], ["utf8", "UTF-8
+with ANSI escape codes"], ["utf8cr", "UTF-8 with ANSI escape codes and
+MS-DOS \\r"], ["html", "HTML"], ["html3", "backwards-compatible HTML"],
+["irc", "IRC with mIRC colours"], ["ps", "PostScript document"], ["svg",
+"SVG vector image"], ["tga", "TGA image"]]
