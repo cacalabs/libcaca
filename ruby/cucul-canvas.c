@@ -12,6 +12,7 @@
 #include <ruby.h>
 #include <cucul.h>
 #include <errno.h>
+#include "cucul-dither.h"
 #include "cucul-font.h"
 #include "common.h"
 
@@ -438,6 +439,16 @@ static VALUE fill_triangle(VALUE self, VALUE x1, VALUE y1, VALUE x2, VALUE y2, V
     return self;
 }
 
+static VALUE dither_bitmap(VALUE self, VALUE x, VALUE y, VALUE w, VALUE h, VALUE d, VALUE pixels)
+{
+    if(CLASS_OF(d) != cDither)
+        rb_raise(rb_eArgError, "d is not a Cucul::Dither");
+    Check_Type(pixels, T_STRING);
+
+    cucul_dither_bitmap(_SELF, NUM2INT(x), NUM2INT(y), NUM2INT(w), NUM2INT(h), DATA_PTR(d), StringValuePtr(pixels));
+    return self;
+}
+
 /****/
 
 get_int(frame_count)
@@ -549,51 +560,8 @@ static VALUE export_memory(VALUE self, VALUE format)
     return ret;
 }
 
-static VALUE export_list(void)
-{
-    VALUE ary, ary2;
-    
-    char const* const* list;
-    
-    list = cucul_get_export_list();
-    
-    ary = rb_ary_new();
-    
-    while (*list != NULL)
-    {
-        ary2 = rb_ary_new();
-        rb_ary_push(ary2, rb_str_new2(*list));
-        list++;
-        rb_ary_push(ary2, rb_str_new2(*list));
-        list++;
-        rb_ary_push(ary, ary2);
-    }
-
-    return ary;
-}
-
-static VALUE import_list(void)
-{
-    VALUE ary, ary2;
-    
-    char const* const* list;
-    
-    list = cucul_get_import_list();
-    
-    ary = rb_ary_new();
-    
-    while (*list != NULL)
-    {
-        ary2 = rb_ary_new();
-        rb_ary_push(ary2, rb_str_new2(*list));
-        list++;
-        rb_ary_push(ary2, rb_str_new2(*list));
-        list++;
-        rb_ary_push(ary, ary2);
-    }
-
-    return ary;
-}
+get_singleton_double_list(export)
+get_singleton_double_list(import)
 
 /****/
 
@@ -658,6 +626,7 @@ void Init_cucul_canvas(VALUE mCucul)
     rb_define_method(cCanvas, "draw_triangle", draw_triangle, 7);
     rb_define_method(cCanvas, "draw_thin_triangle", draw_thin_triangle, 6);
     rb_define_method(cCanvas, "fill_triangle", fill_triangle, 7);
+    rb_define_method(cCanvas, "dither_bitmap", dither_bitmap, 6);
 
     rb_define_method(cCanvas, "frame_count", get_frame_count, 0);
     rb_define_method(cCanvas, "frame=", set_frame, 1);

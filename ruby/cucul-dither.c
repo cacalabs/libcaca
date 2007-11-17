@@ -14,7 +14,7 @@
 #include <errno.h>
 #include "common.h"
 
-VALUE cFont;
+VALUE cDither;
 
 void dither_free(void *dither)
 {
@@ -139,7 +139,7 @@ static VALUE set_dither_palette2(VALUE self, VALUE palette)
 }
 
 #define set_float(x)                                    \
-static VALUE set_##x (VALUE self, VALUE x)              \
+static VALUE set_##x(VALUE self, VALUE x)              \
 {                                                       \
     if(cucul_set_dither_##x(_SELF, (float)NUM2DBL(x))<0)\
         rb_raise(rb_eRuntimeError, strerror(errno));    \
@@ -147,7 +147,7 @@ static VALUE set_##x (VALUE self, VALUE x)              \
     return x;                                           \
 }                                                       \
                                                         \
-static VALUE set_##x##2 (VALUE self, VALUE x)           \
+static VALUE set_##x##2(VALUE self, VALUE x)           \
 {                                                       \
     set_##x(self, x);                                   \
     return self;                                        \
@@ -157,24 +157,53 @@ set_float(brightness)
 set_float(gamma)
 set_float(contrast)
 
-/*
-       int cucul_set_dither_invert (cucul_dither_t *, int)
-           Invert colors of dither.
-*/
+#define get_set_str_from_list(x)                         \
+get_double_list(dither_##x)                              \
+static VALUE set_dither_##x(VALUE self, VALUE x)         \
+{                                                        \
+    if(cucul_set_dither_##x(_SELF, StringValuePtr(x))<0) \
+    {                                                    \
+        rb_raise(rb_eRuntimeError, strerror(errno));     \
+    }                                                    \
+    return x;                                            \
+}                                                        \
+                                                         \
+static VALUE set_dither_##x##2(VALUE self, VALUE x)      \
+{                                                        \
+     set_dither_##x(self, x);                            \
+     return self;                                        \
+}
+
+get_set_str_from_list(antialias)
+get_set_str_from_list(color)
+get_set_str_from_list(charset)
+get_set_str_from_list(algorithm)
 
 void Init_cucul_dither(VALUE mCucul)
 {
-    cFont = rb_define_class_under(mCucul, "Dither", rb_cObject);
-    rb_define_alloc_func(cFont, dither_alloc);
+    cDither = rb_define_class_under(mCucul, "Dither", rb_cObject);
+    rb_define_alloc_func(cDither, dither_alloc);
 
-    rb_define_method(cFont, "initialize", dither_initialize, 8);
-    rb_define_method(cFont, "palette=", set_dither_palette, 1);
-    rb_define_method(cFont, "set_palette", set_dither_palette2, 1);
-    rb_define_method(cFont, "brightness=", set_brightness, 1);
-    rb_define_method(cFont, "set_brightness", set_brightness2, 1);
-    rb_define_method(cFont, "gamma=", set_gamma, 1);
-    rb_define_method(cFont, "set_gamma", set_gamma2, 1);
-    rb_define_method(cFont, "contrast=", set_contrast, 1);
-    rb_define_method(cFont, "set_contrast", set_contrast2, 1);
+    rb_define_method(cDither, "initialize", dither_initialize, 8);
+    rb_define_method(cDither, "palette=", set_dither_palette, 1);
+    rb_define_method(cDither, "set_palette", set_dither_palette2, 1);
+    rb_define_method(cDither, "brightness=", set_brightness, 1);
+    rb_define_method(cDither, "set_brightness", set_brightness2, 1);
+    rb_define_method(cDither, "gamma=", set_gamma, 1);
+    rb_define_method(cDither, "set_gamma", set_gamma2, 1);
+    rb_define_method(cDither, "contrast=", set_contrast, 1);
+    rb_define_method(cDither, "set_contrast", set_contrast2, 1);
+    rb_define_method(cDither, "antialias_list", dither_antialias_list, 0);
+    rb_define_method(cDither, "antialias=", set_dither_antialias, 1);
+    rb_define_method(cDither, "set_antialias", set_dither_antialias2, 1);
+    rb_define_method(cDither, "color_list", dither_color_list, 0);
+    rb_define_method(cDither, "color=", set_dither_color, 1);
+    rb_define_method(cDither, "set_color", set_dither_color2, 1);
+    rb_define_method(cDither, "charset_list", dither_charset_list, 0);
+    rb_define_method(cDither, "charset=", set_dither_charset, 1);
+    rb_define_method(cDither, "set_charset", set_dither_charset2, 1);
+    rb_define_method(cDither, "algorithm_list", dither_algorithm_list, 0);
+    rb_define_method(cDither, "algorithm=", set_dither_algorithm, 1);
+    rb_define_method(cDither, "set_algorithm", set_dither_algorithm2, 1);
 }
 

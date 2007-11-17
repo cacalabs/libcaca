@@ -4,7 +4,7 @@ This a Ruby binding for libcucul, libcaca will be added later.
 
 There is no real documentation but "methods" on any object should help you :)
 
-The objects available for now are :
+The objects available are :
 
 - Cucul::Canvas (functions that have a cucul_canvas_t* as first argument)
 
@@ -12,6 +12,8 @@ The objects available for now are :
 
 - Cucul::Font (functions that have a cucul_font_t* as first argument)
  * The constructor can currently only accept the name of a builtin font
+
+The character set conversion functions are not available yet in the binding.
 
 I tried to follow Ruby spirit meaning that :
 - most of the methods return self
@@ -68,8 +70,11 @@ Cucul::Font.ancestors[1].instance_methods
 
 \code
 irb(main):006:0> Cucul::Dither.instance_methods.sort -
-Cucul::Dither.ancestors[1].instance_methods => ["brightness=",
-"contrast=", "gamma=", "palette=", "set_brightness", "set_contrast",
+Cucul::Dither.ancestors[1].instance_methods
+=> ["algorithm=", "algorithm_list", "antialias=", "antialias_list",
+"brightness=", "charset=", "charset_list", "color=", "color_list",
+"contrast=", "gamma=", "palette=", "set_algorithm", "set_antialias",
+"set_brightness", "set_charset", "set_color", "set_contrast",
 "set_gamma", "set_palette"]
 \endcode
 
