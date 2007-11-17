@@ -33,6 +33,10 @@
  - cucul.h
  - caca.h
 
+ There is language-specific documentation for the various bindings:
+
+ - \subpage libcaca-ruby
+
  Some other topics are covered by specific sections:
 
  - \subpage libcaca-tutorial
