@@ -202,13 +202,19 @@ static VALUE blit(int argc, VALUE* argv, VALUE self) {
 
     Check_Type(x, T_FIXNUM);
     Check_Type(y, T_FIXNUM);
-    //FIXME rather check that class is cCanvas
-    Check_Type(src, TYPE(self));
+
+    if(CLASS_OF(src) != cCanvas)
+    {
+        rb_raise(rb_eArgError, "src is not a Cucul::Canvas");
+    }
     Data_Get_Struct(src, cucul_canvas_t, csrc);
+
     if(!NIL_P(mask))
     {
-        //FIXME rather check that class is cCanvas
-        Check_Type(mask, TYPE(self));
+        if(CLASS_OF(mask) != cCanvas)
+        {
+            rb_raise(rb_eArgError, "mask is not a Cucul::Canvas");
+        }
         Data_Get_Struct(mask, cucul_canvas_t, cmask);
     }
     else
@@ -493,8 +499,10 @@ static VALUE render_canvas(VALUE self, VALUE font, VALUE width, VALUE height, VA
     cucul_font_t *f;
     VALUE b;
 
-    //FIXME rather check that class is cFont
-    Check_Type(font, TYPE(self));
+    if(CLASS_OF(font) != cFont)
+    {
+        rb_raise(rb_eArgError, "First argument is not a Cucul::Font");
+    }
 
     buf = malloc(width*height*4);
     if(buf == NULL)

@@ -50,4 +50,10 @@ class TC_Canvas < Test::Unit::TestCase
 	f = Cucul::Font.new(Cucul::Font.list[0])
 	assert_not_nil(c.render(f, c.width*f.width, c.height*f.height, c.width*f.width*4))
     end
+    def test_fail_render
+        c = Cucul::Canvas.new(4,4)
+        assert_raise(ArgumentError) {
+            c.render(nil, c.width, c.height, c.width*4)
+        }
+    end
 end
