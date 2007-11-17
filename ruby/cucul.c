@@ -13,6 +13,7 @@
 #include <cucul.h>
 
 #include "cucul-canvas.h"
+#include "cucul-dither.h"
 #include "cucul-font.h"
 
 void Init_cucul()
@@ -44,5 +45,6 @@ void Init_cucul()
     rb_define_const(mCucul, "BLINK", INT2FIX(CUCUL_BLINK));
 
     Init_cucul_canvas(mCucul);
+    Init_cucul_dither(mCucul);
     Init_cucul_font(mCucul);
 }
