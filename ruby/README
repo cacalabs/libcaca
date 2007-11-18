@@ -1,10 +1,10 @@
 /* $Id$ */ /** \page libcaca-ruby Libcaca ruby bindings
 
-This a Ruby binding for libcucul, libcaca will be added later.
+This a Ruby binding for libcucul and libcaca.
 
 There is no real documentation but "methods" on any object should help you :)
 
-The objects available are :
+The classes available for libcucul are :
 
 - Cucul::Canvas (functions that have a cucul_canvas_t* as first argument)
 
@@ -12,6 +12,20 @@ The objects available are :
 
 - Cucul::Font (functions that have a cucul_font_t* as first argument)
  * The constructor can currently only accept the name of a builtin font
+
+The classes available for libcaca are :
+
+- Caca::Display
+- Caca::Event
+- Caca::Event::Key
+- Caca::Event::Key::Press
+- Caca::Event::Key::Release
+- Caca::Event::Mouse
+- Caca::Event::Mouse::Press
+- Caca::Event::Mouse::Release
+- Caca::Event::Mouse::Motion
+- Caca::Event::Resize
+- Caca::Event::Quit
 
 The character set conversion functions are not available yet in the binding.
 
@@ -42,7 +56,7 @@ Cucul::Canvas.ancestors[1].methods
 irb(main):003:0> Cucul::Canvas.instance_methods.sort -
 Cucul::Canvas.ancestors[1].instance_methods
 => ["attr=", "blit", "clear", "create_frame", "cursor_x", "cursor_y",
-"draw_box", "draw_circle", "draw_cp437_box", "draw_ellipse",
+"dither_bitmap", "draw_box", "draw_circle", "draw_cp437_box", "draw_ellipse",
 "draw_line", "draw_polyline", "draw_thin_box", "draw_thin_ellipse",
 "draw_thin_line", "draw_thin_polyline", "draw_thin_triangle",
 "draw_triangle", "export_memory", "fill_box", "fill_ellipse",
@@ -78,6 +92,38 @@ Cucul::Dither.ancestors[1].instance_methods
 "set_gamma", "set_palette"]
 \endcode
 
+\code
+irb(main):007:0> Caca::Display.instance_methods.sort -
+Caca::Display.ancestors[1].instance_methods
+=> ["get_event", "height", "mouse=", "mouse_x", "mouse_y", "refresh",
+"set_mouse", "set_time", "set_title", "time", "time=", "title=", "width"]
+\endcode
+
+\code
+irb(main):008:0> Caca::Event.constants
+=> ["Key", "Quit", "TYPE", "Mouse", "Resize"]
+\endcode
+
+\code
+irb(main):009:0> Caca::Event::Key.instance_methods - Caca::Event::Key.ancestors[1].instance_methods
+=> ["ch", "utf32", "utf8"]
+\endcode
+
+\code
+irb(main):010:0> Caca::Event::Key.instance_methods - Caca::Event::Mouse.ancestors[1].instance_methods
+=> ["ch", "utf32", "utf8"]
+\endcode
+
+\code
+irb(main):011:0> Caca::Event::Mouse.instance_methods - Caca::Event::Mouse.ancestors[1].instance_methods
+=> ["button", "x", "y"]
+\endcode
+
+\code
+irb(main):018:0> Caca::Event::Resize.instance_methods - Caca::Event::Resize.ancestors[1].instance_methods
+=> ["w", "h"]
+\endcode
+
 And here are sample uses :
 
 \code
@@ -109,6 +155,19 @@ MS-DOS \\r"], ["html", "HTML"], ["html3", "backwards-compatible HTML"],
 \code
 $ ruby -rcucul -e 'p Cucul::Font.list'
 ["Monospace 9", "Monospace Bold 12"]
+\endcode
+
+And now a real one:
+
+\code
+require 'caca'
+d = Caca::Display.new(Cucul::Canvas.new(20,10))
+d.title = "Test !"
+while((e = d.get_event(Caca::Event, -1)) &&
+       ! e.kind_of?(Caca::Event::Quit))
+    p e
+    d.refresh
+end
 \endcode
 
 */
