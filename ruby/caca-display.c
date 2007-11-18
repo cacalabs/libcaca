@@ -125,6 +125,8 @@ static VALUE get_event(VALUE self, VALUE event_mask, VALUE timeout)
     caca_event_t ev;
     VALUE e;
 
+    event_mask = rb_funcall(event_mask, rb_intern("to_i"), 0);
+
     if(caca_get_event(_SELF, NUM2UINT(event_mask), &ev, NUM2INT(timeout)) == 0)
     {
         return Qnil;
