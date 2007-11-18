@@ -12,13 +12,15 @@ cucul_la_LDFLAGS = -module -avoid-version -shared -L$(RUBY_LIBDIR) -l$(RUBY_SO_N
 cucul_la_LIBADD = ../cucul/libcucul.la
 
 caca_la_CPPFLAGS = -I$(top_srcdir)/caca -I$(RUBY_ARCHDIR)
-caca_la_SOURCES = caca.c caca-display.c
+caca_la_SOURCES = caca.c caca-display.c caca-event.c
 caca_la_LDFLAGS = -module -avoid-version -shared -L$(RUBY_LIBDIR) -l$(RUBY_SO_NAME)
 caca_la_LIBADD = ../caca/libcaca.la
 
 EXTRA_DIST = cucul-canvas.h \
              cucul-dither.h \
              cucul-font.h \
+             caca-display.h \
+             caca-event.h \
              common.h \
              test.rb \
              t/tc_canvas.rb \

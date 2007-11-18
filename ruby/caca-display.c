@@ -12,6 +12,7 @@
 #include <ruby.h>
 #include <caca.h>
 #include <errno.h>
+#include "caca-event.h"
 #include "cucul-canvas.h"
 #include "common.h"
 
@@ -97,6 +98,39 @@ static VALUE set_title2(VALUE self, VALUE t)
     return self;
 }
 
+static VALUE get_mouse_x(VALUE self)
+{
+    return NUM2UINT(caca_get_mouse_x(_SELF));
+}
+
+static VALUE get_mouse_y(VALUE self)
+{
+    return NUM2UINT(caca_get_mouse_y(_SELF));
+}
+
+static VALUE set_mouse(VALUE self, VALUE visible)
+{
+    caca_set_display_time(_SELF, visible);
+    return visible;
+}
+
+static VALUE set_mouse2(VALUE self, VALUE visible)
+{
+    set_mouse(self, visible);
+    return self;
+}
+
+static VALUE get_event(VALUE self, VALUE event_mask, VALUE timeout)
+{
+    caca_event_t ev;
+    if(caca_get_event(_SELF, NUM2UINT(event_mask), &ev, NUM2INT(timeout)) == 0)
+    {
+        return Qnil;
+    }
+    //FIXME
+    return Qnil;
+}
+
 void Init_caca_display(VALUE mCaca)
 {
     cDisplay = rb_define_class_under(mCaca, "Display", rb_cObject);
@@ -111,4 +145,9 @@ void Init_caca_display(VALUE mCaca)
     rb_define_method(cDisplay, "height", get_height, 0);
     rb_define_method(cDisplay, "title=", set_title, 1);
     rb_define_method(cDisplay, "set_title", set_title2, 1);
+    rb_define_method(cDisplay, "mouse_x", get_mouse_x, 0);
+    rb_define_method(cDisplay, "mouse_y", get_mouse_y, 0);
+    rb_define_method(cDisplay, "mouse=", set_mouse, 1);
+    rb_define_method(cDisplay, "set_mouse", set_mouse2, 1);
+    rb_define_method(cDisplay, "get_event", get_event, 3);
 }
