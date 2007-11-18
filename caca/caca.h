@@ -75,7 +75,7 @@ struct caca_event
      *
      *  The validity of the \e data union depends on the value of the \e type
      *  field:
-     *  - \c CACA_EVENT_NONE: no field is valid.
+     *  - \c CACA_EVENT_NONE: no other field is valid.
      *  - \c CACA_EVENT_KEY_PRESS, \c CACA_EVENT_KEY_RELEASE: the
      *  \e data.key.ch field is valid and contains either the ASCII value for
      *  the key, or an \e enum \e caca_key value. If the value is a printable
