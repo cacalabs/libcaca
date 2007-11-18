@@ -338,10 +338,12 @@ if test "${enable_ruby}" != "no"; then
   if test "${RUBY}" != "no"; then
     RUBY_ARCHDIR=`ruby -r rbconfig -e 'print Config::CONFIG@<:@"archdir"@:>@'`
     RUBY_SITEARCHDIR=`ruby -r rbconfig -e 'print Config::CONFIG@<:@"sitearchdir"@:>@'`
+    RUBY_SITELIBDIR=`ruby -r rbconfig -e 'print Config::CONFIG@<:@"sitelibdir"@:>@'`
     RUBY_LIBDIR=`ruby -r rbconfig -e 'print Config::CONFIG@<:@"libdir"@:>@'`
     RUBY_SO_NAME=`ruby -r rbconfig -e 'print Config::CONFIG@<:@"RUBY_SO_NAME"@:>@'`
     AC_SUBST(RUBY_ARCHDIR)
     AC_SUBST(RUBY_SITEARCHDIR)
+    AC_SUBST(RUBY_SITELIBDIR)
     AC_SUBST(RUBY_LIBDIR)
     AC_SUBST(RUBY_SO_NAME)
     AC_CHECK_HEADERS($RUBY_ARCHDIR/ruby.h, [ac_cv_my_have_ruby="yes"])

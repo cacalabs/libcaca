@@ -1,8 +1,10 @@
 # $Id: $
 rubylibdir=$(RUBY_SITEARCHDIR)
+rubysitedir=$(RUBY_SITELIBDIR)
 
 if USE_RUBY
 rubylib_LTLIBRARIES = caca.la cucul.la
+rubysite_DATA = lib/caca.rb
 TESTS = test
 endif
 
