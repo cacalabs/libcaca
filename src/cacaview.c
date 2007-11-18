@@ -133,7 +133,8 @@ int main(int argc, char **argv)
         caca_event_t ev;
         unsigned int const event_mask = CACA_EVENT_KEY_PRESS
                                       | CACA_EVENT_RESIZE
-                                      | CACA_EVENT_MOUSE_PRESS;
+                                      | CACA_EVENT_MOUSE_PRESS
+                                      | CACA_EVENT_QUIT;
         unsigned int new_status = 0, new_help = 0;
         int event;
 
@@ -291,6 +292,8 @@ int main(int argc, char **argv)
                 update = 1;
                 set_zoom(zoom);
             }
+            else if(ev.type & CACA_EVENT_QUIT)
+                quit = 1;
 
             if(status || new_status)
                 status = new_status;
