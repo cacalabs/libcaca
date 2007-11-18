@@ -13,10 +13,12 @@
 #include <caca.h>
 
 #include "caca-display.h"
+#include "caca-event.h"
 
 void Init_caca()
 {
     VALUE mCaca = rb_define_module("Caca");
 
     Init_caca_display(mCaca);
+    Init_caca_event(mCaca);
 }

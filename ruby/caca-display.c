@@ -123,12 +123,58 @@ static VALUE set_mouse2(VALUE self, VALUE visible)
 static VALUE get_event(VALUE self, VALUE event_mask, VALUE timeout)
 {
     caca_event_t ev;
+    VALUE e;
+
     if(caca_get_event(_SELF, NUM2UINT(event_mask), &ev, NUM2INT(timeout)) == 0)
     {
         return Qnil;
     }
-    //FIXME
-    return Qnil;
+
+    switch(ev.type)
+    {
+    case CACA_EVENT_KEY_PRESS:
+        e = rb_funcall(cEventKeyPress, rb_intern("new"), 3,
+                       UINT2NUM(ev.data.key.ch),
+                       ULONG2NUM(ev.data.key.utf32),
+                       rb_str_new(ev.data.key.utf8, 8));
+        break;
+    case CACA_EVENT_KEY_RELEASE:
+        e = rb_funcall(cEventKeyRelease, rb_intern("new"), 3,
+                       UINT2NUM(ev.data.key.ch),
+                       ULONG2NUM(ev.data.key.utf32),
+                       rb_str_new(ev.data.key.utf8, 8));
+        break;
+    case CACA_EVENT_MOUSE_PRESS:
+        e = rb_funcall(cEventMousePress, rb_intern("new"), 3,
+                       UINT2NUM(ev.data.mouse.x),
+                       UINT2NUM(ev.data.mouse.y),
+                       UINT2NUM(ev.data.mouse.button));
+        break;
+    case CACA_EVENT_MOUSE_RELEASE:
+        e = rb_funcall(cEventMouseRelease, rb_intern("new"), 3,
+                       UINT2NUM(ev.data.mouse.x),
+                       UINT2NUM(ev.data.mouse.y),
+                       UINT2NUM(ev.data.mouse.button));
+        break;
+    case CACA_EVENT_MOUSE_MOTION:
+        e = rb_funcall(cEventMouseMotion, rb_intern("new"), 3,
+                       UINT2NUM(ev.data.mouse.x),
+                       UINT2NUM(ev.data.mouse.y),
+                       Qnil);
+        break;
+    case CACA_EVENT_RESIZE:
+        e = rb_funcall(cEventResize, rb_intern("new"), 2,
+                       UINT2NUM(ev.data.resize.w),
+                       UINT2NUM(ev.data.resize.h));
+        break;
+    case CACA_EVENT_QUIT:
+        e = rb_funcall(cEventQuit, rb_intern("new"), 0);
+        break;
+    default:
+        rb_raise(rb_eRuntimeError, "Invalid event received !");
+    }
+
+    return e;
 }
 
 void Init_caca_display(VALUE mCaca)
@@ -149,5 +195,5 @@ void Init_caca_display(VALUE mCaca)
     rb_define_method(cDisplay, "mouse_y", get_mouse_y, 0);
     rb_define_method(cDisplay, "mouse=", set_mouse, 1);
     rb_define_method(cDisplay, "set_mouse", set_mouse2, 1);
-    rb_define_method(cDisplay, "get_event", get_event, 3);
+    rb_define_method(cDisplay, "get_event", get_event, 2);
 }
