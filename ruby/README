@@ -136,7 +136,7 @@ c.export_memory("irc")'
 \endcode
 
 \code
-$ ruby -e 'puts Cucul::Canvas.new(6,3).draw_thin_polyline([[0,0], [2,0],
+$ ruby -e 'puts Cucul::Canvas.new(6,3).draw_thin_polyline([[0,0], [0,2],
 [5,2],[0,0]]).export_memory("irc")' 
 -.    
 | `.  
@@ -161,8 +161,12 @@ And now a real one:
 
 \code
 require 'caca'
-d = Caca::Display.new(Cucul::Canvas.new(20,10))
+c = Cucul::Canvas.new(20,10)
+c.put_str(2, 3, "plop!")
+c.draw_thin_polyline([[0,0], [0,2], [5,2], [0,0]])
+d = Caca::Display.new(c)
 d.title = "Test !"
+d.refresh
 while((e = d.get_event(Caca::Event, -1)) &&
        ! e.kind_of?(Caca::Event::Quit))
     p e
