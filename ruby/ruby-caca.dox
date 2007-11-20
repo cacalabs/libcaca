@@ -1,0 +1,66 @@
+/* $Id$ */ /** \page libcaca-ruby-api Libcaca Ruby API
+
+The classes available for libcaca are :
+
+\li \b Caca::Display
+\li \b Caca::Event
+\li \b Caca::Event::Key
+\li \b Caca::Event::Key::Press
+\li \b Caca::Event::Key::Release
+\li \b Caca::Event::Mouse
+\li \b Caca::Event::Mouse::Press
+\li \b Caca::Event::Mouse::Release
+\li \b Caca::Event::Mouse::Motion
+\li \b Caca::Event::Resize
+\li \b Caca::Event::Quit
+
+\code
+irb(main):007:0> Caca::Display.instance_methods.sort -
+Caca::Display.ancestors[1].instance_methods
+=> ["get_event", "height", "mouse=", "mouse_x", "mouse_y", "refresh",
+"set_mouse", "set_time", "set_title", "time", "time=", "title=", "width"]
+\endcode
+
+\code
+irb(main):008:0> Caca::Event.constants
+=> ["Key", "Quit", "TYPE", "Mouse", "Resize"]
+\endcode
+
+\code
+irb(main):009:0> Caca::Event::Key.instance_methods - Caca::Event::Key.ancestors[1].instance_methods
+=> ["ch", "utf32", "utf8"]
+\endcode
+
+\code
+irb(main):010:0> Caca::Event::Key.instance_methods - Caca::Event::Mouse.ancestors[1].instance_methods
+=> ["ch", "utf32", "utf8"]
+\endcode
+
+\code
+irb(main):011:0> Caca::Event::Mouse.instance_methods - Caca::Event::Mouse.ancestors[1].instance_methods
+=> ["button", "x", "y"]
+\endcode
+
+\code
+irb(main):018:0> Caca::Event::Resize.instance_methods - Caca::Event::Resize.ancestors[1].instance_methods
+=> ["w", "h"]
+\endcode
+
+\section Samples
+
+\code
+require 'caca'
+c = Cucul::Canvas.new(20,10)
+c.put_str(2, 3, "plop!")
+c.draw_thin_polyline([[0,0], [0,2], [5,2], [0,0]])
+d = Caca::Display.new(c)
+d.title = "Test !"
+d.refresh
+while((e = d.get_event(Caca::Event, -1)) &&
+       ! e.kind_of?(Caca::Event::Quit))
+    p e
+    d.refresh
+end
+\endcode
+
+*/

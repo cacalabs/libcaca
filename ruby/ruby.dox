@@ -1,0 +1,17 @@
+/* $Id$ */ /** \page libcaca-ruby Libcaca ruby bindings
+
+There is no real documentation yet for the Ruby binding but \c methods on any object should help you :)
+
+I tried to follow Ruby spirit meaning that :
+- most of the methods return self
+- the methods set_foo with only an argument are also available as foo=
+(returning the value instead of self)
+- the methods originally named get_foo are available only as foo
+
+For the list of methods and some sample code, read:
+
+\subpage libcucul-ruby-api
+
+\subpage libcaca-ruby-api
+
+*/
