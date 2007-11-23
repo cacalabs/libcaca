@@ -194,11 +194,6 @@
 			Filter="h;hpp;hxx;hm;inl;inc"
 			>
 		</Filter>
-		<Filter
-			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
-			>
-		</Filter>
 	</Files>
 	<Globals>
 	</Globals>

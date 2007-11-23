@@ -34,12 +34,14 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="false"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				Optimization="0"
 				AdditionalIncludeDirectories="..\msvc"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
-				Optimization="0"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -58,6 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				ModuleDefinitionFile=".\libcucul.def"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>
@@ -129,6 +132,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				ModuleDefinitionFile=".\libcucul.def"
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
@@ -169,6 +173,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath="..\cucul\attr.c"
+				>
+			</File>
+			<File
 				RelativePath="..\cucul\box.c"
 				>
 			</File>
@@ -178,10 +186,6 @@
 			</File>
 			<File
 				RelativePath="..\cucul\charset.c"
-				>
-			</File>
-			<File
-				RelativePath="..\cucul\colour.c"
 				>
 			</File>
 			<File
@@ -197,23 +201,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\cucul\export_ansi.c"
-				>
-			</File>
-			<File
-				RelativePath="..\cucul\export_html.c"
-				>
-			</File>
-			<File
-				RelativePath="..\cucul\export_irc.c"
-				>
-			</File>
-			<File
-				RelativePath="..\cucul\export_ps.c"
-				>
-			</File>
-			<File
-				RelativePath="..\cucul\export_svg.c"
+				RelativePath="..\cucul\export.c"
 				>
 			</File>
 			<File
@@ -221,19 +209,23 @@
 				>
 			</File>
 			<File
-				RelativePath="..\caca\graphics.c"
+				RelativePath="..\cucul\frame.c"
+				>
+			</File>
+			<File
+				RelativePath="..\cucul\import.c"
+				>
+			</File>
+			<File
+				RelativePath="..\cucul\legacy.c"
+				>
+			</File>
+			<File
+				RelativePath=".\libcucul.def"
 				>
 			</File>
 			<File
 				RelativePath="..\cucul\line.c"
-				>
-			</File>
-			<File
-				RelativePath="..\cucul\math.c"
-				>
-			</File>
-			<File
-				RelativePath="..\cucul\sprite.c"
 				>
 			</File>
 			<File
@@ -251,7 +243,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="config.h"
+				RelativePath=".\config.h"
 				>
 			</File>
 			<File

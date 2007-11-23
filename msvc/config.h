@@ -4,6 +4,7 @@
 /* #undef HAVE_CONIO_H */
 /* #undef HAVE_CURSES_H */
 /* #undef HAVE_ENDIAN_H */
+#define HAVE_ERRNO_H 1
 #define HAVE_GETENV 1
 /* #undef HAVE_GETTIMEOFDAY */
 /* #undef HAVE_IMLIB2_H */
