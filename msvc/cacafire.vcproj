@@ -49,6 +49,8 @@
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
+				CompileAs="1"
+				DisableSpecificWarnings="4996;4142"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -131,6 +133,8 @@
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
+				CompileAs="1"
+				DisableSpecificWarnings="4996;4142"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -188,11 +192,6 @@
 				RelativePath="..\src\aafire.c"
 				>
 			</File>
-		</Filter>
-		<Filter
-			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl;inc"
-			>
 		</Filter>
 	</Files>
 	<Globals>
