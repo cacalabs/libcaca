@@ -172,6 +172,7 @@ int main(int argc, char **argv)
                 break;
             case 'f':
             case 'F':
+            case CACA_KEY_F11:
                 fullscreen = ~fullscreen;
                 update = 1;
                 set_zoom(zoom);
@@ -281,6 +282,7 @@ int main(int argc, char **argv)
                 break;
             case 'q':
             case 'Q':
+            case CACA_KEY_ESCAPE:
                 quit = 1;
                 break;
             }
