@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     cucul_canvas_t *cv, *cw, *mask;
     caca_display_t *dp;
     cucul_dither_t *left, *right;
-    float gam = 1.0;
+    float gam;
     int x;
 
     cv = cucul_create_canvas(0, 0);
@@ -65,6 +65,7 @@ int main(int argc, char *argv[])
                                0x00ff0000, 0x0000ff00, 0x000000ff, 0x0);
     right = cucul_create_dither(32, 256, 4, 4 * 256,
                                 0x00ff0000, 0x0000ff00, 0x000000ff, 0x0);
+    gam = cucul_get_dither_gamma(right);
     caca_set_display_time(dp, 20000);
 
     for(x = 0; ; x++)
