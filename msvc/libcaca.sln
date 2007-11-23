@@ -1,6 +1,11 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual C++ Express 2005
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libcucul", "libcucul.vcproj", "{44303C1F-BB6A-4C4B-BB19-7D475348F151}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libcaca", "libcaca.vcproj", "{8951ECB0-7CFE-41AB-A426-98D7C441BEA4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{44303C1F-BB6A-4C4B-BB19-7D475348F151} = {44303C1F-BB6A-4C4B-BB19-7D475348F151}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cacaball", "cacaball.vcproj", "{7C6ECE78-045C-458D-8B8F-DEC2C9CB9C14}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -48,6 +53,10 @@ Global
 		{04CC61FD-CC15-4B08-9028-BD87A63E7365}.Debug|Win32.Build.0 = Debug|Win32
 		{04CC61FD-CC15-4B08-9028-BD87A63E7365}.Release|Win32.ActiveCfg = Release|Win32
 		{04CC61FD-CC15-4B08-9028-BD87A63E7365}.Release|Win32.Build.0 = Release|Win32
+		{44303C1F-BB6A-4C4B-BB19-7D475348F151}.Debug|Win32.ActiveCfg = Debug|Win32
+		{44303C1F-BB6A-4C4B-BB19-7D475348F151}.Debug|Win32.Build.0 = Debug|Win32
+		{44303C1F-BB6A-4C4B-BB19-7D475348F151}.Release|Win32.ActiveCfg = Release|Win32
+		{44303C1F-BB6A-4C4B-BB19-7D475348F151}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

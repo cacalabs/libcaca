@@ -2,9 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="libcaca"
-	ProjectGUID="{8951ECB0-7CFE-41AB-A426-98D7C441BEA4}"
-	Keyword="Win32Proj"
+	Name="libcucul"
+	ProjectGUID="{44303C1F-BB6A-4C4B-BB19-7D475348F151}"
 	>
 	<Platforms>
 		<Platform
@@ -16,10 +15,9 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="Debug"
-			IntermediateDirectory="Debug"
-			ConfigurationType="4"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="2"
 			CharacterSet="2"
 			>
 			<Tool
@@ -39,13 +37,12 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="0"
 				AdditionalIncludeDirectories="..\msvc"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
+				Optimization="0"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
-				UsePrecompiledHeader="0"
+				RuntimeLibrary="3"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
@@ -60,11 +57,15 @@
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/cacaview.lib"
+				Name="VCLinkerTool"
+				GenerateDebugInformation="true"
+				TargetMachine="1"
 			/>
 			<Tool
 				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -76,16 +77,22 @@
 				Name="VCFxCopTool"
 			/>
 			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="Release"
-			IntermediateDirectory="Release"
-			ConfigurationType="4"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="1"
 			CharacterSet="2"
+			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -104,15 +111,9 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
-				InlineFunctionExpansion="1"
-				OmitFramePointers="true"
 				AdditionalIncludeDirectories="..\msvc"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
-				StringPooling="true"
-				RuntimeLibrary="0"
-				EnableFunctionLevelLinking="true"
-				UsePrecompiledHeader="0"
+				RuntimeLibrary="2"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
@@ -127,11 +128,17 @@
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/cacaview.lib"
+				Name="VCLinkerTool"
+				GenerateDebugInformation="true"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				TargetMachine="1"
 			/>
 			<Tool
 				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -143,6 +150,12 @@
 				Name="VCFxCopTool"
 			/>
 			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
@@ -152,67 +165,101 @@
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm"
+			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
+			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\caca\caca.c"
+				RelativePath="..\cucul\box.c"
 				>
 			</File>
 			<File
-				RelativePath="..\caca\driver_conio.c"
+				RelativePath="..\cucul\canvas.c"
 				>
 			</File>
 			<File
-				RelativePath="..\caca\driver_gl.c"
+				RelativePath="..\cucul\charset.c"
 				>
 			</File>
 			<File
-				RelativePath="..\caca\driver_ncurses.c"
+				RelativePath="..\cucul\colour.c"
 				>
 			</File>
 			<File
-				RelativePath="..\caca\driver_raw.c"
+				RelativePath="..\cucul\conic.c"
 				>
 			</File>
 			<File
-				RelativePath="..\caca\driver_slang.c"
+				RelativePath="..\cucul\cucul.c"
 				>
 			</File>
 			<File
-				RelativePath="..\caca\driver_vga.c"
+				RelativePath="..\cucul\dither.c"
 				>
 			</File>
 			<File
-				RelativePath="..\caca\driver_win32.c"
+				RelativePath="..\cucul\export_ansi.c"
 				>
 			</File>
 			<File
-				RelativePath="..\caca\driver_x11.c"
+				RelativePath="..\cucul\export_html.c"
 				>
 			</File>
 			<File
-				RelativePath="..\caca\event.c"
+				RelativePath="..\cucul\export_irc.c"
 				>
 			</File>
 			<File
-				RelativePath="..\caca\time.c"
+				RelativePath="..\cucul\export_ps.c"
+				>
+			</File>
+			<File
+				RelativePath="..\cucul\export_svg.c"
+				>
+			</File>
+			<File
+				RelativePath="..\cucul\font.c"
+				>
+			</File>
+			<File
+				RelativePath="..\caca\graphics.c"
+				>
+			</File>
+			<File
+				RelativePath="..\cucul\line.c"
+				>
+			</File>
+			<File
+				RelativePath="..\cucul\math.c"
+				>
+			</File>
+			<File
+				RelativePath="..\cucul\sprite.c"
+				>
+			</File>
+			<File
+				RelativePath="..\cucul\transform.c"
+				>
+			</File>
+			<File
+				RelativePath="..\cucul\triangle.c"
 				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl;inc"
+			Filter="h;hpp;hxx;hm;inl;inc;xsd"
+			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\caca\caca.h"
-				>
-			</File>
-			<File
-				RelativePath="..\caca\caca_internals.h"
-				>
-			</File>
-			<File
 				RelativePath="config.h"
+				>
+			</File>
+			<File
+				RelativePath="..\cucul\cucul.h"
+				>
+			</File>
+			<File
+				RelativePath="..\cucul\cucul_internals.h"
 				>
 			</File>
 		</Filter>
