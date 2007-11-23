@@ -170,7 +170,7 @@ static int slang_init_graphics(caca_display_t *dp)
     SLtt_utf8_enable(1);
 #endif
 
-    _cucul_set_canvas_size(dp->cv, SLtt_Screen_Cols, SLtt_Screen_Rows);
+    __cucul_set_canvas_size(dp->cv, SLtt_Screen_Cols, SLtt_Screen_Rows);
 
     return 0;
 }

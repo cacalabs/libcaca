@@ -1,4 +1,4 @@
 LIBRARY "libcucul"
 
 EXPORTS
-    _cucul_set_canvas_size ; Private symbol used by libcaca
+    __cucul_set_canvas_size ; Private symbol used by libcaca

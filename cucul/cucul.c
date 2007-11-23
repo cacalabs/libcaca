@@ -81,7 +81,7 @@ cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
     _cucul_load_frame_info(cv);
     cucul_set_color_ansi(cv, CUCUL_DEFAULT, CUCUL_TRANSPARENT);
 
-    if(_cucul_set_canvas_size(cv, width, height) < 0)
+    if(__cucul_set_canvas_size(cv, width, height) < 0)
     {
         int saved_errno = geterrno();
         free(cv->frames[0].name);
@@ -137,7 +137,7 @@ int cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
         return -1;
     }
 
-    return _cucul_set_canvas_size(cv, width, height);
+    return __cucul_set_canvas_size(cv, width, height);
 }
 
 /** \brief Get the canvas width.
@@ -231,8 +231,8 @@ int cucul_rand(int min, int max)
  * XXX: The following functions are local.
  */
 
-int _cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
-                                               unsigned int height)
+int __cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
+                                                unsigned int height)
 {
     unsigned int x, y, f, old_width, old_height, new_size, old_size;
 

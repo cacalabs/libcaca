@@ -76,7 +76,7 @@ static int vga_init_graphics(caca_display_t *dp)
     outb(tmp, 0x3d5);
 
     /* We don't have much choice */
-    _cucul_set_canvas_size(dp->cv, 80, 25);
+    __cucul_set_canvas_size(dp->cv, 80, 25);
 
     return 0;
 }

@@ -61,7 +61,8 @@ struct cucul_buffer
 };
 
 /* Canvas functions */
-extern int _cucul_set_canvas_size(cucul_canvas_t *, unsigned int, unsigned int);
+extern int __cucul_set_canvas_size(cucul_canvas_t *,
+                                   unsigned int, unsigned int);
 
 /* Colour functions */
 extern uint16_t _cucul_attr_to_rgb12fg(uint32_t);

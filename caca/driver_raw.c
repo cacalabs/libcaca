@@ -40,7 +40,7 @@ static int raw_init_graphics(caca_display_t *dp)
         sscanf(geometry, "%ux%u", &width, &height);
 #endif
 
-    _cucul_set_canvas_size(dp->cv, width ? width : 80, height ? height : 24);
+    __cucul_set_canvas_size(dp->cv, width ? width : 80, height ? height : 24);
 
     return 0;
 }

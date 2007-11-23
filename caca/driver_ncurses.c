@@ -301,7 +301,7 @@ static int ncurses_init_graphics(caca_display_t *dp)
             }
         }
 
-    _cucul_set_canvas_size(dp->cv, COLS, LINES);
+    __cucul_set_canvas_size(dp->cv, COLS, LINES);
 
     return 0;
 }
