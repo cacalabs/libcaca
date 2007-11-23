@@ -24,6 +24,14 @@
 #ifndef __CUCUL_H__
 #define __CUCUL_H__
 
+#if !defined(_DOXYGEN_SKIP_ME)
+#   if defined(__WIN32__) && defined(__LIBCUCUL__)
+#       define __extern extern __declspec(dllexport)
+#   else
+#       define __extern extern
+#   endif
+#endif
+
 /** libcucul API version */
 #define CUCUL_API_VERSION_1
 
@@ -75,12 +83,13 @@ typedef struct cucul_font cucul_font_t;
  *  initialisation, system information retrieval and configuration.
  *
  *  @{ */
-cucul_canvas_t * cucul_create_canvas(unsigned int, unsigned int);
-int cucul_set_canvas_size(cucul_canvas_t *, unsigned int, unsigned int);
-unsigned int cucul_get_canvas_width(cucul_canvas_t *);
-unsigned int cucul_get_canvas_height(cucul_canvas_t *);
-int cucul_free_canvas(cucul_canvas_t *);
-int cucul_rand(int, int);
+__extern cucul_canvas_t * cucul_create_canvas(unsigned int, unsigned int);
+__extern int cucul_set_canvas_size(cucul_canvas_t *, unsigned int,
+                                   unsigned int);
+__extern unsigned int cucul_get_canvas_width(cucul_canvas_t *);
+__extern unsigned int cucul_get_canvas_height(cucul_canvas_t *);
+__extern int cucul_free_canvas(cucul_canvas_t *);
+__extern int cucul_rand(int, int);
 /*  @} */
 
 /** \defgroup cucul_canvas libcucul canvas drawing
@@ -90,26 +99,28 @@ int cucul_rand(int, int);
  *
  *  @{ */
 #define CUCUL_MAGIC_FULLWIDTH 0x000ffffe /**< Used to indicate that the previous character was a fullwidth glyph. */
-int cucul_gotoxy(cucul_canvas_t *, int, int);
-int cucul_get_cursor_x(cucul_canvas_t *);
-int cucul_get_cursor_y(cucul_canvas_t *);
-int cucul_put_char(cucul_canvas_t *, int, int, unsigned long int);
-unsigned long int cucul_get_char(cucul_canvas_t *, int, int);
-int cucul_put_str(cucul_canvas_t *, int, int, char const *);
-unsigned long int cucul_get_attr(cucul_canvas_t *, int, int);
-int cucul_set_attr(cucul_canvas_t *, unsigned long int);
-int cucul_put_attr(cucul_canvas_t *, int, int, unsigned long int);
-int cucul_set_color_ansi(cucul_canvas_t *, unsigned char, unsigned char);
-int cucul_set_color_argb(cucul_canvas_t *, unsigned int, unsigned int);
-int cucul_printf(cucul_canvas_t *, int, int, char const *, ...);
-int cucul_clear_canvas(cucul_canvas_t *);
-int cucul_set_canvas_handle(cucul_canvas_t *, int, int);
-int cucul_get_canvas_handle_x(cucul_canvas_t *);
-int cucul_get_canvas_handle_y(cucul_canvas_t *);
-int cucul_blit(cucul_canvas_t *, int, int, cucul_canvas_t const *,
-               cucul_canvas_t const *);
-int cucul_set_canvas_boundaries(cucul_canvas_t *, int, int,
-                                unsigned int, unsigned int);
+__extern int cucul_gotoxy(cucul_canvas_t *, int, int);
+__extern int cucul_get_cursor_x(cucul_canvas_t *);
+__extern int cucul_get_cursor_y(cucul_canvas_t *);
+__extern int cucul_put_char(cucul_canvas_t *, int, int, unsigned long int);
+__extern unsigned long int cucul_get_char(cucul_canvas_t *, int, int);
+__extern int cucul_put_str(cucul_canvas_t *, int, int, char const *);
+__extern unsigned long int cucul_get_attr(cucul_canvas_t *, int, int);
+__extern int cucul_set_attr(cucul_canvas_t *, unsigned long int);
+__extern int cucul_put_attr(cucul_canvas_t *, int, int, unsigned long int);
+__extern int cucul_set_color_ansi(cucul_canvas_t *, unsigned char,
+                                  unsigned char);
+__extern int cucul_set_color_argb(cucul_canvas_t *, unsigned int,
+                                  unsigned int);
+__extern int cucul_printf(cucul_canvas_t *, int, int, char const *, ...);
+__extern int cucul_clear_canvas(cucul_canvas_t *);
+__extern int cucul_set_canvas_handle(cucul_canvas_t *, int, int);
+__extern int cucul_get_canvas_handle_x(cucul_canvas_t *);
+__extern int cucul_get_canvas_handle_y(cucul_canvas_t *);
+__extern int cucul_blit(cucul_canvas_t *, int, int, cucul_canvas_t const *,
+                        cucul_canvas_t const *);
+__extern int cucul_set_canvas_boundaries(cucul_canvas_t *, int, int,
+                                         unsigned int, unsigned int);
 /*  @} */
 
 /** \defgroup cucul_transform libcucul canvas transformation
@@ -117,14 +128,14 @@ int cucul_set_canvas_boundaries(cucul_canvas_t *, int, int,
  *  These functions perform horizontal and vertical canvas flipping.
  *
  *  @{ */
-int cucul_invert(cucul_canvas_t *);
-int cucul_flip(cucul_canvas_t *);
-int cucul_flop(cucul_canvas_t *);
-int cucul_rotate_180(cucul_canvas_t *);
-int cucul_rotate_left(cucul_canvas_t *);
-int cucul_rotate_right(cucul_canvas_t *);
-int cucul_stretch_left(cucul_canvas_t *);
-int cucul_stretch_right(cucul_canvas_t *);
+__extern int cucul_invert(cucul_canvas_t *);
+__extern int cucul_flip(cucul_canvas_t *);
+__extern int cucul_flop(cucul_canvas_t *);
+__extern int cucul_rotate_180(cucul_canvas_t *);
+__extern int cucul_rotate_left(cucul_canvas_t *);
+__extern int cucul_rotate_right(cucul_canvas_t *);
+__extern int cucul_stretch_left(cucul_canvas_t *);
+__extern int cucul_stretch_right(cucul_canvas_t *);
 /*  @} */
 
 /** \defgroup cucul_attributes libcucul attribute conversions
@@ -132,9 +143,9 @@ int cucul_stretch_right(cucul_canvas_t *);
  *  These functions perform conversions between attribute values.
  *
  *  @{ */
-unsigned char cucul_attr_to_ansi(unsigned long int);
-unsigned char cucul_attr_to_ansi_fg(unsigned long int);
-unsigned char cucul_attr_to_ansi_bg(unsigned long int);
+__extern unsigned char cucul_attr_to_ansi(unsigned long int);
+__extern unsigned char cucul_attr_to_ansi_fg(unsigned long int);
+__extern unsigned char cucul_attr_to_ansi_bg(unsigned long int);
 /*  @} */
 
 /** \defgroup cucul_charset libcucul character set conversions
@@ -142,12 +153,12 @@ unsigned char cucul_attr_to_ansi_bg(unsigned long int);
  *  These functions perform conversions between usual character sets.
  *
  *  @{ */
-unsigned long int cucul_utf8_to_utf32(char const *, unsigned int *);
-unsigned int cucul_utf32_to_utf8(char *, unsigned long int);
-unsigned char cucul_utf32_to_cp437(unsigned long int);
-unsigned long int cucul_cp437_to_utf32(unsigned char);
-char cucul_utf32_to_ascii(unsigned long int);
-int cucul_utf32_is_fullwidth(unsigned long int);
+__extern unsigned long int cucul_utf8_to_utf32(char const *, unsigned int *);
+__extern unsigned int cucul_utf32_to_utf8(char *, unsigned long int);
+__extern unsigned char cucul_utf32_to_cp437(unsigned long int);
+__extern unsigned long int cucul_cp437_to_utf32(unsigned char);
+__extern char cucul_utf32_to_ascii(unsigned long int);
+__extern int cucul_utf32_is_fullwidth(unsigned long int);
 /*  @} */
 
 /** \defgroup cucul_primitives libcucul primitives drawing
@@ -156,28 +167,35 @@ int cucul_utf32_is_fullwidth(unsigned long int);
  *  boxes, triangles and ellipses.
  *
  *  @{ */
-int cucul_draw_line(cucul_canvas_t *, int, int, int, int, unsigned long int);
-int cucul_draw_polyline(cucul_canvas_t *, int const x[], int const y[], int,
-                        unsigned long int);
-int cucul_draw_thin_line(cucul_canvas_t *, int, int, int, int);
-int cucul_draw_thin_polyline(cucul_canvas_t *, int const x[], int const y[],
-                             int);
+__extern int cucul_draw_line(cucul_canvas_t *, int, int, int, int,
+                             unsigned long int);
+__extern int cucul_draw_polyline(cucul_canvas_t *, int const x[],
+                                 int const y[], int, unsigned long int);
+__extern int cucul_draw_thin_line(cucul_canvas_t *, int, int, int, int);
+__extern int cucul_draw_thin_polyline(cucul_canvas_t *, int const x[],
+                                      int const y[], int);
 
-int cucul_draw_circle(cucul_canvas_t *, int, int, int, unsigned long int);
-int cucul_draw_ellipse(cucul_canvas_t *, int, int, int, int, unsigned long int);
-int cucul_draw_thin_ellipse(cucul_canvas_t *, int, int, int, int);
-int cucul_fill_ellipse(cucul_canvas_t *, int, int, int, int, unsigned long int);
+__extern int cucul_draw_circle(cucul_canvas_t *, int, int, int,
+                               unsigned long int);
+__extern int cucul_draw_ellipse(cucul_canvas_t *, int, int, int, int,
+                                unsigned long int);
+__extern int cucul_draw_thin_ellipse(cucul_canvas_t *, int, int, int, int);
+__extern int cucul_fill_ellipse(cucul_canvas_t *, int, int, int, int,
+                                unsigned long int);
 
-int cucul_draw_box(cucul_canvas_t *, int, int, int, int, unsigned long int);
-int cucul_draw_thin_box(cucul_canvas_t *, int, int, int, int);
-int cucul_draw_cp437_box(cucul_canvas_t *, int, int, int, int);
-int cucul_fill_box(cucul_canvas_t *, int, int, int, int, unsigned long int);
+__extern int cucul_draw_box(cucul_canvas_t *, int, int, int, int,
+                            unsigned long int);
+__extern int cucul_draw_thin_box(cucul_canvas_t *, int, int, int, int);
+__extern int cucul_draw_cp437_box(cucul_canvas_t *, int, int, int, int);
+__extern int cucul_fill_box(cucul_canvas_t *, int, int, int, int,
+                            unsigned long int);
 
-int cucul_draw_triangle(cucul_canvas_t *, int, int, int, int, int, int,
-                        unsigned long int);
-int cucul_draw_thin_triangle(cucul_canvas_t *, int, int, int, int, int, int);
-int cucul_fill_triangle(cucul_canvas_t *, int, int, int, int, int, int,
-                        unsigned long int);
+__extern int cucul_draw_triangle(cucul_canvas_t *, int, int, int, int, int,
+                                 int, unsigned long int);
+__extern int cucul_draw_thin_triangle(cucul_canvas_t *, int, int, int, int,
+                                      int, int);
+__extern int cucul_fill_triangle(cucul_canvas_t *, int, int, int, int, int,
+                                 int, unsigned long int);
 /*  @} */
 
 /** \defgroup cucul_frame libcucul canvas frame handling
@@ -186,12 +204,12 @@ int cucul_fill_triangle(cucul_canvas_t *, int, int, int, int, int, int,
  *  removal, copying etc.
  *
  *  @{ */
-unsigned int cucul_get_frame_count(cucul_canvas_t *);
-int cucul_set_frame(cucul_canvas_t *, unsigned int);
-char const *cucul_get_frame_name(cucul_canvas_t *);
-int cucul_set_frame_name(cucul_canvas_t *, char const *);
-int cucul_create_frame(cucul_canvas_t *, unsigned int);
-int cucul_free_frame(cucul_canvas_t *, unsigned int);
+__extern unsigned int cucul_get_frame_count(cucul_canvas_t *);
+__extern int cucul_set_frame(cucul_canvas_t *, unsigned int);
+__extern char const *cucul_get_frame_name(cucul_canvas_t *);
+__extern int cucul_set_frame_name(cucul_canvas_t *, char const *);
+__extern int cucul_create_frame(cucul_canvas_t *, unsigned int);
+__extern int cucul_free_frame(cucul_canvas_t *, unsigned int);
 /*  @} */
 
 /** \defgroup cucul_dither libcucul bitmap dithering
@@ -200,34 +218,40 @@ int cucul_free_frame(cucul_canvas_t *, unsigned int);
  *  rendering.
  *
  *  @{ */
-cucul_dither_t *cucul_create_dither(unsigned int, unsigned int,
-                                    unsigned int, unsigned int,
-                                    unsigned long int, unsigned long int,
-                                    unsigned long int, unsigned long int);
-int cucul_set_dither_palette(cucul_dither_t *,
-                             unsigned int r[], unsigned int g[],
-                             unsigned int b[], unsigned int a[]);
-int cucul_set_dither_brightness(cucul_dither_t *, float);
-float cucul_get_dither_brightness(cucul_dither_t *);
-int cucul_set_dither_gamma(cucul_dither_t *, float);
-float cucul_get_dither_gamma(cucul_dither_t *);
-int cucul_set_dither_contrast(cucul_dither_t *, float);
-float cucul_get_dither_contrast(cucul_dither_t *);
-int cucul_set_dither_antialias(cucul_dither_t *, char const *);
-char const * const * cucul_get_dither_antialias_list(cucul_dither_t const *);
-char const * cucul_get_dither_antialias(cucul_dither_t const *);
-int cucul_set_dither_color(cucul_dither_t *, char const *);
-char const * const * cucul_get_dither_color_list(cucul_dither_t const *);
-char const * cucul_get_dither_color(cucul_dither_t const *);
-int cucul_set_dither_charset(cucul_dither_t *, char const *);
-char const * const * cucul_get_dither_charset_list(cucul_dither_t const *);
-char const * cucul_get_dither_charset(cucul_dither_t const *);
-int cucul_set_dither_algorithm(cucul_dither_t *, char const *);
-char const * const * cucul_get_dither_algorithm_list(cucul_dither_t const *);
-char const * cucul_get_dither_algorithm(cucul_dither_t const *);
-int cucul_dither_bitmap(cucul_canvas_t *, int, int, int, int,
+__extern cucul_dither_t *cucul_create_dither(unsigned int, unsigned int,
+                                             unsigned int, unsigned int,
+                                             unsigned long int,
+                                             unsigned long int,
+                                             unsigned long int,
+                                             unsigned long int);
+__extern int cucul_set_dither_palette(cucul_dither_t *,
+                                      unsigned int r[], unsigned int g[],
+                                      unsigned int b[], unsigned int a[]);
+__extern int cucul_set_dither_brightness(cucul_dither_t *, float);
+__extern float cucul_get_dither_brightness(cucul_dither_t *);
+__extern int cucul_set_dither_gamma(cucul_dither_t *, float);
+__extern float cucul_get_dither_gamma(cucul_dither_t *);
+__extern int cucul_set_dither_contrast(cucul_dither_t *, float);
+__extern float cucul_get_dither_contrast(cucul_dither_t *);
+__extern int cucul_set_dither_antialias(cucul_dither_t *, char const *);
+__extern char const * const * cucul_get_dither_antialias_list(cucul_dither_t
+                                                              const *);
+__extern char const * cucul_get_dither_antialias(cucul_dither_t const *);
+__extern int cucul_set_dither_color(cucul_dither_t *, char const *);
+__extern char const * const * cucul_get_dither_color_list(cucul_dither_t
+                                                          const *);
+__extern char const * cucul_get_dither_color(cucul_dither_t const *);
+__extern int cucul_set_dither_charset(cucul_dither_t *, char const *);
+__extern char const * const * cucul_get_dither_charset_list(cucul_dither_t
+                                                            const *);
+__extern char const * cucul_get_dither_charset(cucul_dither_t const *);
+__extern int cucul_set_dither_algorithm(cucul_dither_t *, char const *);
+__extern char const * const * cucul_get_dither_algorithm_list(cucul_dither_t
+                                                              const *);
+__extern char const * cucul_get_dither_algorithm(cucul_dither_t const *);
+__extern int cucul_dither_bitmap(cucul_canvas_t *, int, int, int, int,
                          cucul_dither_t const *, void *);
-int cucul_free_dither(cucul_dither_t *);
+__extern int cucul_free_dither(cucul_dither_t *);
 /*  @} */
 
 /** \defgroup cucul_font libcucul font handling
@@ -236,14 +260,14 @@ int cucul_free_dither(cucul_dither_t *);
  *  canvas to bitmap rendering.
  *
  *  @{ */
-cucul_font_t *cucul_load_font(void const *, unsigned int);
-char const * const * cucul_get_font_list(void);
-unsigned int cucul_get_font_width(cucul_font_t *);
-unsigned int cucul_get_font_height(cucul_font_t *);
-unsigned long int const *cucul_get_font_blocks(cucul_font_t *);
-int cucul_render_canvas(cucul_canvas_t *, cucul_font_t *, void *,
-                         unsigned int, unsigned int, unsigned int);
-int cucul_free_font(cucul_font_t *);
+__extern cucul_font_t *cucul_load_font(void const *, unsigned int);
+__extern char const * const * cucul_get_font_list(void);
+__extern unsigned int cucul_get_font_width(cucul_font_t *);
+__extern unsigned int cucul_get_font_height(cucul_font_t *);
+__extern unsigned long int const *cucul_get_font_blocks(cucul_font_t *);
+__extern int cucul_render_canvas(cucul_canvas_t *, cucul_font_t *, void *,
+                                 unsigned int, unsigned int, unsigned int);
+__extern int cucul_free_font(cucul_font_t *);
 /*  @} */
 
 /** \defgroup cucul_importexport libcucul importers/exporters from/to various
@@ -253,55 +277,60 @@ int cucul_free_font(cucul_font_t *);
  *  the current canvas to various text formats.
  *
  *  @{ */
-long int cucul_import_memory(cucul_canvas_t *, void const *,
-                             unsigned long int, char const *);
-long int cucul_import_file(cucul_canvas_t *, char const *, char const *);
-char const * const * cucul_get_import_list(void);
-void *cucul_export_memory(cucul_canvas_t *, char const *, unsigned long int *);
-char const * const * cucul_get_export_list(void);
+__extern long int cucul_import_memory(cucul_canvas_t *, void const *,
+                                      unsigned long int, char const *);
+__extern long int cucul_import_file(cucul_canvas_t *, char const *,
+                                    char const *);
+__extern char const * const * cucul_get_import_list(void);
+__extern void *cucul_export_memory(cucul_canvas_t *, char const *,
+                                   unsigned long int *);
+__extern char const * const * cucul_get_export_list(void);
 /*  @} */
 
 #if !defined(_DOXYGEN_SKIP_ME)
     /* Legacy stuff from beta versions, will probably disappear in 1.0 */
-    typedef struct cucul_buffer cucul_buffer_t;
+typedef struct cucul_buffer cucul_buffer_t;
 #   if defined __GNUC__ && __GNUC__ >= 3
 #       define CUCUL_DEPRECATED __attribute__ ((__deprecated__))
 #   else
 #       define CUCUL_DEPRECATED
 #   endif
-    int cucul_putchar(cucul_canvas_t *, int, int,
-                      unsigned long int) CUCUL_DEPRECATED;
-    unsigned long int cucul_getchar(cucul_canvas_t *,
-                                    int, int) CUCUL_DEPRECATED;
-    int cucul_putstr(cucul_canvas_t *, int, int,
-                     char const *) CUCUL_DEPRECATED;
-    int cucul_set_color(cucul_canvas_t *, unsigned char,
-                        unsigned char) CUCUL_DEPRECATED;
-    int cucul_set_truecolor(cucul_canvas_t *, unsigned int,
-                            unsigned int) CUCUL_DEPRECATED;
-    unsigned int cucul_get_canvas_frame_count(cucul_canvas_t *)
-                                              CUCUL_DEPRECATED;
-    int cucul_set_canvas_frame(cucul_canvas_t *,
-                               unsigned int) CUCUL_DEPRECATED;
-    int cucul_create_canvas_frame(cucul_canvas_t *,
-                                  unsigned int) CUCUL_DEPRECATED;
-    int cucul_free_canvas_frame(cucul_canvas_t *,
-                                unsigned int) CUCUL_DEPRECATED;
-    cucul_buffer_t *cucul_load_memory(void *,
-                                      unsigned long int) CUCUL_DEPRECATED;
-    cucul_buffer_t *cucul_load_file(char const *) CUCUL_DEPRECATED;
-    unsigned long int cucul_get_buffer_size(cucul_buffer_t *) CUCUL_DEPRECATED;
-    void * cucul_get_buffer_data(cucul_buffer_t *) CUCUL_DEPRECATED;
-    int cucul_free_buffer(cucul_buffer_t *) CUCUL_DEPRECATED;
-    cucul_buffer_t * cucul_export_canvas(cucul_canvas_t *,
-                                         char const *) CUCUL_DEPRECATED;
-    cucul_canvas_t * cucul_import_canvas(cucul_buffer_t *,
-                                         char const *) CUCUL_DEPRECATED;
-    int cucul_rotate(cucul_canvas_t *) CUCUL_DEPRECATED;
-    int cucul_set_dither_invert(cucul_dither_t *, int) CUCUL_DEPRECATED;
-    int cucul_set_dither_mode(cucul_dither_t *, char const *) CUCUL_DEPRECATED;
-    char const * const * cucul_get_dither_mode_list(cucul_dither_t
-                                                    const *) CUCUL_DEPRECATED;
+__extern int cucul_putchar(cucul_canvas_t *, int, int,
+                           unsigned long int) CUCUL_DEPRECATED;
+__extern unsigned long int cucul_getchar(cucul_canvas_t *,
+                                         int, int) CUCUL_DEPRECATED;
+__extern int cucul_putstr(cucul_canvas_t *, int, int,
+                          char const *) CUCUL_DEPRECATED;
+__extern int cucul_set_color(cucul_canvas_t *, unsigned char,
+                             unsigned char) CUCUL_DEPRECATED;
+__extern int cucul_set_truecolor(cucul_canvas_t *, unsigned int,
+                                 unsigned int) CUCUL_DEPRECATED;
+__extern unsigned int cucul_get_canvas_frame_count(cucul_canvas_t *)
+                                                   CUCUL_DEPRECATED;
+__extern int cucul_set_canvas_frame(cucul_canvas_t *,
+                                    unsigned int) CUCUL_DEPRECATED;
+__extern int cucul_create_canvas_frame(cucul_canvas_t *,
+                                       unsigned int) CUCUL_DEPRECATED;
+__extern int cucul_free_canvas_frame(cucul_canvas_t *,
+                                     unsigned int) CUCUL_DEPRECATED;
+__extern cucul_buffer_t *cucul_load_memory(void *,
+                                           unsigned long int) CUCUL_DEPRECATED;
+__extern cucul_buffer_t *cucul_load_file(char const *) CUCUL_DEPRECATED;
+__extern unsigned long int cucul_get_buffer_size(cucul_buffer_t *)
+                                                 CUCUL_DEPRECATED;
+__extern void * cucul_get_buffer_data(cucul_buffer_t *) CUCUL_DEPRECATED;
+__extern int cucul_free_buffer(cucul_buffer_t *) CUCUL_DEPRECATED;
+__extern cucul_buffer_t * cucul_export_canvas(cucul_canvas_t *,
+                                              char const *) CUCUL_DEPRECATED;
+__extern cucul_canvas_t * cucul_import_canvas(cucul_buffer_t *,
+                                              char const *) CUCUL_DEPRECATED;
+__extern int cucul_rotate(cucul_canvas_t *) CUCUL_DEPRECATED;
+__extern int cucul_set_dither_invert(cucul_dither_t *, int) CUCUL_DEPRECATED;
+__extern int cucul_set_dither_mode(cucul_dither_t *,
+                                   char const *) CUCUL_DEPRECATED;
+__extern char const * const * cucul_get_dither_mode_list(cucul_dither_t
+                                                         const *)
+                                                         CUCUL_DEPRECATED;
 #   define CUCUL_COLOR_BLACK CUCUL_BLACK
 #   define CUCUL_COLOR_BLUE CUCUL_BLUE
 #   define CUCUL_COLOR_GREEN CUCUL_GREEN
@@ -324,6 +353,10 @@ char const * const * cucul_get_export_list(void);
 
 #ifdef __cplusplus
 }
+#endif
+
+#if !defined(_DOXYGEN_SKIP_ME)
+#   undef __extern
 #endif
 
 #endif /* __CUCUL_H__ */

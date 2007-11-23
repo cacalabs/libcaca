@@ -24,10 +24,18 @@
 #ifndef __CACA_H__
 #define __CACA_H__
 
+#include <cucul.h>
+
+#if !defined(_DOXYGEN_SKIP_ME)
+#   if defined(__WIN32__) && defined(__LIBCACA__)
+#       define __extern extern __declspec(dllexport)
+#   else
+#       define __extern extern
+#   endif
+#endif
+
 /** libcaca API version */
 #define CACA_API_VERSION_1
-
-#include <cucul.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -180,14 +188,14 @@ enum caca_key
  *  initialisation, system information retrieval and configuration.
  *
  *  @{ */
-caca_display_t * caca_create_display(cucul_canvas_t *);
-int caca_free_display(caca_display_t *);
-int caca_refresh_display(caca_display_t *);
-int caca_set_display_time(caca_display_t *, unsigned int);
-unsigned int caca_get_display_time(caca_display_t *);
-unsigned int caca_get_display_width(caca_display_t *);
-unsigned int caca_get_display_height(caca_display_t *);
-int caca_set_display_title(caca_display_t *, char const *);
+__extern caca_display_t * caca_create_display(cucul_canvas_t *);
+__extern int caca_free_display(caca_display_t *);
+__extern int caca_refresh_display(caca_display_t *);
+__extern int caca_set_display_time(caca_display_t *, unsigned int);
+__extern unsigned int caca_get_display_time(caca_display_t *);
+__extern unsigned int caca_get_display_width(caca_display_t *);
+__extern unsigned int caca_get_display_height(caca_display_t *);
+__extern int caca_set_display_title(caca_display_t *, char const *);
 /*  @} */
 
 /** \defgroup caca_event libcaca event handling
@@ -196,15 +204,20 @@ int caca_set_display_title(caca_display_t *, char const *);
  *  clicks.
  *
  *  @{ */
-int caca_get_event(caca_display_t *, unsigned int, caca_event_t *, int);
-unsigned int caca_get_mouse_x(caca_display_t *);
-unsigned int caca_get_mouse_y(caca_display_t *);
-int caca_set_mouse(caca_display_t *, int);
-int caca_set_cursor(caca_display_t *, int);
+__extern int caca_get_event(caca_display_t *, unsigned int,
+                            caca_event_t *, int);
+__extern unsigned int caca_get_mouse_x(caca_display_t *);
+__extern unsigned int caca_get_mouse_y(caca_display_t *);
+__extern int caca_set_mouse(caca_display_t *, int);
+__extern int caca_set_cursor(caca_display_t *, int);
 /*  @} */
 
 #ifdef __cplusplus
 }
+#endif
+
+#if !defined(_DOXYGEN_SKIP_ME)
+#   undef __extern
 #endif
 
 #endif /* __CACA_H__ */
