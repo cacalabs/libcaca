@@ -1,6 +1,6 @@
 # $Id: $
 
-if USE_DOTNET
+if USE_CSHARP
 noinst_DATA = libCucul.dll libCaca.dll test.exe
 endif
 
