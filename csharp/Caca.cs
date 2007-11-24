@@ -82,7 +82,7 @@ namespace Caca
     }
 
 
-  public unsafe class Display : IDisposable
+  public unsafe class CacaDisplay : IDisposable
     {
     [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
       public static extern IntPtr caca_create_display(IntPtr cv);
@@ -116,7 +116,7 @@ namespace Caca
     IntPtr _cv;
     IntPtr _dp;
 
-    public Display(CuculCanvas cv)
+    public CacaDisplay(CuculCanvas cv)
     {
         _cv = cv._cv;
         _dp = caca_create_display(_cv);

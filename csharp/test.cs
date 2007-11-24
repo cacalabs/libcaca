@@ -18,71 +18,90 @@ using System;
 using Cucul;
 using Caca;
 
-class Test {
+class DemoCanvas : CuculCanvas
+{
+    private DateTime startTime;
 
+    public DemoCanvas()
+    {
+        startTime = DateTime.Now;
+    }
 
-
-	public static void Main() {
+    public void Draw()
+    {
         int barCount = 6;
+        double t = (DateTime.Now - startTime).TotalMilliseconds;
+
+        Clear();
+
+        setColorAnsi(Libcucul.WHITE, Libcucul.BLACK);
+        for(int i = 0; i < barCount; i++)
+        {
+            double v = ((Math.Sin((t / 500.0)
+                          + (i / ((double)barCount))) + 1) / 2) * height;
+            int y = (int)v;
+
+            setColorAnsi(i + 9, Libcucul.BLACK);
+            /* drawLine is already clipped, we don't care about overflows */
+            drawLine(0, y - 2, width, y - 2, '-');
+            drawLine(0, y - 1, width, y - 1, '*');
+            drawLine(0, y,     width, y,     '#');
+            drawLine(0, y + 1, width, y + 1, '*');
+            drawLine(0, y + 2, width, y + 2, '-');
+        }
+
+        setColorAnsi(Libcucul.WHITE, Libcucul.BLUE);
+        putStr(width - 30, height - 2, " -=[ Powered by libcaca ]=- ");
+        setColorAnsi(Libcucul.WHITE, Libcucul.BLACK);
+    }
+}
+
+class DemoDisplay : CacaDisplay
+{
+    private Event e;
+    private DemoCanvas cv;
+
+    public DemoDisplay(DemoCanvas _cv) : base(_cv)
+    {
+        setDisplayTime(20000); // Refresh every 20 ms
+        setDisplayTitle("libcaca .NET Bindings test suite");
+        cv = _cv;
+        e = new Event();
+    }
+
+    public void EventLoop()
+    {
+        while(getEvent(Event.type.KEY_RELEASE, e, 10) == 0)
+        {
+            cv.Draw();
+
+            Refresh();
+        }
+    }
+}
+
+class Test
+{
+    public static void Main()
+    {
         Console.WriteLine("libcaca .NET test");
-		Console.WriteLine("(c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>");
+        Console.WriteLine("(c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>");
 
         /* Instanciate a cucul canvas */
-        CuculCanvas cv = new CuculCanvas();
+        DemoCanvas cv = new DemoCanvas();
 
+        /* We have a proper canvas, let's display it using Caca */
+        DemoDisplay dp = new DemoDisplay(cv);
 
         /* Random number. This is a static method,
            not to be used with previous instance */
         Console.WriteLine("A random number : {0}", Libcucul.Rand(0, 1337));
 
-
-
-        /* We have a proper canvas, let's display it using Caca */
-        Display dp = new Display(cv);
-        dp.setDisplayTime(20000); // Refresh every 20 ms
-
-        dp.setDisplayTitle("libcaca .NET Bindings test suite");
-
-        double v;
-        Int32 y = 0;
-        Event e = new Event();
-        int i;
-
-        DateTime startTime = DateTime.Now;
-        while(dp.getEvent(Event.type.KEY_RELEASE, e, 10) == 0)
-          {
-            TimeSpan curTime = DateTime.Now - startTime;
-            double t = curTime.TotalMilliseconds;
-            cv.setColorAnsi(Libcucul.WHITE, Libcucul.BLACK);
-            for(i=0; i<barCount;i++)
-             {
-                v = ((Math.Sin((t/500.0)+(i/((double)barCount)))+1)/2)*cv.height;
-                y = (Int32) v;
-
-
-
-                cv.setColorAnsi(i+9, Libcucul.BLACK);
-                /* drawLine is already clipped, we don't care about overflows */
-                cv.drawLine(0, y-2, cv.width, y-2, '-');
-                cv.drawLine(0, y-1, cv.width, y-1, '*');
-                cv.drawLine(0, y, cv.width, y, '#');
-                cv.drawLine(0, y+1, cv.width, y+1, '*');
-                cv.drawLine(0, y+2, cv.width, y+2, '-');
-             }
-
-             cv.setColorAnsi(Libcucul.WHITE, Libcucul.BLUE);
-             cv.putStr(cv.width - 30,cv.height - 2," -=[ Powered by libcaca ]=- ");
-             cv.setColorAnsi(Libcucul.WHITE, Libcucul.BLACK);
-
-
-            dp.Refresh();
-            cv.Clear();
-
-          }
+        dp.EventLoop();
 
         /* Force deletion of our instances for fun */
         dp.Dispose();
         cv.Dispose();
-	}
+    }
 
 }
