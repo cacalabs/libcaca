@@ -56,8 +56,7 @@ c.draw_thin_polyline([[0,0], [0,2], [5,2], [0,0]])
 d = Caca::Display.new(c)
 d.title = "Test !"
 d.refresh
-while((e = d.get_event(Caca::Event, -1)) &&
-       ! e.kind_of?(Caca::Event::Quit))
+while((e = d.get_event(Caca::Event, -1)) && ! e.quit?)
     p e
     d.refresh
 end
