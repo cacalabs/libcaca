@@ -192,9 +192,9 @@ __extern caca_display_t * caca_create_display(cucul_canvas_t *);
 __extern int caca_free_display(caca_display_t *);
 __extern int caca_refresh_display(caca_display_t *);
 __extern int caca_set_display_time(caca_display_t *, unsigned int);
-__extern unsigned int caca_get_display_time(caca_display_t *);
-__extern unsigned int caca_get_display_width(caca_display_t *);
-__extern unsigned int caca_get_display_height(caca_display_t *);
+__extern unsigned int caca_get_display_time(caca_display_t const *);
+__extern unsigned int caca_get_display_width(caca_display_t const *);
+__extern unsigned int caca_get_display_height(caca_display_t const *);
 __extern int caca_set_display_title(caca_display_t *, char const *);
 /*  @} */
 
@@ -206,8 +206,8 @@ __extern int caca_set_display_title(caca_display_t *, char const *);
  *  @{ */
 __extern int caca_get_event(caca_display_t *, unsigned int,
                             caca_event_t *, int);
-__extern unsigned int caca_get_mouse_x(caca_display_t *);
-__extern unsigned int caca_get_mouse_y(caca_display_t *);
+__extern unsigned int caca_get_mouse_x(caca_display_t const *);
+__extern unsigned int caca_get_mouse_y(caca_display_t const *);
 __extern int caca_set_mouse(caca_display_t *, int);
 __extern int caca_set_cursor(caca_display_t *, int);
 /*  @} */

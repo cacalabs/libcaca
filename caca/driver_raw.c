@@ -55,12 +55,12 @@ static int raw_set_display_title(caca_display_t *dp, char const *title)
     return -1;
 }
 
-static unsigned int raw_get_display_width(caca_display_t *dp)
+static unsigned int raw_get_display_width(caca_display_t const *dp)
 {
     return 0;
 }
 
-static unsigned int raw_get_display_height(caca_display_t *dp)
+static unsigned int raw_get_display_height(caca_display_t const *dp)
 {
     return 0;
 }

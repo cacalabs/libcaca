@@ -171,7 +171,7 @@ static int win32_set_display_title(caca_display_t *dp, char const *title)
     return 0;
 }
 
-static unsigned int win32_get_display_width(caca_display_t *dp)
+static unsigned int win32_get_display_width(caca_display_t const *dp)
 {
     /* FIXME */
 
@@ -179,7 +179,7 @@ static unsigned int win32_get_display_width(caca_display_t *dp)
     return dp->cv->width * 6;
 }
 
-static unsigned int win32_get_display_height(caca_display_t *dp)
+static unsigned int win32_get_display_height(caca_display_t const *dp)
 {
     /* FIXME */
 

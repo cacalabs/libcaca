@@ -101,13 +101,13 @@ static int vga_set_display_title(caca_display_t *dp, char const *title)
     return -1;
 }
 
-static unsigned int vga_get_display_width(caca_display_t *dp)
+static unsigned int vga_get_display_width(caca_display_t const *dp)
 {
     /* Fallback to a 320x200 screen */
     return 320;
 }
 
-static unsigned int vga_get_display_height(caca_display_t *dp)
+static unsigned int vga_get_display_height(caca_display_t const *dp)
 {
     /* Fallback to a 320x200 screen */
     return 200;

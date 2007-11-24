@@ -325,7 +325,7 @@ char const * const * cucul_get_font_list(void)
  *  \param f The font, as returned by cucul_load_font()
  *  \return The standard glyph width.
  */
-unsigned int cucul_get_font_width(cucul_font_t *f)
+unsigned int cucul_get_font_width(cucul_font_t const *f)
 {
     return f->header.width;
 }
@@ -340,7 +340,7 @@ unsigned int cucul_get_font_width(cucul_font_t *f)
  *  \param f The font, as returned by cucul_load_font()
  *  \return The standard glyph height.
  */
-unsigned int cucul_get_font_height(cucul_font_t *f)
+unsigned int cucul_get_font_height(cucul_font_t const *f)
 {
     return f->header.height;
 }
@@ -365,7 +365,7 @@ unsigned int cucul_get_font_height(cucul_font_t *f)
  *  \param f The font, as returned by cucul_load_font()
  *  \return The list of Unicode blocks supported by the font.
  */
-unsigned long int const *cucul_get_font_blocks(cucul_font_t *f)
+unsigned long int const *cucul_get_font_blocks(cucul_font_t const *f)
 {
     return (unsigned long int const *)f->user_block_list;
 }
@@ -415,7 +415,7 @@ int cucul_free_font(cucul_font_t *f)
  *  \param pitch The pitch (in bytes) of an image buffer line.
  *  \return This function always returns 0.
  */
-int cucul_render_canvas(cucul_canvas_t *cv, cucul_font_t *f,
+int cucul_render_canvas(cucul_canvas_t const *cv, cucul_font_t const *f,
                         void *buf, unsigned int width,
                         unsigned int height, unsigned int pitch)
 {

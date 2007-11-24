@@ -441,7 +441,7 @@ int cucul_set_dither_brightness(cucul_dither_t *d, float brightness)
  *  \param d Dither object.
  *  \return Brightness value.
  */
-float cucul_get_dither_brightness(cucul_dither_t *d)
+float cucul_get_dither_brightness(cucul_dither_t const *d)
 {
     return d->brightness;
 }
@@ -493,7 +493,7 @@ int cucul_set_dither_gamma(cucul_dither_t *d, float gamma)
  *  \param d Dither object.
  *  \return Gamma value.
  */
-float cucul_get_dither_gamma(cucul_dither_t *d)
+float cucul_get_dither_gamma(cucul_dither_t const *d)
 {
     return d->gamma;
 }
@@ -526,7 +526,7 @@ int cucul_set_dither_contrast(cucul_dither_t *d, float contrast)
  *  \param d Dither object.
  *  \return Contrast value.
  */
-float cucul_get_dither_contrast(cucul_dither_t *d)
+float cucul_get_dither_contrast(cucul_dither_t const *d)
 {
     return d->contrast;
 }

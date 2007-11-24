@@ -149,7 +149,7 @@ int cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
  *  \param cv A libcucul canvas
  *  \return The canvas width.
  */
-unsigned int cucul_get_canvas_width(cucul_canvas_t *cv)
+unsigned int cucul_get_canvas_width(cucul_canvas_t const *cv)
 {
     return cv->width;
 }
@@ -163,7 +163,7 @@ unsigned int cucul_get_canvas_width(cucul_canvas_t *cv)
  *  \param cv A libcucul canvas
  *  \return The canvas height.
  */
-unsigned int cucul_get_canvas_height(cucul_canvas_t *cv)
+unsigned int cucul_get_canvas_height(cucul_canvas_t const *cv)
 {
     return cv->height;
 }

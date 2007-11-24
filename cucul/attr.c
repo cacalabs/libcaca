@@ -50,7 +50,7 @@ static uint8_t nearest_ansi(uint16_t);
  *  \param y Y coordinate.
  *  \return The requested attribute.
  */
-unsigned long int cucul_get_attr(cucul_canvas_t *cv, int x, int y)
+unsigned long int cucul_get_attr(cucul_canvas_t const *cv, int x, int y)
 {
     if(x < 0 || x >= (int)cv->width || y < 0 || y >= (int)cv->height)
         return (unsigned long int)cv->curattr;

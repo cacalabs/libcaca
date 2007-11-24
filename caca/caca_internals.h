@@ -108,8 +108,8 @@ struct caca_display
         int (* init_graphics) (caca_display_t *);
         int (* end_graphics) (caca_display_t *);
         int (* set_display_title) (caca_display_t *, char const *);
-        unsigned int (* get_display_width) (caca_display_t *);
-        unsigned int (* get_display_height) (caca_display_t *);
+        unsigned int (* get_display_width) (caca_display_t const *);
+        unsigned int (* get_display_height) (caca_display_t const *);
         void (* display) (caca_display_t *);
         void (* handle_resize) (caca_display_t *);
         int (* get_event) (caca_display_t *, caca_event_t *);

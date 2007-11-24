@@ -37,7 +37,7 @@
  *  \param cv A libcucul canvas
  *  \return The frame count
  */
-unsigned int cucul_get_frame_count(cucul_canvas_t *cv)
+unsigned int cucul_get_frame_count(cucul_canvas_t const *cv)
 {
     return cv->framecount;
 }
@@ -83,7 +83,7 @@ int cucul_set_frame(cucul_canvas_t *cv, unsigned int id)
  *  \param cv A libcucul canvas.
  *  \return The current frame's name.
  */
-char const *cucul_get_frame_name(cucul_canvas_t *cv)
+char const *cucul_get_frame_name(cucul_canvas_t const *cv)
 {
     return cv->frames[cv->frame].name;
 }

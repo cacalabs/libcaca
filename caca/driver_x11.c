@@ -274,12 +274,12 @@ static int x11_set_display_title(caca_display_t *dp, char const *title)
     return 0;
 }
 
-static unsigned int x11_get_display_width(caca_display_t *dp)
+static unsigned int x11_get_display_width(caca_display_t const *dp)
 {
     return dp->cv->width * dp->drv.p->font_width;
 }
 
-static unsigned int x11_get_display_height(caca_display_t *dp)
+static unsigned int x11_get_display_height(caca_display_t const *dp)
 {
     return dp->cv->height * dp->drv.p->font_height;
 }

@@ -69,7 +69,7 @@ int cucul_gotoxy(cucul_canvas_t *cv, int x, int y)
  *  \param cv A handle to the libcucul canvas.
  *  \return The cursor's X coordinate.
  */
-int cucul_get_cursor_x(cucul_canvas_t *cv)
+int cucul_get_cursor_x(cucul_canvas_t const *cv)
 {
     return cv->frames[cv->frame].x;
 }
@@ -83,7 +83,7 @@ int cucul_get_cursor_x(cucul_canvas_t *cv)
  *  \param cv A handle to the libcucul canvas.
  *  \return The cursor's Y coordinate.
  */
-int cucul_get_cursor_y(cucul_canvas_t *cv)
+int cucul_get_cursor_y(cucul_canvas_t const *cv)
 {
     return cv->frames[cv->frame].y;
 }
@@ -192,7 +192,7 @@ int cucul_put_char(cucul_canvas_t *cv, int x, int y, unsigned long int ch)
  *  \param y Y coordinate.
  *  \return This function always returns 0.
  */
-unsigned long int cucul_get_char(cucul_canvas_t *cv, int x, int y)
+unsigned long int cucul_get_char(cucul_canvas_t const *cv, int x, int y)
 {
     if(x < 0 || x >= (int)cv->width || y < 0 || y >= (int)cv->height)
         return ' ';
@@ -340,7 +340,7 @@ int cucul_set_canvas_handle(cucul_canvas_t *cv, int x, int y)
  *  \param cv A handle to the libcucul canvas.
  *  \return The canvas' handle's X coordinate.
  */
-int cucul_get_canvas_handle_x(cucul_canvas_t *cv)
+int cucul_get_canvas_handle_x(cucul_canvas_t const *cv)
 {
     return cv->frames[cv->frame].handlex;
 }
@@ -354,7 +354,7 @@ int cucul_get_canvas_handle_x(cucul_canvas_t *cv)
  *  \param cv A handle to the libcucul canvas.
  *  \return The canvas' handle's Y coordinate.
  */
-int cucul_get_canvas_handle_y(cucul_canvas_t *cv)
+int cucul_get_canvas_handle_y(cucul_canvas_t const *cv)
 {
     return cv->frames[cv->frame].handley;
 }

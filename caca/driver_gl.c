@@ -197,12 +197,12 @@ static int gl_set_display_title(caca_display_t *dp, char const *title)
     return 0;
 }
 
-static unsigned int gl_get_display_width(caca_display_t *dp)
+static unsigned int gl_get_display_width(caca_display_t const *dp)
 {
     return dp->drv.p->width;
 }
 
-static unsigned int gl_get_display_height(caca_display_t *dp)
+static unsigned int gl_get_display_height(caca_display_t const *dp)
 {
     return dp->drv.p->height;
 }

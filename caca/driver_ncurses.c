@@ -326,13 +326,13 @@ static int ncurses_set_display_title(caca_display_t *dp, char const *title)
     return 0;
 }
 
-static unsigned int ncurses_get_display_width(caca_display_t *dp)
+static unsigned int ncurses_get_display_width(caca_display_t const *dp)
 {
     /* Fallback to a 6x10 font */
     return dp->cv->width * 6;
 }
 
-static unsigned int ncurses_get_display_height(caca_display_t *dp)
+static unsigned int ncurses_get_display_height(caca_display_t const *dp)
 {
     /* Fallback to a 6x10 font */
     return dp->cv->height * 10;

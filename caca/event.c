@@ -125,10 +125,10 @@ int caca_get_event(caca_display_t *dp, unsigned int event_mask,
  *  \param dp The libcaca graphical context.
  *  \return The X mouse coordinate.
  */
-unsigned int caca_get_mouse_x(caca_display_t *dp)
+unsigned int caca_get_mouse_x(caca_display_t const *dp)
 {
     if(dp->mouse.x >= dp->cv->width)
-        dp->mouse.x = dp->cv->width - 1;
+        return dp->cv->width - 1;
 
     return dp->mouse.x;
 }
@@ -145,10 +145,10 @@ unsigned int caca_get_mouse_x(caca_display_t *dp)
  *  \param dp The libcaca graphical context.
  *  \return The Y mouse coordinate.
  */
-unsigned int caca_get_mouse_y(caca_display_t *dp)
+unsigned int caca_get_mouse_y(caca_display_t const *dp)
 {
     if(dp->mouse.y >= dp->cv->height)
-        dp->mouse.y = dp->cv->height - 1;
+        return dp->cv->height - 1;
 
     return dp->mouse.y;
 }

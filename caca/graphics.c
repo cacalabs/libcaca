@@ -64,7 +64,7 @@ int caca_set_display_title(caca_display_t *dp, char const *title)
  *  \param dp The libcaca display context.
  *  \return The display width.
  */
-unsigned int caca_get_display_width(caca_display_t *dp)
+unsigned int caca_get_display_width(caca_display_t const *dp)
 {
     return dp->drv.get_display_width(dp);
 }
@@ -81,7 +81,7 @@ unsigned int caca_get_display_width(caca_display_t *dp)
  *  \param dp The libcaca display context.
  *  \return The display height.
  */
-unsigned int caca_get_display_height(caca_display_t *dp)
+unsigned int caca_get_display_height(caca_display_t const *dp)
 {
     return dp->drv.get_display_height(dp);
 }
@@ -120,7 +120,7 @@ int caca_set_display_time(caca_display_t *dp, unsigned int usec)
  *  \param dp The libcaca display context.
  *  \return The render time in microseconds.
  */
-unsigned int caca_get_display_time(caca_display_t *dp)
+unsigned int caca_get_display_time(caca_display_t const *dp)
 {
     return dp->rendertime;
 }
