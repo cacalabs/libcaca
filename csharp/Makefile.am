@@ -1,24 +1,24 @@
 # $Id: $
 
 if USE_CSHARP
-noinst_DATA = libCucul.dll libCaca.dll test.exe
+noinst_DATA = cucul-sharp.dll caca-sharp.dll test.exe
 endif
 
 EXTRA_DIST = AssemblyInfo.cs \
              Cucul.cs \
              Caca.cs \
-             libCucul.dll.config \
-             libCaca.dll.config \
+             cucul-sharp.dll.config \
+             caca-sharp.dll.config \
              test.cs
 
-libCucul.dll: AssemblyInfo.cs Cucul.cs
+cucul-sharp.dll: AssemblyInfo.cs Cucul.cs
 	gmcs $^ -out:$@ -target:library  -unsafe
 
-libCaca.dll: AssemblyInfo.cs Caca.cs
-	gmcs $^ -out:$@ -target:library -r:./libCucul.dll -lib:./ -unsafe
+caca-sharp.dll: AssemblyInfo.cs Caca.cs
+	gmcs $^ -out:$@ -target:library -r:./cucul-sharp.dll -lib:./ -unsafe
 
-test.exe: test.cs libCaca.dll libCucul.dll
-	gmcs test.cs -out:$@ -r:./libCucul.dll -r:./libCaca.dll -lib:./ -unsafe
+test.exe: test.cs caca-sharp.dll cucul-sharp.dll
+	gmcs test.cs -out:$@ -r:./cucul-sharp.dll -r:./caca-sharp.dll -lib:./ -unsafe
 
 clean-local:
 	rm -f *.exe *.dll

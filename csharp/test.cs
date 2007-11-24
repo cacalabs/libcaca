@@ -14,8 +14,9 @@
 
 
 using System;
-using libCucul;
-using libCaca;
+
+using Cucul;
+using Caca;
 
 class Test {
 
@@ -27,20 +28,20 @@ class Test {
 		Console.WriteLine("(c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>");
         
         /* Instanciate a cucul canvas */
-        Cucul qq = new Cucul();
+        CuculCanvas cv = new CuculCanvas();
 
  
         /* Random number. This is a static method, 
            not to be used with previous instance */
-        Console.WriteLine("A random number : {0}", Cucul.Rand(0, 1337));
+        Console.WriteLine("A random number : {0}", Libcucul.Rand(0, 1337));
 
 
 
         /* We have a proper canvas, let's display it using Caca */
-        Caca kk = new Caca(qq);
-        kk.setDisplayTime(20000); // Refresh every 20 ms
+        Display dp = new Display(cv);
+        dp.setDisplayTime(20000); // Refresh every 20 ms
 
-        kk.setDisplayTitle("libcaca .NET Bindings test suite");
+        dp.setDisplayTitle("libcaca .NET Bindings test suite");
 
         double v;
         Int32 y = 0;
@@ -48,40 +49,40 @@ class Test {
         Int32 i;
         
         DateTime startTime = DateTime.Now;
-        while(kk.getEvent(Event.type.KEY_RELEASE, e, 10) == 0)
+        while(dp.getEvent(Event.type.KEY_RELEASE, e, 10) == 0)
           {
             TimeSpan curTime = DateTime.Now - startTime;
             double t = curTime.TotalMilliseconds;
-            qq.setColor(Cucul.CUCUL_WHITE, Cucul.CUCUL_BLACK);
+            cv.setColor(Libcucul.WHITE, Libcucul.BLACK);
             for(i=0; i<barCount;i++) 
              {
-                v = ((Math.Sin((t/500.0)+(i/((double)barCount)))+1)/2)*qq.getHeight();
+                v = ((Math.Sin((t/500.0)+(i/((double)barCount)))+1)/2)*cv.getHeight();
                 y = (Int32) v;
 
  
 
-                qq.setColor(i+9, Cucul.CUCUL_BLACK);
+                cv.setColor(i+9, Libcucul.BLACK);
                 /* drawLine is already clipped, we don't care about overflows */
-                qq.drawLine(0, y-2, qq.getWidth(), y-2, '-'); 
-                qq.drawLine(0, y-1, qq.getWidth(), y-1, '*');
-                qq.drawLine(0, y, qq.getWidth(), y, '#');
-                qq.drawLine(0, y+1, qq.getWidth(), y+1, '*');
-                qq.drawLine(0, y+2, qq.getWidth(), y+2, '-');
+                cv.drawLine(0, y-2, cv.getWidth(), y-2, '-'); 
+                cv.drawLine(0, y-1, cv.getWidth(), y-1, '*');
+                cv.drawLine(0, y, cv.getWidth(), y, '#');
+                cv.drawLine(0, y+1, cv.getWidth(), y+1, '*');
+                cv.drawLine(0, y+2, cv.getWidth(), y+2, '-');
              }
 
-             qq.setColor(Cucul.CUCUL_WHITE, Cucul.CUCUL_BLUE);   
-             qq.putStr(qq.getWidth() - 30,qq.getHeight() - 2," -=[ Powered by libcaca ]=- ");
-             qq.setColor(Cucul.CUCUL_WHITE, Cucul.CUCUL_BLACK);   
+             cv.setColor(Libcucul.WHITE, Libcucul.BLUE);   
+             cv.putStr(cv.getWidth() - 30,cv.getHeight() - 2," -=[ Powered by libcaca ]=- ");
+             cv.setColor(Libcucul.WHITE, Libcucul.BLACK);   
  
 
-            kk.Refresh();
-            qq.Clear();
+            dp.Refresh();
+            cv.Clear();
             
           }
 
         /* Force deletion of our instances for fun */
-        qq.Dispose();
-        kk.Dispose();
+        dp.Dispose();
+        cv.Dispose();
 	}
 
 }
