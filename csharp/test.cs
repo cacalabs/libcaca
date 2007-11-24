@@ -26,12 +26,12 @@ class Test {
         int barCount = 6;
         Console.WriteLine("libcaca .NET test");
 		Console.WriteLine("(c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>");
-        
+
         /* Instanciate a cucul canvas */
         CuculCanvas cv = new CuculCanvas();
 
- 
-        /* Random number. This is a static method, 
+
+        /* Random number. This is a static method,
            not to be used with previous instance */
         Console.WriteLine("A random number : {0}", Libcucul.Rand(0, 1337));
 
@@ -46,38 +46,38 @@ class Test {
         double v;
         Int32 y = 0;
         Event e = new Event();
-        Int32 i;
-        
+        int i;
+
         DateTime startTime = DateTime.Now;
         while(dp.getEvent(Event.type.KEY_RELEASE, e, 10) == 0)
           {
             TimeSpan curTime = DateTime.Now - startTime;
             double t = curTime.TotalMilliseconds;
-            cv.setColor(Libcucul.WHITE, Libcucul.BLACK);
-            for(i=0; i<barCount;i++) 
+            cv.setColorAnsi(Libcucul.WHITE, Libcucul.BLACK);
+            for(i=0; i<barCount;i++)
              {
-                v = ((Math.Sin((t/500.0)+(i/((double)barCount)))+1)/2)*cv.getHeight();
+                v = ((Math.Sin((t/500.0)+(i/((double)barCount)))+1)/2)*cv.height;
                 y = (Int32) v;
 
- 
 
-                cv.setColor(i+9, Libcucul.BLACK);
+
+                cv.setColorAnsi(i+9, Libcucul.BLACK);
                 /* drawLine is already clipped, we don't care about overflows */
-                cv.drawLine(0, y-2, cv.getWidth(), y-2, '-'); 
-                cv.drawLine(0, y-1, cv.getWidth(), y-1, '*');
-                cv.drawLine(0, y, cv.getWidth(), y, '#');
-                cv.drawLine(0, y+1, cv.getWidth(), y+1, '*');
-                cv.drawLine(0, y+2, cv.getWidth(), y+2, '-');
+                cv.drawLine(0, y-2, cv.width, y-2, '-');
+                cv.drawLine(0, y-1, cv.width, y-1, '*');
+                cv.drawLine(0, y, cv.width, y, '#');
+                cv.drawLine(0, y+1, cv.width, y+1, '*');
+                cv.drawLine(0, y+2, cv.width, y+2, '-');
              }
 
-             cv.setColor(Libcucul.WHITE, Libcucul.BLUE);   
-             cv.putStr(cv.getWidth() - 30,cv.getHeight() - 2," -=[ Powered by libcaca ]=- ");
-             cv.setColor(Libcucul.WHITE, Libcucul.BLACK);   
- 
+             cv.setColorAnsi(Libcucul.WHITE, Libcucul.BLUE);
+             cv.putStr(cv.width - 30,cv.height - 2," -=[ Powered by libcaca ]=- ");
+             cv.setColorAnsi(Libcucul.WHITE, Libcucul.BLACK);
+
 
             dp.Refresh();
             cv.Clear();
-            
+
           }
 
         /* Force deletion of our instances for fun */
