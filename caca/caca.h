@@ -27,7 +27,7 @@
 #include <cucul.h>
 
 #if !defined(_DOXYGEN_SKIP_ME)
-#   if defined(__WIN32__) && defined(__LIBCACA__)
+#   if defined(_WIN32) && defined(__LIBCACA__)
 #       define __extern extern __declspec(dllexport)
 #   else
 #       define __extern extern
