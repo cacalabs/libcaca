@@ -32,7 +32,6 @@
   - support for holes in canvas (eg. not full EOL)
   - support for TAB
   - allow to change the canvas size in a per-frame basis.
-  - export attribute parsing functions such as attr_to_ansi4fg etc.
   - add attributes such as "can grow X-wise" to frames.
   - handle frame name in caca export
 
@@ -40,7 +39,7 @@
 
   - Brightness, contrast support for bitmaps (the functions are here, we
      just need to fill them)
-  - Error distribution dithering
+  - Implement other error distribution dithering algorithms
   - Add a random factor to the random ditherer. No need to change the API
      for that, we can just pass \c "random:10" instead of \c "random" to the
      cucul_set_bitmap_dithering() function.
@@ -58,7 +57,6 @@
   \subsection dep API-dependent stuff
 
   - beep support
-  - check that the libcucul version matches on init
 
   \subsection indep API-independent stuff
 
@@ -79,13 +77,11 @@
 
   - Fix Python
   - Fix Perl
-  - C# (it's the next big thing, believe me)
   - PHP (together with the HTML output it would allow for nice web
      applications)
 
   \subsection notimp Not that important
 
-  - Ruby
   - Java
 
 
