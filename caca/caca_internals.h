@@ -108,6 +108,7 @@ struct caca_display
 {
     /* A link to our cucul canvas */
     cucul_canvas_t *cv;
+    int autorelease;
 
 #if defined(USE_PLUGINS)
     void *plugin;

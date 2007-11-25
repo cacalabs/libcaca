@@ -54,6 +54,10 @@ static int caca_plugin_install(char const *, caca_display_t *);
  *  libcucul canvas. Everything that gets drawn in the libcucul canvas can
  *  then be displayed by the libcaca driver.
  *
+ *  If no cucul canvas is provided, a new one is created. Its handle can be
+ *  retrieved using caca_get_canvas() and it is automatically destroyed when
+ *  caca_free_display() is called.
+ *
  *  If an error occurs, NULL is returned and \b errno is set accordingly:
  *  - \c ENOMEM Not enough memory.
  *  - \c ENODEV Graphical device could not be initialised.
@@ -71,14 +75,22 @@ caca_display_t * caca_create_display(cucul_canvas_t *cv)
         return NULL;
     }
 
+    if((dp->autorelease = (cv == NULL)))
+    {
+        cv = cucul_create_canvas(0, 0);
+    }
+
+    dp->cv = cv;
+
     if(cucul_manage_canvas(cv, (int (*)(void *))caca_can_resize, (void *)dp))
     {
+        if(dp->autorelease)
+            cucul_free_canvas(dp->cv);
         free(dp);
         seterrno(EBUSY);
         return NULL;
     }
 
-    dp->cv = cv;
 #if defined(USE_PLUGINS)
     dp->plugin = NULL;
 #endif
@@ -90,6 +102,8 @@ caca_display_t * caca_create_display(cucul_canvas_t *cv)
             dlclose(dp->plugin);
 #endif
         cucul_unmanage_canvas(cv, (int (*)(void *))caca_can_resize, (void *)dp);
+        if(dp->autorelease)
+            cucul_free_canvas(dp->cv);
         free(dp);
         seterrno(ENODEV);
         return NULL;
@@ -102,6 +116,8 @@ caca_display_t * caca_create_display(cucul_canvas_t *cv)
             dlclose(dp->plugin);
 #endif
         cucul_unmanage_canvas(cv, (int (*)(void *))caca_can_resize, (void *)dp);
+        if(dp->autorelease)
+            cucul_free_canvas(dp->cv);
         free(dp);
         seterrno(ENODEV);
         return NULL;
@@ -144,6 +160,9 @@ caca_display_t * caca_create_display(cucul_canvas_t *cv)
  *  libcucul canvas continues to exist and other graphical contexts can be
  *  attached to it afterwards.
  *
+ *  If the cucul canvas was automatically created by caca_create_display(),
+ *  it is automatically destroyed and any handle to it becomes invalid.
+ *
  *  This function never fails.
  *
  *  \param dp The libcaca graphical context.
@@ -157,9 +176,26 @@ int caca_free_display(caca_display_t *dp)
         dlclose(dp->plugin);
 #endif
     cucul_unmanage_canvas(dp->cv, (int (*)(void *))caca_can_resize, (void *)dp);
+    if(dp->autorelease)
+        cucul_free_canvas(dp->cv);
     free(dp);
 
     return 0;
+}
+
+/** \brief Get the canvas attached to a caca graphical context.
+ *
+ *  Return a handle on the \e cucul_canvas_t object that was either attached
+ *  or created by caca_create_display().
+ *
+ *  This function never fails.
+ *
+ *  \param dp The libcaca graphical context.
+ *  \return The libcucul canvas.
+ */
+cucul_canvas_t * caca_get_canvas(caca_display_t *dp)
+{
+    return dp->cv;
 }
 
 /*
