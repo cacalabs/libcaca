@@ -63,7 +63,7 @@ dnl language bindings
 AC_ARG_ENABLE(csharp,
   [  --enable-csharp         C# bindings (autodetected)])
 AC_ARG_ENABLE(cxx,
-  [  --enable-cxx            C++ bindings (default enabled)])
+  [  --enable-cxx            C++ bindings (autodetected)])
 AC_ARG_ENABLE(ruby,
   [  --enable-ruby           Ruby bindings (autodetected)])
 
@@ -110,7 +110,7 @@ AC_TRY_COMPILE([],[asm("fldln2; fldln2; fxch; fyl2x");],
 
 AC_CHECK_LIB(m, sin, MATH_LIBS="${MATH_LIBS} -lm")
 
-CACA_DRIVERS="" 
+CACA_DRIVERS=""
 
 if test "${enable_conio}" != "no"; then
   ac_cv_my_have_conio="no"
@@ -300,7 +300,6 @@ else
   AC_MSG_RESULT([${CACA_DRIVERS}])
 fi
 
-
 AC_SUBST(MATH_LIBS)
 AC_SUBST(GETOPT_LIBS)
 AC_SUBST(CACA_LIBS)
@@ -314,10 +313,20 @@ CFLAGS="${CFLAGS} -g -O2 -fno-strength-reduce -fomit-frame-pointer"
 # (Comme quoi on n'est pas les seuls porcs)
 CFLAGS="${CFLAGS} -Wall -Wpointer-arith -Wcast-align -Wcast-qual -Wstrict-prototypes -Wshadow -Waggregate-return -Wmissing-prototypes -Wnested-externs -Wsign-compare"
 
+CACA_BINDINGS=""
+
 # Build the C++ bindings?
 ac_cv_my_have_cxx="no"
 if test "${enable_cxx}" != "no"; then
-  ac_cv_my_have_cxx="yes"
+  AC_MSG_CHECKING([working <iostream>])
+  AC_LANG_PUSH(C++)
+  AC_TRY_COMPILE(
+   [#include <iostream>],
+   [],
+   [ac_cv_my_have_cxx="yes"
+    CACA_BINDINGS="${CACA_BINDINGS} C++"])
+  AC_LANG_POP(C++)
+  AC_MSG_RESULT([$ac_cv_my_have_cxx])
 fi
 AM_CONDITIONAL(USE_CXX, test "${ac_cv_my_have_cxx}" = "yes")
 
@@ -327,6 +336,7 @@ if test "${enable_csharp}" != "no"; then
   AC_PATH_PROG(GMCS, gmcs, no)
   if test "${GMCS}" != "no"; then
     ac_cv_my_have_csharp="yes"
+    CACA_BINDINGS="${CACA_BINDINGS} C#"
   fi
 fi
 AM_CONDITIONAL(USE_CSHARP, test "${ac_cv_my_have_csharp}" = "yes")
@@ -346,10 +356,21 @@ if test "${enable_ruby}" != "no"; then
     AC_SUBST(RUBY_SITELIBDIR)
     AC_SUBST(RUBY_LIBDIR)
     AC_SUBST(RUBY_SO_NAME)
-    AC_CHECK_HEADERS($RUBY_ARCHDIR/ruby.h, [ac_cv_my_have_ruby="yes"])
+    AC_CHECK_HEADERS(
+      $RUBY_ARCHDIR/ruby.h,
+     [ac_cv_my_have_ruby="yes"
+      CACA_BINDINGS="${CACA_BINDINGS} Ruby"])
   fi
 fi
 AM_CONDITIONAL(USE_RUBY, test "${ac_cv_my_have_ruby}" = "yes")
+
+AC_MSG_CHECKING(available language bindings)
+if test -z "${CACA_BINDINGS}"; then
+  AC_MSG_RESULT(no)
+else
+  CACA_BINDINGS="${CACA_BINDINGS# *}"
+  AC_MSG_RESULT([${CACA_BINDINGS}])
+fi
 
 # Build cacaserver?
 ac_cv_my_have_network="no"
