@@ -15,34 +15,43 @@ The classes available for libcaca are :
 \li \b Caca::Event::Quit
 
 \code
-irb(main):007:0> Caca::Display.instance_methods.sort -
-Caca::Display.ancestors[1].instance_methods
+$ irb -rcaca
+irb(main):001:0> class Object
+irb(main):002:1>   def Object.my_instance_methods
+irb(main):003:2>     instance_methods.sort - ancestors[1].instance_methods
+irb(main):004:2>   end
+irb(main):005:1>   def Object.my_methods
+irb(main):006:2>     methods.sort - ancestors[1].methods
+irb(main):007:2>   end
+irb(main):008:1> end
+
+irb(main):009:0> Caca::Display.my_instance_methods
 => ["get_event", "height", "mouse=", "mouse_x", "mouse_y", "refresh",
 "set_mouse", "set_time", "set_title", "time", "time=", "title=", "width"]
 \endcode
 
 \code
-irb(main):008:0> Caca::Event.constants
+irb(main):010:0> Caca::Event.constants
 => ["Key", "Quit", "TYPE", "Mouse", "Resize"]
 \endcode
 
 \code
-irb(main):009:0> Caca::Event::Key.instance_methods - Caca::Event::Key.ancestors[1].instance_methods
+irb(main):011:0> Caca::Event.my_instance_methods
+=> ["quit?"]
+\endcode
+
+\code
+irb(main):012:0> Caca::Event::Key.my_instance_methods
 => ["ch", "utf32", "utf8"]
 \endcode
 
 \code
-irb(main):010:0> Caca::Event::Key.instance_methods - Caca::Event::Mouse.ancestors[1].instance_methods
-=> ["ch", "utf32", "utf8"]
-\endcode
-
-\code
-irb(main):011:0> Caca::Event::Mouse.instance_methods - Caca::Event::Mouse.ancestors[1].instance_methods
+irb(main):013:0> Caca::Event::Mouse.my_instance_methods
 => ["button", "x", "y"]
 \endcode
 
 \code
-irb(main):018:0> Caca::Event::Resize.instance_methods - Caca::Event::Resize.ancestors[1].instance_methods
+irb(main):014:0> Caca::Event::Resize.my_instance_methods
 => ["w", "h"]
 \endcode
 
@@ -56,6 +65,16 @@ c.draw_thin_polyline([[0,0], [0,2], [5,2], [0,0]])
 d = Caca::Display.new(c)
 d.title = "Test !"
 d.refresh
+
+# Redefine Event::Key#quit? so that q, Q, and Esc become exit keys
+module Caca
+        class Event::Key
+                def quit?
+                        "qQ^[".split('').member?(@ch.chr)
+                end
+        end
+end
+
 while((e = d.get_event(Caca::Event, -1)) && ! e.quit?)
     p e
     d.refresh

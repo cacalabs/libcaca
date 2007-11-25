@@ -12,7 +12,16 @@ The character set conversion functions are not available yet in the binding.
 
 \code
 $ irb -rcucul
-irb(main):001:0> Cucul.constants
+irb(main):001:0> class Object
+irb(main):002:1>   def Object.my_instance_methods
+irb(main):003:2>     instance_methods.sort - ancestors[1].instance_methods
+irb(main):004:2>   end
+irb(main):005:1>   def Object.my_methods
+irb(main):006:2>     methods.sort - ancestors[1].methods
+irb(main):007:2>   end
+irb(main):008:1> end
+
+irb(main):009:0> Cucul.constants
 => ["BROWN", "BOLD", "GREEN", "LIGHTMAGENTA", "LIGHTBLUE", "BLINK",
 "MAGENTA", "DEFAULT", "TRANSPARENT", "BLUE", "LIGHTRED", "DARKGRAY",
 "UNDERLINE", "RED", "WHITE", "BLACK", "LIGHTCYAN", "LIGHTGRAY",
@@ -20,14 +29,12 @@ irb(main):001:0> Cucul.constants
 \endcode
 
 \code
-irb(main):002:0> Cucul::Canvas.methods.sort -
-Cucul::Canvas.ancestors[1].methods
+irb(main):010:0> Cucul::Canvas.my_methods
 => ["export_list", "import_list"]
 \endcode
 
 \code
-irb(main):003:0> Cucul::Canvas.instance_methods.sort -
-Cucul::Canvas.ancestors[1].instance_methods
+irb(main):003:0> Cucul::Canvas.my_instance_methods
 => ["attr=", "blit", "clear", "create_frame", "cursor_x", "cursor_y",
 "dither_bitmap", "draw_box", "draw_circle", "draw_cp437_box", "draw_ellipse",
 "draw_line", "draw_polyline", "draw_thin_box", "draw_thin_ellipse",
@@ -44,20 +51,17 @@ Cucul::Canvas.ancestors[1].instance_methods
 \endcode
 
 \code
-irb(main):004:0> Cucul::Font.methods.sort -
-Cucul::Font.ancestors[1].methods
+irb(main):004:0> Cucul::Font.my_methods
 => ["list"]
 \endcode
 
 \code
-irb(main):005:0> Cucul::Font.instance_methods.sort -
-Cucul::Font.ancestors[1].instance_methods
+irb(main):005:0> Cucul::Font.my_instance_methods
 => ["blocks", "height", "width"]
 \endcode
 
 \code
-irb(main):006:0> Cucul::Dither.instance_methods.sort -
-Cucul::Dither.ancestors[1].instance_methods
+irb(main):006:0> Cucul::Dither.my_instance_methods
 => ["algorithm=", "algorithm_list", "antialias=", "antialias_list",
 "brightness=", "charset=", "charset_list", "color=", "color_list",
 "contrast=", "gamma=", "palette=", "set_algorithm", "set_antialias",
