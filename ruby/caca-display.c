@@ -122,6 +122,7 @@ static VALUE set_mouse2(VALUE self, VALUE visible)
 
 static VALUE get_event(VALUE self, VALUE event_mask, VALUE timeout)
 {
+    char utf8[8];
     caca_event_t ev;
     VALUE e;
 
@@ -132,42 +133,44 @@ static VALUE get_event(VALUE self, VALUE event_mask, VALUE timeout)
         return Qnil;
     }
 
-    switch(ev.type)
+    switch(caca_get_event_type(&ev))
     {
     case CACA_EVENT_KEY_PRESS:
+        caca_get_event_key_utf8(&ev, utf8);
         e = rb_funcall(cEventKeyPress, rb_intern("new"), 3,
-                       UINT2NUM(ev.data.key.ch),
-                       ULONG2NUM(ev.data.key.utf32),
-                       rb_str_new(ev.data.key.utf8, 8));
+                       UINT2NUM(caca_get_event_key_ch(&ev)),
+                       ULONG2NUM(caca_get_event_key_utf32(&ev)),
+                       rb_str_new(utf8, 8));
         break;
     case CACA_EVENT_KEY_RELEASE:
+        caca_get_event_key_utf8(&ev, utf8);
         e = rb_funcall(cEventKeyRelease, rb_intern("new"), 3,
-                       UINT2NUM(ev.data.key.ch),
-                       ULONG2NUM(ev.data.key.utf32),
-                       rb_str_new(ev.data.key.utf8, 8));
+                       UINT2NUM(caca_get_event_key_ch(&ev)),
+                       ULONG2NUM(caca_get_event_key_utf32(&ev)),
+                       rb_str_new(utf8, 8));
         break;
     case CACA_EVENT_MOUSE_PRESS:
         e = rb_funcall(cEventMousePress, rb_intern("new"), 3,
-                       UINT2NUM(ev.data.mouse.x),
-                       UINT2NUM(ev.data.mouse.y),
-                       UINT2NUM(ev.data.mouse.button));
+                       UINT2NUM(caca_get_event_mouse_x(&ev)),
+                       UINT2NUM(caca_get_event_mouse_y(&ev)),
+                       UINT2NUM(caca_get_event_mouse_button(&ev)));
         break;
     case CACA_EVENT_MOUSE_RELEASE:
         e = rb_funcall(cEventMouseRelease, rb_intern("new"), 3,
-                       UINT2NUM(ev.data.mouse.x),
-                       UINT2NUM(ev.data.mouse.y),
-                       UINT2NUM(ev.data.mouse.button));
+                       UINT2NUM(caca_get_event_mouse_x(&ev)),
+                       UINT2NUM(caca_get_event_mouse_y(&ev)),
+                       UINT2NUM(caca_get_event_mouse_button(&ev)));
         break;
     case CACA_EVENT_MOUSE_MOTION:
         e = rb_funcall(cEventMouseMotion, rb_intern("new"), 3,
-                       UINT2NUM(ev.data.mouse.x),
-                       UINT2NUM(ev.data.mouse.y),
+                       UINT2NUM(caca_get_event_mouse_x(&ev)),
+                       UINT2NUM(caca_get_event_mouse_y(&ev)),
                        Qnil);
         break;
     case CACA_EVENT_RESIZE:
         e = rb_funcall(cEventResize, rb_intern("new"), 2,
-                       UINT2NUM(ev.data.resize.w),
-                       UINT2NUM(ev.data.resize.h));
+                       UINT2NUM(caca_get_event_resize_width(&ev)),
+                       UINT2NUM(caca_get_event_resize_height(&ev)));
         break;
     case CACA_EVENT_QUIT:
         e = rb_funcall(cEventQuit, rb_intern("new"), 0);
