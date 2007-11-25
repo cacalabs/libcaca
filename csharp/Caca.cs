@@ -1,6 +1,7 @@
 /*
- *  libcaca    .NET bindings for libcaca
+ *  libcaca       .NET bindings for libcaca
  *  Copyright (c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
+ *                2007 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
  *  $Id$

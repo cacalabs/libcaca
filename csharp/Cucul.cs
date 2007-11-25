@@ -1,6 +1,7 @@
 /*
- *  libcucul   .NET bindings for libcucul
+ *  libcucul      .NET bindings for libcucul
  *  Copyright (c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
+ *                2007 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
  *  $Id$
@@ -347,55 +348,66 @@ namespace Cucul
         private static extern int cucul_draw_thin_polyline(IntPtr cv, int[] x, int[] y, int n);
 
         /* frame handling */
-        /* FIXME: clean up this shit */
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int cucul_get_frame_count(IntPtr cv);
+        public int getFrameCount()
+        {
+            return cucul_get_frame_count(_cv);
+        }
+
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int cucul_set_frame(IntPtr cv, int f);
+        public int setFrame(int f)
+        {
+            return cucul_set_frame(_cv, f);
+        }
+
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern string cucul_get_frame_name(IntPtr cv);
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int cucul_set_frame_name(IntPtr cv, string n);
+        public string frameName
+        {
+            get { return cucul_get_frame_name(_cv); }
+            set { cucul_set_frame_name(_cv, value); }
+        }
+
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int cucul_create_frame(IntPtr cv, int f);
-        [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
-         SuppressUnmanagedCodeSecurity]
-        private static extern int cucul_free_frame(IntPtr cv, int f);
-
-        public int getFrameCount()
-        {
-            return cucul_get_frame_count(_cv);
-        }
-
-        public int setFrame(int f)
-        {
-            return cucul_set_frame(_cv, f);
-        }
-
-        public string getFrameName()
-        {
-            return cucul_get_frame_name(_cv);
-        }
-
-        public int setFrameName(string n)
-        {
-            return cucul_set_frame_name(_cv, n);
-        }
-
         public int createFrame(int f)
         {
             return cucul_create_frame(_cv, f);
         }
 
+        [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern int cucul_free_frame(IntPtr cv, int f);
         public int freeFrame(int f)
         {
             return cucul_free_frame(_cv, f);
+        }
+
+        /* bitmap dithering */
+
+        [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern int cucul_dither_bitmap(IntPtr c, int  x, int y,
+                                                      int w, int h,
+                                                      IntPtr d, IntPtr data);
+        public int ditherBitmap(int x, int y, int w, int h, CuculDither d,
+                                object data)
+        {
+            GCHandle gch = GCHandle.Alloc(data);
+            int ret = cucul_dither_bitmap(_cv, x, y, w, h, d._dither,
+                                          gch.AddrOfPinnedObject());
+            gch.Free();
+            return ret;
         }
     }
 
@@ -435,15 +447,33 @@ namespace Cucul
 
     public unsafe class CuculDither : IDisposable
     {
-    [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
-         SuppressUnmanagedCodeSecurity]
-      private static extern IntPtr cucul_create_dither(int bpp, int w,
-                                                      int h, int pitch,
-                                                      Int64 rmask,
-                                                      Int64 gmask,
-                                                      Int64 bmask,
-                                                      Int64 amask);
+        public readonly IntPtr _dither;
 
+        [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern IntPtr cucul_create_dither(int bpp, int w,
+                                                         int h, int pitch,
+                                                         ulong rmask,
+                                                         ulong gmask,
+                                                         ulong bmask,
+                                                         ulong amask);
+        public CuculDither(int bpp, int w,int h, int pitch,
+                           uint rmask, uint gmask, uint bmask, uint amask)
+        {
+            _dither = cucul_create_dither(bpp, w, h, pitch,
+                                          rmask, gmask, bmask, amask);
+        }
+
+        [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern int cucul_free_dither(IntPtr d);
+        public void Dispose()
+        {
+            cucul_free_dither(_dither);
+            GC.SuppressFinalize(this);
+        }
+
+        /* TODO: fix this shit */
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
@@ -486,28 +516,7 @@ namespace Cucul
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern string[] cucul_get_dither_mode_list(IntPtr d);
-        [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
-         SuppressUnmanagedCodeSecurity]
-        private static extern int cucul_free_dither(IntPtr d);
 
-  /* FIXME  [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
-         SuppressUnmanagedCodeSecurity]
-      int cucul_dither_bitmap(Canvas c, int  x, int y, int w , int y,
-                         IntPtr d2, void *);*/
-
-        IntPtr _dither;
-
-        public CuculDither(int bpp, int w,int h, int pitch,
-                           Int64 rmask, Int64 gmask,Int64 bmask, Int64 amask)
-        {
-            _dither = cucul_create_dither(bpp, w, h, pitch, rmask, gmask, bmask, amask);
-        }
-
-        public void Dispose()
-        {
-            cucul_free_dither(_dither);
-            GC.SuppressFinalize(this);
-        }
 
         public int setBrightness(float b)
         {

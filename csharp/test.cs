@@ -1,6 +1,7 @@
 /*
- *  Test      .NET bindings test program
+ *  Test          .NET bindings test program
  *  Copyright (c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
+ *                2007 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
  *  $Id$
@@ -14,17 +15,27 @@
 
 
 using System;
+using System.Runtime.InteropServices;
 
 using Cucul;
 using Caca;
 
 class DemoCanvas : CuculCanvas
 {
+    private uint[,] table;
+
     private DateTime startTime;
+    private CuculDither d;
 
     public DemoCanvas()
     {
         startTime = DateTime.Now;
+
+        table = new uint[16,16];
+        d = new CuculDither(32, 16, 16, 16 * 4, 0xff0000, 0xff00, 0xff, 0x0);
+        for(int y = 0; y < 16; y++)
+            for(int x = 0; x < 16; x++)
+                table[x,y] = (uint)((x + y) << 16) | (uint)(x << 8) | (uint)(y);
     }
 
     public void Draw()
@@ -33,6 +44,8 @@ class DemoCanvas : CuculCanvas
         double t = (DateTime.Now - startTime).TotalMilliseconds;
 
         Clear();
+
+        ditherBitmap(0, 0, width, height, d, table);
 
         setColorAnsi(Libcucul.WHITE, Libcucul.BLACK);
         for(int i = 0; i < barCount; i++)

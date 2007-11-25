@@ -1,5 +1,5 @@
 /*
- *  AssemblyInfo      .NET bindings for libcaca
+ *  AssemblyInfo  .NET bindings for libcaca
  *  Copyright (c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                All Rights Reserved
  *
