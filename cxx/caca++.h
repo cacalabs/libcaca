@@ -28,7 +28,16 @@
 
 #include <cucul++.h>
 
-class Event
+#if !defined(_DOXYGEN_SKIP_ME)
+#   undef __class
+#   if defined(_WIN32) && defined(__LIBCACA_PP__)
+#       define __class class __declspec(dllexport)
+#   else
+#       define __class class
+#   endif
+#endif
+
+__class Event
 {
     friend class Caca;
  public:
@@ -50,7 +59,7 @@ class Event
     caca_event_t e;
 };
 
-class Caca
+__class Caca
 {
  public:
     Caca();

@@ -26,9 +26,18 @@
 
 #include <cucul.h>
 
+#if !defined(_DOXYGEN_SKIP_ME)
+#   undef __class
+#   if defined(_WIN32) && defined(__LIBCUCUL_PP__)
+#       define __class class __declspec(dllexport)
+#   else
+#       define __class class
+#   endif
+#endif
+
 class Cucul;
 
-class Charset
+__class Charset
 {
  public:
     unsigned long int utf8ToUtf32(char const *, unsigned int *);
@@ -38,7 +47,7 @@ class Charset
 };
 
 /* Ugly, I know */
-class Font
+__class Font
 {
  public:
     ~Font();
@@ -54,7 +63,7 @@ class Font
     cucul_font *font;
 };
 
-class Dither
+__class Dither
 {
  public:
     Dither(unsigned int, unsigned int, unsigned int, unsigned int,
@@ -80,7 +89,7 @@ class Dither
     cucul_dither *dither;
 };
 
-class Cucul
+__class Cucul
 {
     friend class Caca;
     friend class Dither;

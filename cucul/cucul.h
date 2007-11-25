@@ -25,6 +25,7 @@
 #define __CUCUL_H__
 
 #if !defined(_DOXYGEN_SKIP_ME)
+#   undef __extern
 #   if defined(_WIN32) && defined(__LIBCUCUL__)
 #       define __extern extern __declspec(dllexport)
 #   else

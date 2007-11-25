@@ -75,17 +75,14 @@ int main(int argc, char *argv[])
 
     kk->setDisplayTime(20000);
 
-    while(!kk->getEvent(Event::CACA_EVENT_KEY_PRESS, NULL, 0)) {
-
+    while(!kk->getEvent(Event::CACA_EVENT_KEY_PRESS, NULL, 0))
+    {
 
         /* In case of resize ...*/
         if((x + pig->getWidth())-1 >= qq->getWidth() || x < 0 )
             x = 0;
         if((y + pig->getHeight())-1 >= qq->getHeight() || y < 0 )
             y = 0;
-
-
-
 
         qq->Clear();
 
