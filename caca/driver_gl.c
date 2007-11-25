@@ -102,7 +102,9 @@ static int gl_init_graphics(caca_display_t *dp)
         sscanf(geometry, "%ux%u", &width, &height);
 #endif
 
-    __cucul_set_canvas_size(dp->cv, width ? width : 80, height ? height : 32);
+    dp->resize.allow = 1;
+    cucul_set_canvas_size(dp->cv, width ? width : 80, height ? height : 32);
+    dp->resize.allow = 0;
 
     /* Load a libcucul internal font */
     fonts = cucul_get_font_list();

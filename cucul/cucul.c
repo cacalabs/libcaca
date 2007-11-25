@@ -34,6 +34,8 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
+static int cucul_resize(cucul_canvas_t *, unsigned int, unsigned int);
+
 /** \brief Initialise a \e libcucul canvas.
  *
  *  Initialise internal \e libcucul structures and the backend that will
@@ -60,6 +62,8 @@ cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
 
     cv->refcount = 0;
     cv->autoinc = 0;
+    cv->resize_callback = NULL;
+    cv->resize_data = NULL;
 
     cv->frame = 0;
     cv->framecount = 1;
@@ -81,7 +85,7 @@ cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
     _cucul_load_frame_info(cv);
     cucul_set_color_ansi(cv, CUCUL_DEFAULT, CUCUL_TRANSPARENT);
 
-    if(__cucul_set_canvas_size(cv, width, height) < 0)
+    if(cucul_resize(cv, width, height) < 0)
     {
         int saved_errno = geterrno();
         free(cv->frames[0].name);
@@ -96,6 +100,70 @@ cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
 nomem:
     seterrno(ENOMEM);
     return NULL;
+}
+
+/** \brief Manage a canvas.
+ *
+ *  Lock a canvas to prevent it from being resized. If non-NULL,
+ *  the \e callback function pointer will be called upon each
+ *  \e cucul_set_canvas_size call and if the returned value is zero, the
+ *  canvas resize request will be denied.
+ *
+ *  This function is only useful for display drivers such as the \e libcaca
+ *  library.
+ *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c EBUSY The canvas is already being managed.
+ *
+ *  \param cv A libcucul canvas.
+ *  \param callback An optional callback function pointer.
+ *  \param p The argument to be passed to \e callback.
+ *  \return 0 in case of success, -1 if an error occurred.
+ */
+int cucul_manage_canvas(cucul_canvas_t *cv, int (*callback)(void *), void *p)
+{
+    if(cv->refcount)
+    {
+        seterrno(EBUSY);
+        return -1;
+    }
+
+    cv->refcount = 1;
+
+    return 0;
+}
+
+/** \brief Unmanage a canvas.
+ *
+ *  Unlock a canvas previously locked by cucul_manage_canvas(). For safety
+ *  reasons, the callback and callback data arguments must be the same as for
+ *  the cucul_manage_canvas() call.
+ *
+ *  This function is only useful for display drivers such as the \e libcaca
+ *  library.
+ *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c EINVAL The canvas is not managed, or the callback arguments do
+ *              not match.
+ *
+ *  \param cv A libcucul canvas.
+ *  \param callback The \e callback argument previously passed to
+                    cucul_manage_canvas().
+ *  \param p The \e p argument previously passed to cucul_manage_canvas().
+ *  \return 0 in case of success, -1 if an error occurred.
+ */
+int cucul_unmanage_canvas(cucul_canvas_t *cv, int (*callback)(void *), void *p)
+{
+    if(!cv->refcount
+        || cv->resize_callback != callback || cv->resize_data != p)
+    {
+        seterrno(EINVAL);
+        return -1;
+    }
+
+    cv->refcount = 0;
+
+    return 0;
 }
 
 /** \brief Resize a canvas.
@@ -123,21 +191,22 @@ nomem:
  *  - \c ENOMEM Not enough memory for the requested canvas size. If this
  *    happens, the canvas handle becomes invalid and should not be used.
  *
- *  \param cv A libcucul canvas
- *  \param width The desired canvas width
- *  \param height The desired canvas height
+ *  \param cv A libcucul canvas.
+ *  \param width The desired canvas width.
+ *  \param height The desired canvas height.
  *  \return 0 in case of success, -1 if an error occurred.
  */
 int cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
                                               unsigned int height)
 {
-    if(cv->refcount)
+    if(cv->refcount && cv->resize_callback
+        && !cv->resize_callback(cv->resize_data))
     {
         seterrno(EBUSY);
         return -1;
     }
 
-    return __cucul_set_canvas_size(cv, width, height);
+    return cucul_resize(cv, width, height);
 }
 
 /** \brief Get the canvas width.
@@ -146,7 +215,7 @@ int cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
  *
  *  This function never fails.
  *
- *  \param cv A libcucul canvas
+ *  \param cv A libcucul canvas.
  *  \return The canvas width.
  */
 unsigned int cucul_get_canvas_width(cucul_canvas_t const *cv)
@@ -160,7 +229,7 @@ unsigned int cucul_get_canvas_width(cucul_canvas_t const *cv)
  *
  *  This function never fails.
  *
- *  \param cv A libcucul canvas
+ *  \param cv A libcucul canvas.
  *  \return The canvas height.
  */
 unsigned int cucul_get_canvas_height(cucul_canvas_t const *cv)
@@ -177,7 +246,7 @@ unsigned int cucul_get_canvas_height(cucul_canvas_t const *cv)
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
  *  - \c EBUSY The canvas is in use by a display driver and cannot be freed.
  *
- *  \param cv A libcucul canvas
+ *  \param cv A libcucul canvas.
  *  \return 0 in case of success, -1 if an error occurred.
  */
 int cucul_free_canvas(cucul_canvas_t *cv)
@@ -231,8 +300,7 @@ int cucul_rand(int min, int max)
  * XXX: The following functions are local.
  */
 
-int __cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
-                                                unsigned int height)
+int cucul_resize(cucul_canvas_t *cv, unsigned int width, unsigned int height)
 {
     unsigned int x, y, f, old_width, old_height, new_size, old_size;
 

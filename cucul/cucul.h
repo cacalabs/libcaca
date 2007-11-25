@@ -84,6 +84,8 @@ typedef struct cucul_font cucul_font_t;
  *
  *  @{ */
 __extern cucul_canvas_t * cucul_create_canvas(unsigned int, unsigned int);
+__extern int cucul_manage_canvas(cucul_canvas_t *, int (*)(void *), void *);
+__extern int cucul_unmanage_canvas(cucul_canvas_t *, int (*)(void *), void *);
 __extern int cucul_set_canvas_size(cucul_canvas_t *, unsigned int,
                                    unsigned int);
 __extern unsigned int cucul_get_canvas_width(cucul_canvas_t const *);

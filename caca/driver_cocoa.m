@@ -834,7 +834,9 @@ static int cocoa_init_graphics(caca_display_t *dp)
         return -1;
 
     unsigned int width = dp->cv->width, height = dp->cv->height;
-    __cucul_set_canvas_size(dp->cv, width ? width : 80, height ? height : 32);
+    dp->resize.allow = 1;
+    cucul_set_canvas_size(dp->cv, width ? width : 80, height ? height : 32);
+    dp->resize.allow = 0;
 
     // first create a full cocoa app if the host has no bundle
     if(![[NSBundle mainBundle] bundleIdentifier])

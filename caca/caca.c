@@ -42,6 +42,7 @@
 #   define x11_install(p) caca_plugin_install("x11", p)
 #endif
 
+static int caca_can_resize(caca_display_t *);
 static int caca_select_driver(caca_display_t *);
 #if defined(USE_PLUGINS)
 static int caca_plugin_install(char const *, caca_display_t *);
@@ -61,13 +62,20 @@ static int caca_plugin_install(char const *, caca_display_t *);
  *  \param cv The cucul cavas.
  *  \return The caca graphical context or NULL if an error occurred.
  */
-caca_display_t * caca_create_display(cucul_canvas_t * cv)
+caca_display_t * caca_create_display(cucul_canvas_t *cv)
 {
     caca_display_t *dp = malloc(sizeof(caca_display_t));
 
     if(!dp)
     {
         seterrno(ENOMEM);
+        return NULL;
+    }
+
+    if(cucul_manage_canvas(cv, (int (*)(void *))caca_can_resize, (void *)dp))
+    {
+        free(dp);
+        seterrno(EBUSY);
         return NULL;
     }
 
@@ -82,6 +90,7 @@ caca_display_t * caca_create_display(cucul_canvas_t * cv)
         if(dp->plugin)
             dlclose(dp->plugin);
 #endif
+        cucul_unmanage_canvas(cv, (int (*)(void *))caca_can_resize, (void *)dp);
         free(dp);
         seterrno(ENODEV);
         return NULL;
@@ -93,13 +102,11 @@ caca_display_t * caca_create_display(cucul_canvas_t * cv)
         if(dp->plugin)
             dlclose(dp->plugin);
 #endif
+        cucul_unmanage_canvas(cv, (int (*)(void *))caca_can_resize, (void *)dp);
         free(dp);
         seterrno(ENODEV);
         return NULL;
     }
-
-    /* Attached! */
-    dp->cv->refcount++;
 
     /* Graphics stuff */
     dp->delay = 0;
@@ -127,6 +134,7 @@ caca_display_t * caca_create_display(cucul_canvas_t * cv)
 
     /* Resize events */
     dp->resize.resized = 0;
+    dp->resize.allow = 0;
 
     return dp;
 }
@@ -149,7 +157,7 @@ int caca_free_display(caca_display_t *dp)
     if(dp->plugin)
         dlclose(dp->plugin);
 #endif
-    dp->cv->refcount--;
+    cucul_unmanage_canvas(dp->cv, (int (*)(void *))caca_can_resize, (void *)dp);
     free(dp);
 
     return 0;
@@ -158,6 +166,11 @@ int caca_free_display(caca_display_t *dp)
 /*
  * XXX: The following functions are local.
  */
+
+static int caca_can_resize(caca_display_t *dp)
+{
+    return dp->resize.allow;
+}
 
 static int caca_select_driver(caca_display_t *dp)
 {

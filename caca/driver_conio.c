@@ -58,8 +58,11 @@ static int conio_init_graphics(caca_display_t *dp)
 #   else
     /* FIXME */
 #   endif
-    __cucul_set_canvas_size(dp->cv, dp->drv.p->ti.screenwidth,
-                                    dp->drv.p->ti.screenheight);
+    dp->resize.allow = 1;
+    cucul_set_canvas_size(dp->cv, dp->drv.p->ti.screenwidth,
+                                  dp->drv.p->ti.screenheight);
+    dp->resize.allow = 0;
+
     return 0;
 }
 

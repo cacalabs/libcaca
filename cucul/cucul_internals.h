@@ -43,8 +43,11 @@ struct cucul_canvas
     unsigned int frame, framecount;
     struct cucul_frame *frames;
 
+    /* Canvas management */
     unsigned int refcount;
     unsigned int autoinc;
+    int (*resize_callback)(void *);
+    void *resize_data;
 
     /* Shortcut to the active frame information */
     unsigned int width, height;
@@ -59,10 +62,6 @@ struct cucul_buffer
     char *data;
     int user_data;
 };
-
-/* Canvas functions */
-extern int __cucul_set_canvas_size(cucul_canvas_t *,
-                                   unsigned int, unsigned int);
 
 /* Colour functions */
 extern uint16_t _cucul_attr_to_rgb12fg(uint32_t);

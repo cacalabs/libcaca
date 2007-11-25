@@ -238,7 +238,11 @@ void _caca_handle_resize(caca_display_t *dp)
 
     /* Tell libcucul we changed size */
     if(dp->resize.w != dp->cv->width || dp->resize.h != dp->cv->height)
-        __cucul_set_canvas_size(dp->cv, dp->resize.w, dp->resize.h);
+    {
+        dp->resize.allow = 1;
+        cucul_set_canvas_size(dp->cv, dp->resize.w, dp->resize.h);
+        dp->resize.allow = 0;
+    }
 }
 
 void _caca_set_term_title(char const *str)

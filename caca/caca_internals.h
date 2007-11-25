@@ -141,6 +141,7 @@ struct caca_display
     struct resize
     {
         int resized;   /* A resize event was requested */
+        int allow;     /* The display driver allows resizing */
         unsigned w, h; /* Requested width and height */
     } resize;
 
