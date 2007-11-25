@@ -434,6 +434,7 @@ AC_CONFIG_FILES([
   tools/Makefile
   csharp/Makefile
   cxx/Makefile
+  python/Makefile
   ruby/Makefile
   doc/Makefile
   msvc/Makefile

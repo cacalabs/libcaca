@@ -9,6 +9,7 @@ Jean-Yves Lamoureux <jylam@lnxscene.org>
  - Pypycaca Python wrapper
  - exporters
  - network driver
+ - C# bindings
 
 John Beppu <beppu@lbox.org>
  - Term::Caca Perl wrapper
@@ -18,5 +19,8 @@ Ben Wiley Sittler <bsittler@gmail.com>
 
 Pascal Terjan <pterjan@linuxfr.org>
  - Ruby bindings
+
+Daniele "Eriol" Tricoli <eriol@mornie.org>
+ - Python CTypes sample program
 
 */
