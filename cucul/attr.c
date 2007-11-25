@@ -25,6 +25,22 @@
 
 static uint8_t nearest_ansi(uint16_t);
 
+/* RGB colours for the ANSI palette. There is no real standard, so we
+ * use the same values as gnome-terminal. The 7th colour (brown) is a bit
+ * special: 0xfa50 instead of 0xfaa0. */
+static const uint16_t ansitab16[16] =
+{
+    0xf000, 0xf00a, 0xf0a0, 0xf0aa, 0xfa00, 0xfa0a, 0xfa50, 0xfaaa,
+    0xf555, 0xf55f, 0xf5f5, 0xf5ff, 0xff55, 0xff5f, 0xfff5, 0xffff,
+};
+
+/* Same table, except on 14 bits (3-4-4-3) */
+static const uint16_t ansitab14[16] =
+{
+    0x3800, 0x3805, 0x3850, 0x3855, 0x3d00, 0x3d05, 0x3d28, 0x3d55,
+    0x3aaa, 0x3aaf, 0x3afa, 0x3aff, 0x3faa, 0x3faf, 0x3ffa, 0x3fff,
+};
+
 /** \brief Get the text attribute at the given coordinates.
  *
  *  Get the internal \e libcucul attribute value of the character at the
@@ -291,25 +307,124 @@ unsigned char cucul_attr_to_ansi_bg(unsigned long int attr)
     return nearest_ansi(attr >> 18);
 }
 
+/** \brief Get 12-bit RGB foreground information from attribute.
+ *
+ *  Get the 12-bit foreground colour value for a given attribute. The returned
+ *  value is a native-endian encoded integer with each red, green and blue
+ *  values encoded on 8 bits in the following order:
+ *   - 8-11 most significant bits: red
+ *   - 4-7 most significant bits: green
+ *   - least significant bits: blue
+ *
+ *  This function never fails. If the attribute value is outside the expected
+ *  32-bit range, higher order bits are simply ignored.
+ *
+ *  \param attr The requested attribute value.
+ *  \return The corresponding 12-bit RGB foreground value.
+ */
+unsigned int cucul_attr_to_rgb12_fg(unsigned long int attr)
+{
+    uint16_t fg = (attr >> 4) & 0x3fff;
+
+    if(fg < (0x10 | 0x40))
+        return ansitab16[fg ^ 0x40] & 0x0fff;
+
+    if(fg == (CUCUL_DEFAULT | 0x40))
+        return ansitab16[CUCUL_LIGHTGRAY] & 0x0fff;
+
+    if(fg == (CUCUL_TRANSPARENT | 0x40))
+        return ansitab16[CUCUL_LIGHTGRAY] & 0x0fff;
+
+    return (fg << 1) & 0x0fff;
+}
+
+/** \brief Get 12-bit RGB background information from attribute.
+ *
+ *  Get the 12-bit background colour value for a given attribute. The returned
+ *  value is a native-endian encoded integer with each red, green and blue
+ *  values encoded on 8 bits in the following order:
+ *   - 8-11 most significant bits: red
+ *   - 4-7 most significant bits: green
+ *   - least significant bits: blue
+ *
+ *  This function never fails. If the attribute value is outside the expected
+ *  32-bit range, higher order bits are simply ignored.
+ *
+ *  \param attr The requested attribute value.
+ *  \return The corresponding 12-bit RGB background value.
+ */
+unsigned int cucul_attr_to_rgb12_bg(unsigned long int attr)
+{
+    uint16_t bg = attr >> 18;
+
+    if(bg < (0x10 | 0x40))
+        return ansitab16[bg ^ 0x40] & 0x0fff;
+
+    if(bg == (CUCUL_DEFAULT | 0x40))
+        return ansitab16[CUCUL_BLACK] & 0x0fff;
+
+    if(bg == (CUCUL_TRANSPARENT | 0x40))
+        return ansitab16[CUCUL_BLACK] & 0x0fff;
+
+    return (bg << 1) & 0x0fff;
+}
+
+/** \brief Get 64-bit ARGB information from attribute.
+ *
+ *  Get the 64-bit colour and alpha values for a given attribute. The values
+ *  are written as 8-bit integers in the \e argb array in the following order:
+ *   - \e argb[0]: background alpha value
+ *   - \e argb[1]: background red value
+ *   - \e argb[2]: background green value
+ *   - \e argb[3]: background blue value
+ *   - \e argb[4]: foreground alpha value
+ *   - \e argb[5]: foreground red value
+ *   - \e argb[6]: foreground green value
+ *   - \e argb[7]: foreground blue value
+ *
+ *  This function never fails. If the attribute value is outside the expected
+ *  32-bit range, higher order bits are simply ignored.
+ *
+ *  \param attr The requested attribute value.
+ *  \param argb An array of 8-bit integers.
+ */
+void cucul_attr_to_argb64(unsigned long int attr, unsigned char argb[8])
+{
+    uint16_t fg = (attr >> 4) & 0x3fff;
+    uint16_t bg = attr >> 18;
+
+    if(bg < (0x10 | 0x40))
+        bg = ansitab16[bg ^ 0x40];
+    else if(bg == (CUCUL_DEFAULT | 0x40))
+        bg = ansitab16[CUCUL_BLACK];
+    else if(bg == (CUCUL_TRANSPARENT | 0x40))
+        bg = 0x0fff;
+    else
+        bg = ((bg << 2) & 0xf000) | ((bg << 1) & 0x0fff);
+
+    argb[0] = bg >> 12;
+    argb[1] = (bg >> 8) & 0xf;
+    argb[2] = (bg >> 4) & 0xf;
+    argb[3] = bg & 0xf;
+
+    if(fg < (0x10 | 0x40))
+        fg = ansitab16[fg ^ 0x40];
+    else if(fg == (CUCUL_DEFAULT | 0x40))
+        fg = ansitab16[CUCUL_LIGHTGRAY];
+    else if(fg == (CUCUL_TRANSPARENT | 0x40))
+        fg = 0x0fff;
+    else
+        fg = ((fg << 2) & 0xf000) | ((fg << 1) & 0x0fff);
+
+    argb[4] = fg >> 12;
+    argb[5] = (fg >> 8) & 0xf;
+    argb[6] = (fg >> 4) & 0xf;
+    argb[7] = fg & 0xf;
+}
+
 /*
  * XXX: the following functions are local
  */
-
-/* RGB colours for the ANSI palette. There is no real standard, so we
- * use the same values as gnome-terminal. The 7th colour (brown) is a bit
- * special: 0xfa50 instead of 0xfaa0. */
-static const uint16_t ansitab16[16] =
-{
-    0xf000, 0xf00a, 0xf0a0, 0xf0aa, 0xfa00, 0xfa0a, 0xfa50, 0xfaaa,
-    0xf555, 0xf55f, 0xf5f5, 0xf5ff, 0xff55, 0xff5f, 0xfff5, 0xffff,
-};
-
-/* Same table, except on 14 bits (3-4-4-3) */
-static const uint16_t ansitab14[16] =
-{
-    0x3800, 0x3805, 0x3850, 0x3855, 0x3d00, 0x3d05, 0x3d28, 0x3d55,
-    0x3aaa, 0x3aaf, 0x3afa, 0x3aff, 0x3faa, 0x3faf, 0x3ffa, 0x3fff,
-};
 
 static uint8_t nearest_ansi(uint16_t argb14)
 {
@@ -353,38 +468,6 @@ static uint8_t nearest_ansi(uint16_t argb14)
     return best;
 }
 
-uint16_t _cucul_attr_to_rgb12fg(uint32_t attr)
-{
-    uint16_t fg = (attr >> 4) & 0x3fff;
-
-    if(fg < (0x10 | 0x40))
-        return ansitab16[fg ^ 0x40] & 0x0fff;
-
-    if(fg == (CUCUL_DEFAULT | 0x40))
-        return ansitab16[CUCUL_LIGHTGRAY] & 0x0fff;
-
-    if(fg == (CUCUL_TRANSPARENT | 0x40))
-        return ansitab16[CUCUL_LIGHTGRAY] & 0x0fff;
-
-    return (fg << 1) & 0x0fff;
-}
-
-uint16_t _cucul_attr_to_rgb12bg(uint32_t attr)
-{
-    uint16_t bg = attr >> 18;
-
-    if(bg < (0x10 | 0x40))
-        return ansitab16[bg ^ 0x40] & 0x0fff;
-
-    if(bg == (CUCUL_DEFAULT | 0x40))
-        return ansitab16[CUCUL_BLACK] & 0x0fff;
-
-    if(bg == (CUCUL_TRANSPARENT | 0x40))
-        return ansitab16[CUCUL_BLACK] & 0x0fff;
-
-    return (bg << 1) & 0x0fff;
-}
-
 #define RGB12TO24(i) \
    (((uint32_t)((i & 0xf00) >> 8) * 0x110000) \
   | ((uint32_t)((i & 0x0f0) >> 4) * 0x001100) \
@@ -392,45 +475,11 @@ uint16_t _cucul_attr_to_rgb12bg(uint32_t attr)
 
 uint32_t _cucul_attr_to_rgb24fg(uint32_t attr)
 {
-    return RGB12TO24(_cucul_attr_to_rgb12fg(attr));
+    return RGB12TO24(cucul_attr_to_rgb12_fg(attr));
 }
 
 uint32_t _cucul_attr_to_rgb24bg(uint32_t attr)
 {
-    return RGB12TO24(_cucul_attr_to_rgb12bg(attr));
-}
-
-void _cucul_attr_to_argb4(uint32_t attr, uint8_t argb[8])
-{
-    uint16_t fg = (attr >> 4) & 0x3fff;
-    uint16_t bg = attr >> 18;
-
-    if(bg < (0x10 | 0x40))
-        bg = ansitab16[bg ^ 0x40];
-    else if(bg == (CUCUL_DEFAULT | 0x40))
-        bg = ansitab16[CUCUL_BLACK];
-    else if(bg == (CUCUL_TRANSPARENT | 0x40))
-        bg = 0x0fff;
-    else
-        bg = ((bg << 2) & 0xf000) | ((bg << 1) & 0x0fff);
-
-    argb[0] = bg >> 12;
-    argb[1] = (bg >> 8) & 0xf;
-    argb[2] = (bg >> 4) & 0xf;
-    argb[3] = bg & 0xf;
-
-    if(fg < (0x10 | 0x40))
-        fg = ansitab16[fg ^ 0x40];
-    else if(fg == (CUCUL_DEFAULT | 0x40))
-        fg = ansitab16[CUCUL_LIGHTGRAY];
-    else if(fg == (CUCUL_TRANSPARENT | 0x40))
-        fg = 0x0fff;
-    else
-        fg = ((fg << 2) & 0xf000) | ((fg << 1) & 0x0fff);
-
-    argb[4] = fg >> 12;
-    argb[5] = (fg >> 8) & 0xf;
-    argb[6] = (fg >> 4) & 0xf;
-    argb[7] = fg & 0xf;
+    return RGB12TO24(cucul_attr_to_rgb12_bg(attr));
 }
 

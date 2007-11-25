@@ -394,10 +394,10 @@ static void *export_html(cucul_canvas_t const *cv, unsigned long int *bytes)
             cur += sprintf(cur, "<span style=\"");
             if(cucul_attr_to_ansi_fg(lineattr[x]) < 0x10)
                 cur += sprintf(cur, ";color:#%.03x",
-                               _cucul_attr_to_rgb12fg(lineattr[x]));
+                               cucul_attr_to_rgb12_fg(lineattr[x]));
             if(cucul_attr_to_ansi_bg(lineattr[x]) < 0x10)
                 cur += sprintf(cur, ";background-color:#%.03x",
-                               _cucul_attr_to_rgb12bg(lineattr[x]));
+                               cucul_attr_to_rgb12_bg(lineattr[x]));
             if(lineattr[x] & CUCUL_BOLD)
                 cur += sprintf(cur, ";font-weight:bold");
             if(lineattr[x] & CUCUL_ITALICS)
@@ -699,7 +699,7 @@ static void *export_ps(cucul_canvas_t const *cv, unsigned long int *bytes)
         for(x = 0; x < cv->width; x++)
         {
             uint8_t argb[8];
-            _cucul_attr_to_argb4(*lineattr++, argb);
+            cucul_attr_to_argb64(*lineattr++, argb);
             cur += sprintf(cur, "1 0 translate\n %f %f %f csquare\n",
                            (float)argb[1] * (1.0 / 0xf),
                            (float)argb[2] * (1.0 / 0xf),
@@ -723,7 +723,7 @@ static void *export_ps(cucul_canvas_t const *cv, unsigned long int *bytes)
             uint8_t argb[8];
             uint32_t ch = *linechar++;
 
-            _cucul_attr_to_argb4(*lineattr++, argb);
+            cucul_attr_to_argb64(*lineattr++, argb);
 
             cur += sprintf(cur, "newpath\n");
             cur += sprintf(cur, "%d %d moveto\n", (x + 1) * 6, y * 10 + 2);
@@ -794,7 +794,7 @@ static void *export_svg(cucul_canvas_t const *cv, unsigned long int *bytes)
         {
             cur += sprintf(cur, "<rect style=\"fill:#%.03x\" x=\"%d\" y=\"%d\""
                                 " width=\"6\" height=\"10\"/>\n",
-                                _cucul_attr_to_rgb12bg(*lineattr++),
+                                cucul_attr_to_rgb12_bg(*lineattr++),
                                 x * 6, y * 10);
         }
     }
@@ -817,7 +817,7 @@ static void *export_svg(cucul_canvas_t const *cv, unsigned long int *bytes)
 
             cur += sprintf(cur, "<text style=\"fill:#%.03x\" "
                                 "x=\"%d\" y=\"%d\">",
-                                _cucul_attr_to_rgb12fg(*lineattr++),
+                                cucul_attr_to_rgb12_fg(*lineattr++),
                                 x * 6, (y * 10) + 8);
 
             if(ch < 0x00000020)

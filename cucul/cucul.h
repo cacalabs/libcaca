@@ -150,6 +150,9 @@ __extern int cucul_stretch_right(cucul_canvas_t *);
 __extern unsigned char cucul_attr_to_ansi(unsigned long int);
 __extern unsigned char cucul_attr_to_ansi_fg(unsigned long int);
 __extern unsigned char cucul_attr_to_ansi_bg(unsigned long int);
+__extern unsigned int cucul_attr_to_rgb12_fg(unsigned long int);
+__extern unsigned int cucul_attr_to_rgb12_bg(unsigned long int);
+__extern void cucul_attr_to_argb64(unsigned long int, unsigned char[8]);
 /*  @} */
 
 /** \defgroup cucul_charset libcucul character set conversions

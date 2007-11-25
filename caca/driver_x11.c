@@ -34,7 +34,6 @@
 #include <string.h>
 
 #include "cucul.h"
-#include "cucul_internals.h"
 #include "caca.h"
 #include "caca_internals.h"
 
@@ -304,11 +303,11 @@ static void x11_display(caca_display_t *dp)
         for(x = 0; x < width; x += len)
         {
             uint32_t const *attrs = cvattrs + x + y * width;
-            uint16_t bg = _cucul_attr_to_rgb12bg(*attrs);
+            uint16_t bg = cucul_attr_to_rgb12_bg(*attrs);
 
             len = 1;
             while(x + len < width
-                   && _cucul_attr_to_rgb12bg(attrs[len]) == bg)
+                   && cucul_attr_to_rgb12_bg(attrs[len]) == bg)
                 len++;
 
             XSetForeground(dp->drv.p->dpy, dp->drv.p->gc,
@@ -332,7 +331,7 @@ static void x11_display(caca_display_t *dp)
         for(x = 0; x < width; x++, chars++, attrs++)
         {
             XSetForeground(dp->drv.p->dpy, dp->drv.p->gc,
-                           dp->drv.p->colors[_cucul_attr_to_rgb12fg(*attrs)]);
+                           dp->drv.p->colors[cucul_attr_to_rgb12_fg(*attrs)]);
 
             x11_put_glyph(dp, x * dp->drv.p->font_width,
                           y * dp->drv.p->font_height, yoff,

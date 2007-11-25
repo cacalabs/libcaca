@@ -37,7 +37,6 @@
 #include <stdio.h>
 
 #include "cucul.h"
-#include "cucul_internals.h"
 #include "caca.h"
 #include "caca_internals.h"
 
@@ -227,7 +226,7 @@ static void gl_display(caca_display_t *dp)
         /* FIXME: optimise using stride */
         for(x = 0; x < dp->drv.p->width; x += dp->drv.p->font_width)
         {
-            uint16_t bg = _cucul_attr_to_rgb12bg(*attrs++);
+            uint16_t bg = cucul_attr_to_rgb12_bg(*attrs++);
 
             glColor4b(((bg & 0xf00) >> 8) * 8,
                       ((bg & 0x0f0) >> 4) * 8,
@@ -279,7 +278,7 @@ static void gl_display(caca_display_t *dp)
                               dp->drv.p->txid[b + ch
                                         - (uint32_t)dp->drv.p->blocks[i]]);
 
-                fg = _cucul_attr_to_rgb12fg(*attrs);
+                fg = cucul_attr_to_rgb12_fg(*attrs);
                 glColor3b(((fg & 0xf00) >> 8) * 8,
                           ((fg & 0x0f0) >> 4) * 8,
                           (fg & 0x00f) * 8);

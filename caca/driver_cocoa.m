@@ -270,7 +270,7 @@ static BOOL s_quitting = NO;
                 attrs = _attrs + x + y * _w;
                 NSColor* color = nil;
 #if USE_RGB12_FGBG
-                uint16_t bg = _cucul_attr_to_rgb12bg(*attrs);
+                uint16_t bg = cucul_attr_to_rgb12_bg(*attrs);
                 if(bg)
                 {
 #   ifdef PRECACHE_WHOLE_COLOR_TABLE
@@ -288,7 +288,7 @@ static BOOL s_quitting = NO;
                 }
 #else
                 uint8_t argb[8];
-                _cucul_attr_to_argb4(*attrs, argb);
+                cucul_attr_to_argb64(*attrs, argb);
                 color =  [NSColor colorWithCalibratedRed:((float)argb[1]) / 15.0
                                   green:((float)argb[2]) / 15.0
                                   blue:((float)argb[3]) / 15.0
@@ -328,7 +328,7 @@ static BOOL s_quitting = NO;
                 {
                     NSColor* color = nil;
 #if USE_RGB12_FGBG
-                    uint16_t fg = _cucul_attr_to_rgb12fg(*attrs);
+                    uint16_t fg = cucul_attr_to_rgb12_fg(*attrs);
 #   ifdef PRECACHE_WHOLE_COLOR_TABLE
                     color = _colorCache[fg];
 #   else // PRECACHE_WHOLE_COLOR_TABLE
@@ -343,7 +343,7 @@ static BOOL s_quitting = NO;
 #   endif // PRECACHE_WHOLE_COLOR_TABLE
 #else // USE_RGB12_FGBG
                     uint8_t argb[8];
-                    _cucul_attr_to_argb4(*attrs, argb);
+                    cucul_attr_to_argb64(*attrs, argb);
                     debug_log(@"x,y=[%d,%d] r,g,b back=[%u %u %u] front=[%u %u %u]", 
                               x, y, argb[1], argb[2], argb[3], argb[5], argb[6], argb[7]);
                     color =  [NSColor colorWithCalibratedRed:((float)argb[5]) / 15.0

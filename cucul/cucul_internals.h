@@ -64,11 +64,8 @@ struct cucul_buffer
 };
 
 /* Colour functions */
-extern uint16_t _cucul_attr_to_rgb12fg(uint32_t);
-extern uint16_t _cucul_attr_to_rgb12bg(uint32_t);
 extern uint32_t _cucul_attr_to_rgb24fg(uint32_t);
 extern uint32_t _cucul_attr_to_rgb24bg(uint32_t);
-extern void _cucul_attr_to_argb4(uint32_t, uint8_t[8]);
 
 /* Frames functions */
 extern void _cucul_save_frame_info(cucul_canvas_t *);

@@ -467,7 +467,7 @@ int cucul_render_canvas(cucul_canvas_t const *cv, cucul_font_t const *f,
             g = &f->glyph_list[f->block_list[b].index
                                 + ch - f->block_list[b].start];
 
-            _cucul_attr_to_argb4(attr, argb);
+            cucul_attr_to_argb64(attr, argb);
 
             /* Step 1: unpack glyph */
             switch(f->header.bpp)
