@@ -20,10 +20,9 @@ int main(void)
 {
     /* Initialise libcaca */
     cucul_canvas_t *cv; caca_display_t *dp; caca_event_t ev;
-    cv = cucul_create_canvas(0, 0);
-    if(!cv) return 1;
-    dp = caca_create_display(cv);
+    dp = caca_create_display(NULL);
     if(!dp) return 1;
+    cv = caca_get_canvas(dp);
     /* Set window title */
     caca_set_display_title(dp, "Hello!");
     /* Choose drawing colours */
@@ -36,7 +35,6 @@ int main(void)
     caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
     /* Clean up library */
     caca_free_display(dp);
-    cucul_free_canvas(cv);
 
     return 0;
 }

@@ -29,24 +29,20 @@ uint32_t buffer[256*256];
 
 int main(int argc, char *argv[])
 {
-    cucul_canvas_t *cv;
     caca_display_t *dp;
+    cucul_canvas_t *cv;
 
     cucul_dither_t *dither;
     int x, y;
 
-    cv = cucul_create_canvas(0, 0);
-    if(cv == NULL)
-    {
-        printf("Can't created canvas\n");
-        return -1;
-    }
-    dp = caca_create_display(cv);
+    dp = caca_create_display(NULL);
     if(dp == NULL)
     {
         printf("Can't create display\n");
         return -1;
     }
+
+    cv = caca_get_canvas(dp);
 
     for(y = 0; y < 256; y++)
         for(x = 0; x < 256; x++)
@@ -56,7 +52,7 @@ int main(int argc, char *argv[])
 
     dither = cucul_create_dither(32, 256, 256, 4 * 256,
                                  0x00ff0000, 0x0000ff00, 0x000000ff, 0x0);
-    cucul_dither_bitmap(cv, 0, 0, cucul_get_canvas_width(cv),
+    cucul_dither_bitmap(caca_get_canvas(dp), 0, 0, cucul_get_canvas_width(cv),
                         cucul_get_canvas_height(cv), dither, buffer);
     cucul_free_dither(dither);
 
@@ -65,7 +61,6 @@ int main(int argc, char *argv[])
     caca_get_event(dp, CACA_EVENT_KEY_PRESS, NULL, -1);
 
     caca_free_display(dp);
-    cucul_free_canvas(cv);
 
     return 0;
 }
