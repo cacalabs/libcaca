@@ -84,19 +84,19 @@ unsigned int __caca0_get_event(unsigned int m, int t)
     if(!ret)
         return 0x00000000;
 
-    switch(ev.type)
+    switch(caca_get_event_type(&ev))
     {
         case CACA_EVENT_KEY_PRESS:
-            return 0x01000000 | ev.data.key.ch;
+            return 0x01000000 | caca_get_event_key_ch(&ev);
         case CACA_EVENT_KEY_RELEASE:
-            return 0x02000000 | ev.data.key.ch;
+            return 0x02000000 | caca_get_event_key_ch(&ev);
         case CACA_EVENT_MOUSE_PRESS:
-            return 0x04000000 | ev.data.mouse.button;
+            return 0x04000000 | caca_get_event_mouse_button(&ev);
         case CACA_EVENT_MOUSE_RELEASE:
-            return 0x08000000 | ev.data.mouse.button;
+            return 0x08000000 | caca_get_event_mouse_button(&ev);
         case CACA_EVENT_MOUSE_MOTION:
-            return 0x10000000 | ((ev.data.mouse.x & 0xfff) << 12)
-                              | (ev.data.mouse.y & 0xfff);
+            return 0x10000000 | ((caca_get_event_mouse_x(&ev) & 0xfff) << 12)
+                              | (caca_get_event_mouse_y(&ev) & 0xfff);
         case CACA_EVENT_RESIZE:
             return 0x20000000;
         default:

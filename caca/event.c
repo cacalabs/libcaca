@@ -21,6 +21,7 @@
 
 #if !defined(__KERNEL__)
 #   include <stdio.h>
+#   include <string.h>
 #endif
 
 #include "cucul.h"
@@ -28,8 +29,8 @@
 #include "caca.h"
 #include "caca_internals.h"
 
-static int _get_next_event(caca_display_t *, caca_event_t *);
-static int _lowlevel_event(caca_display_t *, caca_event_t *);
+static int _get_next_event(caca_display_t *, caca_privevent_t *);
+static int _lowlevel_event(caca_display_t *, caca_privevent_t *);
 
 #if !defined(_DOXYGEN_SKIP_ME)
 /* If no new key was pressed after AUTOREPEAT_THRESHOLD usec, assume the
@@ -67,7 +68,7 @@ static int _lowlevel_event(caca_display_t *, caca_event_t *);
 int caca_get_event(caca_display_t *dp, unsigned int event_mask,
                    caca_event_t *ev, int timeout)
 {
-    caca_event_t dummy_event;
+    caca_privevent_t privevent;
     caca_timer_t timer;
     int usec = 0;
 
@@ -77,16 +78,17 @@ int caca_get_event(caca_display_t *dp, unsigned int event_mask,
     if(timeout > 0)
         _caca_getticks(&timer);
 
-    if(ev == NULL)
-        ev = &dummy_event;
-
     for( ; ; )
     {
-        int ret = _get_next_event(dp, ev);
+        int ret = _get_next_event(dp, &privevent);
 
         /* If we got the event we wanted, return */
-        if(ev->type & event_mask)
+        if(privevent.type & event_mask)
+        {
+            if(ev)
+                memcpy(ev, &privevent, sizeof(privevent));
             return ret;
+        }
 
         /* If there is no timeout, sleep and try again. */
         if(timeout < 0)
@@ -98,7 +100,9 @@ int caca_get_event(caca_display_t *dp, unsigned int event_mask,
         /* If we timeouted, return an empty event */
         if(usec >= timeout)
         {
-            ev->type = CACA_EVENT_NONE;
+            privevent.type = CACA_EVENT_NONE;
+            if(ev)
+                memcpy(ev, &privevent, sizeof(privevent));
             return 0;
         }
 
@@ -153,11 +157,170 @@ unsigned int caca_get_mouse_y(caca_display_t const *dp)
     return dp->mouse.y;
 }
 
+/** \brief Return an event's type.
+ *
+ *  Return the type of an event. This function may always be called on an
+ *  event after caca_get_event() was called, and its return value indicates
+ *  which other functions may be called:
+ *  - \c CACA_EVENT_NONE: no other function may be called.
+ *  - \c CACA_EVENT_KEY_PRESS, \c CACA_EVENT_KEY_RELEASE:
+ *  caca_get_event_key_ch(), caca_get_event_key_utf32() and
+ *  caca_get_event_key_utf8() may be called.
+ *  - \c CACA_EVENT_MOUSE_PRESS, \c CACA_EVENT_MOUSE_RELEASE:
+ *  caca_get_event_mouse_button() may be called.
+ *  - \c CACA_EVENT_MOUSE_MOTION: caca_get_event_mouse_x() and
+ *  caca_get_event_mouse_y() may be called.
+ *  - \c CACA_EVENT_RESIZE: caca_get_event_resize_width() and
+ *  caca_get_event_resize_height() may be called.
+ *  - \c CACA_EVENT_QUIT: no other function may be called.
+ *
+ *  This function never fails.
+ *
+ *  \param ev The libcaca event.
+ *  \return The event's type.
+ */
+enum caca_event_type caca_get_event_type(caca_event_t const *ev)
+{
+    return ((caca_privevent_t const *)ev)->type;
+}
+
+/** \brief Return a key press or key release event's value
+ *
+ *  Return either the ASCII value for an event's key, or if the key is not
+ *  an ASCII character, an appropriate \e enum \e caca_key value.
+ *
+ *  This function never fails, but must only be called with a valid event of
+ *  type \c CACA_EVENT_KEY_PRESS or \c CACA_EVENT_KEY_RELEASE, or the results
+ *  will be undefined. See caca_get_event_type() for more information.
+ *
+ *  \param ev The libcaca event.
+ *  \return The key value.
+ */
+unsigned int caca_get_event_key_ch(caca_event_t const *ev)
+{
+    return ((caca_privevent_t const *)ev)->data.key.ch;
+}
+
+/** \brief Return a key press or key release event's Unicode value
+ *
+ *  Return the UTF-32/UCS-4 value for an event's key if it resolves to a
+ *  printable character.
+ *
+ *  This function never fails, but must only be called with a valid event of
+ *  type \c CACA_EVENT_KEY_PRESS or \c CACA_EVENT_KEY_RELEASE, or the results
+ *  will be undefined. See caca_get_event_type() for more information.
+ *
+ *  \param ev The libcaca event.
+ *  \return The key's Unicode value.
+ */
+unsigned long int caca_get_event_key_utf32(caca_event_t const *ev)
+{
+    return ((caca_privevent_t const *)ev)->data.key.utf32;
+}
+
+/** \brief Return a key press or key release event's UTF-8 value
+ *
+ *  Write the UTF-8 value for an event's key if it resolves to a printable
+ *  character. Up to 6 UTF-8 bytes and a null termination are written.
+ *
+ *  This function never fails, but must only be called with a valid event of
+ *  type \c CACA_EVENT_KEY_PRESS or \c CACA_EVENT_KEY_RELEASE, or the results
+ *  will be undefined. See caca_get_event_type() for more information.
+ *
+ *  \param ev The libcaca event.
+ *  \return This function always returns 0.
+ */
+int caca_get_event_key_utf8(caca_event_t const *ev, char *utf8)
+{
+    memcpy(utf8, ((caca_privevent_t const *)ev)->data.key.utf8, 8);
+    return 0;
+}
+
+/** \brief Return a mouse press or mouse release event's button
+ *
+ *  Return the mouse button index for an event.
+ *
+ *  This function never fails, but must only be called with a valid event of
+ *  type \c CACA_EVENT_MOUSE_PRESS or \c CACA_EVENT_MOUSE_RELEASE, or the
+ *  results will be undefined. See caca_get_event_type() for more information.
+ *
+ *  \param ev The libcaca event.
+ *  \return The event's mouse button.
+ */
+unsigned int caca_get_event_mouse_button(caca_event_t const *ev)
+{
+    return ((caca_privevent_t const *)ev)->data.mouse.button;
+}
+
+/** \brief Return a mouse motion event's X coordinate.
+ *
+ *  Return the X coordinate for a mouse motion event.
+ *
+ *  This function never fails, but must only be called with a valid event of
+ *  type \c CACA_EVENT_MOUSE_MOTION, or the results will be undefined. See
+ *  caca_get_event_type() for more information.
+ *
+ *  \param ev The libcaca event.
+ *  \return The event's X mouse coordinate.
+ */
+unsigned int caca_get_event_mouse_x(caca_event_t const *ev)
+{
+    return ((caca_privevent_t const *)ev)->data.mouse.x;
+}
+
+/** \brief Return a mouse motion event's Y coordinate.
+ *
+ *  Return the Y coordinate for a mouse motion event.
+ *
+ *  This function never fails, but must only be called with a valid event of
+ *  type \c CACA_EVENT_MOUSE_MOTION, or the results will be undefined. See
+ *  caca_get_event_type() for more information.
+ *
+ *  \param ev The libcaca event.
+ *  \return The event's Y mouse coordinate.
+ */
+unsigned int caca_get_event_mouse_y(caca_event_t const *ev)
+{
+    return ((caca_privevent_t const *)ev)->data.mouse.y;
+}
+
+/** \brief Return a resize event's display width value.
+ *
+ *  Return the width value for a display resize event.
+ *
+ *  This function never fails, but must only be called with a valid event of
+ *  type \c CACA_EVENT_RESIZE, or the results will be undefined. See
+ *  caca_get_event_type() for more information.
+ *
+ *  \param ev The libcaca event.
+ *  \return The event's new display width value.
+ */
+unsigned int caca_get_event_resize_width(caca_event_t const *ev)
+{
+    return ((caca_privevent_t const *)ev)->data.resize.w;
+}
+
+/** \brief Return a resize event's display height value.
+ *
+ *  Return the height value for a display resize event.
+ *
+ *  This function never fails, but must only be called with a valid event of
+ *  type \c CACA_EVENT_RESIZE, or the results will be undefined. See
+ *  caca_get_event_type() for more information.
+ *
+ *  \param ev The libcaca event.
+ *  \return The event's new display height value.
+ */
+unsigned int caca_get_event_resize_height(caca_event_t const *ev)
+{
+    return ((caca_privevent_t const *)ev)->data.resize.h;
+}
+
 /*
  * XXX: The following functions are local.
  */
 
-static int _get_next_event(caca_display_t *dp, caca_event_t *ev)
+static int _get_next_event(caca_display_t *dp, caca_privevent_t *ev)
 {
 #if defined(USE_SLANG) || defined(USE_NCURSES)
     unsigned int ticks;
@@ -239,7 +402,7 @@ static int _get_next_event(caca_display_t *dp, caca_event_t *ev)
 #endif
 }
 
-static int _lowlevel_event(caca_display_t *dp, caca_event_t *ev)
+static int _lowlevel_event(caca_display_t *dp, caca_privevent_t *ev)
 {
 #if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO)
     int ret = _pop_event(dp, ev);
@@ -252,7 +415,7 @@ static int _lowlevel_event(caca_display_t *dp, caca_event_t *ev)
 }
 
 #if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO) || defined(USE_GL)
-void _push_event(caca_display_t *dp, caca_event_t *ev)
+void _push_event(caca_display_t *dp, caca_privevent_t *ev)
 {
     if(!ev->type || dp->events.queue == EVENTBUF_LEN)
         return;
@@ -260,7 +423,7 @@ void _push_event(caca_display_t *dp, caca_event_t *ev)
     dp->events.queue++;
 }
 
-int _pop_event(caca_display_t *dp, caca_event_t *ev)
+int _pop_event(caca_display_t *dp, caca_privevent_t *ev)
 {
     int i;
 

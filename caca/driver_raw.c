@@ -83,7 +83,7 @@ static void raw_handle_resize(caca_display_t *dp)
     ;
 }
 
-static int raw_get_event(caca_display_t *dp, caca_event_t *ev)
+static int raw_get_event(caca_display_t *dp, caca_privevent_t *ev)
 {
     ev->type = CACA_EVENT_NONE;
     return 0;

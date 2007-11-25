@@ -130,10 +130,10 @@ static void conio_handle_resize(caca_display_t *dp)
     dp->resize.h = dp->cv->height;
 }
 
-static int conio_get_event(caca_display_t *dp, caca_event_t *ev)
+static int conio_get_event(caca_display_t *dp, caca_privevent_t *ev)
 {
     unsigned char ch;
-    caca_event_t release;
+    caca_privevent_t release;
 
     if(!_conio_kbhit())
     {

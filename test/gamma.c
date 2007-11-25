@@ -74,13 +74,13 @@ int main(int argc, char *argv[])
 
         if(ret)
         {
-            if(ev.data.key.ch == CACA_KEY_LEFT)
+            if(caca_get_event_key_ch(&ev) == CACA_KEY_LEFT)
                 gam /= 1.03;
-            else if(ev.data.key.ch == CACA_KEY_RIGHT)
+            else if(caca_get_event_key_ch(&ev) == CACA_KEY_RIGHT)
                 gam *= 1.03;
-            else if(ev.data.key.ch == CACA_KEY_DOWN)
+            else if(caca_get_event_key_ch(&ev) == CACA_KEY_DOWN)
                 gam = 1.0;
-            else if(ev.data.key.ch == CACA_KEY_ESCAPE)
+            else if(caca_get_event_key_ch(&ev) == CACA_KEY_ESCAPE)
                 break;
         }
 

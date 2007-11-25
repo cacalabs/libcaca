@@ -20,6 +20,7 @@
 #endif
 
 typedef struct caca_timer caca_timer_t;
+typedef struct caca_privevent caca_privevent_t;
 
 #if !defined(_DOXYGEN_SKIP_ME)
 #   define EVENTBUF_LEN 10
@@ -89,6 +90,19 @@ struct caca_timer
     int last_sec, last_usec;
 };
 
+/* Private event structure */
+struct caca_privevent
+{
+    enum caca_event_type type;
+
+    union
+    {
+        struct { unsigned int x, y, button; } mouse;
+        struct { unsigned int w, h; } resize;
+        struct { unsigned int ch; unsigned long int utf32; char utf8[8]; } key;
+    } data;
+};
+
 /* Internal caca display context */
 struct caca_display
 {
@@ -112,7 +126,7 @@ struct caca_display
         unsigned int (* get_display_height) (caca_display_t const *);
         void (* display) (caca_display_t *);
         void (* handle_resize) (caca_display_t *);
-        int (* get_event) (caca_display_t *, caca_event_t *);
+        int (* get_event) (caca_display_t *, caca_privevent_t *);
         void (* set_mouse) (caca_display_t *, int);
         void (* set_cursor) (caca_display_t *, int);
     } drv;
@@ -138,14 +152,14 @@ struct caca_display
     struct events
     {
 #if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO) || defined(USE_GL)
-        caca_event_t buf[EVENTBUF_LEN];
+        caca_privevent_t buf[EVENTBUF_LEN];
         int queue;
 #endif
 #if defined(USE_SLANG) || defined(USE_NCURSES)
         caca_timer_t key_timer;
         unsigned int last_key_ticks;
         unsigned int autorepeat_ticks;
-        caca_event_t last_key_event;
+        caca_privevent_t last_key_event;
 #endif
 #if defined(USE_WIN32)
         unsigned char not_empty_struct;
@@ -160,8 +174,8 @@ extern unsigned int _caca_getticks(caca_timer_t *);
 /* Internal event functions */
 extern void _caca_handle_resize(caca_display_t *);
 #if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO) || defined(USE_GL)
-extern void _push_event(caca_display_t *, caca_event_t *);
-extern int _pop_event(caca_display_t *, caca_event_t *);
+extern void _push_event(caca_display_t *, caca_privevent_t *);
+extern int _pop_event(caca_display_t *, caca_privevent_t *);
 #endif
 
 /* Internal window functions */

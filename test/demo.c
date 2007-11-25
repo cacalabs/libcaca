@@ -88,14 +88,14 @@ int main(int argc, char **argv)
 
         while(caca_get_event(dp, CACA_EVENT_ANY, &ev, 0))
         {
-            if(demo && (ev.type & CACA_EVENT_KEY_PRESS))
+            if(demo && (caca_get_event_type(&ev) & CACA_EVENT_KEY_PRESS))
             {
                 menu = 1;
                 demo = NULL;
             }
-            else if(ev.type & CACA_EVENT_KEY_PRESS)
+            else if(caca_get_event_type(&ev) & CACA_EVENT_KEY_PRESS)
             {
-                switch(ev.data.key.ch)
+                switch(caca_get_event_key_ch(&ev))
                 {
                 case 'q':
                 case 'Q':
@@ -159,13 +159,13 @@ int main(int argc, char **argv)
                     cucul_clear_canvas(cv);
                 }
             }
-            else if(ev.type & CACA_EVENT_MOUSE_MOTION)
+            else if(caca_get_event_type(&ev) & CACA_EVENT_MOUSE_MOTION)
             {
                 mouse = 1;
-                xmouse = ev.data.mouse.x;
-                ymouse = ev.data.mouse.y;
+                xmouse = caca_get_event_mouse_x(&ev);
+                ymouse = caca_get_event_mouse_y(&ev);
             }
-            else if(ev.type & CACA_EVENT_RESIZE)
+            else if(caca_get_event_type(&ev) & CACA_EVENT_RESIZE)
             {
                 mouse = 1; /* old hack */
             }

@@ -272,7 +272,7 @@ game (void)
       caca_event_t ev;
       if(caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, 0))
         {
-          switch(ev.data.key.ch)
+          switch(caca_get_event_key_ch(&ev))
             {
                 case CACA_KEY_CTRL_C:
                 case CACA_KEY_CTRL_Z:

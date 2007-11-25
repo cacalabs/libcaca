@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 
         while(caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, 0))
         {
-            switch(ev.data.key.ch)
+            switch(caca_get_event_key_ch(&ev))
             {
             case 0:
                 break;

@@ -108,10 +108,10 @@ int main(int argc, char **argv)
         while(caca_get_event(dp, CACA_EVENT_KEY_PRESS
                                   | CACA_EVENT_QUIT, &ev, 0))
         {
-            if(ev.type == CACA_EVENT_QUIT)
+            if(caca_get_event_type(&ev) == CACA_EVENT_QUIT)
                 goto end;
 
-            switch(ev.data.key.ch)
+            switch(caca_get_event_key_ch(&ev))
             {
                 case CACA_KEY_ESCAPE:
                 case CACA_KEY_CTRL_C:

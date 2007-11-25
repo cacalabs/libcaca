@@ -384,7 +384,7 @@ static void ncurses_handle_resize(caca_display_t *dp)
     dp->resize.h = dp->cv->height;
 }
 
-static int ncurses_get_event(caca_display_t *dp, caca_event_t *ev)
+static int ncurses_get_event(caca_display_t *dp, caca_privevent_t *ev)
 {
     int intkey;
 

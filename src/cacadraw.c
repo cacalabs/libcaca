@@ -80,12 +80,12 @@ int main(int argc, char **argv)
 
         while(caca_get_event(dp, CACA_EVENT_ANY, &ev, -1))
         {
-            switch(ev.type)
+            switch(caca_get_event_type(&ev))
             {
                 case CACA_EVENT_QUIT:
                     goto quit;
                 case CACA_EVENT_KEY_PRESS:
-                    switch(ev.data.key.ch)
+                    switch(caca_get_event_key_ch(&ev))
                     {
                     case CACA_KEY_LEFT: dx -= 2; break;
                     case CACA_KEY_RIGHT: dx += 2; break;

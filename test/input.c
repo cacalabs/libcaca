@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
         if(caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1) == 0)
             continue;
 
-        switch(ev.data.key.ch)
+        switch(caca_get_event_key_ch(&ev))
         {
             case CACA_KEY_ESCAPE:
                 running = 0;
@@ -143,7 +143,8 @@ int main(int argc, char *argv[])
                     memmove(entries[e].buffer + entries[e].cursor + 1,
                             entries[e].buffer + entries[e].cursor,
                             (entries[e].size - entries[e].cursor) * 4);
-                    entries[e].buffer[entries[e].cursor] = ev.data.key.utf32;
+                    entries[e].buffer[entries[e].cursor] =
+                                              caca_get_event_key_utf32(&ev);
                     entries[e].size++;
                     entries[e].cursor++;
                 }

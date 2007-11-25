@@ -71,7 +71,7 @@ int main(int argc, char **argv)
         int ret = caca_get_event(dp, CACA_EVENT_ANY, &ev, 0);
         int eof = 0;
 
-        if(ret && ev.type & CACA_EVENT_KEY_PRESS)
+        if(ret && caca_get_event_type(&ev) & CACA_EVENT_KEY_PRESS)
             break;
 
         if(bytes == 0)

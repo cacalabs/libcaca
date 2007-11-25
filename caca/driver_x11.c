@@ -369,7 +369,7 @@ static void x11_handle_resize(caca_display_t *dp)
     dp->drv.p->pixmap = new_pixmap;
 }
 
-static int x11_get_event(caca_display_t *dp, caca_event_t *ev)
+static int x11_get_event(caca_display_t *dp, caca_privevent_t *ev)
 {
     XEvent xevent;
     char key;

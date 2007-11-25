@@ -83,7 +83,7 @@ int main(int argc, char **argv)
         caca_event_t ev;
         int ret = caca_get_event(dp, CACA_EVENT_ANY, &ev, 0);
 
-        if(ret && ev.type & CACA_EVENT_KEY_PRESS)
+        if(ret && caca_get_event_type(&ev) & CACA_EVENT_KEY_PRESS)
             break;
 
         for(i = 0; i < 4; i++)

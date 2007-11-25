@@ -145,20 +145,21 @@ int main(int argc, char **argv)
 
         while(event)
         {
-            if(ev.type & CACA_EVENT_MOUSE_PRESS)
+            if(caca_get_event_type(&ev) & CACA_EVENT_MOUSE_PRESS)
             {
-                if(ev.data.mouse.button == 1)
+                if(caca_get_event_mouse_button(&ev) == 1)
                 {
                     if(items) current = (current + 1) % items;
                     reload = 1;
                 }
-                else if(ev.data.mouse.button == 2)
+                if(caca_get_event_mouse_button(&ev) == 2)
                 {
                     if(items) current = (items + current - 1) % items;
                     reload = 1;
                 }
             }
-            else if(ev.type & CACA_EVENT_KEY_PRESS) switch(ev.data.key.ch)
+            else if(caca_get_event_type(&ev) & CACA_EVENT_KEY_PRESS)
+                switch(caca_get_event_key_ch(&ev))
             {
             case 'n':
             case 'N':
@@ -286,15 +287,15 @@ int main(int argc, char **argv)
                 quit = 1;
                 break;
             }
-            else if(ev.type == CACA_EVENT_RESIZE)
+            else if(caca_get_event_type(&ev) == CACA_EVENT_RESIZE)
             {
                 caca_refresh_display(dp);
-                ww = ev.data.resize.w;
-                wh = ev.data.resize.h;
+                ww = caca_get_event_resize_width(&ev);
+                wh = caca_get_event_resize_height(&ev);
                 update = 1;
                 set_zoom(zoom);
             }
-            else if(ev.type & CACA_EVENT_QUIT)
+            else if(caca_get_event_type(&ev) & CACA_EVENT_QUIT)
                 quit = 1;
 
             if(status || new_status)

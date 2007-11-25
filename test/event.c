@@ -72,9 +72,9 @@ int main(int argc, char **argv)
         do
         {
             /* "quit" quits */
-            if(ev.type & CACA_EVENT_KEY_PRESS)
+            if(caca_get_event_type(&ev) & CACA_EVENT_KEY_PRESS)
             {
-                int key = ev.data.key.ch;
+                int key = caca_get_event_key_ch(&ev);
                 if((key == 'q' && quit == 0) || (key == 'u' && quit == 1)
                     || (key == 'i' && quit == 2) || (key == 't' && quit == 3))
                     quit++;
@@ -104,7 +104,7 @@ int main(int argc, char **argv)
 
         /* Print previous events */
         cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLACK);
-        for(i = 1; i < h && events[i].type; i++)
+        for(i = 1; i < h && caca_get_event_type(&events[i]); i++)
             print_event(0, i, events + i);
 
         caca_refresh_display(dp);
@@ -121,36 +121,37 @@ static void print_event(int x, int y, caca_event_t *ev)
 {
     int character;
 
-    switch(ev->type)
+    switch(caca_get_event_type(ev))
     {
     case CACA_EVENT_NONE:
         cucul_printf(cv, x, y, "CACA_EVENT_NONE");
         break;
     case CACA_EVENT_KEY_PRESS:
-        character = ev->data.key.ch;
+        character = caca_get_event_key_ch(ev);
         cucul_printf(cv, x, y, "CACA_EVENT_KEY_PRESS 0x%02x (%c)", character,
                      (character > 0x1f && character < 0x80) ? character : '?');
         break;
     case CACA_EVENT_KEY_RELEASE:
-        character = ev->data.key.ch;
+        character = caca_get_event_key_ch(ev);
         cucul_printf(cv, x, y, "CACA_EVENT_KEY_RELEASE 0x%02x (%c)", character,
                      (character > 0x1f && character < 0x80) ? character : '?');
         break;
     case CACA_EVENT_MOUSE_MOTION:
         cucul_printf(cv, x, y, "CACA_EVENT_MOUSE_MOTION %u %u",
-                     ev->data.mouse.x, ev->data.mouse.y);
+                     caca_get_event_mouse_x(ev), caca_get_event_mouse_y(ev));
         break;
     case CACA_EVENT_MOUSE_PRESS:
         cucul_printf(cv, x, y, "CACA_EVENT_MOUSE_PRESS %u",
-                     ev->data.mouse.button);
+                     caca_get_event_mouse_button(ev));
         break;
     case CACA_EVENT_MOUSE_RELEASE:
         cucul_printf(cv, x, y, "CACA_EVENT_MOUSE_RELEASE %u",
-                     ev->data.mouse.button);
+                     caca_get_event_mouse_button(ev));
         break;
     case CACA_EVENT_RESIZE:
         cucul_printf(cv, x, y, "CACA_EVENT_RESIZE %u %u",
-                     ev->data.resize.w, ev->data.resize.h);
+                     caca_get_event_resize_width(ev),
+                     caca_get_event_resize_height(ev));
         break;
     case CACA_EVENT_QUIT:
         cucul_printf(cv, x, y, "CACA_EVENT_QUIT");

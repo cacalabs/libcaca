@@ -272,7 +272,7 @@ static void slang_handle_resize(caca_display_t *dp)
         SLsmg_reinit_smg();
 }
 
-static int slang_get_event(caca_display_t *dp, caca_event_t *ev)
+static int slang_get_event(caca_display_t *dp, caca_privevent_t *ev)
 {
     int intkey;
 

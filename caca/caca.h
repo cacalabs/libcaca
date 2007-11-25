@@ -53,64 +53,28 @@ typedef struct caca_event caca_event_t;
  *  The \e type field is always valid. */
 struct caca_event
 {
-    /** \brief User event type enumeration.
-     *
-     *  This enum serves two purposes:
-     *  - Build listening masks for caca_get_event().
-     *  - Define the type of a \e caca_event_t.
-     */
-    enum caca_event_type
-    {
-        CACA_EVENT_NONE =          0x0000, /**< No event. */
+    unsigned char opaque_structure[32];
+};
 
-        CACA_EVENT_KEY_PRESS =     0x0001, /**< A key was pressed. */
-        CACA_EVENT_KEY_RELEASE =   0x0002, /**< A key was released. */
-        CACA_EVENT_MOUSE_PRESS =   0x0004, /**< A mouse button was pressed. */
-        CACA_EVENT_MOUSE_RELEASE = 0x0008, /**< A mouse button was released. */
-        CACA_EVENT_MOUSE_MOTION =  0x0010, /**< The mouse was moved. */
-        CACA_EVENT_RESIZE =        0x0020, /**< The window was resized. */
-        CACA_EVENT_QUIT =          0x0040, /**< The user requested to quit. */
+/** \brief User event type enumeration.
+ *
+ *  This enum serves two purposes:
+ *  - Build listening masks for caca_get_event().
+ *  - Define the type of a \e caca_event_t.
+ */
+enum caca_event_type
+{
+    CACA_EVENT_NONE =          0x0000, /**< No event. */
 
-        CACA_EVENT_ANY =           0xffff  /**< Bitmask for any event. */
-    }
-    /** \brief User event type member.
-     *
-     *  This field is always valid when caca_get_event() returns.
-     */
-    type;
+    CACA_EVENT_KEY_PRESS =     0x0001, /**< A key was pressed. */
+    CACA_EVENT_KEY_RELEASE =   0x0002, /**< A key was released. */
+    CACA_EVENT_MOUSE_PRESS =   0x0004, /**< A mouse button was pressed. */
+    CACA_EVENT_MOUSE_RELEASE = 0x0008, /**< A mouse button was released. */
+    CACA_EVENT_MOUSE_MOTION =  0x0010, /**< The mouse was moved. */
+    CACA_EVENT_RESIZE =        0x0020, /**< The window was resized. */
+    CACA_EVENT_QUIT =          0x0040, /**< The user requested to quit. */
 
-    /** \brief User event data member.
-     *
-     *  The validity of the \e data union depends on the value of the \e type
-     *  field:
-     *  - \c CACA_EVENT_NONE: no other field is valid.
-     *  - \c CACA_EVENT_KEY_PRESS, \c CACA_EVENT_KEY_RELEASE: the
-     *  \e data.key.ch field is valid and contains either the ASCII value for
-     *  the key, or an \e enum \e caca_key value. If the value is a printable
-     *  ASCII character, the \e data.key.utf32 and \e data.key.utf8 fields are
-     *  also filled and contain respectively the UTF-32/UCS-4 and the UTF-8
-     *  representations of the character. Otherwise, their content is
-     *  undefined.
-     *  - \c CACA_EVENT_MOUSE_PRESS, \c CACA_EVENT_MOUSE_RELEASE: the
-     *  \e data.mouse.button field is valid and contains the index of the
-     *  mouse button that was pressed.
-     *  - \c CACA_EVENT_MOUSE_MOTION: the \e data.mouse.x and \e data.mouse.y
-     *  fields are valid and contain the mouse coordinates in character
-     *  cells.
-     *  - \c CACA_EVENT_RESIZE: the \e data.resize.w and \e data.resize.h
-     *  fields are valid and contain the new width and height values of
-     *  the \e libcucul canvas attached to \e libcaca.
-     *  - \c CACA_EVENT_QUIT: no other field is valid.
-     *
-     *  The result of accessing data members outside the above conditions is
-     *  undefined.
-     */
-    union
-    {
-        struct { unsigned int x, y, button; } mouse;
-        struct { unsigned int w, h; } resize;
-        struct { unsigned int ch; unsigned long int utf32; char utf8[8]; } key;
-    } data;
+    CACA_EVENT_ANY =           0xffff  /**< Bitmask for any event. */
 };
 
 /** \brief Special key values.
@@ -196,6 +160,8 @@ __extern unsigned int caca_get_display_time(caca_display_t const *);
 __extern unsigned int caca_get_display_width(caca_display_t const *);
 __extern unsigned int caca_get_display_height(caca_display_t const *);
 __extern int caca_set_display_title(caca_display_t *, char const *);
+__extern int caca_set_mouse(caca_display_t *, int);
+__extern int caca_set_cursor(caca_display_t *, int);
 /*  @} */
 
 /** \defgroup caca_event libcaca event handling
@@ -208,8 +174,15 @@ __extern int caca_get_event(caca_display_t *, unsigned int,
                             caca_event_t *, int);
 __extern unsigned int caca_get_mouse_x(caca_display_t const *);
 __extern unsigned int caca_get_mouse_y(caca_display_t const *);
-__extern int caca_set_mouse(caca_display_t *, int);
-__extern int caca_set_cursor(caca_display_t *, int);
+__extern enum caca_event_type caca_get_event_type(caca_event_t const *);
+__extern unsigned int caca_get_event_key_ch(caca_event_t const *);
+__extern unsigned long int caca_get_event_key_utf32(caca_event_t const *);
+__extern int caca_get_event_key_utf8(caca_event_t const *, char *);
+__extern unsigned int caca_get_event_mouse_button(caca_event_t const *);
+__extern unsigned int caca_get_event_mouse_x(caca_event_t const *);
+__extern unsigned int caca_get_event_mouse_y(caca_event_t const *);
+__extern unsigned int caca_get_event_resize_width(caca_event_t const *);
+__extern unsigned int caca_get_event_resize_height(caca_event_t const *);
 /*  @} */
 
 #ifdef __cplusplus
