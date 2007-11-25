@@ -1,5 +1,5 @@
-#ifndef __CACA_DISPLAY_H__
-#define __CACA_DISPLAY_H__
+#ifndef __CACA_EVENT_H__
+#define __CACA_EVENT_H__
 
 #include <ruby.h>
 
