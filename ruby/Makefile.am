@@ -1,6 +1,7 @@
 # $Id: $
-rubylibdir=$(RUBY_SITEARCHDIR)
-rubysitedir=$(RUBY_SITELIBDIR)
+
+rubylibdir = $(RUBY_SITEARCHDIR)
+rubysitedir = $(RUBY_SITELIBDIR)
 
 if USE_RUBY
 rubylib_LTLIBRARIES = caca.la cucul.la
@@ -8,27 +9,40 @@ rubysite_DATA = lib/caca.rb
 TESTS = test
 endif
 
-cucul_la_CPPFLAGS = -I$(top_srcdir)/cucul -I$(RUBY_ARCHDIR)
-cucul_la_SOURCES = cucul.c cucul-canvas.c cucul-dither.c cucul-font.c
-cucul_la_LDFLAGS = -module -avoid-version -shared -L$(RUBY_LIBDIR) -l$(RUBY_SO_NAME)
+CFLAGS += -Wno-strict-prototypes -Wno-missing-prototypes
+
+cucul_la_CPPFLAGS = -I$(top_srcdir)/cucul $(RUBY_CFLAGS)
+cucul_la_SOURCES = cucul.c \
+                   common.h \
+                   cucul-canvas.c \
+                   cucul-canvas.h \
+                   cucul-dither.c \
+                   cucul-dither.h \
+                   cucul-font.c \
+                   cucul-font.h \
+                   $(NULL)
+cucul_la_LDFLAGS = -module -avoid-version -shared $(RUBY_LIBS)
 cucul_la_LIBADD = ../cucul/libcucul.la
 
-caca_la_CPPFLAGS = -I$(top_srcdir)/caca -I$(RUBY_ARCHDIR)
-caca_la_SOURCES = caca.c caca-display.c caca-event.c
-caca_la_LDFLAGS = -module -avoid-version -shared -L$(RUBY_LIBDIR) -l$(RUBY_SO_NAME)
+caca_la_CPPFLAGS = -I$(top_srcdir)/caca $(RUBY_CFLAGS)
+caca_la_SOURCES = caca.c \
+                  common.h \
+                  caca-display.c \
+                  caca-display.h \
+                  caca-event.c \
+                  caca-event.h \
+                  $(NULL)
+caca_la_LDFLAGS = -module -avoid-version -shared $(RUBY_LIBS)
 caca_la_LIBADD = ../caca/libcaca.la
 
-EXTRA_DIST = cucul-canvas.h \
-             cucul-dither.h \
-             cucul-font.h \
-             caca-display.h \
-             caca-event.h \
-             common.h \
-             test.rb \
+EXTRA_DIST = ruby.dox \
+             ruby-caca.dox \
+             ruby-cucul.dox \
+             lib/caca.rb \
              t/tc_canvas.rb \
              t/tc_dither.rb \
              t/tc_font.rb \
              t/tc_frame.rb \
-             README
+             README \
+             $(NULL)
 
-CFLAGS+=-Wno-strict-prototypes -Wno-missing-prototypes

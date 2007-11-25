@@ -346,18 +346,16 @@ ac_cv_my_have_ruby="no"
 if test "${enable_ruby}" != "no"; then
   AC_PATH_PROG(RUBY, ruby, no)
   if test "${RUBY}" != "no"; then
-    RUBY_ARCHDIR=`ruby -r rbconfig -e 'print Config::CONFIG@<:@"archdir"@:>@'`
+    RUBY_CFLAGS="-I$(ruby -r rbconfig -e 'print Config::CONFIG@<:@"archdir"@:>@')"
+    RUBY_LIBS="-L$(ruby -r rbconfig -e 'print Config::CONFIG@<:@"libdir"@:>@') -l$(ruby -r rbconfig -e 'print Config::CONFIG@<:@"RUBY_SO_NAME"@:>@')"
     RUBY_SITEARCHDIR=`ruby -r rbconfig -e 'print Config::CONFIG@<:@"sitearchdir"@:>@'`
     RUBY_SITELIBDIR=`ruby -r rbconfig -e 'print Config::CONFIG@<:@"sitelibdir"@:>@'`
-    RUBY_LIBDIR=`ruby -r rbconfig -e 'print Config::CONFIG@<:@"libdir"@:>@'`
-    RUBY_SO_NAME=`ruby -r rbconfig -e 'print Config::CONFIG@<:@"RUBY_SO_NAME"@:>@'`
-    AC_SUBST(RUBY_ARCHDIR)
+    AC_SUBST(RUBY_CFLAGS)
+    AC_SUBST(RUBY_LIBS)
     AC_SUBST(RUBY_SITEARCHDIR)
     AC_SUBST(RUBY_SITELIBDIR)
-    AC_SUBST(RUBY_LIBDIR)
-    AC_SUBST(RUBY_SO_NAME)
-    AC_CHECK_HEADERS(
-      $RUBY_ARCHDIR/ruby.h,
+    CPPFLAGS="${CPPFLAGS} ${RUBY_CFLAGS}"
+    AC_CHECK_HEADERS([ruby.h],
      [ac_cv_my_have_ruby="yes"
       CACA_BINDINGS="${CACA_BINDINGS} Ruby"])
   fi
