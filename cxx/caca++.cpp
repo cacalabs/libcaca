@@ -18,9 +18,9 @@
  *  so on.
  */
 
+#include <iostream>
 
 #include "caca++.h"
-
 
 Caca::Caca(Cucul *cv)
 {
@@ -78,7 +78,7 @@ int Caca::setTitle(char const *s)
 
 int Caca::getEvent(unsigned int g, Event *n, int aa)
 {
-    return caca_get_event(dp, g, &n->e, aa);
+    return caca_get_event(dp, g, n ? &n->e : NULL, aa);
 }
 
 unsigned int Caca::getMouseX()

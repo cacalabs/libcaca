@@ -47,7 +47,7 @@ class Event
         } type;
 
  protected:
-    caca_event e;
+    caca_event_t e;
 };
 
 class Caca

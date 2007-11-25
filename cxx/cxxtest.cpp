@@ -43,7 +43,6 @@ int main(int argc, char *argv[])
 {
     Cucul *qq, *pig;
     Caca  *kk;
-    Event ev;
 
     int x = 0, y = 0, ix = 1, iy = 1;
 
@@ -76,7 +75,7 @@ int main(int argc, char *argv[])
 
     kk->setDisplayTime(20000);
 
-    while(!kk->getEvent(ev.CACA_EVENT_KEY_PRESS, &ev, 0)) {
+    while(!kk->getEvent(Event::CACA_EVENT_KEY_PRESS, NULL, 0)) {
 
 
         /* In case of resize ...*/
