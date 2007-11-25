@@ -58,25 +58,30 @@ class DemoCanvas : CuculCanvas
 
 class DemoDisplay : CacaDisplay
 {
-    private Event e;
     private DemoCanvas cv;
 
     public DemoDisplay(DemoCanvas _cv) : base(_cv)
     {
-        setDisplayTime(20000); // Refresh every 20 ms
-        setDisplayTitle("libcaca .NET Bindings test suite");
+        displayTime = 20000; // Refresh every 20 ms
+        title = "libcaca .NET Bindings test suite";
         cv = _cv;
-        e = new Event();
     }
 
     public void EventLoop()
     {
-        while(getEvent(Event.type.KEY_RELEASE, e, 10) == 0)
+        CacaEvent ev;
+
+        while((ev = getEvent(CacaEventType.KEY_RELEASE, 10)).type == 0)
         {
             cv.Draw();
 
             Refresh();
         }
+
+        if(ev.keyCh > 0x20 && ev.keyCh < 0x7f)
+            Console.WriteLine("Key pressed: {0}", ev.keyUtf8);
+        else
+            Console.WriteLine("Key pressed: 0x{0:x}", ev.keyCh);
     }
 }
 
@@ -95,7 +100,7 @@ class Test
 
         /* Random number. This is a static method,
            not to be used with previous instance */
-        Console.WriteLine("A random number : {0}", Libcucul.Rand(0, 1337));
+        Console.WriteLine("A random number: {0}", Libcucul.Rand(0, 1337));
 
         dp.EventLoop();
 

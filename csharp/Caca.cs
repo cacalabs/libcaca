@@ -20,162 +20,265 @@ using Cucul;
 
 namespace Caca
 {
-
-  enum Keys
-  {
-    CACA_KEY_UNKNOWN = 0x00, /**< Unknown key. */
-
-    /* The following keys have ASCII equivalents */
-    CACA_KEY_BACKSPACE = 0x08, /**< The backspace key. */
-    CACA_KEY_TAB =       0x09, /**< The tabulation key. */
-    CACA_KEY_RETURN =    0x0d, /**< The return key. */
-    CACA_KEY_PAUSE =     0x13, /**< The pause key. */
-    CACA_KEY_ESCAPE =    0x1b, /**< The escape key. */
-    CACA_KEY_DELETE =    0x7f, /**< The delete key. */
-
-    /* The following keys do not have ASCII equivalents but have been
-     * chosen to match the SDL equivalents */
-    CACA_KEY_UP =    0x111, /**< The up arrow key. */
-    CACA_KEY_DOWN =  0x112, /**< The down arrow key. */
-    CACA_KEY_LEFT =  0x113, /**< The left arrow key. */
-    CACA_KEY_RIGHT = 0x114, /**< The right arrow key. */
-
-    CACA_KEY_INSERT =   0x115, /**< The insert key. */
-    CACA_KEY_HOME =     0x116, /**< The home key. */
-    CACA_KEY_END =      0x117, /**< The end key. */
-    CACA_KEY_PAGEUP =   0x118, /**< The page up key. */
-    CACA_KEY_PAGEDOWN = 0x119, /**< The page down key. */
-
-    CACA_KEY_F1 =  0x11a, /**< The F1 key. */
-    CACA_KEY_F2 =  0x11b, /**< The F2 key. */
-    CACA_KEY_F3 =  0x11c, /**< The F3 key. */
-    CACA_KEY_F4 =  0x11d, /**< The F4 key. */
-    CACA_KEY_F5 =  0x11e, /**< The F5 key. */
-    CACA_KEY_F6 =  0x11f, /**< The F6 key. */
-    CACA_KEY_F7 =  0x120, /**< The F7 key. */
-    CACA_KEY_F8 =  0x121, /**< The F8 key. */
-    CACA_KEY_F9 =  0x122, /**< The F9 key. */
-    CACA_KEY_F10 = 0x123, /**< The F10 key. */
-    CACA_KEY_F11 = 0x124, /**< The F11 key. */
-    CACA_KEY_F12 = 0x125, /**< The F12 key. */
-    CACA_KEY_F13 = 0x126, /**< The F13 key. */
-    CACA_KEY_F14 = 0x127, /**< The F14 key. */
-    CACA_KEY_F15 = 0x128  /**< The F15 key. */
-  }
-  public unsafe class Event
+    public enum CacaEventType
     {
-    public enum type
-      {
-        NONE =          0x0000, /**< No event. */
+        NONE =          0x0000,
 
-        KEY_PRESS =     0x0001, /**< A key was pressed. */
-        KEY_RELEASE =   0x0002, /**< A key was released. */
-        MOUSE_PRESS =   0x0004, /**< A mouse button was pressed. */
-        MOUSE_RELEASE = 0x0008, /**< A mouse button was released. */
-        MOUSE_MOTION =  0x0010, /**< The mouse was moved. */
-        RESIZE =        0x0020, /**< The window was resized. */
-        QUIT =          0x0040, /**< The user requested to quit. */
+        KEY_PRESS =     0x0001,
+        KEY_RELEASE =   0x0002,
+        MOUSE_PRESS =   0x0004,
+        MOUSE_RELEASE = 0x0008,
+        MOUSE_MOTION =  0x0010,
+        RESIZE =        0x0020,
+        QUIT =          0x0040,
 
-        ANY =           0xffff  /**< Bitmask for any event. */
-      };
-
+        ANY =           0xffff,
     }
 
+    public enum CacaEventKey
+    {
+        UNKNOWN = 0x00,
 
-  public unsafe class CacaDisplay : IDisposable
-    {
-    [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
-      public static extern IntPtr caca_create_display(IntPtr cv);
-    [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
-      public static extern void caca_free_display(IntPtr dp);
-    [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
-      public static extern void caca_refresh_display(IntPtr dp);
-    [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
-      public static extern void caca_set_display_time(IntPtr dp, Int32 d);
-    [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
-      public static extern Int32 caca_get_display_time(IntPtr dp);
-    [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
-      public static extern Int32 caca_get_display_width(IntPtr dp);
-    [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
-      public static extern Int32 caca_get_display_height(IntPtr dp);
-    [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
-      public static extern Int32 caca_set_display_title(IntPtr dp, string t);
-    [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
-      public static extern Int32 caca_get_event(IntPtr k, Event.type t, Event e, Int32 timeout);
-    [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
-      public static extern Int32 caca_get_mouse_x(IntPtr k);
-    [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
-      public static extern Int32 caca_get_mouse_y(IntPtr k);
-    [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
-      public static extern void caca_set_mouse(IntPtr k, bool status);
+        BACKSPACE = 0x08,
+        TAB =       0x09,
+        RETURN =    0x0d,
+        PAUSE =     0x13,
+        ESCAPE =    0x1b,
+        DELETE =    0x7f,
 
+        UP =    0x111,
+        DOWN =  0x112,
+        LEFT =  0x113,
+        RIGHT = 0x114,
 
+        INSERT =   0x115,
+        HOME =     0x116,
+        END =      0x117,
+        PAGEUP =   0x118,
+        PAGEDOWN = 0x119,
 
-
-
-    IntPtr _cv;
-    IntPtr _dp;
-
-    public CacaDisplay(CuculCanvas cv)
-    {
-        _cv = cv._cv;
-        _dp = caca_create_display(_cv);
-    }
-    public void Dispose()
-    {
-        caca_free_display(_dp);
-        GC.SuppressFinalize(this);
-    }
-    public void Refresh()
-    {
-        caca_refresh_display(_dp);
-    }
-    public void setDisplayTime(Int32 d)
-    {
-        caca_set_display_time(_dp, d);
-    }
-    public Int32 getDisplayTime()
-    {
-        return caca_get_display_time(_dp);
-    }
-    public Int32 getDisplayWidth()
-    {
-        return caca_get_display_width(_dp);
-    }
-    public Int32 getDisplayHeight()
-    {
-        return caca_get_display_height(_dp);
-    }
-    public Int32 setDisplayTitle(string t)
-    {
-        return caca_set_display_title(_dp, t);
-    }
-    public Int32 getEvent(Event.type t, Event e, Int32 timeout)
-    {
-        return caca_get_event(_dp, t, e, timeout);
-    }
-    public Int32 getMouseX()
-    {
-        return caca_get_mouse_x(_dp);
-    }
-    public Int32 getMouseY()
-    {
-        return caca_get_mouse_y(_dp);
-    }
-    public void caca_set_mouse(bool status)
-    {
-        caca_set_mouse(_dp, status);
+        F1 =  0x11a,
+        F2 =  0x11b,
+        F3 =  0x11c,
+        F4 =  0x11d,
+        F5 =  0x11e,
+        F6 =  0x11f,
+        F7 =  0x120,
+        F8 =  0x121,
+        F9 =  0x122,
+        F10 = 0x123,
+        F11 = 0x124,
+        F12 = 0x125,
+        F13 = 0x126,
+        F14 = 0x127,
+        F15 = 0x128,
     }
 
-
-
-
-
-
-
-    public IntPtr get_caca_t()
+    public class CacaEvent : IDisposable
     {
-        return _dp;
+        public IntPtr cevent;
+        private IntPtr utf8;
+
+        public CacaEvent()
+        {
+            cevent = Marshal.AllocHGlobal(32);
+            utf8 = Marshal.AllocHGlobal(8);
+        }
+
+        public void Dispose()
+        {
+            Marshal.FreeHGlobal(cevent);
+            Marshal.FreeHGlobal(utf8);
+            GC.SuppressFinalize(this);
+        }
+
+        [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern int caca_get_event_type(IntPtr ev);
+        public CacaEventType type
+        {
+            get { return (CacaEventType)caca_get_event_type(cevent); }
+        }
+
+        [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern int caca_get_event_key_ch(IntPtr ev);
+        public int keyCh
+        {
+            get { return caca_get_event_key_ch(cevent); }
+        }
+
+        [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern int caca_get_event_key_utf32(IntPtr ev);
+        public int keyUtf32
+        {
+            get { return caca_get_event_key_utf32(cevent); }
+        }
+
+        [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern int caca_get_event_key_utf8(IntPtr ev,
+                                                          IntPtr utf8);
+        public string keyUtf8
+        {
+            get
+            {
+                caca_get_event_key_utf8(cevent, utf8);
+                return Marshal.PtrToStringUni(utf8);
+            }
+        }
+
+        [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern int caca_get_event_mouse_button(IntPtr ev);
+        public int mouseButton
+        {
+            get { return caca_get_event_mouse_button(cevent); }
+        }
+
+        [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern int caca_get_event_mouse_x(IntPtr ev);
+        public int mouseX
+        {
+            get { return caca_get_event_mouse_x(cevent); }
+        }
+
+        [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern int caca_get_event_mouse_y(IntPtr ev);
+        public int mouseY
+        {
+            get { return caca_get_event_mouse_y(cevent); }
+        }
+
+        [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern int caca_get_event_resize_width(IntPtr ev);
+        public int resizeWidth
+        {
+            get { return caca_get_event_resize_width(cevent); }
+        }
+
+        [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern int caca_get_event_resize_height(IntPtr ev);
+        public int resizeHeight
+        {
+            get { return caca_get_event_resize_height(cevent); }
+        }
     }
+
+    public unsafe class CacaDisplay : IDisposable
+    {
+        private IntPtr _cv;
+        private IntPtr _dp;
+
+        [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern IntPtr caca_create_display(IntPtr cv);
+        public CacaDisplay(CuculCanvas cv)
+        {
+            _cv = cv._cv;
+            _dp = caca_create_display(_cv);
+        }
+
+        [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern void caca_free_display(IntPtr dp);
+        public void Dispose()
+        {
+            caca_free_display(_dp);
+            GC.SuppressFinalize(this);
+        }
+
+        [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern void caca_refresh_display(IntPtr dp);
+        public void Refresh()
+        {
+            caca_refresh_display(_dp);
+        }
+
+        [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern void caca_set_display_time(IntPtr dp, int d);
+        [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern int caca_get_display_time(IntPtr dp);
+        public int displayTime
+        {
+            get { return caca_get_display_time(_dp); }
+            set { caca_set_display_time(_dp, value); }
+        }
+
+        [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern int caca_get_event(IntPtr dp, int t,
+                                                 IntPtr cevent,
+                                                 int timeout);
+        public CacaEvent getEvent(CacaEventType t, int timeout)
+        {
+            CacaEvent e = new CacaEvent();
+            caca_get_event(_dp, (int)t, e.cevent, timeout);
+            return e;
+        }
+
+        [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern int caca_get_display_width(IntPtr dp);
+        public int width
+        {
+            get { return caca_get_display_width(_dp); }
+        }
+
+        [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern int caca_get_display_height(IntPtr dp);
+        public int height
+        {
+            get { return caca_get_display_height(_dp); }
+        }
+
+        [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern int caca_set_display_title(IntPtr dp, string t);
+        public string title
+        {
+            set { caca_set_display_title(_dp, value); }
+        }
+
+        [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern void caca_set_mouse(IntPtr k, bool status);
+        public bool mouse
+        {
+            set { caca_set_mouse(_dp, value); }
+        }
+
+        [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern int caca_get_mouse_x(IntPtr k);
+        public int mouseX
+        {
+            get { return caca_get_mouse_x(_dp); }
+        }
+
+        [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern int caca_get_mouse_y(IntPtr k);
+        public int mouseY
+        {
+            get { return caca_get_mouse_y(_dp); }
+        }
+
+        [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern void caca_set_cursor(IntPtr k, bool status);
+        public bool cursor
+        {
+            set { caca_set_cursor(_dp, value); }
+        }
     }
 }
