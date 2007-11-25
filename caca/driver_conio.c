@@ -29,10 +29,9 @@
 
 #include <stdlib.h>
 
+#include "cucul.h"
 #include "caca.h"
 #include "caca_internals.h"
-#include "cucul.h"
-#include "cucul_internals.h"
 
 struct driver_private
 {
@@ -71,7 +70,7 @@ static int conio_end_graphics(caca_display_t *dp)
     _wscroll = 1;
     textcolor((enum COLORS)WHITE);
     textbackground((enum COLORS)BLACK);
-    gotoxy(dp->cv->width, dp->cv->height);
+    gotoxy(cucul_get_canvas_width(dp->cv), cucul_get_canvas_height(dp->cv));
     cputs("\r\n");
     _setcursortype(_NORMALCURSOR);
 
@@ -89,23 +88,25 @@ static int conio_set_display_title(caca_display_t *dp, char const *title)
 static unsigned int conio_get_display_width(caca_display_t const *dp)
 {
     /* Fallback to a 6x10 font */
-    return dp->cv->width * 6;
+    return cucul_get_canvas_width(dp->cv) * 6;
 }
 
 static unsigned int conio_get_display_height(caca_display_t const *dp)
 {
     /* Fallback to a 6x10 font */
-    return dp->cv->height * 10;
+    return cucul_get_canvas_height(dp->cv) * 10;
 }
 
 static void conio_display(caca_display_t *dp)
 {
     char *screen = dp->drv.p->screen;
-    uint32_t *attrs = dp->cv->attrs;
-    uint32_t *chars = dp->cv->chars;
+    uint32_t const *chars = (uint32_t const *)cucul_get_canvas_chars(dp->cv);
+    uint32_t const *attrs = (uint32_t const *)cucul_get_canvas_attrs(dp->cv);
+    unsigned int width = cucul_get_canvas_width(dp->cv);
+    unsigned int height = cucul_get_canvas_height(dp->cv);
     unsigned int n;
 
-    for(n = dp->cv->height * dp->cv->width; n--; )
+    for(n = height * width; n--; )
     {
         char ch = cucul_utf32_to_cp437(*chars++);
         if(n && *chars == CUCUL_MAGIC_FULLWIDTH)
@@ -129,8 +130,8 @@ static void conio_display(caca_display_t *dp)
 static void conio_handle_resize(caca_display_t *dp)
 {
     /* We know nothing about our window */
-    dp->resize.w = dp->cv->width;
-    dp->resize.h = dp->cv->height;
+    dp->resize.w = cucul_get_canvas_width(dp->cv);
+    dp->resize.h = cucul_get_canvas_height(dp->cv);
 }
 
 static int conio_get_event(caca_display_t *dp, caca_privevent_t *ev)

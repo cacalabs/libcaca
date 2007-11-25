@@ -51,10 +51,9 @@
 #   include <termios.h>
 #endif
 
+#include "cucul.h"
 #include "caca.h"
 #include "caca_internals.h"
-#include "cucul.h"
-#include "cucul_internals.h"
 
 /*
  * Emulation for missing ACS_* in older curses
@@ -331,27 +330,30 @@ static int ncurses_set_display_title(caca_display_t *dp, char const *title)
 static unsigned int ncurses_get_display_width(caca_display_t const *dp)
 {
     /* Fallback to a 6x10 font */
-    return dp->cv->width * 6;
+    return cucul_get_canvas_width(dp->cv) * 6;
 }
 
 static unsigned int ncurses_get_display_height(caca_display_t const *dp)
 {
     /* Fallback to a 6x10 font */
-    return dp->cv->height * 10;
+    return cucul_get_canvas_height(dp->cv) * 10;
 }
 
 static void ncurses_display(caca_display_t *dp)
 {
+    uint32_t const *cvchars = (uint32_t const *)cucul_get_canvas_chars(dp->cv);
+    uint32_t const *cvattrs = (uint32_t const *)cucul_get_canvas_attrs(dp->cv);
+    unsigned int width = cucul_get_canvas_width(dp->cv);
+    unsigned int height = cucul_get_canvas_height(dp->cv);
     int x, y;
-    uint32_t *attrs = dp->cv->attrs;
-    uint32_t *chars = dp->cv->chars;
-    for(y = 0; y < (int)dp->cv->height; y++)
+
+    for(y = 0; y < (int)height; y++)
     {
         move(y, 0);
-        for(x = dp->cv->width; x--; )
+        for(x = width; x--; )
         {
-            attrset(dp->drv.p->attr[cucul_attr_to_ansi(*attrs++)]);
-            ncurses_write_utf32(*chars++);
+            attrset(dp->drv.p->attr[cucul_attr_to_ansi(*cvattrs++)]);
+            ncurses_write_utf32(*cvchars++);
         }
     }
     
@@ -382,8 +384,8 @@ static void ncurses_handle_resize(caca_display_t *dp)
 #endif
 
     /* Fallback */
-    dp->resize.w = dp->cv->width;
-    dp->resize.h = dp->cv->height;
+    dp->resize.w = cucul_get_canvas_width(dp->cv);
+    dp->resize.h = cucul_get_canvas_height(dp->cv);
 }
 
 static int ncurses_get_event(caca_display_t *dp, caca_privevent_t *ev)

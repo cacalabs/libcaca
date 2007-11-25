@@ -33,10 +33,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "caca.h"
-#include "caca_internals.h"
 #include "cucul.h"
 #include "cucul_internals.h"
+#include "caca.h"
+#include "caca_internals.h"
 
 /*
  * Local functions
@@ -77,7 +77,8 @@ static int x11_init_graphics(caca_display_t *dp)
     int (*old_error_handler)(Display *, XErrorEvent *);
     char const *fonts[] = { NULL, "8x13bold", "fixed" }, **parser;
     char const *geometry;
-    unsigned int width = dp->cv->width, height = dp->cv->height;
+    unsigned int width = cucul_get_canvas_width(dp->cv);
+    unsigned int height = cucul_get_canvas_height(dp->cv);
     int i;
 
     dp->drv.p = malloc(sizeof(struct driver_private));
@@ -90,6 +91,8 @@ static int x11_init_graphics(caca_display_t *dp)
 
     dp->resize.allow = 1;
     cucul_set_canvas_size(dp->cv, width ? width : 80, height ? height : 32);
+    width = cucul_get_canvas_width(dp->cv);
+    height = cucul_get_canvas_height(dp->cv);
     dp->resize.allow = 0;
 
     dp->drv.p->dpy = XOpenDisplay(NULL);
@@ -192,8 +195,8 @@ static int x11_init_graphics(caca_display_t *dp)
 
     dp->drv.p->window =
         XCreateWindow(dp->drv.p->dpy, DefaultRootWindow(dp->drv.p->dpy), 0, 0,
-                      dp->cv->width * dp->drv.p->font_width,
-                      dp->cv->height * dp->drv.p->font_height,
+                      width * dp->drv.p->font_width,
+                      height * dp->drv.p->font_height,
                       0, 0, InputOutput, 0,
                       CWBackingStore | CWBackPixel | CWEventMask,
                       &x11_winattr);
@@ -240,10 +243,10 @@ static int x11_init_graphics(caca_display_t *dp)
     XSync(dp->drv.p->dpy, False);
 
     dp->drv.p->pixmap = XCreatePixmap(dp->drv.p->dpy, dp->drv.p->window,
-                                   dp->cv->width * dp->drv.p->font_width,
-                                   dp->cv->height * dp->drv.p->font_height,
-                                   DefaultDepth(dp->drv.p->dpy,
-                                            DefaultScreen(dp->drv.p->dpy)));
+                                      width * dp->drv.p->font_width,
+                                      height * dp->drv.p->font_height,
+                                      DefaultDepth(dp->drv.p->dpy,
+                                      DefaultScreen(dp->drv.p->dpy)));
     dp->drv.p->pointer = None;
 
     dp->drv.p->cursor_flags = 0;
@@ -278,29 +281,33 @@ static int x11_set_display_title(caca_display_t *dp, char const *title)
 
 static unsigned int x11_get_display_width(caca_display_t const *dp)
 {
-    return dp->cv->width * dp->drv.p->font_width;
+    return cucul_get_canvas_width(dp->cv) * dp->drv.p->font_width;
 }
 
 static unsigned int x11_get_display_height(caca_display_t const *dp)
 {
-    return dp->cv->height * dp->drv.p->font_height;
+    return cucul_get_canvas_height(dp->cv) * dp->drv.p->font_height;
 }
 
 static void x11_display(caca_display_t *dp)
 {
+    uint32_t const *cvchars = (uint32_t const *)cucul_get_canvas_chars(dp->cv);
+    uint32_t const *cvattrs = (uint32_t const *)cucul_get_canvas_attrs(dp->cv);
+    unsigned int width = cucul_get_canvas_width(dp->cv);
+    unsigned int height = cucul_get_canvas_height(dp->cv);
     unsigned int x, y, len;
 
     /* First draw the background colours. Splitting the process in two
      * loops like this is actually slightly faster. */
-    for(y = 0; y < dp->cv->height; y++)
+    for(y = 0; y < height; y++)
     {
-        for(x = 0; x < dp->cv->width; x += len)
+        for(x = 0; x < width; x += len)
         {
-            uint32_t *attrs = dp->cv->attrs + x + y * dp->cv->width;
+            uint32_t const *attrs = cvattrs + x + y * width;
             uint16_t bg = _cucul_attr_to_rgb12bg(*attrs);
 
             len = 1;
-            while(x + len < dp->cv->width
+            while(x + len < width
                    && _cucul_attr_to_rgb12bg(attrs[len]) == bg)
                 len++;
 
@@ -315,14 +322,14 @@ static void x11_display(caca_display_t *dp)
     }
 
     /* Then print the foreground characters */
-    for(y = 0; y < dp->cv->height; y++)
+    for(y = 0; y < height; y++)
     {
         unsigned int yoff = (y + 1) * dp->drv.p->font_height
                                     - dp->drv.p->font_offset;
-        uint32_t *chars = dp->cv->chars + y * dp->cv->width;
-        uint32_t *attrs = dp->cv->attrs + y * dp->cv->width;
+        uint32_t const *chars = cvchars + y * width;
+        uint32_t const *attrs = cvattrs + y * width;
 
-        for(x = 0; x < dp->cv->width; x++, chars++, attrs++)
+        for(x = 0; x < width; x++, chars++, attrs++)
         {
             XSetForeground(dp->drv.p->dpy, dp->drv.p->gc,
                            dp->drv.p->colors[_cucul_attr_to_rgb12fg(*attrs)]);
@@ -348,8 +355,8 @@ static void x11_display(caca_display_t *dp)
 
     XCopyArea(dp->drv.p->dpy, dp->drv.p->pixmap, dp->drv.p->window,
               dp->drv.p->gc, 0, 0,
-              dp->cv->width * dp->drv.p->font_width,
-              dp->cv->height * dp->drv.p->font_height,
+              width * dp->drv.p->font_width,
+              height * dp->drv.p->font_height,
               0, 0);
     XFlush(dp->drv.p->dpy);
 }
@@ -373,6 +380,8 @@ static void x11_handle_resize(caca_display_t *dp)
 
 static int x11_get_event(caca_display_t *dp, caca_privevent_t *ev)
 {
+    unsigned int width = cucul_get_canvas_width(dp->cv);
+    unsigned int height = cucul_get_canvas_height(dp->cv);
     XEvent xevent;
     char key;
 
@@ -386,8 +395,8 @@ static int x11_get_event(caca_display_t *dp, caca_privevent_t *ev)
         {
             XCopyArea(dp->drv.p->dpy, dp->drv.p->pixmap,
                       dp->drv.p->window, dp->drv.p->gc, 0, 0,
-                      dp->cv->width * dp->drv.p->font_width,
-                      dp->cv->height * dp->drv.p->font_height, 0, 0);
+                      width * dp->drv.p->font_width,
+                      height * dp->drv.p->font_height, 0, 0);
             continue;
         }
 
@@ -401,7 +410,7 @@ static int x11_get_event(caca_display_t *dp, caca_privevent_t *ev)
             h = (xevent.xconfigure.height + dp->drv.p->font_height / 3)
                   / dp->drv.p->font_height;
 
-            if(!w || !h || (w == dp->cv->width && h == dp->cv->height))
+            if(!w || !h || (w == width && h == height))
                 continue;
 
             dp->resize.w = w;
@@ -417,10 +426,10 @@ static int x11_get_event(caca_display_t *dp, caca_privevent_t *ev)
             unsigned int newx = xevent.xmotion.x / dp->drv.p->font_width;
             unsigned int newy = xevent.xmotion.y / dp->drv.p->font_height;
 
-            if(newx >= dp->cv->width)
-                newx = dp->cv->width - 1;
-            if(newy >= dp->cv->height)
-                newy = dp->cv->height - 1;
+            if(newx >= width)
+                newx = width - 1;
+            if(newy >= height)
+                newy = height - 1;
 
             if(dp->mouse.x == newx && dp->mouse.y == newy)
                 continue;

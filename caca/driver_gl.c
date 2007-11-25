@@ -36,11 +36,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "caca.h"
-#include "caca_internals.h"
 #include "cucul.h"
 #include "cucul_internals.h"
-
+#include "caca.h"
+#include "caca_internals.h"
 
 /*
  * Global variables
@@ -89,7 +88,8 @@ static int gl_init_graphics(caca_display_t *dp)
     char const *geometry;
     char *argv[2] = { "", NULL };
     char const * const * fonts;
-    unsigned int width = dp->cv->width, height = dp->cv->height;
+    unsigned int width = cucul_get_canvas_width(dp->cv);
+    unsigned int height = cucul_get_canvas_height(dp->cv);
     int argc = 1;
 
     dp->drv.p = malloc(sizeof(struct driver_private));
@@ -123,8 +123,8 @@ static int gl_init_graphics(caca_display_t *dp)
     dp->drv.p->font_width = cucul_get_font_width(dp->drv.p->f);
     dp->drv.p->font_height = cucul_get_font_height(dp->drv.p->f);
 
-    dp->drv.p->width = dp->cv->width * dp->drv.p->font_width;
-    dp->drv.p->height = dp->cv->height * dp->drv.p->font_height;
+    dp->drv.p->width = cucul_get_canvas_width(dp->cv) * dp->drv.p->font_width;
+    dp->drv.p->height = cucul_get_canvas_height(dp->cv) * dp->drv.p->font_height;
 
 #ifdef HAVE_GLUTCLOSEFUNC
     dp->drv.p->close = 0;
@@ -211,6 +211,9 @@ static unsigned int gl_get_display_height(caca_display_t const *dp)
 
 static void gl_display(caca_display_t *dp)
 {
+    uint32_t const *cvchars = (uint32_t const *)cucul_get_canvas_chars(dp->cv);
+    uint32_t const *cvattrs = (uint32_t const *)cucul_get_canvas_attrs(dp->cv);
+    unsigned int width = cucul_get_canvas_width(dp->cv);
     unsigned int x, y, line;
 
     glClear(GL_COLOR_BUFFER_BIT);
@@ -219,7 +222,7 @@ static void gl_display(caca_display_t *dp)
     line = 0;
     for(y = 0; y < dp->drv.p->height; y += dp->drv.p->font_height)
     {
-        uint32_t *attrs = dp->cv->attrs + line * dp->cv->width;
+        uint32_t const *attrs = cvattrs + line * width;
 
         /* FIXME: optimise using stride */
         for(x = 0; x < dp->drv.p->width; x += dp->drv.p->font_width)
@@ -249,8 +252,8 @@ static void gl_display(caca_display_t *dp)
     line = 0;
     for(y = 0; y < dp->drv.p->height; y += dp->drv.p->font_height, line++)
     {
-        uint32_t *attrs = dp->cv->attrs + line * dp->cv->width;
-        uint32_t *chars = dp->cv->chars + line * dp->cv->width;
+        uint32_t const *attrs = cvattrs + line * width;
+        uint32_t const *chars = cvchars + line * width;
 
         for(x = 0; x < dp->drv.p->width; x += dp->drv.p->font_width, attrs++)
         {
@@ -344,8 +347,8 @@ static int gl_get_event(caca_display_t *dp, caca_privevent_t *ev)
     if(dp->resize.resized)
     {
         ev->type = CACA_EVENT_RESIZE;
-        ev->data.resize.w = dp->cv->width;
-        ev->data.resize.h = dp->cv->height;
+        ev->data.resize.w = cucul_get_canvas_width(dp->cv);
+        ev->data.resize.h = cucul_get_canvas_height(dp->cv);
         return 1;
     }
 

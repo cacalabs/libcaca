@@ -21,10 +21,9 @@
 
 #if defined(USE_VGA)
 
+#include "cucul.h"
 #include "caca.h"
 #include "caca_internals.h"
-#include "cucul.h"
-#include "cucul_internals.h"
 
 /* Address of the VGA screen */
 #define VGA_SCREEN ((char *)(intptr_t)0x000b8000)
@@ -118,31 +117,33 @@ static unsigned int vga_get_display_height(caca_display_t const *dp)
 static void vga_display(caca_display_t *dp)
 {
     char *screen = (char *)(intptr_t)0x000b8000;
-    uint32_t *attrs = dp->cv->attrs;
-    uint32_t *chars = dp->cv->chars;
+    uint32_t const *cvchars = (uint32_t const *)cucul_get_canvas_chars(dp->cv);
+    uint32_t const *cvattrs = (uint32_t const *)cucul_get_canvas_attrs(dp->cv);
+    unsigned int width = cucul_get_canvas_width(dp->cv);
+    unsigned int height = cucul_get_canvas_height(dp->cv);
     int n;
 
-    for(n = dp->cv->height * dp->cv->width; n--; )
+    for(n = height * width; n--; )
     {
-        char ch = cucul_utf32_to_cp437(*chars++);
-        if(n && *chars == CUCUL_MAGIC_FULLWIDTH)
+        char ch = cucul_utf32_to_cp437(*cvchars++);
+        if(n && *cvchars == CUCUL_MAGIC_FULLWIDTH)
         {
             *screen++ = '[';
-            *screen++ = cucul_attr_to_ansi(*attrs++);
+            *screen++ = cucul_attr_to_ansi(*cvattrs++);
             ch = ']';
-            chars++;
+            cvchars++;
             n--;
         }
         *screen++ = ch;
-        *screen++ = cucul_attr_to_ansi(*attrs++);
+        *screen++ = cucul_attr_to_ansi(*cvattrs++);
     }
 }
 
 static void vga_handle_resize(caca_display_t *dp)
 {
     /* We know nothing about our window */
-    dp->resize.w = dp->cv->width;
-    dp->resize.h = dp->cv->height;
+    dp->resize.w = cucul_get_canvas_width(dp->cv);
+    dp->resize.h = cucul_get_canvas_height(dp->cv);
 }
 
 static int vga_get_event(caca_display_t *dp, caca_privevent_t *ev)

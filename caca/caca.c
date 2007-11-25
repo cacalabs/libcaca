@@ -33,7 +33,6 @@
 #endif
 
 #include "cucul.h"
-#include "cucul_internals.h"
 #include "caca.h"
 #include "caca_internals.h"
 
@@ -129,8 +128,8 @@ caca_display_t * caca_create_display(cucul_canvas_t *cv)
     dp->lastticks = 0;
 
     /* Mouse position */
-    dp->mouse.x = dp->cv->width / 2;
-    dp->mouse.y = dp->cv->height / 2;
+    dp->mouse.x = cucul_get_canvas_width(dp->cv) / 2;
+    dp->mouse.y = cucul_get_canvas_height(dp->cv) / 2;
 
     /* Resize events */
     dp->resize.resized = 0;

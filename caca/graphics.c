@@ -25,10 +25,9 @@
 #   include <string.h>
 #endif
 
+#include "cucul.h"
 #include "caca.h"
 #include "caca_internals.h"
-#include "cucul.h"
-#include "cucul_internals.h"
 
 /** \brief Set the display title.
  *
@@ -237,7 +236,8 @@ void _caca_handle_resize(caca_display_t *dp)
     dp->drv.handle_resize(dp);
 
     /* Tell libcucul we changed size */
-    if(dp->resize.w != dp->cv->width || dp->resize.h != dp->cv->height)
+    if(dp->resize.w != cucul_get_canvas_width(dp->cv)
+        || dp->resize.h != cucul_get_canvas_height(dp->cv))
     {
         dp->resize.allow = 1;
         cucul_set_canvas_size(dp->cv, dp->resize.w, dp->resize.h);

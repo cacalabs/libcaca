@@ -237,6 +237,44 @@ unsigned int cucul_get_canvas_height(cucul_canvas_t const *cv)
     return cv->height;
 }
 
+/** \brief Get the canvas character array.
+ *
+ *  Return the current canvas' internal character array. The array elements
+ *  consist in native endian 32-bit Unicode values as returned by
+ *  cucul_get_char().
+ *
+ *  This function is only useful for display drivers such as the \e libcaca
+ *  library.
+ *
+ *  This function never fails.
+ *
+ *  \param cv A libcucul canvas.
+ *  \return The canvas character array.
+ */
+unsigned char const * cucul_get_canvas_chars(cucul_canvas_t const *cv)
+{
+    return (unsigned char const *)cv->chars;
+}
+
+/** \brief Get the canvas attribute array.
+ *
+ *  Returns the current canvas' internal attribute array. The array elements
+ *  consist in native endian 32-bit attribute values as returned by
+ *  cucul_get_attr().
+ *
+ *  This function is only useful for display drivers such as the \e libcaca
+ *  library.
+ *
+ *  This function never fails.
+ *
+ *  \param cv A libcucul canvas.
+ *  \return The canvas attribute array.
+ */
+unsigned char const * cucul_get_canvas_attrs(cucul_canvas_t const *cv)
+{
+    return (unsigned char const *)cv->attrs;
+}
+
 /** \brief Uninitialise \e libcucul.
  *
  *  Free all resources allocated by cucul_create_canvas(). After

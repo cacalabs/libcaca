@@ -24,14 +24,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "cucul.h"
 #include "caca.h"
 #include "caca_internals.h"
-#include "cucul.h"
-#include "cucul_internals.h"
 
 static int raw_init_graphics(caca_display_t *dp)
 {
-    unsigned int width = dp->cv->width, height = dp->cv->height;
+    unsigned int width = cucul_get_canvas_width(dp->cv);
+    unsigned int height = cucul_get_canvas_height(dp->cv);
     char const *geometry;
 
 #if defined(HAVE_GETENV)

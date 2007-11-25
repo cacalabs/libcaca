@@ -25,7 +25,6 @@
 #endif
 
 #include "cucul.h"
-#include "cucul_internals.h"
 #include "caca.h"
 #include "caca_internals.h"
 
@@ -131,8 +130,10 @@ int caca_get_event(caca_display_t *dp, unsigned int event_mask,
  */
 unsigned int caca_get_mouse_x(caca_display_t const *dp)
 {
-    if(dp->mouse.x >= dp->cv->width)
-        return dp->cv->width - 1;
+    unsigned int width = cucul_get_canvas_width(dp->cv);
+
+    if(dp->mouse.x >= width)
+        return width - 1;
 
     return dp->mouse.x;
 }
@@ -151,8 +152,10 @@ unsigned int caca_get_mouse_x(caca_display_t const *dp)
  */
 unsigned int caca_get_mouse_y(caca_display_t const *dp)
 {
-    if(dp->mouse.y >= dp->cv->height)
-        return dp->cv->height - 1;
+    unsigned int height = cucul_get_canvas_height(dp->cv);
+
+    if(dp->mouse.y >= height)
+        return height - 1;
 
     return dp->mouse.y;
 }
@@ -333,8 +336,8 @@ static int _get_next_event(caca_display_t *dp, caca_privevent_t *ev)
         dp->resize.resized = 0;
         _caca_handle_resize(dp);
         ev->type = CACA_EVENT_RESIZE;
-        ev->data.resize.w = dp->cv->width;
-        ev->data.resize.h = dp->cv->height;
+        ev->data.resize.w = cucul_get_canvas_width(dp->cv);
+        ev->data.resize.h = cucul_get_canvas_height(dp->cv);
         return 1;
     }
 
