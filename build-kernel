@@ -33,6 +33,6 @@ gcc $LDFLAGS -o src/cacademo kernel/multiboot.o kernel/kernel.o src/cacademo.o c
 objcopy -O binary src/cacademo cacademo.boot
 
 # For further development: create floppy images using the kernel
-gcc -traditional -c -o bootsect.o /usr/src/linux/arch/i386/boot/bootsect.S
+gcc -traditional -c -o bootsect.o kernel/bootsect.S
 ld -Ttext 0x0 -s --oformat binary bootsect.o -o cacademo.img
 
