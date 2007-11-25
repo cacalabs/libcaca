@@ -56,7 +56,7 @@ namespace Cucul
                          BLINK = 0x08;
     }
 
-    public unsafe class CuculCanvas : IDisposable
+    public class CuculCanvas : IDisposable
     {
         public readonly IntPtr _cv;
 
@@ -403,7 +403,7 @@ namespace Cucul
         public int ditherBitmap(int x, int y, int w, int h, CuculDither d,
                                 object data)
         {
-            GCHandle gch = GCHandle.Alloc(data);
+            GCHandle gch = GCHandle.Alloc(data, GCHandleType.Pinned);
             int ret = cucul_dither_bitmap(_cv, x, y, w, h, d._dither,
                                           gch.AddrOfPinnedObject());
             gch.Free();
@@ -411,7 +411,7 @@ namespace Cucul
         }
     }
 
-    public unsafe class CuculAttr
+    public class CuculAttr
     {
         private int _attr;
 
@@ -445,7 +445,7 @@ namespace Cucul
         }
     }
 
-    public unsafe class CuculDither : IDisposable
+    public class CuculDither : IDisposable
     {
         public readonly IntPtr _dither;
 

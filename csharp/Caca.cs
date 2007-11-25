@@ -193,7 +193,7 @@ namespace Caca
         }
     }
 
-    public unsafe class CacaDisplay : IDisposable
+    public class CacaDisplay : IDisposable
     {
         private IntPtr _cv;
         private IntPtr _dp;
