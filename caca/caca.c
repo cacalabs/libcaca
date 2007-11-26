@@ -198,6 +198,19 @@ cucul_canvas_t * caca_get_canvas(caca_display_t *dp)
     return dp->cv;
 }
 
+/** \brief Return the \e libcaca version.
+ *
+ *  Return a read-only string with the \e libcaca version information.
+ *
+ *  This function never fails.
+ *
+ *  \return The \e libcaca version information.
+ */
+char const * caca_get_version(void)
+{
+    return VERSION;
+}
+
 /*
  * XXX: The following functions are local.
  */

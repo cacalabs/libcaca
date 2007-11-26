@@ -96,3 +96,8 @@ void Caca::setMouse(int v)
     caca_set_mouse(dp, v);
 }
 
+const char * Caca::getVersion()
+{
+    return caca_get_version();
+}
+

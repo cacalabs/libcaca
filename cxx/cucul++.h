@@ -129,7 +129,6 @@ __class Cucul
     void drawTriangle(int, int, int, int, int, int, unsigned long int);
     void drawThinTriangle(int, int, int, int, int, int);
     void fillTriangle(int, int, int, int, int, int, unsigned long int);
-    int Rand(int, int);
     int setBoundaries(cucul_canvas_t *, int, int, unsigned int, unsigned int);
     unsigned int getFrameCount();
     int setFrame(unsigned int);
@@ -142,6 +141,8 @@ __class Cucul
     char const * const * getExportList(void);
     void *exportMemory(char const *, unsigned long int *);
 
+    static int Rand(int, int);
+    static char const * getVersion();
  protected:
     cucul_canvas_t *get_cucul_canvas_t();
 

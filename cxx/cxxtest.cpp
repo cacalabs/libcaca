@@ -12,8 +12,6 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
-#include "config.h"
-
 #include <iostream>
 
 #include <cucul++.h>
@@ -41,13 +39,13 @@ static char const pigstring[] =
 
 int main(int argc, char *argv[])
 {
-    Cucul *qq, *pig;
-    Caca  *kk;
+    Cucul *cv, *pig;
+    Caca  *dp;
 
     int x = 0, y = 0, ix = 1, iy = 1;
 
     try {
-        qq = new Cucul();
+        cv = new Cucul();
     }
     catch (int e) {
         cerr << "Error while initializing cucul (" << e << ")" << endl;
@@ -55,7 +53,7 @@ int main(int argc, char *argv[])
     }
 
     try {
-        kk = new Caca(qq);
+        dp = new Caca(cv);
     }
     catch(int e) {
         cerr << "Error while attaching cucul to caca (" << e << ")" << endl;
@@ -73,42 +71,42 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    kk->setDisplayTime(20000);
+    dp->setDisplayTime(20000);
 
-    while(!kk->getEvent(Event::CACA_EVENT_KEY_PRESS, NULL, 0))
+    while(!dp->getEvent(Event::CACA_EVENT_KEY_PRESS, NULL, 0))
     {
 
         /* In case of resize ...*/
-        if((x + pig->getWidth())-1 >= qq->getWidth() || x < 0 )
+        if((x + pig->getWidth())-1 >= cv->getWidth() || x < 0 )
             x = 0;
-        if((y + pig->getHeight())-1 >= qq->getHeight() || y < 0 )
+        if((y + pig->getHeight())-1 >= cv->getHeight() || y < 0 )
             y = 0;
 
-        qq->Clear();
+        cv->Clear();
 
         /* Draw pig */
-        qq->Blit(x, y, pig, NULL);
+        cv->Blit(x, y, pig, NULL);
 
         /* printf works */
-        qq->setColorANSI(CUCUL_LIGHTBLUE, CUCUL_BLACK);
-        qq->Printf(qq->getWidth() / 2 - 10, qq->getHeight() / 2,
-                   "Powered by libcaca %s", VERSION);
+        cv->setColorANSI(CUCUL_LIGHTBLUE, CUCUL_BLACK);
+        cv->Printf(cv->getWidth() / 2 - 10, cv->getHeight() / 2,
+                   "Powered by libcaca %s", dp->getVersion());
 
         /* Blit */
-        kk->Display();
+        dp->Display();
 
         x += ix;
         y += iy;
 
-        if(x + pig->getWidth() >= qq->getWidth() || x < 0 )
+        if(x + pig->getWidth() >= cv->getWidth() || x < 0 )
             ix = -ix;
-        if(y + pig->getHeight() >= qq->getHeight() || y < 0 )
+        if(y + pig->getHeight() >= cv->getHeight() || y < 0 )
             iy = -iy;
 
     }
 
-    delete kk;
-    delete qq;
+    delete dp;
+    delete cv;
 
     return 0;
 }

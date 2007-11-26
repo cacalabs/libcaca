@@ -78,6 +78,7 @@ __class Caca
     unsigned int getMouseY();
     void setMouse(int);
 
+    static char const * getVersion();
  private:
     caca_display_t *dp;
 };

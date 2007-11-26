@@ -334,6 +334,19 @@ int cucul_rand(int min, int max)
     return min + (int)((1.0 * (max - min)) * rand() / (RAND_MAX + 1.0));
 }
 
+/** \brief Return the \e libcucul version.
+ *
+ *  Return a read-only string with the \e libcucul version information.
+ *
+ *  This function never fails.
+ *
+ *  \return The \e libcucul version information.
+ */
+char const * cucul_get_version(void)
+{
+    return VERSION;
+}
+
 /*
  * XXX: The following functions are local.
  */

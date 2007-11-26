@@ -164,6 +164,7 @@ __extern unsigned int caca_get_display_height(caca_display_t const *);
 __extern int caca_set_display_title(caca_display_t *, char const *);
 __extern int caca_set_mouse(caca_display_t *, int);
 __extern int caca_set_cursor(caca_display_t *, int);
+__extern char const * caca_get_version(void);
 /*  @} */
 
 /** \defgroup caca_event libcaca event handling

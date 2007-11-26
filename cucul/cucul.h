@@ -93,6 +93,7 @@ __extern unsigned char const * cucul_get_canvas_chars(cucul_canvas_t const *);
 __extern unsigned char const * cucul_get_canvas_attrs(cucul_canvas_t const *);
 __extern int cucul_free_canvas(cucul_canvas_t *);
 __extern int cucul_rand(int, int);
+__extern char const * cucul_get_version(void);
 /*  @} */
 
 /** \defgroup cucul_canvas libcucul canvas drawing

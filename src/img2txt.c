@@ -88,8 +88,8 @@ static void version(void)
     "\n"
     "The latest version of img2txt is available from the web site,\n"
     "        http://libcaca.zoy.org/ in the libcaca package.\n"
-    "\n"
-    , VERSION, __DATE__);
+    "\n",
+    cucul_get_version(), __DATE__);
 }
 int main(int argc, char **argv)
 {

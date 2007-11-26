@@ -236,6 +236,11 @@ int Cucul::Rand(int min, int max)
     return cucul_rand(min, max);
 }
 
+const char * Cucul::getVersion()
+{
+    return cucul_get_version();
+}
+
 int Cucul::setAttr(unsigned long int attr)
 {
     return cucul_set_attr(cv, attr);
