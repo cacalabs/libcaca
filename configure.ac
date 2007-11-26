@@ -334,7 +334,8 @@ AM_CONDITIONAL(USE_CXX, test "${ac_cv_my_have_cxx}" = "yes")
 ac_cv_my_have_csharp="no"
 if test "${enable_csharp}" != "no"; then
   AC_PATH_PROG(GMCS, gmcs, no)
-  if test "${GMCS}" != "no"; then
+  AC_PATH_PROG(GACUTIL, gacutil, no)
+  if test "${GMCS}" != "no" -a "${GACUTIL}" != "no"; then
     ac_cv_my_have_csharp="yes"
     CACA_BINDINGS="${CACA_BINDINGS} C#"
   fi
