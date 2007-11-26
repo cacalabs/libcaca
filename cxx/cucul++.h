@@ -26,13 +26,11 @@
 
 #include <cucul.h>
 
-#if !defined(_DOXYGEN_SKIP_ME)
-#   undef __class
-#   if defined(_WIN32) && defined(__LIBCUCUL_PP__)
-#       define __class class __declspec(dllexport)
-#   else
-#       define __class class
-#   endif
+#undef __class
+#if defined(_WIN32) && defined(__LIBCUCUL_PP__)
+#   define __class class __declspec(dllexport)
+#else
+#   define __class class
 #endif
 
 class Cucul;

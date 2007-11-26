@@ -24,13 +24,11 @@
 #ifndef __CUCUL_H__
 #define __CUCUL_H__
 
-#if !defined(_DOXYGEN_SKIP_ME)
-#   undef __extern
-#   if defined(_WIN32) && defined(__LIBCUCUL__)
-#       define __extern extern __declspec(dllexport)
-#   else
-#       define __extern extern
-#   endif
+#undef __extern
+#if defined(_WIN32) && defined(__LIBCUCUL__)
+#   define __extern extern __declspec(dllexport)
+#else
+#   define __extern extern
 #endif
 
 /** libcucul API version */
