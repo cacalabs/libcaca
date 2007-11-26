@@ -122,6 +122,8 @@ int main(int argc, char *argv[])
     cucul_free_dither(right);
 
     caca_free_display(dp);
+    cucul_free_canvas(mask);
+    cucul_free_canvas(cw);
     cucul_free_canvas(cv);
 
     return 0;

@@ -128,6 +128,8 @@ int cucul_manage_canvas(cucul_canvas_t *cv, int (*callback)(void *), void *p)
         return -1;
     }
 
+    cv->resize_callback = callback;
+    cv->resize_data = p;
     cv->refcount = 1;
 
     return 0;

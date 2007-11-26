@@ -106,6 +106,7 @@ int main(int argc, char *argv[])
     }
 
     delete dp;
+    delete pig;
     delete cv;
 
     return 0;

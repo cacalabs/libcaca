@@ -111,6 +111,7 @@ int main(int argc, char **argv)
     }
 
     /* Clean up */
+    free(events);
     caca_free_display(dp);
     cucul_free_canvas(cv);
 
