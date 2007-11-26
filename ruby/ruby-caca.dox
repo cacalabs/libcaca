@@ -24,34 +24,41 @@ irb(main):005:1>   def Object.my_methods
 irb(main):006:2>     methods.sort - ancestors[1].methods
 irb(main):007:2>   end
 irb(main):008:1> end
+\endcode
 
-irb(main):009:0> Caca::Display.my_instance_methods
+\code
+irb(main):009:0> Caca.my_methods
+=> ["version"]
+\endcode
+
+\code
+irb(main):010:0> Caca::Display.my_instance_methods
 => ["get_event", "height", "mouse=", "mouse_x", "mouse_y", "refresh",
 "set_mouse", "set_time", "set_title", "time", "time=", "title=", "width"]
 \endcode
 
 \code
-irb(main):010:0> Caca::Event.constants
+irb(main):011:0> Caca::Event.constants
 => ["Key", "Quit", "TYPE", "Mouse", "Resize"]
 \endcode
 
 \code
-irb(main):011:0> Caca::Event.my_instance_methods
+irb(main):012:0> Caca::Event.my_instance_methods
 => ["quit?"]
 \endcode
 
 \code
-irb(main):012:0> Caca::Event::Key.my_instance_methods
+irb(main):013:0> Caca::Event::Key.my_instance_methods
 => ["ch", "utf32", "utf8"]
 \endcode
 
 \code
-irb(main):013:0> Caca::Event::Mouse.my_instance_methods
+irb(main):014:0> Caca::Event::Mouse.my_instance_methods
 => ["button", "x", "y"]
 \endcode
 
 \code
-irb(main):014:0> Caca::Event::Resize.my_instance_methods
+irb(main):015:0> Caca::Event::Resize.my_instance_methods
 => ["w", "h"]
 \endcode
 

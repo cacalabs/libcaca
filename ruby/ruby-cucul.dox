@@ -20,7 +20,9 @@ irb(main):005:1>   def Object.my_methods
 irb(main):006:2>     methods.sort - ancestors[1].methods
 irb(main):007:2>   end
 irb(main):008:1> end
+\endcode
 
+\code
 irb(main):009:0> Cucul.constants
 => ["BROWN", "BOLD", "GREEN", "LIGHTMAGENTA", "LIGHTBLUE", "BLINK",
 "MAGENTA", "DEFAULT", "TRANSPARENT", "BLUE", "LIGHTRED", "DARKGRAY",
@@ -29,12 +31,17 @@ irb(main):009:0> Cucul.constants
 \endcode
 
 \code
-irb(main):010:0> Cucul::Canvas.my_methods
+irb(main):010:0> Cucul.my_methods
+=> ["version"]
+\endcode
+
+\code
+irb(main):011:0> Cucul::Canvas.my_methods
 => ["export_list", "import_list"]
 \endcode
 
 \code
-irb(main):003:0> Cucul::Canvas.my_instance_methods
+irb(main):012:0> Cucul::Canvas.my_instance_methods
 => ["attr=", "blit", "clear", "create_frame", "cursor_x", "cursor_y",
 "dither_bitmap", "draw_box", "draw_circle", "draw_cp437_box", "draw_ellipse",
 "draw_line", "draw_polyline", "draw_thin_box", "draw_thin_ellipse",
@@ -51,17 +58,17 @@ irb(main):003:0> Cucul::Canvas.my_instance_methods
 \endcode
 
 \code
-irb(main):004:0> Cucul::Font.my_methods
+irb(main):013:0> Cucul::Font.my_methods
 => ["list"]
 \endcode
 
 \code
-irb(main):005:0> Cucul::Font.my_instance_methods
+irb(main):014:0> Cucul::Font.my_instance_methods
 => ["blocks", "height", "width"]
 \endcode
 
 \code
-irb(main):006:0> Cucul::Dither.my_instance_methods
+irb(main):015:0> Cucul::Dither.my_instance_methods
 => ["algorithm=", "algorithm_list", "antialias=", "antialias_list",
 "brightness=", "charset=", "charset_list", "color=", "color_list",
 "contrast=", "gamma=", "palette=", "set_algorithm", "set_antialias",

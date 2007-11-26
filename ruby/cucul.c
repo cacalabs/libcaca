@@ -16,9 +16,16 @@
 #include "cucul-dither.h"
 #include "cucul-font.h"
 
+static VALUE get_version(VALUE self)
+{
+    return rb_str_new2(cucul_get_version());
+}
+
 void Init_cucul()
 {
     VALUE mCucul = rb_define_module("Cucul");
+
+    rb_define_singleton_method(mCucul, "version", get_version, 0);
 
     rb_define_const(mCucul, "BLACK", INT2FIX(CUCUL_BLACK));
     rb_define_const(mCucul, "BLUE", INT2FIX(CUCUL_BLUE));

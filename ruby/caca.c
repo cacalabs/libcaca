@@ -15,9 +15,16 @@
 #include "caca-display.h"
 #include "caca-event.h"
 
+static VALUE get_version(VALUE self)
+{
+    return rb_str_new2(caca_get_version());
+}
+
 void Init_caca()
 {
     VALUE mCaca = rb_define_module("Caca");
+
+    rb_define_singleton_method(mCaca, "version", get_version, 0);
 
     Init_caca_display(mCaca);
     Init_caca_event(mCaca);
