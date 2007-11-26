@@ -33,9 +33,6 @@ class DemoCanvas : CuculCanvas
 
         table = new uint[16,16];
         d = new CuculDither(32, 16, 16, 16 * 4, 0xff0000, 0xff00, 0xff, 0x0);
-        for(int y = 0; y < 16; y++)
-            for(int x = 0; x < 16; x++)
-                table[x,y] = (uint)((x + y) << 16) | (uint)(x << 8) | (uint)(y);
     }
 
     public void Draw()
@@ -45,6 +42,23 @@ class DemoCanvas : CuculCanvas
 
         Clear();
 
+        double cos = Math.Cos(t / 500.0);
+        double sin = Math.Sin(t / 500.0);
+
+        for(int y = 0; y < 16; y++)
+            for(int x = 0; x < 16; x++)
+            {
+                double xt = (double)(x - 8);
+                double yt = (double)(y - 8);
+                int x2 = (int)(xt * cos + yt * sin + 8.0);
+                int y2 = (int)(xt * sin - yt * cos + 8.0);
+                if(x2 < 0) x2 = 0;
+                if(y2 < 0) y2 = 0;
+
+                table[x,y] = (uint)((x2 + y2) << 16)
+                              | (uint)(x2 << 8)
+                              | (uint)(y2);
+            }
         ditherBitmap(0, 0, width, height, d, table);
 
         setColorAnsi(Libcucul.WHITE, Libcucul.BLACK);
@@ -102,7 +116,7 @@ class Test
 {
     public static void Main()
     {
-        Console.WriteLine("libcaca .NET test");
+        Console.WriteLine("libcaca {0} .NET test", Libcaca.getVersion());
         Console.WriteLine("(c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>");
 
         /* Instanciate a cucul canvas */

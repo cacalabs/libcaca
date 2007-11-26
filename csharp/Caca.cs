@@ -21,6 +21,18 @@ using Cucul;
 
 namespace Caca
 {
+    /* Static libcaca stuff that does not fit in any object */
+    public static class Libcaca
+    {
+        [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern IntPtr caca_get_version();
+        public static string getVersion()
+        {
+            return Marshal.PtrToStringAnsi(caca_get_version());
+        }
+    }
+
     public enum CacaEventType
     {
         NONE =          0x0000,
@@ -148,7 +160,7 @@ namespace Caca
             get
             {
                 caca_get_event_key_utf8(cevent, utf8);
-                return Marshal.PtrToStringUni(utf8);
+                return Marshal.PtrToStringAnsi(utf8);
             }
         }
 

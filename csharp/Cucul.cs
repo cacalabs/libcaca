@@ -25,10 +25,17 @@ namespace Cucul
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int cucul_rand(int min, int max);
-
         public static int Rand(int min, int max)
         {
             return cucul_rand(min, max);
+        }
+
+        [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern IntPtr cucul_get_version();
+        public static string getVersion()
+        {
+            return Marshal.PtrToStringAnsi(cucul_get_version());
         }
 
         public const int BLACK = 0x00,
