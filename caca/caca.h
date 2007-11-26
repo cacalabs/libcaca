@@ -49,7 +49,9 @@ typedef struct caca_event caca_event_t;
 /** \brief Handling of user events.
  *
  *  This structure is filled by caca_get_event() when an event is received.
- *  The \e type field is always valid. */
+ *  It is an opaque structure that should only be accessed through
+ *  caca_event_get_type() and similar functions.
+ */
 struct caca_event
 {
     unsigned char opaque_structure[32];
