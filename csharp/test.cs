@@ -27,6 +27,7 @@ class DemoCanvas : CuculCanvas
 
     private DateTime startTime;
     private CuculDither d;
+    private CuculFont f;
 
     public DemoCanvas()
     {
@@ -35,6 +36,8 @@ class DemoCanvas : CuculCanvas
         image = new uint[16,16];
         d = new CuculDither(32, new Size(16, 16), 16 * 4,
                             0xff0000, 0xff00, 0xff, 0x0);
+        f = new CuculFont(CuculFont.getList()[0]);
+        f.getBlocks();
     }
 
     public void Draw()

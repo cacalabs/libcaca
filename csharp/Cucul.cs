@@ -717,5 +717,93 @@ namespace Cucul
 
         /* </FIXME> */
     }
+
+    public class CuculFont : IDisposable
+    {
+        private IntPtr _font;
+        private GCHandle _gch;
+
+        [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern IntPtr cucul_load_font(IntPtr data, int len);
+        public CuculFont(string s)
+        {
+            IntPtr name = Marshal.StringToHGlobalAnsi(s);
+            _font = cucul_load_font(name, 0);
+            Marshal.FreeHGlobal(name);
+        }
+
+        public CuculFont(byte[] buf)
+        {
+            GCHandle _gch = GCHandle.Alloc(buf, GCHandleType.Pinned);
+            _font = cucul_load_font(_gch.AddrOfPinnedObject(), buf.Length);
+        }
+
+        [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern int cucul_free_font(IntPtr d);
+        public void Dispose()
+        {
+            cucul_free_font(_font);
+            _gch.Free();
+            GC.SuppressFinalize(this);
+        }
+
+        [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern IntPtr cucul_get_font_list();
+        public static string[] getList()
+        {
+            IntPtr l = cucul_get_font_list();
+
+            int size;
+            for(size = 0; true; size++)
+                if(Marshal.ReadIntPtr(l, IntPtr.Size * size) == IntPtr.Zero)
+                    break;
+
+            string[] ret = new string[size];
+            for(int i = 0; i < size; i++)
+            {
+                IntPtr s = Marshal.ReadIntPtr(l, IntPtr.Size * i);
+                ret[i] = Marshal.PtrToStringAnsi(s);
+            }
+
+            return ret;
+        }
+
+        [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern int cucul_get_font_width(IntPtr font);
+        [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern int cucul_get_font_height(IntPtr font);
+        public Size Size
+        {
+            get { return new Size(cucul_get_font_width(_font),
+                                  cucul_get_font_height(_font)); }
+        }
+
+        [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern IntPtr cucul_get_font_blocks(IntPtr font);
+        public int[,] getBlocks()
+        {
+            IntPtr l = cucul_get_font_blocks(_font);
+
+            int size;
+            for(size = 1; true; size += 2)
+                if(Marshal.ReadIntPtr(l, IntPtr.Size * size) == IntPtr.Zero)
+                    break;
+
+            int[,] ret = new int[size,2];
+            for(int i = 0; i < size; i++)
+            {
+                ret[i,0] = (int)Marshal.ReadIntPtr(l, IntPtr.Size * i * 2);
+                ret[i,1] = (int)Marshal.ReadIntPtr(l, IntPtr.Size * i * 2 + 1);
+            }
+
+            return ret;
+        }
+    }
 }
 
