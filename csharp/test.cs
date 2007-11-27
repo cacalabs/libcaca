@@ -27,17 +27,25 @@ class DemoCanvas : CuculCanvas
 
     private DateTime startTime;
     private CuculDither d;
-    private CuculFont f;
+    private CuculCanvas scroll;
 
     public DemoCanvas()
     {
         startTime = DateTime.Now;
 
-        image = new uint[16,16];
-        d = new CuculDither(32, new Size(16, 16), 16 * 4,
-                            0xff0000, 0xff00, 0xff, 0x0);
-        f = new CuculFont(CuculFont.getList()[0]);
-        f.getBlocks();
+        string message = "LIBCACA *** 100% PURE WIN *** ";
+
+        scroll = new CuculCanvas(new Size(message.Length, 1));
+        scroll.setColorAnsi(Libcucul.WHITE, Libcucul.BLACK);
+        scroll.putStr(new Point(0, 0), message);
+
+        CuculFont f = new CuculFont(CuculFont.getList()[0]);
+        int w = f.Size.Width * message.Length;
+        int h = f.Size.Height;
+        image = new uint[w, h];
+        d = new CuculDither(32, new Size(w, h), w * 4,
+                            0xff0000, 0xff00, 0xff, 0xff000000);
+        f.Render(scroll, image, image.GetLength(0) * 4);
     }
 
     public void Draw()
@@ -47,24 +55,12 @@ class DemoCanvas : CuculCanvas
 
         Clear();
 
-        double cos = Math.Cos(t / 500.0);
-        double sin = Math.Sin(t / 500.0);
-
-        for(int y = 0; y < 16; y++)
-            for(int x = 0; x < 16; x++)
-            {
-                double xt = (double)(x - 8);
-                double yt = (double)(y - 8);
-                int x2 = (int)(xt * cos + yt * sin + 8.0);
-                int y2 = (int)(xt * sin - yt * cos + 8.0);
-                if(x2 < 0) x2 = 0;
-                if(y2 < 0) y2 = 0;
-
-                image[x,y] = (uint)((x2 + y2) << 16)
-                              | (uint)(x2 << 8)
-                              | (uint)(y2);
-            }
-        ditherBitmap(Rectangle, d, image);
+        int w = Size.Width;
+        int h = Size.Height;
+        int x = (int)(t / 10) % (6 * w);
+        int y = (int)(h * (2.0 + Math.Sin(t / 200.0)) / 4);
+        ditherBitmap(new Rectangle(- x, h / 2 - y, w * 6, y * 2), d, image);
+        ditherBitmap(new Rectangle(6 * w - x, h / 2 - y, w * 6, y * 2), d, image);
 
         setColorAnsi(Libcucul.WHITE, Libcucul.BLACK);
         for(int i = 0; i < barCount; i++)

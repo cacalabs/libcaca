@@ -804,6 +804,22 @@ namespace Cucul
 
             return ret;
         }
+
+        [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern int cucul_render_canvas(IntPtr cv, IntPtr f,
+                                                      IntPtr buf, int w, int h,
+                                                      int pitch);
+        public int Render(CuculCanvas cv, uint[,] buf, int pitch)
+        {
+            GCHandle gch = GCHandle.Alloc(buf, GCHandleType.Pinned);
+            int ret = cucul_render_canvas(cv._cv, _font,
+                                          gch.AddrOfPinnedObject(),
+                                          buf.GetLength(0), buf.GetLength(1),
+                                          pitch);
+            gch.Free();
+            return ret;
+        }
     }
 }
 
