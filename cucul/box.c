@@ -31,16 +31,19 @@
  *  This function never fails.
  *
  *  \param cv The handle to the libcucul canvas.
- *  \param x1 X coordinate of the upper-left corner of the box.
- *  \param y1 Y coordinate of the upper-left corner of the box.
- *  \param x2 X coordinate of the lower-right corner of the box.
- *  \param y2 Y coordinate of the lower-right corner of the box.
+ *  \param x X coordinate of the upper-left corner of the box.
+ *  \param y Y coordinate of the upper-left corner of the box.
+ *  \param w Width of the box.
+ *  \param h Height of the box.
  *  \param ch UTF-32 character to be used to draw the box.
  *  \return This function always returns 0.
  */
-int cucul_draw_box(cucul_canvas_t *cv, int x1, int y1, int x2, int y2, 
+int cucul_draw_box(cucul_canvas_t *cv, int x1, int y1, int w, int h, 
                    unsigned long int ch)
 {
+    int x2 = x1 + w - 1;
+    int y2 = y1 + h - 1;
+
     cucul_draw_line(cv, x1, y1, x1, y2, ch);
     cucul_draw_line(cv, x1, y2, x2, y2, ch);
     cucul_draw_line(cv, x2, y2, x2, y1, ch);
@@ -54,15 +57,18 @@ int cucul_draw_box(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
  *  This function never fails.
  *
  *  \param cv The handle to the libcucul canvas.
- *  \param x1 X coordinate of the upper-left corner of the box.
- *  \param y1 Y coordinate of the upper-left corner of the box.
- *  \param x2 X coordinate of the lower-right corner of the box.
- *  \param y2 Y coordinate of the lower-right corner of the box.
+ *  \param x X coordinate of the upper-left corner of the box.
+ *  \param y Y coordinate of the upper-left corner of the box.
+ *  \param w Width of the box.
+ *  \param h Height of the box.
  *  \return This function always returns 0.
  */
-int cucul_draw_thin_box(cucul_canvas_t *cv, int x1, int y1, int x2, int y2)
+int cucul_draw_thin_box(cucul_canvas_t *cv, int x1, int y1, int w, int h)
 {
     int x, y, xmax, ymax;
+
+    int x2 = x1 + w - 1;
+    int y2 = y1 + h - 1;
 
     if(x1 > x2)
     {
@@ -113,15 +119,18 @@ int cucul_draw_thin_box(cucul_canvas_t *cv, int x1, int y1, int x2, int y2)
  *  This function never fails.
  *
  *  \param cv The handle to the libcucul canvas.
- *  \param x1 X coordinate of the upper-left corner of the box.
- *  \param y1 Y coordinate of the upper-left corner of the box.
- *  \param x2 X coordinate of the lower-right corner of the box.
- *  \param y2 Y coordinate of the lower-right corner of the box.
+ *  \param x X coordinate of the upper-left corner of the box.
+ *  \param y Y coordinate of the upper-left corner of the box.
+ *  \param w Width of the box.
+ *  \param h Height of the box.
  *  \return This function always returns 0.
  */
-int cucul_draw_cp437_box(cucul_canvas_t *cv, int x1, int y1, int x2, int y2)
+int cucul_draw_cp437_box(cucul_canvas_t *cv, int x1, int y1, int w, int h)
 {
     int x, y, xmax, ymax;
+
+    int x2 = x1 + w - 1;
+    int y2 = y1 + h - 1;
 
     if(x1 > x2)
     {
@@ -172,17 +181,20 @@ int cucul_draw_cp437_box(cucul_canvas_t *cv, int x1, int y1, int x2, int y2)
  *  This function never fails.
  *
  *  \param cv The handle to the libcucul canvas.
- *  \param x1 X coordinate of the upper-left corner of the box.
- *  \param y1 Y coordinate of the upper-left corner of the box.
- *  \param x2 X coordinate of the lower-right corner of the box.
- *  \param y2 Y coordinate of the lower-right corner of the box.
+ *  \param x X coordinate of the upper-left corner of the box.
+ *  \param y Y coordinate of the upper-left corner of the box.
+ *  \param w Width of the box.
+ *  \param h Height of the box.
  *  \param ch UTF-32 character to be used to draw the box.
  *  \return This function always returns 0.
  */
-int cucul_fill_box(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
+int cucul_fill_box(cucul_canvas_t *cv, int x1, int y1, int w, int h,
                    unsigned long int ch)
 {
     int x, y, xmax, ymax;
+
+    int x2 = x1 + w - 1;
+    int y2 = y1 + h - 1;
 
     if(x1 > x2)
     {
