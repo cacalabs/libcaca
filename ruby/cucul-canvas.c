@@ -397,27 +397,27 @@ static VALUE fill_ellipse(VALUE self, VALUE x, VALUE y, VALUE a, VALUE b, VALUE 
     return self;
 }
 
-static VALUE draw_box(VALUE self, VALUE x1, VALUE y1, VALUE x2, VALUE y2, VALUE ch)
+static VALUE draw_box(VALUE self, VALUE x, VALUE y, VALUE w, VALUE h, VALUE ch)
 {
-    cucul_draw_box(_SELF, NUM2INT(x1), NUM2INT(y1), NUM2INT(x2), NUM2INT(y2), NUM2ULONG(ch));
+    cucul_draw_box(_SELF, NUM2INT(x), NUM2INT(y), NUM2INT(w), NUM2INT(h), NUM2ULONG(ch));
     return self;
 }
 
-static VALUE draw_thin_box(VALUE self, VALUE x1, VALUE y1, VALUE x2, VALUE y2)
+static VALUE draw_thin_box(VALUE self, VALUE x, VALUE y, VALUE w, VALUE h)
 {
-    cucul_draw_thin_box(_SELF, NUM2INT(x1), NUM2INT(y1), NUM2INT(x2), NUM2INT(y2));
+    cucul_draw_thin_box(_SELF, NUM2INT(x), NUM2INT(y), NUM2INT(w), NUM2INT(h));
     return self;
 }
 
-static VALUE draw_cp437_box(VALUE self, VALUE x1, VALUE y1, VALUE x2, VALUE y2)
+static VALUE draw_cp437_box(VALUE self, VALUE x, VALUE y, VALUE w, VALUE h)
 {
-    cucul_draw_cp437_box(_SELF, NUM2INT(x1), NUM2INT(y1), NUM2INT(x2), NUM2INT(y2));
+    cucul_draw_cp437_box(_SELF, NUM2INT(x), NUM2INT(y), NUM2INT(w), NUM2INT(h));
     return self;
 }
 
-static VALUE fill_box(VALUE self, VALUE x1, VALUE y1, VALUE x2, VALUE y2, VALUE ch)
+static VALUE fill_box(VALUE self, VALUE x, VALUE y, VALUE w, VALUE h, VALUE ch)
 {
-    cucul_fill_box(_SELF, NUM2INT(x1), NUM2INT(y1), NUM2INT(x2), NUM2INT(y2), NUM2ULONG(ch));
+    cucul_fill_box(_SELF, NUM2INT(x), NUM2INT(y), NUM2INT(w), NUM2INT(h), NUM2ULONG(ch));
     return self;
 }
 
