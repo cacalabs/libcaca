@@ -15,6 +15,7 @@
 
 
 using System;
+using System.Drawing;
 using System.Runtime.InteropServices;
 
 using Cucul;
@@ -22,7 +23,7 @@ using Caca;
 
 class DemoCanvas : CuculCanvas
 {
-    private uint[,] table;
+    private uint[,] image;
 
     private DateTime startTime;
     private CuculDither d;
@@ -31,8 +32,9 @@ class DemoCanvas : CuculCanvas
     {
         startTime = DateTime.Now;
 
-        table = new uint[16,16];
-        d = new CuculDither(32, 16, 16, 16 * 4, 0xff0000, 0xff00, 0xff, 0x0);
+        image = new uint[16,16];
+        d = new CuculDither(32, new Size(16, 16), 16 * 4,
+                            0xff0000, 0xff00, 0xff, 0x0);
     }
 
     public void Draw()
@@ -55,30 +57,31 @@ class DemoCanvas : CuculCanvas
                 if(x2 < 0) x2 = 0;
                 if(y2 < 0) y2 = 0;
 
-                table[x,y] = (uint)((x2 + y2) << 16)
+                image[x,y] = (uint)((x2 + y2) << 16)
                               | (uint)(x2 << 8)
                               | (uint)(y2);
             }
-        ditherBitmap(0, 0, width, height, d, table);
+        ditherBitmap(Rectangle, d, image);
 
         setColorAnsi(Libcucul.WHITE, Libcucul.BLACK);
         for(int i = 0; i < barCount; i++)
         {
             double v = ((Math.Sin((t / 500.0)
-                          + (i / ((double)barCount))) + 1) / 2) * height;
-            int y = (int)v;
+                          + (i / ((double)barCount))) + 1) / 2) * Size.Height;
+            Point p1 = new Point(0, (int)v);
+            Point p2 = new Point(Size.Width - 1, (int)v);
 
             setColorAnsi(i + 9, Libcucul.BLACK);
             /* drawLine is already clipped, we don't care about overflows */
-            drawLine(0, y - 2, width, y - 2, '-');
-            drawLine(0, y - 1, width, y - 1, '*');
-            drawLine(0, y,     width, y,     '#');
-            drawLine(0, y + 1, width, y + 1, '*');
-            drawLine(0, y + 2, width, y + 2, '-');
+            drawLine(p1 + new Size(0, -2), p2 + new Size(0, -2), '-');
+            drawLine(p1 + new Size(0, -1), p2 + new Size(0, -1), '*');
+            drawLine(p1,                    p2,                    '#');
+            drawLine(p1 + new Size(0,  1), p2 + new Size(0,  1), '*');
+            drawLine(p1 + new Size(0,  2), p2 + new Size(0,  2), '-');
         }
 
         setColorAnsi(Libcucul.WHITE, Libcucul.BLUE);
-        putStr(width - 30, height - 2, " -=[ Powered by libcaca ]=- ");
+        putStr(new Point(-30, -2) + Size, " -=[ Powered by libcaca ]=- ");
         setColorAnsi(Libcucul.WHITE, Libcucul.BLACK);
     }
 }

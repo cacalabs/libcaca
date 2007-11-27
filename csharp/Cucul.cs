@@ -16,6 +16,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.Drawing;
 
 namespace Cucul
 {
@@ -77,9 +78,9 @@ namespace Cucul
             _cv = cucul_create_canvas(0, 0);
         }
 
-        public CuculCanvas(int w, int h)
+        public CuculCanvas(Size s)
         {
-            _cv = cucul_create_canvas(w, h);
+            _cv = cucul_create_canvas(s.Width, s.Height);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -95,29 +96,29 @@ namespace Cucul
          SuppressUnmanagedCodeSecurity]
         private static extern int cucul_set_canvas_size(IntPtr cv,
                                                         int w, int h);
-        public void setSize(int w, int h)
+        public void setSize(Size s)
         {
-            cucul_set_canvas_size(_cv, w, h);
+            cucul_set_canvas_size(_cv, s.Width, s.Height);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int cucul_get_canvas_width(IntPtr cv);
-        public int width
-        {
-            get { return cucul_get_canvas_width(_cv); }
-            set { cucul_set_canvas_size(_cv, value,
-                                        cucul_get_canvas_height(_cv)); }
-        }
-
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int cucul_get_canvas_height(IntPtr cv);
-        public int height
+        public Size Size
         {
-            get { return cucul_get_canvas_height(_cv); }
-            set { cucul_set_canvas_size(_cv, cucul_get_canvas_width(_cv),
-                                        value); }
+            get { return new Size(cucul_get_canvas_width(_cv),
+                                  cucul_get_canvas_height(_cv)); }
+            set { cucul_set_canvas_size(_cv, value.Width, value.Height); }
+        }
+
+        public Rectangle Rectangle
+        {
+            get { return new Rectangle(0, 0, cucul_get_canvas_width(_cv),
+                                             cucul_get_canvas_height(_cv)); }
+            set { cucul_set_canvas_size(_cv, value.Width, value.Height); }
         }
 
         /* canvas drawing */
@@ -131,50 +132,45 @@ namespace Cucul
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int cucul_get_cursor_y(IntPtr cv);
-        public int cursorX
+        public Point Cursor
         {
-            get { return cucul_get_cursor_x(_cv); }
-            set { cucul_gotoxy(_cv, value, cucul_get_cursor_y(_cv)); }
-        }
-
-        public int cursorY
-        {
-            get { return cucul_get_cursor_y(_cv); }
-            set { cucul_gotoxy(_cv, cucul_get_cursor_x(_cv), value); }
+            get { return new Point(cucul_get_cursor_x(_cv),
+                                   cucul_get_cursor_y(_cv)); }
+            set { cucul_gotoxy(_cv, value.X, value.Y); }
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int cucul_put_char(IntPtr cv,
                                                  int x, int y, int c);
-        public int putChar(int x, int y, int c)
+        public int putChar(Point p, int c)
         {
-            return cucul_put_char(_cv, x, y, c);
+            return cucul_put_char(_cv, p.X, p.Y, c);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int cucul_get_char(IntPtr cv, int x, int y);
-        public int getChar(int x, int y)
+        public int getChar(Point p)
         {
-            return cucul_get_char(_cv, x, y);
+            return cucul_get_char(_cv, p.X, p.Y);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int cucul_put_str(IntPtr cv,
                                                 int x, int y, string c);
-        public int putStr(int x, int y, string c)
+        public int putStr(Point p, string c)
         {
-            return cucul_put_str(_cv, x, y, c);
+            return cucul_put_str(_cv, p.X, p.Y, c);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int cucul_get_attr(IntPtr cv, int x, int y);
-        public int getAttr(int x, int y)
+        public int getAttr(Point p)
         {
-            return cucul_get_attr(_cv, x, y);
+            return cucul_get_attr(_cv, p.X, p.Y);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -189,9 +185,9 @@ namespace Cucul
          SuppressUnmanagedCodeSecurity]
         private static extern int cucul_put_attr(IntPtr cv,
                                                  int x, int y, int a);
-        public int putAttr(int x, int y, int a)
+        public int putAttr(Point p, int a)
         {
-            return cucul_put_attr(_cv, x, y, a);
+            return cucul_put_attr(_cv, p.X, p.Y, a);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -230,42 +226,36 @@ namespace Cucul
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int cucul_get_canvas_handle_y(IntPtr cv);
-        public int handleX
+        public Point Handle
         {
-            get { return cucul_get_canvas_handle_x(_cv); }
-            set { cucul_set_canvas_handle(_cv, value,
-                                          cucul_get_canvas_handle_y(_cv)); }
-        }
-
-        public int handleY
-        {
-            get { return cucul_get_canvas_handle_y(_cv); }
-            set { cucul_set_canvas_handle(_cv, cucul_get_canvas_handle_x(_cv),
-                                          value); }
+            get { return new Point(cucul_get_canvas_handle_x(_cv),
+                                   cucul_get_canvas_handle_y(_cv)); }
+            set { cucul_set_canvas_handle(_cv, value.X, value.Y); }
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int cucul_blit(IntPtr cv, int x, int y,
                                              IntPtr cv1, IntPtr cv2);
-        public int Blit(int x, int y, CuculCanvas canvas)
+        public int Blit(Point p, CuculCanvas canvas)
         {
-            return cucul_blit(_cv, x, y, canvas._cv, IntPtr.Zero);
+            return cucul_blit(_cv, p.X, p.Y, canvas._cv, IntPtr.Zero);
         }
 
-        public int Blit(int x, int y, CuculCanvas cv, CuculCanvas mask)
+        public int Blit(Point p, CuculCanvas cv, CuculCanvas mask)
         {
-            return cucul_blit(_cv, x, y, cv._cv, mask._cv);
+            return cucul_blit(_cv, p.X, p.Y, cv._cv, mask._cv);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int cucul_set_canvas_boundaries(IntPtr cv,
                                                               int x, int y,
-                                                              int h,  int w);
-        public int setBoundaries(int x, int y, int h, int w)
+                                                              int h, int w);
+        public int setBoundaries(Rectangle r)
         {
-            return cucul_set_canvas_boundaries(_cv, x, y, h, w);
+            return cucul_set_canvas_boundaries(_cv, r.X, r.Y,
+                                               r.Width, r.Height);
         }
 
         /* canvas transformation */
@@ -339,11 +329,13 @@ namespace Cucul
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
-        private static extern int cucul_draw_line(IntPtr cv, int x1, int y1, int x2, int y2, int c);
-        public int drawLine(int x1, int y1, int x2, int y2, int c)
+        private static extern int cucul_draw_line(IntPtr cv, int x1, int y1,
+                                                  int x2, int y2, int c);
+        public int drawLine(Point p1, Point p2, int c)
         {
-            return cucul_draw_line(_cv, x1, y1, x2, y2, c);
+            return cucul_draw_line(_cv, p1.X, p1.Y, p2.X, p2.Y, c);
         }
+
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int cucul_draw_polyline(IntPtr cv, int[] x, int[] y, int n, IntPtr c);
@@ -407,12 +399,11 @@ namespace Cucul
         private static extern int cucul_dither_bitmap(IntPtr c, int  x, int y,
                                                       int w, int h,
                                                       IntPtr d, IntPtr data);
-        public int ditherBitmap(int x, int y, int w, int h, CuculDither d,
-                                object data)
+        public int ditherBitmap(Rectangle r, CuculDither d, object data)
         {
             GCHandle gch = GCHandle.Alloc(data, GCHandleType.Pinned);
-            int ret = cucul_dither_bitmap(_cv, x, y, w, h, d._dither,
-                                          gch.AddrOfPinnedObject());
+            int ret = cucul_dither_bitmap(_cv, r.X, r.Y, r.Width, r.Height,
+                                          d._dither, gch.AddrOfPinnedObject());
             gch.Free();
             return ret;
         }
@@ -464,10 +455,10 @@ namespace Cucul
                                                          ulong gmask,
                                                          ulong bmask,
                                                          ulong amask);
-        public CuculDither(int bpp, int w,int h, int pitch,
+        public CuculDither(int bpp, Size s, int pitch,
                            uint rmask, uint gmask, uint bmask, uint amask)
         {
-            _dither = cucul_create_dither(bpp, w, h, pitch,
+            _dither = cucul_create_dither(bpp, s.Width, s.Height, pitch,
                                           rmask, gmask, bmask, amask);
         }
 

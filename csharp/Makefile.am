@@ -17,15 +17,16 @@ EXTRA_DIST = $(cucul_sources) cucul-sharp.dll.config \
              test.cs
 
 cucul-sharp.dll: $(cucul_sources)
-	gmcs $(cucul_sources) -out:$@ -target:library  -unsafe
+	gmcs -unsafe $(cucul_sources) -out:$@ -target:library \
+	  -r:System.Drawing.dll
 
 caca-sharp.dll: $(caca_sources) cucul-sharp.dll
-	gmcs $(caca_sources) -out:$@ -target:library \
-	     -r:./cucul-sharp.dll -lib:./ -unsafe
+	gmcs -unsafe $(caca_sources) -out:$@ -target:library -lib:./ \
+	  -r:System.Drawing.dll -r:./cucul-sharp.dll
 
 test.exe: test.cs caca-sharp.dll cucul-sharp.dll
-	gmcs test.cs -out:$@ \
-	     -r:./cucul-sharp.dll -r:./caca-sharp.dll -lib:./ -unsafe
+	gmcs test.cs -out:$@ -lib:./ \
+	  -r:System.Drawing.dll -r:./cucul-sharp.dll -r:./caca-sharp.dll
 
 clean-local:
 	rm -f *.exe *.dll

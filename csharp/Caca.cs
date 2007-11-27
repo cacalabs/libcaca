@@ -16,6 +16,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.Drawing;
 
 using Cucul;
 
@@ -112,18 +113,18 @@ namespace Caca
     public class CacaEvent : IDisposable
     {
         public IntPtr cevent;
-        private IntPtr utf8;
+        private IntPtr _utf8;
 
         public CacaEvent()
         {
             cevent = Marshal.AllocHGlobal(32);
-            utf8 = Marshal.AllocHGlobal(8);
+            _utf8 = Marshal.AllocHGlobal(8);
         }
 
         public void Dispose()
         {
             Marshal.FreeHGlobal(cevent);
-            Marshal.FreeHGlobal(utf8);
+            Marshal.FreeHGlobal(_utf8);
             GC.SuppressFinalize(this);
         }
 
@@ -154,13 +155,13 @@ namespace Caca
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int caca_get_event_key_utf8(IntPtr ev,
-                                                          IntPtr utf8);
+                                                          IntPtr _utf8);
         public string keyUtf8
         {
             get
             {
-                caca_get_event_key_utf8(cevent, utf8);
-                return Marshal.PtrToStringAnsi(utf8);
+                caca_get_event_key_utf8(cevent, _utf8);
+                return Marshal.PtrToStringAnsi(_utf8);
             }
         }
 
@@ -175,33 +176,25 @@ namespace Caca
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int caca_get_event_mouse_x(IntPtr ev);
-        public int mouseX
-        {
-            get { return caca_get_event_mouse_x(cevent); }
-        }
-
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int caca_get_event_mouse_y(IntPtr ev);
-        public int mouseY
+        public Point mousePos
         {
-            get { return caca_get_event_mouse_y(cevent); }
+            get { return new Point(caca_get_event_mouse_x(cevent),
+                                   caca_get_event_mouse_y(cevent)); }
         }
 
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int caca_get_event_resize_width(IntPtr ev);
-        public int resizeWidth
-        {
-            get { return caca_get_event_resize_width(cevent); }
-        }
-
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int caca_get_event_resize_height(IntPtr ev);
-        public int resizeHeight
+        public Size resizeSize
         {
-            get { return caca_get_event_resize_height(cevent); }
+            get { return new Size(caca_get_event_resize_width(cevent),
+                                  caca_get_event_resize_height(cevent)); }
         }
     }
 
@@ -263,17 +256,13 @@ namespace Caca
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int caca_get_display_width(IntPtr dp);
-        public int width
-        {
-            get { return caca_get_display_width(_dp); }
-        }
-
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int caca_get_display_height(IntPtr dp);
-        public int height
+        public Size Size
         {
-            get { return caca_get_display_height(_dp); }
+            get { return new Size(caca_get_display_width(_dp),
+                                  caca_get_display_height(_dp)); }
         }
 
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
@@ -295,17 +284,13 @@ namespace Caca
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int caca_get_mouse_x(IntPtr k);
-        public int mouseX
-        {
-            get { return caca_get_mouse_x(_dp); }
-        }
-
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int caca_get_mouse_y(IntPtr k);
-        public int mouseY
+        public Point mousePos
         {
-            get { return caca_get_mouse_y(_dp); }
+            get { return new Point(caca_get_mouse_x(_dp),
+                                   caca_get_mouse_y(_dp)); }
         }
 
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
@@ -317,3 +302,4 @@ namespace Caca
         }
     }
 }
+
