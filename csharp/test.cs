@@ -33,13 +33,13 @@ class DemoCanvas : CuculCanvas
     {
         startTime = DateTime.Now;
 
-        string message = "LIBCACA *** 100% PURE WIN *** ";
+        string message = "POWERED BY LIBCACA --- OLDSCHOOL TEXT EFFECTS ARE 100% PURE WIN --- ";
 
         scroll = new CuculCanvas(new Size(message.Length, 1));
         scroll.setColorAnsi(Libcucul.WHITE, Libcucul.BLACK);
         scroll.putStr(new Point(0, 0), message);
 
-        CuculFont f = new CuculFont(CuculFont.getList()[0]);
+        CuculFont f = new CuculFont(CuculFont.getList()[1]);
         int w = f.Size.Width * message.Length;
         int h = f.Size.Height;
         image = new uint[w, h];
@@ -57,10 +57,10 @@ class DemoCanvas : CuculCanvas
 
         int w = Size.Width;
         int h = Size.Height;
-        int x = (int)(t / 10) % (6 * w);
+        int x = (int)(t / 10) % (12 * w);
         int y = (int)(h * (2.0 + Math.Sin(t / 200.0)) / 4);
-        ditherBitmap(new Rectangle(- x, h / 2 - y, w * 6, y * 2), d, image);
-        ditherBitmap(new Rectangle(6 * w - x, h / 2 - y, w * 6, y * 2), d, image);
+        ditherBitmap(new Rectangle(- x, h / 2 - y, w * 12, y * 2), d, image);
+        ditherBitmap(new Rectangle(12 * w - x, h / 2 - y, w * 12, y * 2), d, image);
 
         setColorAnsi(Libcucul.WHITE, Libcucul.BLACK);
         for(int i = 0; i < barCount; i++)
