@@ -49,4 +49,7 @@
       <Name>cucul-sharp</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
 </Project>
