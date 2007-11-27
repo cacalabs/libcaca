@@ -75,7 +75,7 @@ class DemoCanvas : CuculCanvas
             /* drawLine is already clipped, we don't care about overflows */
             drawLine(p1 + new Size(0, -2), p2 + new Size(0, -2), '-');
             drawLine(p1 + new Size(0, -1), p2 + new Size(0, -1), '*');
-            drawLine(p1,                    p2,                    '#');
+            drawLine(p1,                   p2,                   '#');
             drawLine(p1 + new Size(0,  1), p2 + new Size(0,  1), '*');
             drawLine(p1 + new Size(0,  2), p2 + new Size(0,  2), '-');
         }
@@ -133,10 +133,6 @@ class Test
         Console.WriteLine("A random number: {0}", Libcucul.Rand(0, 1337));
 
         dp.EventLoop();
-
-        /* Force deletion of our instances for fun */
-        dp.Dispose();
-        cv.Dispose();
     }
-
 }
+
