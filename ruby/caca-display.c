@@ -33,6 +33,7 @@ static VALUE display_alloc(VALUE klass)
 static VALUE display_initialize(int argc, VALUE* argv, VALUE self)
 {
     caca_display_t *display;
+    cucul_canvas_t *canvas;
     VALUE cv;
 
     rb_scan_args(argc, argv, "01", &cv);
@@ -40,6 +41,8 @@ static VALUE display_initialize(int argc, VALUE* argv, VALUE self)
     if(NIL_P(cv))
     {
         display = caca_create_display(NULL);
+        canvas = caca_get_canvas(display);
+        cv = canvas_create(canvas);
     }
     else
     {
@@ -57,6 +60,8 @@ static VALUE display_initialize(int argc, VALUE* argv, VALUE self)
     }
 
     _SELF = display;
+
+    rb_iv_set(self, "@canvas", cv);
 
     return self;
 }

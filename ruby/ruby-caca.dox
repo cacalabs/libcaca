@@ -33,7 +33,7 @@ irb(main):009:0> Caca.my_methods
 
 \code
 irb(main):010:0> Caca::Display.my_instance_methods
-=> ["get_event", "height", "mouse=", "mouse_x", "mouse_y", "refresh",
+=> ["canvas", "get_event", "height", "mouse=", "mouse_x", "mouse_y", "refresh",
 "set_mouse", "set_time", "set_title", "time", "time=", "title=", "width"]
 \endcode
 

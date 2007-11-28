@@ -49,6 +49,11 @@ static VALUE canvas_alloc(VALUE klass)
     return obj;
 }
 
+VALUE canvas_create(cucul_canvas_t *canvas)
+{
+    return Data_Wrap_Struct(cCanvas, 0, canvas_free, canvas);
+}
+
 static VALUE canvas_initialize(VALUE self, VALUE width, VALUE height)
 {
     unsigned int w, h;

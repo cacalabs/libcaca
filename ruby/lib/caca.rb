@@ -2,6 +2,9 @@ require 'cucul'
 require 'caca.so'
 
 module Caca
+    class Display
+        attr_reader :canvas
+    end
     class Event
         def Event.to_i
             const_get("TYPE")
