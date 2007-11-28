@@ -30,16 +30,27 @@ static VALUE display_alloc(VALUE klass)
     return obj;
 }
 
-static VALUE display_initialize(VALUE self, VALUE cv)
+static VALUE display_initialize(int argc, VALUE* argv, VALUE self)
 {
     caca_display_t *display;
-    
-    if(CLASS_OF(cv) != cCanvas)
+    VALUE cv;
+
+    rb_scan_args(argc, argv, "01", &cv);
+
+    if(NIL_P(cv))
     {
-        rb_raise(rb_eArgError, "Argument is not a Cucul::Canvas");
+        display = caca_create_display(NULL);
+    }
+    else
+    {
+        if(CLASS_OF(cv) != cCanvas)
+        {
+            rb_raise(rb_eArgError, "Argument is not a Cucul::Canvas");
+        }
+
+        display = caca_create_display(DATA_PTR(cv));
     }
 
-    display = caca_create_display(DATA_PTR(cv));
     if(display == NULL)
     {
         rb_raise(rb_eRuntimeError, strerror(errno));
@@ -187,7 +198,7 @@ void Init_caca_display(VALUE mCaca)
     cDisplay = rb_define_class_under(mCaca, "Display", rb_cObject);
     rb_define_alloc_func(cDisplay, display_alloc);
 
-    rb_define_method(cDisplay, "initialize", display_initialize, 1);
+    rb_define_method(cDisplay, "initialize", display_initialize, -1);
     rb_define_method(cDisplay, "refresh", display_refresh, 0);
     rb_define_method(cDisplay, "time=", set_time, 1);
     rb_define_method(cDisplay, "set_time", set_time2, 1);
