@@ -34,6 +34,6 @@ libcucul_la_DEPENDENCIES = \
 	monobold12.data \
 	$(NULL)
 AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/cucul
-libcucul_la_LDFLAGS = -no-undefined -version-info @LT_VERSION@
+libcucul_la_LDFLAGS = -no-undefined -version-number @LT_VERSION@
 libcucul_la_LIBADD = 
 

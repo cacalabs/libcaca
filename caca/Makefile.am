@@ -30,7 +30,7 @@ libcaca_la_SOURCES = \
 	$(cocoa_source) \
 	$(extra_source) \
 	$(NULL)
-libcaca_la_LDFLAGS = -no-undefined -version-info @LT_VERSION@
+libcaca_la_LDFLAGS = -no-undefined -version-number @LT_VERSION@
 libcaca_la_LIBADD = ../cucul/libcucul.la @CACA_LIBS@
 
 if USE_PLUGINS

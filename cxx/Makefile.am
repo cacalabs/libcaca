@@ -8,11 +8,11 @@ lib_LTLIBRARIES = libcucul++.la libcaca++.la
 endif
 
 libcucul___la_SOURCES = cucul++.cpp cucul++.h
-libcucul___la_LDFLAGS = -no-undefined -version-info @LT_VERSION@
+libcucul___la_LDFLAGS = -no-undefined -version-number @LT_VERSION@
 libcucul___la_LIBADD = ../cucul/libcucul.la
 
 libcaca___la_SOURCES = caca++.cpp caca++.h
-libcaca___la_LDFLAGS = -no-undefined -version-info @LT_VERSION@
+libcaca___la_LDFLAGS = -no-undefined -version-number @LT_VERSION@
 libcaca___la_LIBADD = libcucul++.la ../caca/libcaca.la
 
 if USE_CXX
