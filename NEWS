@@ -1,5 +1,16 @@
 /* $Id$ */ /** \page libcaca-news Libcaca news
 
+\section news0_99_beta13 Changes between 0.9.beta13 and 0.99.beta12
+
+ - device-dependent cursor support
+ - event API rewrite
+ - minor API improvements and extensions
+ - img2txt improvements
+ - Ruby bindings
+ - Massive C# bindings improvements
+ - Python sample code
+ - Visual Studio build solution
+
 \section news0_99_beta12 Changes between 0.9.beta12 and 0.99.beta11
 
  - support for 90-degree canvas rotation
