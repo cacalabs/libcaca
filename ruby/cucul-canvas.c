@@ -40,12 +40,8 @@ static void canvas_free(void * p)
 
 static VALUE canvas_alloc(VALUE klass)
 {
-    cucul_canvas_t *canvas;
-    VALUE obj;
-    
-    canvas = cucul_create_canvas(0, 0);
-    obj = Data_Wrap_Struct(klass, 0, canvas_free, canvas);
-    
+    VALUE obj;    
+    obj = Data_Wrap_Struct(klass, 0, canvas_free, NULL);
     return obj;
 }
 
@@ -56,13 +52,17 @@ VALUE canvas_create(cucul_canvas_t *canvas)
 
 static VALUE canvas_initialize(VALUE self, VALUE width, VALUE height)
 {
-    unsigned int w, h;
+    cucul_canvas_t *canvas;
 
-    w = NUM2INT(width);
-    h = NUM2INT(height);
-    
-    cucul_set_canvas_size(_SELF, w, h);
-    
+    canvas = cucul_create_canvas(NUM2INT(width), NUM2INT(height));
+
+    if(canvas == NULL)
+    {
+        rb_raise(rb_eRuntimeError, strerror(errno));
+    }
+
+    _SELF = canvas;
+
     return self;
 }
 
