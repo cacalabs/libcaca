@@ -200,16 +200,30 @@ namespace Caca
 
     public class CacaDisplay : IDisposable
     {
-        private IntPtr _cv;
-        private IntPtr _dp;
+        private CuculCanvas _cv;
+        public CuculCanvas Canvas { get { return _cv; } }
+
+        private IntPtr _c_cv;
+        private IntPtr _c_dp;
 
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern IntPtr caca_create_display(IntPtr cv);
         public CacaDisplay(CuculCanvas cv)
         {
-            _cv = cv._cv;
-            _dp = caca_create_display(_cv);
+            _cv = cv;
+            _c_cv = _cv._c_cv;
+            _c_dp = caca_create_display(_c_cv);
+        }
+
+        public CacaDisplay()
+        {
+            /* XXX: we do not call caca_create_display() with a NULL
+             * argument because it's then impossible to create a CuculCanvas
+             * and I don't want to add a weird constructor */
+            _cv = new CuculCanvas();
+            _c_cv = _cv._c_cv;
+            _c_dp = caca_create_display(_c_cv);
         }
 
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
@@ -217,7 +231,7 @@ namespace Caca
         private static extern void caca_free_display(IntPtr dp);
         public void Dispose()
         {
-            caca_free_display(_dp);
+            caca_free_display(_c_dp);
             GC.SuppressFinalize(this);
         }
 
@@ -226,7 +240,7 @@ namespace Caca
         private static extern void caca_refresh_display(IntPtr dp);
         public void Refresh()
         {
-            caca_refresh_display(_dp);
+            caca_refresh_display(_c_dp);
         }
 
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
@@ -237,8 +251,8 @@ namespace Caca
         private static extern int caca_get_display_time(IntPtr dp);
         public int DisplayTime
         {
-            get { return caca_get_display_time(_dp); }
-            set { caca_set_display_time(_dp, value); }
+            get { return caca_get_display_time(_c_dp); }
+            set { caca_set_display_time(_c_dp, value); }
         }
 
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
@@ -249,7 +263,7 @@ namespace Caca
         public CacaEvent getEvent(CacaEventType t, int timeout)
         {
             CacaEvent e = new CacaEvent();
-            caca_get_event(_dp, (int)t, e.cevent, timeout);
+            caca_get_event(_c_dp, (int)t, e.cevent, timeout);
             return e;
         }
 
@@ -261,8 +275,8 @@ namespace Caca
         private static extern int caca_get_display_height(IntPtr dp);
         public Size Size
         {
-            get { return new Size(caca_get_display_width(_dp),
-                                  caca_get_display_height(_dp)); }
+            get { return new Size(caca_get_display_width(_c_dp),
+                                  caca_get_display_height(_c_dp)); }
         }
 
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
@@ -270,7 +284,7 @@ namespace Caca
         private static extern int caca_set_display_title(IntPtr dp, string t);
         public string Title
         {
-            set { caca_set_display_title(_dp, value); }
+            set { caca_set_display_title(_c_dp, value); }
         }
 
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
@@ -278,7 +292,7 @@ namespace Caca
         private static extern void caca_set_mouse(IntPtr k, bool status);
         public bool Mouse
         {
-            set { caca_set_mouse(_dp, value); }
+            set { caca_set_mouse(_c_dp, value); }
         }
 
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
@@ -289,8 +303,8 @@ namespace Caca
         private static extern int caca_get_mouse_y(IntPtr k);
         public Point MousePos
         {
-            get { return new Point(caca_get_mouse_x(_dp),
-                                   caca_get_mouse_y(_dp)); }
+            get { return new Point(caca_get_mouse_x(_c_dp),
+                                   caca_get_mouse_y(_c_dp)); }
         }
 
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
@@ -298,7 +312,7 @@ namespace Caca
         private static extern void caca_set_cursor(IntPtr k, bool status);
         public bool Cursor
         {
-            set { caca_set_cursor(_dp, value); }
+            set { caca_set_cursor(_c_dp, value); }
         }
     }
 }

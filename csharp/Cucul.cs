@@ -66,7 +66,7 @@ namespace Cucul
 
     public class CuculCanvas : IDisposable
     {
-        public readonly IntPtr _cv;
+        public readonly IntPtr _c_cv;
 
         /* libcucul basic functions */
 
@@ -75,17 +75,17 @@ namespace Cucul
         private static extern IntPtr cucul_create_canvas(int w, int h);
         public CuculCanvas()
         {
-            _cv = cucul_create_canvas(0, 0);
+            _c_cv = cucul_create_canvas(0, 0);
         }
 
         public CuculCanvas(Size s)
         {
-            _cv = cucul_create_canvas(s.Width, s.Height);
+            _c_cv = cucul_create_canvas(s.Width, s.Height);
         }
 
         public CuculCanvas(int w, int h)
         {
-            _cv = cucul_create_canvas(h, w);
+            _c_cv = cucul_create_canvas(h, w);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -93,7 +93,8 @@ namespace Cucul
         private static extern int cucul_free_canvas(IntPtr cv);
         public void Dispose()
         {
-           cucul_free_canvas(_cv);
+           /* FIXME: don't destroy ourselves if we're attached */
+           cucul_free_canvas(_c_cv);
            GC.SuppressFinalize(this);
         }
 
@@ -109,16 +110,16 @@ namespace Cucul
         private static extern int cucul_get_canvas_height(IntPtr cv);
         public Size Size
         {
-            get { return new Size(cucul_get_canvas_width(_cv),
-                                  cucul_get_canvas_height(_cv)); }
-            set { cucul_set_canvas_size(_cv, value.Width, value.Height); }
+            get { return new Size(cucul_get_canvas_width(_c_cv),
+                                  cucul_get_canvas_height(_c_cv)); }
+            set { cucul_set_canvas_size(_c_cv, value.Width, value.Height); }
         }
 
         public Rectangle Rectangle
         {
-            get { return new Rectangle(0, 0, cucul_get_canvas_width(_cv),
-                                             cucul_get_canvas_height(_cv)); }
-            set { cucul_set_canvas_size(_cv, value.Width, value.Height); }
+            get { return new Rectangle(0, 0, cucul_get_canvas_width(_c_cv),
+                                             cucul_get_canvas_height(_c_cv)); }
+            set { cucul_set_canvas_size(_c_cv, value.Width, value.Height); }
         }
 
         /* canvas drawing */
@@ -134,9 +135,9 @@ namespace Cucul
         private static extern int cucul_get_cursor_y(IntPtr cv);
         public Point Cursor
         {
-            get { return new Point(cucul_get_cursor_x(_cv),
-                                   cucul_get_cursor_y(_cv)); }
-            set { cucul_gotoxy(_cv, value.X, value.Y); }
+            get { return new Point(cucul_get_cursor_x(_c_cv),
+                                   cucul_get_cursor_y(_c_cv)); }
+            set { cucul_gotoxy(_c_cv, value.X, value.Y); }
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -145,12 +146,12 @@ namespace Cucul
                                                  int x, int y, int c);
         public int putChar(Point p, int c)
         {
-            return cucul_put_char(_cv, p.X, p.Y, c);
+            return cucul_put_char(_c_cv, p.X, p.Y, c);
         }
 
         public int putChar(int x, int y, int c)
         {
-            return cucul_put_char(_cv, x, y, c);
+            return cucul_put_char(_c_cv, x, y, c);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -158,12 +159,12 @@ namespace Cucul
         private static extern int cucul_get_char(IntPtr cv, int x, int y);
         public int getChar(Point p)
         {
-            return cucul_get_char(_cv, p.X, p.Y);
+            return cucul_get_char(_c_cv, p.X, p.Y);
         }
 
         public int getChar(int x, int y)
         {
-            return cucul_get_char(_cv, x, y);
+            return cucul_get_char(_c_cv, x, y);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -172,12 +173,12 @@ namespace Cucul
                                                 int x, int y, string c);
         public int putStr(Point p, string c)
         {
-            return cucul_put_str(_cv, p.X, p.Y, c);
+            return cucul_put_str(_c_cv, p.X, p.Y, c);
         }
 
         public int putStr(int x, int y, string c)
         {
-            return cucul_put_str(_cv, x, y, c);
+            return cucul_put_str(_c_cv, x, y, c);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -185,12 +186,12 @@ namespace Cucul
         private static extern int cucul_get_attr(IntPtr cv, int x, int y);
         public int getAttr(Point p)
         {
-            return cucul_get_attr(_cv, p.X, p.Y);
+            return cucul_get_attr(_c_cv, p.X, p.Y);
         }
 
         public int getAttr(int x, int y)
         {
-            return cucul_get_attr(_cv, x, y);
+            return cucul_get_attr(_c_cv, x, y);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -198,7 +199,7 @@ namespace Cucul
         private static extern int cucul_set_attr(IntPtr cv, int a);
         public int setAttr(int a)
         {
-            return cucul_set_attr(_cv, a);
+            return cucul_set_attr(_c_cv, a);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -207,12 +208,12 @@ namespace Cucul
                                                  int x, int y, int a);
         public int putAttr(Point p, int a)
         {
-            return cucul_put_attr(_cv, p.X, p.Y, a);
+            return cucul_put_attr(_c_cv, p.X, p.Y, a);
         }
 
         public int putAttr(int x, int y, int a)
         {
-            return cucul_put_attr(_cv, x, y, a);
+            return cucul_put_attr(_c_cv, x, y, a);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -221,7 +222,7 @@ namespace Cucul
                                                        byte fg, byte bg);
         public int setColorAnsi(int fg, int bg)
         {
-            return cucul_set_color_ansi(_cv, (byte)fg, (byte)bg);
+            return cucul_set_color_ansi(_c_cv, (byte)fg, (byte)bg);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -230,7 +231,7 @@ namespace Cucul
                                                        int fg, int bg);
         public int setColorArgb(int fg, int bg)
         {
-            return cucul_set_color_argb(_cv, fg, bg);
+            return cucul_set_color_argb(_c_cv, fg, bg);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -238,7 +239,7 @@ namespace Cucul
         private static extern int cucul_clear_canvas(IntPtr cv);
         public int Clear()
         {
-            return cucul_clear_canvas(_cv);
+            return cucul_clear_canvas(_c_cv);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -253,9 +254,9 @@ namespace Cucul
         private static extern int cucul_get_canvas_handle_y(IntPtr cv);
         public Point Handle
         {
-            get { return new Point(cucul_get_canvas_handle_x(_cv),
-                                   cucul_get_canvas_handle_y(_cv)); }
-            set { cucul_set_canvas_handle(_cv, value.X, value.Y); }
+            get { return new Point(cucul_get_canvas_handle_x(_c_cv),
+                                   cucul_get_canvas_handle_y(_c_cv)); }
+            set { cucul_set_canvas_handle(_c_cv, value.X, value.Y); }
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -264,22 +265,22 @@ namespace Cucul
                                              IntPtr cv1, IntPtr cv2);
         public int Blit(Point p, CuculCanvas canvas)
         {
-            return cucul_blit(_cv, p.X, p.Y, canvas._cv, IntPtr.Zero);
+            return cucul_blit(_c_cv, p.X, p.Y, canvas._c_cv, IntPtr.Zero);
         }
 
         public int Blit(Point p, CuculCanvas cv, CuculCanvas mask)
         {
-            return cucul_blit(_cv, p.X, p.Y, cv._cv, mask._cv);
+            return cucul_blit(_c_cv, p.X, p.Y, cv._c_cv, mask._c_cv);
         }
 
         public int Blit(int x, int y, CuculCanvas canvas)
         {
-            return cucul_blit(_cv, x, y, canvas._cv, IntPtr.Zero);
+            return cucul_blit(_c_cv, x, y, canvas._c_cv, IntPtr.Zero);
         }
 
         public int Blit(int x, int y, CuculCanvas cv, CuculCanvas mask)
         {
-            return cucul_blit(_cv, x, y, cv._cv, mask._cv);
+            return cucul_blit(_c_cv, x, y, cv._c_cv, mask._c_cv);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -289,13 +290,13 @@ namespace Cucul
                                                               int h, int w);
         public int setBoundaries(Rectangle r)
         {
-            return cucul_set_canvas_boundaries(_cv, r.X, r.Y,
+            return cucul_set_canvas_boundaries(_c_cv, r.X, r.Y,
                                                r.Width, r.Height);
         }
 
         public int setBoundaries(int x, int y, int w, int h)
         {
-            return cucul_set_canvas_boundaries(_cv, x, y, w, h);
+            return cucul_set_canvas_boundaries(_c_cv, x, y, w, h);
         }
 
         /* canvas transformation */
@@ -305,7 +306,7 @@ namespace Cucul
         private static extern int cucul_invert(IntPtr cv);
         public int Invert()
         {
-            return cucul_invert(_cv);
+            return cucul_invert(_c_cv);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -313,7 +314,7 @@ namespace Cucul
         private static extern int cucul_flip(IntPtr cv);
         public int Flip()
         {
-            return cucul_flip(_cv);
+            return cucul_flip(_c_cv);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -321,7 +322,7 @@ namespace Cucul
         private static extern int cucul_flop(IntPtr cv);
         public int Flop()
         {
-            return cucul_flop(_cv);
+            return cucul_flop(_c_cv);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -329,7 +330,7 @@ namespace Cucul
         private static extern int cucul_rotate_180(IntPtr cv);
         public int Rotate180()
         {
-            return cucul_rotate_180(_cv);
+            return cucul_rotate_180(_c_cv);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -337,7 +338,7 @@ namespace Cucul
         private static extern int cucul_rotate_left(IntPtr cv);
         public int RotateLeft()
         {
-            return cucul_rotate_left(_cv);
+            return cucul_rotate_left(_c_cv);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -345,7 +346,7 @@ namespace Cucul
         private static extern int cucul_rotate_right(IntPtr cv);
         public int RotateRight()
         {
-            return cucul_rotate_right(_cv);
+            return cucul_rotate_right(_c_cv);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -353,7 +354,7 @@ namespace Cucul
         private static extern int cucul_stretch_left(IntPtr cv);
         public int StretchLeft()
         {
-            return cucul_stretch_left(_cv);
+            return cucul_stretch_left(_c_cv);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -361,7 +362,7 @@ namespace Cucul
         private static extern int cucul_stretch_right(IntPtr cv);
         public int StretchRight()
         {
-            return cucul_stretch_right(_cv);
+            return cucul_stretch_right(_c_cv);
         }
 
         /* primitives drawing */
@@ -372,12 +373,12 @@ namespace Cucul
                                                   int x2, int y2, uint c);
         public int drawLine(Point p1, Point p2, uint c)
         {
-            return cucul_draw_line(_cv, p1.X, p1.Y, p2.X, p2.Y, c);
+            return cucul_draw_line(_c_cv, p1.X, p1.Y, p2.X, p2.Y, c);
         }
 
         public int drawLine(int x1, int y1, int x2, int y2, uint c)
         {
-            return cucul_draw_line(_cv, x1, y1, x2, y2, c);
+            return cucul_draw_line(_c_cv, x1, y1, x2, y2, c);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -393,7 +394,7 @@ namespace Cucul
                 lx[i] = lp[i].X;
                 ly[i] = lp[i].Y;
             }
-            return cucul_draw_polyline(_cv, lx, ly, lp.Length - 1, c);
+            return cucul_draw_polyline(_c_cv, lx, ly, lp.Length - 1, c);
         }
 
         public int drawPolyline(int[] lx, int[] ly, uint c)
@@ -401,7 +402,7 @@ namespace Cucul
             if(lx.Length != ly.Length)
                 return -1;
 
-            return cucul_draw_polyline(_cv, lx, ly, lx.Length - 1, c);
+            return cucul_draw_polyline(_c_cv, lx, ly, lx.Length - 1, c);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -410,12 +411,12 @@ namespace Cucul
                                                        int y1, int x2, int y2);
         public int drawThinLine(Point p1, Point p2)
         {
-            return cucul_draw_thin_line(_cv, p1.X, p1.Y, p2.X, p2.Y);
+            return cucul_draw_thin_line(_c_cv, p1.X, p1.Y, p2.X, p2.Y);
         }
 
         public int drawThinLine(int x1, int y1, int x2, int y2)
         {
-            return cucul_draw_thin_line(_cv, x1, y1, x2, y2);
+            return cucul_draw_thin_line(_c_cv, x1, y1, x2, y2);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -431,7 +432,7 @@ namespace Cucul
                 lx[i] = lp[i].X;
                 ly[i] = lp[i].Y;
             }
-            return cucul_draw_thin_polyline(_cv, lx, ly, lp.Length - 1);
+            return cucul_draw_thin_polyline(_c_cv, lx, ly, lp.Length - 1);
         }
 
         public int drawThinPolyline(int[] lx, int[] ly)
@@ -439,7 +440,7 @@ namespace Cucul
             if(lx.Length != ly.Length)
                 return -1;
 
-            return cucul_draw_thin_polyline(_cv, lx, ly, lx.Length - 1);
+            return cucul_draw_thin_polyline(_c_cv, lx, ly, lx.Length - 1);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -448,12 +449,12 @@ namespace Cucul
                                                     int r, uint c);
         public int drawCircle(Point p, int r, uint c)
         {
-            return cucul_draw_circle(_cv, p.X, p.Y, r, c);
+            return cucul_draw_circle(_c_cv, p.X, p.Y, r, c);
         }
 
         public int drawCircle(int x, int y, int r, uint c)
         {
-            return cucul_draw_circle(_cv, x, y, r, c);
+            return cucul_draw_circle(_c_cv, x, y, r, c);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -462,12 +463,12 @@ namespace Cucul
                                                      int a, int b, uint c);
         public int drawEllipse(Point p, int a, int b, uint c)
         {
-            return cucul_draw_ellipse(_cv, p.X, p.Y, a, b, c);
+            return cucul_draw_ellipse(_c_cv, p.X, p.Y, a, b, c);
         }
 
         public int drawEllipse(int x, int y, int a, int b, uint c)
         {
-            return cucul_draw_ellipse(_cv, x, y, a, b, c);
+            return cucul_draw_ellipse(_c_cv, x, y, a, b, c);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -477,12 +478,12 @@ namespace Cucul
                                                           int a, int b);
         public int drawThinEllipse(Point p, int a, int b)
         {
-            return cucul_draw_thin_ellipse(_cv, p.X, p.Y, a, b);
+            return cucul_draw_thin_ellipse(_c_cv, p.X, p.Y, a, b);
         }
 
         public int drawThinEllipse(int x, int y, int a, int b)
         {
-            return cucul_draw_thin_ellipse(_cv, x, y, a, b);
+            return cucul_draw_thin_ellipse(_c_cv, x, y, a, b);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -491,12 +492,12 @@ namespace Cucul
                                                      int a, int b, uint c);
         public int fillEllipse(Point p, int a, int b, uint c)
         {
-            return cucul_fill_ellipse(_cv, p.X, p.Y, a, b, c);
+            return cucul_fill_ellipse(_c_cv, p.X, p.Y, a, b, c);
         }
 
         public int fillEllipse(int x, int y, int a, int b, uint c)
         {
-            return cucul_fill_ellipse(_cv, x, y, a, b, c);
+            return cucul_fill_ellipse(_c_cv, x, y, a, b, c);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -505,12 +506,12 @@ namespace Cucul
                                                  int w, int h, uint c);
         public int drawBox(Rectangle r, uint c)
         {
-            return cucul_draw_box(_cv, r.X, r.Y, r.Width, r.Height, c);
+            return cucul_draw_box(_c_cv, r.X, r.Y, r.Width, r.Height, c);
         }
 
         public int drawBox(int x, int y, int w, int h, uint c)
         {
-            return cucul_draw_box(_cv, x, y, w, h, c);
+            return cucul_draw_box(_c_cv, x, y, w, h, c);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -519,12 +520,12 @@ namespace Cucul
                                                       int w, int h);
         public int drawThinBox(Rectangle r)
         {
-            return cucul_draw_thin_box(_cv, r.X, r.Y, r.Width, r.Height);
+            return cucul_draw_thin_box(_c_cv, r.X, r.Y, r.Width, r.Height);
         }
 
         public int drawThinBox(int x, int y, int w, int h)
         {
-            return cucul_draw_thin_box(_cv, x, y, w, h);
+            return cucul_draw_thin_box(_c_cv, x, y, w, h);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -533,12 +534,12 @@ namespace Cucul
                                                        int w, int h);
         public int drawCp437Box(Rectangle r)
         {
-            return cucul_draw_cp437_box(_cv, r.X, r.Y, r.Width, r.Height);
+            return cucul_draw_cp437_box(_c_cv, r.X, r.Y, r.Width, r.Height);
         }
 
         public int drawCp437Box(int x, int y, int w, int h)
         {
-            return cucul_draw_cp437_box(_cv, x, y, w, h);
+            return cucul_draw_cp437_box(_c_cv, x, y, w, h);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -547,12 +548,12 @@ namespace Cucul
                                                  int w, int h, uint c);
         public int fillBox(Rectangle r, uint c)
         {
-            return cucul_fill_box(_cv, r.X, r.Y, r.Width, r.Height, c);
+            return cucul_fill_box(_c_cv, r.X, r.Y, r.Width, r.Height, c);
         }
 
         public int fillBox(int x, int y, int w, int h, uint c)
         {
-            return cucul_fill_box(_cv, x, y, w, h, c);
+            return cucul_fill_box(_c_cv, x, y, w, h, c);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -562,14 +563,14 @@ namespace Cucul
                                                       int x3, int y3, uint c);
         public int drawTriangle(Point p1, Point p2, Point p3, uint c)
         {
-            return cucul_draw_triangle(_cv, p1.X, p1.Y, p2.X, p2.Y,
+            return cucul_draw_triangle(_c_cv, p1.X, p1.Y, p2.X, p2.Y,
                                        p3.X, p3.Y, c);
         }
 
         public int drawTriangle(int x1, int y1, int x2, int y2,
                                 int x3, int y3, uint c)
         {
-            return cucul_draw_triangle(_cv, x1, y1, x2, y2, x3, y3, c);
+            return cucul_draw_triangle(_c_cv, x1, y1, x2, y2, x3, y3, c);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -580,14 +581,14 @@ namespace Cucul
                                                            int x3, int y3);
         public int drawThinTriangle(Point p1, Point p2, Point p3)
         {
-            return cucul_draw_thin_triangle(_cv, p1.X, p1.Y, p2.X, p2.Y,
+            return cucul_draw_thin_triangle(_c_cv, p1.X, p1.Y, p2.X, p2.Y,
                                             p3.X, p3.Y);
         }
 
         public int drawThinTriangle(int x1, int y1, int x2, int y2,
                                     int x3, int y3)
         {
-            return cucul_draw_thin_triangle(_cv, x1, y1, x2, y2, x3, y3);
+            return cucul_draw_thin_triangle(_c_cv, x1, y1, x2, y2, x3, y3);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -597,14 +598,14 @@ namespace Cucul
                                                       int x3, int y3, uint c);
         public int fillTriangle(Point p1, Point p2, Point p3, uint c)
         {
-            return cucul_fill_triangle(_cv, p1.X, p1.Y, p2.X, p2.Y,
+            return cucul_fill_triangle(_c_cv, p1.X, p1.Y, p2.X, p2.Y,
                                        p3.X, p3.Y, c);
         }
 
         public int fillTriangle(int x1, int y1, int x2, int y2,
                                 int x3, int y3, uint c)
         {
-            return cucul_fill_triangle(_cv, x1, y1, x2, y2, x3, y3, c);
+            return cucul_fill_triangle(_c_cv, x1, y1, x2, y2, x3, y3, c);
         }
 
         /* frame handling */
@@ -614,7 +615,7 @@ namespace Cucul
         private static extern int cucul_get_frame_count(IntPtr cv);
         public int getFrameCount()
         {
-            return cucul_get_frame_count(_cv);
+            return cucul_get_frame_count(_c_cv);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -622,7 +623,7 @@ namespace Cucul
         private static extern int cucul_set_frame(IntPtr cv, int f);
         public int setFrame(int f)
         {
-            return cucul_set_frame(_cv, f);
+            return cucul_set_frame(_c_cv, f);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -633,8 +634,8 @@ namespace Cucul
         private static extern int cucul_set_frame_name(IntPtr cv, string n);
         public string FrameName
         {
-            get { return cucul_get_frame_name(_cv); }
-            set { cucul_set_frame_name(_cv, value); }
+            get { return cucul_get_frame_name(_c_cv); }
+            set { cucul_set_frame_name(_c_cv, value); }
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -642,7 +643,7 @@ namespace Cucul
         private static extern int cucul_create_frame(IntPtr cv, int f);
         public int createFrame(int f)
         {
-            return cucul_create_frame(_cv, f);
+            return cucul_create_frame(_c_cv, f);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
@@ -650,7 +651,7 @@ namespace Cucul
         private static extern int cucul_free_frame(IntPtr cv, int f);
         public int freeFrame(int f)
         {
-            return cucul_free_frame(_cv, f);
+            return cucul_free_frame(_c_cv, f);
         }
 
         /* bitmap dithering */
@@ -663,7 +664,7 @@ namespace Cucul
         public int ditherBitmap(Rectangle r, CuculDither d, object data)
         {
             GCHandle gch = GCHandle.Alloc(data, GCHandleType.Pinned);
-            int ret = cucul_dither_bitmap(_cv, r.X, r.Y, r.Width, r.Height,
+            int ret = cucul_dither_bitmap(_c_cv, r.X, r.Y, r.Width, r.Height,
                                           d._dither, gch.AddrOfPinnedObject());
             gch.Free();
             return ret;
@@ -673,7 +674,7 @@ namespace Cucul
                                 CuculDither d, object data)
         {
             GCHandle gch = GCHandle.Alloc(data, GCHandleType.Pinned);
-            int ret = cucul_dither_bitmap(_cv, x, y, w, h, d._dither,
+            int ret = cucul_dither_bitmap(_c_cv, x, y, w, h, d._dither,
                                           gch.AddrOfPinnedObject());
             gch.Free();
             return ret;
@@ -946,7 +947,7 @@ namespace Cucul
         public int Render(CuculCanvas cv, uint[,] buf, int pitch)
         {
             GCHandle gch = GCHandle.Alloc(buf, GCHandleType.Pinned);
-            int ret = cucul_render_canvas(cv._cv, _font,
+            int ret = cucul_render_canvas(cv._c_cv, _font,
                                           gch.AddrOfPinnedObject(),
                                           buf.GetLength(0), buf.GetLength(1),
                                           pitch);
