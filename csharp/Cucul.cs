@@ -325,7 +325,6 @@ namespace Cucul
         }
 
         /* primitives drawing */
-        /* FIXME: highly incomplete */
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
@@ -508,7 +507,7 @@ namespace Cucul
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int cucul_set_frame_name(IntPtr cv, string n);
-        public string frameName
+        public string FrameName
         {
             get { return cucul_get_frame_name(_cv); }
             set { cucul_set_frame_name(_cv, value); }
@@ -553,7 +552,7 @@ namespace Cucul
 
         public CuculAttr(int attr)
         {
-            attr = _attr;
+            _attr = attr;
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),

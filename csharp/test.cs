@@ -91,8 +91,8 @@ class DemoDisplay : CacaDisplay
 
     public DemoDisplay(DemoCanvas _cv) : base(_cv)
     {
-        displayTime = 20000; // Refresh every 20 ms
-        title = "libcaca .NET Bindings test suite";
+        Title = "libcaca .NET Bindings test suite";
+        DisplayTime = 20000; // Refresh every 20 ms
         cv = _cv;
     }
 
@@ -100,17 +100,17 @@ class DemoDisplay : CacaDisplay
     {
         CacaEvent ev;
 
-        while((ev = getEvent(CacaEventType.KEY_RELEASE, 10)).type == 0)
+        while((ev = getEvent(CacaEventType.KEY_RELEASE, 10)).Type == 0)
         {
             cv.Draw();
 
             Refresh();
         }
 
-        if(ev.keyCh > 0x20 && ev.keyCh < 0x7f)
-            Console.WriteLine("Key pressed: {0}", ev.keyUtf8);
+        if(ev.KeyCh > 0x20 && ev.KeyCh < 0x7f)
+            Console.WriteLine("Key pressed: {0}", ev.KeyUtf8);
         else
-            Console.WriteLine("Key pressed: 0x{0:x}", ev.keyCh);
+            Console.WriteLine("Key pressed: 0x{0:x}", ev.KeyCh);
     }
 }
 
