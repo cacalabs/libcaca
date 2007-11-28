@@ -447,6 +447,8 @@ AC_CONFIG_FILES([
 AC_CONFIG_FILES([
   cucul/cucul.pc
   caca/caca.pc
+  csharp/cucul-sharp.dll.config
+  csharp/caca-sharp.dll.config
   doc/doxygen.cfg
 ])
 AC_CONFIG_FILES([caca-config], [chmod 0755 caca-config])

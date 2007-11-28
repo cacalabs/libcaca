@@ -1,0 +1,3 @@
+<configuration>
+    <dllmap dll="libcaca.dll" target="libcaca.so.@LT_MAJOR@" />
+</configuration>

@@ -12,8 +12,8 @@ caca_DATA = caca-sharp.dll caca-sharp.dll.config
 noinst_DATA = test.exe
 endif
 
-EXTRA_DIST = $(cucul_sources) cucul-sharp.dll.config \
-             $(caca_sources) caca-sharp.dll.config \
+EXTRA_DIST = $(cucul_sources) cucul-sharp.dll.config.in \
+             $(caca_sources) caca-sharp.dll.config.in \
              test.cs
 
 cucul-sharp.dll: $(cucul_sources)
