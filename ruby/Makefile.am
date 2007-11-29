@@ -24,7 +24,7 @@ cucul_la_SOURCES = cucul.c \
 cucul_la_LDFLAGS = -module -avoid-version -shared $(RUBY_LIBS)
 cucul_la_LIBADD = ../cucul/libcucul.la
 
-caca_la_CPPFLAGS = -I$(top_srcdir)/caca $(RUBY_CFLAGS)
+caca_la_CPPFLAGS = -I$(top_srcdir)/caca -I$(top_srcdir)/cucul $(RUBY_CFLAGS)
 caca_la_SOURCES = caca.c \
                   common.h \
                   caca-display.c \
