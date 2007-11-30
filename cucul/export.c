@@ -50,6 +50,7 @@ static void *export_ansi(cucul_canvas_t const *, unsigned long int *);
 static void *export_utf8(cucul_canvas_t const *, unsigned long int *, int);
 static void *export_html(cucul_canvas_t const *, unsigned long int *);
 static void *export_html3(cucul_canvas_t const *, unsigned long int *);
+static void *export_bbfr(cucul_canvas_t const *, unsigned long int *);
 static void *export_irc(cucul_canvas_t const *, unsigned long int *);
 static void *export_ps(cucul_canvas_t const *, unsigned long int *);
 static void *export_svg(cucul_canvas_t const *, unsigned long int *);
@@ -103,6 +104,9 @@ void *cucul_export_memory(cucul_canvas_t const *cv, char const *format,
     if(!strcasecmp("html3", format))
         return export_html3(cv, bytes);
 
+    if(!strcasecmp("bbfr", format))
+        return export_bbfr(cv, bytes);
+
     if(!strcasecmp("irc", format))
         return export_irc(cv, bytes);
 
@@ -140,6 +144,7 @@ char const * const * cucul_get_export_list(void)
         "utf8cr", "UTF-8 with ANSI escape codes and MS-DOS \\r",
         "html", "HTML",
         "html3", "backwards-compatible HTML",
+        "bbfr", "BBCode (French)",
         "irc", "IRC with mIRC colours",
         "ps", "PostScript document",
         "svg", "SVG vector image",
@@ -539,6 +544,106 @@ static void *export_html3(cucul_canvas_t const *cv, unsigned long int *bytes)
 
     /* Crop to really used size */
     debug("html3 export: alloc %lu bytes, realloc %lu",
+          (unsigned long int)*bytes, (unsigned long int)(cur - data));
+    *bytes = (uintptr_t)(cur - data);
+    data = realloc(data, *bytes);
+
+    return data;
+}
+
+static void *export_bbfr(cucul_canvas_t const *cv, unsigned long int *bytes)
+{
+    char *data, *cur;
+    unsigned int x, y, len;
+
+    /* The font markup: less than 100 bytes
+     * A line: 1 char for "\n"
+     * A glyph: 22 chars for "[f=#xxxxxx][c=#xxxxxx]"
+     *          up to 21 chars for "[g][i][s][/s][/i][/g]"
+     *          up to 6 chars for the UTF-8 glyph
+     *          8 chars for "[/c][/f]" */
+    *bytes = 100 + cv->height * (1 + cv->width * (22 + 21 + 6 + 8));
+    cur = data = malloc(*bytes);
+
+    /* Table */
+    cur += sprintf(cur, "[font=Courier New]");
+
+    for(y = 0; y < cv->height; y++)
+    {
+        uint32_t *lineattr = cv->attrs + y * cv->width;
+        uint32_t *linechar = cv->chars + y * cv->width;
+
+        for(x = 0; x < cv->width; x += len)
+        {
+            unsigned int i, needback, needfront;
+
+            /* Use colspan option to factor cells with same attributes
+             * (see below) */
+            len = 1;
+            if(linechar[x] == ' ')
+                while(x + len < cv->width && lineattr[x + len] == lineattr[x]
+                        && linechar[x] == ' ')
+                    len++;
+            else
+                while(x + len < cv->width && lineattr[x + len] == lineattr[x]
+                        && linechar[x] != ' ')
+                    len++;
+
+            needback = cucul_attr_to_ansi_bg(lineattr[x]) < 0x10;
+            needfront = cucul_attr_to_ansi_fg(lineattr[x]) < 0x10;
+
+            if(needback)
+                cur += sprintf(cur, "[f=#%.06lx]", (unsigned long int)
+                               _cucul_attr_to_rgb24bg(lineattr[x]));
+
+            if(linechar[x] == ' ')
+                cur += sprintf(cur, "[c=#%.06lx]", (unsigned long int)
+                               _cucul_attr_to_rgb24bg(lineattr[x]));
+            else if(needfront)
+                cur += sprintf(cur, "[c=#%.06lx]", (unsigned long int)
+                               _cucul_attr_to_rgb24fg(lineattr[x]));
+
+            if(lineattr[x] & CUCUL_BOLD)
+                cur += sprintf(cur, "[g]");
+            if(lineattr[x] & CUCUL_ITALICS)
+                cur += sprintf(cur, "[i]");
+            if(lineattr[x] & CUCUL_UNDERLINE)
+                cur += sprintf(cur, "[s]");
+            if(lineattr[x] & CUCUL_BLINK)
+                ; /* FIXME */
+
+            for(i = 0; i < len; i++)
+            {
+                if(linechar[x + i] == CUCUL_MAGIC_FULLWIDTH)
+                    ;
+                else if(linechar[x + i] == ' ')
+                    *cur++ = '_';
+                else
+                    cur += cucul_utf32_to_utf8(cur, linechar[x + i]);
+            }
+
+            if(lineattr[x] & CUCUL_BLINK)
+                ; /* FIXME */
+            if(lineattr[x] & CUCUL_UNDERLINE)
+                cur += sprintf(cur, "[/s]");
+            if(lineattr[x] & CUCUL_ITALICS)
+                cur += sprintf(cur, "[/i]");
+            if(lineattr[x] & CUCUL_BOLD)
+                cur += sprintf(cur, "[/g]");
+
+            if(linechar[x] == ' ' || needfront)
+                cur += sprintf(cur, "[/c]");
+            if(needback)
+                cur += sprintf(cur, "[/f]");
+        }
+        cur += sprintf(cur, "\n");
+    }
+
+    /* Footer */
+    cur += sprintf(cur, "[/font]\n");
+
+    /* Crop to really used size */
+    debug("bbfr export: alloc %lu bytes, realloc %lu",
           (unsigned long int)*bytes, (unsigned long int)(cur - data));
     *bytes = (uintptr_t)(cur - data);
     data = realloc(data, *bytes);
