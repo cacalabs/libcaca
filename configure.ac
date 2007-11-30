@@ -79,11 +79,13 @@ AC_ARG_ENABLE(imlib2,
 
 dnl conditional builds
 AC_ARG_ENABLE(debug,
-  [  --enable-debug          build debug versions of the library])
+  [  --enable-debug          build debug versions of the library (default no)])
 AC_ARG_ENABLE(plugins,
-  [  --enable-plugins        build X11 and GL drivers as plugins])
+  [  --enable-plugins        make X11 and GL drivers plugins (default disabled)])
 AC_ARG_ENABLE(doc,
   [  --enable-doc            build documentation (needs doxygen and LaTeX)])
+AC_ARG_ENABLE(zzuf,
+  [  --enable-zzuf           use zzuf for fuzzing tests (autodetected)])
 
 AC_CHECK_HEADERS(stdio.h stdarg.h signal.h sys/ioctl.h sys/time.h inttypes.h endian.h unistd.h arpa/inet.h netinet/in.h winsock2.h errno.h locale.h getopt.h dlfcn.h termios.h)
 AC_CHECK_FUNCS(signal ioctl vsnprintf getenv putenv strcasecmp htons)
@@ -429,13 +431,20 @@ fi
 AM_CONDITIONAL(BUILD_DOCUMENTATION, test "${DOXYGEN}" != "no")
 AM_CONDITIONAL(USE_LATEX, test "${LATEX}" != "no")
 
+# Use zzuf for fuzzing tests?
+ZZUF="no"
+if test "${enable_zzuf}" != "no"; then
+  AC_PATH_PROG(ZZUF, zzuf, no)
+fi
+AM_CONDITIONAL(USE_ZZUF, test "${ZZUF}" != "no")
+
 AC_CONFIG_FILES([
   Makefile
   kernel/Makefile
   cucul/Makefile
   caca/Makefile
   src/Makefile
-  test/Makefile
+  examples/Makefile
   tools/Makefile
   csharp/Makefile
   cxx/Makefile
