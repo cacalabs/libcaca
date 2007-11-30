@@ -62,16 +62,17 @@ static void usage(int argc, char **argv)
     fprintf(stderr, "\t\t\trandom   : Random\n");
     fprintf(stderr, "\t\t\tfstein   : Floyd Steinberg (default)\n");
     fprintf(stderr, "  -f, --format=FORMAT\t\tFormat of the resulting image :\n");
-    fprintf(stderr, "\t\t\tansi : coloured ANSI (default)\n");
-    fprintf(stderr, "\t\t\tcaca : internal libcaca format\n");
-    fprintf(stderr, "\t\t\tutf8 : UTF8 with CR\n");
-    fprintf(stderr, "\t\t\tutf8 : UTF8 with CRLF (MS Windows)\n");
-    fprintf(stderr, "\t\t\thtml : HTML with CSS and DIV support\n");
+    fprintf(stderr, "\t\t\tansi  : coloured ANSI (default)\n");
+    fprintf(stderr, "\t\t\tcaca  : internal libcaca format\n");
+    fprintf(stderr, "\t\t\tutf8  : UTF8 with CR\n");
+    fprintf(stderr, "\t\t\tutf8  : UTF8 with CRLF (MS Windows)\n");
+    fprintf(stderr, "\t\t\thtml  : HTML with CSS and DIV support\n");
     fprintf(stderr, "\t\t\thtml3 : Pure HTML3 with tables\n");
-    fprintf(stderr, "\t\t\tirc  : IRC with ctrl-k codes\n");
-    fprintf(stderr, "\t\t\tps   : Postscript\n");
-    fprintf(stderr, "\t\t\tsvg  : Scalable Vector Graphics\n");
-    fprintf(stderr, "\t\t\ttga  : Targa Image\n\n");
+    fprintf(stderr, "\t\t\tirc   : IRC with ctrl-k codes\n");
+    fprintf(stderr, "\t\t\bbfr   : BBCode (French)\n");
+    fprintf(stderr, "\t\t\tps    : Postscript\n");
+    fprintf(stderr, "\t\t\tsvg   : Scalable Vector Graphics\n");
+    fprintf(stderr, "\t\t\ttga   : Targa Image\n\n");
 
 #if !defined(USE_IMLIB2)
     fprintf(stderr, "NOTE: This program has NOT been built with Imlib2 support. Only BMP loading is supported.\n");
