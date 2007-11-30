@@ -445,6 +445,7 @@ AC_CONFIG_FILES([
   caca/Makefile
   src/Makefile
   examples/Makefile
+  tests/Makefile
   tools/Makefile
   csharp/Makefile
   cxx/Makefile
