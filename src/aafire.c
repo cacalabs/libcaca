@@ -270,8 +270,10 @@ game (void)
     {
 #ifdef LIBCACA
       caca_event_t ev;
-      if(caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, 0))
+      if(caca_get_event(dp, CACA_EVENT_KEY_PRESS|CACA_EVENT_QUIT, &ev, 0))
         {
+          if (caca_get_event_type(&ev) & CACA_EVENT_QUIT)
+            return;
           switch(caca_get_event_key_ch(&ev))
             {
                 case CACA_KEY_CTRL_C:
