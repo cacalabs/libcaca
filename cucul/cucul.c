@@ -85,6 +85,8 @@ cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
     _cucul_load_frame_info(cv);
     cucul_set_color_ansi(cv, CUCUL_DEFAULT, CUCUL_TRANSPARENT);
 
+    cv->ff = NULL;
+
     if(cucul_resize(cv, width, height) < 0)
     {
         int saved_errno = geterrno();
@@ -305,6 +307,9 @@ int cucul_free_canvas(cucul_canvas_t *cv)
         free(cv->frames[f].attrs);
         free(cv->frames[f].name);
     }
+
+    if(cv->ff)
+        _cucul_free_figfont(cv->ff);
 
     free(cv->frames);
     free(cv);

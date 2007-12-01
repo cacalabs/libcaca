@@ -280,6 +280,14 @@ __extern int cucul_render_canvas(cucul_canvas_t const *, cucul_font_t const *,
 __extern int cucul_free_font(cucul_font_t *);
 /*  @} */
 
+/** \defgroup cucul_figfont libcucul FIGfont handling
+ *
+ *  These functions provide FIGlet and TOIlet font handling routines.
+ *
+ *  @{ */
+__extern int cucul_canvas_set_figfont(cucul_canvas_t *, char const *);
+/*  @} */
+
 /** \defgroup cucul_importexport libcucul importers/exporters from/to various
  *  formats
  *

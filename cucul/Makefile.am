@@ -29,6 +29,7 @@ libcucul_la_SOURCES = \
 	import.c \
 	export.c \
 	file.c \
+	figfont.c \
 	$(NULL)
 libcucul_la_DEPENDENCIES = \
 	mono9.data \

@@ -490,7 +490,7 @@ int cucul_set_canvas_boundaries(cucul_canvas_t *cv, int x, int y,
     }
     free(cv->frames);
 
-    memcpy(cv, new, sizeof(cucul_canvas_t));
+    cv->frames = new->frames;
     free(new);
 
     cucul_set_frame(cv, saved_f);
