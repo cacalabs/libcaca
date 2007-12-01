@@ -45,6 +45,8 @@ typedef struct cucul_canvas cucul_canvas_t;
 typedef struct cucul_dither cucul_dither_t;
 /** font structure */
 typedef struct cucul_font cucul_font_t;
+/** file handle structure */
+typedef struct cucul_file cucul_file_t;
 
 /** \defgroup cucul_attr libcucul attribute definitions
  *

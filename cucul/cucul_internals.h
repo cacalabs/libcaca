@@ -71,4 +71,10 @@ extern uint32_t _cucul_attr_to_rgb24bg(uint32_t);
 extern void _cucul_save_frame_info(cucul_canvas_t *);
 extern void _cucul_load_frame_info(cucul_canvas_t *);
 
+/* File functions */
+extern cucul_file_t *_cucul_file_open(const char *, const char *);
+extern int _cucul_file_close(cucul_file_t *);
+extern int _cucul_file_eof(cucul_file_t *);
+extern char *_cucul_file_gets(char *, int, cucul_file_t *);
+
 #endif /* __CUCUL_INTERNALS_H__ */

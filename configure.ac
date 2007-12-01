@@ -116,6 +116,9 @@ AC_TRY_COMPILE([],[asm("fldln2; fldln2; fxch; fyl2x");],
   AC_DEFINE(HAVE_FLDLN2, 1, [Define to 1 if you have the `fldln2' and other floating points operands.])],
  [AC_MSG_RESULT(no)])
 
+AC_CHECK_HEADERS(zlib.h)
+AC_CHECK_LIB(z, gzopen, [ZLIB_LIBS="${ZLIB_LIBS} -lz"])
+
 AC_CHECK_LIB(m, sin, MATH_LIBS="${MATH_LIBS} -lm")
 
 CACA_DRIVERS=""
@@ -309,6 +312,7 @@ else
 fi
 
 AC_SUBST(MATH_LIBS)
+AC_SUBST(ZLIB_LIBS)
 AC_SUBST(GETOPT_LIBS)
 AC_SUBST(CACA_LIBS)
 AC_SUBST(X11_LIBS)
