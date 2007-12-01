@@ -126,7 +126,7 @@ int main(int argc, char **argv)
             { "help",        0, NULL, 'h' },
             { "version",     0, NULL, 'v' },
         };
-        int c = mygetopt(argc, argv, "W:H:f:d:g:b:c:h:v:x:y:", long_options, &option_index);
+        int c = mygetopt(argc, argv, "W:H:f:d:g:b:c:hvx:y:", long_options, &option_index);
         if(c == -1)
             break;
 
