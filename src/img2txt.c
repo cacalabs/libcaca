@@ -41,6 +41,8 @@
 
 static void usage(int argc, char **argv)
 {
+    char const * const * list;
+
     fprintf(stderr, "Usage: %s [OPTIONS]... <IMAGE>\n", argv[0]);
     fprintf(stderr, "Convert IMAGE to any text based available format.\n");
     fprintf(stderr, "Example : %s -w 80 -f ansi ./caca.png\n\n", argv[0]);
@@ -55,24 +57,20 @@ static void usage(int argc, char **argv)
     fprintf(stderr, "  -c, --contrast=CONTRAST\tContrast of resulting image\n");
     fprintf(stderr, "  -g, --gamma=GAMMA\t\tGamma of resulting image\n");
     fprintf(stderr, "  -d, --dither=DITHER\t\tDithering algorithm to use :\n");
-    fprintf(stderr, "\t\t\tnone     : Nearest color\n");
-    fprintf(stderr, "\t\t\tordered2 : Ordered 2x2\n");
-    fprintf(stderr, "\t\t\tordered4 : Ordered 4x4\n");
-    fprintf(stderr, "\t\t\tordered8 : Ordered 8x8\n");
-    fprintf(stderr, "\t\t\trandom   : Random\n");
-    fprintf(stderr, "\t\t\tfstein   : Floyd Steinberg (default)\n");
+    list = cucul_get_dither_algorithm_list(NULL);
+    while(*list)
+    {
+        fprintf(stderr, "\t\t\t%s: %s\n", list[0], list[1]);
+        list += 2;
+    }
+
     fprintf(stderr, "  -f, --format=FORMAT\t\tFormat of the resulting image :\n");
-    fprintf(stderr, "\t\t\tansi  : coloured ANSI (default)\n");
-    fprintf(stderr, "\t\t\tcaca  : internal libcaca format\n");
-    fprintf(stderr, "\t\t\tutf8  : UTF8 with CR\n");
-    fprintf(stderr, "\t\t\tutf8  : UTF8 with CRLF (MS Windows)\n");
-    fprintf(stderr, "\t\t\thtml  : HTML with CSS and DIV support\n");
-    fprintf(stderr, "\t\t\thtml3 : Pure HTML3 with tables\n");
-    fprintf(stderr, "\t\t\tirc   : IRC with ctrl-k codes\n");
-    fprintf(stderr, "\t\t\bbfr   : BBCode (French)\n");
-    fprintf(stderr, "\t\t\tps    : Postscript\n");
-    fprintf(stderr, "\t\t\tsvg   : Scalable Vector Graphics\n");
-    fprintf(stderr, "\t\t\ttga   : Targa Image\n\n");
+    list = cucul_get_export_list();
+    while(*list)
+    {
+        fprintf(stderr, "\t\t\t%s: %s\n", list[0], list[1]);
+        list += 2;
+    }
 
 #if !defined(USE_IMLIB2)
     fprintf(stderr, "NOTE: This program has NOT been built with Imlib2 support. Only BMP loading is supported.\n");
