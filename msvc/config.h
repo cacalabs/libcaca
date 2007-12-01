@@ -49,7 +49,7 @@
 /* #undef USE_SLANG */
 #define USE_WIN32 1
 /* #undef USE_X11 */
-#define VERSION "0.99.beta13"
+#define VERSION "0.99.beta14"
 /* #undef const */
 #ifndef __cplusplus
 #define inline __inline
