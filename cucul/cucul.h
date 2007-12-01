@@ -286,6 +286,7 @@ __extern int cucul_free_font(cucul_font_t *);
  *
  *  @{ */
 __extern int cucul_canvas_set_figfont(cucul_canvas_t *, char const *);
+__extern int cucul_put_figchar(cucul_canvas_t *, unsigned long int);
 /*  @} */
 
 /** \defgroup cucul_importexport libcucul importers/exporters from/to various

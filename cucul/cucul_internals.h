@@ -85,8 +85,4 @@ extern int _cucul_file_close(cucul_file_t *);
 extern int _cucul_file_eof(cucul_file_t *);
 extern char *_cucul_file_gets(char *, int, cucul_file_t *);
 
-/* FIGfont functions */
-extern cucul_figfont_t * _cucul_open_figfont(char const *);
-extern int _cucul_free_figfont(cucul_figfont_t *);
-
 #endif /* __CUCUL_INTERNALS_H__ */

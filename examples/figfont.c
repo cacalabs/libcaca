@@ -17,6 +17,7 @@
 
 #if !defined(__KERNEL__)
 #   include <stdio.h>
+#   include <stdlib.h>
 #endif
 
 #include "cucul.h"
@@ -24,8 +25,11 @@
 int main(int argc, char *argv[])
 {
     cucul_canvas_t *cv;
+    void *buffer;
+    unsigned long int len;
+    uint8_t color = 0;
 
-    if(argc < 2)
+    if(argc < 3)
     {
         fprintf(stderr, "Too few arguments\n");
         return -1;
@@ -37,6 +41,16 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Could not open font\n");
         return -1;
     }
+
+    while(argv[2][0])
+    {
+        cucul_set_color_ansi(cv, 1 + ((color += 4) % 15), CUCUL_TRANSPARENT);
+        cucul_put_figchar(cv, argv[2]++[0]);
+    }
+
+    buffer = cucul_export_memory(cv, "utf8", &len);
+    fwrite(buffer, len, 1, stdout);
+    free(buffer);
 
     cucul_free_canvas(cv);
 

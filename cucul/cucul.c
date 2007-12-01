@@ -308,8 +308,7 @@ int cucul_free_canvas(cucul_canvas_t *cv)
         free(cv->frames[f].name);
     }
 
-    if(cv->ff)
-        _cucul_free_figfont(cv->ff);
+    cucul_canvas_set_figfont(cv, NULL);
 
     free(cv->frames);
     free(cv);
