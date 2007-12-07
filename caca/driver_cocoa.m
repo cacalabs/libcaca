@@ -722,7 +722,7 @@ static unsigned int get_caca_keycode(NSEvent* event)
     return caca_keycode;
 }
 
-static BOOL handle_key_event(struct caca_event *ev, NSEvent* event)
+static BOOL handle_key_event(caca_privevent_t *ev, NSEvent* event)
 {
     if(!ev || !event)
         return NO;
@@ -774,7 +774,7 @@ static BOOL handle_key_event(struct caca_event *ev, NSEvent* event)
 }
 
 // TODO: handle CACA_EVENT_RESIZE
-static BOOL handle_mouse_event(caca_display_t *dp, struct caca_event *ev,
+static BOOL handle_mouse_event(caca_display_t *dp, caca_privevent_t *ev,
                                NSEvent* event)
 {
     if(!ev || !event)
@@ -884,7 +884,7 @@ static void cocoa_display(caca_display_t *dp)
     [pool release];
 }
 
-static int cocoa_get_event(caca_display_t *dp, struct caca_event *ev)
+static int cocoa_get_event(caca_display_t *dp, caca_privevent_t *ev)
 {
     if(s_quit)
     {
@@ -970,12 +970,12 @@ static int cocoa_set_display_title(caca_display_t *dp, char const *title)
     return 0;
 }
 
-static unsigned int cocoa_get_display_width(caca_display_t *dp)
+static unsigned int cocoa_get_display_width(caca_display_t const *dp)
 {
     return [dp->drv.p->window frame].size.width;
 }
 
-static unsigned int cocoa_get_display_height(caca_display_t *dp)
+static unsigned int cocoa_get_display_height(caca_display_t const *dp)
 {
     return [dp->drv.p->window frame].size.height;
 }
