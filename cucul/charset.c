@@ -349,8 +349,6 @@ char cucul_utf32_to_ascii(unsigned long int ch)
     case 0x00002591: /* ░ */
     case 0x00002592: /* ▒ */
     case 0x00002593: /* ▓ */
-    case 0x00002580: /* ▀ */
-    case 0x00002584: /* ▄ */
     case 0x00002588: /* █ */
     case 0x0000258c: /* ▌ */
     case 0x00002590: /* ▐ */
@@ -358,6 +356,10 @@ char cucul_utf32_to_ascii(unsigned long int ch)
     case 0x000025ac: /* ▬ */
     case 0x000025ae: /* ▮ */
         return '#';
+    case 0x00002580: /* ▀ */
+        return '"';
+    case 0x00002584: /* ▄ */
+        return ',';
     case 0x000025c6: /* ◆ */
     case 0x00002666: /* ♦ */
         return '+';
