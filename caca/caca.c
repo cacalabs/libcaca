@@ -211,6 +211,57 @@ char const * caca_get_version(void)
     return VERSION;
 }
 
+/** \brief Get available display drivers
+ *
+ *  Return a list of available display drivers. The list is a NULL-terminated
+ *  array of strings, interleaving a string containing the internal value for
+ *  the display driver, and a string containing the natural language
+ *  description for that driver.
+ *
+ *  This function never fails.
+ *
+ *  \param dp Display object.
+ *  \return An array of strings.
+ */
+char const * const * caca_get_display_driver_list(caca_display_t *dp)
+{
+    static char const * const list[] =
+    {
+        "none", "No antialiasing",
+        "prefilter", "Prefilter antialiasing",
+#if defined(USE_COCOA)
+        "cocoa", "Mac OS X Cocoa",
+#endif
+#if defined(USE_WIN32)
+        "win32", "Windows console",
+#endif
+#if defined(USE_CONIO)
+        "conio", "MS-DOS conio",
+#endif
+#if defined(USE_X11)
+        "x11", "X11 graphical window",
+#endif
+#if defined(USE_GL)
+        "gl", "OpenGL window",
+#endif
+#if !defined(__KERNEL__)
+        "raw", "raw libcaca output",
+#endif
+#if defined(USE_SLANG)
+        "slang", "S-Lang console library",
+#endif
+#if defined(USE_NCURSES)
+        "ncurses", "ncurses console library",
+#endif
+#if defined(USE_VGA)
+        "vga", "direct VGA memory",
+#endif
+        NULL, NULL
+    };
+
+    return list;
+}
+
 /*
  * XXX: The following functions are local.
  */

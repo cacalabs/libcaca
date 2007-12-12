@@ -157,6 +157,7 @@ __extern caca_display_t * caca_create_display(cucul_canvas_t *);
 __extern int caca_free_display(caca_display_t *);
 __extern cucul_canvas_t * caca_get_canvas(caca_display_t *);
 __extern int caca_refresh_display(caca_display_t *);
+__extern char const * const * caca_get_display_driver_list(caca_display_t *);
 __extern int caca_set_display_time(caca_display_t *, unsigned int);
 __extern unsigned int caca_get_display_time(caca_display_t const *);
 __extern unsigned int caca_get_display_width(caca_display_t const *);
