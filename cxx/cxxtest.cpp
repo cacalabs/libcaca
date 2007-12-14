@@ -13,6 +13,7 @@
  */
 
 #include <iostream>
+#include <cstring>
 
 #include <cucul++.h>
 #include <caca++.h>
