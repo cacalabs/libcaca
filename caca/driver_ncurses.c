@@ -196,7 +196,8 @@ static RETSIGTYPE sigwinch_handler(int);
 static caca_display_t *sigwinch_d; /* FIXME: we ought to get rid of this */
 #endif
 #if defined HAVE_GETENV && defined HAVE_PUTENV
-static void ncurses_check_terminal(void);
+static void ncurses_install_terminal(caca_display_t *);
+static void ncurses_uninstall_terminal(caca_display_t *);
 #endif
 static void ncurses_write_utf32(uint32_t);
 
@@ -204,6 +205,7 @@ struct driver_private
 {
     int attr[16*16];
     mmask_t oldmask;
+    char *term;
 };
 
 static int ncurses_init_graphics(caca_display_t *dp)
@@ -236,7 +238,7 @@ static int ncurses_init_graphics(caca_display_t *dp)
     dp->drv.p = malloc(sizeof(struct driver_private));
 
 #if defined HAVE_GETENV && defined HAVE_PUTENV
-    ncurses_check_terminal();
+    ncurses_install_terminal(dp);
 #endif
 
 #if defined HAVE_SIGNAL
@@ -314,6 +316,10 @@ static int ncurses_end_graphics(caca_display_t *dp)
     curs_set(1);
     noraw();
     endwin();
+
+#if defined HAVE_GETENV && defined HAVE_PUTENV
+    ncurses_uninstall_terminal(dp);
+#endif
 
     free(dp->drv.p);
 
@@ -561,9 +567,11 @@ static RETSIGTYPE sigwinch_handler(int sig)
 #endif
 
 #if defined HAVE_GETENV && defined HAVE_PUTENV
-static void ncurses_check_terminal(void)
+static void ncurses_install_terminal(caca_display_t *dp)
 {
     char *term, *colorterm;
+
+    dp->drv.p->term = NULL;
 
     term = getenv("TERM");
     colorterm = getenv("COLORTERM");
@@ -583,8 +591,22 @@ static void ncurses_check_terminal(void)
             return;
         endwin();
         (void)putenv("TERM=xterm-16color");
+        dp->drv.p->term = strdup(term);
         return;
     }
+}
+
+static void ncurses_uninstall_terminal(caca_display_t *dp)
+{
+    /* Needs to be persistent because we use putenv() */
+    static char termenv[1024];
+
+    if(!dp->drv.p->term)
+        return;
+
+    snprintf(termenv, 1023, "TERM=%s", dp->drv.p->term);
+    free(dp->drv.p->term);
+    (void)putenv(termenv);
 }
 #endif
 
