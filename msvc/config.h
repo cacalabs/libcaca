@@ -32,6 +32,7 @@
 /* #undef HAVE_UNISTD_H */
 /* #undef HAVE_USLEEP */
 /* #undef HAVE_VSNPRINTF */
+#define HAVE_SNPRINTF 1
 #define HAVE_WINDOWS_H 1
 /* #undef HAVE_X11_XKBLIB_H */
 /* #undef NO_MINUS_C_MINUS_O */

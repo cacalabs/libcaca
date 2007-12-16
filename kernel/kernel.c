@@ -212,6 +212,16 @@ char *strdup(const char *s)
     return new;
 }
 
+char *strchr(const char *s, int c)
+{
+    do
+        if(*s == c)
+            return (char *)(intptr_t)s;
+    while(*s++);
+
+    return NULL;
+}
+
 /* stdarg.h functions */
 int vsnprintf(char *str, size_t size, const char *format, va_list ap)
 {

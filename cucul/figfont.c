@@ -303,6 +303,7 @@ cucul_figfont_t * open_figfont(char const *path)
 
     /* Open font: if not found, try .tlf, then .flf */
     f = _cucul_file_open(path, "r");
+#if !defined __KERNEL__ && defined HAVE_SNPRINTF
     if(!f)
     {
         snprintf(altpath, 2047, "%s.tlf", path);
@@ -315,6 +316,7 @@ cucul_figfont_t * open_figfont(char const *path)
         altpath[2047] = '\0';
         f = _cucul_file_open(altpath, "r");
     }
+#endif
     if(!f)
     {
         free(ff);

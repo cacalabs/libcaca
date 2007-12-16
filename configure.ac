@@ -88,7 +88,7 @@ AC_ARG_ENABLE(zzuf,
   [  --enable-zzuf           use zzuf for fuzzing tests (autodetected)])
 
 AC_CHECK_HEADERS(stdio.h stdarg.h signal.h sys/ioctl.h sys/time.h inttypes.h endian.h unistd.h arpa/inet.h netinet/in.h winsock2.h errno.h locale.h getopt.h dlfcn.h termios.h)
-AC_CHECK_FUNCS(signal ioctl vsnprintf getenv putenv strcasecmp htons)
+AC_CHECK_FUNCS(signal ioctl snprintf vsnprintf getenv putenv strcasecmp htons)
 AC_CHECK_FUNCS(usleep gettimeofday)
 
 AC_CHECK_FUNCS(getopt_long,

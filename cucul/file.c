@@ -19,7 +19,7 @@
 #include "config.h"
 #include "common.h"
 
-#if !defined(__KERNEL__)
+#if !defined __KERNEL__
 #   include <stdio.h>
 #   include <stdlib.h>
 #   include <string.h>
@@ -33,26 +33,31 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
-#if defined HAVE_ZLIB_H
+#if !defined __KERNEL__ && defined HAVE_ZLIB_H
 static int zipread(cucul_file_t *, void *, unsigned int);
 #endif
 
+#if !defined __KERNEL__
 struct cucul_file
 {
-#if defined HAVE_ZLIB_H
+#   if defined HAVE_ZLIB_H
     unsigned char read_buffer[READSIZE];
     z_stream stream;
     gzFile gz;
     int eof, zip;
-#endif
+#   endif
     FILE *f;
 };
+#endif
 
 cucul_file_t *_cucul_file_open(char const *path, const char *mode)
 {
+#if defined __KERNEL__
+    return NULL;
+#else
     cucul_file_t *fp = malloc(sizeof(*fp));
 
-#if defined HAVE_ZLIB_H
+#   if defined HAVE_ZLIB_H
     uint8_t buf[4];
     unsigned int skip_size = 0;
 
@@ -99,7 +104,7 @@ cucul_file_t *_cucul_file_open(char const *path, const char *mode)
         gzclose(fp->gz);
         return NULL;
     }
-#else
+#   else
     fp->f = fopen(path, mode);
 
     if(!fp->f)
@@ -107,14 +112,17 @@ cucul_file_t *_cucul_file_open(char const *path, const char *mode)
         free(fp);
         return NULL;
     }
-#endif
+#   endif
 
     return fp;
+#endif
 }
 
 int _cucul_file_close(cucul_file_t *fp)
 {
-#if defined HAVE_ZLIB_H
+#if defined __KERNEL__
+    return 0;
+#elif defined HAVE_ZLIB_H
     gzFile gz = fp->gz;
     if(fp->zip)
         inflateEnd(&fp->stream);
@@ -129,7 +137,9 @@ int _cucul_file_close(cucul_file_t *fp)
 
 int _cucul_file_eof(cucul_file_t *fp)
 {
-#if defined HAVE_ZLIB_H
+#if defined __KERNEL__
+    return 1;
+#elif defined HAVE_ZLIB_H
     return fp->zip ? fp->eof : gzeof(fp->gz);
 #else
     return feof(fp->f);
@@ -138,7 +148,9 @@ int _cucul_file_eof(cucul_file_t *fp)
 
 char *_cucul_file_gets(char *s, int size, cucul_file_t *fp)
 {
-#if defined HAVE_ZLIB_H
+#if defined __KERNEL__
+    return NULL;
+#elif defined HAVE_ZLIB_H
     if(fp->zip)
     {
         int i;
@@ -167,7 +179,7 @@ char *_cucul_file_gets(char *s, int size, cucul_file_t *fp)
 #endif
 }
 
-#if defined HAVE_ZLIB_H
+#if !defined __KERNEL__ && defined HAVE_ZLIB_H
 static int zipread(cucul_file_t *fp, void *buf, unsigned int len)
 {
     unsigned int total_read = 0;

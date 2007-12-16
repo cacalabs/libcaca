@@ -87,6 +87,7 @@ int strcmp(const char *s1, const char *s2);
 int strcasecmp(const char *s1, const char *s2);
 int memcmp(const void *s1, const void *s2, size_t n);
 char *strdup(const char *s);
+char *strchr(const char *s, int c);
 
 /* stdarg.h functions */
 typedef void * va_list;
