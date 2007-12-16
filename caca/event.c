@@ -68,7 +68,7 @@ int caca_get_event(caca_display_t *dp, unsigned int event_mask,
                    caca_event_t *ev, int timeout)
 {
     caca_privevent_t privevent;
-    caca_timer_t timer;
+    caca_timer_t timer = {0, 0};
     int usec = 0;
 
     if(!event_mask)
