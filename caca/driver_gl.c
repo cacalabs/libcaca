@@ -44,6 +44,7 @@
  * Global variables
  */
 
+static int glut_init;
 static caca_display_t *gl_d; /* FIXME: we ought to get rid of this */
 
 /*
@@ -139,7 +140,11 @@ static int gl_init_graphics(caca_display_t *dp)
     dp->drv.p->sw = ((float)dp->drv.p->font_width) / 16.0f;
     dp->drv.p->sh = ((float)dp->drv.p->font_height) / 16.0f;
 
-    glutInit(&argc, argv);
+    if(!glut_init)
+    {
+        glut_init = 1;
+        glutInit(&argc, argv);
+    }
 
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
     glutInitWindowSize(dp->drv.p->width, dp->drv.p->height);
@@ -186,7 +191,9 @@ static int gl_init_graphics(caca_display_t *dp)
 
 static int gl_end_graphics(caca_display_t *dp)
 {
+    glutHideWindow();
     glutDestroyWindow(dp->drv.p->window);
+    cucul_free_font(dp->drv.p->f);
     free(dp->drv.p->txid);
     free(dp->drv.p);
     return 0;
