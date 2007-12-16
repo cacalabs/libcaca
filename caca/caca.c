@@ -227,8 +227,6 @@ char const * const * caca_get_display_driver_list(caca_display_t *dp)
 {
     static char const * const list[] =
     {
-        "none", "No antialiasing",
-        "prefilter", "Prefilter antialiasing",
 #if defined(USE_COCOA)
         "cocoa", "Mac OS X Cocoa",
 #endif
