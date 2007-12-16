@@ -42,6 +42,8 @@
 #endif
 
 static int caca_can_resize(caca_display_t *);
+static int caca_install_driver(caca_display_t *, char const *);
+static int caca_uninstall_driver(caca_display_t *);
 static int caca_select_driver(caca_display_t *, char const *);
 #if defined(USE_PLUGINS)
 static int caca_plugin_install(char const *, caca_display_t *);
@@ -72,7 +74,7 @@ caca_display_t * caca_create_display(cucul_canvas_t *cv)
     return caca_create_display_with_driver(cv, NULL);
 }
 
-/** \brief Attach a caca graphical context to a cucul canvas.
+/** \brief Attach a specific caca graphical context to a cucul canvas.
  *
  *  Create a graphical context using device-dependent features (ncurses for
  *  terminals, an X11 window, a DOS command window...) that attaches to a
@@ -82,6 +84,9 @@ caca_display_t * caca_create_display(cucul_canvas_t *cv)
  *  If no cucul canvas is provided, a new one is created. Its handle can be
  *  retrieved using caca_get_canvas() and it is automatically destroyed when
  *  caca_free_display() is called.
+ *
+ *  If no driver name is provided, \e libcaca will try to autodetect the best
+ *  output driver it can.
  *
  *  See also caca_create_display().
  *
@@ -121,16 +126,8 @@ caca_display_t * caca_create_display_with_driver(cucul_canvas_t *cv,
         return NULL;
     }
 
-#if defined(USE_PLUGINS)
-    dp->plugin = NULL;
-#endif
-
-    if(caca_select_driver(dp, driver))
+    if(caca_install_driver(dp, driver))
     {
-#if defined(USE_PLUGINS)
-        if(dp->plugin)
-            dlclose(dp->plugin);
-#endif
         cucul_unmanage_canvas(cv, (int (*)(void *))caca_can_resize, (void *)dp);
         if(dp->autorelease)
             cucul_free_canvas(dp->cv);
@@ -138,53 +135,60 @@ caca_display_t * caca_create_display_with_driver(cucul_canvas_t *cv,
         seterrno(ENODEV);
         return NULL;
     }
-
-    if(dp->drv.init_graphics(dp))
-    {
-#if defined(USE_PLUGINS)
-        if(dp->plugin)
-            dlclose(dp->plugin);
-#endif
-        cucul_unmanage_canvas(cv, (int (*)(void *))caca_can_resize, (void *)dp);
-        if(dp->autorelease)
-            cucul_free_canvas(dp->cv);
-        free(dp);
-        seterrno(ENODEV);
-        return NULL;
-    }
-
-    /* Graphics stuff */
-    dp->delay = 0;
-    dp->rendertime = 0;
-
-    /* Events stuff */
-#if defined(USE_SLANG) || defined(USE_NCURSES)
-    dp->events.key_timer.last_sec = 0;
-    dp->events.key_timer.last_usec = 0;
-    dp->events.last_key_ticks = 0;
-    dp->events.autorepeat_ticks = 0;
-    dp->events.last_key_event.type = CACA_EVENT_NONE;
-#endif
-#if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO) || defined(USE_GL)
-    dp->events.queue = 0;
-#endif
-
-    dp->timer.last_sec = 0;
-    dp->timer.last_usec = 0;
-    dp->lastticks = 0;
-
-    /* Mouse position */
-    dp->mouse.x = cucul_get_canvas_width(dp->cv) / 2;
-    dp->mouse.y = cucul_get_canvas_height(dp->cv) / 2;
-
-    /* Resize events */
-    dp->resize.resized = 0;
-    dp->resize.allow = 0;
 
     return dp;
 }
 
-/** \brief Return the current output driver
+/** \brief Get available display drivers
+ *
+ *  Return a list of available display drivers. The list is a NULL-terminated
+ *  array of strings, interleaving a string containing the internal value for
+ *  the display driver, and a string containing the natural language
+ *  description for that driver.
+ *
+ *  This function never fails.
+ *
+ *  \param dp Display object.
+ *  \return An array of strings.
+ */
+char const * const * caca_get_display_driver_list(void)
+{
+    static char const * const list[] =
+    {
+#if defined(USE_COCOA)
+        "cocoa", "Mac OS X Cocoa",
+#endif
+#if defined(USE_WIN32)
+        "win32", "Windows console",
+#endif
+#if defined(USE_CONIO)
+        "conio", "MS-DOS conio",
+#endif
+#if defined(USE_X11)
+        "x11", "X11 graphical window",
+#endif
+#if defined(USE_GL)
+        "gl", "OpenGL window",
+#endif
+#if defined(USE_SLANG)
+        "slang", "S-Lang console library",
+#endif
+#if defined(USE_NCURSES)
+        "ncurses", "ncurses console library",
+#endif
+#if defined(USE_VGA)
+        "vga", "direct VGA memory",
+#endif
+#if !defined(__KERNEL__)
+        "raw", "raw libcaca output",
+#endif
+        NULL, NULL
+    };
+
+    return list;
+}
+
+/** \brief Return a caca graphical context's current output driver.
  *
  *  Return the given display's current output driver.
  *
@@ -196,6 +200,29 @@ caca_display_t * caca_create_display_with_driver(cucul_canvas_t *cv,
 char const * caca_get_display_driver(caca_display_t *dp)
 {
     return dp->drv.driver;
+}
+
+/** \brief Set the output driver.
+ *
+ *  Dynamically change the given display's output driver.
+ *
+ *  FIXME: decide what to do in case of failure
+ *
+ *  \param dp The caca display.
+ *  \param driver A string describing the desired output driver or NULL to
+ *                choose the best driver automatically.
+ *  \return 0 in case of success, -1 if an error occurred.
+ */
+int caca_set_display_driver(caca_display_t *dp, char const *driver)
+{
+    caca_uninstall_driver(dp);
+    if(caca_install_driver(dp, driver))
+    {
+        seterrno(ENODEV);
+        return -1;
+    }
+
+    return 0;
 }
 
 /** \brief Detach a caca graphical context from a cucul backend context.
@@ -214,11 +241,7 @@ char const * caca_get_display_driver(caca_display_t *dp)
  */
 int caca_free_display(caca_display_t *dp)
 {
-    dp->drv.end_graphics(dp);
-#if defined(USE_PLUGINS)
-    if(dp->plugin)
-        dlclose(dp->plugin);
-#endif
+    caca_uninstall_driver(dp);
     cucul_unmanage_canvas(dp->cv, (int (*)(void *))caca_can_resize, (void *)dp);
     if(dp->autorelease)
         cucul_free_canvas(dp->cv);
@@ -255,55 +278,6 @@ char const * caca_get_version(void)
     return VERSION;
 }
 
-/** \brief Get available display drivers
- *
- *  Return a list of available display drivers. The list is a NULL-terminated
- *  array of strings, interleaving a string containing the internal value for
- *  the display driver, and a string containing the natural language
- *  description for that driver.
- *
- *  This function never fails.
- *
- *  \param dp Display object.
- *  \return An array of strings.
- */
-char const * const * caca_get_display_driver_list(void)
-{
-    static char const * const list[] =
-    {
-#if defined(USE_COCOA)
-        "cocoa", "Mac OS X Cocoa",
-#endif
-#if defined(USE_WIN32)
-        "win32", "Windows console",
-#endif
-#if defined(USE_CONIO)
-        "conio", "MS-DOS conio",
-#endif
-#if defined(USE_X11)
-        "x11", "X11 graphical window",
-#endif
-#if defined(USE_GL)
-        "gl", "OpenGL window",
-#endif
-#if !defined(__KERNEL__)
-        "raw", "raw libcaca output",
-#endif
-#if defined(USE_SLANG)
-        "slang", "S-Lang console library",
-#endif
-#if defined(USE_NCURSES)
-        "ncurses", "ncurses console library",
-#endif
-#if defined(USE_VGA)
-        "vga", "direct VGA memory",
-#endif
-        NULL, NULL
-    };
-
-    return list;
-}
-
 /*
  * XXX: The following functions are local.
  */
@@ -311,6 +285,72 @@ char const * const * caca_get_display_driver_list(void)
 static int caca_can_resize(caca_display_t *dp)
 {
     return dp->resize.allow;
+}
+
+static int caca_install_driver(caca_display_t *dp, char const *driver)
+{
+#if defined(USE_PLUGINS)
+    dp->plugin = NULL;
+#endif
+
+    if(caca_select_driver(dp, driver))
+    {
+#if defined(USE_PLUGINS)
+        if(dp->plugin)
+            dlclose(dp->plugin);
+#endif
+        return -1;
+    }
+
+    if(dp->drv.init_graphics(dp))
+    {
+#if defined(USE_PLUGINS)
+        if(dp->plugin)
+            dlclose(dp->plugin);
+#endif
+        return -1;
+    }
+
+    /* Graphics stuff */
+    dp->delay = 0;
+    dp->rendertime = 0;
+
+    /* Events stuff */
+#if defined(USE_SLANG) || defined(USE_NCURSES)
+    dp->events.key_timer.last_sec = 0;
+    dp->events.key_timer.last_usec = 0;
+    dp->events.last_key_ticks = 0;
+    dp->events.autorepeat_ticks = 0;
+    dp->events.last_key_event.type = CACA_EVENT_NONE;
+#endif
+#if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO) || defined(USE_GL)
+    dp->events.queue = 0;
+#endif
+
+    dp->timer.last_sec = 0;
+    dp->timer.last_usec = 0;
+    dp->lastticks = 0;
+
+    /* Mouse position */
+    dp->mouse.x = cucul_get_canvas_width(dp->cv) / 2;
+    dp->mouse.y = cucul_get_canvas_height(dp->cv) / 2;
+
+    /* Resize events */
+    dp->resize.resized = 0;
+    dp->resize.allow = 0;
+
+    return 0;
+}
+
+static int caca_uninstall_driver(caca_display_t *dp)
+{
+    dp->drv.end_graphics(dp);
+#if defined(USE_PLUGINS)
+    if(dp->plugin)
+        dlclose(dp->plugin);
+#endif
+
+    return 0;
 }
 
 static int caca_select_driver(caca_display_t *dp, char const *driver)

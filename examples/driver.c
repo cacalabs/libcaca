@@ -16,6 +16,7 @@
 #include "common.h"
 
 #if !defined(__KERNEL__)
+#   include <string.h>
 #   include <stdio.h>
 #endif
 
@@ -24,47 +25,61 @@
 
 int main(int argc, char *argv[])
 {
-    char const * const * list;
+    char const * const *list;
     caca_display_t *dp;
     cucul_canvas_t *cv;
 
     list = caca_get_display_driver_list();
-    if(argc <= 1)
-    {
-        printf("Available drivers:\n");
 
-        while(*list)
-        {
-            printf("  %s (%s)\n", list[0], list[1]);
-            list += 2;
-        }
-
-        return 0;
-    }
-
-    cv = cucul_create_canvas(0, 0);
-    if(cv == NULL)
-    {
-        printf("cannot create canvas\n");
-        return -1;
-    }
-    dp = caca_create_display_with_driver(cv, argv[1]);
+    dp = caca_create_display(NULL);
     if(dp == NULL)
     {
         printf("cannot create display\n");
         return -1;
     }
 
-    cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
-    cucul_draw_line(cv, 0, 0, 9999, 0, ' ');
-    cucul_printf(cv, 1, 0, "Current driver: %s", argv[1]);
+    cv = caca_get_canvas(dp);
+    cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLACK);
 
-    caca_refresh_display(dp);
+    while(1)
+    {
+        char const *driver;
+        int i, cur = 0;
 
-    caca_get_event(dp, CACA_EVENT_KEY_PRESS, NULL, -1);
+        cucul_put_str(cv, 1, 0, "Available drivers:");
+
+        driver = caca_get_display_driver(dp);
+
+        for(i = 0; list[i]; i += 2)
+        {
+            int match = !strcmp(list[i], driver);
+
+            if(match)
+                cur = i;
+            cucul_draw_line(cv, 0, i + 2, 9999, i + 2, ' ');
+            cucul_printf(cv, 2, i + 2, "%c %s (%s)",
+                         match ? '*' : ' ', list[i], list[i + 1]);
+        }
+
+        cucul_put_str(cv, 1, i + 2, "Switching driver in 5 seconds");
+
+        caca_refresh_display(dp);
+
+        if(caca_get_event(dp, CACA_EVENT_KEY_PRESS, NULL, 5000000))
+            break;
+
+        do
+        {
+            cur += 2;
+            if(list[cur] && !strcmp(list[cur], "raw"))
+                cur += 2;
+            if(!list[cur])
+                cur = 0;
+        }
+        while(caca_set_display_driver(dp, list[cur]));
+    }
 
     caca_free_display(dp);
-    cucul_free_canvas(cv);
 
     return 0;
 }
