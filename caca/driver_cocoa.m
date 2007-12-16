@@ -997,7 +997,8 @@ static void cocoa_set_mouse(caca_display_t *dp, int flag)
 
 int cocoa_install(caca_display_t *dp)
 {
-    dp->drv.driver = CACA_DRIVER_RAW;
+    dp->drv.id = CACA_DRIVER_COCOA;
+    dp->drv.driver = "cocoa";
 
     dp->drv.init_graphics = cocoa_init_graphics;
     dp->drv.end_graphics = cocoa_end_graphics;

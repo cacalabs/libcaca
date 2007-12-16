@@ -2,7 +2,7 @@
 
 AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/cucul -I$(top_srcdir)/caca -DDATADIR=\"$(pkgdatadir)\"
 
-noinst_PROGRAMS = blit colors cucul demo demo0 dithering event export figfont font font2tga frames fullwidth gamma hsv input spritedit swallow text transform truecolor unicode import
+noinst_PROGRAMS = blit colors cucul demo demo0 dithering driver event export figfont font font2tga frames fullwidth gamma hsv input spritedit swallow text transform truecolor unicode import
 
 blit_SOURCES = blit.c
 blit_LDADD = ../caca/libcaca.la ../cucul/libcucul.la
@@ -23,6 +23,9 @@ demo0_LDFLAGS = @MATH_LIBS@
 
 dithering_SOURCES = dithering.c
 dithering_LDADD = ../caca/libcaca.la ../cucul/libcucul.la
+
+driver_SOURCES = driver.c
+driver_LDADD = ../caca/libcaca.la ../cucul/libcucul.la
 
 event_SOURCES = event.c
 event_LDADD = ../caca/libcaca.la ../cucul/libcucul.la

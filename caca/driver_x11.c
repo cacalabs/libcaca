@@ -789,7 +789,8 @@ int x11_install(caca_display_t *dp)
         return -1;
 #endif
 
-    dp->drv.driver = CACA_DRIVER_X11;
+    dp->drv.id = CACA_DRIVER_X11;
+    dp->drv.driver = "x11";
 
     dp->drv.init_graphics = x11_init_graphics;
     dp->drv.end_graphics = x11_end_graphics;

@@ -597,7 +597,8 @@ int gl_install(caca_display_t *dp)
         return -1;
 #endif
 
-    dp->drv.driver = CACA_DRIVER_GL;
+    dp->drv.id = CACA_DRIVER_GL;
+    dp->drv.driver = "gl";
 
     dp->drv.init_graphics = gl_init_graphics;
     dp->drv.end_graphics = gl_end_graphics;

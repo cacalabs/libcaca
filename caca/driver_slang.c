@@ -522,7 +522,8 @@ static void slang_check_terminal(void)
 
 int slang_install(caca_display_t *dp)
 {
-    dp->drv.driver = CACA_DRIVER_SLANG;
+    dp->drv.id = CACA_DRIVER_SLANG;
+    dp->drv.driver = "slang";
 
     dp->drv.init_graphics = slang_init_graphics;
     dp->drv.end_graphics = slang_end_graphics;

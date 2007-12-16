@@ -808,7 +808,8 @@ static void ncurses_write_utf32(uint32_t ch)
 
 int ncurses_install(caca_display_t *dp)
 {
-    dp->drv.driver = CACA_DRIVER_NCURSES;
+    dp->drv.id = CACA_DRIVER_NCURSES;
+    dp->drv.driver = "ncurses";
 
     dp->drv.init_graphics = ncurses_init_graphics;
     dp->drv.end_graphics = ncurses_end_graphics;

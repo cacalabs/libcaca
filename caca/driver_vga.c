@@ -159,7 +159,8 @@ static int vga_get_event(caca_display_t *dp, caca_privevent_t *ev)
 
 int vga_install(caca_display_t *dp)
 {
-    dp->drv.driver = CACA_DRIVER_VGA;
+    dp->drv.id = CACA_DRIVER_VGA;
+    dp->drv.driver = "vga";
 
     dp->drv.init_graphics = vga_init_graphics;
     dp->drv.end_graphics = vga_end_graphics;

@@ -97,7 +97,8 @@ static int raw_get_event(caca_display_t *dp, caca_privevent_t *ev)
 
 int raw_install(caca_display_t *dp)
 {
-    dp->drv.driver = CACA_DRIVER_RAW;
+    dp->drv.id = CACA_DRIVER_RAW;
+    dp->drv.driver = "raw";
 
     dp->drv.init_graphics = raw_init_graphics;
     dp->drv.end_graphics = raw_end_graphics;

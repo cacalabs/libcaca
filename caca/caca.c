@@ -37,12 +37,12 @@
 #include "caca_internals.h"
 
 #if defined(USE_PLUGINS)
-#   define gl_install(p) caca_plugin_install("gl", p)
-#   define x11_install(p) caca_plugin_install("x11", p)
+#   define gl_install(p) caca_plugin_install(p, "gl")
+#   define x11_install(p) caca_plugin_install(p, "x11")
 #endif
 
 static int caca_can_resize(caca_display_t *);
-static int caca_select_driver(caca_display_t *);
+static int caca_select_driver(caca_display_t *, char const *);
 #if defined(USE_PLUGINS)
 static int caca_plugin_install(char const *, caca_display_t *);
 #endif
@@ -58,14 +58,44 @@ static int caca_plugin_install(char const *, caca_display_t *);
  *  retrieved using caca_get_canvas() and it is automatically destroyed when
  *  caca_free_display() is called.
  *
+ *  See also caca_create_display_with_driver().
+ *
  *  If an error occurs, NULL is returned and \b errno is set accordingly:
  *  - \c ENOMEM Not enough memory.
  *  - \c ENODEV Graphical device could not be initialised.
  *
- *  \param cv The cucul cavas.
+ *  \param cv The cucul canvas or NULL to create a canvas automatically.
  *  \return The caca graphical context or NULL if an error occurred.
  */
 caca_display_t * caca_create_display(cucul_canvas_t *cv)
+{
+    return caca_create_display_with_driver(cv, NULL);
+}
+
+/** \brief Attach a caca graphical context to a cucul canvas.
+ *
+ *  Create a graphical context using device-dependent features (ncurses for
+ *  terminals, an X11 window, a DOS command window...) that attaches to a
+ *  libcucul canvas. Everything that gets drawn in the libcucul canvas can
+ *  then be displayed by the libcaca driver.
+ *
+ *  If no cucul canvas is provided, a new one is created. Its handle can be
+ *  retrieved using caca_get_canvas() and it is automatically destroyed when
+ *  caca_free_display() is called.
+ *
+ *  See also caca_create_display().
+ *
+ *  If an error occurs, NULL is returned and \b errno is set accordingly:
+ *  - \c ENOMEM Not enough memory.
+ *  - \c ENODEV Graphical device could not be initialised.
+ *
+ *  \param cv The cucul canvas or NULL to create a canvas automatically.
+ *  \param driver A string describing the desired output driver or NULL to
+ *                choose the best driver automatically.
+ *  \return The caca graphical context or NULL if an error occurred.
+ */
+caca_display_t * caca_create_display_with_driver(cucul_canvas_t *cv,
+                                                 char const *driver)
 {
     caca_display_t *dp = malloc(sizeof(caca_display_t));
 
@@ -95,7 +125,7 @@ caca_display_t * caca_create_display(cucul_canvas_t *cv)
     dp->plugin = NULL;
 #endif
 
-    if(caca_select_driver(dp))
+    if(caca_select_driver(dp, driver))
     {
 #if defined(USE_PLUGINS)
         if(dp->plugin)
@@ -152,6 +182,20 @@ caca_display_t * caca_create_display(cucul_canvas_t *cv)
     dp->resize.allow = 0;
 
     return dp;
+}
+
+/** \brief Return the current output driver
+ *
+ *  Return the given display's current output driver.
+ *
+ *  This function never fails.
+ *
+ *  \param dp The caca display.
+ *  \return A static string.
+ */
+char const * caca_get_display_driver(caca_display_t *dp)
+{
+    return dp->drv.driver;
 }
 
 /** \brief Detach a caca graphical context from a cucul backend context.
@@ -223,7 +267,7 @@ char const * caca_get_version(void)
  *  \param dp Display object.
  *  \return An array of strings.
  */
-char const * const * caca_get_display_driver_list(caca_display_t *dp)
+char const * const * caca_get_display_driver_list(void)
 {
     static char const * const list[] =
     {
@@ -269,11 +313,15 @@ static int caca_can_resize(caca_display_t *dp)
     return dp->resize.allow;
 }
 
-static int caca_select_driver(caca_display_t *dp)
+static int caca_select_driver(caca_display_t *dp, char const *driver)
 {
-#if defined(HAVE_GETENV) && defined(HAVE_STRCASECMP)
-    char *var = getenv("CACA_DRIVER");
+    char const *var = driver;
+#if defined(HAVE_GETENV)
+    if(!var)
+        var = getenv("CACA_DRIVER");
+#endif
 
+#if defined(HAVE_STRCASECMP)
     /* If the environment variable was set, use it */
     if(var && *var)
     {
@@ -339,22 +387,22 @@ static int caca_select_driver(caca_display_t *dp)
 }
 
 #if defined(USE_PLUGINS)
-static int caca_plugin_install(char const *name, caca_display_t *dp)
+static int caca_plugin_install(caca_display_t *dp, char const *driver)
 {
     char buf[512];
     int (*sym) (caca_display_t *);
 
-    sprintf(buf, "%s/lib%s_plugin.so", PLUGINDIR, name);
+    sprintf(buf, "%s/lib%s_plugin.so", PLUGINDIR, driver);
     dp->plugin = dlopen(buf, RTLD_NOW);
     if(!dp->plugin)
     {
-        sprintf(buf, "lib%s_plugin.so", name);
+        sprintf(buf, "lib%s_plugin.so", driver);
         dp->plugin = dlopen(buf, RTLD_NOW);
         if(!dp->plugin)
             return -1;
     }
 
-    sprintf(buf, "%s_install", name);
+    sprintf(buf, "%s_install", driver);
     sym = dlsym(dp->plugin, buf);
     if(!sym)
     {

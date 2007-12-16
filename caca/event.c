@@ -344,10 +344,10 @@ static int _get_next_event(caca_display_t *dp, caca_privevent_t *ev)
     ret = _lowlevel_event(dp, ev);
 
 #if defined(USE_SLANG)
-    if(dp->drv.driver != CACA_DRIVER_SLANG)
+    if(dp->drv.id != CACA_DRIVER_SLANG)
 #endif
 #if defined(USE_NCURSES)
-    if(dp->drv.driver != CACA_DRIVER_NCURSES)
+    if(dp->drv.id != CACA_DRIVER_NCURSES)
 #endif
     return ret;
 

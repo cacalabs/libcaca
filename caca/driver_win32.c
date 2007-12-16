@@ -349,7 +349,8 @@ static int win32_get_event(caca_display_t *dp, caca_privevent_t *ev)
 
 int win32_install(caca_display_t *dp)
 {
-    dp->drv.driver = CACA_DRIVER_WIN32;
+    dp->drv.id = CACA_DRIVER_WIN32;
+    dp->drv.driver = "win32";
 
     dp->drv.init_graphics = win32_init_graphics;
     dp->drv.end_graphics = win32_end_graphics;

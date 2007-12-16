@@ -166,7 +166,8 @@ static int conio_get_event(caca_display_t *dp, caca_privevent_t *ev)
 
 int conio_install(caca_display_t *dp)
 {
-    dp->drv.driver = CACA_DRIVER_CONIO;
+    dp->drv.id = CACA_DRIVER_CONIO;
+    dp->drv.driver = "conio";
 
     dp->drv.init_graphics = conio_init_graphics;
     dp->drv.end_graphics = conio_end_graphics;

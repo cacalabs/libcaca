@@ -117,7 +117,8 @@ struct caca_display
     /* Device-specific functions */
     struct drv
     {
-        enum caca_driver driver;
+        char const * driver;
+        enum caca_driver id;
         struct driver_private *p;
 
         int (* init_graphics) (caca_display_t *);
