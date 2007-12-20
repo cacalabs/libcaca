@@ -162,44 +162,51 @@ char const * const * cucul_get_export_list(void)
 /* Generate a native libcaca canvas file. */
 static void *export_caca(cucul_canvas_t const *cv, unsigned long int *bytes)
 {
-    uint32_t *attrs = cv->attrs;
-    uint32_t *chars = cv->chars;
     char *data, *cur;
-    unsigned int n;
+    unsigned int f, n;
 
     /* 52 bytes for the header:
      *  - 4 bytes for "\xCA\xCA" + "CV"
      *  - 16 bytes for the canvas header
      *  - 32 bytes for the frame info
      * 8 bytes for each character cell */
-    *bytes = 52 + 8 * cv->width * cv->height;
+    *bytes = 20 + (32 + 8 * cv->width * cv->height) * cv->framecount;
     cur = data = malloc(*bytes);
 
     /* magic */
     cur += sprintf(cur, "%s", "\xCA\xCA" "CV");
 
     /* canvas_header */
-    cur += sprintu32(cur, 16 + 32 * 1);
-    cur += sprintu32(cur, cv->width * cv->height * 8);
+    cur += sprintu32(cur, 16 + 32 * cv->framecount);
+    cur += sprintu32(cur, cv->width * cv->height * 8 * cv->framecount);
     cur += sprintu16(cur, 0x0001);
-    cur += sprintu32(cur, 1);
+    cur += sprintu32(cur, cv->framecount);
     cur += sprintu16(cur, 0x0000);
 
     /* frame_info */
-    cur += sprintu32(cur, cv->width);
-    cur += sprintu32(cur, cv->height);
-    cur += sprintu32(cur, 0);
-    cur += sprintu32(cur, cv->curattr);
-    cur += sprintu32(cur, cv->frames[0].x);
-    cur += sprintu32(cur, cv->frames[0].y);
-    cur += sprintu32(cur, cv->frames[0].handlex);
-    cur += sprintu32(cur, cv->frames[0].handley);
+    for(f = 0; f < cv->framecount; f++)
+    {
+        cur += sprintu32(cur, cv->width);
+        cur += sprintu32(cur, cv->height);
+        cur += sprintu32(cur, 0);
+        cur += sprintu32(cur, cv->curattr);
+        cur += sprintu32(cur, cv->frames[f].x);
+        cur += sprintu32(cur, cv->frames[f].y);
+        cur += sprintu32(cur, cv->frames[f].handlex);
+        cur += sprintu32(cur, cv->frames[f].handley);
+    }
 
     /* canvas_data */
-    for(n = cv->height * cv->width; n--; )
+    for(f = 0; f < cv->framecount; f++)
     {
-        cur += sprintu32(cur, *chars++);
-        cur += sprintu32(cur, *attrs++);
+        uint32_t *attrs = cv->frames[f].attrs;
+        uint32_t *chars = cv->frames[f].chars;
+
+        for(n = cv->height * cv->width; n--; )
+        {
+            cur += sprintu32(cur, *chars++);
+            cur += sprintu32(cur, *attrs++);
+        }
     }
 
     return data;

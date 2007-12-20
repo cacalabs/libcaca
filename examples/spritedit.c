@@ -63,7 +63,7 @@ int main(int argc, char **argv)
     for(i = 0; i < 4; i++)
     {
         cucul_set_frame(sprite, i);
-        cucul_import_memory(sprite, guy[i], strlen(guy[i]), "text");
+        cucul_import_memory(sprite, guy[i], strlen(guy[i]), "utf8");
     }
 
     /* Export our sprite in a memory buffer. We could save this to
