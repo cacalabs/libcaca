@@ -14,134 +14,81 @@
 
 #include "config.h"
 #include "common.h"
+
 #if !defined(__KERNEL__)
 #   include <stdio.h>
+#   include <string.h>
+#   include <stdlib.h>
 #endif
+
 #include "cucul.h"
 #include "caca.h"
 
-#define MYDELAY 100
+/* Courtesy of Zashi */
+char *guy[] = {
+  "  O_,= \n"
+  "  |    \n"
+  "  /\\   \n"
+  " / /   \n",
+
+  "  O_,= \n"
+  "  |    \n"
+  "  /|   \n"
+  " / |   \n",
+
+  "  O_,= \n"
+  "  |    \n"
+  "  |\\   \n"
+  "  |/   \n",
+
+  "  O_,= \n"
+  "  |    \n"
+  "  |\\   \n"
+  "  | \\  \n",
+};
 
 int main(int argc, char **argv)
 {
-#if 0
-    cucul_canvas_t *cv;
-    caca_display_t *dp;
+    cucul_canvas_t *sprite;
+    unsigned long int len;
+    void *buffer;
+    int i;
 
-    int quit = 0;
-    cucul_sprite_t *sprite;
-    int frame = 0;
-    unsigned char play = 0;
-    unsigned int delay = 0;
+    /* Create a canvas with 4 frames */
+    sprite = cucul_create_canvas(0, 0);
+    for(i = 0; i < 3; i++)
+        cucul_create_frame(sprite, 0);
 
-    if(argc < 2)
+    /* Load stuff in all 4 frames */
+    for(i = 0; i < 4; i++)
     {
-        fprintf(stderr, "%s: missing argument (filename).\n", argv[0]);
-        return 1;
+        cucul_set_frame(sprite, i);
+        cucul_import_memory(sprite, guy[i], strlen(guy[i]), "text");
     }
 
-    cv = cucul_create_canvas(0, 0);
-    if(!cv)
-        return 1;
-    dp = caca_create_display(cv);
-    if(!dp)
-        return 1;
+    /* Export our sprite in a memory buffer. We could save this to
+     * disk afterwards. */
+    buffer = cucul_export_memory(sprite, "caca", &len);
 
-    sprite = cucul_load_sprite(argv[1]);
+    /* Free our sprite and reload it from the memory buffer. We could
+     * load this from disk, too. */
+    cucul_free_canvas(sprite);
+    sprite = cucul_create_canvas(0, 0);
+    cucul_import_memory(sprite, buffer, len, "caca");
+    free(buffer);
 
-    if(!sprite)
+    /* Print each sprite frame to stdout */
+    for(i = 0; i < 4; i++)
     {
-        caca_free_display(dp);
-        cucul_free_canvas(cv);
-        fprintf(stderr, "%s: could not open `%s'.\n", argv[0], argv[1]);
-        return 1;
+        cucul_set_frame(sprite, i);
+        printf("Frame #%i\n", i);
+        buffer = cucul_export_memory(sprite, "utf8", &len);
+        fwrite(buffer, len, 1, stdout);
+        free(buffer);
     }
 
-    /* Go ! */
-    while(!quit)
-    {
-        caca_event_t ev;
-        int xa, ya, xb, yb;
-        char buf[BUFSIZ];
-
-        while(caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, 0))
-        {
-            switch(caca_get_event_key_ch(&ev))
-            {
-            case 0:
-                break;
-            case 'q':
-                quit = 1;
-                break;
-            case '-':
-                if(frame > 0)
-                    frame--;
-                break;
-            case '+':
-                if(frame < cucul_get_sprite_frames(sprite) - 1)
-                    frame++;
-                break;
-	    case 'p':
-		play=!play;
-
-            }
-        }
-
-	if(play) {
-	    if(!delay) {
-		if(frame < cucul_get_sprite_frames(sprite) - 1) {
-		    frame++;
-		}
-		else {
-		    frame = 0;
-		}
-	    }
-	    delay++;
-	    if(delay>=MYDELAY) {
-		delay = 0;
-	    }
-	}
-
-
-        cucul_set_color_ansi(cv, CUCUL_LIGHTGRAY, CUCUL_BLACK);
-        cucul_clear_canvas(cv);
-
-        cucul_draw_thin_box(cv, 0, 0, cucul_get_canvas_width(cv) - 1,
-                            cucul_get_canvas_height(cv) - 1);
-
-        cucul_put_str(cv, 3, 0, "[ Sprite editor for libcaca ]");
-
-        sprintf(buf, "sprite `%s'", argv[1]);
-        cucul_put_str(cv, 3, 2, buf);
-        sprintf(buf, "frame %i/%i", frame, cucul_get_sprite_frames(sprite) - 1);
-        cucul_put_str(cv, 3, 3, buf);
-
-        /* Crosshair */
-        cucul_draw_thin_line(cv, 57, 2, 57, 18);
-        cucul_draw_thin_line(cv, 37, 10, 77, 10);
-        cucul_put_char(cv, 57, 10, '+');
-
-        /* Boxed sprite */
-        xa = -1 - cucul_get_sprite_dx(sprite, frame);
-        ya = -1 - cucul_get_sprite_dy(sprite, frame);
-        xb = xa + 1 + cucul_get_sprite_width(sprite, frame);
-        yb = ya + 1 + cucul_get_sprite_height(sprite, frame);
-        cucul_set_color_ansi(cv, CUCUL_BLACK, CUCUL_BLACK);
-        cucul_fill_box(cv, 57 + xa, 10 + ya, 57 + xb, 10 + yb, " ");
-        cucul_set_color_ansi(cv, CUCUL_LIGHTGRAY, CUCUL_BLACK);
-        cucul_draw_thin_box(cv, 57 + xa, 10 + ya, 57 + xb, 10 + yb);
-        cucul_draw_sprite(cv, 57, 10, sprite, frame);
-
-        /* Free sprite */
-        cucul_draw_sprite(cv, 20, 10, sprite, frame);
-
-        caca_refresh_display(dp);
-    }
-
-    /* Clean up */
-    caca_free_display(dp);
-    cucul_free_canvas(cv);
-#endif
+    /* Free our sprite */
+    cucul_free_canvas(sprite);
 
     return 0;
 }
