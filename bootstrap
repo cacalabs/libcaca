@@ -30,6 +30,7 @@ fi
 # Check for needed features
 auxdir="`sed -ne 's/^[ \t]*A._CONFIG_AUX_DIR *([[ ]*\([^] )]*\).*/\1/p' $conffile`"
 libtool="`grep -q '^[ \t]*A._PROG_LIBTOOL' $conffile && echo yes || echo no`"
+pkgconfig="`grep -q '^[ \t]*PKG_PROG_PKG_CONFIG' $conffile && echo yes || echo no`"
 header="`grep -q '^[ \t]*A._CONFIG_HEADER' $conffile && echo yes || echo no`"
 aclocalflags="`sed -ne 's/^[ \t]*ACLOCAL_AMFLAGS[ \t]*=//p' Makefile.am`"
 
@@ -89,6 +90,14 @@ if test "$libtool" = "yes"; then
 
   if test "$libtoolize" = "no"; then
     echo "$0: you need libtool"
+    exit 1
+  fi
+fi
+
+# Check for pkg-config
+if test "$pkgconfig" = "yes"; then
+  if ! pkg-config --version >/dev/null 2>&1; then
+    echo "$0: you need pkg-config"
     exit 1
   fi
 fi
