@@ -238,6 +238,10 @@
 				RelativePath="..\cucul\triangle.c"
 				>
 			</File>
+			<File
+				RelativePath="..\cucul\figfont.c"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
