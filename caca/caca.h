@@ -46,17 +46,6 @@ typedef struct caca_display caca_display_t;
 /** \e libcaca event structure */
 typedef struct caca_event caca_event_t;
 
-/** \brief Handling of user events.
- *
- *  This structure is filled by caca_get_event() when an event is received.
- *  It is an opaque structure that should only be accessed through
- *  caca_event_get_type() and similar functions.
- */
-struct caca_event
-{
-    unsigned char opaque_structure[32];
-};
-
 /** \brief User event type enumeration.
  *
  *  This enum serves two purposes:
@@ -76,6 +65,25 @@ enum caca_event_type
     CACA_EVENT_QUIT =          0x0040, /**< The user requested to quit. */
 
     CACA_EVENT_ANY =           0xffff  /**< Bitmask for any event. */
+};
+
+/** \brief Handling of user events.
+ *
+ *  This structure is filled by caca_get_event() when an event is received.
+ *  It is an opaque structure that should only be accessed through
+ *  caca_event_get_type() and similar functions. The struct members may no
+ *  longer be directly accessible in future versions.
+ */
+struct caca_event
+{
+    enum caca_event_type type;
+    union
+    {
+        struct { unsigned int x, y, button; } mouse;
+        struct { unsigned int w, h; } resize;
+        struct { unsigned int ch; unsigned long int utf32; char utf8[8]; } key;
+    } data;
+    unsigned char padding[16];
 };
 
 /** \brief Special key values.
