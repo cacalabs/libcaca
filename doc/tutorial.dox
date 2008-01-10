@@ -4,7 +4,7 @@
 
  Before writing your first libcaca application, you need to know the difference between libcucul and libcaca : 
 - libcucul is the text rendering library. It will do all the work you actually need. From imports (text, ANSI, caca internal format, all of this supporting n-bytes unicode), to exports (sames formats, adding SVG, PostScript, TGA, HTML (both 3 and 4), IRC), it'll cover all your needs.
-- libcaca handle everything that can be hardware related. It includes display (RAW, X11, OpenGL, Windows (GDI), conio (DOS), ncurses, slang, text VGA (IMB-Compatible)), keyboard (same drivers but RAW), mouse (same drivers but RAW and VGA), time and resize events (on windowed drivers).
+- libcaca handle everything that can be hardware related. It includes display (RAW, X11, OpenGL, Windows (native console), DOS (conio), ncurses, slang, text VGA (IMB-Compatible)), keyboard (same drivers but RAW), mouse (same drivers but RAW and VGA), time and resize events (on windowed drivers).
 
 So, you can write a libcucul only program, but you <b>can't</b> write a libcaca only program, it'll be nonsense. Period.
 

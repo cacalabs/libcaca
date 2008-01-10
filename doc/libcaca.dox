@@ -8,12 +8,13 @@
  so that it can work on older video cards or text terminals. It is not
  unlike the famous AAlib library. \e libcaca can use almost any virtual
  terminal to work, thus it should work on all Unix systems (including
- Mac OS X) using either the slang library or the ncurses library, on DOS
- using the conio library, and on Windows systems using either slang or
- ncurses (through Cygwin emulation) or conio. There is also a native X11
- driver, and an OpenGL driver (through freeglut) that does not require a
- text terminal. For machines without a screen, the raw driver can be used
- to send the output to another machine, using for instance cacaserver.
+ Mac OS X) using either the S-Lang library or the ncurses library, on DOS
+ using the conio library, and on Windows systems using the native Win32
+ console, the conio library, or using S-Lang or ncurses (through Cygwin
+ emulation). There is also a native X11 driver, and an OpenGL driver
+ (through freeglut) that does not require a text terminal. For machines
+ without a screen, the raw driver can be used to send the output to another
+ machine, using for instance cacaserver.
 
  \e libcaca is free software, released under the Do What The Fuck You
  Want To Public License. This ensures that no one, not even the \e libcaca
