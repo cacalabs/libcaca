@@ -56,3 +56,4 @@
 #define inline __inline
 #endif
 #define strcasecmp stricmp
+#define snprintf _snprintf

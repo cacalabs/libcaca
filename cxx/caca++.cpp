@@ -18,6 +18,8 @@
  *  so on.
  */
 
+#include "config.h"
+
 #include <iostream>
 
 #include "caca++.h"

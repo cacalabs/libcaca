@@ -306,13 +306,13 @@ cucul_figfont_t * open_figfont(char const *path)
 #if !defined __KERNEL__ && defined HAVE_SNPRINTF
     if(!f)
     {
-        snprintf(altpath, 2047, "%s.tlf", path);
+        _snprintf(altpath, 2047, "%s.tlf", path);
         altpath[2047] = '\0';
         f = _cucul_file_open(altpath, "r");
     }
     if(!f)
     {
-        snprintf(altpath, 2047, "%s.flf", path);
+        _snprintf(altpath, 2047, "%s.flf", path);
         altpath[2047] = '\0';
         f = _cucul_file_open(altpath, "r");
     }
