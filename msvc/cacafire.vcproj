@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="cacafire"
 	ProjectGUID="{F25D1237-9ED8-4343-B958-308C95FE392F}"
 	Keyword="Win32Proj"
@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\src;..\msvc;..\caca;..\cucul;&quot;C:\Program Files\Microsoft Platform SDK\Include&quot;"
+				AdditionalIncludeDirectories="..\src;..\msvc;..\caca;..\cucul"
 				PreprocessorDefinitions="LIBCACA=1"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -124,7 +124,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				OmitFramePointers="true"
-				AdditionalIncludeDirectories="..\src;..\msvc"
+				AdditionalIncludeDirectories="..\src;..\msvc;..\caca;..\cucul"
 				PreprocessorDefinitions="LIBCACA=1"
 				StringPooling="true"
 				RuntimeLibrary="0"
