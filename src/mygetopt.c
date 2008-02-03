@@ -26,7 +26,9 @@
 
 /* DOS / Kernel driver */
 #ifndef __intptr_t_defined
+#ifndef _UINTPTR_T
 typedef unsigned int		uintptr_t;
+#endif
 #endif
 
 #include <stdio.h>

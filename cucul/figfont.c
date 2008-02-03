@@ -304,15 +304,20 @@ cucul_figfont_t * open_figfont(char const *path)
     /* Open font: if not found, try .tlf, then .flf */
     f = _cucul_file_open(path, "r");
 #if !defined __KERNEL__ && defined HAVE_SNPRINTF
+
+#if (! defined(snprintf)) && ( defined(_WIN32) || defined(WIN32) ) && (! defined(__CYGWIN__))
+#define snprintf _snprintf
+#endif
+
     if(!f)
     {
-        _snprintf(altpath, 2047, "%s.tlf", path);
+        snprintf(altpath, 2047, "%s.tlf", path);
         altpath[2047] = '\0';
         f = _cucul_file_open(altpath, "r");
     }
     if(!f)
     {
-        _snprintf(altpath, 2047, "%s.flf", path);
+        snprintf(altpath, 2047, "%s.flf", path);
         altpath[2047] = '\0';
         f = _cucul_file_open(altpath, "r");
     }
