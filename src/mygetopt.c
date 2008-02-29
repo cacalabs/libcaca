@@ -17,18 +17,12 @@
  */
 
 #include "config.h"
+#include "common.h"
 
 #if defined HAVE_STDINT_H
 #   include <stdint.h>
 #elif defined HAVE_INTTYPES_H
 #   include <inttypes.h>
-#endif
-
-/* DOS / Kernel driver */
-#ifndef __intptr_t_defined
-#ifndef _UINTPTR_T
-typedef unsigned int		uintptr_t;
-#endif
 #endif
 
 #include <stdio.h>
