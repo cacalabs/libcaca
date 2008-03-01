@@ -326,8 +326,6 @@ AC_SUBST(GL_LIBS)
 # Optimizations
 CFLAGS="${CFLAGS} -g -O2 -fno-strength-reduce -fomit-frame-pointer"
 # Code qui fait des warnings == code de porc == deux baffes dans ta gueule
-# [Jylam] Removed -Wshadow in order to avoid ncurses/gl conflict
-# (Comme quoi on n'est pas les seuls porcs)
 CFLAGS="${CFLAGS} -Wall -Wpointer-arith -Wcast-align -Wcast-qual -Wstrict-prototypes -Wshadow -Waggregate-return -Wmissing-prototypes -Wnested-externs -Wsign-compare"
 
 CACA_BINDINGS=""
