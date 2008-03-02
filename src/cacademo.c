@@ -230,6 +230,8 @@ void transition(cucul_canvas_t *mask, int tmode, int completed)
     int h2 = cucul_get_canvas_height(mask) / 2;
     float angle = (0.0075f * completed * 360) * 3.14 / 180, x, y;
     unsigned int i;
+    int w = cucul_get_canvas_width(mask);
+    int h = cucul_get_canvas_height(mask);
 
     switch(tmode)
     {
@@ -293,22 +295,17 @@ void transition(cucul_canvas_t *mask, int tmode, int completed)
         case TRANSITION_VLINES:
             for(i = 0; i < 8; i++)
             {
-                int w = cucul_get_canvas_width(mask);
-                int h = cucul_get_canvas_height(mask);
-                int z = ((i & 1) ? h : -h) * (100 - completed) / 100;
-
-                cucul_fill_box(mask, i * w / 8, z, (i + 1) * w / 8, z + h, '#');
+                int z = ((i & 1) ? w : (-w)/2) * (100 - completed) / 100;
+                cucul_fill_box(mask, i * w / 8, z ,  (w / 8) + 1, z + h, '#');
             }
             break;
 
         case TRANSITION_HLINES:
+
             for(i = 0; i < 6; i++)
             {
-                int w = cucul_get_canvas_width(mask);
-                int h = cucul_get_canvas_height(mask);
-                int z = ((i & 1) ? w : -w) * (100 - completed) / 100;
-
-                cucul_fill_box(mask, z, i * h / 6, z + w, (i + 1) * h / 6, '#');
+                int z = ((i & 1) ? w : (-w)/2) * (100 - completed) / 100;
+                cucul_fill_box(mask, z, i * h / 6, z + w, (h / 6) + 1, '#');
             }
             break;
     }
