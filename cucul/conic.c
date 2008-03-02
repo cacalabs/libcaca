@@ -27,7 +27,7 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
-static void ellipsepoints(cucul_canvas_t *, int, int, int, int, uint32_t);
+static void ellipsepoints(cucul_canvas_t *, int, int, int, int, uint32_t, int);
 
 /** \brief Draw a circle on the canvas using the given character.
  *
@@ -48,8 +48,8 @@ int cucul_draw_circle(cucul_canvas_t *cv, int x, int y, int r,
     /* Optimized Bresenham. Kick ass. */
     for(test = 0, dx = 0, dy = r ; dx <= dy ; dx++)
     {
-        ellipsepoints(cv, x, y, dx, dy, ch);
-        ellipsepoints(cv, x, y, dy, dx, ch);
+        ellipsepoints(cv, x, y, dx, dy, ch, 1);
+        ellipsepoints(cv, x, y, dy, dx, ch, 1);
 
         test += test > 0 ? dx - dy-- : dx;
     }
@@ -137,7 +137,7 @@ int cucul_draw_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b,
     int y = b;
     int d1 = b*b - (a*a*b) + (a*a/4);
 
-    ellipsepoints(cv, xo, yo, x, y, ch);
+    ellipsepoints(cv, xo, yo, x, y, ch, 0);
 
     while(a*a*y - a*a/2 > b*b*(x+1))
     {
@@ -151,7 +151,7 @@ int cucul_draw_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b,
             y--;
         }
         x++;
-        ellipsepoints(cv, xo, yo, x, y, ch);
+        ellipsepoints(cv, xo, yo, x, y, ch, 0);
     }
 
     d2 = b*b*(x+0.5)*(x+0.5) + a*a*(y-1)*(y-1) - a*a*b*b;
@@ -168,7 +168,7 @@ int cucul_draw_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b,
         }
 
         y--;
-        ellipsepoints(cv, xo, yo, x, y, ch);
+        ellipsepoints(cv, xo, yo, x, y, ch, 0);
     }
 
     return 0;
@@ -193,21 +193,24 @@ int cucul_draw_thin_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b)
     int y = b;
     int d1 = b*b - (a*a*b) + (a*a/4);
 
-    ellipsepoints(cv, xo, yo, x, y, '-');
+    ellipsepoints(cv, xo, yo, x, y, '-', 1);
 
     while(a*a*y - a*a/2 > b*b*(x+1))
     {
         if(d1 < 0)
         {
             d1 += b*b*(2*x+1); /* XXX: "Computer Graphics" has + 3 here. */
+            ellipsepoints(cv, xo, yo, x + 1, y, '0', 1);
         }
         else
         {
             d1 += b*b*(2*x*1) + a*a*(-2*y+2);
             y--;
+            ellipsepoints(cv, xo, yo, x + 1, y, '1', 1);
         }
         x++;
-        ellipsepoints(cv, xo, yo, x, y, '-');
+       
+        
     }
 
     d2 = b*b*(x+0.5)*(x+0.5) + a*a*(y-1)*(y-1) - a*a*b*b;
@@ -217,21 +220,24 @@ int cucul_draw_thin_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b)
         {
             d2 += b*b*(2*x+2) + a*a*(-2*y+3);
             x++;
+            ellipsepoints(cv, xo, yo, x , y - 1, '2', 1);
         }
         else
         {
             d2 += a*a*(-2*y+3);
+            ellipsepoints(cv, xo, yo, x , y - 1, '3', 1);
         }
 
         y--;
-        ellipsepoints(cv, xo, yo, x, y, '|');
+        
+       
     }
 
     return 0;
 }
 
 static void ellipsepoints(cucul_canvas_t *cv, int xo, int yo, int x, int y,
-                          uint32_t ch)
+                          uint32_t ch, int thin)
 {
     uint8_t b = 0;
 
@@ -244,16 +250,98 @@ static void ellipsepoints(cucul_canvas_t *cv, int xo, int yo, int x, int y,
     if(yo - y >= 0 && yo - y < (int)cv->height)
         b |= 0x8;
 
-    if((b & (0x1|0x4)) == (0x1|0x4))
-        cucul_put_char(cv, xo + x, yo + y, ch);
+    if((b & (0x1|0x4)) == (0x1|0x4)) {
+        char c = ch;
+        
+        if(thin) {
+            switch(c) {
+            case '0':
+                c = '-';
+                break;
+            case '1':
+                c = ',';
+                break;
+            case '2':
+                c = '/';
+                break;
+            case '3':
+                c = '|';
+                break;
+            }
 
-    if((b & (0x2|0x4)) == (0x2|0x4))
-        cucul_put_char(cv, xo - x, yo + y, ch);
+        }
+        cucul_put_char(cv, xo + x, yo + y, c);
+    }
+    if((b & (0x2|0x4)) == (0x2|0x4)) {
+        char c = ch;
+        
+        if(thin) {
+            switch(c) {
+            case '0':
+                c = '-';
+                break;
+            case '1':
+                c = '.';
+                break;
+            case '2':
+                c = '\\';
+                break;
+            case '3':
+                c = '|';
+                break;
+            }
 
-    if((b & (0x1|0x8)) == (0x1|0x8))
-        cucul_put_char(cv, xo + x, yo - y, ch);
+        }
+        cucul_put_char(cv, xo - x, yo + y, c);
+    }
 
-    if((b & (0x2|0x8)) == (0x2|0x8))
-        cucul_put_char(cv, xo - x, yo - y, ch);
+
+    if((b & (0x1|0x8)) == (0x1|0x8)) {
+        char c = ch;
+        
+        if(thin) {
+            switch(c) {
+            case '0':
+                c = '-';
+                break;
+            case '1':
+                c = '`';
+                break;
+            case '2':
+                c = '\\';
+                break;
+            case '3':
+                c = '|';
+                break;
+            }
+
+        }
+        cucul_put_char(cv, xo + x, yo - y, c);
+    }
+
+    if((b & (0x2|0x8)) == (0x2|0x8)) {
+        char c = ch;
+        
+        if(thin) {
+            switch(c) {
+            case '0':
+                c = '-';
+                break;
+            case '1':
+                c = '\'';
+                break;
+            case '2':
+                c = '/';
+                break;
+            case '3':
+                c = '|';
+                break;
+            }
+
+        }
+        cucul_put_char(cv, xo - x, yo - y, c);
+    }
+
+        
 }
 
