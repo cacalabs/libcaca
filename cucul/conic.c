@@ -251,7 +251,7 @@ static void ellipsepoints(cucul_canvas_t *cv, int xo, int yo, int x, int y,
         b |= 0x8;
 
     if((b & (0x1|0x4)) == (0x1|0x4)) {
-        char c = ch;
+        uint32_t c = ch;
         
         if(thin) {
             switch(c) {
@@ -273,7 +273,7 @@ static void ellipsepoints(cucul_canvas_t *cv, int xo, int yo, int x, int y,
         cucul_put_char(cv, xo + x, yo + y, c);
     }
     if((b & (0x2|0x4)) == (0x2|0x4)) {
-        char c = ch;
+        uint32_t c = ch;
         
         if(thin) {
             switch(c) {
@@ -297,7 +297,7 @@ static void ellipsepoints(cucul_canvas_t *cv, int xo, int yo, int x, int y,
 
 
     if((b & (0x1|0x8)) == (0x1|0x8)) {
-        char c = ch;
+        uint32_t c = ch;
         
         if(thin) {
             switch(c) {
@@ -320,7 +320,7 @@ static void ellipsepoints(cucul_canvas_t *cv, int xo, int yo, int x, int y,
     }
 
     if((b & (0x2|0x8)) == (0x2|0x8)) {
-        char c = ch;
+        uint32_t c = ch;
         
         if(thin) {
             switch(c) {
