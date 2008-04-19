@@ -84,13 +84,13 @@ static int conio_set_display_title(caca_display_t *dp, char const *title)
     return -1;
 }
 
-static unsigned int conio_get_display_width(caca_display_t const *dp)
+static int conio_get_display_width(caca_display_t const *dp)
 {
     /* Fallback to a 6x10 font */
     return cucul_get_canvas_width(dp->cv) * 6;
 }
 
-static unsigned int conio_get_display_height(caca_display_t const *dp)
+static int conio_get_display_height(caca_display_t const *dp)
 {
     /* Fallback to a 6x10 font */
     return cucul_get_canvas_height(dp->cv) * 10;
@@ -101,9 +101,9 @@ static void conio_display(caca_display_t *dp)
     char *screen = dp->drv.p->screen;
     uint32_t const *chars = (uint32_t const *)cucul_get_canvas_chars(dp->cv);
     uint32_t const *attrs = (uint32_t const *)cucul_get_canvas_attrs(dp->cv);
-    unsigned int width = cucul_get_canvas_width(dp->cv);
-    unsigned int height = cucul_get_canvas_height(dp->cv);
-    unsigned int n;
+    int width = cucul_get_canvas_width(dp->cv);
+    int height = cucul_get_canvas_height(dp->cv);
+    int n;
 
     for(n = height * width; n--; )
     {

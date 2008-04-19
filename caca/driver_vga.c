@@ -101,13 +101,13 @@ static int vga_set_display_title(caca_display_t *dp, char const *title)
     return -1;
 }
 
-static unsigned int vga_get_display_width(caca_display_t const *dp)
+static int vga_get_display_width(caca_display_t const *dp)
 {
     /* Fallback to a 320x200 screen */
     return 320;
 }
 
-static unsigned int vga_get_display_height(caca_display_t const *dp)
+static int vga_get_display_height(caca_display_t const *dp)
 {
     /* Fallback to a 320x200 screen */
     return 200;
@@ -118,8 +118,8 @@ static void vga_display(caca_display_t *dp)
     char *screen = (char *)(intptr_t)0x000b8000;
     uint32_t const *cvchars = (uint32_t const *)cucul_get_canvas_chars(dp->cv);
     uint32_t const *cvattrs = (uint32_t const *)cucul_get_canvas_attrs(dp->cv);
-    unsigned int width = cucul_get_canvas_width(dp->cv);
-    unsigned int height = cucul_get_canvas_height(dp->cv);
+    int width = cucul_get_canvas_width(dp->cv);
+    int height = cucul_get_canvas_height(dp->cv);
     int n;
 
     for(n = height * width; n--; )

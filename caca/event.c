@@ -63,7 +63,7 @@ static int _lowlevel_event(caca_display_t *, caca_privevent_t *);
  *  \param ev A pointer to a caca_event structure, or NULL.
  *  \return 1 if a matching event was received, or 0 if the wait timeouted.
  */
-int caca_get_event(caca_display_t *dp, unsigned int event_mask,
+int caca_get_event(caca_display_t *dp, int event_mask,
                    caca_event_t *ev, int timeout)
 {
     caca_privevent_t privevent;
@@ -127,9 +127,9 @@ int caca_get_event(caca_display_t *dp, unsigned int event_mask,
  *  \param dp The libcaca graphical context.
  *  \return The X mouse coordinate.
  */
-unsigned int caca_get_mouse_x(caca_display_t const *dp)
+int caca_get_mouse_x(caca_display_t const *dp)
 {
-    unsigned int width = cucul_get_canvas_width(dp->cv);
+    int width = cucul_get_canvas_width(dp->cv);
 
     if(dp->mouse.x >= width)
         return width - 1;
@@ -149,9 +149,9 @@ unsigned int caca_get_mouse_x(caca_display_t const *dp)
  *  \param dp The libcaca graphical context.
  *  \return The Y mouse coordinate.
  */
-unsigned int caca_get_mouse_y(caca_display_t const *dp)
+int caca_get_mouse_y(caca_display_t const *dp)
 {
-    unsigned int height = cucul_get_canvas_height(dp->cv);
+    int height = cucul_get_canvas_height(dp->cv);
 
     if(dp->mouse.y >= height)
         return height - 1;
@@ -198,7 +198,7 @@ enum caca_event_type caca_get_event_type(caca_event_t const *ev)
  *  \param ev The libcaca event.
  *  \return The key value.
  */
-unsigned int caca_get_event_key_ch(caca_event_t const *ev)
+int caca_get_event_key_ch(caca_event_t const *ev)
 {
     return ((caca_privevent_t const *)ev)->data.key.ch;
 }
@@ -249,7 +249,7 @@ int caca_get_event_key_utf8(caca_event_t const *ev, char *utf8)
  *  \param ev The libcaca event.
  *  \return The event's mouse button.
  */
-unsigned int caca_get_event_mouse_button(caca_event_t const *ev)
+int caca_get_event_mouse_button(caca_event_t const *ev)
 {
     return ((caca_privevent_t const *)ev)->data.mouse.button;
 }
@@ -265,7 +265,7 @@ unsigned int caca_get_event_mouse_button(caca_event_t const *ev)
  *  \param ev The libcaca event.
  *  \return The event's X mouse coordinate.
  */
-unsigned int caca_get_event_mouse_x(caca_event_t const *ev)
+int caca_get_event_mouse_x(caca_event_t const *ev)
 {
     return ((caca_privevent_t const *)ev)->data.mouse.x;
 }
@@ -281,7 +281,7 @@ unsigned int caca_get_event_mouse_x(caca_event_t const *ev)
  *  \param ev The libcaca event.
  *  \return The event's Y mouse coordinate.
  */
-unsigned int caca_get_event_mouse_y(caca_event_t const *ev)
+int caca_get_event_mouse_y(caca_event_t const *ev)
 {
     return ((caca_privevent_t const *)ev)->data.mouse.y;
 }
@@ -297,7 +297,7 @@ unsigned int caca_get_event_mouse_y(caca_event_t const *ev)
  *  \param ev The libcaca event.
  *  \return The event's new display width value.
  */
-unsigned int caca_get_event_resize_width(caca_event_t const *ev)
+int caca_get_event_resize_width(caca_event_t const *ev)
 {
     return ((caca_privevent_t const *)ev)->data.resize.w;
 }
@@ -313,7 +313,7 @@ unsigned int caca_get_event_resize_width(caca_event_t const *ev)
  *  \param ev The libcaca event.
  *  \return The event's new display height value.
  */
-unsigned int caca_get_event_resize_height(caca_event_t const *ev)
+int caca_get_event_resize_height(caca_event_t const *ev)
 {
     return ((caca_privevent_t const *)ev)->data.resize.h;
 }
@@ -325,7 +325,7 @@ unsigned int caca_get_event_resize_height(caca_event_t const *ev)
 static int _get_next_event(caca_display_t *dp, caca_privevent_t *ev)
 {
 #if defined(USE_SLANG) || defined(USE_NCURSES)
-    unsigned int ticks;
+    int ticks;
 #endif
     int ret;
 

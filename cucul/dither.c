@@ -138,12 +138,12 @@ struct cucul_dither
 
     char const *algo_name;
     void (*init_dither) (int);
-    unsigned int (*get_dither) (void);
+    int (*get_dither) (void);
     void (*increment_dither) (void);
 
     char const *glyph_name;
     uint32_t const * glyphs;
-    unsigned glyph_count;
+    int glyph_count;
 
     int invert;
 };
@@ -178,27 +178,27 @@ static int init_lookup(void);
 
 /* Dithering algorithms */
 static void init_no_dither(int);
-static unsigned int get_no_dither(void);
+static int get_no_dither(void);
 static void increment_no_dither(void);
 
 static void init_fstein_dither(int);
-static unsigned int get_fstein_dither(void);
+static int get_fstein_dither(void);
 static void increment_fstein_dither(void);
 
 static void init_ordered2_dither(int);
-static unsigned int get_ordered2_dither(void);
+static int get_ordered2_dither(void);
 static void increment_ordered2_dither(void);
 
 static void init_ordered4_dither(int);
-static unsigned int get_ordered4_dither(void);
+static int get_ordered4_dither(void);
 static void increment_ordered4_dither(void);
 
 static void init_ordered8_dither(int);
-static unsigned int get_ordered8_dither(void);
+static int get_ordered8_dither(void);
 static void increment_ordered8_dither(void);
 
 static void init_random_dither(int);
-static unsigned int get_random_dither(void);
+static int get_random_dither(void);
 static void increment_random_dither(void);
 
 static inline int sq(int x)
@@ -260,8 +260,7 @@ static inline void rgb2hsv_default(int r, int g, int b,
  *  \param amask Bitmask for alpha values.
  *  \return Dither object upon success, NULL if an error occurred.
  */
-cucul_dither_t *cucul_create_dither(unsigned int bpp, unsigned int w,
-                                    unsigned int h, unsigned int pitch,
+cucul_dither_t *cucul_create_dither(int bpp, int w, int h, int pitch,
                                     uint32_t rmask, uint32_t gmask,
                                     uint32_t bmask, uint32_t amask)
 {
@@ -269,7 +268,7 @@ cucul_dither_t *cucul_create_dither(unsigned int bpp, unsigned int w,
     int i;
 
     /* Minor sanity test */
-    if(!w || !h || !pitch || bpp > 32 || bpp < 8)
+    if(w < 0 || h < 0 || pitch < 0 || bpp > 32 || bpp < 8)
     {
         seterrno(EINVAL);
         return NULL;
@@ -373,8 +372,8 @@ cucul_dither_t *cucul_create_dither(unsigned int bpp, unsigned int w,
  *  \return 0 in case of success, -1 if an error occurred.
  */
 int cucul_set_dither_palette(cucul_dither_t *d,
-                             unsigned int red[], unsigned int green[],
-                             unsigned int blue[], unsigned int alpha[])
+                             uint32_t red[], uint32_t green[],
+                             uint32_t blue[], uint32_t alpha[])
 {
     int i, has_alpha = 0;
 
@@ -946,8 +945,7 @@ int cucul_dither_bitmap(cucul_canvas_t *cv, int x, int y, int w, int h,
     int *floyd_steinberg, *fs_r, *fs_g, *fs_b;
     uint32_t savedattr;
     int fs_length;
-    int x1, y1, x2, y2, pitch, deltax, deltay;
-    unsigned int dchmax;
+    int x1, y1, x2, y2, pitch, deltax, deltay, dchmax;
 
     if(!d || !pixels)
         return 0;
@@ -981,14 +979,13 @@ int cucul_dither_bitmap(cucul_canvas_t *cv, int x, int y, int w, int h,
             x <= x2 && x <= (int)cv->width;
             x++)
     {
-        unsigned int i;
-        int ch = 0, distmin;
         unsigned int rgba[4];
+        int error[3];
+        int i, ch = 0, distmin;
         int fg_r = 0, fg_g = 0, fg_b = 0, bg_r, bg_g, bg_b;
         int fromx, fromy, tox, toy, myx, myy, dots, dist;
-        int error[3];
 
-        unsigned int outfg = 0, outbg = 0;
+        int outfg = 0, outbg = 0;
         uint32_t outch;
 
         rgba[0] = rgba[1] = rgba[2] = rgba[3] = 0;
@@ -1362,7 +1359,7 @@ static void init_no_dither(int line)
     ;
 }
 
-static unsigned int get_no_dither(void)
+static int get_no_dither(void)
 {
     return 0x80;
 }
@@ -1380,7 +1377,7 @@ static void init_fstein_dither(int line)
     ;
 }
 
-static unsigned int get_fstein_dither(void)
+static int get_fstein_dither(void)
 {
     return 0x80;
 }
@@ -1393,12 +1390,12 @@ static void increment_fstein_dither(void)
 /*
  * Ordered 2 dithering
  */
-static unsigned int const *ordered2_table;
-static unsigned int ordered2_index;
+static int const *ordered2_table;
+static int ordered2_index;
 
 static void init_ordered2_dither(int line)
 {
-    static unsigned int const dither2x2[] =
+    static int const dither2x2[] =
     {
         0x00, 0x80,
         0xc0, 0x40,
@@ -1408,7 +1405,7 @@ static void init_ordered2_dither(int line)
     ordered2_index = 0;
 }
 
-static unsigned int get_ordered2_dither(void)
+static int get_ordered2_dither(void)
 {
     return ordered2_table[ordered2_index];
 }
@@ -1425,12 +1422,12 @@ static void increment_ordered2_dither(void)
                           -1, -6, -5,  2,
                           -2, -7, -8,  3,
                            4, -3, -4, -7};*/
-static unsigned int const *ordered4_table;
-static unsigned int ordered4_index;
+static int const *ordered4_table;
+static int ordered4_index;
 
 static void init_ordered4_dither(int line)
 {
-    static unsigned int const dither4x4[] =
+    static int const dither4x4[] =
     {
         0x00, 0x80, 0x20, 0xa0,
         0xc0, 0x40, 0xe0, 0x60,
@@ -1442,7 +1439,7 @@ static void init_ordered4_dither(int line)
     ordered4_index = 0;
 }
 
-static unsigned int get_ordered4_dither(void)
+static int get_ordered4_dither(void)
 {
     return ordered4_table[ordered4_index];
 }
@@ -1455,12 +1452,12 @@ static void increment_ordered4_dither(void)
 /*
  * Ordered 8 dithering
  */
-static unsigned int const *ordered8_table;
-static unsigned int ordered8_index;
+static int const *ordered8_table;
+static int ordered8_index;
 
 static void init_ordered8_dither(int line)
 {
-    static unsigned int const dither8x8[] =
+    static int const dither8x8[] =
     {
         0x00, 0x80, 0x20, 0xa0, 0x08, 0x88, 0x28, 0xa8,
         0xc0, 0x40, 0xe0, 0x60, 0xc8, 0x48, 0xe8, 0x68,
@@ -1476,7 +1473,7 @@ static void init_ordered8_dither(int line)
     ordered8_index = 0;
 }
 
-static unsigned int get_ordered8_dither(void)
+static int get_ordered8_dither(void)
 {
     return ordered8_table[ordered8_index];
 }
@@ -1494,7 +1491,7 @@ static void init_random_dither(int line)
     ;
 }
 
-static unsigned int get_random_dither(void)
+static int get_random_dither(void)
 {
     return cucul_rand(0x00, 0x100);
 }
@@ -1509,7 +1506,7 @@ static void increment_random_dither(void)
  */
 static int init_lookup(void)
 {
-    unsigned int v, s, h;
+    int v, s, h;
 
     /* These ones are constant */
     lookup_colors[0] = CUCUL_BLACK;

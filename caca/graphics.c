@@ -62,7 +62,7 @@ int caca_set_display_title(caca_display_t *dp, char const *title)
  *  \param dp The libcaca display context.
  *  \return The display width.
  */
-unsigned int caca_get_display_width(caca_display_t const *dp)
+int caca_get_display_width(caca_display_t const *dp)
 {
     return dp->drv.get_display_width(dp);
 }
@@ -79,7 +79,7 @@ unsigned int caca_get_display_width(caca_display_t const *dp)
  *  \param dp The libcaca display context.
  *  \return The display height.
  */
-unsigned int caca_get_display_height(caca_display_t const *dp)
+int caca_get_display_height(caca_display_t const *dp)
 {
     return dp->drv.get_display_height(dp);
 }
@@ -93,14 +93,21 @@ unsigned int caca_get_display_height(caca_display_t const *dp)
  *  If the argument is zero, constant framerate is disabled. This is the
  *  default behaviour.
  *
- *  This function never fails.
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c EINVAL Refresh delay value is invalid.
  *
  *  \param dp The libcaca display context.
  *  \param usec The refresh delay in microseconds.
- *  \return This function always returns 0.
+ *  \return 0 upon success, -1 if an error occurred.
  */
-int caca_set_display_time(caca_display_t *dp, unsigned int usec)
+int caca_set_display_time(caca_display_t *dp, int usec)
 {
+    if(usec < 0)
+    {
+        seterrno(EINVAL);
+        return -1;
+    }
+
     dp->delay = usec;
     return 0;
 }
@@ -118,7 +125,7 @@ int caca_set_display_time(caca_display_t *dp, unsigned int usec)
  *  \param dp The libcaca display context.
  *  \return The render time in microseconds.
  */
-unsigned int caca_get_display_time(caca_display_t const *dp)
+int caca_get_display_time(caca_display_t const *dp)
 {
     return dp->rendertime;
 }

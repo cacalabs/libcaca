@@ -62,7 +62,7 @@ static BOOL s_quitting = NO;
 {
     //NSFont* _font;
     NSRect _font_rect;
-    unsigned int _h, _w;
+    int _h, _w;
     uint32_t* _attrs;
     uint32_t* _chars;
     NSRect*   _bkg_rects;
@@ -99,7 +99,7 @@ static BOOL s_quitting = NO;
     [[self window] makeFirstResponder:self];
 
 #ifdef PRECACHE_WHOLE_COLOR_TABLE
-    unsigned int i;
+    int i;
     for(i = 0; i < NCOLORS; i++)
         _colorCache[i] = [[NSColor colorFromRgb12:i] retain];
 #else
@@ -125,7 +125,7 @@ static BOOL s_quitting = NO;
 {
     //[_font release];
 #ifdef PRECACHE_WHOLE_COLOR_TABLE
-    unsigned short i;
+    short i;
     for(i = 0; i < NCOLORS; i++)
         [_colorCache[i] release];
 #else
@@ -248,7 +248,7 @@ static BOOL s_quitting = NO;
         return;
     }
 
-    unsigned int x, y;
+    int x, y;
     float fw = _font_rect.size.width;
     float fh = _font_rect.size.height;
     uint32_t* attrs;
@@ -258,10 +258,10 @@ static BOOL s_quitting = NO;
     [[NSColor blackColor] set];
     NSRectFill(rect);
 
-    unsigned int arrayLength = 0;
+    int arrayLength = 0;
     for(y = 0; y < _h; y++)
     {
-        unsigned int yoff = y * fh;
+        int yoff = y * fh;
         for(x = 0; x < _w; x++)
         {
             NSRect r = NSMakeRect(x * fw, yoff, fw, fh);
@@ -307,7 +307,7 @@ static BOOL s_quitting = NO;
     /* Then print the foreground characters */
     for(y = 0; y < _h; y++)
     {
-        unsigned int yoff = y * fh;
+        int yoff = y * fh;
         for(x = 0; x < _w; x++, chars++)
         {
             attrs = _attrs + x + y * _w;
@@ -597,9 +597,9 @@ static void create_first_window(caca_display_t *dp)
     dp->drv.p->view = view;
 }
 
-static unsigned int get_caca_keycode(NSEvent* event)
+static int get_caca_keycode(NSEvent* event)
 {
-    unsigned int caca_keycode = 0;
+    int caca_keycode = 0;
     /*
     unsigned short mac_keycode = [event keyCode];
     debug_log(@"keycode %u (%x)", mac_keycode, mac_keycode);
@@ -747,7 +747,7 @@ static BOOL handle_key_event(caca_privevent_t *ev, NSEvent* event)
             ;
     }
 
-    unsigned int caca_keycode = get_caca_keycode(event);
+    int caca_keycode = get_caca_keycode(event);
     if(caca_keycode)
     {
         ev->data.key.ch = caca_keycode;
@@ -800,8 +800,8 @@ static BOOL handle_mouse_event(caca_display_t *dp, caca_privevent_t *ev,
         case NSMouseMoved:
         {
             NSPoint mouseLoc = [NSEvent mouseLocation];
-            unsigned int mouse_x = round(mouseLoc.x);
-            unsigned int mouse_y = round(mouseLoc.y);
+            int mouse_x = round(mouseLoc.x);
+            int mouse_y = round(mouseLoc.y);
             if(dp->mouse.x == mouse_x && dp->mouse.y == mouse_y)
                 break;
 
@@ -826,8 +826,8 @@ static BOOL handle_mouse_event(caca_display_t *dp, caca_privevent_t *ev,
 
 static int cocoa_init_graphics(caca_display_t *dp)
 {
-    unsigned int width = cucul_get_canvas_width(dp->cv);
-    unsigned int height = cucul_get_canvas_height(dp->cv);
+    int width = cucul_get_canvas_width(dp->cv);
+    int height = cucul_get_canvas_height(dp->cv);
 
     debug_log(@"%s dp->cv: %ux%u", __PRETTY_FUNCTION__, width, height);
 
@@ -970,12 +970,12 @@ static int cocoa_set_display_title(caca_display_t *dp, char const *title)
     return 0;
 }
 
-static unsigned int cocoa_get_display_width(caca_display_t const *dp)
+static int cocoa_get_display_width(caca_display_t const *dp)
 {
     return [dp->drv.p->window frame].size.width;
 }
 
-static unsigned int cocoa_get_display_height(caca_display_t const *dp)
+static int cocoa_get_display_height(caca_display_t const *dp)
 {
     return [dp->drv.p->window frame].size.height;
 }

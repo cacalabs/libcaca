@@ -33,7 +33,7 @@
 #include "cucul.h"
 #include "cucul_internals.h"
 
-static int cucul_resize(cucul_canvas_t *, unsigned int, unsigned int);
+static int cucul_resize(cucul_canvas_t *, int, int);
 
 /** \brief Initialise a \e libcucul canvas.
  *
@@ -46,15 +46,24 @@ static int cucul_resize(cucul_canvas_t *, unsigned int, unsigned int);
  *  corner.
  *
  *  If an error occurs, NULL is returned and \b errno is set accordingly:
+ *  - \c EINVAL Specified width or height is invalid.
  *  - \c ENOMEM Not enough memory for the requested canvas size.
  *
  *  \param width The desired canvas width
  *  \param height The desired canvas height
  *  \return A libcucul canvas handle upon success, NULL if an error occurred.
  */
-cucul_canvas_t * cucul_create_canvas(unsigned int width, unsigned int height)
+cucul_canvas_t * cucul_create_canvas(int width, int height)
 {
-    cucul_canvas_t *cv = malloc(sizeof(cucul_canvas_t));
+    cucul_canvas_t *cv;
+
+    if(width < 0 || height < 0)
+    {
+        seterrno(EINVAL);
+        return NULL;
+    }
+
+    cv = malloc(sizeof(cucul_canvas_t));
 
     if(!cv)
         goto nomem;
@@ -190,6 +199,7 @@ int cucul_unmanage_canvas(cucul_canvas_t *cv, int (*callback)(void *), void *p)
  *  for more about this.
  *
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c EINVAL Specified width or height is invalid.
  *  - \c EBUSY The canvas is in use by a display driver and cannot be resized.
  *  - \c ENOMEM Not enough memory for the requested canvas size. If this
  *    happens, the canvas handle becomes invalid and should not be used.
@@ -199,9 +209,14 @@ int cucul_unmanage_canvas(cucul_canvas_t *cv, int (*callback)(void *), void *p)
  *  \param height The desired canvas height.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
-                                              unsigned int height)
+int cucul_set_canvas_size(cucul_canvas_t *cv, int width, int height)
 {
+    if(width < 0 || height < 0)
+    {
+        seterrno(EINVAL);
+        return -1;
+    }
+
     if(cv->refcount && cv->resize_callback
         && !cv->resize_callback(cv->resize_data))
     {
@@ -221,7 +236,7 @@ int cucul_set_canvas_size(cucul_canvas_t *cv, unsigned int width,
  *  \param cv A libcucul canvas.
  *  \return The canvas width.
  */
-unsigned int cucul_get_canvas_width(cucul_canvas_t const *cv)
+int cucul_get_canvas_width(cucul_canvas_t const *cv)
 {
     return cv->width;
 }
@@ -235,7 +250,7 @@ unsigned int cucul_get_canvas_width(cucul_canvas_t const *cv)
  *  \param cv A libcucul canvas.
  *  \return The canvas height.
  */
-unsigned int cucul_get_canvas_height(cucul_canvas_t const *cv)
+int cucul_get_canvas_height(cucul_canvas_t const *cv)
 {
     return cv->height;
 }
@@ -292,7 +307,7 @@ uint8_t const * cucul_get_canvas_attrs(cucul_canvas_t const *cv)
  */
 int cucul_free_canvas(cucul_canvas_t *cv)
 {
-    unsigned int f;
+    int f;
 
     if(cv->refcount)
     {
@@ -356,9 +371,9 @@ char const * cucul_get_version(void)
  * XXX: The following functions are local.
  */
 
-int cucul_resize(cucul_canvas_t *cv, unsigned int width, unsigned int height)
+int cucul_resize(cucul_canvas_t *cv, int width, int height)
 {
-    unsigned int x, y, f, old_width, old_height, new_size, old_size;
+    int x, y, f, old_width, old_height, new_size, old_size;
 
     old_width = cv->width;
     old_height = cv->height;
@@ -426,7 +441,7 @@ int cucul_resize(cucul_canvas_t *cv, unsigned int width, unsigned int height)
     {
         /* New width is smaller. Copy as many lines as possible. Ignore
          * the first line, it is already in place. */
-        unsigned int lines = height < old_height ? height : old_height;
+        int lines = height < old_height ? height : old_height;
 
         for(f = 0; f < cv->framecount; f++)
         {

@@ -162,7 +162,7 @@ char const * const * cucul_get_export_list(void)
 static void *export_caca(cucul_canvas_t const *cv, size_t *bytes)
 {
     char *data, *cur;
-    unsigned int f, n;
+    int f, n;
 
     /* 52 bytes for the header:
      *  - 4 bytes for "\xCA\xCA" + "CV"
@@ -222,7 +222,7 @@ static void *export_utf8(cucul_canvas_t const *cv, size_t *bytes,
     };
 
     char *data, *cur;
-    unsigned int x, y;
+    int x, y;
 
     /* 23 bytes assumed for max length per pixel ('\e[5;1;3x;4y;9x;10ym' plus
      * 4 max bytes for a UTF-8 character).
@@ -302,7 +302,7 @@ static void *export_ansi(cucul_canvas_t const *cv, size_t *bytes)
     };
 
     char *data, *cur;
-    unsigned int x, y;
+    int x, y;
 
     uint8_t prevfg = -1;
     uint8_t prevbg = -1;
@@ -376,7 +376,7 @@ static void *export_ansi(cucul_canvas_t const *cv, size_t *bytes)
 static void *export_html(cucul_canvas_t const *cv, size_t *bytes)
 {
     char *data, *cur;
-    unsigned int x, y, len;
+    int x, y, len;
 
     /* The HTML header: less than 1000 bytes
      * A line: 7 chars for "<br />\n"
@@ -458,7 +458,7 @@ static void *export_html(cucul_canvas_t const *cv, size_t *bytes)
 static void *export_html3(cucul_canvas_t const *cv, size_t *bytes)
 {
     char *data, *cur;
-    unsigned int x, y, len;
+    int x, y, len;
 
     /* The HTML table markup: less than 1000 bytes
      * A line: 10 chars for "<tr></tr>\n"
@@ -482,7 +482,7 @@ static void *export_html3(cucul_canvas_t const *cv, size_t *bytes)
 
         for(x = 0; x < cv->width; x += len)
         {
-            unsigned int i, needfont;
+            int i, needfont;
 
             /* Use colspan option to factor cells with same attributes
              * (see below) */
@@ -559,7 +559,7 @@ static void *export_html3(cucul_canvas_t const *cv, size_t *bytes)
 static void *export_bbfr(cucul_canvas_t const *cv, size_t *bytes)
 {
     char *data, *cur;
-    unsigned int x, y, len;
+    int x, y, len;
 
     /* The font markup: less than 100 bytes
      * A line: 1 char for "\n"
@@ -580,7 +580,7 @@ static void *export_bbfr(cucul_canvas_t const *cv, size_t *bytes)
 
         for(x = 0; x < cv->width; x += len)
         {
-            unsigned int i, needback, needfront;
+            int i, needback, needfront;
 
             /* Use colspan option to factor cells with same attributes
              * (see below) */
@@ -666,7 +666,7 @@ static void *export_irc(cucul_canvas_t const *cv, size_t *bytes)
     };
 
     char *data, *cur;
-    unsigned int x, y;
+    int x, y;
 
     /* 14 bytes assumed for max length per pixel. Worst case scenario:
      * ^Cxx,yy   6 bytes
@@ -792,7 +792,7 @@ static void *export_ps(cucul_canvas_t const *cv, size_t *bytes)
         "6 10 scale\n";
 
     char *data, *cur;
-    unsigned int x, y;
+    int x, y;
 
     /* 200 is arbitrary but should be ok */
     *bytes = strlen(ps_header) + 100 + cv->height * (32 + cv->width * 200);
@@ -883,7 +883,7 @@ static void *export_svg(cucul_canvas_t const *cv, size_t *bytes)
         " xml:space=\"preserve\" version=\"1.1\"  baseProfile=\"full\">\n";
 
     char *data, *cur;
-    unsigned int x, y;
+    int x, y;
 
     /* 200 is arbitrary but should be ok */
     *bytes = strlen(svg_header) + 128 + cv->width * cv->height * 200;
@@ -964,7 +964,7 @@ static void *export_tga(cucul_canvas_t const *cv, size_t *bytes)
     char const * const *fontlist;
     char *data, *cur;
     cucul_font_t *f;
-    unsigned int i, w, h;
+    int i, w, h;
 
     fontlist = cucul_get_font_list();
     if(!fontlist[0])

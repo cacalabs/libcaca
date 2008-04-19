@@ -332,13 +332,13 @@ static int ncurses_set_display_title(caca_display_t *dp, char const *title)
     return 0;
 }
 
-static unsigned int ncurses_get_display_width(caca_display_t const *dp)
+static int ncurses_get_display_width(caca_display_t const *dp)
 {
     /* Fallback to a 6x10 font */
     return cucul_get_canvas_width(dp->cv) * 6;
 }
 
-static unsigned int ncurses_get_display_height(caca_display_t const *dp)
+static int ncurses_get_display_height(caca_display_t const *dp)
 {
     /* Fallback to a 6x10 font */
     return cucul_get_canvas_height(dp->cv) * 10;
@@ -348,8 +348,8 @@ static void ncurses_display(caca_display_t *dp)
 {
     uint32_t const *cvchars = (uint32_t const *)cucul_get_canvas_chars(dp->cv);
     uint32_t const *cvattrs = (uint32_t const *)cucul_get_canvas_attrs(dp->cv);
-    unsigned int width = cucul_get_canvas_width(dp->cv);
-    unsigned int height = cucul_get_canvas_height(dp->cv);
+    int width = cucul_get_canvas_width(dp->cv);
+    int height = cucul_get_canvas_height(dp->cv);
     int x, y;
 
     for(y = 0; y < (int)height; y++)
@@ -420,8 +420,7 @@ static int ncurses_get_event(caca_display_t *dp, caca_privevent_t *ev)
         int keys[7]; /* Necessary for ungetch(); */
         char utf8[7];
         uint32_t utf32;
-        unsigned int i;
-        size_t bytes = 0;
+        size_t i, bytes = 0;
 
         keys[0] = intkey;
         utf8[0] = intkey;
@@ -495,8 +494,7 @@ static int ncurses_get_event(caca_display_t *dp, caca_privevent_t *ev)
 #undef CLICK
         }
 
-        if(dp->mouse.x == (unsigned int)mevent.x &&
-           dp->mouse.y == (unsigned int)mevent.y)
+        if(dp->mouse.x == mevent.x && dp->mouse.y == mevent.y)
             return _pop_event(dp, ev);
 
         dp->mouse.x = mevent.x;

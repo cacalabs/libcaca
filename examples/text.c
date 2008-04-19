@@ -37,8 +37,8 @@ int main(int argc, char *argv[])
 {
     cucul_canvas_t *cv, *pig;
     void *buffer;
-    unsigned long int len;
-    unsigned int i, j;
+    size_t len;
+    int i, j;
 
     pig = cucul_create_canvas(0, 0);
     cucul_import_memory(pig, STRING, strlen(STRING), "text");

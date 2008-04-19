@@ -82,8 +82,8 @@ struct driver_private
 
 static int win32_init_graphics(caca_display_t *dp)
 {
-    unsigned int width = cucul_get_canvas_width(dp->cv);
-    unsigned int height = cucul_get_canvas_height(dp->cv);
+    int width = cucul_get_canvas_width(dp->cv);
+    int height = cucul_get_canvas_height(dp->cv);
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     SMALL_RECT rect;
     COORD size;
@@ -175,7 +175,7 @@ static int win32_set_display_title(caca_display_t *dp, char const *title)
     return 0;
 }
 
-static unsigned int win32_get_display_width(caca_display_t const *dp)
+static int win32_get_display_width(caca_display_t const *dp)
 {
     /* FIXME */
 
@@ -183,7 +183,7 @@ static unsigned int win32_get_display_width(caca_display_t const *dp)
     return cucul_get_canvas_width(dp->cv) * 6;
 }
 
-static unsigned int win32_get_display_height(caca_display_t const *dp)
+static int win32_get_display_height(caca_display_t const *dp)
 {
     /* FIXME */
 
@@ -198,9 +198,9 @@ static void win32_display(caca_display_t *dp)
     CHAR_INFO *buffer = dp->drv.p->buffer;
     uint32_t const *cvchars = (uint32_t const *)cucul_get_canvas_chars(dp->cv);
     uint32_t const *cvattrs = (uint32_t const *)cucul_get_canvas_attrs(dp->cv);
-    unsigned int width = cucul_get_canvas_width(dp->cv);
-    unsigned int height = cucul_get_canvas_height(dp->cv);
-    unsigned int n;
+    int width = cucul_get_canvas_width(dp->cv);
+    int height = cucul_get_canvas_height(dp->cv);
+    int n;
 
     /* Render everything to our screen buffer */
     for(n = height * width; n--; )
@@ -302,8 +302,7 @@ static int win32_get_event(caca_display_t *dp, caca_privevent_t *ev)
             {
                 COORD pos = rec.Event.MouseEvent.dwMousePosition;
 
-                if(dp->mouse.x == (unsigned int)pos.X &&
-                   dp->mouse.y == (unsigned int)pos.Y)
+                if(dp->mouse.x == pos.X && dp->mouse.y == pos.Y)
                     continue;
 
                 dp->mouse.x = pos.X;

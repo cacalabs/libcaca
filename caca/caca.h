@@ -27,7 +27,8 @@
 #include <cucul.h>
 
 #undef __extern
-#if defined(_WIN32) && defined(__LIBCACA__)
+#if defined(_DOXYGEN_SKIP_ME)
+#elif defined(_WIN32) && defined(__LIBCACA__)
 #   define __extern extern __declspec(dllexport)
 #else
 #   define __extern extern
@@ -79,9 +80,9 @@ struct caca_event
     enum caca_event_type type;
     union
     {
-        struct { unsigned int x, y, button; } mouse;
-        struct { unsigned int w, h; } resize;
-        struct { unsigned int ch; uint32_t utf32; char utf8[8]; } key;
+        struct { int x, y, button; } mouse;
+        struct { int w, h; } resize;
+        struct { int ch; uint32_t utf32; char utf8[8]; } key;
     } data;
     uint8_t padding[16];
 };
@@ -170,10 +171,10 @@ __extern int caca_set_display_driver(caca_display_t *, char const *);
 __extern int caca_free_display(caca_display_t *);
 __extern cucul_canvas_t * caca_get_canvas(caca_display_t *);
 __extern int caca_refresh_display(caca_display_t *);
-__extern int caca_set_display_time(caca_display_t *, unsigned int);
-__extern unsigned int caca_get_display_time(caca_display_t const *);
-__extern unsigned int caca_get_display_width(caca_display_t const *);
-__extern unsigned int caca_get_display_height(caca_display_t const *);
+__extern int caca_set_display_time(caca_display_t *, int);
+__extern int caca_get_display_time(caca_display_t const *);
+__extern int caca_get_display_width(caca_display_t const *);
+__extern int caca_get_display_height(caca_display_t const *);
 __extern int caca_set_display_title(caca_display_t *, char const *);
 __extern int caca_set_mouse(caca_display_t *, int);
 __extern int caca_set_cursor(caca_display_t *, int);
@@ -186,27 +187,24 @@ __extern char const * caca_get_version(void);
  *  clicks.
  *
  *  @{ */
-__extern int caca_get_event(caca_display_t *, unsigned int,
-                            caca_event_t *, int);
-__extern unsigned int caca_get_mouse_x(caca_display_t const *);
-__extern unsigned int caca_get_mouse_y(caca_display_t const *);
+__extern int caca_get_event(caca_display_t *, int, caca_event_t *, int);
+__extern int caca_get_mouse_x(caca_display_t const *);
+__extern int caca_get_mouse_y(caca_display_t const *);
 __extern enum caca_event_type caca_get_event_type(caca_event_t const *);
-__extern unsigned int caca_get_event_key_ch(caca_event_t const *);
+__extern int caca_get_event_key_ch(caca_event_t const *);
 __extern uint32_t caca_get_event_key_utf32(caca_event_t const *);
 __extern int caca_get_event_key_utf8(caca_event_t const *, char *);
-__extern unsigned int caca_get_event_mouse_button(caca_event_t const *);
-__extern unsigned int caca_get_event_mouse_x(caca_event_t const *);
-__extern unsigned int caca_get_event_mouse_y(caca_event_t const *);
-__extern unsigned int caca_get_event_resize_width(caca_event_t const *);
-__extern unsigned int caca_get_event_resize_height(caca_event_t const *);
+__extern int caca_get_event_mouse_button(caca_event_t const *);
+__extern int caca_get_event_mouse_x(caca_event_t const *);
+__extern int caca_get_event_mouse_y(caca_event_t const *);
+__extern int caca_get_event_resize_width(caca_event_t const *);
+__extern int caca_get_event_resize_height(caca_event_t const *);
 /*  @} */
 
 #ifdef __cplusplus
 }
 #endif
 
-#if !defined(_DOXYGEN_SKIP_ME)
-#   undef __extern
-#endif
+#undef __extern
 
 #endif /* __CACA_H__ */

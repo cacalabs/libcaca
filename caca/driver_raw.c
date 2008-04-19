@@ -29,8 +29,8 @@
 
 static int raw_init_graphics(caca_display_t *dp)
 {
-    unsigned int width = cucul_get_canvas_width(dp->cv);
-    unsigned int height = cucul_get_canvas_height(dp->cv);
+    int width = cucul_get_canvas_width(dp->cv);
+    int height = cucul_get_canvas_height(dp->cv);
     char const *geometry;
 
 #if defined(HAVE_GETENV)
@@ -56,12 +56,12 @@ static int raw_set_display_title(caca_display_t *dp, char const *title)
     return -1;
 }
 
-static unsigned int raw_get_display_width(caca_display_t const *dp)
+static int raw_get_display_width(caca_display_t const *dp)
 {
     return 0;
 }
 
-static unsigned int raw_get_display_height(caca_display_t const *dp)
+static int raw_get_display_height(caca_display_t const *dp)
 {
     return 0;
 }
@@ -69,7 +69,7 @@ static unsigned int raw_get_display_height(caca_display_t const *dp)
 static void raw_display(caca_display_t *dp)
 {
     void *buffer;
-    unsigned long int len;
+    size_t len;
 
     buffer = cucul_export_memory(dp->cv, "caca", &len);
     if(!buffer)

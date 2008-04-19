@@ -95,9 +95,9 @@ struct caca_privevent
 
     union
     {
-        struct { unsigned int x, y, button; } mouse;
-        struct { unsigned int w, h; } resize;
-        struct { unsigned int ch; unsigned long int utf32; char utf8[8]; } key;
+        struct { int x, y, button; } mouse;
+        struct { int w, h; } resize;
+        struct { int ch; uint32_t utf32; char utf8[8]; } key;
     } data;
 };
 
@@ -122,8 +122,8 @@ struct caca_display
         int (* init_graphics) (caca_display_t *);
         int (* end_graphics) (caca_display_t *);
         int (* set_display_title) (caca_display_t *, char const *);
-        unsigned int (* get_display_width) (caca_display_t const *);
-        unsigned int (* get_display_height) (caca_display_t const *);
+        int (* get_display_width) (caca_display_t const *);
+        int (* get_display_height) (caca_display_t const *);
         void (* display) (caca_display_t *);
         void (* handle_resize) (caca_display_t *);
         int (* get_event) (caca_display_t *, caca_privevent_t *);
@@ -134,7 +134,7 @@ struct caca_display
     /* Mouse position */
     struct mouse
     {
-        unsigned int x, y;
+        int x, y;
     } mouse;
 
     /* Window resize handling */
@@ -142,11 +142,11 @@ struct caca_display
     {
         int resized;   /* A resize event was requested */
         int allow;     /* The display driver allows resizing */
-        unsigned w, h; /* Requested width and height */
+        int w, h; /* Requested width and height */
     } resize;
 
     /* Framerate handling */
-    unsigned int delay, rendertime;
+    int delay, rendertime;
     caca_timer_t timer;
     int lastticks;
 
@@ -158,19 +158,19 @@ struct caca_display
 #endif
 #if defined(USE_SLANG) || defined(USE_NCURSES)
         caca_timer_t key_timer;
-        unsigned int last_key_ticks;
-        unsigned int autorepeat_ticks;
+        int last_key_ticks;
+        int autorepeat_ticks;
         caca_privevent_t last_key_event;
 #endif
 #if defined(USE_WIN32)
-        unsigned char not_empty_struct;
+        uint8_t not_empty_struct;
 #endif
     } events;
 };
 
 /* Internal timer functions */
-extern void _caca_sleep(unsigned int);
-extern unsigned int _caca_getticks(caca_timer_t *);
+extern void _caca_sleep(int);
+extern int _caca_getticks(caca_timer_t *);
 
 /* Internal event functions */
 extern void _caca_handle_resize(caca_display_t *);

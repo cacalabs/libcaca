@@ -70,10 +70,9 @@ struct cucul_font
 
 #define DECLARE_UNPACKGLYPH(bpp) \
     static inline void \
-      unpack_glyph ## bpp(uint8_t *glyph, uint8_t *packed_data, \
-                          unsigned int n) \
+      unpack_glyph ## bpp(uint8_t *glyph, uint8_t *packed_data, int n) \
 { \
-    unsigned int i; \
+    int i; \
     \
     for(i = 0; i < n; i++) \
     { \
@@ -111,10 +110,10 @@ DECLARE_UNPACKGLYPH(1)
  *  \param size The size of the memory area, or 0 if the font name is given.
  *  \return A font handle or NULL in case of error.
  */
-cucul_font_t *cucul_load_font(void const *data, unsigned int size)
+cucul_font_t *cucul_load_font(void const *data, size_t size)
 {
     cucul_font_t *f;
-    unsigned int i;
+    int i;
 
     if(size == 0)
     {
@@ -247,7 +246,7 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
            f->private + 4 + sizeof(struct font_header)
                 + f->header.blocks * sizeof(struct block_info),
            f->header.glyphs * sizeof(struct glyph_info));
-    for(i = 0; i < f->header.glyphs; i++)
+    for(i = 0; i < (int)f->header.glyphs; i++)
     {
         f->glyph_list[i].width = hton16(f->glyph_list[i].width);
         f->glyph_list[i].height = hton16(f->glyph_list[i].height);
@@ -324,7 +323,7 @@ char const * const * cucul_get_font_list(void)
  *  \param f The font, as returned by cucul_load_font()
  *  \return The standard glyph width.
  */
-unsigned int cucul_get_font_width(cucul_font_t const *f)
+int cucul_get_font_width(cucul_font_t const *f)
 {
     return f->header.width;
 }
@@ -339,7 +338,7 @@ unsigned int cucul_get_font_width(cucul_font_t const *f)
  *  \param f The font, as returned by cucul_load_font()
  *  \return The standard glyph height.
  */
-unsigned int cucul_get_font_height(cucul_font_t const *f)
+int cucul_get_font_height(cucul_font_t const *f)
 {
     return f->header.height;
 }
@@ -404,7 +403,8 @@ int cucul_free_font(cucul_font_t *f)
  *  Glyphs that do not fit in the image buffer are currently not rendered at
  *  all. They may be cropped instead in future versions.
  *
- *  This function never fails.
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c EINVAL Specified width, height or pitch is invalid.
  *
  *  \param cv The canvas to render
  *  \param f The font, as returned by cucul_load_font()
@@ -412,14 +412,19 @@ int cucul_free_font(cucul_font_t *f)
  *  \param width The width (in pixels) of the image buffer
  *  \param height The height (in pixels) of the image buffer
  *  \param pitch The pitch (in bytes) of an image buffer line.
- *  \return This function always returns 0.
+ *  \return 0 in case of success, -1 if an error occurred.
  */
 int cucul_render_canvas(cucul_canvas_t const *cv, cucul_font_t const *f,
-                        void *buf, unsigned int width,
-                        unsigned int height, unsigned int pitch)
+                        void *buf, int width, int height, int pitch)
 {
     uint8_t *glyph = NULL;
-    unsigned int x, y, xmax, ymax;
+    int x, y, xmax, ymax;
+
+    if(width < 0 || height < 0 || pitch < 0)
+    {
+        seterrno(EINVAL);
+        return -1;
+    }
 
     if(f->header.bpp != 8)
         glyph = malloc(f->header.width * 2 * f->header.height);
@@ -439,11 +444,11 @@ int cucul_render_canvas(cucul_canvas_t const *cv, cucul_font_t const *f,
         for(x = 0; x < xmax; x++)
         {
             uint8_t argb[8];
-            unsigned int starty = y * f->header.height;
-            unsigned int startx = x * f->header.width;
+            int starty = y * f->header.height;
+            int startx = x * f->header.width;
             uint32_t ch = cv->chars[y * cv->width + x];
             uint32_t attr = cv->attrs[y * cv->width + x];
-            unsigned int b, i, j;
+            int b, i, j;
             struct glyph_info *g;
 
             /* Find the Unicode block where our glyph lies */

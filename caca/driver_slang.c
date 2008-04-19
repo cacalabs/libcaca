@@ -207,13 +207,13 @@ static int slang_set_display_title(caca_display_t *dp, char const *title)
     return 0;
 }
 
-static unsigned int slang_get_display_width(caca_display_t const *dp)
+static int slang_get_display_width(caca_display_t const *dp)
 {
     /* Fallback to a 6x10 font */
     return cucul_get_canvas_width(dp->cv) * 6;
 }
 
-static unsigned int slang_get_display_height(caca_display_t const *dp)
+static int slang_get_display_height(caca_display_t const *dp)
 {
     /* Fallback to a 6x10 font */
     return cucul_get_canvas_height(dp->cv) * 10;
@@ -223,8 +223,8 @@ static void slang_display(caca_display_t *dp)
 {
     uint32_t const *cvchars = (uint32_t const *)cucul_get_canvas_chars(dp->cv);
     uint32_t const *cvattrs = (uint32_t const *)cucul_get_canvas_attrs(dp->cv);
-    unsigned int width = cucul_get_canvas_width(dp->cv);
-    unsigned int height = cucul_get_canvas_height(dp->cv);
+    int width = cucul_get_canvas_width(dp->cv);
+    int height = cucul_get_canvas_height(dp->cv);
     int x, y;
 
     for(y = 0; y < (int)height; y++)
@@ -328,8 +328,7 @@ static int slang_get_event(caca_display_t *dp, caca_privevent_t *ev)
         int keys[7]; /* Necessary for ungetkey(); */
         char utf8[7];
         uint32_t utf32;
-        unsigned int i;
-        size_t bytes = 0;
+        size_t i, bytes = 0;
 
         keys[0] = intkey;
         utf8[0] = intkey;
@@ -361,8 +360,8 @@ static int slang_get_event(caca_display_t *dp, caca_privevent_t *ev)
     if(intkey == 0x3e9)
     {
         int button = (SLang_getkey() - ' ' + 1) & 0xf;
-        unsigned int x = SLang_getkey() - '!';
-        unsigned int y = SLang_getkey() - '!';
+        int x = SLang_getkey() - '!';
+        int y = SLang_getkey() - '!';
 
         ev->data.mouse.button = button;
         ev->type = CACA_EVENT_MOUSE_PRESS;

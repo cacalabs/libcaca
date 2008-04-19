@@ -33,22 +33,22 @@
 
 struct cucul_figfont
 {
-    unsigned int term_width;
+    int term_width;
     int x, y, w, h, lines;
 
     enum { H_DEFAULT, H_KERN, H_SMUSH, H_NONE, H_OVERLAP } hmode;
-    unsigned int hsmushrule;
+    int hsmushrule;
     uint32_t hardblank;
-    unsigned int height, baseline, max_length;
+    int height, baseline, max_length;
     int old_layout;
-    unsigned int print_direction, full_layout, codetag_count;
-    unsigned int glyphs;
+    int print_direction, full_layout, codetag_count;
+    int glyphs;
     cucul_canvas_t *fontcv, *charcv;
     int *left, *right; /* Unused yet */
-    unsigned int *lookup;
+    uint32_t *lookup;
 };
 
-static uint32_t hsmush(uint32_t ch1, uint32_t ch2, unsigned int rule);
+static uint32_t hsmush(uint32_t ch1, uint32_t ch2, int rule);
 static cucul_figfont_t * open_figfont(char const *);
 static int free_figfont(cucul_figfont_t *);
 
@@ -130,7 +130,7 @@ int cucul_canvas_set_figfont(cucul_canvas_t *cv, char const *path)
 int cucul_put_figchar(cucul_canvas_t *cv, uint32_t ch)
 {
     cucul_figfont_t *ff = cv->ff;
-    unsigned int c, w, h, x, y, overlap, extra, xleft, xright;
+    int c, w, h, x, y, overlap, extra, xleft, xright;
 
     switch(ch)
     {
@@ -253,7 +253,7 @@ int cucul_put_figchar(cucul_canvas_t *cv, uint32_t ch)
 static int flush_figlet(cucul_canvas_t *cv)
 {
     cucul_figfont_t *ff = cv->ff;
-    unsigned int x, y;
+    int x, y;
 
     //ff->torender = cv;
     //cucul_set_canvas_size(ff->torender, ff->w, ff->h);
@@ -291,7 +291,7 @@ cucul_figfont_t * open_figfont(char const *path)
     cucul_figfont_t *ff;
     char *data = NULL;
     cucul_file_t *f;
-    unsigned int i, j, size, comment_lines;
+    int i, j, size, comment_lines;
 
     ff = malloc(sizeof(cucul_figfont_t));
     if(!ff)
@@ -487,7 +487,7 @@ int free_figfont(cucul_figfont_t *ff)
     return 0;
 }
 
-static uint32_t hsmush(uint32_t ch1, uint32_t ch2, unsigned int rule)
+static uint32_t hsmush(uint32_t ch1, uint32_t ch2, int rule)
 {
     /* Rule 1 */
     if((rule & 0x01) && ch1 == ch2 && ch1 != 0xa0)

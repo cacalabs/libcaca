@@ -35,7 +35,7 @@
 #include "caca.h"
 #include "caca_internals.h"
 
-void _caca_sleep(unsigned int usec)
+void _caca_sleep(int usec)
 {
 #if defined(HAVE_USLEEP)
         usleep(usec);
@@ -46,15 +46,15 @@ void _caca_sleep(unsigned int usec)
 #endif
 }
 
-unsigned int _caca_getticks(caca_timer_t *timer)
+int _caca_getticks(caca_timer_t *timer)
 {
 #if defined(HAVE_GETTIMEOFDAY)
     struct timeval tv;
 #elif defined(USE_WIN32)
     static __int64 freq = -1; /* FIXME: can this move to caca_context? */
-    unsigned __int64 usec;
+    __int64 usec;
 #endif
-    unsigned int ticks = 0;
+    int ticks = 0;
     int new_sec, new_usec;
 
 #if defined(HAVE_GETTIMEOFDAY)

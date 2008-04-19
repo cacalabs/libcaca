@@ -36,7 +36,7 @@
  *  \param cv A libcucul canvas
  *  \return The frame count
  */
-unsigned int cucul_get_frame_count(cucul_canvas_t const *cv)
+int cucul_get_frame_count(cucul_canvas_t const *cv)
 {
     return cv->framecount;
 }
@@ -56,9 +56,9 @@ unsigned int cucul_get_frame_count(cucul_canvas_t const *cv)
  *  \param id The canvas frame to activate
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_set_frame(cucul_canvas_t *cv, unsigned int id)
+int cucul_set_frame(cucul_canvas_t *cv, int id)
 {
-    if(id >= cv->framecount)
+    if(id < 0 || id >= cv->framecount)
     {
         seterrno(EINVAL);
         return -1;
@@ -124,7 +124,8 @@ int cucul_set_frame_name(cucul_canvas_t *cv, char const *name)
  *  The frame index indicates where the frame should be inserted. Valid
  *  values range from 0 to the current canvas frame count. If the frame
  *  index is greater than or equals the current canvas frame count, the new
- *  frame is appended at the end of the canvas.
+ *  frame is appended at the end of the canvas. If the frame index is less
+ *  than zero, the new frame is inserted at index 0.
  *
  *  The active frame does not change, but its index may be renumbered due
  *  to the insertion.
@@ -136,12 +137,14 @@ int cucul_set_frame_name(cucul_canvas_t *cv, char const *name)
  *  \param id The index where to insert the new frame
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_create_frame(cucul_canvas_t *cv, unsigned int id)
+int cucul_create_frame(cucul_canvas_t *cv, int id)
 {
-    unsigned int size = cv->width * cv->height;
-    unsigned int f;
+    int size = cv->width * cv->height;
+    int f;
 
-    if(id > cv->framecount)
+    if(id < 0)
+        id = 0;
+    else if(id > cv->framecount)
         id = cv->framecount;
 
     cv->framecount++;
@@ -194,11 +197,11 @@ int cucul_create_frame(cucul_canvas_t *cv, unsigned int id)
  *  \param id The index of the frame to delete
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_free_frame(cucul_canvas_t *cv, unsigned int id)
+int cucul_free_frame(cucul_canvas_t *cv, int id)
 {
-    unsigned int f;
+    int f;
 
-    if(id >= cv->framecount)
+    if(id < 0 || id >= cv->framecount)
     {
         seterrno(EINVAL);
         return -1;

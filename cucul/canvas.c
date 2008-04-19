@@ -299,7 +299,7 @@ int cucul_printf(cucul_canvas_t *cv, int x, int y, char const *format, ...)
 int cucul_clear_canvas(cucul_canvas_t *cv)
 {
     uint32_t attr = cv->curattr;
-    unsigned int n;
+    int n;
 
     for(n = cv->width * cv->height; n--; )
     {
@@ -393,21 +393,21 @@ int cucul_blit(cucul_canvas_t *dst, int x, int y,
     endi = (x + src->width >= dst->width) ? dst->width - x : src->width;
     endj = (y + src->height >= dst->height) ? dst->height - y : src->height;
 
-    if((unsigned int)starti > src->width || (unsigned int)startj > src->height
+    if(starti > src->width || startj > src->height
         || starti >= endi || startj >= endj)
         return 0;
 
     for(j = startj; j < endj; j++)
     {
-        unsigned int dstix = (j + y) * dst->width + starti + x;
-        unsigned int srcix = j * src->width + starti;
+        int dstix = (j + y) * dst->width + starti + x;
+        int srcix = j * src->width + starti;
         int stride = endi - starti;
 
         /* FIXME: we are ignoring the mask here */
         if((starti + x) && dst->chars[dstix] == CUCUL_MAGIC_FULLWIDTH)
             dst->chars[dstix - 1] = ' ';
 
-        if((unsigned int)(endi + x) < dst->width
+        if(endi + x < dst->width
                 && dst->chars[dstix + stride] == CUCUL_MAGIC_FULLWIDTH)
             dst->chars[dstix + stride] = ' ';
 
@@ -432,8 +432,7 @@ int cucul_blit(cucul_canvas_t *dst, int x, int y,
         if(src->chars[srcix] == CUCUL_MAGIC_FULLWIDTH)
             dst->chars[dstix] = ' ';
 
-        if((unsigned int)endi < src->width
-                && src->chars[endi] == CUCUL_MAGIC_FULLWIDTH)
+        if(endi < src->width && src->chars[endi] == CUCUL_MAGIC_FULLWIDTH)
             dst->chars[dstix + stride - 1] = ' ';
     }
 
@@ -447,6 +446,7 @@ int cucul_blit(cucul_canvas_t *dst, int x, int y,
  *  are affected by this function.
  *
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c EINVAL Specified width or height is invalid.
  *  - \c EBUSY The canvas is in use by a display driver and cannot be resized.
  *  - \c ENOMEM Not enough memory for the requested canvas size. If this
  *    happens, the canvas handle becomes invalid and should not be used.
@@ -458,15 +458,20 @@ int cucul_blit(cucul_canvas_t *dst, int x, int y,
  *  \param h The height of the cropped area.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_set_canvas_boundaries(cucul_canvas_t *cv, int x, int y,
-                                unsigned int w, unsigned int h)
+int cucul_set_canvas_boundaries(cucul_canvas_t *cv, int x, int y, int w, int h)
 {
     cucul_canvas_t *new;
-    unsigned int f, saved_f, framecount;
+    int f, saved_f, framecount;
 
     if(cv->refcount)
     {
         seterrno(EBUSY);
+        return -1;
+    }
+
+    if(w < 0 || h < 0)
+    {
+        seterrno(EINVAL);
         return -1;
     }
 

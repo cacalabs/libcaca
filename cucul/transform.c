@@ -46,7 +46,7 @@ static void rightpair(uint32_t pair[2]);
 int cucul_invert(cucul_canvas_t *cv)
 {
     uint32_t *attrs = cv->attrs;
-    unsigned int i;
+    int i;
 
     for(i = cv->height * cv->width; i--; )
     {
@@ -71,7 +71,7 @@ int cucul_invert(cucul_canvas_t *cv)
  */
 int cucul_flip(cucul_canvas_t *cv)
 {
-    unsigned int y;
+    int y;
 
     for(y = 0; y < cv->height; y++)
     {
@@ -130,7 +130,7 @@ int cucul_flip(cucul_canvas_t *cv)
  */
 int cucul_flop(cucul_canvas_t *cv)
 {
-    unsigned int x;
+    int x;
 
     for(x = 0; x < cv->width; x++)
     {
@@ -180,7 +180,7 @@ int cucul_rotate_180(cucul_canvas_t *cv)
     uint32_t *cend = cbegin + cv->width * cv->height - 1;
     uint32_t *abegin = cv->attrs;
     uint32_t *aend = abegin + cv->width * cv->height - 1;
-    unsigned int y;
+    int y;
 
     while(cbegin < cend)
     {
@@ -242,7 +242,7 @@ int cucul_rotate_180(cucul_canvas_t *cv)
 int cucul_rotate_left(cucul_canvas_t *cv)
 {
     uint32_t *newchars, *newattrs;
-    unsigned int x, y, w2, h2;
+    int x, y, w2, h2;
 
     if(cv->refcount)
     {
@@ -359,7 +359,7 @@ int cucul_rotate_left(cucul_canvas_t *cv)
 int cucul_rotate_right(cucul_canvas_t *cv)
 {
     uint32_t *newchars, *newattrs;
-    unsigned int x, y, w2, h2;
+    int x, y, w2, h2;
 
     if(cv->refcount)
     {
@@ -474,7 +474,7 @@ int cucul_rotate_right(cucul_canvas_t *cv)
 int cucul_stretch_left(cucul_canvas_t *cv)
 {
     uint32_t *newchars, *newattrs;
-    unsigned int x, y;
+    int x, y;
 
     if(cv->refcount)
     {
@@ -565,7 +565,7 @@ int cucul_stretch_left(cucul_canvas_t *cv)
 int cucul_stretch_right(cucul_canvas_t *cv)
 {
     uint32_t *newchars, *newattrs;
-    unsigned int x, y;
+    int x, y;
 
     if(cv->refcount)
     {

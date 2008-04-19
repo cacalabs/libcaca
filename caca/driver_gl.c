@@ -63,8 +63,8 @@ static void gl_compute_font(caca_display_t *);
 struct driver_private
 {
     int window;
-    unsigned int width, height;
-    unsigned int new_width, new_height;
+    int width, height;
+    int new_width, new_height;
     cucul_font_t *f;
     float font_width, font_height;
     float incx, incy;
@@ -73,8 +73,8 @@ struct driver_private
     uint8_t close;
     uint8_t bit;
     uint8_t mouse_changed, mouse_clicked;
-    unsigned int mouse_x, mouse_y;
-    unsigned int mouse_button, mouse_state;
+    int mouse_x, mouse_y;
+    int mouse_button, mouse_state;
 
     uint8_t key;
     int special_key;
@@ -87,8 +87,8 @@ static int gl_init_graphics(caca_display_t *dp)
     char const *geometry;
     char *argv[2] = { "", NULL };
     char const * const * fonts;
-    unsigned int width = cucul_get_canvas_width(dp->cv);
-    unsigned int height = cucul_get_canvas_height(dp->cv);
+    int width = cucul_get_canvas_width(dp->cv);
+    int height = cucul_get_canvas_height(dp->cv);
     int argc = 1;
 
     dp->drv.p = malloc(sizeof(struct driver_private));
@@ -204,12 +204,12 @@ static int gl_set_display_title(caca_display_t *dp, char const *title)
     return 0;
 }
 
-static unsigned int gl_get_display_width(caca_display_t const *dp)
+static int gl_get_display_width(caca_display_t const *dp)
 {
     return dp->drv.p->width;
 }
 
-static unsigned int gl_get_display_height(caca_display_t const *dp)
+static int gl_get_display_height(caca_display_t const *dp)
 {
     return dp->drv.p->height;
 }
@@ -218,8 +218,8 @@ static void gl_display(caca_display_t *dp)
 {
     uint32_t const *cvchars = (uint32_t const *)cucul_get_canvas_chars(dp->cv);
     uint32_t const *cvattrs = (uint32_t const *)cucul_get_canvas_attrs(dp->cv);
-    unsigned int width = cucul_get_canvas_width(dp->cv);
-    unsigned int x, y, line;
+    int width = cucul_get_canvas_width(dp->cv);
+    int x, y, line;
 
     glClear(GL_COLOR_BUFFER_BIT);
     glDisable(GL_TEXTURE_2D);

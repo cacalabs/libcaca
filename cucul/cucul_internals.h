@@ -22,7 +22,7 @@ typedef struct cucul_figfont cucul_figfont_t;
 struct cucul_frame
 {
     /* Frame size */
-    unsigned int width, height;
+    int width, height;
 
     /* Cell information */
     uint32_t *chars;
@@ -43,17 +43,17 @@ struct cucul_canvas
      * to this structure. The function is quite hacky. */
 
     /* Frame information */
-    unsigned int frame, framecount;
+    int frame, framecount;
     struct cucul_frame *frames;
 
     /* Canvas management */
-    unsigned int refcount;
-    unsigned int autoinc;
+    int refcount;
+    int autoinc;
     int (*resize_callback)(void *);
     void *resize_data;
 
     /* Shortcut to the active frame information */
-    unsigned int width, height;
+    int width, height;
     uint32_t *chars;
     uint32_t *attrs;
     uint32_t curattr;
@@ -64,7 +64,7 @@ struct cucul_canvas
 
 struct cucul_buffer
 {
-    unsigned long int size;
+    size_t size;
     char *data;
     int user_data;
 };
