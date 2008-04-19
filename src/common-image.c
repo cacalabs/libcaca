@@ -277,7 +277,7 @@ void unload_image(struct image * im)
 #if !defined(USE_IMLIB2)
 static unsigned int u32fread(FILE *fp)
 {
-    unsigned char buffer[4];
+    uint8_t buffer[4];
     fread(buffer, 4, 1, fp);
     return ((unsigned int)buffer[3] << 24) | ((unsigned int)buffer[2] << 16)
              | ((unsigned int)buffer[1] << 8) | ((unsigned int)buffer[0]);
@@ -285,14 +285,14 @@ static unsigned int u32fread(FILE *fp)
 
 static unsigned int u16fread(FILE *fp)
 {
-    unsigned char buffer[2];
+    uint8_t buffer[2];
     fread(buffer, 2, 1, fp);
     return ((unsigned int)buffer[1] << 8) | ((unsigned int)buffer[0]);
 }
 
 static unsigned int u8fread(FILE *fp)
 {
-    unsigned char buffer;
+    uint8_t buffer;
     fread(&buffer, 1, 1, fp);
     return (unsigned int)buffer;
 }

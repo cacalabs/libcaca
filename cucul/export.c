@@ -429,8 +429,7 @@ static void *export_html(cucul_canvas_t const *cv, unsigned long int *bytes)
                 else if(linechar[x + len] <= 0x00000020)
                     cur += sprintf(cur, "&nbsp;");
                 else if(linechar[x + len] < 0x00000080)
-                    cur += sprintf(cur, "%c",
-                                   (unsigned char)linechar[x + len]);
+                    cur += sprintf(cur, "%c", (uint8_t)linechar[x + len]);
                 else
                     cur += sprintf(cur, "&#%i;",
                                    (unsigned int)linechar[x + len]);
@@ -524,7 +523,7 @@ static void *export_html3(cucul_canvas_t const *cv, unsigned long int *bytes)
                 else if(linechar[x + i] <= 0x00000020)
                     cur += sprintf(cur, "&nbsp;");
                 else if(linechar[x + i] < 0x00000080)
-                    cur += sprintf(cur, "%c", (unsigned char)linechar[x + i]);
+                    cur += sprintf(cur, "%c", (uint8_t)linechar[x + i]);
                 else
                     cur += sprintf(cur, "&#%i;", (unsigned int)linechar[x + i]);
             }
@@ -853,10 +852,10 @@ static void *export_ps(cucul_canvas_t const *cv, unsigned long int *bytes)
                 case '\\':
                 case '(':
                 case ')':
-                    cur += sprintf(cur, "(\\%c) show\n", (unsigned char)ch);
+                    cur += sprintf(cur, "(\\%c) show\n", (uint8_t)ch);
                     break;
                 default:
-                    cur += sprintf(cur, "(%c) show\n", (unsigned char)ch);
+                    cur += sprintf(cur, "(%c) show\n", (uint8_t)ch);
                     break;
             }
         }

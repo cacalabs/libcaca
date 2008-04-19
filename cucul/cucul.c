@@ -254,9 +254,9 @@ unsigned int cucul_get_canvas_height(cucul_canvas_t const *cv)
  *  \param cv A libcucul canvas.
  *  \return The canvas character array.
  */
-unsigned char const * cucul_get_canvas_chars(cucul_canvas_t const *cv)
+uint8_t const * cucul_get_canvas_chars(cucul_canvas_t const *cv)
 {
-    return (unsigned char const *)cv->chars;
+    return (uint8_t const *)cv->chars;
 }
 
 /** \brief Get the canvas attribute array.
@@ -273,9 +273,9 @@ unsigned char const * cucul_get_canvas_chars(cucul_canvas_t const *cv)
  *  \param cv A libcucul canvas.
  *  \return The canvas attribute array.
  */
-unsigned char const * cucul_get_canvas_attrs(cucul_canvas_t const *cv)
+uint8_t const * cucul_get_canvas_attrs(cucul_canvas_t const *cv)
 {
-    return (unsigned char const *)cv->attrs;
+    return (uint8_t const *)cv->attrs;
 }
 
 /** \brief Uninitialise \e libcucul.

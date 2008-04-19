@@ -41,7 +41,7 @@
 #   define LOOKUP_SAT 32
 #   define LOOKUP_HUE 16
 #endif
-static unsigned char hsv_distances[LOOKUP_VAL][LOOKUP_SAT][LOOKUP_HUE];
+static uint8_t hsv_distances[LOOKUP_VAL][LOOKUP_SAT][LOOKUP_HUE];
 static uint16_t lookup_colors[8];
 static int lookup_initialised = 0;
 
@@ -1531,7 +1531,7 @@ static int init_lookup(void)
     {
         int i, distbg, distfg, dist;
         int val, sat, hue;
-        unsigned char outbg, outfg;
+        uint8_t outbg, outfg;
 
         val = 0xfff * v / (LOOKUP_VAL - 1);
         sat = 0xfff * s / (LOOKUP_SAT - 1);

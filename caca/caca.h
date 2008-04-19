@@ -83,7 +83,7 @@ struct caca_event
         struct { unsigned int w, h; } resize;
         struct { unsigned int ch; unsigned long int utf32; char utf8[8]; } key;
     } data;
-    unsigned char padding[16];
+    uint8_t padding[16];
 };
 
 /** \brief Special key values.

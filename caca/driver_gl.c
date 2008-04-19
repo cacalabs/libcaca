@@ -70,13 +70,13 @@ struct driver_private
     float incx, incy;
     unsigned long int const *blocks;
     int *txid;
-    unsigned char close;
-    unsigned char bit;
-    unsigned char mouse_changed, mouse_clicked;
+    uint8_t close;
+    uint8_t bit;
+    uint8_t mouse_changed, mouse_clicked;
     unsigned int mouse_x, mouse_y;
     unsigned int mouse_button, mouse_state;
 
-    unsigned char key;
+    uint8_t key;
     int special_key;
 
     float sw, sh;

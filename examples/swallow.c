@@ -28,7 +28,7 @@ int main(int argc, char **argv)
     char cmd[BUFSIZ];
     static cucul_canvas_t *cv, *app;
     static caca_display_t *dp;
-    unsigned char *buf[4];
+    uint8_t *buf[4];
     long int bytes[4], total[4];
     FILE *f[4];
     int w, h, i;

@@ -149,10 +149,10 @@ int main(void)
     /* FIXME, handle >255 sizes */
     memcpy(server->prefix, INIT_PREFIX, sizeof(INIT_PREFIX));
     tmp = strstr(server->prefix, "____");
-    tmp[0] = (unsigned char) (server->width & 0xff00) >> 8;
-    tmp[1] = (unsigned char) server->width & 0xff;
-    tmp[2] = (unsigned char) (server->height & 0xff00) >> 8;
-    tmp[3] = (unsigned char) server->height & 0xff;
+    tmp[0] = (uint8_t) (server->width & 0xff00) >> 8;
+    tmp[1] = (uint8_t) server->width & 0xff;
+    tmp[2] = (uint8_t) (server->height & 0xff00) >> 8;
+    tmp[3] = (uint8_t) server->height & 0xff;
 
     if((server->sockfd = socket(PF_INET, SOCK_STREAM, 0)) == -1)
     {

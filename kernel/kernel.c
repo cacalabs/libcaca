@@ -190,7 +190,7 @@ int strcasecmp(const char *s1, const char *s2)
 
 int memcmp(const void *_s1, const void *_s2, size_t n)
 {
-    unsigned char const *s1 = _s1, *s2 = _s2;
+    uint8_t const *s1 = _s1, *s2 = _s2;
 
     while(n--)
     {

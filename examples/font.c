@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
     caca_display_t *dp;
     cucul_font_t *f;
     cucul_dither_t *d;
-    unsigned char *buf;
+    uint8_t *buf;
     unsigned int w, h;
     char const * const * fonts;
 

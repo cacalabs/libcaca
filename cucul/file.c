@@ -40,7 +40,7 @@ static int zipread(cucul_file_t *, void *, unsigned int);
 struct cucul_file
 {
 #   if defined HAVE_ZLIB_H
-    unsigned char read_buffer[READSIZE];
+    uint8_t read_buffer[READSIZE];
     z_stream stream;
     gzFile gz;
     int eof, zip;

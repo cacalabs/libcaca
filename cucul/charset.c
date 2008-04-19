@@ -190,7 +190,7 @@ unsigned int cucul_utf32_to_utf8(char *buf, unsigned long int ch)
  *  \param ch The UTF-32 character.
  *  \return The corresponding CP437 character, or "?" if not representable.
  */
-unsigned char cucul_utf32_to_cp437(unsigned long int ch)
+uint8_t cucul_utf32_to_cp437(unsigned long int ch)
 {
     unsigned int i;
 
@@ -222,7 +222,7 @@ unsigned char cucul_utf32_to_cp437(unsigned long int ch)
  *  \param ch The CP437 character.
  *  \return The corresponding UTF-32 character, or zero if not representable.
  */
-unsigned long int cucul_cp437_to_utf32(unsigned char ch)
+unsigned long int cucul_cp437_to_utf32(uint8_t ch)
 {
     if(ch > 0x7f)
         return cp437_lookup2[ch - 0x7f];

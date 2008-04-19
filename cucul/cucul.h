@@ -93,8 +93,8 @@ __extern int cucul_set_canvas_size(cucul_canvas_t *, unsigned int,
                                    unsigned int);
 __extern unsigned int cucul_get_canvas_width(cucul_canvas_t const *);
 __extern unsigned int cucul_get_canvas_height(cucul_canvas_t const *);
-__extern unsigned char const * cucul_get_canvas_chars(cucul_canvas_t const *);
-__extern unsigned char const * cucul_get_canvas_attrs(cucul_canvas_t const *);
+__extern uint8_t const * cucul_get_canvas_chars(cucul_canvas_t const *);
+__extern uint8_t const * cucul_get_canvas_attrs(cucul_canvas_t const *);
 __extern int cucul_free_canvas(cucul_canvas_t *);
 __extern int cucul_rand(int, int);
 __extern char const * cucul_get_version(void);
@@ -116,8 +116,7 @@ __extern int cucul_put_str(cucul_canvas_t *, int, int, char const *);
 __extern unsigned long int cucul_get_attr(cucul_canvas_t const *, int, int);
 __extern int cucul_set_attr(cucul_canvas_t *, unsigned long int);
 __extern int cucul_put_attr(cucul_canvas_t *, int, int, unsigned long int);
-__extern int cucul_set_color_ansi(cucul_canvas_t *, unsigned char,
-                                  unsigned char);
+__extern int cucul_set_color_ansi(cucul_canvas_t *, uint8_t, uint8_t);
 __extern int cucul_set_color_argb(cucul_canvas_t *, unsigned int,
                                   unsigned int);
 __extern int cucul_printf(cucul_canvas_t *, int, int, char const *, ...);
@@ -151,12 +150,12 @@ __extern int cucul_stretch_right(cucul_canvas_t *);
  *  These functions perform conversions between attribute values.
  *
  *  @{ */
-__extern unsigned char cucul_attr_to_ansi(unsigned long int);
-__extern unsigned char cucul_attr_to_ansi_fg(unsigned long int);
-__extern unsigned char cucul_attr_to_ansi_bg(unsigned long int);
+__extern uint8_t cucul_attr_to_ansi(unsigned long int);
+__extern uint8_t cucul_attr_to_ansi_fg(unsigned long int);
+__extern uint8_t cucul_attr_to_ansi_bg(unsigned long int);
 __extern unsigned int cucul_attr_to_rgb12_fg(unsigned long int);
 __extern unsigned int cucul_attr_to_rgb12_bg(unsigned long int);
-__extern void cucul_attr_to_argb64(unsigned long int, unsigned char[8]);
+__extern void cucul_attr_to_argb64(unsigned long int, uint8_t[8]);
 /*  @} */
 
 /** \defgroup cucul_charset libcucul character set conversions
@@ -166,8 +165,8 @@ __extern void cucul_attr_to_argb64(unsigned long int, unsigned char[8]);
  *  @{ */
 __extern unsigned long int cucul_utf8_to_utf32(char const *, unsigned int *);
 __extern unsigned int cucul_utf32_to_utf8(char *, unsigned long int);
-__extern unsigned char cucul_utf32_to_cp437(unsigned long int);
-__extern unsigned long int cucul_cp437_to_utf32(unsigned char);
+__extern uint8_t cucul_utf32_to_cp437(unsigned long int);
+__extern unsigned long int cucul_cp437_to_utf32(uint8_t);
 __extern char cucul_utf32_to_ascii(unsigned long int);
 __extern int cucul_utf32_is_fullwidth(unsigned long int);
 /*  @} */

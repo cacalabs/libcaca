@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 {
     cucul_canvas_t *cv, *app;
     caca_display_t *dp;
-    unsigned char *buf = NULL;
+    uint8_t *buf = NULL;
     long int bytes = 0, total = 0;
     int fd;
 
