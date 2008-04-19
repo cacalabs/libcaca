@@ -33,25 +33,53 @@ static VALUE display_alloc(VALUE klass)
 static VALUE display_initialize(int argc, VALUE* argv, VALUE self)
 {
     caca_display_t *display;
-    cucul_canvas_t *canvas;
-    VALUE cv;
+    cucul_canvas_t *canvas = NULL;
+    const char *driver = NULL;
+    VALUE cv = Qnil;
+    VALUE arg1, arg2;
 
-    rb_scan_args(argc, argv, "01", &cv);
+    rb_scan_args(argc, argv, "02", &arg1, &arg2);
 
-    if(NIL_P(cv))
+    if(CLASS_OF(arg1) == cCanvas)
     {
-        display = caca_create_display(NULL);
-        canvas = caca_get_canvas(display);
-        cv = canvas_create(canvas);
+        cv = arg1;
+        if(CLASS_OF(arg2) == cCanvas)
+        {
+            rb_raise(rb_eArgError, "Only one argument can be a Cucul::Canvas");
+        }
+    }
+    else if(CLASS_OF(arg2) == cCanvas)
+    {
+        cv = arg2;
+    }
+
+    if(CLASS_OF(arg1) == T_STRING)
+    {
+        driver = StringValuePtr(arg1);
+        if(CLASS_OF(arg2) == T_STRING)
+        {
+            rb_raise(rb_eArgError, "Only one argument can be a string");
+        }
+    }
+    else if(CLASS_OF(arg2) == T_STRING)
+    {
+        driver = StringValuePtr(arg2);
+    }
+
+    if(cv !=  Qnil)
+        canvas = DATA_PTR(cv);
+
+    if(driver == NULL)
+    {
+        display = caca_create_display(canvas);
+	if(display && NIL_P(cv))
+	{
+            cv = canvas_create(caca_get_canvas(display));
+	}
     }
     else
     {
-        if(CLASS_OF(cv) != cCanvas)
-        {
-            rb_raise(rb_eArgError, "Argument is not a Cucul::Canvas");
-        }
-
-        display = caca_create_display(DATA_PTR(cv));
+        display = caca_create_display_with_driver(canvas, driver);
     }
 
     if(display == NULL)
@@ -198,10 +226,49 @@ static VALUE get_event(VALUE self, VALUE event_mask, VALUE timeout)
     return e;
 }
 
+static VALUE driver_list(void)
+{
+    VALUE ary;
+    char const* const* list;
+    
+    list = caca_get_display_driver_list();
+    
+    ary = rb_ary_new();    
+    while (*list != NULL)
+    {
+        rb_ary_push(ary, rb_str_new2(*list));
+        list++;
+    }
+
+    return ary;
+}
+
+static VALUE get_driver(VALUE self)
+{
+    return rb_str_new2(caca_get_display_driver(_SELF));
+}
+
+static VALUE set_driver(VALUE self, VALUE driver)
+{
+    if(caca_set_display_driver(_SELF, StringValuePtr(driver))<0)
+    {
+        rb_raise(rb_eRuntimeError, strerror(errno));
+    }
+    return driver;
+}
+
+static VALUE set_driver2(VALUE self, VALUE driver)
+{
+    set_driver(self, driver);
+    return self;
+}
+
 void Init_caca_display(VALUE mCaca)
 {
     cDisplay = rb_define_class_under(mCaca, "Display", rb_cObject);
     rb_define_alloc_func(cDisplay, display_alloc);
+
+    rb_define_singleton_method(cDisplay, "driver_list", driver_list, 0);
 
     rb_define_method(cDisplay, "initialize", display_initialize, -1);
     rb_define_method(cDisplay, "refresh", display_refresh, 0);
@@ -215,6 +282,9 @@ void Init_caca_display(VALUE mCaca)
     rb_define_method(cDisplay, "mouse_x", get_mouse_x, 0);
     rb_define_method(cDisplay, "mouse_y", get_mouse_y, 0);
     rb_define_method(cDisplay, "mouse=", set_mouse, 1);
+    rb_define_method(cDisplay, "driver", get_driver, 0);
+    rb_define_method(cDisplay, "set_driver", set_driver2, 1);
+    rb_define_method(cDisplay, "driver=", set_driver, 1);
     rb_define_method(cDisplay, "set_mouse", set_mouse2, 1);
     rb_define_method(cDisplay, "get_event", get_event, 2);
 }
