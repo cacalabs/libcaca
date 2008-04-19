@@ -3,7 +3,8 @@
 pkgdata_DATA = caca.txt
 
 EXTRA_DIST = caca.txt
-AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/cucul -I$(top_srcdir)/caca -DLIBCACA=1 -DX_DISPLAY_MISSING=1
+AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/cucul -I../cucul \
+              -I$(top_srcdir)/caca -DLIBCACA=1 -DX_DISPLAY_MISSING=1
 
 bin_PROGRAMS = cacademo cacafire cacaplay cacaview img2txt $(fcntl_programs)
 noinst_PROGRAMS = cacadraw

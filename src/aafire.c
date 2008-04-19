@@ -24,12 +24,12 @@
 
 #ifdef LIBCACA
 #include "config.h"
-#include "common.h"
 #if !defined(__KERNEL__)
 #   include <stdio.h>
 #   include <stdlib.h>
 #   include <string.h>
 #endif
+#include "cucul.h"
 #include "caca.h"
 #else
 #include <stdio.h>

@@ -1,6 +1,7 @@
 # $Id$
 
-AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/cucul -I$(top_srcdir)/caca -DDATADIR=\"$(pkgdatadir)\"
+AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/cucul -I../cucul \
+              -I$(top_srcdir)/caca -DDATADIR=\"$(pkgdatadir)\"
 
 noinst_PROGRAMS = blit colors cucul demo demo0 dithering driver event export figfont font font2tga frames fullwidth gamma hsv input spritedit swallow text transform truecolor unicode import
 

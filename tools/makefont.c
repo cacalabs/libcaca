@@ -16,22 +16,21 @@
  */
 
 #include "config.h"
-#include "common.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 
-#if defined(HAVE_ARPA_INET_H)
+#if defined HAVE_ARPA_INET_H
 #   include <arpa/inet.h>
-#elif defined(HAVE_NETINET_IN_H)
+#elif defined HAVE_NETINET_IN_H
 #   include <netinet/in.h>
 #endif
 
-#include "cucul.h"
-
 #include <pango/pango.h>
 #include <pango/pangoft2.h>
+
+#include "cucul.h"
 
 /* Split our big strings into chunks of 480 characters, because it is
  * the multiple of 32 directly below 509, which is the maximum allowed
@@ -437,13 +436,13 @@ static int printf_unicode(struct glyph *g)
 
 static int printf_u32(char const *fmt, uint32_t i)
 {
-    uint32_t ni = hton32(i);
+    uint32_t ni = htonl(i);
     return printf_hex(fmt, (uint8_t *)&ni, 4);
 }
 
 static int printf_u16(char const *fmt, uint16_t i)
 {
-    uint16_t ni = hton16(i);
+    uint16_t ni = htons(i);
     return printf_hex(fmt, (uint8_t *)&ni, 2);
 }
 

@@ -6,7 +6,7 @@
 set -x
 set -e
 
-CFLAGS="-fno-builtin -O2 -I. -I.. -Wall"
+CFLAGS="-fno-builtin -O2 -I. -I.. -I../cucul/ -Wall"
 CPPFLAGS="-D__KERNEL__ -nostdinc -include kernel/kernel.h"
 LDFLAGS="-nostdlib -Wl,-N -Wl,-Ttext -Wl,100000"
 

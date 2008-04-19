@@ -19,7 +19,6 @@
  */
 
 #include "config.h"
-#include "common.h"
 
 #if defined(USE_GL)
 

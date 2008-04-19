@@ -24,6 +24,8 @@
 #ifndef __CUCUL_H__
 #define __CUCUL_H__
 
+#include <cucul_types.h>
+
 #undef __extern
 #if defined(_WIN32) && defined(__LIBCUCUL__)
 #   define __extern extern __declspec(dllexport)

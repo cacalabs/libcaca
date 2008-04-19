@@ -13,13 +13,8 @@
  */
 
 #include "config.h"
-#include "common.h"
 
 #if !defined(__KERNEL__)
-#   if defined(HAVE_INTTYPES_H)
-#      include <inttypes.h>
-#   endif
-
 #   if defined(HAVE_ENDIAN_H)
 #      include <endian.h>
 #   endif

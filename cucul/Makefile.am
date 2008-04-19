@@ -1,18 +1,19 @@
 # $Id$
 
-EXTRA_DIST = cucul.pc.in mono9.data monobold12.data
-DISTCLEANFILES = cucul.pc
+EXTRA_DIST = cucul_types.h.in cucul.pc.in mono9.data monobold12.data
+DISTCLEANFILES = cucul_types.h cucul.pc
 
 pkgconfig_DATA = cucul.pc
 pkgconfigdir = $(libdir)/pkgconfig
 
-include_HEADERS = cucul.h
+include_HEADERS = cucul.h cucul_types.h
 
 lib_LTLIBRARIES = libcucul.la
 
 libcucul_la_SOURCES = \
 	cucul.c \
 	cucul.h \
+	cucul_types.h \
 	cucul_internals.h \
 	legacy.c \
 	canvas.c \
@@ -35,7 +36,7 @@ libcucul_la_DEPENDENCIES = \
 	mono9.data \
 	monobold12.data \
 	$(NULL)
-AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/cucul
+AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/cucul -I../cucul
 libcucul_la_LDFLAGS = -no-undefined -version-number @LT_VERSION@
 libcucul_la_LIBADD = $(ZLIB_LIBS)
 

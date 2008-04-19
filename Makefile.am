@@ -3,7 +3,7 @@
 SUBDIRS = kernel cucul caca src examples tests tools csharp cxx python ruby doc
 DIST_SUBDIRS = $(SUBDIRS) msvc
 
-EXTRA_DIST = NOTES COPYING.GPL COPYING.LGPL bootstrap build-dos build-kernel build-win32 caca-config.in common.h libcaca.spec
+EXTRA_DIST = NOTES COPYING.GPL COPYING.LGPL bootstrap build-dos build-kernel build-win32 caca-config.in stubs.h libcaca.spec
 AUTOMAKE_OPTIONS = dist-bzip2
 
 bin_SCRIPTS = caca-config

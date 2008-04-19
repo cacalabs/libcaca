@@ -18,7 +18,7 @@ mkdir "${BUILDDIR}"
 
 cd "${BUILDDIR}"
 # Build for DOS
-"${SRCDIR}/configure" --host=i386-pc-msdosdjgpp --prefix=/ --bindir=/ --libdir=/ --disable-imlib2 --disable-doc
+"${SRCDIR}/configure" --host=i386-pc-msdosdjgpp --prefix=/ --bindir=/ --libdir=/ --disable-imlib2 --disable-doc --disable-ruby --disable-csharp --disable-cxx
 make pkglibdir=/lib pkgdatadir=/data
 # Install into our private directory
 make install DESTDIR="${INSTALLDIR}" pkglibdir=/lib pkgdatadir=/
@@ -28,7 +28,7 @@ rm -Rf "${BUILDDIR}"
 i386-pc-msdosdjgpp-strip "${INSTALLDIR}/"*.exe
 
 mkdir "${INSTALLDIR}/doc"
-for f in COPYING COPYING.LGPL COPYING.GPL README AUTHORS NEWS NOTES THANKS TODO; do
+for f in COPYING COPYING.LGPL COPYING.GPL README AUTHORS NEWS NOTES THANKS; do
    sed -e 's/$/^M/' < "${SRCDIR}/${f}" > "${INSTALLDIR}/doc/${f}.txt"
 done
 

@@ -17,21 +17,8 @@
  *  function prototypes that are sometimes missing.
  */
 
-/* C99 types */
-#if defined HAVE_INTTYPES_H && !defined __KERNEL__
-#   include <inttypes.h>
-#else
-typedef signed char int8_t;
-typedef signed short int16_t;
-typedef signed long int int32_t;
-
-typedef unsigned char uint8_t;
-typedef unsigned short uint16_t;
-typedef unsigned long int uint32_t;
-
-typedef long int intptr_t;
-typedef unsigned long int uintptr_t;
-#endif
+#ifndef __STUBS_H__
+#define __STUBS_H__
 
 /* errno handling */
 #if defined HAVE_ERRNO_H && !defined __KERNEL__
@@ -106,4 +93,6 @@ static inline uint32_t hton32(uint32_t x)
                 | ((x << 8) & 0x00ff0000) | (x << 24);
 }
 #endif
+
+#endif /* __STUBS_H__ */
 

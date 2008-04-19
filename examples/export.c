@@ -13,12 +13,8 @@
  */
 
 #include "config.h"
-#include "common.h"
 
 #if !defined(__KERNEL__)
-#   if defined(HAVE_INTTYPES_H)
-#      include <inttypes.h>
-#   endif
 #   include <stdio.h>
 #   include <stdlib.h>
 #   include <string.h>

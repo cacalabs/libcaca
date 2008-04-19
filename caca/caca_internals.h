@@ -15,9 +15,7 @@
 #ifndef __CACA_INTERNALS_H__
 #define __CACA_INTERNALS_H__
 
-#if defined(HAVE_INTTYPES_H) && !defined(__KERNEL__)
-#   include <inttypes.h>
-#endif
+#include "stubs.h"
 
 typedef struct caca_timer caca_timer_t;
 typedef struct caca_privevent caca_privevent_t;

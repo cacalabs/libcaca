@@ -18,7 +18,6 @@
  */
 
 #include "config.h"
-#include "common.h"
 
 #include "cucul.h"
 #include "cucul_internals.h"

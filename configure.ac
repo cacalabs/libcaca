@@ -87,7 +87,7 @@ AC_ARG_ENABLE(doc,
 AC_ARG_ENABLE(zzuf,
   [  --enable-zzuf           use zzuf for fuzzing tests (autodetected)])
 
-AC_CHECK_HEADERS(stdio.h stdarg.h signal.h sys/ioctl.h sys/time.h inttypes.h endian.h unistd.h arpa/inet.h netinet/in.h winsock2.h errno.h locale.h getopt.h dlfcn.h termios.h)
+AC_CHECK_HEADERS(stdio.h stdarg.h signal.h sys/ioctl.h sys/time.h endian.h unistd.h arpa/inet.h netinet/in.h winsock2.h errno.h locale.h getopt.h dlfcn.h termios.h)
 AC_CHECK_FUNCS(signal ioctl snprintf vsnprintf getenv putenv strcasecmp htons)
 AC_CHECK_FUNCS(usleep gettimeofday)
 
@@ -323,6 +323,19 @@ AC_SUBST(CACA_LIBS)
 AC_SUBST(X11_LIBS)
 AC_SUBST(GL_LIBS)
 
+# How to get the C99 types. See cucul/cucul_types.h.in for details about
+# the CUCUL_TYPES variable
+if test "${ac_cv_my_have_vga}" = "yes"; then
+  CUCUL_TYPES=0
+else
+  AC_CHECK_HEADERS(stdint.h,
+    [CUCUL_TYPES=1],
+    [AC_CHECK_HEADERS(inttypes.h,
+      [CUCUL_TYPES=2],
+      [CUCUL_TYPES=0])])
+fi
+AC_SUBST(CUCUL_TYPES)
+
 # Optimizations
 CFLAGS="${CFLAGS} -g -O2 -fno-strength-reduce -fomit-frame-pointer"
 # Code qui fait des warnings == code de porc == deux baffes dans ta gueule
@@ -462,6 +475,7 @@ AC_CONFIG_FILES([
   msvc/Makefile
 ])
 AC_CONFIG_FILES([
+  cucul/cucul_types.h
   cucul/cucul.pc
   caca/caca.pc
   csharp/cucul-sharp.dll.config

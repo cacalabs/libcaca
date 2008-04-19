@@ -4,7 +4,7 @@ NULL =
 
 EXTRA_DIST = libcaca.sln \
              config.h \
-             common.h \
+             cucul_types.h \
              libcucul.vcproj \
              libcaca.vcproj \
              cacafire.vcproj \

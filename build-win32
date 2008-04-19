@@ -34,7 +34,7 @@ rmdir "${INSTALLDIR}/bin"
 rmdir "${INSTALLDIR}/lib"
 
 mkdir "${INSTALLDIR}/doc"
-for f in COPYING COPYING.LGPL COPYING.GPL README AUTHORS NEWS NOTES THANKS TODO; do
+for f in COPYING COPYING.LGPL COPYING.GPL README AUTHORS NEWS NOTES THANKS; do
    sed -e 's/$//' < "${SRCDIR}/${f}" > "${INSTALLDIR}/doc/${f}.txt"
 done
 rm -Rf "${INSTALLDIR}/share"

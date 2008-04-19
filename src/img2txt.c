@@ -14,7 +14,6 @@
  */
 
 #include "config.h"
-#include "common.h"
 
 #if !defined(__KERNEL__)
 #   include <stdio.h>
@@ -35,6 +34,7 @@
 #endif
 
 #include "cucul.h"
+
 #include "common-image.h"
 
 #define IMG2TXTVERSION "0.1"

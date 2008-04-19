@@ -13,15 +13,13 @@
  */
 
 #include "config.h"
-#include "common.h"
+
 #if !defined(__KERNEL__)
-#   if defined(HAVE_INTTYPES_H)
-#      include <inttypes.h>
-#   endif
 #   include <stdio.h>
 #   include <string.h>
 #   include <stdlib.h>
 #endif
+
 #include "cucul.h"
 
 #define GLYPHS 0x7f

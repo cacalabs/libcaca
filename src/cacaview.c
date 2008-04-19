@@ -13,7 +13,6 @@
  */
 
 #include "config.h"
-#include "common.h"
 
 #if !defined(__KERNEL__)
 #   include <stdio.h>
@@ -27,6 +26,7 @@
 
 #include "cucul.h"
 #include "caca.h"
+
 #include "common-image.h"
 
 /* Local macros */

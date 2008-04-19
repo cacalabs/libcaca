@@ -13,12 +13,14 @@
  */
 
 #include "config.h"
-#include "common.h"
+
 #if !defined(__KERNEL__)
 #   include <math.h>
 #   include <string.h>
 #   include <stdio.h>
 #endif
+
+#include "cucul.h"
 #include "caca.h"
 
 static void display_menu(void);

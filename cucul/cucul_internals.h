@@ -15,9 +15,7 @@
 #ifndef __CUCUL_INTERNALS_H__
 #define __CUCUL_INTERNALS_H__
 
-#if defined(HAVE_INTTYPES_H) && !defined(__KERNEL__)
-#   include <inttypes.h>
-#endif
+#include "stubs.h"
 
 typedef struct cucul_figfont cucul_figfont_t;
 

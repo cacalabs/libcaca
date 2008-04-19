@@ -1,6 +1,6 @@
 # $Id$
 
-AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/cucul
+AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/cucul -I../cucul
 
 TESTS = simple
 

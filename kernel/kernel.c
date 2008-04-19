@@ -20,7 +20,8 @@
  */
 
 #include "config.h"
-#include "common.h"
+
+#include "cucul_types.h"
 
 #ifdef __KERNEL__
 

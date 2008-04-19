@@ -3,7 +3,8 @@
 EXTRA_DIST = caca.pc.in
 DISTCLEANFILES = caca.pc
 
-AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/cucul -DPLUGINDIR=\"$(plugindir)\"
+AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/cucul -I../cucul \
+              -DPLUGINDIR=\"$(plugindir)\"
 
 pkgconfig_DATA = caca.pc
 pkgconfigdir = $(libdir)/pkgconfig
