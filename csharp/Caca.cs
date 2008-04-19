@@ -146,8 +146,8 @@ namespace Caca
 
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
-        private static extern int caca_get_event_key_utf32(IntPtr ev);
-        public int KeyUtf32
+        private static extern uint caca_get_event_key_utf32(IntPtr ev);
+        public uint KeyUtf32
         {
             get { return caca_get_event_key_utf32(cevent); }
         }
@@ -228,7 +228,7 @@ namespace Caca
 
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
-        private static extern void caca_free_display(IntPtr dp);
+        private static extern int caca_free_display(IntPtr dp);
         public void Dispose()
         {
             caca_free_display(_c_dp);
@@ -237,7 +237,7 @@ namespace Caca
 
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
-        private static extern void caca_refresh_display(IntPtr dp);
+        private static extern int caca_refresh_display(IntPtr dp);
         public void Refresh()
         {
             caca_refresh_display(_c_dp);
@@ -245,7 +245,7 @@ namespace Caca
 
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
-        private static extern void caca_set_display_time(IntPtr dp, int d);
+        private static extern int caca_set_display_time(IntPtr dp, int d);
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int caca_get_display_time(IntPtr dp);
@@ -257,13 +257,13 @@ namespace Caca
 
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
-        private static extern int caca_get_event(IntPtr dp, int t,
+        private static extern int caca_get_event(IntPtr dp, uint t,
                                                  IntPtr cevent,
                                                  int timeout);
         public CacaEvent getEvent(CacaEventType t, int timeout)
         {
             CacaEvent e = new CacaEvent();
-            caca_get_event(_c_dp, (int)t, e.cevent, timeout);
+            caca_get_event(_c_dp, (uint)t, e.cevent, timeout);
             return e;
         }
 
@@ -289,7 +289,7 @@ namespace Caca
 
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
-        private static extern void caca_set_mouse(IntPtr k, bool status);
+        private static extern int caca_set_mouse(IntPtr k, bool status);
         public bool Mouse
         {
             set { caca_set_mouse(_c_dp, value); }
@@ -309,7 +309,7 @@ namespace Caca
 
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
-        private static extern void caca_set_cursor(IntPtr k, bool status);
+        private static extern int caca_set_cursor(IntPtr k, bool status);
         public bool Cursor
         {
             set { caca_set_cursor(_c_dp, value); }

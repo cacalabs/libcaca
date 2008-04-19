@@ -39,29 +39,29 @@ namespace Cucul
             return Marshal.PtrToStringAnsi(cucul_get_version());
         }
 
-        public const int BLACK = 0x00,
-                         BLUE = 0x01,
-                         GREEN = 0x02,
-                         CYAN = 0x03,
-                         RED = 0x04,
-                         MAGENTA = 0x05,
-                         BROWN = 0x06,
-                         LIGHTGRAY = 0x07,
-                         DARKGRAY = 0x08,
-                         LIGHTBLUE = 0x09,
-                         LIGHTGREEN = 0x0a,
-                         LIGHTCYAN = 0x0b,
-                         LIGHTRED = 0x0c,
-                         LIGHTMAGENTA = 0x0d,
-                         YELLOW = 0x0e,
-                         WHITE = 0x0f,
-                         DEFAULT = 0x10,
-                         TRANSPARENT = 0x20;
+        public const uint BLACK = 0x00,
+                          BLUE = 0x01,
+                          GREEN = 0x02,
+                          CYAN = 0x03,
+                          RED = 0x04,
+                          MAGENTA = 0x05,
+                          BROWN = 0x06,
+                          LIGHTGRAY = 0x07,
+                          DARKGRAY = 0x08,
+                          LIGHTBLUE = 0x09,
+                          LIGHTGREEN = 0x0a,
+                          LIGHTCYAN = 0x0b,
+                          LIGHTRED = 0x0c,
+                          LIGHTMAGENTA = 0x0d,
+                          YELLOW = 0x0e,
+                          WHITE = 0x0f,
+                          DEFAULT = 0x10,
+                          TRANSPARENT = 0x20;
 
-        public const int BOLD = 0x01,
-                         ITALICS = 0x02,
-                         UNDERLINE = 0x04,
-                         BLINK = 0x08;
+        public const uint BOLD = 0x01,
+                          ITALICS = 0x02,
+                          UNDERLINE = 0x04,
+                          BLINK = 0x08;
     }
 
     public class CuculCanvas : IDisposable
@@ -143,26 +143,26 @@ namespace Cucul
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int cucul_put_char(IntPtr cv,
-                                                 int x, int y, int c);
-        public int putChar(Point p, int c)
+                                                 int x, int y, uint c);
+        public int putChar(Point p, uint c)
         {
             return cucul_put_char(_c_cv, p.X, p.Y, c);
         }
 
-        public int putChar(int x, int y, int c)
+        public int putChar(int x, int y, uint c)
         {
             return cucul_put_char(_c_cv, x, y, c);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
-        private static extern int cucul_get_char(IntPtr cv, int x, int y);
-        public int getChar(Point p)
+        private static extern uint cucul_get_char(IntPtr cv, int x, int y);
+        public uint getChar(Point p)
         {
             return cucul_get_char(_c_cv, p.X, p.Y);
         }
 
-        public int getChar(int x, int y)
+        public uint getChar(int x, int y)
         {
             return cucul_get_char(_c_cv, x, y);
         }
@@ -196,8 +196,8 @@ namespace Cucul
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
-        private static extern int cucul_set_attr(IntPtr cv, int a);
-        public int setAttr(int a)
+        private static extern int cucul_set_attr(IntPtr cv, uint a);
+        public int setAttr(uint a)
         {
             return cucul_set_attr(_c_cv, a);
         }
@@ -205,13 +205,13 @@ namespace Cucul
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int cucul_put_attr(IntPtr cv,
-                                                 int x, int y, int a);
-        public int putAttr(Point p, int a)
+                                                 int x, int y, uint a);
+        public int putAttr(Point p, uint a)
         {
             return cucul_put_attr(_c_cv, p.X, p.Y, a);
         }
 
-        public int putAttr(int x, int y, int a)
+        public int putAttr(int x, int y, uint a)
         {
             return cucul_put_attr(_c_cv, x, y, a);
         }
@@ -220,7 +220,7 @@ namespace Cucul
          SuppressUnmanagedCodeSecurity]
         private static extern int cucul_set_color_ansi(IntPtr cv,
                                                        byte fg, byte bg);
-        public int setColorAnsi(int fg, int bg)
+        public int setColorAnsi(uint fg, uint bg)
         {
             return cucul_set_color_ansi(_c_cv, (byte)fg, (byte)bg);
         }
@@ -228,8 +228,8 @@ namespace Cucul
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int cucul_set_color_argb(IntPtr cv,
-                                                       int fg, int bg);
-        public int setColorArgb(int fg, int bg)
+                                                       uint fg, uint bg);
+        public int setColorArgb(uint fg, uint bg)
         {
             return cucul_set_color_argb(_c_cv, fg, bg);
         }
@@ -683,16 +683,16 @@ namespace Cucul
 
     public class CuculAttr
     {
-        private int _attr;
+        private uint _attr;
 
-        public CuculAttr(int attr)
+        public CuculAttr(uint attr)
         {
             _attr = attr;
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
-        private static extern byte cucul_attr_to_ansi(Int32 a);
+        private static extern byte cucul_attr_to_ansi(uint a);
         public byte toAnsi()
         {
             return cucul_attr_to_ansi(_attr);
@@ -700,7 +700,7 @@ namespace Cucul
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
-        private static extern byte cucul_attr_to_ansi_fg(Int32 a);
+        private static extern byte cucul_attr_to_ansi_fg(uint a);
         public byte toAnsiFg()
         {
             return cucul_attr_to_ansi_fg(_attr);
@@ -708,7 +708,7 @@ namespace Cucul
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
-        private static extern byte cucul_attr_to_ansi_bg(Int32 a);
+        private static extern byte cucul_attr_to_ansi_bg(uint a);
         public byte toAnsiBg()
         {
             return cucul_attr_to_ansi_bg(_attr);
@@ -723,10 +723,10 @@ namespace Cucul
          SuppressUnmanagedCodeSecurity]
         private static extern IntPtr cucul_create_dither(int bpp, int w,
                                                          int h, int pitch,
-                                                         ulong rmask,
-                                                         ulong gmask,
-                                                         ulong bmask,
-                                                         ulong amask);
+                                                         uint rmask,
+                                                         uint gmask,
+                                                         uint bmask,
+                                                         uint amask);
         public CuculDither(int bpp, Size s, int pitch,
                            uint rmask, uint gmask, uint bmask, uint amask)
         {
@@ -748,8 +748,8 @@ namespace Cucul
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int cucul_set_dither_palette(IntPtr d,
-                               int[] r, int[] g,
-                               int[] b, int[] a);
+                               uint[] r, uint[] g,
+                               uint[] b, uint[] a);
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int cucul_set_dither_brightness(IntPtr d, float b);
@@ -859,7 +859,7 @@ namespace Cucul
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
-        private static extern IntPtr cucul_load_font(IntPtr data, int len);
+        private static extern IntPtr cucul_load_font(IntPtr data, uint len);
         public CuculFont(string s)
         {
             IntPtr name = Marshal.StringToHGlobalAnsi(s);
@@ -870,7 +870,8 @@ namespace Cucul
         public CuculFont(byte[] buf)
         {
             GCHandle _gch = GCHandle.Alloc(buf, GCHandleType.Pinned);
-            _font = cucul_load_font(_gch.AddrOfPinnedObject(), buf.Length);
+            _font = cucul_load_font(_gch.AddrOfPinnedObject(),
+                                    (uint)buf.Length);
         }
 
         [DllImport("libcucul.dll", CallingConvention=CallingConvention.Cdecl),

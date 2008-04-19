@@ -63,7 +63,7 @@ class DemoCanvas : CuculCanvas
             Point p1 = new Point(0, (int)v);
             Point p2 = new Point(Size.Width - 1, (int)v);
 
-            setColorAnsi(i + 9, Libcucul.BLACK);
+            setColorAnsi((uint)(i + 9), Libcucul.BLACK);
             /* drawLine is already clipped, we don't care about overflows */
             drawLine(p1 + new Size(0, -2), p2 + new Size(0, -2), '-');
             drawLine(p1 + new Size(0, -1), p2 + new Size(0, -1), '*');
