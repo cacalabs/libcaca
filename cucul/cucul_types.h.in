@@ -23,13 +23,15 @@
 #   define CUCUL_TYPES @CUCUL_TYPES@
 #endif
 
-/* mode 1: standard <inttypes.h> header is present, just include it */
+/* mode 1: standard <stdint.h> header is present, just include it */
 #if CUCUL_TYPES == 1
-#   include <inttypes.h>
-
-/* mode 2: standard <stdint.h> header is present, just include it */
-#elif CUCUL_TYPES == 2
 #   include <stdint.h>
+#   include <unistd.h>
+
+/* mode 2: standard <inttypes.h> header is present, just include it */
+#elif CUCUL_TYPES == 2
+#   include <inttypes.h>
+#   include <unistd.h>
 
 /* fallback: nothing is available, we assume the platform is 32-bit and
  * sizeof(long) == sizeof(void *) */
@@ -46,6 +48,9 @@ typedef unsigned long long int uint64_t;
 
 typedef long int intptr_t;
 typedef unsigned long int uintptr_t;
+
+typedef int ssize_t;
+typedef unsigned int size_t;
 
 #endif
 
