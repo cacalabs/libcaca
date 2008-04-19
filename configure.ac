@@ -409,17 +409,15 @@ AM_CONDITIONAL(USE_NETWORK, test "${ac_cv_my_have_network}" = "yes")
 
 # Use Imlib2?
 if test "${enable_imlib2}" != "no"; then
-  IMLIB2="no"
-  PKG_CHECK_MODULES(IMLIB2, imlib2, [IMLIB2="yes"], [AC_MSG_RESULT(no)])
-  if test "${IMLIB2}" != "no"; then
+  PKG_CHECK_MODULES(IMLIB2, imlib2, [IMLIB2="yes"], [IMLIB2="no"])
+  if test "${IMLIB2}" = "yes"; then
     AC_DEFINE(USE_IMLIB2, 1, Define to 1 to use Imlib2)
   fi
 fi
 
 # Build development tools?
-PANGOFT2="no"
-PKG_CHECK_MODULES(PANGOFT2, pangoft2, [PANGOFT2="yes"], [AC_MSG_RESULT(no)])
-AM_CONDITIONAL(USE_PANGO, test "${PANGOFT2}" != "no")
+PKG_CHECK_MODULES(PANGOFT2, pangoft2, [PANGOFT2="yes"], [PANGOFT2="no"])
+AM_CONDITIONAL(USE_PANGO, test "${PANGOFT2}" = "yes")
 
 # Build documentation?
 DOXYGEN="no"
@@ -454,9 +452,8 @@ AM_CONDITIONAL(BUILD_DOCUMENTATION, test "${DOXYGEN}" != "no")
 AM_CONDITIONAL(USE_LATEX, test "${LATEX}" != "no")
 
 # Use cppunit for unit tests?
-CPPUNIT="no"
-PKG_CHECK_MODULES(CPPUNIT, cppunit, [CPPUNIT="yes"], [AC_MSG_RESULT(no)])
-AM_CONDITIONAL(USE_CPPUNIT, test "$CPPUNIT" != "no")
+PKG_CHECK_MODULES(CPPUNIT, cppunit, [CPPUNIT="yes"], [CPPUNIT="no"])
+AM_CONDITIONAL(USE_CPPUNIT, test "$CPPUNIT" = "yes")
 
 # Use zzuf for fuzzing tests?
 ZZUF="no"
