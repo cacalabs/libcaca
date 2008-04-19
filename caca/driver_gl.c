@@ -68,7 +68,7 @@ struct driver_private
     cucul_font_t *f;
     float font_width, font_height;
     float incx, incy;
-    unsigned long int const *blocks;
+    uint32_t const *blocks;
     int *txid;
     uint8_t close;
     uint8_t bit;

@@ -38,7 +38,7 @@ struct cucul_figfont
 
     enum { H_DEFAULT, H_KERN, H_SMUSH, H_NONE, H_OVERLAP } hmode;
     unsigned int hsmushrule;
-    unsigned long int hardblank;
+    uint32_t hardblank;
     unsigned int height, baseline, max_length;
     int old_layout;
     unsigned int print_direction, full_layout, codetag_count;
@@ -127,7 +127,7 @@ int cucul_canvas_set_figfont(cucul_canvas_t *cv, char const *path)
     return 0;
 }
 
-int cucul_put_figchar(cucul_canvas_t *cv, unsigned long int ch)
+int cucul_put_figchar(cucul_canvas_t *cv, uint32_t ch)
 {
     cucul_figfont_t *ff = cv->ff;
     unsigned int c, w, h, x, y, overlap, extra, xleft, xright;
@@ -450,7 +450,7 @@ cucul_figfont_t * open_figfont(char const *path)
      * smushing, nor any kind of error checking. */
     for(j = 0; j < ff->height * ff->glyphs; j++)
     {
-        unsigned long int ch, oldch = 0;
+        uint32_t ch, oldch = 0;
 
         for(i = ff->max_length; i--;)
         {

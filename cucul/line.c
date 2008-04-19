@@ -54,7 +54,7 @@ static void draw_thin_line(cucul_canvas_t*, struct line*);
  *  \return This function always returns 0.
  */
 int cucul_draw_line(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
-                    unsigned long int ch)
+                    uint32_t ch)
 {
     struct line s;
     s.x1 = x1;
@@ -85,7 +85,7 @@ int cucul_draw_line(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
  *  \return This function always returns 0.
  */
 int cucul_draw_polyline(cucul_canvas_t *cv, int const x[], int const y[],
-                        int n, unsigned long int ch)
+                        int n, uint32_t ch)
 {
     int i;
     struct line s;

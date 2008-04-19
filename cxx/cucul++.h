@@ -38,10 +38,10 @@ class Cucul;
 __class Charset
 {
  public:
-    unsigned long int utf8ToUtf32(char const *, unsigned int *);
-    unsigned int utf32ToUtf8(char *, unsigned long int);
-    unsigned char utf32ToCp437(unsigned long int);
-    unsigned long int cp437ToUtf32(unsigned char);
+    uint32_t utf8ToUtf32(char const *, unsigned int *);
+    unsigned int utf32ToUtf8(char *, uint32_t);
+    uint8_t utf32ToCp437(uint32_t);
+    uint32_t cp437ToUtf32(uint8_t);
 };
 
 /* Ugly, I know */
@@ -53,9 +53,9 @@ __class Font
     char const *const * getList(void);
     unsigned int getWidth();
     unsigned int getHeight();
-    void renderCanvas(Cucul *, unsigned char *, unsigned int,
+    void renderCanvas(Cucul *, uint8_t *, unsigned int,
                                unsigned int, unsigned int);
-    unsigned long int const *getBlocks();
+    uint32_t const *getBlocks();
 
  private:
     cucul_font *font;
@@ -100,13 +100,13 @@ __class Cucul
     void setSize(unsigned int w, unsigned int h);
     unsigned int getWidth(void);
     unsigned int getHeight(void);
-    unsigned long int getAttr(int, int);
-    int setAttr(unsigned long int);
-    int setColorANSI(unsigned char f, unsigned char b);
+    uint32_t getAttr(int, int);
+    int setAttr(uint32_t);
+    int setColorANSI(uint8_t f, uint8_t b);
     int setColorARGB(unsigned int f, unsigned int b);
     void Printf(int x, int y , char const * format, ...);
-    void putChar(int x, int y, unsigned long int ch);
-    unsigned long int getChar(int, int);
+    void putChar(int x, int y, uint32_t ch);
+    uint32_t getChar(int, int);
     void putStr(int x, int y, char *str);
     void Clear(void);
     void Blit(int, int, Cucul* c1, Cucul* c2);
@@ -114,21 +114,21 @@ __class Cucul
     void Flip();
     void Flop();
     void Rotate();
-    void drawLine(int, int, int, int, unsigned long int);
-    void drawPolyline(int const x[], int const y[], int, unsigned long int);
+    void drawLine(int, int, int, int, uint32_t);
+    void drawPolyline(int const x[], int const y[], int, uint32_t);
     void drawThinLine(int, int, int, int);
     void drawThinPolyline(int const x[], int const y[], int);
-    void drawCircle(int, int, int, unsigned long int);
-    void drawEllipse(int, int, int, int, unsigned long int);
+    void drawCircle(int, int, int, uint32_t);
+    void drawEllipse(int, int, int, int, uint32_t);
     void drawThinEllipse(int, int, int, int);
-    void fillEllipse(int, int, int, int, unsigned long int);
-    void drawBox(int, int, int, int, unsigned long int);
+    void fillEllipse(int, int, int, int, uint32_t);
+    void drawBox(int, int, int, int, uint32_t);
     void drawThinBox(int, int, int, int);
     void drawCP437Box(int, int, int, int);
-    void fillBox(int, int, int, int, unsigned long int);
-    void drawTriangle(int, int, int, int, int, int, unsigned long int);
+    void fillBox(int, int, int, int, uint32_t);
+    void drawTriangle(int, int, int, int, int, int, uint32_t);
     void drawThinTriangle(int, int, int, int, int, int);
-    void fillTriangle(int, int, int, int, int, int, unsigned long int);
+    void fillTriangle(int, int, int, int, int, int, uint32_t);
     int setBoundaries(cucul_canvas_t *, int, int, unsigned int, unsigned int);
     unsigned int getFrameCount();
     int setFrame(unsigned int);

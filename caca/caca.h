@@ -81,7 +81,7 @@ struct caca_event
     {
         struct { unsigned int x, y, button; } mouse;
         struct { unsigned int w, h; } resize;
-        struct { unsigned int ch; unsigned long int utf32; char utf8[8]; } key;
+        struct { unsigned int ch; uint32_t utf32; char utf8[8]; } key;
     } data;
     uint8_t padding[16];
 };
@@ -192,7 +192,7 @@ __extern unsigned int caca_get_mouse_x(caca_display_t const *);
 __extern unsigned int caca_get_mouse_y(caca_display_t const *);
 __extern enum caca_event_type caca_get_event_type(caca_event_t const *);
 __extern unsigned int caca_get_event_key_ch(caca_event_t const *);
-__extern unsigned long int caca_get_event_key_utf32(caca_event_t const *);
+__extern uint32_t caca_get_event_key_utf32(caca_event_t const *);
 __extern int caca_get_event_key_utf8(caca_event_t const *, char *);
 __extern unsigned int caca_get_event_mouse_button(caca_event_t const *);
 __extern unsigned int caca_get_event_mouse_x(caca_event_t const *);

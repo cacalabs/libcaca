@@ -111,7 +111,7 @@ static uint32_t const cp437_lookup2[] =
  *  \return The corresponding UTF-32 character, or zero if the character
  *  is incomplete.
  */
-unsigned long int cucul_utf8_to_utf32(char const *s, unsigned int *read)
+uint32_t cucul_utf8_to_utf32(char const *s, unsigned int *read)
 {
     unsigned int bytes = trailing[(int)(unsigned char)*s];
     unsigned int i = 0;
@@ -150,7 +150,7 @@ unsigned long int cucul_utf8_to_utf32(char const *s, unsigned int *read)
  *  \param ch The UTF-32 character.
  *  \return The number of bytes written.
  */
-unsigned int cucul_utf32_to_utf8(char *buf, unsigned long int ch)
+unsigned int cucul_utf32_to_utf8(char *buf, uint32_t ch)
 {
     static const uint8_t mark[7] =
     {
@@ -190,7 +190,7 @@ unsigned int cucul_utf32_to_utf8(char *buf, unsigned long int ch)
  *  \param ch The UTF-32 character.
  *  \return The corresponding CP437 character, or "?" if not representable.
  */
-uint8_t cucul_utf32_to_cp437(unsigned long int ch)
+uint8_t cucul_utf32_to_cp437(uint32_t ch)
 {
     unsigned int i;
 
@@ -222,7 +222,7 @@ uint8_t cucul_utf32_to_cp437(unsigned long int ch)
  *  \param ch The CP437 character.
  *  \return The corresponding UTF-32 character, or zero if not representable.
  */
-unsigned long int cucul_cp437_to_utf32(uint8_t ch)
+uint32_t cucul_cp437_to_utf32(uint8_t ch)
 {
     if(ch > 0x7f)
         return cp437_lookup2[ch - 0x7f];
@@ -248,7 +248,7 @@ unsigned long int cucul_cp437_to_utf32(uint8_t ch)
  *  \return The corresponding ASCII character, or a graphically close
  *  equivalent if found, or "?" if not representable.
  */
-char cucul_utf32_to_ascii(unsigned long int ch)
+char cucul_utf32_to_ascii(uint32_t ch)
 {
     /* Standard ASCII */
     if(ch < 0x80)
@@ -387,7 +387,7 @@ char cucul_utf32_to_ascii(unsigned long int ch)
  *  \param ch The UTF-32 character.
  *  \return 1 if the character is fullwidth, 0 otherwise.
  */
-int cucul_utf32_is_fullwidth(unsigned long int ch)
+int cucul_utf32_is_fullwidth(uint32_t ch)
 {
     if(ch < 0x2e80) /* Standard stuff */
         return 0;

@@ -39,8 +39,7 @@ static void ellipsepoints(cucul_canvas_t *, int, int, int, int, uint32_t, int);
  *  \param ch UTF-32 character to be used to draw the circle outline.
  *  \return This function always returns 0.
  */
-int cucul_draw_circle(cucul_canvas_t *cv, int x, int y, int r,
-                      unsigned long int ch)
+int cucul_draw_circle(cucul_canvas_t *cv, int x, int y, int r, uint32_t ch)
 {
     int test, dx, dy;
 
@@ -69,7 +68,7 @@ int cucul_draw_circle(cucul_canvas_t *cv, int x, int y, int r,
  *  \return This function always returns 0.
  */
 int cucul_fill_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b,
-                       unsigned long int ch)
+                       uint32_t ch)
 {
     int d2;
     int x = 0;
@@ -129,7 +128,7 @@ int cucul_fill_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b,
  *  \return This function always returns 0.
  */
 int cucul_draw_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b,
-                       unsigned long int ch)
+                       uint32_t ch)
 {
     int d2;
     int x = 0;

@@ -110,15 +110,14 @@ __extern char const * cucul_get_version(void);
 __extern int cucul_gotoxy(cucul_canvas_t *, int, int);
 __extern int cucul_get_cursor_x(cucul_canvas_t const *);
 __extern int cucul_get_cursor_y(cucul_canvas_t const *);
-__extern int cucul_put_char(cucul_canvas_t *, int, int, unsigned long int);
-__extern unsigned long int cucul_get_char(cucul_canvas_t const *, int, int);
+__extern int cucul_put_char(cucul_canvas_t *, int, int, uint32_t);
+__extern uint32_t cucul_get_char(cucul_canvas_t const *, int, int);
 __extern int cucul_put_str(cucul_canvas_t *, int, int, char const *);
-__extern unsigned long int cucul_get_attr(cucul_canvas_t const *, int, int);
-__extern int cucul_set_attr(cucul_canvas_t *, unsigned long int);
-__extern int cucul_put_attr(cucul_canvas_t *, int, int, unsigned long int);
+__extern uint32_t cucul_get_attr(cucul_canvas_t const *, int, int);
+__extern int cucul_set_attr(cucul_canvas_t *, uint32_t);
+__extern int cucul_put_attr(cucul_canvas_t *, int, int, uint32_t);
 __extern int cucul_set_color_ansi(cucul_canvas_t *, uint8_t, uint8_t);
-__extern int cucul_set_color_argb(cucul_canvas_t *, unsigned int,
-                                  unsigned int);
+__extern int cucul_set_color_argb(cucul_canvas_t *, uint16_t, uint16_t);
 __extern int cucul_printf(cucul_canvas_t *, int, int, char const *, ...);
 __extern int cucul_clear_canvas(cucul_canvas_t *);
 __extern int cucul_set_canvas_handle(cucul_canvas_t *, int, int);
@@ -150,12 +149,12 @@ __extern int cucul_stretch_right(cucul_canvas_t *);
  *  These functions perform conversions between attribute values.
  *
  *  @{ */
-__extern uint8_t cucul_attr_to_ansi(unsigned long int);
-__extern uint8_t cucul_attr_to_ansi_fg(unsigned long int);
-__extern uint8_t cucul_attr_to_ansi_bg(unsigned long int);
-__extern unsigned int cucul_attr_to_rgb12_fg(unsigned long int);
-__extern unsigned int cucul_attr_to_rgb12_bg(unsigned long int);
-__extern void cucul_attr_to_argb64(unsigned long int, uint8_t[8]);
+__extern uint8_t cucul_attr_to_ansi(uint32_t);
+__extern uint8_t cucul_attr_to_ansi_fg(uint32_t);
+__extern uint8_t cucul_attr_to_ansi_bg(uint32_t);
+__extern uint16_t cucul_attr_to_rgb12_fg(uint32_t);
+__extern uint16_t cucul_attr_to_rgb12_bg(uint32_t);
+__extern void cucul_attr_to_argb64(uint32_t, uint8_t[8]);
 /*  @} */
 
 /** \defgroup cucul_charset libcucul character set conversions
@@ -163,12 +162,12 @@ __extern void cucul_attr_to_argb64(unsigned long int, uint8_t[8]);
  *  These functions perform conversions between usual character sets.
  *
  *  @{ */
-__extern unsigned long int cucul_utf8_to_utf32(char const *, unsigned int *);
-__extern unsigned int cucul_utf32_to_utf8(char *, unsigned long int);
-__extern uint8_t cucul_utf32_to_cp437(unsigned long int);
-__extern unsigned long int cucul_cp437_to_utf32(uint8_t);
-__extern char cucul_utf32_to_ascii(unsigned long int);
-__extern int cucul_utf32_is_fullwidth(unsigned long int);
+__extern uint32_t cucul_utf8_to_utf32(char const *, unsigned int *);
+__extern unsigned int cucul_utf32_to_utf8(char *, uint32_t);
+__extern uint8_t cucul_utf32_to_cp437(uint32_t);
+__extern uint32_t cucul_cp437_to_utf32(uint8_t);
+__extern char cucul_utf32_to_ascii(uint32_t);
+__extern int cucul_utf32_is_fullwidth(uint32_t);
 /*  @} */
 
 /** \defgroup cucul_primitives libcucul primitives drawing
@@ -177,35 +176,29 @@ __extern int cucul_utf32_is_fullwidth(unsigned long int);
  *  boxes, triangles and ellipses.
  *
  *  @{ */
-__extern int cucul_draw_line(cucul_canvas_t *, int, int, int, int,
-                             unsigned long int);
+__extern int cucul_draw_line(cucul_canvas_t *, int, int, int, int, uint32_t);
 __extern int cucul_draw_polyline(cucul_canvas_t *, int const x[],
-                                 int const y[], int, unsigned long int);
+                                 int const y[], int, uint32_t);
 __extern int cucul_draw_thin_line(cucul_canvas_t *, int, int, int, int);
 __extern int cucul_draw_thin_polyline(cucul_canvas_t *, int const x[],
                                       int const y[], int);
 
-__extern int cucul_draw_circle(cucul_canvas_t *, int, int, int,
-                               unsigned long int);
-__extern int cucul_draw_ellipse(cucul_canvas_t *, int, int, int, int,
-                                unsigned long int);
+__extern int cucul_draw_circle(cucul_canvas_t *, int, int, int, uint32_t);
+__extern int cucul_draw_ellipse(cucul_canvas_t *, int, int, int, int, uint32_t);
 __extern int cucul_draw_thin_ellipse(cucul_canvas_t *, int, int, int, int);
-__extern int cucul_fill_ellipse(cucul_canvas_t *, int, int, int, int,
-                                unsigned long int);
+__extern int cucul_fill_ellipse(cucul_canvas_t *, int, int, int, int, uint32_t);
 
-__extern int cucul_draw_box(cucul_canvas_t *, int, int, int, int,
-                            unsigned long int);
+__extern int cucul_draw_box(cucul_canvas_t *, int, int, int, int, uint32_t);
 __extern int cucul_draw_thin_box(cucul_canvas_t *, int, int, int, int);
 __extern int cucul_draw_cp437_box(cucul_canvas_t *, int, int, int, int);
-__extern int cucul_fill_box(cucul_canvas_t *, int, int, int, int,
-                            unsigned long int);
+__extern int cucul_fill_box(cucul_canvas_t *, int, int, int, int, uint32_t);
 
 __extern int cucul_draw_triangle(cucul_canvas_t *, int, int, int, int, int,
-                                 int, unsigned long int);
+                                 int, uint32_t);
 __extern int cucul_draw_thin_triangle(cucul_canvas_t *, int, int, int, int,
                                       int, int);
 __extern int cucul_fill_triangle(cucul_canvas_t *, int, int, int, int, int,
-                                 int, unsigned long int);
+                                 int, uint32_t);
 /*  @} */
 
 /** \defgroup cucul_frame libcucul canvas frame handling
@@ -230,10 +223,8 @@ __extern int cucul_free_frame(cucul_canvas_t *, unsigned int);
  *  @{ */
 __extern cucul_dither_t *cucul_create_dither(unsigned int, unsigned int,
                                              unsigned int, unsigned int,
-                                             unsigned long int,
-                                             unsigned long int,
-                                             unsigned long int,
-                                             unsigned long int);
+                                             uint32_t, uint32_t,
+                                             uint32_t, uint32_t);
 __extern int cucul_set_dither_palette(cucul_dither_t *,
                                       unsigned int r[], unsigned int g[],
                                       unsigned int b[], unsigned int a[]);
@@ -274,7 +265,7 @@ __extern cucul_font_t *cucul_load_font(void const *, unsigned int);
 __extern char const * const * cucul_get_font_list(void);
 __extern unsigned int cucul_get_font_width(cucul_font_t const *);
 __extern unsigned int cucul_get_font_height(cucul_font_t const *);
-__extern unsigned long int const *cucul_get_font_blocks(cucul_font_t const *);
+__extern unsigned int const *cucul_get_font_blocks(cucul_font_t const *);
 __extern int cucul_render_canvas(cucul_canvas_t const *, cucul_font_t const *,
                                  void *, unsigned int, unsigned int,
                                  unsigned int);
@@ -287,7 +278,7 @@ __extern int cucul_free_font(cucul_font_t *);
  *
  *  @{ */
 __extern int cucul_canvas_set_figfont(cucul_canvas_t *, char const *);
-__extern int cucul_put_figchar(cucul_canvas_t *, unsigned long int);
+__extern int cucul_put_figchar(cucul_canvas_t *, uint32_t);
 /*  @} */
 
 /** \defgroup cucul_importexport libcucul importers/exporters from/to various

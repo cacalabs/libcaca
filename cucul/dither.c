@@ -169,7 +169,7 @@ struct cucul_dither
 /*
  * Local prototypes
  */
-static void mask2shift(unsigned long int, int *, int *);
+static void mask2shift(uint32_t, int *, int *);
 static float gammapow(float x, float y);
 
 static void get_rgba_default(cucul_dither_t const *, uint8_t *, int, int,
@@ -262,10 +262,8 @@ static inline void rgb2hsv_default(int r, int g, int b,
  */
 cucul_dither_t *cucul_create_dither(unsigned int bpp, unsigned int w,
                                     unsigned int h, unsigned int pitch,
-                                    unsigned long int rmask,
-                                    unsigned long int gmask,
-                                    unsigned long int bmask,
-                                    unsigned long int amask)
+                                    uint32_t rmask, uint32_t gmask,
+                                    uint32_t bmask, uint32_t amask)
 {
     cucul_dither_t *d;
     int i;
@@ -1213,7 +1211,7 @@ int cucul_free_dither(cucul_dither_t *d)
  */
 
 /* Convert a mask, eg. 0x0000ff00, to shift values, eg. 8 and -4. */
-static void mask2shift(unsigned long int mask, int *right, int *left)
+static void mask2shift(uint32_t mask, int *right, int *left)
 {
     int rshift = 0, lshift = 0;
 

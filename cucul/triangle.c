@@ -40,7 +40,7 @@
  *  \return This function always returns 0.
  */
 int cucul_draw_triangle(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
-                        int x3, int y3, unsigned long int ch)
+                        int x3, int y3, uint32_t ch)
 {
     cucul_draw_line(cv, x1, y1, x2, y2, ch);
     cucul_draw_line(cv, x2, y2, x3, y3, ch);
@@ -87,7 +87,7 @@ int cucul_draw_thin_triangle(cucul_canvas_t *cv, int x1, int y1,
  *  \return This function always returns 0.
  */
 int cucul_fill_triangle(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
-                        int x3, int y3, unsigned long int ch)
+                        int x3, int y3, uint32_t ch)
 {
     int x, y, xmin, xmax, ymin, ymax;
     long int xx1, xx2, xa, xb, sl21, sl31, sl32;

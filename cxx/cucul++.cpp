@@ -25,19 +25,19 @@
 #include "cucul++.h"
 
 
-unsigned long int Charset::utf8ToUtf32(char const *s, unsigned int *read)
+uint32_t Charset::utf8ToUtf32(char const *s, unsigned int *read)
 {
     return cucul_utf8_to_utf32(s, read);
 }
-unsigned int Charset::utf32ToUtf8(char *buf, unsigned long int ch)
+unsigned int Charset::utf32ToUtf8(char *buf, uint32_t ch)
 {
     return cucul_utf32_to_utf8(buf, ch);
 }
-unsigned char Charset::utf32ToCp437(unsigned long int ch)
+uint8_t Charset::utf32ToCp437(uint32_t ch)
 {
     return cucul_utf32_to_cp437(ch);
 }
-unsigned long int Charset::cp437ToUtf32(unsigned char ch)
+uint32_t Charset::cp437ToUtf32(uint8_t ch)
 {
     return cucul_cp437_to_utf32(ch);
 }
@@ -82,7 +82,7 @@ unsigned int Cucul::getHeight(void)
     return cucul_get_canvas_height(cv);
 }
 
-int Cucul::setColorANSI(unsigned char f, unsigned char b)
+int Cucul::setColorANSI(uint8_t f, uint8_t b)
 {
     return cucul_set_color_ansi(cv, f, b);
 }
@@ -92,12 +92,12 @@ int  Cucul::setColorARGB(unsigned int f, unsigned int b)
     return cucul_set_color_argb(cv, f, b);
 }
 
-void Cucul::putChar(int x, int y, unsigned long int ch)
+void Cucul::putChar(int x, int y, uint32_t ch)
 {
     cucul_put_char(cv, x, y, ch);
 }
 
-unsigned long int Cucul::getChar(int x, int y)
+uint32_t Cucul::getChar(int x, int y)
 {
     return cucul_get_char(cv, x, y);
 }
@@ -156,12 +156,12 @@ void Cucul::Rotate()
     cucul_rotate_180(cv);
 }
 
-void Cucul::drawLine(int x1, int y1, int x2, int y2, unsigned long int ch)
+void Cucul::drawLine(int x1, int y1, int x2, int y2, uint32_t ch)
 {
     cucul_draw_line(cv, x1, y1, x2, y2, ch);
 }
 
-void Cucul::drawPolyline(int const x[], int const y[], int f, unsigned long int ch)
+void Cucul::drawPolyline(int const x[], int const y[], int f, uint32_t ch)
 {
     cucul_draw_polyline(cv, x, y, f, ch);
 }
@@ -176,12 +176,12 @@ void Cucul::drawThinPolyline(int const x[], int const y[], int f)
     cucul_draw_thin_polyline(cv, x, y, f);
 }
 
-void Cucul::drawCircle(int x, int y, int d, unsigned long int ch)
+void Cucul::drawCircle(int x, int y, int d, uint32_t ch)
 {
     cucul_draw_circle(cv, x, y, d, ch);
 }
 
-void Cucul::drawEllipse(int x, int y, int d1, int d2, unsigned long int ch)
+void Cucul::drawEllipse(int x, int y, int d1, int d2, uint32_t ch)
 {
     cucul_draw_ellipse(cv, x, y, d1, d2, ch);
 }
@@ -191,12 +191,12 @@ void Cucul::drawThinEllipse(int x, int y, int d1, int d2)
     cucul_draw_thin_ellipse(cv, x, y, d1, d2);
 }
 
-void Cucul::fillEllipse(int x, int y, int d1, int d2, unsigned long int ch)
+void Cucul::fillEllipse(int x, int y, int d1, int d2, uint32_t ch)
 {
     cucul_fill_ellipse(cv, x, y, d1, d2, ch);
 }
 
-void Cucul::drawBox(int x, int y, int w, int h, unsigned long int ch)
+void Cucul::drawBox(int x, int y, int w, int h, uint32_t ch)
 {
     cucul_draw_box(cv, x, y, w, h, ch);
 }
@@ -211,12 +211,12 @@ void Cucul::drawCP437Box(int x, int y, int w, int h)
     cucul_draw_cp437_box(cv, x, y, w, h);
 }
 
-void Cucul::fillBox(int x, int y, int w, int h, unsigned long int ch)
+void Cucul::fillBox(int x, int y, int w, int h, uint32_t ch)
 {
     cucul_fill_box(cv, x, y, w, h, ch);
 }
 
-void Cucul::drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, unsigned long int ch)
+void Cucul::drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, uint32_t ch)
 {
     cucul_draw_triangle(cv, x1, y1, x2, y2, x3, y3, ch);
 }
@@ -226,7 +226,7 @@ void Cucul::drawThinTriangle(int x1, int y1, int x2, int y2, int x3, int y3)
     cucul_draw_thin_triangle(cv, x1, y1, x2, y2, x3, y3);
 }
 
-void Cucul::fillTriangle(int x1, int y1, int x2, int y2, int x3, int y3, unsigned long int ch)
+void Cucul::fillTriangle(int x1, int y1, int x2, int y2, int x3, int y3, uint32_t ch)
 {
     cucul_fill_triangle(cv, x1, y1, x2, y2, x3, y3, ch);
 }
@@ -241,12 +241,12 @@ const char * Cucul::getVersion()
     return cucul_get_version();
 }
 
-int Cucul::setAttr(unsigned long int attr)
+int Cucul::setAttr(uint32_t attr)
 {
     return cucul_set_attr(cv, attr);
 }
 
-unsigned long int Cucul::getAttr(int x, int y)
+uint32_t Cucul::getAttr(int x, int y)
 {
     return cucul_get_attr(cv, x, y);
 }
@@ -394,12 +394,12 @@ unsigned int Font::getHeight()
     return cucul_get_font_height(font);
 }
 
-void Font::renderCanvas(Cucul *cv, unsigned char *buf, unsigned int x, unsigned int y, unsigned int w)
+void Font::renderCanvas(Cucul *cv, uint8_t *buf, unsigned int x, unsigned int y, unsigned int w)
 {
     cucul_render_canvas(cv->get_cucul_canvas_t(), font, buf, x, y, w);
 }
 
-unsigned long int const *Font::getBlocks()
+uint32_t const *Font::getBlocks()
 {
     return cucul_get_font_blocks(font);
 }

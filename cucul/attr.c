@@ -65,12 +65,12 @@ static const uint16_t ansitab14[16] =
  *  \param y Y coordinate.
  *  \return The requested attribute.
  */
-unsigned long int cucul_get_attr(cucul_canvas_t const *cv, int x, int y)
+uint32_t cucul_get_attr(cucul_canvas_t const *cv, int x, int y)
 {
     if(x < 0 || x >= (int)cv->width || y < 0 || y >= (int)cv->height)
-        return (unsigned long int)cv->curattr;
+        return cv->curattr;
 
-    return (unsigned long int)cv->attrs[x + y * cv->width];
+    return cv->attrs[x + y * cv->width];
 }
 
 /** \brief Set the default character attribute.
@@ -90,21 +90,14 @@ unsigned long int cucul_get_attr(cucul_canvas_t const *cv, int x, int y)
  *
  *  To retrieve the current attribute value, use cucul_get_attr(-1,-1).
  *
- *  If an error occurs, -1 is returned and \b errno is set accordingly:
- *  - \c EINVAL The attribute value is out of the 32-bit range.
+ *  This function never fails.
  *
  *  \param cv A handle to the libcucul canvas.
  *  \param attr The requested attribute value.
- *  \return 0 in case of success, -1 if an error occurred.
+ *  \return This function always returns 0.
  */
-int cucul_set_attr(cucul_canvas_t *cv, unsigned long int attr)
+int cucul_set_attr(cucul_canvas_t *cv, uint32_t attr)
 {
-    if(sizeof(unsigned long int) > sizeof(uint32_t) && attr > 0xffffffff)
-    {
-        seterrno(EINVAL);
-        return -1;
-    }
-
     if(attr < 0x00000010)
         attr = (cv->curattr & 0xfffffff0) | attr;
 
@@ -126,24 +119,17 @@ int cucul_set_attr(cucul_canvas_t *cv, unsigned long int attr)
  *    \e CUCUL_BLINK, \e CUCUL_BOLD and \e CUCUL_ITALICS), in which case
  *    setting the attribute does not modify the current colour information.
  *
- *  If an error occurs, -1 is returned and \b errno is set accordingly:
- *  - \c EINVAL The attribute value is out of the 32-bit range.
+ *  This function never fails.
  *
  *  \param cv A handle to the libcucul canvas.
  *  \param x X coordinate.
  *  \param y Y coordinate.
  *  \param attr The requested attribute value.
- *  \return 0 in case of success, -1 if an error occurred.
+ *  \return This function always returns 0.
  */
-int cucul_put_attr(cucul_canvas_t *cv, int x, int y, unsigned long int attr)
+int cucul_put_attr(cucul_canvas_t *cv, int x, int y, uint32_t attr)
 {
     uint32_t *curattr, *curchar;
-
-    if(sizeof(unsigned long int) > sizeof(uint32_t) && attr > 0xffffffff)
-    {
-        seterrno(EINVAL);
-        return -1;
-    }
 
     if(x < 0 || x >= (int)cv->width || y < 0 || y >= (int)cv->height)
         return 0;
@@ -207,23 +193,16 @@ int cucul_set_color_ansi(cucul_canvas_t *cv, uint8_t fg, uint8_t bg)
  *  instance, 0xf088 is solid dark cyan (A=15 R=0 G=8 B=8), and 0x8fff is
  *  white with 50% alpha (A=8 R=15 G=15 B=15).
  *
- *  If an error occurs, 0 is returned and \b errno is set accordingly:
- *  - \c EINVAL At least one of the colour values is invalid.
+ *  This function never fails.
  *
  *  \param cv A handle to the libcucul canvas.
  *  \param fg The requested ARGB foreground colour.
  *  \param bg The requested ARGB background colour.
- *  \return 0 in case of success, -1 if an error occurred.
+ *  \return This function always returns 0.
  */
-int cucul_set_color_argb(cucul_canvas_t *cv, unsigned int fg, unsigned int bg)
+int cucul_set_color_argb(cucul_canvas_t *cv, uint16_t fg, uint16_t bg)
 {
     uint32_t attr;
-
-    if(fg > 0xffff || bg > 0xffff)
-    {
-        seterrno(EINVAL);
-        return -1;
-    }
 
     if(fg < 0x100)
         fg += 0x100;
@@ -257,7 +236,7 @@ int cucul_set_color_argb(cucul_canvas_t *cv, unsigned int fg, unsigned int bg)
  *  \param attr The requested attribute value.
  *  \return The corresponding DOS ANSI value.
  */
-uint8_t cucul_attr_to_ansi(unsigned long int attr)
+uint8_t cucul_attr_to_ansi(uint32_t attr)
 {
     uint8_t fg = nearest_ansi((attr >> 4) & 0x3fff);
     uint8_t bg = nearest_ansi(attr >> 18);
@@ -281,7 +260,7 @@ uint8_t cucul_attr_to_ansi(unsigned long int attr)
  *  \param attr The requested attribute value.
  *  \return The corresponding ANSI foreground value.
  */
-uint8_t cucul_attr_to_ansi_fg(unsigned long int attr)
+uint8_t cucul_attr_to_ansi_fg(uint32_t attr)
 {
     return nearest_ansi(((uint16_t)attr >> 4) & 0x3fff);
 }
@@ -301,7 +280,7 @@ uint8_t cucul_attr_to_ansi_fg(unsigned long int attr)
  *  \param attr The requested attribute value.
  *  \return The corresponding ANSI background value.
  */
-uint8_t cucul_attr_to_ansi_bg(unsigned long int attr)
+uint8_t cucul_attr_to_ansi_bg(uint32_t attr)
 {
     return nearest_ansi(attr >> 18);
 }
@@ -321,7 +300,7 @@ uint8_t cucul_attr_to_ansi_bg(unsigned long int attr)
  *  \param attr The requested attribute value.
  *  \return The corresponding 12-bit RGB foreground value.
  */
-unsigned int cucul_attr_to_rgb12_fg(unsigned long int attr)
+uint16_t cucul_attr_to_rgb12_fg(uint32_t attr)
 {
     uint16_t fg = (attr >> 4) & 0x3fff;
 
@@ -352,7 +331,7 @@ unsigned int cucul_attr_to_rgb12_fg(unsigned long int attr)
  *  \param attr The requested attribute value.
  *  \return The corresponding 12-bit RGB background value.
  */
-unsigned int cucul_attr_to_rgb12_bg(unsigned long int attr)
+uint16_t cucul_attr_to_rgb12_bg(uint32_t attr)
 {
     uint16_t bg = attr >> 18;
 
@@ -387,7 +366,7 @@ unsigned int cucul_attr_to_rgb12_bg(unsigned long int attr)
  *  \param attr The requested attribute value.
  *  \param argb An array of 8-bit integers.
  */
-void cucul_attr_to_argb64(unsigned long int attr, uint8_t argb[8])
+void cucul_attr_to_argb64(uint32_t attr, uint8_t argb[8])
 {
     uint16_t fg = (attr >> 4) & 0x3fff;
     uint16_t bg = attr >> 18;

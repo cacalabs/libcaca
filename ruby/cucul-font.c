@@ -71,7 +71,7 @@ static VALUE get_font_height(VALUE self)
 static VALUE get_font_blocks(VALUE self)
 {
     VALUE ary;
-    unsigned long int const *list;
+    uint32_t const *list;
     
     list = cucul_get_font_blocks(_SELF);
     

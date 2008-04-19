@@ -215,7 +215,7 @@ unsigned int caca_get_event_key_ch(caca_event_t const *ev)
  *  \param ev The libcaca event.
  *  \return The key's Unicode value.
  */
-unsigned long int caca_get_event_key_utf32(caca_event_t const *ev)
+uint32_t caca_get_event_key_utf32(caca_event_t const *ev)
 {
     return ((caca_privevent_t const *)ev)->data.key.utf32;
 }

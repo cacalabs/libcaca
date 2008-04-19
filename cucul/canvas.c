@@ -109,7 +109,7 @@ int cucul_get_cursor_y(cucul_canvas_t const *cv)
  *  \param ch The character to print.
  *  \return This function always returns 0.
  */
-int cucul_put_char(cucul_canvas_t *cv, int x, int y, unsigned long int ch)
+int cucul_put_char(cucul_canvas_t *cv, int x, int y, uint32_t ch)
 {
     uint32_t *curchar, *curattr, attr;
     int fullwidth;
@@ -191,12 +191,12 @@ int cucul_put_char(cucul_canvas_t *cv, int x, int y, unsigned long int ch)
  *  \param y Y coordinate.
  *  \return This function always returns 0.
  */
-unsigned long int cucul_get_char(cucul_canvas_t const *cv, int x, int y)
+uint32_t cucul_get_char(cucul_canvas_t const *cv, int x, int y)
 {
     if(x < 0 || x >= (int)cv->width || y < 0 || y >= (int)cv->height)
         return ' ';
 
-    return (unsigned long int)cv->chars[x + y * cv->width];
+    return cv->chars[x + y * cv->width];
 }
 
 /** \brief Print a string.

@@ -38,7 +38,7 @@
  *  \return This function always returns 0.
  */
 int cucul_draw_box(cucul_canvas_t *cv, int x1, int y1, int w, int h, 
-                   unsigned long int ch)
+                   uint32_t ch)
 {
     int x2 = x1 + w - 1;
     int y2 = y1 + h - 1;
@@ -188,7 +188,7 @@ int cucul_draw_cp437_box(cucul_canvas_t *cv, int x1, int y1, int w, int h)
  *  \return This function always returns 0.
  */
 int cucul_fill_box(cucul_canvas_t *cv, int x1, int y1, int w, int h,
-                   unsigned long int ch)
+                   uint32_t ch)
 {
     int x, y, xmax, ymax;
 

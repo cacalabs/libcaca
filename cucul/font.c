@@ -60,7 +60,7 @@ struct cucul_font
     struct font_header header;
 
     struct block_info *block_list;
-    unsigned long int *user_block_list;
+    uint32_t *user_block_list;
     struct glyph_info *glyph_list;
     uint8_t *font_data;
 
@@ -186,7 +186,7 @@ cucul_font_t *cucul_load_font(void const *data, unsigned int size)
     }
 
     f->user_block_list = malloc((f->header.blocks + 1)
-                                  * 2 * sizeof(unsigned long int));
+                                  * 2 * sizeof(uint32_t));
     if(!f->user_block_list)
     {
         free(f->block_list);
@@ -364,9 +364,9 @@ unsigned int cucul_get_font_height(cucul_font_t const *f)
  *  \param f The font, as returned by cucul_load_font()
  *  \return The list of Unicode blocks supported by the font.
  */
-unsigned long int const *cucul_get_font_blocks(cucul_font_t const *f)
+uint32_t const *cucul_get_font_blocks(cucul_font_t const *f)
 {
-    return (unsigned long int const *)f->user_block_list;
+    return (uint32_t const *)f->user_block_list;
 }
 
 /** \brief Free a font structure.
