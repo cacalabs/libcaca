@@ -31,7 +31,7 @@
  * UTF-8 handling
  */
 
-static char const trailing[256] =
+static uint8_t const trailing[256] =
 {
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -106,15 +106,15 @@ static uint32_t const cp437_lookup2[] =
  *  is undefined.
  *
  *  \param s A string containing the UTF-8 character.
- *  \param read A pointer to an unsigned integer to store the number of
- *  bytes in the character, or NULL.
+ *  \param bytes A pointer to a size_t to store the number of bytes in the
+ *         character, or NULL.
  *  \return The corresponding UTF-32 character, or zero if the character
  *  is incomplete.
  */
 uint32_t cucul_utf8_to_utf32(char const *s, size_t *bytes)
 {
-    unsigned int todo = trailing[(int)(unsigned char)*s];
-    unsigned int i = 0;
+    int todo = trailing[(int)(unsigned char)*s];
+    int i = 0;
     uint32_t ret = 0;
 
     for(;;)

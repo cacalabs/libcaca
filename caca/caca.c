@@ -147,7 +147,6 @@ caca_display_t * caca_create_display_with_driver(cucul_canvas_t *cv,
  *
  *  This function never fails.
  *
- *  \param dp Display object.
  *  \return An array of strings.
  */
 char const * const * caca_get_display_driver_list(void)

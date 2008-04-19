@@ -37,16 +37,15 @@
  *  \param ch UTF-32 character to be used to draw the box.
  *  \return This function always returns 0.
  */
-int cucul_draw_box(cucul_canvas_t *cv, int x1, int y1, int w, int h, 
-                   uint32_t ch)
+int cucul_draw_box(cucul_canvas_t *cv, int x, int y, int w, int h, uint32_t ch)
 {
-    int x2 = x1 + w - 1;
-    int y2 = y1 + h - 1;
+    int x2 = x + w - 1;
+    int y2 = y + h - 1;
 
-    cucul_draw_line(cv, x1, y1, x1, y2, ch);
-    cucul_draw_line(cv, x1, y2, x2, y2, ch);
-    cucul_draw_line(cv, x2, y2, x2, y1, ch);
-    cucul_draw_line(cv, x2, y1, x1, y1, ch);
+    cucul_draw_line(cv,  x,  y,  x, y2, ch);
+    cucul_draw_line(cv,  x, y2, x2, y2, ch);
+    cucul_draw_line(cv, x2, y2, x2,  y, ch);
+    cucul_draw_line(cv, x2,  y,  x,  y, ch);
 
     return 0;
 }
@@ -62,52 +61,52 @@ int cucul_draw_box(cucul_canvas_t *cv, int x1, int y1, int w, int h,
  *  \param h Height of the box.
  *  \return This function always returns 0.
  */
-int cucul_draw_thin_box(cucul_canvas_t *cv, int x1, int y1, int w, int h)
+int cucul_draw_thin_box(cucul_canvas_t *cv, int x, int y, int w, int h)
 {
-    int x, y, xmax, ymax;
+    int i, j, xmax, ymax;
 
-    int x2 = x1 + w - 1;
-    int y2 = y1 + h - 1;
+    int x2 = x + w - 1;
+    int y2 = y + h - 1;
 
-    if(x1 > x2)
+    if(x > x2)
     {
-        int tmp = x1;
-        x1 = x2; x2 = tmp;
+        int tmp = x;
+        x = x2; x2 = tmp;
     }
 
-    if(y1 > y2)
+    if(y > y2)
     {
-        int tmp = y1;
-        y1 = y2; y2 = tmp;
+        int tmp = y;
+        y = y2; y2 = tmp;
     }
 
     xmax = cv->width - 1;
     ymax = cv->height - 1;
 
-    if(x2 < 0 || y2 < 0 || x1 > xmax || y1 > ymax)
+    if(x2 < 0 || y2 < 0 || x > xmax || y > ymax)
         return 0;
 
     /* Draw edges */
-    if(y1 >= 0)
-        for(x = x1 < 0 ? 1 : x1 + 1; x < x2 && x < xmax; x++)
-            cucul_put_char(cv, x, y1, '-');
+    if(y >= 0)
+        for(i = x < 0 ? 1 : x + 1; i < x2 && i < xmax; i++)
+            cucul_put_char(cv, i, y, '-');
 
     if(y2 <= ymax)
-        for(x = x1 < 0 ? 1 : x1 + 1; x < x2 && x < xmax; x++)
-            cucul_put_char(cv, x, y2, '-');
+        for(i = x < 0 ? 1 : x + 1; i < x2 && i < xmax; i++)
+            cucul_put_char(cv, i, y2, '-');
 
-    if(x1 >= 0)
-        for(y = y1 < 0 ? 1 : y1 + 1; y < y2 && y < ymax; y++)
-            cucul_put_char(cv, x1, y, '|');
+    if(x >= 0)
+        for(j = y < 0 ? 1 : y + 1; j < y2 && j < ymax; j++)
+            cucul_put_char(cv, x, j, '|');
 
     if(x2 <= xmax)
-        for(y = y1 < 0 ? 1 : y1 + 1; y < y2 && y < ymax; y++)
-            cucul_put_char(cv, x2, y, '|');
+        for(j = y < 0 ? 1 : y + 1; j < y2 && j < ymax; j++)
+            cucul_put_char(cv, x2, j, '|');
 
     /* Draw corners */
-    cucul_put_char(cv, x1, y1, ',');
-    cucul_put_char(cv, x1, y2, '`');
-    cucul_put_char(cv, x2, y1, '.');
+    cucul_put_char(cv, x, y, ',');
+    cucul_put_char(cv, x, y2, '`');
+    cucul_put_char(cv, x2, y, '.');
     cucul_put_char(cv, x2, y2, '\'');
 
     return 0;
@@ -124,52 +123,52 @@ int cucul_draw_thin_box(cucul_canvas_t *cv, int x1, int y1, int w, int h)
  *  \param h Height of the box.
  *  \return This function always returns 0.
  */
-int cucul_draw_cp437_box(cucul_canvas_t *cv, int x1, int y1, int w, int h)
+int cucul_draw_cp437_box(cucul_canvas_t *cv, int x, int y, int w, int h)
 {
-    int x, y, xmax, ymax;
+    int i, j, xmax, ymax;
 
-    int x2 = x1 + w - 1;
-    int y2 = y1 + h - 1;
+    int x2 = x + w - 1;
+    int y2 = y + h - 1;
 
-    if(x1 > x2)
+    if(x > x2)
     {
-        int tmp = x1;
-        x1 = x2; x2 = tmp;
+        int tmp = x;
+        x = x2; x2 = tmp;
     }
 
-    if(y1 > y2)
+    if(y > y2)
     {
-        int tmp = y1;
-        y1 = y2; y2 = tmp;
+        int tmp = y;
+        y = y2; y2 = tmp;
     }
 
     xmax = cv->width - 1;
     ymax = cv->height - 1;
 
-    if(x2 < 0 || y2 < 0 || x1 > xmax || y1 > ymax)
+    if(x2 < 0 || y2 < 0 || x > xmax || y > ymax)
         return 0;
 
     /* Draw edges */
-    if(y1 >= 0)
-        for(x = x1 < 0 ? 1 : x1 + 1; x < x2 && x < xmax; x++)
-            cucul_put_char(cv, x, y1, 0x2500); /* ─ */
+    if(y >= 0)
+        for(i = x < 0 ? 1 : x + 1; i < x2 && i < xmax; i++)
+            cucul_put_char(cv, i, y, 0x2500); /* ─ */
 
     if(y2 <= ymax)
-        for(x = x1 < 0 ? 1 : x1 + 1; x < x2 && x < xmax; x++)
-            cucul_put_char(cv, x, y2, 0x2500); /* ─ */
+        for(i = x < 0 ? 1 : x + 1; i < x2 && i < xmax; i++)
+            cucul_put_char(cv, i, y2, 0x2500); /* ─ */
 
-    if(x1 >= 0)
-        for(y = y1 < 0 ? 1 : y1 + 1; y < y2 && y < ymax; y++)
-            cucul_put_char(cv, x1, y, 0x2502); /* │ */
+    if(x >= 0)
+        for(j = y < 0 ? 1 : y + 1; j < y2 && j < ymax; j++)
+            cucul_put_char(cv, x, j, 0x2502); /* │ */
 
     if(x2 <= xmax)
-        for(y = y1 < 0 ? 1 : y1 + 1; y < y2 && y < ymax; y++)
-            cucul_put_char(cv, x2, y, 0x2502); /* │ */
+        for(j = y < 0 ? 1 : y + 1; j < y2 && j < ymax; j++)
+            cucul_put_char(cv, x2, j, 0x2502); /* │ */
 
     /* Draw corners */
-    cucul_put_char(cv, x1, y1, 0x250c); /* ┌ */
-    cucul_put_char(cv, x1, y2, 0x2514); /* └ */
-    cucul_put_char(cv, x2, y1, 0x2510); /* ┐ */
+    cucul_put_char(cv, x, y, 0x250c); /* ┌ */
+    cucul_put_char(cv, x, y2, 0x2514); /* └ */
+    cucul_put_char(cv, x2, y, 0x2510); /* ┐ */
     cucul_put_char(cv, x2, y2, 0x2518); /* ┘ */
 
     return 0;
@@ -187,40 +186,40 @@ int cucul_draw_cp437_box(cucul_canvas_t *cv, int x1, int y1, int w, int h)
  *  \param ch UTF-32 character to be used to draw the box.
  *  \return This function always returns 0.
  */
-int cucul_fill_box(cucul_canvas_t *cv, int x1, int y1, int w, int h,
+int cucul_fill_box(cucul_canvas_t *cv, int x, int y, int w, int h,
                    uint32_t ch)
 {
-    int x, y, xmax, ymax;
+    int i, j, xmax, ymax;
 
-    int x2 = x1 + w - 1;
-    int y2 = y1 + h - 1;
+    int x2 = x + w - 1;
+    int y2 = y + h - 1;
 
-    if(x1 > x2)
+    if(x > x2)
     {
-        int tmp = x1;
-        x1 = x2; x2 = tmp;
+        int tmp = x;
+        x = x2; x2 = tmp;
     }
 
-    if(y1 > y2)
+    if(y > y2)
     {
-        int tmp = y1;
-        y1 = y2; y2 = tmp;
+        int tmp = y;
+        y = y2; y2 = tmp;
     }
 
     xmax = cv->width - 1;
     ymax = cv->height - 1;
 
-    if(x2 < 0 || y2 < 0 || x1 > xmax || y1 > ymax)
+    if(x2 < 0 || y2 < 0 || x > xmax || y > ymax)
         return 0;
 
-    if(x1 < 0) x1 = 0;
-    if(y1 < 0) y1 = 0;
+    if(x < 0) x = 0;
+    if(y < 0) y = 0;
     if(x2 > xmax) x2 = xmax;
     if(y2 > ymax) y2 = ymax;
 
-    for(y = y1; y <= y2; y++)
-        for(x = x1; x <= x2; x++)
-            cucul_put_char(cv, x, y, ch);
+    for(j = y; j <= y2; j++)
+        for(i = x; i <= x2; i++)
+            cucul_put_char(cv, i, j, ch);
 
     return 0;
 }
