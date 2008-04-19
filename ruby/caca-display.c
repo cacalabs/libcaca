@@ -53,15 +53,15 @@ static VALUE display_initialize(int argc, VALUE* argv, VALUE self)
         cv = arg2;
     }
 
-    if(CLASS_OF(arg1) == T_STRING)
+    if(TYPE(arg1) == T_STRING)
     {
         driver = StringValuePtr(arg1);
-        if(CLASS_OF(arg2) == T_STRING)
+        if(TYPE(arg2) == T_STRING)
         {
             rb_raise(rb_eArgError, "Only one argument can be a string");
         }
     }
-    else if(CLASS_OF(arg2) == T_STRING)
+    else if(TYPE(arg2) == T_STRING)
     {
         driver = StringValuePtr(arg2);
     }
