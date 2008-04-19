@@ -484,7 +484,6 @@ int cucul_set_canvas_boundaries(cucul_canvas_t *cv, int x, int y,
         cucul_set_frame(cv, f);
         cucul_set_frame(new, f);
         cucul_blit(new, -x, -y, cv, NULL);
-
         free(cv->frames[f].chars);
         free(cv->frames[f].attrs);
     }
@@ -493,8 +492,9 @@ int cucul_set_canvas_boundaries(cucul_canvas_t *cv, int x, int y,
     cv->frames = new->frames;
     free(new);
 
-    cucul_set_frame(cv, saved_f);
-
+    cucul_set_frame(cv, saved_f); 
+    _cucul_load_frame_info(cv);
+    
     return 0;
 }
 
