@@ -84,6 +84,8 @@ AC_ARG_ENABLE(plugins,
   [  --enable-plugins        make X11 and GL drivers plugins (default disabled)])
 AC_ARG_ENABLE(doc,
   [  --enable-doc            build documentation (needs doxygen and LaTeX)])
+AC_ARG_ENABLE(cppunit,
+  [  --enable-cppunit        use cppunit for unit tests (autodetected)])
 AC_ARG_ENABLE(zzuf,
   [  --enable-zzuf           use zzuf for fuzzing tests (autodetected)])
 
@@ -450,6 +452,11 @@ if test "${enable_doc}" != "no"; then
 fi
 AM_CONDITIONAL(BUILD_DOCUMENTATION, test "${DOXYGEN}" != "no")
 AM_CONDITIONAL(USE_LATEX, test "${LATEX}" != "no")
+
+# Use cppunit for unit tests?
+CPPUNIT="no"
+PKG_CHECK_MODULES(CPPUNIT, cppunit, [CPPUNIT="yes"], [AC_MSG_RESULT(no)])
+AM_CONDITIONAL(USE_CPPUNIT, test "$CPPUNIT" != "no")
 
 # Use zzuf for fuzzing tests?
 ZZUF="no"
