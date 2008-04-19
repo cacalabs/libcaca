@@ -41,13 +41,13 @@ static void canvas_free(void * p)
 static VALUE canvas_alloc(VALUE klass)
 {
     VALUE obj;    
-    obj = Data_Wrap_Struct(klass, 0, canvas_free, NULL);
+    obj = Data_Wrap_Struct(klass, NULL, canvas_free, NULL);
     return obj;
 }
 
 VALUE canvas_create(cucul_canvas_t *canvas)
 {
-    return Data_Wrap_Struct(cCanvas, 0, canvas_free, canvas);
+    return Data_Wrap_Struct(cCanvas, NULL, NULL, canvas);
 }
 
 static VALUE canvas_initialize(VALUE self, VALUE width, VALUE height)
