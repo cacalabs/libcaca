@@ -219,7 +219,7 @@ uint32_t cucul_get_char(cucul_canvas_t const *cv, int x, int y)
  */
 int cucul_put_str(cucul_canvas_t *cv, int x, int y, char const *s)
 {
-    unsigned int rd;
+    size_t rd;
 
     if(y < 0 || y >= (int)cv->height || x >= (int)cv->width)
         return 0;

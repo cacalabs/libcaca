@@ -111,9 +111,9 @@ static uint32_t const cp437_lookup2[] =
  *  \return The corresponding UTF-32 character, or zero if the character
  *  is incomplete.
  */
-uint32_t cucul_utf8_to_utf32(char const *s, unsigned int *read)
+uint32_t cucul_utf8_to_utf32(char const *s, size_t *bytes)
 {
-    unsigned int bytes = trailing[(int)(unsigned char)*s];
+    unsigned int todo = trailing[(int)(unsigned char)*s];
     unsigned int i = 0;
     uint32_t ret = 0;
 
@@ -121,18 +121,18 @@ uint32_t cucul_utf8_to_utf32(char const *s, unsigned int *read)
     {
         if(!*s)
         {
-            if(read)
-                *read = 0;
+            if(bytes)
+                *bytes = 0;
             return 0;
         }
 
-        ret += ((uint32_t)(unsigned char)*s++) << (6 * (bytes - i));
+        ret += ((uint32_t)(unsigned char)*s++) << (6 * (todo - i));
 
-        if(bytes == i++)
+        if(todo == i++)
         {
-            if(read)
-                *read = i;
-            return ret - offsets[bytes];
+            if(bytes)
+                *bytes = i;
+            return ret - offsets[todo];
         }
     }
 }
@@ -150,7 +150,7 @@ uint32_t cucul_utf8_to_utf32(char const *s, unsigned int *read)
  *  \param ch The UTF-32 character.
  *  \return The number of bytes written.
  */
-unsigned int cucul_utf32_to_utf8(char *buf, uint32_t ch)
+size_t cucul_utf32_to_utf8(char *buf, uint32_t ch)
 {
     static const uint8_t mark[7] =
     {
@@ -158,7 +158,7 @@ unsigned int cucul_utf32_to_utf8(char *buf, uint32_t ch)
     };
 
     char *parser = buf;
-    int bytes;
+    size_t bytes;
 
     if(ch < 0x80)
     {

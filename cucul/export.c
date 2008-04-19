@@ -44,16 +44,16 @@ static inline int sprintu16(char *s, uint16_t x)
     return 2;
 }
 
-static void *export_caca(cucul_canvas_t const *, unsigned long int *);
-static void *export_ansi(cucul_canvas_t const *, unsigned long int *);
-static void *export_utf8(cucul_canvas_t const *, unsigned long int *, int);
-static void *export_html(cucul_canvas_t const *, unsigned long int *);
-static void *export_html3(cucul_canvas_t const *, unsigned long int *);
-static void *export_bbfr(cucul_canvas_t const *, unsigned long int *);
-static void *export_irc(cucul_canvas_t const *, unsigned long int *);
-static void *export_ps(cucul_canvas_t const *, unsigned long int *);
-static void *export_svg(cucul_canvas_t const *, unsigned long int *);
-static void *export_tga(cucul_canvas_t const *, unsigned long int *);
+static void *export_caca(cucul_canvas_t const *, size_t *);
+static void *export_ansi(cucul_canvas_t const *, size_t *);
+static void *export_utf8(cucul_canvas_t const *, size_t *, int);
+static void *export_html(cucul_canvas_t const *, size_t *);
+static void *export_html3(cucul_canvas_t const *, size_t *);
+static void *export_bbfr(cucul_canvas_t const *, size_t *);
+static void *export_irc(cucul_canvas_t const *, size_t *);
+static void *export_ps(cucul_canvas_t const *, size_t *);
+static void *export_svg(cucul_canvas_t const *, size_t *);
+static void *export_tga(cucul_canvas_t const *, size_t *);
 
 /** \brief Export a canvas into a foreign format.
  *
@@ -78,12 +78,12 @@ static void *export_tga(cucul_canvas_t const *, unsigned long int *);
  *
  *  \param cv A libcucul canvas
  *  \param format A string describing the requested output format.
- *  \param bytes A pointer to an unsigned long integer where the number of
- *         allocated bytes will be written.
+ *  \param bytes A pointer to a size_t where the number of allocated bytes
+ *         will be written.
  *  \return A pointer to the exported memory area, or NULL in case of error.
  */
 void *cucul_export_memory(cucul_canvas_t const *cv, char const *format,
-                          unsigned long int *bytes)
+                          size_t *bytes)
 {
     if(!strcasecmp("caca", format))
         return export_caca(cv, bytes);
@@ -159,7 +159,7 @@ char const * const * cucul_get_export_list(void)
  */
 
 /* Generate a native libcaca canvas file. */
-static void *export_caca(cucul_canvas_t const *cv, unsigned long int *bytes)
+static void *export_caca(cucul_canvas_t const *cv, size_t *bytes)
 {
     char *data, *cur;
     unsigned int f, n;
@@ -212,7 +212,7 @@ static void *export_caca(cucul_canvas_t const *cv, unsigned long int *bytes)
 }
 
 /* Generate UTF-8 representation of current canvas. */
-static void *export_utf8(cucul_canvas_t const *cv, unsigned long int *bytes,
+static void *export_utf8(cucul_canvas_t const *cv, size_t *bytes,
                          int cr)
 {
     static uint8_t const palette[] =
@@ -293,7 +293,7 @@ static void *export_utf8(cucul_canvas_t const *cv, unsigned long int *bytes,
 }
 
 /* Generate ANSI representation of current canvas. */
-static void *export_ansi(cucul_canvas_t const *cv, unsigned long int *bytes)
+static void *export_ansi(cucul_canvas_t const *cv, size_t *bytes)
 {
     static uint8_t const palette[] =
     {
@@ -373,7 +373,7 @@ static void *export_ansi(cucul_canvas_t const *cv, unsigned long int *bytes)
 }
 
 /* Generate HTML representation of current canvas. */
-static void *export_html(cucul_canvas_t const *cv, unsigned long int *bytes)
+static void *export_html(cucul_canvas_t const *cv, size_t *bytes)
 {
     char *data, *cur;
     unsigned int x, y, len;
@@ -455,7 +455,7 @@ static void *export_html(cucul_canvas_t const *cv, unsigned long int *bytes)
  * but permits viewing in old browsers (or limited ones such as links). It
  * will not work under gecko (mozilla rendering engine) unless you set a
  * correct header. */
-static void *export_html3(cucul_canvas_t const *cv, unsigned long int *bytes)
+static void *export_html3(cucul_canvas_t const *cv, size_t *bytes)
 {
     char *data, *cur;
     unsigned int x, y, len;
@@ -556,7 +556,7 @@ static void *export_html3(cucul_canvas_t const *cv, unsigned long int *bytes)
     return data;
 }
 
-static void *export_bbfr(cucul_canvas_t const *cv, unsigned long int *bytes)
+static void *export_bbfr(cucul_canvas_t const *cv, size_t *bytes)
 {
     char *data, *cur;
     unsigned int x, y, len;
@@ -657,7 +657,7 @@ static void *export_bbfr(cucul_canvas_t const *cv, unsigned long int *bytes)
 }
 
 /* Export a text file with IRC colours */
-static void *export_irc(cucul_canvas_t const *cv, unsigned long int *bytes)
+static void *export_irc(cucul_canvas_t const *cv, size_t *bytes)
 {
     static uint8_t const palette[] =
     {
@@ -764,7 +764,7 @@ static void *export_irc(cucul_canvas_t const *cv, unsigned long int *bytes)
 }
 
 /* Export a PostScript document. */
-static void *export_ps(cucul_canvas_t const *cv, unsigned long int *bytes)
+static void *export_ps(cucul_canvas_t const *cv, size_t *bytes)
 {
     static char const *ps_header =
         "%!\n"
@@ -873,7 +873,7 @@ static void *export_ps(cucul_canvas_t const *cv, unsigned long int *bytes)
 }
 
 /* Export an SVG vector image */
-static void *export_svg(cucul_canvas_t const *cv, unsigned long int *bytes)
+static void *export_svg(cucul_canvas_t const *cv, size_t *bytes)
 {
     static char const svg_header[] =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -959,7 +959,7 @@ static void *export_svg(cucul_canvas_t const *cv, unsigned long int *bytes)
 }
 
 /* Export a TGA image */
-static void *export_tga(cucul_canvas_t const *cv, unsigned long int *bytes)
+static void *export_tga(cucul_canvas_t const *cv, size_t *bytes)
 {
     char const * const *fontlist;
     char *data, *cur;

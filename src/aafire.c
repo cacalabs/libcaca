@@ -45,7 +45,7 @@ static caca_display_t *dp;
 static int XSIZ, YSIZ;
 static cucul_dither_t *cucul_dither;
 static char *bitmap;
-static int pause = 0;
+static int paused = 0;
 #else
 static aa_context *context;
 static aa_renderparams *params;
@@ -212,8 +212,8 @@ drawfire (void)
 #ifndef LIBCACA
   char *bitmap = aa_image (context);
 #else
-  if(pause)
-    goto paused;
+  if(paused)
+    goto _paused;
 #endif
 
   height++;
@@ -237,7 +237,7 @@ drawfire (void)
   i = 0;
   firemain ();
 #ifdef LIBCACA
-paused:
+_paused:
   cucul_dither_bitmap(cv, 0, 0, cucul_get_canvas_width(cv),
                       cucul_get_canvas_height(cv), cucul_dither, bitmap);
   cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
@@ -279,7 +279,7 @@ game (void)
                 case CACA_KEY_CTRL_C:
                 case CACA_KEY_CTRL_Z:
                 case CACA_KEY_ESCAPE: return;
-                case ' ': pause = !pause;
+                case ' ': paused = !paused;
             }
         }
 #endif

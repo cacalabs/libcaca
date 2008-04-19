@@ -25,11 +25,11 @@
 #include "cucul++.h"
 
 
-uint32_t Charset::utf8ToUtf32(char const *s, unsigned int *read)
+uint32_t Charset::utf8ToUtf32(char const *s, size_t *read)
 {
     return cucul_utf8_to_utf32(s, read);
 }
-unsigned int Charset::utf32ToUtf8(char *buf, uint32_t ch)
+size_t Charset::utf32ToUtf8(char *buf, uint32_t ch)
 {
     return cucul_utf32_to_utf8(buf, ch);
 }

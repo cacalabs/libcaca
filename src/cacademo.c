@@ -72,7 +72,7 @@ int main(int argc, char **argv)
     static caca_display_t *dp;
     static cucul_canvas_t *frontcv, *backcv, *mask;
 
-    int demo, next = -1, pause = 0, next_transition = DEMO_FRAMES;
+    int demo, next = -1, paused = 0, next_transition = DEMO_FRAMES;
     unsigned int i;
     int tmode = cucul_rand(0, TRANSITION_COUNT);
 
@@ -117,7 +117,7 @@ int main(int argc, char **argv)
                 case CACA_KEY_CTRL_Z:
                     goto end;
                 case ' ':
-                    pause = !pause;
+                    paused = !paused;
                     break;
                 case '\r':
                     if(next == -1)
@@ -132,8 +132,8 @@ int main(int argc, char **argv)
         cucul_set_canvas_size(mask, cucul_get_canvas_width(frontcv),
                                     cucul_get_canvas_height(frontcv));
 
-        if(pause)
-            goto paused;
+        if(paused)
+            goto _paused;
 
         /* Update demo's data */
         fn[demo](UPDATE, frontcv);
@@ -159,7 +159,7 @@ int main(int argc, char **argv)
             fn[next](UPDATE, backcv);
 
         frame++;
-paused:
+_paused:
         /* Render main demo's canvas */
         fn[demo](RENDER, frontcv);
 

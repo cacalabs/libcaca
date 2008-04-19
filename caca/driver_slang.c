@@ -328,7 +328,8 @@ static int slang_get_event(caca_display_t *dp, caca_privevent_t *ev)
         int keys[7]; /* Necessary for ungetkey(); */
         char utf8[7];
         uint32_t utf32;
-        unsigned int i, bytes = 0;
+        unsigned int i;
+        size_t bytes = 0;
 
         keys[0] = intkey;
         utf8[0] = intkey;

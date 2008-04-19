@@ -23,12 +23,12 @@
 
 int main(int argc, char *argv[])
 {
-    unsigned long int const *blocks;
+    uint32_t const *blocks;
     cucul_font_t *f;
     char const * const * fonts;
     cucul_canvas_t *cv;
     void *buffer;
-    unsigned long int len;
+    size_t len;
     unsigned int i, j, x, y, cells, width;
 
     fonts = cucul_get_font_list();

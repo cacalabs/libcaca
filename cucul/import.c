@@ -52,9 +52,9 @@ struct import
     uint8_t faint, strike, proportional; /* unsupported */
 };
 
-static long int import_caca(cucul_canvas_t *, void const *, unsigned int);
-static long int import_text(cucul_canvas_t *, void const *, unsigned int);
-static long int import_ansi(cucul_canvas_t *, void const *, unsigned int, int);
+static ssize_t import_caca(cucul_canvas_t *, void const *, size_t);
+static ssize_t import_text(cucul_canvas_t *, void const *, size_t);
+static ssize_t import_ansi(cucul_canvas_t *, void const *, size_t, int);
 
 static void ansi_parse_grcm(cucul_canvas_t *, struct import *,
                             unsigned int, unsigned int const *);
@@ -86,8 +86,8 @@ static void ansi_parse_grcm(cucul_canvas_t *, struct import *,
  *  \return The number of bytes read, or 0 if there was not enough data,
  *  or -1 if an error occurred.
  */
-long int cucul_import_memory(cucul_canvas_t *cv, void const *data,
-                             unsigned long int len, char const *format)
+ssize_t cucul_import_memory(cucul_canvas_t *cv, void const *data,
+                            size_t len, char const *format)
 {
     if(!strcasecmp("caca", format))
         return import_caca(cv, data, len);
@@ -151,8 +151,8 @@ long int cucul_import_memory(cucul_canvas_t *cv, void const *data,
  *  \return The number of bytes read, or 0 if there was not enough data,
  *  or -1 if an error occurred.
  */
-long int cucul_import_file(cucul_canvas_t *cv, char const *filename,
-                           char const *format)
+ssize_t cucul_import_file(cucul_canvas_t *cv, char const *filename,
+                          char const *format)
 {
 #if defined __KERNEL__
     seterrno(ENOSYS);
@@ -160,7 +160,7 @@ long int cucul_import_file(cucul_canvas_t *cv, char const *filename,
 #else
     FILE *fp;
     void *data;
-    long int size;
+    ssize_t size;
     int ret;
 
     fp = fopen(filename, "rb");
@@ -219,8 +219,7 @@ char const * const * cucul_get_import_list(void)
  * XXX: the following functions are local.
  */
 
-static long int import_caca(cucul_canvas_t *cv,
-                            void const *data, unsigned int size)
+static ssize_t import_caca(cucul_canvas_t *cv, void const *data, size_t size)
 {
     uint8_t const *buf = (uint8_t const *)data;
     unsigned int control_size, data_size, expected_size, frames, f, n;
@@ -337,8 +336,7 @@ invalid_caca:
     return -1;
 }
 
-static long int import_text(cucul_canvas_t *cv,
-                            void const *data, unsigned int size)
+static ssize_t import_text(cucul_canvas_t *cv, void const *data, size_t size)
 {
     char const *text = (char const *)data;
     unsigned int width = 0, height = 0, x = 0, y = 0, i;
@@ -380,8 +378,8 @@ static long int import_text(cucul_canvas_t *cv,
     return size;
 }
 
-static long int import_ansi(cucul_canvas_t *cv,
-                            void const *data, unsigned int size, int utf8)
+static ssize_t import_ansi(cucul_canvas_t *cv, void const *data,
+                           size_t size, int utf8)
 {
     struct import im;
     unsigned char const *buffer = (unsigned char const*)data;
@@ -682,7 +680,7 @@ static long int import_ansi(cucul_canvas_t *cv,
         /* Get the character we’re going to paste */
         else if(utf8)
         {
-            unsigned int bytes;
+            size_t bytes;
 
             if(i + 6 < size)
                 ch = cucul_utf8_to_utf32((char const *)(buffer + i), &bytes);

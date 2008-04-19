@@ -38,8 +38,8 @@ class Cucul;
 __class Charset
 {
  public:
-    uint32_t utf8ToUtf32(char const *, unsigned int *);
-    unsigned int utf32ToUtf8(char *, uint32_t);
+    uint32_t utf8ToUtf32(char const *, size_t *);
+    size_t utf32ToUtf8(char *, uint32_t);
     uint8_t utf32ToCp437(uint32_t);
     uint32_t cp437ToUtf32(uint8_t);
 };

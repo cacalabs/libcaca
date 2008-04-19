@@ -162,8 +162,8 @@ __extern void cucul_attr_to_argb64(uint32_t, uint8_t[8]);
  *  These functions perform conversions between usual character sets.
  *
  *  @{ */
-__extern uint32_t cucul_utf8_to_utf32(char const *, unsigned int *);
-__extern unsigned int cucul_utf32_to_utf8(char *, uint32_t);
+__extern uint32_t cucul_utf8_to_utf32(char const *, size_t *);
+__extern size_t cucul_utf32_to_utf8(char *, uint32_t);
 __extern uint8_t cucul_utf32_to_cp437(uint32_t);
 __extern uint32_t cucul_cp437_to_utf32(uint8_t);
 __extern char cucul_utf32_to_ascii(uint32_t);
@@ -288,13 +288,13 @@ __extern int cucul_put_figchar(cucul_canvas_t *, uint32_t);
  *  the current canvas to various text formats.
  *
  *  @{ */
-__extern long int cucul_import_memory(cucul_canvas_t *, void const *,
-                                      unsigned long int, char const *);
-__extern long int cucul_import_file(cucul_canvas_t *, char const *,
-                                    char const *);
+__extern ssize_t cucul_import_memory(cucul_canvas_t *, void const *,
+                                     size_t, char const *);
+__extern ssize_t cucul_import_file(cucul_canvas_t *, char const *,
+                                   char const *);
 __extern char const * const * cucul_get_import_list(void);
 __extern void *cucul_export_memory(cucul_canvas_t const *, char const *,
-                                   unsigned long int *);
+                                   size_t *);
 __extern char const * const * cucul_get_export_list(void);
 /*  @} */
 
