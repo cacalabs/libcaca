@@ -1,7 +1,6 @@
 /*
  *  cucul-test    testsuite program for libcucul
  *  Copyright (c) 2008 Sam Hocevar <sam@zoy.org>
- *  Copyright (c) 2008 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
  *  $Id$
@@ -52,20 +51,20 @@ public:
         cucul_canvas_t *cv;
 
         cv = cucul_create_canvas(0, 0);
-        CPPUNIT_ASSERT_EQUAL(cucul_get_canvas_width(cv), 0U);
-        CPPUNIT_ASSERT_EQUAL(cucul_get_canvas_height(cv), 0U);
+        CPPUNIT_ASSERT_EQUAL(cucul_get_canvas_width(cv), 0);
+        CPPUNIT_ASSERT_EQUAL(cucul_get_canvas_height(cv), 0);
 
         cucul_set_canvas_size(cv, 1, 1);
-        CPPUNIT_ASSERT_EQUAL(cucul_get_canvas_width(cv), 1U);
-        CPPUNIT_ASSERT_EQUAL(cucul_get_canvas_height(cv), 1U);
+        CPPUNIT_ASSERT_EQUAL(cucul_get_canvas_width(cv), 1);
+        CPPUNIT_ASSERT_EQUAL(cucul_get_canvas_height(cv), 1);
 
         cucul_set_canvas_size(cv, 1234, 1001);
-        CPPUNIT_ASSERT_EQUAL(cucul_get_canvas_width(cv), 1234U);
-        CPPUNIT_ASSERT_EQUAL(cucul_get_canvas_height(cv), 1001U);
+        CPPUNIT_ASSERT_EQUAL(cucul_get_canvas_width(cv), 1234);
+        CPPUNIT_ASSERT_EQUAL(cucul_get_canvas_height(cv), 1001);
 
         cucul_set_canvas_size(cv, 0, 0);
-        CPPUNIT_ASSERT_EQUAL(cucul_get_canvas_width(cv), 0U);
-        CPPUNIT_ASSERT_EQUAL(cucul_get_canvas_height(cv), 0U);
+        CPPUNIT_ASSERT_EQUAL(cucul_get_canvas_width(cv), 0);
+        CPPUNIT_ASSERT_EQUAL(cucul_get_canvas_height(cv), 0);
 
         cucul_free_canvas(cv);
     }
