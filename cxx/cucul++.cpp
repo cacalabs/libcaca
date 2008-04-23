@@ -279,7 +279,7 @@ char const *const * Cucul::getImportList(void)
     return cucul_get_import_list();
 }
 
-long int Cucul::importMemory(void const *buf, unsigned long int len, char const *fmt)
+long int Cucul::importMemory(void const *buf, size_t len, char const *fmt)
 {
     return cucul_import_memory(cv, buf, len, fmt);
 }
@@ -294,7 +294,7 @@ char const *const * Cucul::getExportList(void)
     return cucul_get_export_list();
 }
 
-void *Cucul::exportMemory(char const *fmt, unsigned long int *len)
+void *Cucul::exportMemory(char const *fmt, size_t *len)
 {
     return cucul_export_memory(cv, fmt, len);
 }
@@ -308,7 +308,7 @@ Dither::~Dither()
     cucul_free_dither(dither);
 }
 
-void Dither::setPalette(unsigned int r[], unsigned int g[], unsigned int b[], unsigned int a[])
+void Dither::setPalette(uint32_t r[], uint32_t g[], uint32_t b[], uint32_t a[])
 {
     cucul_set_dither_palette(dither, r, g, b, a);
 }

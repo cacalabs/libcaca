@@ -90,7 +90,7 @@ int cucul_fill_triangle(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
                         int x3, int y3, uint32_t ch)
 {
     int x, y, xmin, xmax, ymin, ymax;
-    long int xx1, xx2, xa, xb, sl21, sl31, sl32;
+    int xx1, xx2, xa, xb, sl21, sl31, sl32;
 
     /* Bubble-sort y1 <= y2 <= y3 */
     if(y1 > y2)
@@ -109,7 +109,7 @@ int cucul_fill_triangle(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
     x3 *= 0x10000;
 
     ymin = y1 < 0 ? 0 : y1;
-    ymax = y3 + 1 < (int)cv->height ? y3 + 1 : (int)cv->height;
+    ymax = y3 + 1 < cv->height ? y3 + 1 : cv->height;
 
     if(ymin < y2)
     {
@@ -143,7 +143,7 @@ int cucul_fill_triangle(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
         }
 
         xmin = xx1 < 0 ? 0 : xx1;
-        xmax = xx2 + 1 < (int)cv->width ? xx2 + 1 : (int)cv->width;
+        xmax = xx2 + 1 < cv->width ? xx2 + 1 : cv->width;
 
         for(x = xmin; x < xmax; x++)
             cucul_put_char(cv, x, y, ch);

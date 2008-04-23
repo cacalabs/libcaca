@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     void *buffer;
     char *file, *format;
     char const * const * exports, * const * p;
-    unsigned long int len;
+    size_t len;
     int x, y;
 
     exports = cucul_get_export_list();

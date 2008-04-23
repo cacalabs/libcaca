@@ -112,7 +112,7 @@ struct server
 
     cucul_canvas_t *canvas;
     void *buffer;
-    unsigned long int buflen;
+    size_t buflen;
 
     int client_count;
     struct client *clients;
@@ -222,8 +222,7 @@ restart:
 
         for(;;)
         {
-            long int needed;
-            ssize_t wanted;
+            ssize_t needed, wanted;
 
             needed = cucul_import_memory(server->canvas, server->input,
                                          server->read, "caca");
@@ -243,7 +242,7 @@ restart:
                 goto restart;
             server->read += wanted;
         }
-            
+
         /* Free the previous export buffer, if any */
         if(server->buffer)
         {

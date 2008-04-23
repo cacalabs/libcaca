@@ -68,8 +68,8 @@ __class Dither
            unsigned int, unsigned int, unsigned int, unsigned int);
     ~Dither();
 
-    void setPalette(unsigned int r[], unsigned int g[],
-                    unsigned int b[], unsigned int a[]);
+    void setPalette(uint32_t r[], uint32_t g[],
+                    uint32_t b[], uint32_t a[]);
     void setBrightness(float);
     void setGamma(float);
     void setContrast(float);
@@ -136,13 +136,14 @@ __class Cucul
     int freeFrame(unsigned int);
 
     char const * const * getImportList(void);
-    long int importMemory(void const *, unsigned long int, char const *);
+    long int importMemory(void const *, size_t, char const *);
     long int importFile(char const *, char const *);
     char const * const * getExportList(void);
-    void *exportMemory(char const *, unsigned long int *);
+    void *exportMemory(char const *, size_t *);
 
     static int Rand(int, int);
     static char const * getVersion();
+
  protected:
     cucul_canvas_t *get_cucul_canvas_t();
 

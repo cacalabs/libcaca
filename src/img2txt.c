@@ -95,7 +95,7 @@ int main(int argc, char **argv)
     /* libcucul context */
     cucul_canvas_t *cv;
     void *export;
-    unsigned long int len;
+    size_t len;
     struct image *i;
     unsigned int cols = 0, lines = 0, font_width = 6, font_height = 10;
     char *format = NULL;

@@ -49,7 +49,7 @@ char *guy[] = {
 int main(int argc, char **argv)
 {
     cucul_canvas_t *sprite;
-    unsigned long int len;
+    size_t len;
     void *buffer;
     int i;
 

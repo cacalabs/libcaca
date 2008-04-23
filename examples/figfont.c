@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 {
     cucul_canvas_t *cv;
     void *buffer;
-    unsigned long int len;
+    size_t len;
     uint8_t color = 0;
 
     if(argc < 3)

@@ -222,9 +222,9 @@ char const * const * cucul_get_import_list(void)
 static ssize_t import_caca(cucul_canvas_t *cv, void const *data, size_t size)
 {
     uint8_t const *buf = (uint8_t const *)data;
-    unsigned int control_size, data_size, expected_size, frames, f, n;
+    size_t control_size, data_size, expected_size;
+    unsigned int frames, f, n, offset;
     uint16_t version, flags;
-    unsigned int offset;
     int32_t xmin = 0, ymin = 0, xmax = 0, ymax = 0;
 
     if(size < 20)
@@ -247,8 +247,8 @@ static ssize_t import_caca(cucul_canvas_t *cv, void const *data, size_t size)
 
     if(control_size < 16 + frames * 32)
     {
-        debug("caca import error: control size %lu < expected %lu",
-              (unsigned long int)control_size, 16 + frames * 32);
+        debug("caca import error: control size %u < expected %u",
+              (unsigned int)control_size, 16 + frames * 32);
         goto invalid_caca;
     }
 
@@ -279,8 +279,8 @@ static ssize_t import_caca(cucul_canvas_t *cv, void const *data, size_t size)
 
     if(expected_size != data_size)
     {
-        debug("caca import error: data size %lu < expected %lu",
-              (unsigned long int)data_size, (unsigned long int)expected_size);
+        debug("caca import error: data size %u < expected %u",
+              (unsigned int)data_size, (unsigned int)expected_size);
         goto invalid_caca;
     }
 
