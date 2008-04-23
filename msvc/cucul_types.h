@@ -1,2 +1,2 @@
-#define CUCUL_TYPES 0
+#define CUCUL_TYPES 3
 #include "../cucul/cucul_types.h.in"

@@ -334,7 +334,9 @@ else
     [CUCUL_TYPES=1],
     [AC_CHECK_HEADERS(inttypes.h,
       [CUCUL_TYPES=2],
-      [CUCUL_TYPES=0])])
+      [AC_CHECK_HEADERS(windows.h,
+        [CUCUL_TYPES=3],
+        [CUCUL_TYPES=0])])])
 fi
 AC_SUBST(CUCUL_TYPES)
 
