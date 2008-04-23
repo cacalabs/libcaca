@@ -242,6 +242,10 @@
 				RelativePath=".\config.h"
 				>
 			</File>
+			<File
+				RelativePath=".\stubs.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

@@ -266,6 +266,14 @@
 				RelativePath="..\cucul\cucul_internals.h"
 				>
 			</File>
+			<File
+				RelativePath="..\cucul\cucul_types.h"
+				>
+			</File>
+			<File
+				RelativePath="..\cucul\stubs.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
