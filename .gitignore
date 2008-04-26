@@ -3,13 +3,13 @@
 *.la
 *.exe
 *.pc
+.auto
 .libs
 .deps
 Makefile
 Makefile.in
 aclocal.m4
 autom4te.cache
-autotools
 config.h.in
 config.h
 config.log
