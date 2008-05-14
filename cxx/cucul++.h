@@ -113,7 +113,9 @@ __class Cucul
     void Invert();
     void Flip();
     void Flop();
-    void Rotate();
+    void Rotate180();
+    void RotateLeft();
+    void RotateRight();
     void drawLine(int, int, int, int, uint32_t);
     void drawPolyline(int const x[], int const y[], int, uint32_t);
     void drawThinLine(int, int, int, int);

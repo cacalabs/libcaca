@@ -151,9 +151,19 @@ void Cucul::Flop()
     cucul_flop(cv);
 }
 
-void Cucul::Rotate()
+void Cucul::Rotate180()
 {
     cucul_rotate_180(cv);
+}
+
+void Cucul::RotateLeft()
+{
+    cucul_rotate_left(cv);
+}
+
+void Cucul::RotateRight()
+{
+    cucul_rotate_right(cv);
 }
 
 void Cucul::drawLine(int x1, int y1, int x2, int y2, uint32_t ch)
