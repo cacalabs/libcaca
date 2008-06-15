@@ -274,7 +274,7 @@ void unload_image(struct image * im)
 static unsigned int u32fread(cucul_file_t * f)
 {
     uint8_t buffer[4];
-    cucul_file_read(buffer, 4, 1, f);
+    cucul_file_read(f, buffer, 4);
     return ((unsigned int)buffer[3] << 24) | ((unsigned int)buffer[2] << 16)
              | ((unsigned int)buffer[1] << 8) | ((unsigned int)buffer[0]);
 }
@@ -282,14 +282,14 @@ static unsigned int u32fread(cucul_file_t * f)
 static unsigned int u16fread(cucul_file_t * f)
 {
     uint8_t buffer[2];
-    cucul_file_read(buffer, 2, 1, f);
+    cucul_file_read(f, buffer, 2);
     return ((unsigned int)buffer[1] << 8) | ((unsigned int)buffer[0]);
 }
 
 static unsigned int u8fread(cucul_file_t * f)
 {
     uint8_t buffer;
-    cucul_file_read(&buffer, 1, 1, f);
+    cucul_file_read(f, &buffer, 1);
     return (unsigned int)buffer;
 }
 #endif
