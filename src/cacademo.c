@@ -322,7 +322,7 @@ void plasma(enum action action, cucul_canvas_t *cv)
 {
     static cucul_dither_t *dither;
     static uint8_t *screen;
-    static unsigned int red[256], green[256], blue[256], alpha[256];
+    static uint32_t red[256], green[256], blue[256], alpha[256];
     static double r[3], R[6];
 
     int i, x, y;
@@ -429,7 +429,7 @@ void metaballs(enum action action, cucul_canvas_t *cv)
 {
     static cucul_dither_t *cucul_dither;
     static uint8_t *screen;
-    static unsigned int r[256], g[256], b[256], a[256];
+    static uint32_t r[256], g[256], b[256], a[256];
     static float dd[METABALLS], di[METABALLS], dj[METABALLS], dk[METABALLS];
     static unsigned int x[METABALLS], y[METABALLS];
     static float i = 10.0, j = 17.0, k = 11.0;
@@ -581,7 +581,7 @@ void moire(enum action action, cucul_canvas_t *cv)
     static cucul_dither_t *dither;
     static uint8_t *screen;
     static float d[6];
-    static unsigned int red[256], green[256], blue[256], alpha[256];
+    static uint32_t red[256], green[256], blue[256], alpha[256];
 
     int i, x, y;
 
