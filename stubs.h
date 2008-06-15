@@ -50,10 +50,8 @@ static inline void debug(const char *format, ...)
 #endif
 
 /* hton16() and hton32() */
-#if defined HAVE_HTONS
-#   if defined __KERNEL__
-        /* Nothing to do */
-#   elif defined HAVE_ARPA_INET_H
+#if defined HAVE_HTONS && !defined __KERNEL__
+#   if defined HAVE_ARPA_INET_H
 #       include <arpa/inet.h>
 #   elif defined HAVE_NETINET_IN_H
 #       include <netinet/in.h>
@@ -61,7 +59,9 @@ static inline void debug(const char *format, ...)
 #   define hton16 htons
 #   define hton32 htonl
 #else
-#   if defined HAVE_ENDIAN_H
+#   if defined __KERNEL__
+        /* Nothing to do */
+#   elif defined HAVE_ENDIAN_H
 #       include <endian.h>
 #   endif
 static inline uint16_t hton16(uint16_t x)

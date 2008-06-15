@@ -382,20 +382,7 @@ double sqrt(double x)
 }
 
 /* errno.h stuff */
+
 int errno = 0;
-
-/* arpa/inet.h functions */
-
-/* XXX FIXME Converts only from little endian to big endian (x86) */
-unsigned int htonl(unsigned int hostlong)
-{
-    return ((hostlong&0xFFFF0000)>>16)|((hostlong&0x0000FFFFFF)<<16);
-}
-
-/* XXX FIXME Converts only from little endian to big endian (x86) */
-unsigned short htons(unsigned short hostlong)
-{
-    return ((hostlong&0xFF00)>>8)|((hostlong&0x00FF)<<8);
-}
 
 #endif /* __KERNEL__ */
