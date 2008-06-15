@@ -19,7 +19,6 @@
 #include "config.h"
 
 #if !defined __KERNEL__
-#   include <stdio.h>
 #   include <stdlib.h>
 #   include <string.h>
 #endif
@@ -158,29 +157,30 @@ ssize_t cucul_import_file(cucul_canvas_t *cv, char const *filename,
     seterrno(ENOSYS);
     return -1;
 #else
-    FILE *fp;
-    void *data;
-    ssize_t size;
+    cucul_file_t *f;
+    char *data = NULL;
+    ssize_t size = 0;
     int ret;
 
-    fp = fopen(filename, "rb");
-    if(!fp)
+    f = cucul_file_open(filename, "rb");
+    if(!f)
         return -1; /* fopen already set errno */
 
-    fseek(fp, 0, SEEK_END);
-    size = ftell(fp);
-
-    data = malloc(size);
-    if(!data)
+    while(!cucul_file_eof(f))
     {
-        fclose(fp);
-        seterrno(ENOMEM);
-        return -1;
-    }
+        data = realloc(data, size + 1024);
+        if(!data)
+        {
+            cucul_file_close(f);
+            seterrno(ENOMEM);
+            return -1;
+        }
 
-    fseek(fp, 0, SEEK_SET);
-    fread(data, size, 1, fp);
-    fclose(fp);
+        ret = cucul_file_read(f, data + size, 1024);
+        if(ret >= 0)
+            size += ret;
+    }
+    cucul_file_close(f);
 
     ret = cucul_import_memory(cv, data, size, format);
     free(data);
@@ -188,7 +188,7 @@ ssize_t cucul_import_file(cucul_canvas_t *cv, char const *filename,
     return ret;
 #endif
 }
-    
+
 /** \brief Get available import formats
  *
  *  Return a list of available import formats. The list is a NULL-terminated
