@@ -46,21 +46,24 @@ struct cucul_file
     int eof, zip;
 #   endif
     FILE *f;
+    int readonly;
 };
 #endif
 
-cucul_file_t *_cucul_file_open(char const *path, const char *mode)
+cucul_file_t *cucul_file_open(char const *path, const char *mode)
 {
 #if defined __KERNEL__
     return NULL;
 #else
     cucul_file_t *fp = malloc(sizeof(*fp));
 
+    fp->readonly = !strchr(mode, 'r');
+
 #   if defined HAVE_ZLIB_H
     uint8_t buf[4];
     unsigned int skip_size = 0;
 
-    fp->gz = gzopen(path, "rb");
+    fp->gz = gzopen(path, fp->readonly ? "rb" : "wb");
     if(!fp->gz)
     {
         free(fp);
@@ -70,41 +73,44 @@ cucul_file_t *_cucul_file_open(char const *path, const char *mode)
     fp->eof = 0;
     fp->zip = 0;
 
-    /* Parse ZIP file and go to start of first file */
-    gzread(fp->gz, buf, 4);
-    if(memcmp(buf, "PK\3\4", 4))
+    if(fp->readonly)
     {
-        gzseek(fp->gz, 0, SEEK_SET);
-        return fp;
-    }
+        /* Parse ZIP file and go to start of first file */
+        gzread(fp->gz, buf, 4);
+        if(memcmp(buf, "PK\3\4", 4))
+        {
+            gzseek(fp->gz, 0, SEEK_SET);
+            return fp;
+        }
 
-    fp->zip = 1;
+        fp->zip = 1;
 
-    gzseek(fp->gz, 22, SEEK_CUR);
+        gzseek(fp->gz, 22, SEEK_CUR);
 
-    gzread(fp->gz, buf, 2); /* Filename size */
-    skip_size += (uint16_t)buf[0] | ((uint16_t)buf[1] << 8);
-    gzread(fp->gz, buf, 2); /* Extra field size */
-    skip_size += (uint16_t)buf[0] | ((uint16_t)buf[1] << 8);
+        gzread(fp->gz, buf, 2); /* Filename size */
+        skip_size += (uint16_t)buf[0] | ((uint16_t)buf[1] << 8);
+        gzread(fp->gz, buf, 2); /* Extra field size */
+        skip_size += (uint16_t)buf[0] | ((uint16_t)buf[1] << 8);
 
-    gzseek(fp->gz, skip_size, SEEK_CUR);
+        gzseek(fp->gz, skip_size, SEEK_CUR);
 
-    /* Initialise inflate stream */
-    fp->stream.total_out = 0;
-    fp->stream.zalloc = NULL;
-    fp->stream.zfree = NULL;
-    fp->stream.opaque = NULL;
-    fp->stream.next_in = NULL;
-    fp->stream.avail_in = 0;
+        /* Initialise inflate stream */
+        fp->stream.total_out = 0;
+        fp->stream.zalloc = NULL;
+        fp->stream.zfree = NULL;
+        fp->stream.opaque = NULL;
+        fp->stream.next_in = NULL;
+        fp->stream.avail_in = 0;
 
-    if(inflateInit2(&fp->stream, -MAX_WBITS))
-    {
-        free(fp);
-        gzclose(fp->gz);
-        return NULL;
+        if(inflateInit2(&fp->stream, -MAX_WBITS))
+        {
+            free(fp);
+            gzclose(fp->gz);
+            return NULL;
+        }
     }
 #   else
-    fp->f = fopen(path, mode);
+    fp->f = fopen(path, fmode);
 
     if(!fp->f)
     {
@@ -117,7 +123,7 @@ cucul_file_t *_cucul_file_open(char const *path, const char *mode)
 #endif
 }
 
-int _cucul_file_close(cucul_file_t *fp)
+int cucul_file_close(cucul_file_t *fp)
 {
 #if defined __KERNEL__
     return 0;
@@ -134,18 +140,34 @@ int _cucul_file_close(cucul_file_t *fp)
 #endif
 }
 
-int _cucul_file_eof(cucul_file_t *fp)
+size_t cucul_file_read(cucul_file_t *fp, void *ptr, size_t size)
 {
 #if defined __KERNEL__
-    return 1;
+    return 0;
 #elif defined HAVE_ZLIB_H
-    return fp->zip ? fp->eof : gzeof(fp->gz);
+    if(fp->zip)
+        return zipread(fp, ptr, size);
+    return gzread(fp->gz, ptr, size);
 #else
-    return feof(fp->f);
+    return fread(ptr, 1, size, fp->f);
 #endif
 }
 
-char *_cucul_file_gets(char *s, int size, cucul_file_t *fp)
+size_t cucul_file_write(cucul_file_t *fp, const void *ptr, size_t size)
+{
+    if(fp->readonly)
+        return 0;
+
+#if defined __KERNEL__
+    return 0;
+#elif defined HAVE_ZLIB_H
+    return gzwrite(fp->gz, ptr, size);
+#else
+    return fwrite(ptr, 1, size, fp->f);
+#endif
+}
+
+char *cucul_file_gets(cucul_file_t *fp, char *s, int size)
 {
 #if defined __KERNEL__
     return NULL;
@@ -175,6 +197,17 @@ char *_cucul_file_gets(char *s, int size, cucul_file_t *fp)
     return gzgets(fp->gz, s, size);
 #else
     return fgets(s, size, fp->f);
+#endif
+}
+
+int cucul_file_eof(cucul_file_t *fp)
+{
+#if defined __KERNEL__
+    return 1;
+#elif defined HAVE_ZLIB_H
+    return fp->zip ? fp->eof : gzeof(fp->gz);
+#else
+    return feof(fp->f);
 #endif
 }
 

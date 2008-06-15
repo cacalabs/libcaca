@@ -278,6 +278,19 @@ __extern int cucul_canvas_set_figfont(cucul_canvas_t *, char const *);
 __extern int cucul_put_figchar(cucul_canvas_t *, uint32_t);
 /*  @} */
 
+/** \defgroup cucul_file libcucul file IO
+ *
+ *  These functions allow to read and write files in a platform-independent
+ *  way.
+ *  @{ */
+__extern cucul_file_t *cucul_file_open(char const *, const char *);
+__extern int cucul_file_close(cucul_file_t *);
+__extern size_t cucul_file_read(cucul_file_t *, void *, size_t);
+__extern size_t cucul_file_write(cucul_file_t *, const void *, size_t);
+__extern char * cucul_file_gets(cucul_file_t *, char *, int);
+__extern int cucul_file_eof(cucul_file_t *);
+/*  @} */
+
 /** \defgroup cucul_importexport libcucul importers/exporters from/to various
  *  formats
  *

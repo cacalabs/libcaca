@@ -301,7 +301,7 @@ cucul_figfont_t * open_figfont(char const *path)
     }
 
     /* Open font: if not found, try .tlf, then .flf */
-    f = _cucul_file_open(path, "r");
+    f = cucul_file_open(path, "r");
 #if !defined __KERNEL__ && defined HAVE_SNPRINTF
 
 #if (! defined(snprintf)) && ( defined(_WIN32) || defined(WIN32) ) && (! defined(__CYGWIN__))
@@ -312,13 +312,13 @@ cucul_figfont_t * open_figfont(char const *path)
     {
         snprintf(altpath, 2047, "%s.tlf", path);
         altpath[2047] = '\0';
-        f = _cucul_file_open(altpath, "r");
+        f = cucul_file_open(altpath, "r");
     }
     if(!f)
     {
         snprintf(altpath, 2047, "%s.flf", path);
         altpath[2047] = '\0';
-        f = _cucul_file_open(altpath, "r");
+        f = cucul_file_open(altpath, "r");
     }
 #endif
     if(!f)
@@ -332,14 +332,14 @@ cucul_figfont_t * open_figfont(char const *path)
     ff->print_direction = 0;
     ff->full_layout = 0;
     ff->codetag_count = 0;
-    _cucul_file_gets(buf, 2048, f);
+    cucul_file_gets(f, buf, 2048);
     if(sscanf(buf, "%*[ft]lf2a%6s %u %u %u %i %u %u %u %u\n", hardblank,
               &ff->height, &ff->baseline, &ff->max_length,
               &ff->old_layout, &comment_lines, &ff->print_direction,
               &ff->full_layout, &ff->codetag_count) < 6)
     {
         debug("figfont error: `%s' has invalid header: %s", path, buf);
-        _cucul_file_close(f);
+        cucul_file_close(f);
         free(ff);
         seterrno(EINVAL);
         return NULL;
@@ -351,7 +351,7 @@ cucul_figfont_t * open_figfont(char const *path)
     {
         debug("figfont error: `%s' has invalid layout %i/%u",
                 path, ff->old_layout, ff->full_layout);
-        _cucul_file_close(f);
+        cucul_file_close(f);
         free(ff);
         seterrno(EINVAL);
         return NULL;
@@ -361,14 +361,14 @@ cucul_figfont_t * open_figfont(char const *path)
 
     /* Skip comment lines */
     for(i = 0; i < comment_lines; i++)
-        _cucul_file_gets(buf, 2048, f);
+        cucul_file_gets(f, buf, 2048);
 
     /* Read mandatory characters (32-127, 196, 214, 220, 228, 246, 252, 223)
      * then read additional characters. */
     ff->glyphs = 0;
     ff->lookup = NULL;
 
-    for(i = 0, size = 0; !_cucul_file_eof(f); ff->glyphs++)
+    for(i = 0, size = 0; !cucul_file_eof(f); ff->glyphs++)
     {
         if((ff->glyphs % 2048) == 0)
             ff->lookup = realloc(ff->lookup,
@@ -385,7 +385,7 @@ cucul_figfont_t * open_figfont(char const *path)
         }
         else
         {
-            if(_cucul_file_gets(buf, 2048, f) == NULL)
+            if(cucul_file_gets(f, buf, 2048) == NULL)
                 break;
 
             /* Ignore blank lines, as in jacky.flf */
@@ -396,7 +396,7 @@ cucul_figfont_t * open_figfont(char const *path)
             if(buf[0] == '-')
             {
                 for(j = 0; j < ff->height; j++)
-                    _cucul_file_gets(buf, 2048, f);
+                    cucul_file_gets(f, buf, 2048);
                 continue;
             }
 
@@ -423,12 +423,12 @@ cucul_figfont_t * open_figfont(char const *path)
             if(i + 2048 >= size)
                 data = realloc(data, size += 2048);
 
-            _cucul_file_gets(data + i, 2048, f);
+            cucul_file_gets(f, data + i, 2048);
             i = (uintptr_t)strchr(data + i, 0) - (uintptr_t)data;
         }
     }
 
-    _cucul_file_close(f);
+    cucul_file_close(f);
 
     if(ff->glyphs < EXT_GLYPHS)
     {
