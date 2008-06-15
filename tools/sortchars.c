@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
     for(i = 0x20; i < GLYPHS; i++)
         for(y = 0; y < DY; y++)
             for(x = 0; x < DX; x++)
-                total[GLYPHS][x][y] = 0;
+                total[i][x][y] = 0;
 
     /* Draw all glyphs and count their pixels */
     for(i = 0x20; i < GLYPHS; i++)
