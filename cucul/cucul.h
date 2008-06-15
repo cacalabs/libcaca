@@ -285,6 +285,7 @@ __extern int cucul_put_figchar(cucul_canvas_t *, uint32_t);
  *  @{ */
 __extern cucul_file_t *cucul_file_open(char const *, const char *);
 __extern int cucul_file_close(cucul_file_t *);
+__extern uint64_t cucul_file_tell(cucul_file_t *);
 __extern size_t cucul_file_read(cucul_file_t *, void *, size_t);
 __extern size_t cucul_file_write(cucul_file_t *, const void *, size_t);
 __extern char * cucul_file_gets(cucul_file_t *, char *, int);

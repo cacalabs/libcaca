@@ -43,7 +43,7 @@ struct cucul_file
     uint8_t read_buffer[READSIZE];
     z_stream stream;
     gzFile gz;
-    int eof, zip;
+    int eof, zip, total;
 #   endif
     FILE *f;
     int readonly;
@@ -57,7 +57,7 @@ cucul_file_t *cucul_file_open(char const *path, const char *mode)
 #else
     cucul_file_t *fp = malloc(sizeof(*fp));
 
-    fp->readonly = !strchr(mode, 'r');
+    fp->readonly = strchr(mode, 'r');
 
 #   if defined HAVE_ZLIB_H
     uint8_t buf[4];
@@ -72,6 +72,7 @@ cucul_file_t *cucul_file_open(char const *path, const char *mode)
 
     fp->eof = 0;
     fp->zip = 0;
+    fp->total = 0;
 
     if(fp->readonly)
     {
@@ -140,6 +141,19 @@ int cucul_file_close(cucul_file_t *fp)
 #endif
 }
 
+uint64_t cucul_file_tell(cucul_file_t *fp)
+{
+#if defined __KERNEL__
+    return 0;
+#elif defined HAVE_ZLIB_H
+    if(fp->zip)
+        return fp->total;
+    return gztell(fp->gz);
+#else
+    return ftell(fp->f);
+#endif
+}
+
 size_t cucul_file_read(cucul_file_t *fp, void *ptr, size_t size)
 {
 #if defined __KERNEL__
@@ -161,6 +175,7 @@ size_t cucul_file_write(cucul_file_t *fp, const void *ptr, size_t size)
 #if defined __KERNEL__
     return 0;
 #elif defined HAVE_ZLIB_H
+    /* FIXME: zip files are not supported */
     return gzwrite(fp->gz, ptr, size);
 #else
     return fwrite(ptr, 1, size, fp->f);
@@ -246,6 +261,7 @@ static int zipread(cucul_file_t *fp, void *buf, unsigned int len)
         if(ret == Z_STREAM_END)
         {
             fp->eof = 1;
+            fp->total += total_read;
             return total_read;
         }
 
@@ -253,6 +269,7 @@ static int zipread(cucul_file_t *fp, void *buf, unsigned int len)
             return ret;
     }
 
+    fp->total += total_read;
     return total_read;
 }
 #endif
