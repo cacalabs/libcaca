@@ -53,11 +53,12 @@ struct cucul_file
 cucul_file_t *cucul_file_open(char const *path, const char *mode)
 {
 #if defined __KERNEL__
+    seterrno(ENOSYS);
     return NULL;
 #else
     cucul_file_t *fp = malloc(sizeof(*fp));
 
-    fp->readonly = strchr(mode, 'r');
+    fp->readonly = !!strchr(mode, 'r');
 
 #   if defined HAVE_ZLIB_H
     uint8_t buf[4];
@@ -127,6 +128,7 @@ cucul_file_t *cucul_file_open(char const *path, const char *mode)
 int cucul_file_close(cucul_file_t *fp)
 {
 #if defined __KERNEL__
+    seterrno(ENOSYS);
     return 0;
 #elif defined HAVE_ZLIB_H
     gzFile gz = fp->gz;
@@ -144,6 +146,7 @@ int cucul_file_close(cucul_file_t *fp)
 uint64_t cucul_file_tell(cucul_file_t *fp)
 {
 #if defined __KERNEL__
+    seterrno(ENOSYS);
     return 0;
 #elif defined HAVE_ZLIB_H
     if(fp->zip)
@@ -157,6 +160,7 @@ uint64_t cucul_file_tell(cucul_file_t *fp)
 size_t cucul_file_read(cucul_file_t *fp, void *ptr, size_t size)
 {
 #if defined __KERNEL__
+    seterrno(ENOSYS);
     return 0;
 #elif defined HAVE_ZLIB_H
     if(fp->zip)
@@ -169,22 +173,31 @@ size_t cucul_file_read(cucul_file_t *fp, void *ptr, size_t size)
 
 size_t cucul_file_write(cucul_file_t *fp, const void *ptr, size_t size)
 {
+#if defined __KERNEL__
+    seterrno(ENOSYS);
+    return 0;
+#else
     if(fp->readonly)
         return 0;
 
-#if defined __KERNEL__
-    return 0;
-#elif defined HAVE_ZLIB_H
-    /* FIXME: zip files are not supported */
+#   if defined HAVE_ZLIB_H
+    if(fp->zip)
+    {
+        /* FIXME: zip files are not supported */
+        seterrno(ENOSYS);
+        return 0;
+    }
     return gzwrite(fp->gz, ptr, size);
-#else
+#   else
     return fwrite(ptr, 1, size, fp->f);
+#   endif
 #endif
 }
 
 char *cucul_file_gets(cucul_file_t *fp, char *s, int size)
 {
 #if defined __KERNEL__
+    seterrno(ENOSYS);
     return NULL;
 #elif defined HAVE_ZLIB_H
     if(fp->zip)
