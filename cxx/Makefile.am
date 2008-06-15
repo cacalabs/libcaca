@@ -3,10 +3,10 @@
 AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/cucul -I../cucul \
               -I$(top_srcdir)/caca
 
+if USE_CXX
 pkgconfig_DATA = cucul++.pc caca++.pc
 pkgconfigdir = $(libdir)/pkgconfig
 
-if USE_CXX
 include_HEADERS = cucul++.h caca++.h
 lib_LTLIBRARIES = libcucul++.la libcaca++.la
 endif
