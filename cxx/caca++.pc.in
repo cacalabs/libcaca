@@ -8,5 +8,5 @@ Description: Colour ASCII-Art library C++ bindings
 Version: @VERSION@
 Requires: cucul++ = @VERSION@
 Conflicts: 
-Libs: -L${libdir} -lcaca -lcucul -lcucul++
+Libs: -L${libdir} -lcaca++ -lcucul++
 Cflags: -I${includedir}
