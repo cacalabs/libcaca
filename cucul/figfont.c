@@ -250,7 +250,7 @@ int cucul_put_figchar(cucul_canvas_t *cv, uint32_t ch)
     return 0;
 }
 
-static int flush_figlet(cucul_canvas_t *cv)
+int cucul_flush_figlet(cucul_canvas_t *cv)
 {
     cucul_figfont_t *ff = cv->ff;
     int x, y;
@@ -283,7 +283,7 @@ static int flush_figlet(cucul_canvas_t *cv)
 #define STD_GLYPHS (127 - 32)
 #define EXT_GLYPHS (STD_GLYPHS + 7)
 
-cucul_figfont_t * open_figfont(char const *path)
+static cucul_figfont_t * open_figfont(char const *path)
 {
     char altpath[2048];
     char buf[2048];
