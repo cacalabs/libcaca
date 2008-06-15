@@ -172,44 +172,46 @@ cucul_buffer_t *cucul_load_memory(void *data, unsigned long int size)
     return buf;
 }
 
-#if !defined(__KERNEL__)
 cucul_buffer_t *cucul_load_file(char const *file)
 {
     cucul_buffer_t *buf;
-    FILE *fp;
-    long int size;
+    cucul_file_t *f;
+    int ret;
 
-    fp = fopen(file, "rb");
-    if(!fp)
+    f = cucul_file_open(file, "rb");
+    if(!f)
         return NULL;
 
     buf = malloc(sizeof(cucul_buffer_t));
     if(!buf)
     {
-        fclose(fp);
+        cucul_file_close(f);
         return NULL;
     }
 
-    fseek(fp, 0, SEEK_END);
-    size = ftell(fp);
+    buf->data = NULL;
+    buf->size = 0;
 
-    buf->data = malloc(size);
-    if(!buf->data)
+    while(!cucul_file_eof(f))
     {
-        free(buf);
-        fclose(fp);
-        return NULL;
-    }
-    buf->size = size;
-    buf->user_data = 0;
+        buf->data = realloc(buf->data, buf->size + 1024);
+        if(!buf->data)
+        {
+            int saved_errno = geterrno();
+            free(buf);
+            cucul_file_close(f);
+            seterrno(saved_errno);
+            return NULL;
+        }
 
-    fseek(fp, 0, SEEK_SET);
-    fread(buf->data, buf->size, 1, fp);
-    fclose(fp);
+        ret = cucul_file_read(f, buf->data + buf->size, 1024);
+        if(ret >= 0)
+            buf->size += ret;
+    }
+    cucul_file_close(f);
 
     return buf;
 }
-#endif
 
 unsigned long int cucul_get_buffer_size(cucul_buffer_t *buf)
 {
