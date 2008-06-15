@@ -15,17 +15,12 @@
 #include "config.h"
 
 #if !defined(__KERNEL__)
-#   include <stdio.h>
 #   include <string.h>
 #   include <stdlib.h>
 #endif
 
 #if defined(USE_IMLIB2)
 #   include <Imlib2.h>
-#else
-#   if !defined(__KERNEL__)
-#      include <stdio.h>
-#   endif
 #endif
 
 #include "cucul.h"
@@ -33,9 +28,9 @@
 #include "common-image.h"
 
 #if !defined(USE_IMLIB2)
-static unsigned int u32fread(FILE *);
-static unsigned int u16fread(FILE *);
-static unsigned int u8fread(FILE *);
+static unsigned int u32fread(cucul_file_t *);
+static unsigned int u16fread(cucul_file_t *);
+static unsigned int u8fread(cucul_file_t *);
 #endif
 
 struct image * load_image(char const * name)
@@ -82,79 +77,79 @@ struct image * load_image(char const * name)
     /* Try to load a BMP file */
     unsigned int red[256], green[256], blue[256], alpha[256];
     unsigned int i, colors, offset, tmp, planes;
-    FILE *fp;
+    cucul_file_t *f;
 
-    fp = fopen(name, "rb");
-    if(!fp)
+    f = cucul_file_open(name, "rb");
+    if(!f)
     {
         free(im);
         return NULL;
     }
 
-    if(u16fread(fp) != 0x4d42)
+    if(u16fread(f) != 0x4d42)
     {
-        fclose(fp);
+        cucul_file_close(f);
         free(im);
         return NULL;
     }
 
-    u32fread(fp); /* size */
-    u16fread(fp); /* reserved 1 */
-    u16fread(fp); /* reserved 2 */
+    u32fread(f); /* size */
+    u16fread(f); /* reserved 1 */
+    u16fread(f); /* reserved 2 */
 
-    offset = u32fread(fp);
+    offset = u32fread(f);
 
-    tmp = u32fread(fp); /* header size */
+    tmp = u32fread(f); /* header size */
     if(tmp == 40)
     {
-        im->w = u32fread(fp);
-        im->h = u32fread(fp);
-        planes = u16fread(fp);
-        bpp = u16fread(fp);
+        im->w = u32fread(f);
+        im->h = u32fread(f);
+        planes = u16fread(f);
+        bpp = u16fread(f);
 
-        tmp = u32fread(fp); /* compression */
+        tmp = u32fread(f); /* compression */
         if(tmp != 0)
         {
-            fclose(fp);
+            cucul_file_close(f);
             free(im);
             return NULL;
         }
 
-        u32fread(fp); /* sizeimage */
-        u32fread(fp); /* xpelspermeter */
-        u32fread(fp); /* ypelspermeter */
-        u32fread(fp); /* biclrused */
-        u32fread(fp); /* biclrimportantn */
+        u32fread(f); /* sizeimage */
+        u32fread(f); /* xpelspermeter */
+        u32fread(f); /* ypelspermeter */
+        u32fread(f); /* biclrused */
+        u32fread(f); /* biclrimportantn */
 
         colors = (offset - 54) / 4;
         for(i = 0; i < colors && i < 256; i++)
         {
-            blue[i] = u8fread(fp) * 16;
-            green[i] = u8fread(fp) * 16;
-            red[i] = u8fread(fp) * 16;
+            blue[i] = u8fread(f) * 16;
+            green[i] = u8fread(f) * 16;
+            red[i] = u8fread(f) * 16;
             alpha[i] = 0;
-            u8fread(fp);
+            u8fread(f);
         }
     }
     else if(tmp == 12)
     {
-        im->w = u32fread(fp);
-        im->h = u32fread(fp);
-        planes = u16fread(fp);
-        bpp = u16fread(fp);
+        im->w = u32fread(f);
+        im->h = u32fread(f);
+        planes = u16fread(f);
+        bpp = u16fread(f);
 
         colors = (offset - 26) / 3;
         for(i = 0; i < colors && i < 256; i++)
         {
-            blue[i] = u8fread(fp);
-            green[i] = u8fread(fp);
-            red[i] = u8fread(fp);
+            blue[i] = u8fread(f);
+            green[i] = u8fread(f);
+            red[i] = u8fread(f);
             alpha[i] = 0;
         }
     }
     else
     {
-        fclose(fp);
+        cucul_file_close(f);
         free(im);
         return NULL;
     }
@@ -168,7 +163,7 @@ struct image * load_image(char const * name)
     /* Sanity check */
     if(!im->w || im->w > 0x10000 || !im->h || im->h > 0x10000 || planes != 1)
     {
-        fclose(fp);
+        cucul_file_close(f);
         free(im);
         return NULL;
     }
@@ -177,7 +172,7 @@ struct image * load_image(char const * name)
     im->pixels = malloc(im->w * im->h * depth);
     if(!im->pixels)
     {
-        fclose(fp);
+        cucul_file_close(f);
         free(im);
         return NULL;
     }
@@ -196,7 +191,7 @@ struct image * load_image(char const * name)
                 {
                     k = j % 32;
                     if(k == 0)
-                        bits = u32fread(fp);
+                        bits = u32fread(f);
                     im->pixels[im->w * i * depth + j] =
                         (bits >> ((k & ~0xf) + 0xf - (k & 0xf))) & 0x1;
                 }
@@ -206,19 +201,20 @@ struct image * load_image(char const * name)
                 {
                     k = j % 8;
                     if(k == 0)
-                        bits = u32fread(fp);
+                        bits = u32fread(f);
                     im->pixels[im->w * i * depth + j] =
                         (bits >> (4 * ((k & ~0x1) + 0x1 - (k & 0x1)))) & 0xf;
                 }
                 break;
             default:
                 /* Works for 8bpp, but also for 16, 24 etc. */
-                fread(im->pixels + im->w * i * depth, im->w * depth, 1, fp);
+                cucul_file_read(f, im->pixels + im->w * i * depth,
+                                im->w * depth);
                 /* Pad reads to 4 bytes */
                 tmp = (im->w * depth) % 4;
                 tmp = (4 - tmp) % 4;
                 while(tmp--)
-                    u8fread(fp);
+                    u8fread(f);
                 break;
         }
     }
@@ -244,7 +240,7 @@ struct image * load_image(char const * name)
         break;
     }
 
-    fclose(fp);
+    cucul_file_close(f);
 
     /* Create the libcucul dither */
     im->dither = cucul_create_dither(bpp, im->w, im->h, depth * im->w,
@@ -275,25 +271,25 @@ void unload_image(struct image * im)
 }
 
 #if !defined(USE_IMLIB2)
-static unsigned int u32fread(FILE *fp)
+static unsigned int u32fread(cucul_file_t * f)
 {
     uint8_t buffer[4];
-    fread(buffer, 4, 1, fp);
+    cucul_file_read(buffer, 4, 1, fp);
     return ((unsigned int)buffer[3] << 24) | ((unsigned int)buffer[2] << 16)
              | ((unsigned int)buffer[1] << 8) | ((unsigned int)buffer[0]);
 }
 
-static unsigned int u16fread(FILE *fp)
+static unsigned int u16fread(cucul_file_t * f)
 {
     uint8_t buffer[2];
-    fread(buffer, 2, 1, fp);
+    cucul_file_read(buffer, 2, 1, fp);
     return ((unsigned int)buffer[1] << 8) | ((unsigned int)buffer[0]);
 }
 
-static unsigned int u8fread(FILE *fp)
+static unsigned int u8fread(cucul_file_t * f)
 {
     uint8_t buffer;
-    fread(&buffer, 1, 1, fp);
+    cucul_file_read(&buffer, 1, 1, fp);
     return (unsigned int)buffer;
 }
 #endif
