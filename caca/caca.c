@@ -45,7 +45,7 @@ static int caca_install_driver(caca_display_t *, char const *);
 static int caca_uninstall_driver(caca_display_t *);
 static int caca_select_driver(caca_display_t *, char const *);
 #if defined(USE_PLUGINS)
-static int caca_plugin_install(char const *, caca_display_t *);
+static int caca_plugin_install(caca_display_t *, char const *);
 #endif
 
 /** \brief Attach a caca graphical context to a cucul canvas.
