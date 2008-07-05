@@ -1,5 +1,12 @@
 /* $Id$ */ /** \page libcaca-news Libcaca news
 
+\section news0_99_beta14 Changes between 0.9.beta14 and 0.99.beta13
+
+ - internal FIGlet font support
+ - use C99 types in public headers
+ - runtime support for output drivers
+ - BBcode export support
+
 \section news0_99_beta13 Changes between 0.9.beta13 and 0.99.beta12
 
  - device-dependent cursor support
