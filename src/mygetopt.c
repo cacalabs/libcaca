@@ -59,7 +59,7 @@ int mygetopt(int argc, char * const _argv[], const char *optstring,
         if(tmp[1] == ':')
         {
             if(flag[2] != '\0')
-                myoptarg = tmp + 2;
+                myoptarg = flag + 2;
             else
                 myoptarg = argv[myoptind++];
             return ret;
