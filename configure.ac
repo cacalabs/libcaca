@@ -218,8 +218,8 @@ if test "${enable_gl}" != "no"; then
     AC_MSG_ERROR([cannot find OpenGL+FreeGLUT development files])
   fi
   PKG_CHECK_MODULES(FTGL, ftgl >= 2.1.3, [FTGL="yes"], [FTGL="no"])
-  AM_CONDITIONAL(USE_FTGL, test "${FTGL}" = "yes")
 fi
+AM_CONDITIONAL(USE_FTGL, test "${FTGL}" = "yes")
 
 if test "${enable_cocoa}" != "no"; then
   ac_cv_my_have_cocoa="no"
