@@ -112,13 +112,13 @@ AC_TRY_COMPILE([#include <windows.h>],[Sleep(42);],
  [AC_MSG_RESULT(no)])
 
 AC_MSG_CHECKING(for fsin/fcos)
-AC_TRY_COMPILE([],[asm("fsin\n\tfcos");],
+AC_TRY_COMPILE([],[double x; asm("fsin\n\tfcos":"=t"(x):);],
  [AC_MSG_RESULT(yes)
   AC_DEFINE(HAVE_FSIN_FCOS, 1, [Define to 1 if you have the `fsin' and `fcos' operands.])],
  [AC_MSG_RESULT(no)])
 
 AC_MSG_CHECKING(for fldln2/fxch/fyl2x)
-AC_TRY_COMPILE([],[asm("fldln2; fldln2; fxch; fyl2x");],
+AC_TRY_COMPILE([],[double x; asm("fldln2; fldln2; fxch; fyl2x":"=t"(x):);],
  [AC_MSG_RESULT(yes)
   AC_DEFINE(HAVE_FLDLN2, 1, [Define to 1 if you have the `fldln2' and other floating points operands.])],
  [AC_MSG_RESULT(no)])
