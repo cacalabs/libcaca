@@ -112,7 +112,7 @@ cucul_file_t *cucul_file_open(char const *path, const char *mode)
         }
     }
 #   else
-    fp->f = fopen(path, fmode);
+    fp->f = fopen(path, mode);
 
     if(!fp->f)
     {
