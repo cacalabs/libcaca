@@ -1,4 +1,3 @@
-require 'test/unit'
 require 'caca'
 
 class TC_Canvas < Test::Unit::TestCase
