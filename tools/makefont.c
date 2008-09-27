@@ -187,42 +187,37 @@ int main(int argc, char *argv[])
 
     printf("static unsigned int const %s_size = %i;\n",
            prefix, 4 + control_size + data_size);
-    printf("static struct {\n");
-    printf("char ");
-    for(i = 0; (i + 1) * STRING_CHUNKS < 8 + control_size + data_size; i++)
-        printf("d%x[%i],%c", i, STRING_CHUNKS, (i % 6) == 5 ? '\n' : ' ');
-    printf("d%x[%i];\n", i, 4 + control_size + data_size - i * STRING_CHUNKS);
-    printf("} %s_data = {\n", prefix);
-    printf("\n");
+    printf("static char %s_data[%i] =\n", prefix, 4 + control_size + data_size);
+    printf("{\n");
 
     printf("/* file: */\n");
-    printf("\"\\xCA\\xCA\" /* caca_header */\n");
+    printf("0xCA,0xCA, /* caca_header */\n");
     written += 2;
-    printf("\"FT\" /* caca_file_type */\n");
+    printf("'F','T', /* caca_file_type */\n");
     written += 2;
     printf("\n");
 
     printf("/* font_header: */\n");
-    printf_u32("\"%s\" /* control_size */\n", control_size);
-    printf_u32("\"%s\" /* data_size */\n", data_size);
-    printf_u16("\"%s\" /* version */\n", 1);
-    printf_u16("\"%s\" /* blocks */\n", blocks);
-    printf_u32("\"%s\" /* glyphs */\n", glyphs);
-    printf_u16("\"%s\" /* bpp */\n", bpp);
-    printf_u16("\"%s\" /* std width */\n", stdwidth);
-    printf_u16("\"%s\" /* std height */\n", height);
-    printf_u16("\"%s\" /* max width */\n", fullwidth);
-    printf_u16("\"%s\" /* max height */\n", height);
-    printf_u16("\"%s\" /* flags */\n", 1);
+    printf_u32("%s /* control_size */\n", control_size);
+    printf_u32("%s /* data_size */\n", data_size);
+    printf_u16("%s /* version */\n", 1);
+    printf_u16("%s /* blocks */\n", blocks);
+    printf_u32("%s /* glyphs */\n", glyphs);
+    printf_u16("%s /* bpp */\n", bpp);
+    printf_u16("%s /* std width */\n", stdwidth);
+    printf_u16("%s /* std height */\n", height);
+    printf_u16("%s /* max width */\n", fullwidth);
+    printf_u16("%s /* max height */\n", height);
+    printf_u16("%s /* flags */\n", 1);
     printf("\n");
 
     printf("/* block_info: */\n");
     n = 0;
     for(b = 0; blocklist[b + 1]; b += 2)
     {
-        printf_u32("\"%s", blocklist[b]);
+        printf_u32("%s", blocklist[b]);
         printf_u32("%s", blocklist[b + 1]);
-        printf_u32("%s\"\n", n);
+        printf_u32("%s\n", n);
         n += blocklist[b + 1] - blocklist[b];
     }
     printf("\n");
@@ -301,9 +296,9 @@ int main(int argc, char *argv[])
     {
         for(i = blocklist[b]; i < blocklist[b + 1]; i++)
         {
-            printf_u16("\"%s", gtab[n].data_width);
+            printf_u16("%s", gtab[n].data_width);
             printf_u16("%s", height);
-            printf_u32("%s\"\n", gtab[gtab[n].same_as].data_offset);
+            printf_u32("%s\n", gtab[gtab[n].same_as].data_offset);
             n++;
         }
     }
@@ -320,7 +315,7 @@ int main(int argc, char *argv[])
             printf_unicode(&gtab[n]);
 
             if(gtab[n].same_as == n)
-                printf_hex(" */ \"%s\"\n",
+                printf_hex(" */ %s\n",
                            glyph_data + gtab[n].data_offset, gtab[n].data_size);
             else
             {
@@ -450,42 +445,9 @@ static int printf_hex(char const *fmt, uint8_t *data, int bytes)
 {
     char buf[BUFSIZ];
     char *parser = buf;
-    int rev = 0; /* we use this variable to rewind 2 bytes after \000
-                  * was printed when the next char starts with "\", too. */
 
     while(bytes--)
-    {
-        uint8_t ch = *data++;
-
-        if(written == STRING_CHUNKS)
-        {
-            parser += sprintf(parser, "\", \"");
-            written = 0;
-            rev = 0;
-        }
-
-        if(ch == '\\' || ch == '"')
-        {
-            parser -= rev;
-            parser += sprintf(parser, "\\%c", ch);
-            rev = 0;
-        }
-        else if(ch >= 0x20 && ch < 0x7f)
-        {
-            parser += sprintf(parser, "%c", ch);
-            rev = 0;
-        }
-        else
-        {
-            parser -= rev;
-            parser += sprintf(parser, "\\%.03o", ch);
-            rev = ch ? 0 : 2;
-        }
-
-        written++;
-    }
-
-    parser -= rev;
+        parser += sprintf(parser, "%i,", (unsigned int)*data++);
     parser[0] = '\0';
 
     return printf(fmt, buf);
