@@ -85,9 +85,9 @@ static VALUE get_font_blocks(VALUE self)
     return ary;
 }
 
-void Init_caca_font(VALUE mCucul)
+void Init_caca_font(VALUE mCaca)
 {
-    cFont = rb_define_class_under(mCucul, "Font", rb_cObject);
+    cFont = rb_define_class_under(mCaca, "Font", rb_cObject);
     rb_define_alloc_func(cFont, font_alloc);
 
     rb_define_method(cFont, "initialize", font_initialize, 1);

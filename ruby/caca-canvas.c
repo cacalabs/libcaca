@@ -211,7 +211,7 @@ static VALUE blit(int argc, VALUE* argv, VALUE self) {
 
     if(CLASS_OF(src) != cCanvas)
     {
-        rb_raise(rb_eArgError, "src is not a Cucul::Canvas");
+        rb_raise(rb_eArgError, "src is not a Caca::Canvas");
     }
     Data_Get_Struct(src, caca_canvas_t, csrc);
 
@@ -219,7 +219,7 @@ static VALUE blit(int argc, VALUE* argv, VALUE self) {
     {
         if(CLASS_OF(mask) != cCanvas)
         {
-            rb_raise(rb_eArgError, "mask is not a Cucul::Canvas");
+            rb_raise(rb_eArgError, "mask is not a Caca::Canvas");
         }
         Data_Get_Struct(mask, caca_canvas_t, cmask);
     }
@@ -447,7 +447,7 @@ static VALUE fill_triangle(VALUE self, VALUE x1, VALUE y1, VALUE x2, VALUE y2, V
 static VALUE dither_bitmap(VALUE self, VALUE x, VALUE y, VALUE w, VALUE h, VALUE d, VALUE pixels)
 {
     if(CLASS_OF(d) != cDither)
-        rb_raise(rb_eArgError, "d is not a Cucul::Dither");
+        rb_raise(rb_eArgError, "d is not a Caca::Dither");
     Check_Type(pixels, T_STRING);
 
     caca_dither_bitmap(_SELF, NUM2INT(x), NUM2INT(y), NUM2INT(w), NUM2INT(h), DATA_PTR(d), StringValuePtr(pixels));
@@ -517,7 +517,7 @@ static VALUE render_canvas(VALUE self, VALUE font, VALUE width, VALUE height, VA
 
     if(CLASS_OF(font) != cFont)
     {
-        rb_raise(rb_eArgError, "First argument is not a Cucul::Font");
+        rb_raise(rb_eArgError, "First argument is not a Caca::Font");
     }
 
     buf = malloc(width*height*4);
@@ -570,9 +570,9 @@ get_singleton_double_list(import)
 
 /****/
 
-void Init_caca_canvas(VALUE mCucul)
+void Init_caca_canvas(VALUE mCaca)
 {
-    cCanvas = rb_define_class_under(mCucul, "Canvas", rb_cObject);
+    cCanvas = rb_define_class_under(mCaca, "Canvas", rb_cObject);
     rb_define_alloc_func(cCanvas, canvas_alloc);
 
     rb_define_method(cCanvas, "initialize", canvas_initialize, 2);

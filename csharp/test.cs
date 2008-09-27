@@ -18,16 +18,15 @@ using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 
-using Cucul;
 using Caca;
 
-class DemoCanvas : CuculCanvas
+class DemoCanvas : CacaCanvas
 {
     private uint[,] image;
 
     private DateTime startTime;
-    private CuculDither d;
-    private CuculCanvas scroll;
+    private CacaDither d;
+    private CacaCanvas scroll;
 
     public DemoCanvas()
     {
@@ -35,15 +34,15 @@ class DemoCanvas : CuculCanvas
 
         string message = " --- POWERED BY LIBCACA --- OLDSCHOOL TEXT EFFECTS ARE 100% PURE WIN";
 
-        scroll = new CuculCanvas(new Size(message.Length, 1));
-        scroll.setColorAnsi(Libcucul.WHITE, Libcucul.TRANSPARENT);
+        scroll = new CacaCanvas(new Size(message.Length, 1));
+        scroll.setColorAnsi(Libcaca.WHITE, Libcaca.TRANSPARENT);
         scroll.putStr(new Point(0, 0), message);
 
-        CuculFont f = new CuculFont(CuculFont.getList()[1]);
+        CacaFont f = new CacaFont(CacaFont.getList()[1]);
         int w = f.Size.Width * message.Length;
         int h = f.Size.Height;
         image = new uint[w, h];
-        d = new CuculDither(32, new Size(w, h), w * 4,
+        d = new CacaDither(32, new Size(w, h), w * 4,
                             0xff00, 0xff0000, 0xff000000, 0xff);
         f.Render(scroll, image, image.GetLength(0) * 4);
     }
@@ -55,7 +54,7 @@ class DemoCanvas : CuculCanvas
 
         Clear();
 
-        setColorAnsi(Libcucul.WHITE, Libcucul.BLACK);
+        setColorAnsi(Libcaca.WHITE, Libcaca.BLACK);
         for(int i = 0; i < barCount; i++)
         {
             double v = ((Math.Sin((t / 500.0)
@@ -63,7 +62,7 @@ class DemoCanvas : CuculCanvas
             Point p1 = new Point(0, (int)v);
             Point p2 = new Point(Size.Width - 1, (int)v);
 
-            setColorAnsi((uint)(i + 9), Libcucul.BLACK);
+            setColorAnsi((uint)(i + 9), Libcaca.BLACK);
             /* drawLine is already clipped, we don't care about overflows */
             drawLine(p1 + new Size(0, -2), p2 + new Size(0, -2), '-');
             drawLine(p1 + new Size(0, -1), p2 + new Size(0, -1), '*');
@@ -79,9 +78,9 @@ class DemoCanvas : CuculCanvas
         ditherBitmap(new Rectangle(- x, h / 2 - y, w * 12, y * 2), d, image);
         ditherBitmap(new Rectangle(12 * w - x, h / 2 - y, w * 12, y * 2), d, image);
 
-        setColorAnsi(Libcucul.WHITE, Libcucul.BLUE);
+        setColorAnsi(Libcaca.WHITE, Libcaca.BLUE);
         putStr(new Point(-30, -2) + Size, " -=[ Powered by libcaca ]=- ");
-        setColorAnsi(Libcucul.WHITE, Libcucul.BLACK);
+        setColorAnsi(Libcaca.WHITE, Libcaca.BLACK);
     }
 }
 
@@ -121,7 +120,7 @@ class Test
         Console.WriteLine("libcaca {0} .NET test", Libcaca.getVersion());
         Console.WriteLine("(c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>");
 
-        /* Instanciate a cucul canvas */
+        /* Instanciate a caca canvas */
         DemoCanvas cv = new DemoCanvas();
 
         /* We have a proper canvas, let's display it using Caca */
@@ -129,7 +128,7 @@ class Test
 
         /* Random number. This is a static method,
            not to be used with previous instance */
-        Console.WriteLine("A random number: {0}", Libcucul.Rand(0, 1337));
+        Console.WriteLine("A random number: {0}", Libcaca.Rand(0, 1337));
 
         dp.EventLoop();
     }

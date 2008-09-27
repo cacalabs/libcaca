@@ -45,7 +45,7 @@ static VALUE display_initialize(int argc, VALUE* argv, VALUE self)
         cv = arg1;
         if(CLASS_OF(arg2) == cCanvas)
         {
-            rb_raise(rb_eArgError, "Only one argument can be a Cucul::Canvas");
+            rb_raise(rb_eArgError, "Only one argument can be a Caca::Canvas");
         }
     }
     else if(CLASS_OF(arg2) == cCanvas)

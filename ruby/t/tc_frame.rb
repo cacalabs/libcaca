@@ -1,9 +1,9 @@
 require 'test/unit'
-require 'cucul'
+require 'caca'
 
 class TC_Frame < Test::Unit::TestCase
 	def setup
-		@c = Cucul::Canvas.new(3, 3)
+		@c = Caca::Canvas.new(3, 3)
 	end
 	def test_create
 	      f = @c.create_frame(1)

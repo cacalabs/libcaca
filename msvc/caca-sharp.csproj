@@ -37,12 +37,6 @@
     <Compile Include="..\csharp\Caca.cs" />
     <Compile Include="..\csharp\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="cucul-sharp.csproj">
-      <Project>{C05C1521-F4E2-48D8-BD83-786EF345A887}</Project>
-      <Name>cucul-sharp</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

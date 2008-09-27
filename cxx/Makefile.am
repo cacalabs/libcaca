@@ -10,7 +10,7 @@ include_HEADERS = caca++.h
 lib_LTLIBRARIES = libcaca++.la
 endif
 
-libcaca___la_SOURCES = caca++.cpp cucul++.cpp caca++.h
+libcaca___la_SOURCES = caca++.cpp caca++.h
 libcaca___la_LDFLAGS = -no-undefined -version-number @LT_VERSION@
 libcaca___la_LIBADD = ../caca/libcaca.la
 

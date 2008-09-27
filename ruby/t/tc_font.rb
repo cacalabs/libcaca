@@ -1,13 +1,13 @@
 require 'test/unit'
-require 'cucul'
+require 'caca'
 
 class TC_Canvas < Test::Unit::TestCase
     def test_list
-	assert_not_nil(Cucul::Font.list)
+	assert_not_nil(Caca::Font.list)
     end
     def test_load
-	Cucul::Font.list.each{|f|
-		font = Cucul::Font.new(f)
+	Caca::Font.list.each{|f|
+		font = Caca::Font.new(f)
 		assert_not_nil(font)
 		assert_not_nil(font.width)
 		assert_not_nil(font.height)
@@ -16,7 +16,7 @@ class TC_Canvas < Test::Unit::TestCase
     end
     def test_fail_load
 	assert_raise(RuntimeError) {
-		Cucul::Font.new("This font should not exist")
+		Caca::Font.new("This font should not exist")
 	}
     end
 end

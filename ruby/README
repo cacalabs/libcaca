@@ -1,4 +1,4 @@
-This a Ruby binding for libcucul and libcaca.
+This a Ruby binding for libcaca.
 
-You can play with it by doing require 'caca' or require 'cucul' and looking at
-the Cucul and Caca modules, or maybe read the documentation :)
+You can play with it by doing require 'caca' and looking at
+the Caca module, or maybe read the documentation :)

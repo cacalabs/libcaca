@@ -38,7 +38,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\msvc;..\cucul"
+				AdditionalIncludeDirectories="..\msvc"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;__LIBCACA__"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -114,7 +114,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\msvc;..\cucul"
+				AdditionalIncludeDirectories="..\msvc"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;__LIBCACA__"
 				RuntimeLibrary="2"
 				WarningLevel="3"
@@ -177,6 +177,74 @@
 				RelativePath="..\caca\caca.c"
 				>
 			</File>
+                        <File
+                                RelativePath="..\caca\attr.c"
+                                >
+                        </File>
+                        <File
+                                RelativePath="..\caca\box.c"
+                                >
+                        </File>
+                        <File
+                                RelativePath="..\caca\string.c"
+                                >
+                        </File>
+                        <File
+                                RelativePath="..\caca\charset.c"
+                                >
+                        </File>
+                        <File
+                                RelativePath="..\caca\conic.c"
+                                >
+                        </File>
+                        <File
+                                RelativePath="..\caca\canvas.c"
+                                >
+                        </File>
+                        <File
+                                RelativePath="..\caca\dither.c"
+                                >
+                        </File>
+                        <File
+                                RelativePath="..\caca\export.c"
+                                >
+                        </File>
+                        <File
+                                RelativePath="..\caca\figfont.c"
+                                >
+                        </File>
+                        <File
+                                RelativePath="..\caca\file.c"
+                                >
+                        </File>
+                        <File
+                                RelativePath="..\caca\font.c"
+                                >
+                        </File>
+                        <File
+                                RelativePath="..\caca\frame.c"
+                                >
+                        </File>
+                        <File
+                                RelativePath="..\caca\import.c"
+                                >
+                        </File>
+                        <File
+                                RelativePath="..\caca\line.c"
+                                >
+                        </File>
+                        <File
+                                RelativePath="..\caca\transform.c"
+                                >
+                        </File>
+                        <File
+                                RelativePath="..\caca\triangle.c"
+                                >
+                        </File>
+                        <File
+                                RelativePath="..\caca\legacy.c"
+                                >
+                        </File>
 			<File
 				RelativePath="..\caca\driver_conio.c"
 				>
@@ -236,6 +304,14 @@
 			</File>
 			<File
 				RelativePath="..\caca\caca_internals.h"
+				>
+			</File>
+			<File
+				RelativePath="..\caca\caca_types.h"
+				>
+			</File>
+			<File
+				RelativePath="..\stubs.h"
 				>
 			</File>
 			<File

@@ -14,17 +14,17 @@ class TC_Canvas < Test::Unit::TestCase
         assert_raise(RuntimeError){Caca::Display.new("plop")}
         driver = Caca::Display.driver_list[0]
         assert_raise(ArgumentError){Caca::Display.new(driver, driver)}
-        c = Cucul::Canvas.new(3, 3)
+        c = Caca::Canvas.new(3, 3)
         assert_raise(ArgumentError){Caca::Display.new(c, c)}
     end
     def test_create_from_canvas
-        c = Cucul::Canvas.new(3, 3)
+        c = Caca::Canvas.new(3, 3)
         d = Caca::Display.new(c)
         assert_not_nil(d, 'Display creation failed')
         assert_equal(d.canvas, c, 'Wrong canvas')
     end
     def test_set_title
-        c = Cucul::Canvas.new(3, 3)
+        c = Caca::Canvas.new(3, 3)
         d = Caca::Display.new(c)
         d.title = "Test !"
     end

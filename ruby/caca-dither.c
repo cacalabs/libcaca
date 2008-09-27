@@ -179,9 +179,9 @@ get_set_str_from_list(color)
 get_set_str_from_list(charset)
 get_set_str_from_list(algorithm)
 
-void Init_caca_dither(VALUE mCucul)
+void Init_caca_dither(VALUE mCaca)
 {
-    cDither = rb_define_class_under(mCucul, "Dither", rb_cObject);
+    cDither = rb_define_class_under(mCaca, "Dither", rb_cObject);
     rb_define_alloc_func(cDither, dither_alloc);
 
     rb_define_method(cDither, "initialize", dither_initialize, 8);

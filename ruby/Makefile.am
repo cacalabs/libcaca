@@ -30,7 +30,6 @@ caca_la_LIBADD = ../caca/libcaca.la
 
 EXTRA_DIST = ruby.dox \
              ruby-caca.dox \
-             ruby-cucul.dox \
              lib/caca.rb \
              t/tc_canvas.rb \
              t/tc_dither.rb \

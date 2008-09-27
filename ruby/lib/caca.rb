@@ -1,4 +1,3 @@
-require 'cucul'
 require 'caca.so'
 
 module Caca
