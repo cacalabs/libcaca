@@ -21,11 +21,19 @@ endif
 cxxtest_SOURCES = cxxtest.cpp
 cxxtest_LDADD = libcaca++.la ../caca/libcaca.la
 
-install-exec-hook:
+install-exec-local:
+	$(mkinstalldirs) $(DESTDIR)$(libdir)
 	ln -sf libcaca++.so $(DESTDIR)$(libdir)/libcucul++.so
 	ln -sf libcaca++.so.0 $(DESTDIR)$(libdir)/libcucul++.so.0
 
-uninstall-hook:
+install-data-local:
+	$(mkinstalldirs) $(DESTDIR)$(pkgconfigdir)
+	ln -sf caca++.pc $(DESTDIR)$(pkgconfigdir)/cucul++.pc
+
+uninstall-local:
 	rm -f $(DESTDIR)$(libdir)/libcucul++.so
 	rm -f $(DESTDIR)$(libdir)/libcucul++.so.0
+	rmdir $(DESTDIR)$(libdir) 2>/dev/null || true
+	rm -f $(DESTDIR)$(pkgconfigdir)/cucul++.pc
+	rmdir $(DESTDIR)$(pkgconfigdir) 2>/dev/null || true
 

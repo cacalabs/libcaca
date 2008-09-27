@@ -56,13 +56,21 @@ libcaca_la_CPPFLAGS = $(AM_CPPFLAGS) @CACA_CFLAGS@ -D__LIBCACA__
 libcaca_la_LDFLAGS = -no-undefined -version-number @LT_VERSION@
 libcaca_la_LIBADD = @CACA_LIBS@ $(ZLIB_LIBS)
 
-install-exec-hook:
+install-exec-local:
+	$(mkinstalldirs) $(DESTDIR)$(libdir)
 	ln -sf libcaca.so $(DESTDIR)$(libdir)/libcucul.so
 	ln -sf libcaca.so.0 $(DESTDIR)$(libdir)/libcucul.so.0
 
-uninstall-hook:
+install-data-local:
+	$(mkinstalldirs) $(DESTDIR)$(pkgconfigdir)
+	ln -sf caca.pc $(DESTDIR)$(pkgconfigdir)/cucul.pc
+
+uninstall-local:
 	rm -f $(DESTDIR)$(libdir)/libcucul.so
 	rm -f $(DESTDIR)$(libdir)/libcucul.so.0
+	rmdir $(DESTDIR)$(libdir) 2>/dev/null || true
+	rm -f $(DESTDIR)$(pkgconfigdir)/cucul.pc
+	rmdir $(DESTDIR)$(pkgconfigdir) 2>/dev/null || true
 
 if USE_PLUGINS
 plugin_LTLIBRARIES = libx11_plugin.la libgl_plugin.la

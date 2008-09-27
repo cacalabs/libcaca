@@ -43,6 +43,7 @@ clean-local:
 
 install-data-local:
 if BUILD_DOCUMENTATION
+	ln -s libcaca-dev $(DESTDIR)$(datadir)/doc/libcucul-dev
 	$(mkinstalldirs) $(DESTDIR)$(datadir)/doc/libcaca-dev/html
 	cp `find html -name '*.html' -o -name '*.gif' -o -name '*.png'` \
 	  $(DESTDIR)$(datadir)/doc/libcaca-dev/html
@@ -55,4 +56,7 @@ if BUILD_DOCUMENTATION
 	rm -f $(DESTDIR)$(mandir)/man1/cacademo.1
 	ln -s cacafire.1 $(DESTDIR)$(mandir)/man1/cacademo.1
 endif
+
+uninstall-local:
+	rm -f $(DESTDIR)$(datadir)/doc/libcucul-dev
 
