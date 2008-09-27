@@ -18,15 +18,14 @@
 #   include <stdio.h>
 #endif
 
-#include "cucul.h"
 #include "caca.h"
 
 int main(int argc, char *argv[])
 {
-    cucul_canvas_t *cv;
+    caca_canvas_t *cv;
     caca_display_t *dp;
 
-    cv = cucul_create_canvas(0, 0);
+    cv = caca_create_canvas(0, 0);
     if(cv == NULL)
     {
         printf("Can't created canvas\n");
@@ -38,66 +37,66 @@ int main(int argc, char *argv[])
         printf("Can't create display\n");
         return -1;
     }
-    cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
-    cucul_put_str(cv, 1, 1, "Basic Unicode support");
+    caca_set_color_ansi(cv, CACA_WHITE, CACA_BLUE);
+    caca_put_str(cv, 1, 1, "Basic Unicode support");
 
-    cucul_set_color_ansi(cv, CUCUL_DEFAULT, CUCUL_TRANSPARENT);
-    cucul_put_str(cv, 1, 2, "This is ASCII:    | abc DEF 123 !@# |");
-    cucul_put_str(cv, 1, 3, "This is Unicode:  | äßç δεφ ☺♥♀ ╞╬╗ |");
-    cucul_put_str(cv, 1, 4, "And this is, too: | ἀβϛ ΔЗҒ ᚴᛒᛯ ♩♔✈ |");
+    caca_set_color_ansi(cv, CACA_DEFAULT, CACA_TRANSPARENT);
+    caca_put_str(cv, 1, 2, "This is ASCII:    | abc DEF 123 !@# |");
+    caca_put_str(cv, 1, 3, "This is Unicode:  | äßç δεφ ☺♥♀ ╞╬╗ |");
+    caca_put_str(cv, 1, 4, "And this is, too: | ἀβϛ ΔЗҒ ᚴᛒᛯ ♩♔✈ |");
 
-    cucul_put_str(cv, 1, 5, "If the three lines do not have the same length, there is a bug somewhere.");
+    caca_put_str(cv, 1, 5, "If the three lines do not have the same length, there is a bug somewhere.");
 
-    cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
-    cucul_put_str(cv, 1, 7, "Gradient glyphs");
+    caca_set_color_ansi(cv, CACA_WHITE, CACA_BLUE);
+    caca_put_str(cv, 1, 7, "Gradient glyphs");
 
-    cucul_set_color_ansi(cv, CUCUL_DEFAULT, CUCUL_TRANSPARENT);
-    cucul_put_str(cv, 31,  8, "  0%");
-    cucul_put_str(cv, 31,  9, " 25%");
-    cucul_put_str(cv, 31, 10, " 50%");
-    cucul_put_str(cv, 31, 11, " 75%");
-    cucul_put_str(cv, 31, 12, "100%");
+    caca_set_color_ansi(cv, CACA_DEFAULT, CACA_TRANSPARENT);
+    caca_put_str(cv, 31,  8, "  0%");
+    caca_put_str(cv, 31,  9, " 25%");
+    caca_put_str(cv, 31, 10, " 50%");
+    caca_put_str(cv, 31, 11, " 75%");
+    caca_put_str(cv, 31, 12, "100%");
 
-    cucul_set_color_ansi(cv, CUCUL_LIGHTRED, CUCUL_LIGHTGREEN);
-    cucul_put_str(cv, 1,  8, "                             ");
-    cucul_put_str(cv, 1,  9, "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
-    cucul_put_str(cv, 1, 10, "▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒");
-    cucul_put_str(cv, 1, 11, "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓");
-    cucul_put_str(cv, 1, 12, "█████████████████████████████");
+    caca_set_color_ansi(cv, CACA_LIGHTRED, CACA_LIGHTGREEN);
+    caca_put_str(cv, 1,  8, "                             ");
+    caca_put_str(cv, 1,  9, "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
+    caca_put_str(cv, 1, 10, "▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒");
+    caca_put_str(cv, 1, 11, "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓");
+    caca_put_str(cv, 1, 12, "█████████████████████████████");
 
-    cucul_set_color_ansi(cv, CUCUL_LIGHTGREEN, CUCUL_LIGHTRED);
-    cucul_put_str(cv, 36,  8, "█████████████████████████████");
-    cucul_put_str(cv, 36,  9, "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓");
-    cucul_put_str(cv, 36, 10, "▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒");
-    cucul_put_str(cv, 36, 11, "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
-    cucul_put_str(cv, 36, 12, "                             ");
+    caca_set_color_ansi(cv, CACA_LIGHTGREEN, CACA_LIGHTRED);
+    caca_put_str(cv, 36,  8, "█████████████████████████████");
+    caca_put_str(cv, 36,  9, "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓");
+    caca_put_str(cv, 36, 10, "▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒");
+    caca_put_str(cv, 36, 11, "░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
+    caca_put_str(cv, 36, 12, "                             ");
 
-    cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
-    cucul_put_str(cv, 1, 14, "Double width characters");
+    caca_set_color_ansi(cv, CACA_WHITE, CACA_BLUE);
+    caca_put_str(cv, 1, 14, "Double width characters");
 
-    cucul_set_color_ansi(cv, CUCUL_LIGHTRED, CUCUL_TRANSPARENT);
-    cucul_put_str(cv, 1, 15, "| ドラゴン ボーレ |");
-    cucul_set_color_ansi(cv, CUCUL_DEFAULT, CUCUL_TRANSPARENT);
-    cucul_put_str(cv, 1, 16, "| ()()()() ()()() |");
-    cucul_set_color_ansi(cv, CUCUL_YELLOW, CUCUL_TRANSPARENT);
-    cucul_put_str(cv, 1, 17, "| ドラゴン");
-    cucul_put_str(cv, 12, 17, "ボーレ |");
+    caca_set_color_ansi(cv, CACA_LIGHTRED, CACA_TRANSPARENT);
+    caca_put_str(cv, 1, 15, "| ドラゴン ボーレ |");
+    caca_set_color_ansi(cv, CACA_DEFAULT, CACA_TRANSPARENT);
+    caca_put_str(cv, 1, 16, "| ()()()() ()()() |");
+    caca_set_color_ansi(cv, CACA_YELLOW, CACA_TRANSPARENT);
+    caca_put_str(cv, 1, 17, "| ドラゴン");
+    caca_put_str(cv, 12, 17, "ボーレ |");
 
-    cucul_set_color_ansi(cv, CUCUL_DEFAULT, CUCUL_TRANSPARENT);
-    cucul_put_str(cv, 1, 18, "If the three lines do not have the same length, there is a bug somewhere.");
+    caca_set_color_ansi(cv, CACA_DEFAULT, CACA_TRANSPARENT);
+    caca_put_str(cv, 1, 18, "If the three lines do not have the same length, there is a bug somewhere.");
 
-    cucul_put_str(cv, 1, 20, "CP437 glyphs: ☺ ☻ ♥ ♦ ♣ ♠ • ◘ ○ ◙ ♂ ♀ ♪ ♫ ☼ ► ◄ ↕ ‼ ¶ § ▬ ↨ ↑ ↓ → ← ∟ ↔ ▲ ▼");
-    cucul_put_str(cv, 1, 21, "more CP437: α ß Γ π Σ σ µ τ Φ Θ Ω δ ∞ φ ε ∩ ≡ ± ≥ ≤ ⌠ ⌡ ÷ ≈ ° ∙ · √ ⁿ ² ■");
-    cucul_put_str(cv, 1, 22, "drawing blocks: ███ ▓▓▓ ▒▒▒ ░░░ ▀ ▄ ▌ ▐ █ ▖ ▗ ▘ ▝ ▚ ▞ ▙ ▛ ▜ ▟ ─ │ ┌ ┐ └ ┘ ├ ┤");
-    cucul_put_str(cv, 1, 23, "more drawing: ┬ ┴ ┼ ═ ║ ╒ ╓ ╔ ╕ ╖ ╗ ╘ ╙ ╚ ╛ ╜ ╝ ╞ ╟ ╠ ╡ ╢ ╣ ╤ ╥ ╦ ╧ ╨ ╩ ╪ ╫ ╬");
-    cucul_put_str(cv, 1, 24, "misc Unicode: ● ☭ ☮ ☯ ♔ ♛ ♙ ♞ ⚒ ⚓ ⚠");
+    caca_put_str(cv, 1, 20, "CP437 glyphs: ☺ ☻ ♥ ♦ ♣ ♠ • ◘ ○ ◙ ♂ ♀ ♪ ♫ ☼ ► ◄ ↕ ‼ ¶ § ▬ ↨ ↑ ↓ → ← ∟ ↔ ▲ ▼");
+    caca_put_str(cv, 1, 21, "more CP437: α ß Γ π Σ σ µ τ Φ Θ Ω δ ∞ φ ε ∩ ≡ ± ≥ ≤ ⌠ ⌡ ÷ ≈ ° ∙ · √ ⁿ ² ■");
+    caca_put_str(cv, 1, 22, "drawing blocks: ███ ▓▓▓ ▒▒▒ ░░░ ▀ ▄ ▌ ▐ █ ▖ ▗ ▘ ▝ ▚ ▞ ▙ ▛ ▜ ▟ ─ │ ┌ ┐ └ ┘ ├ ┤");
+    caca_put_str(cv, 1, 23, "more drawing: ┬ ┴ ┼ ═ ║ ╒ ╓ ╔ ╕ ╖ ╗ ╘ ╙ ╚ ╛ ╜ ╝ ╞ ╟ ╠ ╡ ╢ ╣ ╤ ╥ ╦ ╧ ╨ ╩ ╪ ╫ ╬");
+    caca_put_str(cv, 1, 24, "misc Unicode: ● ☭ ☮ ☯ ♔ ♛ ♙ ♞ ⚒ ⚓ ⚠");
 
     caca_refresh_display(dp);
 
     caca_get_event(dp, CACA_EVENT_KEY_PRESS, NULL, -1);
 
     caca_free_display(dp);
-    cucul_free_canvas(cv);
+    caca_free_canvas(cv);
 
     return 0;
 }

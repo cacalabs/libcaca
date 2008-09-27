@@ -19,7 +19,6 @@
 #   include <string.h>
 #endif
 
-#include "cucul.h"
 #include "caca.h"
 
 static char const pig[] =
@@ -39,10 +38,10 @@ static char const duck[] =
 
 int main(int argc, char *argv[])
 {
-    cucul_canvas_t *cv, *image, *tmp, *sprite;
+    caca_canvas_t *cv, *image, *tmp, *sprite;
     caca_display_t *dp;
 
-    cv = cucul_create_canvas(0, 0);
+    cv = caca_create_canvas(0, 0);
     if(cv == NULL)
     {
         printf("Can't created canvas\n");
@@ -55,64 +54,64 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    image = cucul_create_canvas(70, 6);
-    tmp = cucul_create_canvas(70, 6);
-    sprite = cucul_create_canvas(0, 0);
+    image = caca_create_canvas(70, 6);
+    tmp = caca_create_canvas(70, 6);
+    sprite = caca_create_canvas(0, 0);
 
-    cucul_set_color_ansi(sprite, CUCUL_LIGHTMAGENTA, CUCUL_BLACK);
-    cucul_import_memory(sprite, pig, strlen(pig), "text");
-    cucul_blit(image, 55, 0, sprite, NULL);
+    caca_set_color_ansi(sprite, CACA_LIGHTMAGENTA, CACA_BLACK);
+    caca_import_memory(sprite, pig, strlen(pig), "text");
+    caca_blit(image, 55, 0, sprite, NULL);
 
-    cucul_set_color_ansi(sprite, CUCUL_LIGHTGREEN, CUCUL_BLACK);
-    cucul_import_memory(sprite, duck, strlen(duck), "text");
-    cucul_blit(image, 30, 1, sprite, NULL);
+    caca_set_color_ansi(sprite, CACA_LIGHTGREEN, CACA_BLACK);
+    caca_import_memory(sprite, duck, strlen(duck), "text");
+    caca_blit(image, 30, 1, sprite, NULL);
 
-    cucul_set_color_ansi(image, CUCUL_LIGHTCYAN, CUCUL_BLACK);
-    cucul_put_str(image, 1, 1, "hahaha mais vieux porc immonde !! [⽼ ⾗]");
-    cucul_set_color_ansi(image, CUCUL_LIGHTRED, CUCUL_BLACK);
-    cucul_put_char(image, 38, 1, '|');
+    caca_set_color_ansi(image, CACA_LIGHTCYAN, CACA_BLACK);
+    caca_put_str(image, 1, 1, "hahaha mais vieux porc immonde !! [⽼ ⾗]");
+    caca_set_color_ansi(image, CACA_LIGHTRED, CACA_BLACK);
+    caca_put_char(image, 38, 1, '|');
 
-    cucul_set_color_ansi(image, CUCUL_YELLOW, CUCUL_BLACK);
-    cucul_put_str(image, 4, 2, "\\o\\ \\o| _o/ \\o_ |o/ /o/");
+    caca_set_color_ansi(image, CACA_YELLOW, CACA_BLACK);
+    caca_put_str(image, 4, 2, "\\o\\ \\o| _o/ \\o_ |o/ /o/");
 
-    cucul_set_color_ansi(image, CUCUL_WHITE, CUCUL_LIGHTRED);
-    cucul_put_str(image, 7, 3, "▙▘▌▙▘▞▖▞▖▌ ▞▖▌ ▌▌");
-    cucul_put_str(image, 7, 4, "▛▖▌▛▖▚▘▚▘▚▖▚▘▚▖▖▖");
-    cucul_set_color_ansi(image, CUCUL_BLACK, CUCUL_LIGHTRED);
-    cucul_put_str(image, 4, 3, "▓▒░");
-    cucul_put_str(image, 4, 4, "▓▒░");
-    cucul_put_str(image, 24, 3, "░▒▓");
-    cucul_put_str(image, 24, 4, "░▒▓");
+    caca_set_color_ansi(image, CACA_WHITE, CACA_LIGHTRED);
+    caca_put_str(image, 7, 3, "▙▘▌▙▘▞▖▞▖▌ ▞▖▌ ▌▌");
+    caca_put_str(image, 7, 4, "▛▖▌▛▖▚▘▚▘▚▖▚▘▚▖▖▖");
+    caca_set_color_ansi(image, CACA_BLACK, CACA_LIGHTRED);
+    caca_put_str(image, 4, 3, "▓▒░");
+    caca_put_str(image, 4, 4, "▓▒░");
+    caca_put_str(image, 24, 3, "░▒▓");
+    caca_put_str(image, 24, 4, "░▒▓");
 
     /* Blit the transformed canvas onto the main canvas */
-    cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
-    cucul_put_str(cv, 0, 0, "normal");
-    cucul_blit(cv, 10, 0, image, NULL);
+    caca_set_color_ansi(cv, CACA_WHITE, CACA_BLUE);
+    caca_put_str(cv, 0, 0, "normal");
+    caca_blit(cv, 10, 0, image, NULL);
 
-    cucul_put_str(cv, 0, 6, "flip");
-    cucul_blit(tmp, 0, 0, image, NULL);
-    cucul_flip(tmp);
-    cucul_blit(cv, 10, 6, tmp, NULL);
+    caca_put_str(cv, 0, 6, "flip");
+    caca_blit(tmp, 0, 0, image, NULL);
+    caca_flip(tmp);
+    caca_blit(cv, 10, 6, tmp, NULL);
 
-    cucul_put_str(cv, 0, 12, "flop");
-    cucul_blit(tmp, 0, 0, image, NULL);
-    cucul_flop(tmp);
-    cucul_blit(cv, 10, 12, tmp, NULL);
+    caca_put_str(cv, 0, 12, "flop");
+    caca_blit(tmp, 0, 0, image, NULL);
+    caca_flop(tmp);
+    caca_blit(cv, 10, 12, tmp, NULL);
 
-    cucul_put_str(cv, 0, 18, "rotate");
-    cucul_blit(tmp, 0, 0, image, NULL);
-    cucul_rotate_180(tmp);
-    cucul_blit(cv, 10, 18, tmp, NULL);
+    caca_put_str(cv, 0, 18, "rotate");
+    caca_blit(tmp, 0, 0, image, NULL);
+    caca_rotate_180(tmp);
+    caca_blit(cv, 10, 18, tmp, NULL);
 
     caca_refresh_display(dp);
 
     caca_get_event(dp, CACA_EVENT_KEY_PRESS, NULL, -1);
 
     caca_free_display(dp);
-    cucul_free_canvas(tmp);
-    cucul_free_canvas(sprite);
-    cucul_free_canvas(image);
-    cucul_free_canvas(cv);
+    caca_free_canvas(tmp);
+    caca_free_canvas(sprite);
+    caca_free_canvas(image);
+    caca_free_canvas(cv);
 
     return 0;
 }

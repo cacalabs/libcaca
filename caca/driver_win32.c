@@ -25,7 +25,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "cucul.h"
 #include "caca.h"
 #include "caca_internals.h"
 
@@ -82,8 +81,8 @@ struct driver_private
 
 static int win32_init_graphics(caca_display_t *dp)
 {
-    int width = cucul_get_canvas_width(dp->cv);
-    int height = cucul_get_canvas_height(dp->cv);
+    int width = caca_get_canvas_width(dp->cv);
+    int height = caca_get_canvas_height(dp->cv);
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     SMALL_RECT rect;
     COORD size;
@@ -122,16 +121,16 @@ static int win32_init_graphics(caca_display_t *dp)
     rect.Bottom = size.Y - 1;
     SetConsoleWindowInfo(dp->drv.p->screen, TRUE, &rect);
 
-    /* Report our new size to libcucul */
+    /* Report our new size to libcaca */
     if(!GetConsoleScreenBufferInfo(dp->drv.p->screen, &csbi))
         return -1;
 
     dp->resize.allow = 1;
-    cucul_set_canvas_size(dp->cv,
+    caca_set_canvas_size(dp->cv,
                           csbi.srWindow.Right - csbi.srWindow.Left + 1,
                           csbi.srWindow.Bottom - csbi.srWindow.Top + 1);
-    width = cucul_get_canvas_width(dp->cv);
-    height = cucul_get_canvas_height(dp->cv);
+    width = caca_get_canvas_width(dp->cv);
+    height = caca_get_canvas_height(dp->cv);
     dp->resize.allow = 0;
 
     SetConsoleMode(dp->drv.p->screen, 0);
@@ -180,7 +179,7 @@ static int win32_get_display_width(caca_display_t const *dp)
     /* FIXME */
 
     /* Fallback to a 6x10 font */
-    return cucul_get_canvas_width(dp->cv) * 6;
+    return caca_get_canvas_width(dp->cv) * 6;
 }
 
 static int win32_get_display_height(caca_display_t const *dp)
@@ -188,7 +187,7 @@ static int win32_get_display_height(caca_display_t const *dp)
     /* FIXME */
 
     /* Fallback to a 6x10 font */
-    return cucul_get_canvas_height(dp->cv) * 10;
+    return caca_get_canvas_height(dp->cv) * 10;
 }
 
 static void win32_display(caca_display_t *dp)
@@ -196,18 +195,18 @@ static void win32_display(caca_display_t *dp)
     COORD size, pos;
     SMALL_RECT rect;
     CHAR_INFO *buffer = dp->drv.p->buffer;
-    uint32_t const *cvchars = (uint32_t const *)cucul_get_canvas_chars(dp->cv);
-    uint32_t const *cvattrs = (uint32_t const *)cucul_get_canvas_attrs(dp->cv);
-    int width = cucul_get_canvas_width(dp->cv);
-    int height = cucul_get_canvas_height(dp->cv);
+    uint32_t const *cvchars = (uint32_t const *)caca_get_canvas_chars(dp->cv);
+    uint32_t const *cvattrs = (uint32_t const *)caca_get_canvas_attrs(dp->cv);
+    int width = caca_get_canvas_width(dp->cv);
+    int height = caca_get_canvas_height(dp->cv);
     int n;
 
     /* Render everything to our screen buffer */
     for(n = height * width; n--; )
     {
         uint32_t ch = *cvchars++;
-        uint8_t fg = cucul_attr_to_ansi_fg(*cvattrs);
-        uint8_t bg = cucul_attr_to_ansi_bg(*cvattrs);
+        uint8_t fg = caca_attr_to_ansi_fg(*cvattrs);
+        uint8_t bg = caca_attr_to_ansi_bg(*cvattrs);
 
 #if 0
         if(ch > 0x00000020 && ch < 0x00000080)
@@ -215,7 +214,7 @@ static void win32_display(caca_display_t *dp)
         else
             dp->drv.p->buffer[i].Char.AsciiChar = ' ';
 #else
-        if(n && *cvchars == CUCUL_MAGIC_FULLWIDTH)
+        if(n && *cvchars == CACA_MAGIC_FULLWIDTH)
             ;
         else if(ch > 0x00000020 && ch < 0x00010000)
             buffer->Char.UnicodeChar = (uint16_t)ch;
@@ -223,8 +222,8 @@ static void win32_display(caca_display_t *dp)
             buffer->Char.UnicodeChar = (uint16_t)' ';
 #endif
 
-        buffer->Attributes = win32_fg_palette[fg < 0x10 ? fg : CUCUL_LIGHTGRAY]
-                              | win32_bg_palette[bg < 0x10 ? bg : CUCUL_BLACK];
+        buffer->Attributes = win32_fg_palette[fg < 0x10 ? fg : CACA_LIGHTGRAY]
+                              | win32_bg_palette[bg < 0x10 ? bg : CACA_BLACK];
         cvattrs++;
         buffer++;
     }
@@ -246,8 +245,8 @@ static void win32_display(caca_display_t *dp)
 static void win32_handle_resize(caca_display_t *dp)
 {
     /* FIXME: I don't know what to do here. */
-    dp->resize.w = cucul_get_canvas_width(dp->cv);
-    dp->resize.h = cucul_get_canvas_height(dp->cv);
+    dp->resize.w = caca_get_canvas_width(dp->cv);
+    dp->resize.h = caca_get_canvas_height(dp->cv);
 }
 
 static int win32_get_event(caca_display_t *dp, caca_privevent_t *ev)

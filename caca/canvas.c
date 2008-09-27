@@ -1,5 +1,5 @@
 /*
- *  libcucul      Canvas for ultrafast compositing of Unicode letters
+ *  libcaca       Colour ASCII-Art library
  *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
@@ -13,7 +13,7 @@
  */
 
 /*
- *  This file contains the main functions used by \e libcucul applications
+ *  This file contains the main functions used by \e libcaca applications
  *  to initialise a drawing context.
  */
 
@@ -30,16 +30,16 @@
 #   endif
 #endif
 
-#include "cucul.h"
-#include "cucul_internals.h"
+#include "caca.h"
+#include "caca_internals.h"
 
-static int cucul_resize(cucul_canvas_t *, int, int);
+static int caca_resize(caca_canvas_t *, int, int);
 
-/** \brief Initialise a \e libcucul canvas.
+/** \brief Initialise a \e libcaca canvas.
  *
- *  Initialise internal \e libcucul structures and the backend that will
+ *  Initialise internal \e libcaca structures and the backend that will
  *  be used for subsequent graphical operations. It must be the first
- *  \e libcucul function to be called in a function. cucul_free_canvas()
+ *  \e libcaca function to be called in a function. caca_free_canvas()
  *  should be called at the end of the program to free all allocated resources.
  *
  *  Both the cursor and the canvas' handle are initialised at the top-left
@@ -51,11 +51,11 @@ static int cucul_resize(cucul_canvas_t *, int, int);
  *
  *  \param width The desired canvas width
  *  \param height The desired canvas height
- *  \return A libcucul canvas handle upon success, NULL if an error occurred.
+ *  \return A libcaca canvas handle upon success, NULL if an error occurred.
  */
-cucul_canvas_t * cucul_create_canvas(int width, int height)
+caca_canvas_t * caca_create_canvas(int width, int height)
 {
-    cucul_canvas_t *cv;
+    caca_canvas_t *cv;
 
     if(width < 0 || height < 0)
     {
@@ -63,7 +63,7 @@ cucul_canvas_t * cucul_create_canvas(int width, int height)
         return NULL;
     }
 
-    cv = malloc(sizeof(cucul_canvas_t));
+    cv = malloc(sizeof(caca_canvas_t));
 
     if(!cv)
         goto nomem;
@@ -75,7 +75,7 @@ cucul_canvas_t * cucul_create_canvas(int width, int height)
 
     cv->frame = 0;
     cv->framecount = 1;
-    cv->frames = malloc(sizeof(struct cucul_frame));
+    cv->frames = malloc(sizeof(struct caca_frame));
     if(!cv->frames)
     {
         free(cv);
@@ -90,12 +90,12 @@ cucul_canvas_t * cucul_create_canvas(int width, int height)
     cv->frames[0].curattr = 0;
     cv->frames[0].name = strdup("frame#00000000");
 
-    _cucul_load_frame_info(cv);
-    cucul_set_color_ansi(cv, CUCUL_DEFAULT, CUCUL_TRANSPARENT);
+    _caca_load_frame_info(cv);
+    caca_set_color_ansi(cv, CACA_DEFAULT, CACA_TRANSPARENT);
 
     cv->ff = NULL;
 
-    if(cucul_resize(cv, width, height) < 0)
+    if(caca_resize(cv, width, height) < 0)
     {
         int saved_errno = geterrno();
         free(cv->frames[0].name);
@@ -116,7 +116,7 @@ nomem:
  *
  *  Lock a canvas to prevent it from being resized. If non-NULL,
  *  the \e callback function pointer will be called upon each
- *  \e cucul_set_canvas_size call and if the returned value is zero, the
+ *  \e caca_set_canvas_size call and if the returned value is zero, the
  *  canvas resize request will be denied.
  *
  *  This function is only useful for display drivers such as the \e libcaca
@@ -125,12 +125,12 @@ nomem:
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
  *  - \c EBUSY The canvas is already being managed.
  *
- *  \param cv A libcucul canvas.
+ *  \param cv A libcaca canvas.
  *  \param callback An optional callback function pointer.
  *  \param p The argument to be passed to \e callback.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_manage_canvas(cucul_canvas_t *cv, int (*callback)(void *), void *p)
+int caca_manage_canvas(caca_canvas_t *cv, int (*callback)(void *), void *p)
 {
     if(cv->refcount)
     {
@@ -147,9 +147,9 @@ int cucul_manage_canvas(cucul_canvas_t *cv, int (*callback)(void *), void *p)
 
 /** \brief Unmanage a canvas.
  *
- *  Unlock a canvas previously locked by cucul_manage_canvas(). For safety
+ *  Unlock a canvas previously locked by caca_manage_canvas(). For safety
  *  reasons, the callback and callback data arguments must be the same as for
- *  the cucul_manage_canvas() call.
+ *  the caca_manage_canvas() call.
  *
  *  This function is only useful for display drivers such as the \e libcaca
  *  library.
@@ -158,13 +158,13 @@ int cucul_manage_canvas(cucul_canvas_t *cv, int (*callback)(void *), void *p)
  *  - \c EINVAL The canvas is not managed, or the callback arguments do
  *              not match.
  *
- *  \param cv A libcucul canvas.
+ *  \param cv A libcaca canvas.
  *  \param callback The \e callback argument previously passed to
-                    cucul_manage_canvas().
- *  \param p The \e p argument previously passed to cucul_manage_canvas().
+                    caca_manage_canvas().
+ *  \param p The \e p argument previously passed to caca_manage_canvas().
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_unmanage_canvas(cucul_canvas_t *cv, int (*callback)(void *), void *p)
+int caca_unmanage_canvas(caca_canvas_t *cv, int (*callback)(void *), void *p)
 {
     if(!cv->refcount
         || cv->resize_callback != callback || cv->resize_data != p)
@@ -204,12 +204,12 @@ int cucul_unmanage_canvas(cucul_canvas_t *cv, int (*callback)(void *), void *p)
  *  - \c ENOMEM Not enough memory for the requested canvas size. If this
  *    happens, the canvas handle becomes invalid and should not be used.
  *
- *  \param cv A libcucul canvas.
+ *  \param cv A libcaca canvas.
  *  \param width The desired canvas width.
  *  \param height The desired canvas height.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_set_canvas_size(cucul_canvas_t *cv, int width, int height)
+int caca_set_canvas_size(caca_canvas_t *cv, int width, int height)
 {
     if(width < 0 || height < 0)
     {
@@ -224,7 +224,7 @@ int cucul_set_canvas_size(cucul_canvas_t *cv, int width, int height)
         return -1;
     }
 
-    return cucul_resize(cv, width, height);
+    return caca_resize(cv, width, height);
 }
 
 /** \brief Get the canvas width.
@@ -233,10 +233,10 @@ int cucul_set_canvas_size(cucul_canvas_t *cv, int width, int height)
  *
  *  This function never fails.
  *
- *  \param cv A libcucul canvas.
+ *  \param cv A libcaca canvas.
  *  \return The canvas width.
  */
-int cucul_get_canvas_width(cucul_canvas_t const *cv)
+int caca_get_canvas_width(caca_canvas_t const *cv)
 {
     return cv->width;
 }
@@ -247,10 +247,10 @@ int cucul_get_canvas_width(cucul_canvas_t const *cv)
  *
  *  This function never fails.
  *
- *  \param cv A libcucul canvas.
+ *  \param cv A libcaca canvas.
  *  \return The canvas height.
  */
-int cucul_get_canvas_height(cucul_canvas_t const *cv)
+int caca_get_canvas_height(caca_canvas_t const *cv)
 {
     return cv->height;
 }
@@ -259,17 +259,17 @@ int cucul_get_canvas_height(cucul_canvas_t const *cv)
  *
  *  Return the current canvas' internal character array. The array elements
  *  consist in native endian 32-bit Unicode values as returned by
- *  cucul_get_char().
+ *  caca_get_char().
  *
  *  This function is only useful for display drivers such as the \e libcaca
  *  library.
  *
  *  This function never fails.
  *
- *  \param cv A libcucul canvas.
+ *  \param cv A libcaca canvas.
  *  \return The canvas character array.
  */
-uint8_t const * cucul_get_canvas_chars(cucul_canvas_t const *cv)
+uint8_t const * caca_get_canvas_chars(caca_canvas_t const *cv)
 {
     return (uint8_t const *)cv->chars;
 }
@@ -278,34 +278,34 @@ uint8_t const * cucul_get_canvas_chars(cucul_canvas_t const *cv)
  *
  *  Returns the current canvas' internal attribute array. The array elements
  *  consist in native endian 32-bit attribute values as returned by
- *  cucul_get_attr().
+ *  caca_get_attr().
  *
  *  This function is only useful for display drivers such as the \e libcaca
  *  library.
  *
  *  This function never fails.
  *
- *  \param cv A libcucul canvas.
+ *  \param cv A libcaca canvas.
  *  \return The canvas attribute array.
  */
-uint8_t const * cucul_get_canvas_attrs(cucul_canvas_t const *cv)
+uint8_t const * caca_get_canvas_attrs(caca_canvas_t const *cv)
 {
     return (uint8_t const *)cv->attrs;
 }
 
-/** \brief Uninitialise \e libcucul.
+/** \brief Uninitialise \e libcaca.
  *
- *  Free all resources allocated by cucul_create_canvas(). After
- *  this function has been called, no other \e libcucul functions may be
- *  used unless a new call to cucul_create_canvas() is done.
+ *  Free all resources allocated by caca_create_canvas(). After
+ *  this function has been called, no other \e libcaca functions may be
+ *  used unless a new call to caca_create_canvas() is done.
  *
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
  *  - \c EBUSY The canvas is in use by a display driver and cannot be freed.
  *
- *  \param cv A libcucul canvas.
+ *  \param cv A libcaca canvas.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_free_canvas(cucul_canvas_t *cv)
+int caca_free_canvas(caca_canvas_t *cv)
 {
     int f;
 
@@ -322,7 +322,7 @@ int cucul_free_canvas(cucul_canvas_t *cv)
         free(cv->frames[f].name);
     }
 
-    cucul_canvas_set_figfont(cv, NULL);
+    caca_canvas_set_figfont(cv, NULL);
 
     free(cv->frames);
     free(cv);
@@ -341,7 +341,7 @@ int cucul_free_canvas(cucul_canvas_t *cv)
  *  \return A random integer comprised between \p min  and \p max - 1
  *  (inclusive).
  */
-int cucul_rand(int min, int max)
+int caca_rand(int min, int max)
 {
     static int need_init = 1;
 
@@ -354,24 +354,12 @@ int cucul_rand(int min, int max)
     return min + (int)((1.0 * (max - min)) * rand() / (RAND_MAX + 1.0));
 }
 
-/** \brief Return the \e libcucul version.
- *
- *  Return a read-only string with the \e libcucul version information.
- *
- *  This function never fails.
- *
- *  \return The \e libcucul version information.
- */
-char const * cucul_get_version(void)
-{
-    return VERSION;
-}
 
 /*
  * XXX: The following functions are local.
  */
 
-int cucul_resize(cucul_canvas_t *cv, int width, int height)
+int caca_resize(caca_canvas_t *cv, int width, int height)
 {
     int x, y, f, old_width, old_height, new_size, old_size;
 
@@ -379,7 +367,7 @@ int cucul_resize(cucul_canvas_t *cv, int width, int height)
     old_height = cv->height;
     old_size = old_width * old_height;
 
-    _cucul_save_frame_info(cv);
+    _caca_save_frame_info(cv);
 
     cv->width = width;
     cv->height = height;
@@ -507,7 +495,7 @@ int cucul_resize(cucul_canvas_t *cv, int width, int height)
     }
 
     /* Reset the current frame shortcuts */
-    _cucul_load_frame_info(cv);
+    _caca_load_frame_info(cv);
 
     return 0;
 }

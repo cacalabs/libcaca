@@ -1,5 +1,5 @@
 /*
- *  libcucul      Canvas for ultrafast compositing of Unicode letters
+ *  libcaca      Canvas for ultrafast compositing of Unicode letters
  *  libcaca       Colour ASCII-Art library
  *  Copyright (c) 2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
@@ -15,7 +15,7 @@
 
 /*
  *  This file contains replacement functions for the standard C library
- *  that must be used when building libcucul and libcaca into a kernel.
+ *  that must be used when building libcaca and libcaca into a kernel.
  */
 
 /* Various defines */

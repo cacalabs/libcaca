@@ -23,9 +23,8 @@
 #ifndef _CACA_PP_H
 #define _CACA_PP_H
 
-#include <cucul.h>
 #include <caca.h>
-
+#include <caca++.h>
 #include <cucul++.h>
 
 #undef __class
@@ -61,10 +60,10 @@ __class Caca
 {
  public:
     Caca();
-    Caca(Cucul *cv);
+    Caca(Canvas *cv);
     ~Caca();
 
-    void Attach(Cucul *cv);
+    void Attach(Canvas *cv);
     void Detach();
     void setDisplayTime(unsigned int);
 

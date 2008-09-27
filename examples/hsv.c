@@ -18,7 +18,6 @@
 #   include <stdio.h>
 #endif
 
-#include "cucul.h"
 #include "caca.h"
 
 uint32_t buffer[256*256];
@@ -26,9 +25,9 @@ uint32_t buffer[256*256];
 int main(int argc, char *argv[])
 {
     caca_display_t *dp;
-    cucul_canvas_t *cv;
+    caca_canvas_t *cv;
 
-    cucul_dither_t *dither;
+    caca_dither_t *dither;
     int x, y;
 
     dp = caca_create_display(NULL);
@@ -46,11 +45,11 @@ int main(int argc, char *argv[])
         buffer[y * 256 + x] = ((y * x / 256) << 16) | ((y * x / 256) << 8) | (x<< 0);
     }
 
-    dither = cucul_create_dither(32, 256, 256, 4 * 256,
+    dither = caca_create_dither(32, 256, 256, 4 * 256,
                                  0x00ff0000, 0x0000ff00, 0x000000ff, 0x0);
-    cucul_dither_bitmap(caca_get_canvas(dp), 0, 0, cucul_get_canvas_width(cv),
-                        cucul_get_canvas_height(cv), dither, buffer);
-    cucul_free_dither(dither);
+    caca_dither_bitmap(caca_get_canvas(dp), 0, 0, caca_get_canvas_width(cv),
+                        caca_get_canvas_height(cv), dither, buffer);
+    caca_free_dither(dither);
 
     caca_refresh_display(dp);
 

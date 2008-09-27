@@ -13,7 +13,7 @@
 #include <caca.h>
 #include <errno.h>
 #include "caca-event.h"
-#include "cucul-canvas.h"
+#include "caca-canvas.h"
 #include "common.h"
 
 VALUE cDisplay;
@@ -33,7 +33,7 @@ static VALUE display_alloc(VALUE klass)
 static VALUE display_initialize(int argc, VALUE* argv, VALUE self)
 {
     caca_display_t *display;
-    cucul_canvas_t *canvas = NULL;
+    caca_canvas_t *canvas = NULL;
     const char *driver = NULL;
     VALUE cv = Qnil;
     VALUE arg1, arg2;

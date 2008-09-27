@@ -18,19 +18,18 @@
 #   include <stdio.h>
 #endif
 
-#include "cucul.h"
 #include "caca.h"
 
 #define CACA "쫊쫊쫊쫊쫊쫊쫊쫊쫊쫊쫊쫊쫊쫊쫊"
 
 int main(int argc, char *argv[])
 {
-    cucul_canvas_t *cv, *caca, *line;
+    caca_canvas_t *cv, *caca, *line;
     caca_display_t *dp;
 
     unsigned int i;
 
-    cv = cucul_create_canvas(0, 0);
+    cv = caca_create_canvas(0, 0);
     if(cv == NULL)
     {
         printf("Can't created canvas\n");
@@ -43,42 +42,42 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    caca = cucul_create_canvas(6, 10);
-    line = cucul_create_canvas(2, 1);
+    caca = caca_create_canvas(6, 10);
+    line = caca_create_canvas(2, 1);
 
     /* Line of x's */
     for(i = 0; i < 10; i++)
     {
-        cucul_set_color_ansi(caca, CUCUL_WHITE, CUCUL_BLUE);
-        cucul_put_str(caca, 0, i, CACA);
-        cucul_set_color_ansi(caca, CUCUL_WHITE, CUCUL_RED);
-        cucul_put_char(caca, i - 2, i, 'x');
+        caca_set_color_ansi(caca, CACA_WHITE, CACA_BLUE);
+        caca_put_str(caca, 0, i, CACA);
+        caca_set_color_ansi(caca, CACA_WHITE, CACA_RED);
+        caca_put_char(caca, i - 2, i, 'x');
     }
 
-    cucul_blit(cv, 1, 1, caca, NULL);
+    caca_blit(cv, 1, 1, caca, NULL);
 
     /* Line of ホ's */
     for(i = 0; i < 10; i++)
     {
-        cucul_set_color_ansi(caca, CUCUL_WHITE, CUCUL_BLUE);
-        cucul_put_str(caca, 0, i, CACA);
-        cucul_set_color_ansi(caca, CUCUL_WHITE, CUCUL_GREEN);
-        cucul_put_str(caca, i - 2, i, "ホ");
+        caca_set_color_ansi(caca, CACA_WHITE, CACA_BLUE);
+        caca_put_str(caca, 0, i, CACA);
+        caca_set_color_ansi(caca, CACA_WHITE, CACA_GREEN);
+        caca_put_str(caca, i - 2, i, "ホ");
     }
 
-    cucul_blit(cv, 15, 1, caca, NULL);
+    caca_blit(cv, 15, 1, caca, NULL);
 
     /* Line of canvas */
-    cucul_set_color_ansi(line, CUCUL_WHITE, CUCUL_MAGENTA);
-    cucul_put_str(line, 0, 0, "ほ");
+    caca_set_color_ansi(line, CACA_WHITE, CACA_MAGENTA);
+    caca_put_str(line, 0, 0, "ほ");
     for(i = 0; i < 10; i++)
     {
-        cucul_set_color_ansi(caca, CUCUL_WHITE, CUCUL_BLUE);
-        cucul_put_str(caca, 0, i, CACA);
-        cucul_blit(caca, i - 2, i, line, NULL);
+        caca_set_color_ansi(caca, CACA_WHITE, CACA_BLUE);
+        caca_put_str(caca, 0, i, CACA);
+        caca_blit(caca, i - 2, i, line, NULL);
     }
 
-    cucul_blit(cv, 29, 1, caca, NULL);
+    caca_blit(cv, 29, 1, caca, NULL);
 
     caca_refresh_display(dp);
 
@@ -86,9 +85,9 @@ int main(int argc, char *argv[])
 
     caca_free_display(dp);
 
-    cucul_free_canvas(line);
-    cucul_free_canvas(caca);
-    cucul_free_canvas(cv);
+    caca_free_canvas(line);
+    caca_free_canvas(caca);
+    caca_free_canvas(cv);
 
     return 0;
 }

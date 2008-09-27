@@ -1,5 +1,5 @@
 /*
- *  libcucul      Canvas for ultrafast compositing of Unicode letters
+ *  libcaca       Colour ASCII-Art library
  *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
@@ -27,8 +27,8 @@
 #   include <string.h>
 #endif
 
-#include "cucul.h"
-#include "cucul_internals.h"
+#include "caca.h"
+#include "caca_internals.h"
 
 /* Internal fonts */
 #include "mono9.data"
@@ -55,7 +55,7 @@ struct glyph_info
     uint32_t data_offset;
 };
 
-struct cucul_font
+struct caca_font
 {
     struct font_header header;
 
@@ -91,7 +91,7 @@ DECLARE_UNPACKGLYPH(1)
 /** \brief Load a font from memory for future use.
  *
  *  This function loads a font and returns a handle to its internal
- *  structure. The handle can then be used with cucul_render_canvas()
+ *  structure. The handle can then be used with caca_render_canvas()
  *  for bitmap output.
  *
  *  Internal fonts can also be loaded: if \c size is set to 0, \c data must
@@ -99,7 +99,7 @@ DECLARE_UNPACKGLYPH(1)
  *
  *  If \c size is non-zero, the \c size bytes of memory at address \c data
  *  are loaded as a font. This memory are must not be freed by the calling
- *  program until the font handle has been freed with cucul_free_font().
+ *  program until the font handle has been freed with caca_free_font().
  *
  *  If an error occurs, NULL is returned and \b errno is set accordingly:
  *  - \c ENOENT Requested built-in font does not exist.
@@ -110,17 +110,17 @@ DECLARE_UNPACKGLYPH(1)
  *  \param size The size of the memory area, or 0 if the font name is given.
  *  \return A font handle or NULL in case of error.
  */
-cucul_font_t *cucul_load_font(void const *data, size_t size)
+caca_font_t *caca_load_font(void const *data, size_t size)
 {
-    cucul_font_t *f;
+    caca_font_t *f;
     int i;
 
     if(size == 0)
     {
         if(!strcasecmp(data, "Monospace 9"))
-            return cucul_load_font((char *)&mono9_data, mono9_size);
+            return caca_load_font((char *)&mono9_data, mono9_size);
         if(!strcasecmp(data, "Monospace Bold 12"))
-            return cucul_load_font((char *)&monobold12_data, monobold12_size);
+            return caca_load_font((char *)&monobold12_data, monobold12_size);
 
         seterrno(ENOENT);
         return NULL;
@@ -134,7 +134,7 @@ cucul_font_t *cucul_load_font(void const *data, size_t size)
         return NULL;
     }
 
-    f = malloc(sizeof(cucul_font_t));
+    f = malloc(sizeof(caca_font_t));
     if(!f)
     {
         seterrno(ENOMEM);
@@ -301,7 +301,7 @@ cucul_font_t *cucul_load_font(void const *data, size_t size)
  *
  *  \return An array of strings.
  */
-char const * const * cucul_get_font_list(void)
+char const * const * caca_get_font_list(void)
 {
     static char const * const list[] =
     {
@@ -320,10 +320,10 @@ char const * const * cucul_get_font_list(void)
  *
  *  This function never fails.
  *
- *  \param f The font, as returned by cucul_load_font()
+ *  \param f The font, as returned by caca_load_font()
  *  \return The standard glyph width.
  */
-int cucul_get_font_width(cucul_font_t const *f)
+int caca_get_font_width(caca_font_t const *f)
 {
     return f->header.width;
 }
@@ -335,10 +335,10 @@ int cucul_get_font_width(cucul_font_t const *f)
  *
  *  This function never fails.
  *
- *  \param f The font, as returned by cucul_load_font()
+ *  \param f The font, as returned by caca_load_font()
  *  \return The standard glyph height.
  */
-int cucul_get_font_height(cucul_font_t const *f)
+int caca_get_font_height(caca_font_t const *f)
 {
     return f->header.height;
 }
@@ -360,27 +360,27 @@ int cucul_get_font_height(cucul_font_t const *f)
  *
  *  This function never fails.
  *
- *  \param f The font, as returned by cucul_load_font()
+ *  \param f The font, as returned by caca_load_font()
  *  \return The list of Unicode blocks supported by the font.
  */
-uint32_t const *cucul_get_font_blocks(cucul_font_t const *f)
+uint32_t const *caca_get_font_blocks(caca_font_t const *f)
 {
     return (uint32_t const *)f->user_block_list;
 }
 
 /** \brief Free a font structure.
  *
- *  This function frees all data allocated by cucul_load_font(). The
- *  font structure is no longer usable by other libcucul functions. Once
+ *  This function frees all data allocated by caca_load_font(). The
+ *  font structure is no longer usable by other libcaca functions. Once
  *  this function has returned, the memory area that was given to
- *  cucul_load_font() can be freed.
+ *  caca_load_font() can be freed.
  *
  *  This function never fails.
  *
- *  \param f The font, as returned by cucul_load_font()
+ *  \param f The font, as returned by caca_load_font()
  *  \return This function always returns 0.
  */
-int cucul_free_font(cucul_font_t *f)
+int caca_free_font(caca_font_t *f)
 {
     free(f->glyph_list);
     free(f->user_block_list);
@@ -396,9 +396,9 @@ int cucul_free_font(cucul_font_t *f)
  *  font. The pixel format is fixed (32-bit ARGB, 8 bits for each component).
  *
  *  The required image width can be computed using
- *  cucul_get_canvas_width() and cucul_get_font_width(). The required
- *  height can be computed using cucul_get_canvas_height() and
- *  cucul_get_font_height().
+ *  caca_get_canvas_width() and caca_get_font_width(). The required
+ *  height can be computed using caca_get_canvas_height() and
+ *  caca_get_font_height().
  *
  *  Glyphs that do not fit in the image buffer are currently not rendered at
  *  all. They may be cropped instead in future versions.
@@ -407,14 +407,14 @@ int cucul_free_font(cucul_font_t *f)
  *  - \c EINVAL Specified width, height or pitch is invalid.
  *
  *  \param cv The canvas to render
- *  \param f The font, as returned by cucul_load_font()
+ *  \param f The font, as returned by caca_load_font()
  *  \param buf The image buffer
  *  \param width The width (in pixels) of the image buffer
  *  \param height The height (in pixels) of the image buffer
  *  \param pitch The pitch (in bytes) of an image buffer line.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_render_canvas(cucul_canvas_t const *cv, cucul_font_t const *f,
+int caca_render_canvas(caca_canvas_t const *cv, caca_font_t const *f,
                         void *buf, int width, int height, int pitch)
 {
     uint8_t *glyph = NULL;
@@ -471,7 +471,7 @@ int cucul_render_canvas(cucul_canvas_t const *cv, cucul_font_t const *f,
             g = &f->glyph_list[f->block_list[b].index
                                 + ch - f->block_list[b].start];
 
-            cucul_attr_to_argb64(attr, argb);
+            caca_attr_to_argb64(attr, argb);
 
             /* Step 1: unpack glyph */
             switch(f->header.bpp)

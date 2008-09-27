@@ -1,5 +1,5 @@
 /*
- *  libcucul      Canvas for ultrafast compositing of Unicode letters
+ *  libcaca       Colour ASCII-Art library
  *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
@@ -22,14 +22,14 @@
 #   include <stdlib.h>
 #endif
 
-#include "cucul.h"
-#include "cucul_internals.h"
+#include "caca.h"
+#include "caca_internals.h"
 
 /** \brief Draw a box on the canvas using the given character.
  *
  *  This function never fails.
  *
- *  \param cv The handle to the libcucul canvas.
+ *  \param cv The handle to the libcaca canvas.
  *  \param x X coordinate of the upper-left corner of the box.
  *  \param y Y coordinate of the upper-left corner of the box.
  *  \param w Width of the box.
@@ -37,15 +37,15 @@
  *  \param ch UTF-32 character to be used to draw the box.
  *  \return This function always returns 0.
  */
-int cucul_draw_box(cucul_canvas_t *cv, int x, int y, int w, int h, uint32_t ch)
+int caca_draw_box(caca_canvas_t *cv, int x, int y, int w, int h, uint32_t ch)
 {
     int x2 = x + w - 1;
     int y2 = y + h - 1;
 
-    cucul_draw_line(cv,  x,  y,  x, y2, ch);
-    cucul_draw_line(cv,  x, y2, x2, y2, ch);
-    cucul_draw_line(cv, x2, y2, x2,  y, ch);
-    cucul_draw_line(cv, x2,  y,  x,  y, ch);
+    caca_draw_line(cv,  x,  y,  x, y2, ch);
+    caca_draw_line(cv,  x, y2, x2, y2, ch);
+    caca_draw_line(cv, x2, y2, x2,  y, ch);
+    caca_draw_line(cv, x2,  y,  x,  y, ch);
 
     return 0;
 }
@@ -54,14 +54,14 @@ int cucul_draw_box(cucul_canvas_t *cv, int x, int y, int w, int h, uint32_t ch)
  *
  *  This function never fails.
  *
- *  \param cv The handle to the libcucul canvas.
+ *  \param cv The handle to the libcaca canvas.
  *  \param x X coordinate of the upper-left corner of the box.
  *  \param y Y coordinate of the upper-left corner of the box.
  *  \param w Width of the box.
  *  \param h Height of the box.
  *  \return This function always returns 0.
  */
-int cucul_draw_thin_box(cucul_canvas_t *cv, int x, int y, int w, int h)
+int caca_draw_thin_box(caca_canvas_t *cv, int x, int y, int w, int h)
 {
     int i, j, xmax, ymax;
 
@@ -89,25 +89,25 @@ int cucul_draw_thin_box(cucul_canvas_t *cv, int x, int y, int w, int h)
     /* Draw edges */
     if(y >= 0)
         for(i = x < 0 ? 1 : x + 1; i < x2 && i < xmax; i++)
-            cucul_put_char(cv, i, y, '-');
+            caca_put_char(cv, i, y, '-');
 
     if(y2 <= ymax)
         for(i = x < 0 ? 1 : x + 1; i < x2 && i < xmax; i++)
-            cucul_put_char(cv, i, y2, '-');
+            caca_put_char(cv, i, y2, '-');
 
     if(x >= 0)
         for(j = y < 0 ? 1 : y + 1; j < y2 && j < ymax; j++)
-            cucul_put_char(cv, x, j, '|');
+            caca_put_char(cv, x, j, '|');
 
     if(x2 <= xmax)
         for(j = y < 0 ? 1 : y + 1; j < y2 && j < ymax; j++)
-            cucul_put_char(cv, x2, j, '|');
+            caca_put_char(cv, x2, j, '|');
 
     /* Draw corners */
-    cucul_put_char(cv, x, y, ',');
-    cucul_put_char(cv, x, y2, '`');
-    cucul_put_char(cv, x2, y, '.');
-    cucul_put_char(cv, x2, y2, '\'');
+    caca_put_char(cv, x, y, ',');
+    caca_put_char(cv, x, y2, '`');
+    caca_put_char(cv, x2, y, '.');
+    caca_put_char(cv, x2, y2, '\'');
 
     return 0;
 }
@@ -116,14 +116,14 @@ int cucul_draw_thin_box(cucul_canvas_t *cv, int x, int y, int w, int h)
  *
  *  This function never fails.
  *
- *  \param cv The handle to the libcucul canvas.
+ *  \param cv The handle to the libcaca canvas.
  *  \param x X coordinate of the upper-left corner of the box.
  *  \param y Y coordinate of the upper-left corner of the box.
  *  \param w Width of the box.
  *  \param h Height of the box.
  *  \return This function always returns 0.
  */
-int cucul_draw_cp437_box(cucul_canvas_t *cv, int x, int y, int w, int h)
+int caca_draw_cp437_box(caca_canvas_t *cv, int x, int y, int w, int h)
 {
     int i, j, xmax, ymax;
 
@@ -151,25 +151,25 @@ int cucul_draw_cp437_box(cucul_canvas_t *cv, int x, int y, int w, int h)
     /* Draw edges */
     if(y >= 0)
         for(i = x < 0 ? 1 : x + 1; i < x2 && i < xmax; i++)
-            cucul_put_char(cv, i, y, 0x2500); /* ─ */
+            caca_put_char(cv, i, y, 0x2500); /* ─ */
 
     if(y2 <= ymax)
         for(i = x < 0 ? 1 : x + 1; i < x2 && i < xmax; i++)
-            cucul_put_char(cv, i, y2, 0x2500); /* ─ */
+            caca_put_char(cv, i, y2, 0x2500); /* ─ */
 
     if(x >= 0)
         for(j = y < 0 ? 1 : y + 1; j < y2 && j < ymax; j++)
-            cucul_put_char(cv, x, j, 0x2502); /* │ */
+            caca_put_char(cv, x, j, 0x2502); /* │ */
 
     if(x2 <= xmax)
         for(j = y < 0 ? 1 : y + 1; j < y2 && j < ymax; j++)
-            cucul_put_char(cv, x2, j, 0x2502); /* │ */
+            caca_put_char(cv, x2, j, 0x2502); /* │ */
 
     /* Draw corners */
-    cucul_put_char(cv, x, y, 0x250c); /* ┌ */
-    cucul_put_char(cv, x, y2, 0x2514); /* └ */
-    cucul_put_char(cv, x2, y, 0x2510); /* ┐ */
-    cucul_put_char(cv, x2, y2, 0x2518); /* ┘ */
+    caca_put_char(cv, x, y, 0x250c); /* ┌ */
+    caca_put_char(cv, x, y2, 0x2514); /* └ */
+    caca_put_char(cv, x2, y, 0x2510); /* ┐ */
+    caca_put_char(cv, x2, y2, 0x2518); /* ┘ */
 
     return 0;
 }
@@ -178,7 +178,7 @@ int cucul_draw_cp437_box(cucul_canvas_t *cv, int x, int y, int w, int h)
  *
  *  This function never fails.
  *
- *  \param cv The handle to the libcucul canvas.
+ *  \param cv The handle to the libcaca canvas.
  *  \param x X coordinate of the upper-left corner of the box.
  *  \param y Y coordinate of the upper-left corner of the box.
  *  \param w Width of the box.
@@ -186,7 +186,7 @@ int cucul_draw_cp437_box(cucul_canvas_t *cv, int x, int y, int w, int h)
  *  \param ch UTF-32 character to be used to draw the box.
  *  \return This function always returns 0.
  */
-int cucul_fill_box(cucul_canvas_t *cv, int x, int y, int w, int h,
+int caca_fill_box(caca_canvas_t *cv, int x, int y, int w, int h,
                    uint32_t ch)
 {
     int i, j, xmax, ymax;
@@ -219,7 +219,7 @@ int cucul_fill_box(cucul_canvas_t *cv, int x, int y, int w, int h,
 
     for(j = y; j <= y2; j++)
         for(i = x; i <= x2; i++)
-            cucul_put_char(cv, i, j, ch);
+            caca_put_char(cv, i, j, ch);
 
     return 0;
 }

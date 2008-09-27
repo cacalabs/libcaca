@@ -28,7 +28,6 @@
 
 #include <stdlib.h>
 
-#include "cucul.h"
 #include "caca.h"
 #include "caca_internals.h"
 
@@ -57,7 +56,7 @@ static int conio_init_graphics(caca_display_t *dp)
     /* FIXME */
 #   endif
     dp->resize.allow = 1;
-    cucul_set_canvas_size(dp->cv, dp->drv.p->ti.screenwidth,
+    caca_set_canvas_size(dp->cv, dp->drv.p->ti.screenwidth,
                                   dp->drv.p->ti.screenheight);
     dp->resize.allow = 0;
 
@@ -69,7 +68,7 @@ static int conio_end_graphics(caca_display_t *dp)
     _wscroll = 1;
     textcolor((enum COLORS)WHITE);
     textbackground((enum COLORS)BLACK);
-    gotoxy(cucul_get_canvas_width(dp->cv), cucul_get_canvas_height(dp->cv));
+    gotoxy(caca_get_canvas_width(dp->cv), caca_get_canvas_height(dp->cv));
     cputs("\r\n");
     _setcursortype(_NORMALCURSOR);
 
@@ -87,37 +86,37 @@ static int conio_set_display_title(caca_display_t *dp, char const *title)
 static int conio_get_display_width(caca_display_t const *dp)
 {
     /* Fallback to a 6x10 font */
-    return cucul_get_canvas_width(dp->cv) * 6;
+    return caca_get_canvas_width(dp->cv) * 6;
 }
 
 static int conio_get_display_height(caca_display_t const *dp)
 {
     /* Fallback to a 6x10 font */
-    return cucul_get_canvas_height(dp->cv) * 10;
+    return caca_get_canvas_height(dp->cv) * 10;
 }
 
 static void conio_display(caca_display_t *dp)
 {
     char *screen = dp->drv.p->screen;
-    uint32_t const *chars = (uint32_t const *)cucul_get_canvas_chars(dp->cv);
-    uint32_t const *attrs = (uint32_t const *)cucul_get_canvas_attrs(dp->cv);
-    int width = cucul_get_canvas_width(dp->cv);
-    int height = cucul_get_canvas_height(dp->cv);
+    uint32_t const *chars = (uint32_t const *)caca_get_canvas_chars(dp->cv);
+    uint32_t const *attrs = (uint32_t const *)caca_get_canvas_attrs(dp->cv);
+    int width = caca_get_canvas_width(dp->cv);
+    int height = caca_get_canvas_height(dp->cv);
     int n;
 
     for(n = height * width; n--; )
     {
-        char ch = cucul_utf32_to_cp437(*chars++);
-        if(n && *chars == CUCUL_MAGIC_FULLWIDTH)
+        char ch = caca_utf32_to_cp437(*chars++);
+        if(n && *chars == CACA_MAGIC_FULLWIDTH)
         {
             *screen++ = '[';
-            *screen++ = cucul_attr_to_ansi(*attrs++);
+            *screen++ = caca_attr_to_ansi(*attrs++);
             ch = ']';
             chars++;
             n--;
         }
         *screen++ = ch;
-        *screen++ = cucul_attr_to_ansi(*attrs++);
+        *screen++ = caca_attr_to_ansi(*attrs++);
     }
 #   if defined(SCREENUPDATE_IN_PC_H)
     ScreenUpdate(dp->drv.p->screen);
@@ -129,8 +128,8 @@ static void conio_display(caca_display_t *dp)
 static void conio_handle_resize(caca_display_t *dp)
 {
     /* We know nothing about our window */
-    dp->resize.w = cucul_get_canvas_width(dp->cv);
-    dp->resize.h = cucul_get_canvas_height(dp->cv);
+    dp->resize.w = caca_get_canvas_width(dp->cv);
+    dp->resize.h = caca_get_canvas_height(dp->cv);
 }
 
 static int conio_get_event(caca_display_t *dp, caca_privevent_t *ev)

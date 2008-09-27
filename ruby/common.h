@@ -9,7 +9,7 @@ static VALUE x##_list(void)                     \
     VALUE ary, ary2;                            \
     char const* const* list;                    \
                                                 \
-    list = cucul_get_##x##_list();              \
+    list = caca_get_##x##_list();              \
     ary = rb_ary_new();                         \
     while (*list != NULL)                       \
     {                                           \
@@ -30,7 +30,7 @@ static VALUE x##_list(VALUE self)               \
     VALUE ary, ary2;                            \
     char const* const* list;                    \
                                                 \
-    list = cucul_get_##x##_list(_SELF);         \
+    list = caca_get_##x##_list(_SELF);         \
     ary = rb_ary_new();                         \
     while (*list != NULL)                       \
     {                                           \

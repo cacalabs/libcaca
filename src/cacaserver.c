@@ -42,7 +42,7 @@
 #   define USE_WINSOCK 0
 #endif
 
-#include "cucul.h"
+#include "caca.h"
 
 #define BACKLOG 1337     /* Number of pending connections */
 #define INBUFFER 32      /* Size of per-client input buffer */
@@ -110,7 +110,7 @@ struct server
 
     char prefix[sizeof(INIT_PREFIX)];
 
-    cucul_canvas_t *canvas;
+    caca_canvas_t *canvas;
     void *buffer;
     size_t buflen;
 
@@ -189,7 +189,7 @@ int main(void)
         return -1;
     }
 
-    server->canvas = cucul_create_canvas(0, 0);
+    server->canvas = caca_create_canvas(0, 0);
     server->buffer = NULL;
 
     /* Ignore SIGPIPE */
@@ -213,7 +213,7 @@ restart:
             server->read = 12;
         }
 
-        while(cucul_import_memory(server->canvas, server->input,
+        while(caca_import_memory(server->canvas, server->input,
                                   server->read, "caca") < 0)
         {
             memmove(server->input, server->input + 1, server->read - 1);
@@ -224,7 +224,7 @@ restart:
         {
             ssize_t needed, wanted;
 
-            needed = cucul_import_memory(server->canvas, server->input,
+            needed = caca_import_memory(server->canvas, server->input,
                                          server->read, "caca");
             if(needed < 0)
                 goto restart;
@@ -252,7 +252,7 @@ restart:
 
         /* Get ANSI representation of the image and skip the end-of buffer
          * linefeed ("\r\n", 2 byte) */
-        server->buffer = cucul_export_memory(server->canvas, "utf8cr",
+        server->buffer = caca_export_memory(server->canvas, "utf8cr",
                                              &server->buflen);
         server->buflen -= 2;
 
@@ -284,7 +284,7 @@ restart:
     if(server->buffer)
         free(server->buffer);
 
-    cucul_free_canvas(server->canvas);
+    caca_free_canvas(server->canvas);
 
     /* Restore SIGPIPE handler */
     signal(SIGPIPE, server->sigpipe_handler);

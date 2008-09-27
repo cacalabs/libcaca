@@ -1,5 +1,5 @@
 /*
- *  libcucul      Canvas for ultrafast compositing of Unicode letters
+ *  libcaca       Colour ASCII-Art library
  *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
@@ -19,8 +19,8 @@
 
 #include "config.h"
 
-#include "cucul.h"
-#include "cucul_internals.h"
+#include "caca.h"
+#include "caca_internals.h"
 
 static uint8_t nearest_ansi(uint16_t);
 
@@ -42,7 +42,7 @@ static const uint16_t ansitab14[16] =
 
 /** \brief Get the text attribute at the given coordinates.
  *
- *  Get the internal \e libcucul attribute value of the character at the
+ *  Get the internal \e libcaca attribute value of the character at the
  *  given coordinates. The attribute value has 32 significant bits,
  *  organised as follows from MSB to LSB:
  *  - 3 bits for the background alpha
@@ -60,12 +60,12 @@ static const uint16_t ansitab14[16] =
  *
  *  This function never fails.
  *
- *  \param cv A handle to the libcucul canvas.
+ *  \param cv A handle to the libcaca canvas.
  *  \param x X coordinate.
  *  \param y Y coordinate.
  *  \return The requested attribute.
  */
-uint32_t cucul_get_attr(cucul_canvas_t const *cv, int x, int y)
+uint32_t caca_get_attr(caca_canvas_t const *cv, int x, int y)
 {
     if(x < 0 || x >= (int)cv->width || y < 0 || y >= (int)cv->height)
         return cv->curattr;
@@ -82,21 +82,21 @@ uint32_t cucul_get_attr(cucul_canvas_t const *cv, int x, int y)
  *  will use this attribute.
  *
  *  The value of \e attr is either:
- *  - a 32-bit integer as returned by cucul_get_attr(), in which case it
+ *  - a 32-bit integer as returned by caca_get_attr(), in which case it
  *    also contains colour information,
- *  - a combination (bitwise OR) of style values (\e CUCUL_UNDERLINE,
- *    \e CUCUL_BLINK, \e CUCUL_BOLD and \e CUCUL_ITALICS), in which case
+ *  - a combination (bitwise OR) of style values (\e CACA_UNDERLINE,
+ *    \e CACA_BLINK, \e CACA_BOLD and \e CACA_ITALICS), in which case
  *    setting the attribute does not modify the current colour information.
  *
- *  To retrieve the current attribute value, use cucul_get_attr(-1,-1).
+ *  To retrieve the current attribute value, use caca_get_attr(-1,-1).
  *
  *  This function never fails.
  *
- *  \param cv A handle to the libcucul canvas.
+ *  \param cv A handle to the libcaca canvas.
  *  \param attr The requested attribute value.
  *  \return This function always returns 0.
  */
-int cucul_set_attr(cucul_canvas_t *cv, uint32_t attr)
+int caca_set_attr(caca_canvas_t *cv, uint32_t attr)
 {
     if(attr < 0x00000010)
         attr = (cv->curattr & 0xfffffff0) | attr;
@@ -113,21 +113,21 @@ int cucul_set_attr(cucul_canvas_t *cv, uint32_t attr)
  *  cells' attributes are replaced.
  *
  *  The value of \e attr is either:
- *  - a 32-bit integer as returned by cucul_get_attr(), in which case it
+ *  - a 32-bit integer as returned by caca_get_attr(), in which case it
  *    also contains colour information,
- *  - a combination (bitwise OR) of style values (\e CUCUL_UNDERLINE,
- *    \e CUCUL_BLINK, \e CUCUL_BOLD and \e CUCUL_ITALICS), in which case
+ *  - a combination (bitwise OR) of style values (\e CACA_UNDERLINE,
+ *    \e CACA_BLINK, \e CACA_BOLD and \e CACA_ITALICS), in which case
  *    setting the attribute does not modify the current colour information.
  *
  *  This function never fails.
  *
- *  \param cv A handle to the libcucul canvas.
+ *  \param cv A handle to the libcaca canvas.
  *  \param x X coordinate.
  *  \param y Y coordinate.
  *  \param attr The requested attribute value.
  *  \return This function always returns 0.
  */
-int cucul_put_attr(cucul_canvas_t *cv, int x, int y, uint32_t attr)
+int caca_put_attr(caca_canvas_t *cv, int x, int y, uint32_t attr)
 {
     uint32_t *curattr, *curchar;
 
@@ -142,9 +142,9 @@ int cucul_put_attr(cucul_canvas_t *cv, int x, int y, uint32_t attr)
     else
         curattr[0] = attr;
 
-    if(x && curchar[0] == CUCUL_MAGIC_FULLWIDTH)
+    if(x && curchar[0] == CACA_MAGIC_FULLWIDTH)
         curattr[-1] = curattr[0];
-    else if(x + 1 < (int)cv->width && curchar[1] == CUCUL_MAGIC_FULLWIDTH)
+    else if(x + 1 < (int)cv->width && curchar[1] == CACA_MAGIC_FULLWIDTH)
         curattr[1] = curattr[0];
 
     return 0;
@@ -156,18 +156,18 @@ int cucul_put_attr(cucul_canvas_t *cv, int x, int y, uint32_t attr)
  *  as caca_printf() and graphical primitive functions such as caca_draw_line()
  *  will use these attributes.
  *
- *  Color values are those defined in cucul.h, such as CUCUL_RED
- *  or CUCUL_TRANSPARENT.
+ *  Color values are those defined in caca.h, such as CACA_RED
+ *  or CACA_TRANSPARENT.
  *
  *  If an error occurs, 0 is returned and \b errno is set accordingly:
  *  - \c EINVAL At least one of the colour values is invalid.
  *
- *  \param cv A handle to the libcucul canvas.
+ *  \param cv A handle to the libcaca canvas.
  *  \param fg The requested ANSI foreground colour.
  *  \param bg The requested ANSI background colour.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_set_color_ansi(cucul_canvas_t *cv, uint8_t fg, uint8_t bg)
+int caca_set_color_ansi(caca_canvas_t *cv, uint8_t fg, uint8_t bg)
 {
     uint32_t attr;
 
@@ -195,12 +195,12 @@ int cucul_set_color_ansi(cucul_canvas_t *cv, uint8_t fg, uint8_t bg)
  *
  *  This function never fails.
  *
- *  \param cv A handle to the libcucul canvas.
+ *  \param cv A handle to the libcaca canvas.
  *  \param fg The requested ARGB foreground colour.
  *  \param bg The requested ARGB background colour.
  *  \return This function always returns 0.
  */
-int cucul_set_color_argb(cucul_canvas_t *cv, uint16_t fg, uint16_t bg)
+int caca_set_color_argb(caca_canvas_t *cv, uint16_t fg, uint16_t bg)
 {
     uint32_t attr;
 
@@ -226,9 +226,9 @@ int cucul_set_color_argb(cucul_canvas_t *cv, uint16_t fg, uint16_t bg)
  *  4 bits are the foreground colour.
  *
  *  If the attribute has ARGB colours, the nearest colour is used. Special
- *  attributes such as \e CUCUL_DEFAULT and \e CUCUL_TRANSPARENT are not
- *  handled and are both replaced with \e CUCUL_LIGHTGRAY for the foreground
- *  colour and \e CUCUL_BLACK for the background colour.
+ *  attributes such as \e CACA_DEFAULT and \e CACA_TRANSPARENT are not
+ *  handled and are both replaced with \e CACA_LIGHTGRAY for the foreground
+ *  colour and \e CACA_BLACK for the background colour.
  *
  *  This function never fails. If the attribute value is outside the expected
  *  32-bit range, higher order bits are simply ignored.
@@ -236,21 +236,21 @@ int cucul_set_color_argb(cucul_canvas_t *cv, uint16_t fg, uint16_t bg)
  *  \param attr The requested attribute value.
  *  \return The corresponding DOS ANSI value.
  */
-uint8_t cucul_attr_to_ansi(uint32_t attr)
+uint8_t caca_attr_to_ansi(uint32_t attr)
 {
     uint8_t fg = nearest_ansi((attr >> 4) & 0x3fff);
     uint8_t bg = nearest_ansi(attr >> 18);
 
-    return (fg < 0x10 ? fg : CUCUL_LIGHTGRAY)
-            | ((bg < 0x10 ? bg : CUCUL_BLACK) << 4);
+    return (fg < 0x10 ? fg : CACA_LIGHTGRAY)
+            | ((bg < 0x10 ? bg : CACA_BLACK) << 4);
 }
 
 /** \brief Get ANSI foreground information from attribute.
  *
  *  Get the ANSI foreground colour value for a given attribute. The returned
- *  value is either one of the \e CUCUL_RED, \e CUCUL_BLACK etc. predefined
- *  colours, or the special value \e CUCUL_DEFAULT meaning the media's
- *  default foreground value, or the special value \e CUCUL_TRANSPARENT.
+ *  value is either one of the \e CACA_RED, \e CACA_BLACK etc. predefined
+ *  colours, or the special value \e CACA_DEFAULT meaning the media's
+ *  default foreground value, or the special value \e CACA_TRANSPARENT.
  *
  *  If the attribute has ARGB colours, the nearest colour is returned.
  *
@@ -260,7 +260,7 @@ uint8_t cucul_attr_to_ansi(uint32_t attr)
  *  \param attr The requested attribute value.
  *  \return The corresponding ANSI foreground value.
  */
-uint8_t cucul_attr_to_ansi_fg(uint32_t attr)
+uint8_t caca_attr_to_ansi_fg(uint32_t attr)
 {
     return nearest_ansi(((uint16_t)attr >> 4) & 0x3fff);
 }
@@ -268,9 +268,9 @@ uint8_t cucul_attr_to_ansi_fg(uint32_t attr)
 /** \brief Get ANSI background information from attribute.
  *
  *  Get the ANSI background colour value for a given attribute. The returned
- *  value is either one of the \e CUCUL_RED, \e CUCUL_BLACK etc. predefined
- *  colours, or the special value \e CUCUL_DEFAULT meaning the media's
- *  default background value, or the special value \e CUCUL_TRANSPARENT.
+ *  value is either one of the \e CACA_RED, \e CACA_BLACK etc. predefined
+ *  colours, or the special value \e CACA_DEFAULT meaning the media's
+ *  default background value, or the special value \e CACA_TRANSPARENT.
  *
  *  If the attribute has ARGB colours, the nearest colour is returned.
  *
@@ -280,7 +280,7 @@ uint8_t cucul_attr_to_ansi_fg(uint32_t attr)
  *  \param attr The requested attribute value.
  *  \return The corresponding ANSI background value.
  */
-uint8_t cucul_attr_to_ansi_bg(uint32_t attr)
+uint8_t caca_attr_to_ansi_bg(uint32_t attr)
 {
     return nearest_ansi(attr >> 18);
 }
@@ -300,18 +300,18 @@ uint8_t cucul_attr_to_ansi_bg(uint32_t attr)
  *  \param attr The requested attribute value.
  *  \return The corresponding 12-bit RGB foreground value.
  */
-uint16_t cucul_attr_to_rgb12_fg(uint32_t attr)
+uint16_t caca_attr_to_rgb12_fg(uint32_t attr)
 {
     uint16_t fg = (attr >> 4) & 0x3fff;
 
     if(fg < (0x10 | 0x40))
         return ansitab16[fg ^ 0x40] & 0x0fff;
 
-    if(fg == (CUCUL_DEFAULT | 0x40))
-        return ansitab16[CUCUL_LIGHTGRAY] & 0x0fff;
+    if(fg == (CACA_DEFAULT | 0x40))
+        return ansitab16[CACA_LIGHTGRAY] & 0x0fff;
 
-    if(fg == (CUCUL_TRANSPARENT | 0x40))
-        return ansitab16[CUCUL_LIGHTGRAY] & 0x0fff;
+    if(fg == (CACA_TRANSPARENT | 0x40))
+        return ansitab16[CACA_LIGHTGRAY] & 0x0fff;
 
     return (fg << 1) & 0x0fff;
 }
@@ -331,18 +331,18 @@ uint16_t cucul_attr_to_rgb12_fg(uint32_t attr)
  *  \param attr The requested attribute value.
  *  \return The corresponding 12-bit RGB background value.
  */
-uint16_t cucul_attr_to_rgb12_bg(uint32_t attr)
+uint16_t caca_attr_to_rgb12_bg(uint32_t attr)
 {
     uint16_t bg = attr >> 18;
 
     if(bg < (0x10 | 0x40))
         return ansitab16[bg ^ 0x40] & 0x0fff;
 
-    if(bg == (CUCUL_DEFAULT | 0x40))
-        return ansitab16[CUCUL_BLACK] & 0x0fff;
+    if(bg == (CACA_DEFAULT | 0x40))
+        return ansitab16[CACA_BLACK] & 0x0fff;
 
-    if(bg == (CUCUL_TRANSPARENT | 0x40))
-        return ansitab16[CUCUL_BLACK] & 0x0fff;
+    if(bg == (CACA_TRANSPARENT | 0x40))
+        return ansitab16[CACA_BLACK] & 0x0fff;
 
     return (bg << 1) & 0x0fff;
 }
@@ -366,16 +366,16 @@ uint16_t cucul_attr_to_rgb12_bg(uint32_t attr)
  *  \param attr The requested attribute value.
  *  \param argb An array of 8-bit integers.
  */
-void cucul_attr_to_argb64(uint32_t attr, uint8_t argb[8])
+void caca_attr_to_argb64(uint32_t attr, uint8_t argb[8])
 {
     uint16_t fg = (attr >> 4) & 0x3fff;
     uint16_t bg = attr >> 18;
 
     if(bg < (0x10 | 0x40))
         bg = ansitab16[bg ^ 0x40];
-    else if(bg == (CUCUL_DEFAULT | 0x40))
-        bg = ansitab16[CUCUL_BLACK];
-    else if(bg == (CUCUL_TRANSPARENT | 0x40))
+    else if(bg == (CACA_DEFAULT | 0x40))
+        bg = ansitab16[CACA_BLACK];
+    else if(bg == (CACA_TRANSPARENT | 0x40))
         bg = 0x0fff;
     else
         bg = ((bg << 2) & 0xf000) | ((bg << 1) & 0x0fff);
@@ -387,9 +387,9 @@ void cucul_attr_to_argb64(uint32_t attr, uint8_t argb[8])
 
     if(fg < (0x10 | 0x40))
         fg = ansitab16[fg ^ 0x40];
-    else if(fg == (CUCUL_DEFAULT | 0x40))
-        fg = ansitab16[CUCUL_LIGHTGRAY];
-    else if(fg == (CUCUL_TRANSPARENT | 0x40))
+    else if(fg == (CACA_DEFAULT | 0x40))
+        fg = ansitab16[CACA_LIGHTGRAY];
+    else if(fg == (CACA_TRANSPARENT | 0x40))
         fg = 0x0fff;
     else
         fg = ((fg << 2) & 0xf000) | ((fg << 1) & 0x0fff);
@@ -411,13 +411,13 @@ static uint8_t nearest_ansi(uint16_t argb14)
     if(argb14 < (0x10 | 0x40))
         return argb14 ^ 0x40;
 
-    if(argb14 == (CUCUL_DEFAULT | 0x40) || argb14 == (CUCUL_TRANSPARENT | 0x40))
+    if(argb14 == (CACA_DEFAULT | 0x40) || argb14 == (CACA_TRANSPARENT | 0x40))
         return argb14 ^ 0x40;
 
     if(argb14 < 0x0fff) /* too transparent */
-        return CUCUL_TRANSPARENT;
+        return CACA_TRANSPARENT;
 
-    best = CUCUL_DEFAULT;
+    best = CACA_DEFAULT;
     dist = 0x3fff;
     for(i = 0; i < 16; i++)
     {
@@ -451,13 +451,13 @@ static uint8_t nearest_ansi(uint16_t argb14)
   | ((uint32_t)((i & 0x0f0) >> 4) * 0x001100) \
   | ((uint32_t)(i & 0x00f) * 0x000011))
 
-uint32_t _cucul_attr_to_rgb24fg(uint32_t attr)
+uint32_t _caca_attr_to_rgb24fg(uint32_t attr)
 {
-    return RGB12TO24(cucul_attr_to_rgb12_fg(attr));
+    return RGB12TO24(caca_attr_to_rgb12_fg(attr));
 }
 
-uint32_t _cucul_attr_to_rgb24bg(uint32_t attr)
+uint32_t _caca_attr_to_rgb24bg(uint32_t attr)
 {
-    return RGB12TO24(cucul_attr_to_rgb12_bg(attr));
+    return RGB12TO24(caca_attr_to_rgb12_bg(attr));
 }
 

@@ -1,5 +1,5 @@
 /*
- *  libcucul Ruby bindings
+ *  libcaca Ruby bindings
  *  Copyright (c) 2007 Pascal Terjan <pterjan@linuxfr.org>
  *
  *  This library is free software. It comes without any warranty, to
@@ -10,7 +10,7 @@
  */
 
 #include <ruby.h>
-#include <cucul.h>
+#include <caca.h>
 #include <errno.h>
 #include "common.h"
 
@@ -18,7 +18,7 @@ VALUE cDither;
 
 void dither_free(void *dither)
 {
-    cucul_free_dither((cucul_dither_t *)dither);
+    caca_free_dither((caca_dither_t *)dither);
 }
 
 static VALUE dither_alloc(VALUE klass)
@@ -30,9 +30,9 @@ static VALUE dither_alloc(VALUE klass)
 
 static VALUE dither_initialize(VALUE self, VALUE bpp, VALUE w, VALUE h, VALUE pitch, VALUE rmask, VALUE gmask, VALUE bmask, VALUE amask)
 {
-    cucul_dither_t *dither;
+    caca_dither_t *dither;
 
-    dither = cucul_create_dither(NUM2UINT(bpp), NUM2UINT(w), NUM2UINT(h), NUM2UINT(pitch), NUM2ULONG(rmask), NUM2ULONG(gmask), NUM2ULONG(bmask), NUM2ULONG(amask));
+    dither = caca_create_dither(NUM2UINT(bpp), NUM2UINT(w), NUM2UINT(h), NUM2UINT(pitch), NUM2ULONG(rmask), NUM2ULONG(gmask), NUM2ULONG(bmask), NUM2ULONG(amask));
     if(dither == NULL)
     {
         rb_raise(rb_eRuntimeError, strerror(errno));
@@ -115,7 +115,7 @@ static VALUE set_dither_palette(VALUE self, VALUE palette)
         rb_raise(rb_eArgError, "Invalid palette");
     }
 
-    if(cucul_set_dither_palette(_SELF, red, green, blue, alpha)<0)
+    if(caca_set_dither_palette(_SELF, red, green, blue, alpha)<0)
     {
         free(red);
         free(green);
@@ -141,7 +141,7 @@ static VALUE set_dither_palette2(VALUE self, VALUE palette)
 #define set_float(x)                                    \
 static VALUE set_##x(VALUE self, VALUE x)              \
 {                                                       \
-    if(cucul_set_dither_##x(_SELF, (float)NUM2DBL(x))<0)\
+    if(caca_set_dither_##x(_SELF, (float)NUM2DBL(x))<0)\
         rb_raise(rb_eRuntimeError, strerror(errno));    \
                                                         \
     return x;                                           \
@@ -161,7 +161,7 @@ set_float(contrast)
 get_double_list(dither_##x)                              \
 static VALUE set_dither_##x(VALUE self, VALUE x)         \
 {                                                        \
-    if(cucul_set_dither_##x(_SELF, StringValuePtr(x))<0) \
+    if(caca_set_dither_##x(_SELF, StringValuePtr(x))<0) \
     {                                                    \
         rb_raise(rb_eRuntimeError, strerror(errno));     \
     }                                                    \
@@ -179,7 +179,7 @@ get_set_str_from_list(color)
 get_set_str_from_list(charset)
 get_set_str_from_list(algorithm)
 
-void Init_cucul_dither(VALUE mCucul)
+void Init_caca_dither(VALUE mCucul)
 {
     cDither = rb_define_class_under(mCucul, "Dither", rb_cObject);
     rb_define_alloc_func(cDither, dither_alloc);

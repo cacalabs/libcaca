@@ -1,5 +1,5 @@
 /*
- *  libcucul      Canvas for ultrafast compositing of Unicode letters
+ *  libcaca       Colour ASCII-Art library
  *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
@@ -25,8 +25,15 @@
 #   include <string.h>
 #endif
 
-#include "cucul.h"
-#include "cucul_internals.h"
+#include "caca.h"
+#include "caca_internals.h"
+
+struct cucul_buffer
+{
+    size_t size;
+    char *data;
+    int user_data;
+};
 
 /*
  * Functions from canvas.c
@@ -34,17 +41,17 @@
 
 int cucul_putchar(cucul_canvas_t *cv, int x, int y, unsigned long int ch)
 {
-    return cucul_put_char(cv, x, y, ch);
+    return caca_put_char(cv, x, y, ch);
 }
 
 unsigned long int cucul_getchar(cucul_canvas_t *cv, int x, int y)
 {
-    return cucul_get_char(cv, x, y);
+    return caca_get_char(cv, x, y);
 }
 
 int cucul_putstr(cucul_canvas_t *cv, int x, int y, char const *s)
 {
-    return cucul_put_str(cv, x, y, s);
+    return caca_put_str(cv, x, y, s);
 }
 
 /*
@@ -53,12 +60,12 @@ int cucul_putstr(cucul_canvas_t *cv, int x, int y, char const *s)
 
 int cucul_set_color(cucul_canvas_t *cv, unsigned char fg, unsigned char bg)
 {
-    return cucul_set_color_ansi(cv, fg, bg);
+    return caca_set_color_ansi(cv, fg, bg);
 }
 
 int cucul_set_truecolor(cucul_canvas_t *cv, unsigned int fg, unsigned int bg)
 {
-    return cucul_set_color_argb(cv, fg, bg);
+    return caca_set_color_argb(cv, fg, bg);
 }
 
 /*
@@ -66,22 +73,22 @@ int cucul_set_truecolor(cucul_canvas_t *cv, unsigned int fg, unsigned int bg)
  */
 int cucul_set_dither_invert(cucul_dither_t *d, int value)
 {
-    float gamma = cucul_get_dither_gamma(d);
+    float gamma = caca_get_dither_gamma(d);
 
     if(gamma * (value ? -1 : 1) < 0)
-        cucul_set_dither_gamma(d, -gamma);
+        caca_set_dither_gamma(d, -gamma);
 
     return 0;
 }
 
 int cucul_set_dither_mode(cucul_dither_t *d, char const *s)
 {
-    return cucul_set_dither_algorithm(d, s);
+    return caca_set_dither_algorithm(d, s);
 }
 
 char const * const * cucul_get_dither_mode_list(cucul_dither_t const *d)
 {
-    return cucul_get_dither_algorithm_list(d);
+    return caca_get_dither_algorithm_list(d);
 }
 
 /*
@@ -90,12 +97,12 @@ char const * const * cucul_get_dither_mode_list(cucul_dither_t const *d)
 
 cucul_canvas_t * cucul_import_canvas(cucul_buffer_t *buf, char const *format)
 {
-    cucul_canvas_t *cv = cucul_create_canvas(0, 0);
-    int ret = cucul_import_memory(cv, (unsigned char const *)buf->data,
+    caca_canvas_t *cv = caca_create_canvas(0, 0);
+    int ret = caca_import_memory(cv, (unsigned char const *)buf->data,
                                   buf->size, format);
     if(ret < 0)
     {
-        cucul_free_canvas(cv);
+        caca_free_canvas(cv);
         return NULL;
     }
 
@@ -117,7 +124,7 @@ cucul_buffer_t * cucul_export_canvas(cucul_canvas_t *cv, char const *format)
         return NULL;
     }
 
-    ex->data = cucul_export_memory(cv, format, &ex->size);
+    ex->data = caca_export_memory(cv, format, &ex->size);
     if(!ex->data)
     {
         free(ex);
@@ -135,22 +142,22 @@ cucul_buffer_t * cucul_export_canvas(cucul_canvas_t *cv, char const *format)
 
 unsigned int cucul_get_canvas_frame_count(cucul_canvas_t *cv)
 {
-    return cucul_get_frame_count(cv);
+    return caca_get_frame_count(cv);
 }
 
 int cucul_set_canvas_frame(cucul_canvas_t *cv, unsigned int id)
 {
-    return cucul_set_frame(cv, id);
+    return caca_set_frame(cv, id);
 }
 
 int cucul_create_canvas_frame(cucul_canvas_t *cv, unsigned int id)
 {
-    return cucul_create_frame(cv, id);
+    return caca_create_frame(cv, id);
 }
 
 int cucul_free_canvas_frame(cucul_canvas_t *cv, unsigned int id)
 {
-    return cucul_free_frame(cv, id);
+    return caca_free_frame(cv, id);
 }
 
 /*
@@ -175,40 +182,40 @@ cucul_buffer_t *cucul_load_memory(void *data, unsigned long int size)
 cucul_buffer_t *cucul_load_file(char const *file)
 {
     cucul_buffer_t *buf;
-    cucul_file_t *f;
+    caca_file_t *f;
     int ret;
 
-    f = cucul_file_open(file, "rb");
+    f = caca_file_open(file, "rb");
     if(!f)
         return NULL;
 
     buf = malloc(sizeof(cucul_buffer_t));
     if(!buf)
     {
-        cucul_file_close(f);
+        caca_file_close(f);
         return NULL;
     }
 
     buf->data = NULL;
     buf->size = 0;
 
-    while(!cucul_file_eof(f))
+    while(!caca_file_eof(f))
     {
         buf->data = realloc(buf->data, buf->size + 1024);
         if(!buf->data)
         {
             int saved_errno = geterrno();
             free(buf);
-            cucul_file_close(f);
+            caca_file_close(f);
             seterrno(saved_errno);
             return NULL;
         }
 
-        ret = cucul_file_read(f, buf->data + buf->size, 1024);
+        ret = caca_file_read(f, buf->data + buf->size, 1024);
         if(ret >= 0)
             buf->size += ret;
     }
-    cucul_file_close(f);
+    caca_file_close(f);
 
     return buf;
 }
@@ -239,6 +246,6 @@ int cucul_free_buffer(cucul_buffer_t *buf)
 
 int cucul_rotate(cucul_canvas_t *cv)
 {
-    return cucul_rotate_180(cv);
+    return caca_rotate_180(cv);
 }
 

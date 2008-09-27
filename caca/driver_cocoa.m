@@ -23,7 +23,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "cucul.h"
+#include "caca.h"
 #include "caca.h"
 #include "caca_internals.h"
 
@@ -195,14 +195,14 @@ static BOOL s_quitting = NO;
 
 - (void)resizeIfNeeded:(caca_display_t *)dp
 {
-    if(_w != cucul_get_canvas_width(dp->cv)
-        || _h != cucul_get_canvas_height(dp->cv)
+    if(_w != caca_get_canvas_width(dp->cv)
+        || _h != caca_get_canvas_height(dp->cv)
         || !_attrs || !_bkg_rects || !_bkg_colors)
     {
         debug_log(@"%s resize to %ux%u", _cmd, _w, _h);
         
-        _w = cucul_get_canvas_width(dp->cv);
-        _h = cucul_get_canvas_height(dp->cv);
+        _w = caca_get_canvas_width(dp->cv);
+        _h = caca_get_canvas_height(dp->cv);
 
         if(_attrs)
             free(_attrs);
@@ -216,8 +216,8 @@ static BOOL s_quitting = NO;
             free(_bkg_colors);
         _bkg_colors = malloc(_w * _h * sizeof(NSColor*));
 
-        [[self window] setContentSize: NSMakeSize(cucul_get_canvas_width(dp->cv) * _font_rect.size.width,
-                                                  cucul_get_canvas_height(dp->cv) * _font_rect.size.height)];
+        [[self window] setContentSize: NSMakeSize(caca_get_canvas_width(dp->cv) * _font_rect.size.width,
+                                                  caca_get_canvas_height(dp->cv) * _font_rect.size.height)];
     }
 }
 
@@ -228,9 +228,9 @@ static BOOL s_quitting = NO;
     if(_attrs)
     {
         _chars = _attrs + _w * _h;
-        memcpy(_attrs, cucul_get_canvas_attrs(dp->cv),
+        memcpy(_attrs, caca_get_canvas_attrs(dp->cv),
                _w * _h * sizeof(uint32_t));
-        memcpy(_chars, cucul_get_canvas_chars(dp->cv),
+        memcpy(_chars, caca_get_canvas_chars(dp->cv),
                _w * _h * sizeof(uint32_t));
 
         [self setNeedsDisplay:TRUE];
@@ -270,7 +270,7 @@ static BOOL s_quitting = NO;
                 attrs = _attrs + x + y * _w;
                 NSColor* color = nil;
 #if USE_RGB12_FGBG
-                uint16_t bg = cucul_attr_to_rgb12_bg(*attrs);
+                uint16_t bg = caca_attr_to_rgb12_bg(*attrs);
                 if(bg)
                 {
 #   ifdef PRECACHE_WHOLE_COLOR_TABLE
@@ -288,7 +288,7 @@ static BOOL s_quitting = NO;
                 }
 #else
                 uint8_t argb[8];
-                cucul_attr_to_argb64(*attrs, argb);
+                caca_attr_to_argb64(*attrs, argb);
                 color =  [NSColor colorWithCalibratedRed:((float)argb[1]) / 15.0
                                   green:((float)argb[2]) / 15.0
                                   blue:((float)argb[3]) / 15.0
@@ -316,7 +316,7 @@ static BOOL s_quitting = NO;
             if(*chars <= 0x00000020)
                 continue;
 
-            if(*chars == CUCUL_MAGIC_FULLWIDTH)
+            if(*chars == CACA_MAGIC_FULLWIDTH)
                 continue;
 
             /* Plain ASCII, no problem. */
@@ -328,7 +328,7 @@ static BOOL s_quitting = NO;
                 {
                     NSColor* color = nil;
 #if USE_RGB12_FGBG
-                    uint16_t fg = cucul_attr_to_rgb12_fg(*attrs);
+                    uint16_t fg = caca_attr_to_rgb12_fg(*attrs);
 #   ifdef PRECACHE_WHOLE_COLOR_TABLE
                     color = _colorCache[fg];
 #   else // PRECACHE_WHOLE_COLOR_TABLE
@@ -343,7 +343,7 @@ static BOOL s_quitting = NO;
 #   endif // PRECACHE_WHOLE_COLOR_TABLE
 #else // USE_RGB12_FGBG
                     uint8_t argb[8];
-                    cucul_attr_to_argb64(*attrs, argb);
+                    caca_attr_to_argb64(*attrs, argb);
                     debug_log(@"x,y=[%d,%d] r,g,b back=[%u %u %u] front=[%u %u %u]", 
                               x, y, argb[1], argb[2], argb[3], argb[5], argb[6], argb[7]);
                     color =  [NSColor colorWithCalibratedRed:((float)argb[5]) / 15.0
@@ -354,7 +354,7 @@ static BOOL s_quitting = NO;
 
                     if(color)
                     {
-                        NSMutableDictionary* attrDict = (*attrs & CUCUL_UNDERLINE) ? 
+                        NSMutableDictionary* attrDict = (*attrs & CACA_UNDERLINE) ? 
                                                         _attrDictUnderline : _attrDict;
                         [attrDict setObject:color forKey:NSForegroundColorAttributeName];
 
@@ -572,8 +572,8 @@ static void create_first_window(caca_display_t *dp)
     NSFont* font = [NSFont fontWithName:@"Monaco" size:10];
     NSRect fontRect = [font boundingRectForFont];
     fontRect = NSMakeRect(0, 0, ceilf(fontRect.size.width), ceilf(fontRect.size.height));
-    NSRect windowRect = NSMakeRect(20, 20, cucul_get_canvas_width(dp->cv) * fontRect.size.width,
-                                           cucul_get_canvas_height(dp->cv) * fontRect.size.height);
+    NSRect windowRect = NSMakeRect(20, 20, caca_get_canvas_width(dp->cv) * fontRect.size.width,
+                                           caca_get_canvas_height(dp->cv) * fontRect.size.height);
     convert_NSRect(&windowRect);
 
     CacaView* view = [[CacaView alloc] initWithFrame:windowRect];
@@ -826,8 +826,8 @@ static BOOL handle_mouse_event(caca_display_t *dp, caca_privevent_t *ev,
 
 static int cocoa_init_graphics(caca_display_t *dp)
 {
-    int width = cucul_get_canvas_width(dp->cv);
-    int height = cucul_get_canvas_height(dp->cv);
+    int width = caca_get_canvas_width(dp->cv);
+    int height = caca_get_canvas_height(dp->cv);
 
     debug_log(@"%s dp->cv: %ux%u", __PRETTY_FUNCTION__, width, height);
 
@@ -838,7 +838,7 @@ static int cocoa_init_graphics(caca_display_t *dp)
         return -1;
 
     dp->resize.allow = 1;
-    cucul_set_canvas_size(dp->cv, width ? width : 80, height ? height : 32);
+    caca_set_canvas_size(dp->cv, width ? width : 80, height ? height : 32);
     dp->resize.allow = 0;
 
     // first create a full cocoa app if the host has no bundle
@@ -858,7 +858,7 @@ static int cocoa_init_graphics(caca_display_t *dp)
 static int cocoa_end_graphics(caca_display_t *dp)
 {
     debug_log(@"%s dp->cv: %ux%u", __PRETTY_FUNCTION__, 
-              cucul_get_canvas_width(dp->cv), cucul_get_canvas_height(dp->cv));
+              caca_get_canvas_width(dp->cv), caca_get_canvas_height(dp->cv));
 
     NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
     [dp->drv.p->window close];
@@ -958,8 +958,8 @@ static int cocoa_get_event(caca_display_t *dp, caca_privevent_t *ev)
 static void cocoa_handle_resize(caca_display_t *dp)
 {
     debug_log(@"%s", __PRETTY_FUNCTION__);
-    dp->resize.w = cucul_get_canvas_width(dp->cv);
-    dp->resize.h = cucul_get_canvas_height(dp->cv);
+    dp->resize.w = caca_get_canvas_width(dp->cv);
+    dp->resize.h = caca_get_canvas_height(dp->cv);
 }
 
 static int cocoa_set_display_title(caca_display_t *dp, char const *title)

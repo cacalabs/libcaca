@@ -1,5 +1,5 @@
 /*
- *  font          libcucul font test program
+ *  font          libcaca font test program
  *  Copyright (c) 2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
@@ -24,21 +24,20 @@
 #   include <string.h>
 #endif
 
-#include "cucul.h"
 #include "caca.h"
 
 int main(int argc, char *argv[])
 {
-    cucul_canvas_t *cv;
+    caca_canvas_t *cv;
     caca_display_t *dp;
-    cucul_font_t *f;
-    cucul_dither_t *d;
+    caca_font_t *f;
+    caca_dither_t *d;
     uint8_t *buf;
     unsigned int w, h;
     char const * const * fonts;
 
     /* Create a canvas */
-    cv = cucul_create_canvas(8, 2);
+    cv = caca_create_canvas(8, 2);
     if(cv == NULL)
     {
         printf("Can't create canvas\n");
@@ -47,21 +46,21 @@ int main(int argc, char *argv[])
 
 
     /* Draw stuff on our canvas */
-    cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLACK);
-    cucul_put_str(cv, 0, 0, "ABcde");
-    cucul_set_color_ansi(cv, CUCUL_LIGHTRED, CUCUL_BLACK);
-    cucul_put_str(cv, 5, 0, "\\o/");
-    cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
-    cucul_put_str(cv, 0, 1, "&$âøÿØ?!");
+    caca_set_color_ansi(cv, CACA_WHITE, CACA_BLACK);
+    caca_put_str(cv, 0, 0, "ABcde");
+    caca_set_color_ansi(cv, CACA_LIGHTRED, CACA_BLACK);
+    caca_put_str(cv, 5, 0, "\\o/");
+    caca_set_color_ansi(cv, CACA_WHITE, CACA_BLUE);
+    caca_put_str(cv, 0, 1, "&$âøÿØ?!");
 
-    /* Load a libcucul internal font */
-    fonts = cucul_get_font_list();
+    /* Load a libcaca internal font */
+    fonts = caca_get_font_list();
     if(fonts[0] == NULL)
     {
-        fprintf(stderr, "error: libcucul was compiled without any fonts\n");
+        fprintf(stderr, "error: libcaca was compiled without any fonts\n");
         return -1;
     }
-    f = cucul_load_font(fonts[0], 0);
+    f = caca_load_font(fonts[0], 0);
     if(f == NULL)
     {
         fprintf(stderr, "error: could not load font \"%s\"\n", fonts[0]);
@@ -69,15 +68,15 @@ int main(int argc, char *argv[])
     }
 
     /* Create our bitmap buffer (32-bit ARGB) */
-    w = cucul_get_canvas_width(cv) * cucul_get_font_width(f);
-    h = cucul_get_canvas_height(cv) * cucul_get_font_height(f);
+    w = caca_get_canvas_width(cv) * caca_get_font_width(f);
+    h = caca_get_canvas_height(cv) * caca_get_font_height(f);
     buf = malloc(4 * w * h);
 
     /* Render the canvas onto our image buffer */
-    cucul_render_canvas(cv, f, buf, w, h, 4 * w);
+    caca_render_canvas(cv, f, buf, w, h, 4 * w);
 
     /* Just for fun, render the image using libcaca */
-    cucul_set_canvas_size(cv, 80, 32);
+    caca_set_canvas_size(cv, 80, 32);
     dp = caca_create_display(cv);
 
     {
@@ -88,15 +87,15 @@ int main(int argc, char *argv[])
         uint32_t const tmp = 0x12345678;
         if(*(uint8_t const *)&tmp == 0x12)
 #endif
-            d = cucul_create_dither(32, w, h, 4 * w,
+            d = caca_create_dither(32, w, h, 4 * w,
                                     0xff0000, 0xff00, 0xff, 0xff000000);
         else
-            d = cucul_create_dither(32, w, h, 4 * w,
+            d = caca_create_dither(32, w, h, 4 * w,
                                     0xff00, 0xff0000, 0xff000000, 0xff);
     }
 
-    cucul_dither_bitmap(cv, 0, 0, cucul_get_canvas_width(cv),
-                                  cucul_get_canvas_height(cv), d, buf);
+    caca_dither_bitmap(cv, 0, 0, caca_get_canvas_width(cv),
+                                  caca_get_canvas_height(cv), d, buf);
     caca_refresh_display(dp);
 
     caca_get_event(dp, CACA_EVENT_KEY_PRESS, NULL, -1);
@@ -104,9 +103,9 @@ int main(int argc, char *argv[])
     /* Free everything */
     caca_free_display(dp);
     free(buf);
-    cucul_free_dither(d);
-    cucul_free_font(f);
-    cucul_free_canvas(cv);
+    caca_free_dither(d);
+    caca_free_font(f);
+    caca_free_canvas(cv);
 
     return 0;
 }

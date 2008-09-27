@@ -1,2 +1,2 @@
-#define CUCUL_TYPES 3
-#include "../cucul/cucul_types.h.in"
+#define CACA_TYPES 3
+#include "../caca/caca_types.h.in"

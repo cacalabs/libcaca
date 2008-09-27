@@ -18,7 +18,6 @@
 #   include <stdio.h>
 #endif
 
-#include "cucul.h"
 #include "caca.h"
 
 #define XRATIO 100*100
@@ -27,20 +26,20 @@
 
 unsigned int points[] =
 {
-    CUCUL_BLACK, CUCUL_DARKGRAY, CUCUL_LIGHTGRAY,
-    CUCUL_WHITE, CUCUL_RED, CUCUL_LIGHTRED
+    CACA_BLACK, CACA_DARKGRAY, CACA_LIGHTGRAY,
+    CACA_WHITE, CACA_RED, CACA_LIGHTRED
 };
 
 char density[] = " ',+:;o&%w$W@#";
 
 int main(int argc, char *argv[])
 {
-    cucul_canvas_t *cv;
+    caca_canvas_t *cv;
     caca_display_t *dp;
     int neara, dista, nearb, distb, dist;
     int x, y;
 
-    cv = cucul_create_canvas(80, 24);
+    cv = caca_create_canvas(80, 24);
     if(cv == NULL)
     {
         printf("Failed to create canvas\n");
@@ -67,7 +66,7 @@ int main(int argc, char *argv[])
 
         /* distance to 40% */
         dist = XRATIO * (x - 40) * (x - 40) + YRATIO * y * y;
-        if(cucul_rand(-FUZZY, FUZZY+1) + dist < dista)
+        if(caca_rand(-FUZZY, FUZZY+1) + dist < dista)
         {
             nearb = neara; distb = dista; neara = 1; dista = dist;
         }
@@ -78,22 +77,22 @@ int main(int argc, char *argv[])
 
         /* check dist to 70% */
         dist = XRATIO * (x - 70) * (x - 70) + YRATIO * y * y;
-        if(cucul_rand(-FUZZY, FUZZY+1) + dist < dista)
+        if(caca_rand(-FUZZY, FUZZY+1) + dist < dista)
         {
             nearb = neara; distb = dista; neara = 2; dista = dist;
         }
-        else if(cucul_rand(-FUZZY, FUZZY+1) + dist < distb)
+        else if(caca_rand(-FUZZY, FUZZY+1) + dist < distb)
         {
             nearb = 2; distb = dist;
         }
 
         /* check dist to white */
         dist = XRATIO * (x - 100) * (x - 100) + YRATIO * y * y;
-        if(cucul_rand(-FUZZY, FUZZY+1) + dist < dista)
+        if(caca_rand(-FUZZY, FUZZY+1) + dist < dista)
         {
             nearb = neara; distb = dista; neara = 3; dista = dist;
         }
-        else if(cucul_rand(-FUZZY, FUZZY+1) + dist < distb)
+        else if(caca_rand(-FUZZY, FUZZY+1) + dist < distb)
         {
             nearb = 3; distb = dist;
         }
@@ -102,11 +101,11 @@ int main(int argc, char *argv[])
         /* check dist to dark */
         dist = XRATIO * (x - 40) * (x - 40) + YRATIO * (y - 100) * (y - 100);
         dist = dist * 12 / 16;
-        if(cucul_rand(-FUZZY, FUZZY+1) + dist < dista)
+        if(caca_rand(-FUZZY, FUZZY+1) + dist < dista)
         {
             nearb = neara; distb = dista; neara = 4; dista = dist;
         }
-        else if(cucul_rand(-FUZZY, FUZZY+1) + dist < distb)
+        else if(caca_rand(-FUZZY, FUZZY+1) + dist < distb)
         {
             nearb = 4; distb = dist;
         }
@@ -114,11 +113,11 @@ int main(int argc, char *argv[])
         /* check dist to light */
         dist = XRATIO * (x - 100) * (x - 100) + YRATIO * (y - 100) * (y - 100);
         dist = dist * 8 / 16;
-        if(cucul_rand(-FUZZY, FUZZY+1) + dist < dista)
+        if(caca_rand(-FUZZY, FUZZY+1) + dist < dista)
         {
             nearb = neara; distb = dista; neara = 5; dista = dist;
         }
-        else if(cucul_rand(-FUZZY, FUZZY+1) + dist < distb)
+        else if(caca_rand(-FUZZY, FUZZY+1) + dist < distb)
         {
             nearb = 5; distb = dist;
         }
@@ -129,10 +128,10 @@ int main(int argc, char *argv[])
             ch = density[distb * 2 * 13 / (dista + distb)];
         else
             ch = density[dista * 2 * 13 / (dista + distb)];
-        cucul_set_color_ansi(cv, points[nearb], points[neara]);
+        caca_set_color_ansi(cv, points[nearb], points[neara]);
 
-        cucul_put_char(cv, x * cucul_get_canvas_width(cv) / 100,
-                          (100 - y) * cucul_get_canvas_height(cv) / 100, ch);
+        caca_put_char(cv, x * caca_get_canvas_width(cv) / 100,
+                          (100 - y) * caca_get_canvas_height(cv) / 100, ch);
     }
 
     caca_refresh_display(dp);
@@ -140,7 +139,7 @@ int main(int argc, char *argv[])
     caca_get_event(dp, CACA_EVENT_KEY_PRESS, NULL, -1);
 
     caca_free_display(dp);
-    cucul_free_canvas(cv);
+    caca_free_canvas(cv);
 
     return 0;
 }

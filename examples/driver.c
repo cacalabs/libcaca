@@ -19,14 +19,13 @@
 #   include <stdio.h>
 #endif
 
-#include "cucul.h"
 #include "caca.h"
 
 int main(int argc, char *argv[])
 {
     char const * const *list;
     caca_display_t *dp;
-    cucul_canvas_t *cv;
+    caca_canvas_t *cv;
 
     list = caca_get_display_driver_list();
 
@@ -38,14 +37,14 @@ int main(int argc, char *argv[])
     }
 
     cv = caca_get_canvas(dp);
-    cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLACK);
+    caca_set_color_ansi(cv, CACA_WHITE, CACA_BLACK);
 
     while(1)
     {
         char const *driver;
         int i, cur = 0;
 
-        cucul_put_str(cv, 1, 0, "Available drivers:");
+        caca_put_str(cv, 1, 0, "Available drivers:");
 
         driver = caca_get_display_driver(dp);
 
@@ -55,12 +54,12 @@ int main(int argc, char *argv[])
 
             if(match)
                 cur = i;
-            cucul_draw_line(cv, 0, i + 2, 9999, i + 2, ' ');
-            cucul_printf(cv, 2, i + 2, "%c %s (%s)",
+            caca_draw_line(cv, 0, i + 2, 9999, i + 2, ' ');
+            caca_printf(cv, 2, i + 2, "%c %s (%s)",
                          match ? '*' : ' ', list[i], list[i + 1]);
         }
 
-        cucul_put_str(cv, 1, i + 2, "Switching driver in 5 seconds");
+        caca_put_str(cv, 1, i + 2, "Switching driver in 5 seconds");
 
         caca_refresh_display(dp);
 

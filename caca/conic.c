@@ -1,5 +1,5 @@
 /*
- *  libcucul      Canvas for ultrafast compositing of Unicode letters
+ *  libcaca       Colour ASCII-Art library
  *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
@@ -23,23 +23,23 @@
 #   include <stdlib.h>
 #endif
 
-#include "cucul.h"
-#include "cucul_internals.h"
+#include "caca.h"
+#include "caca_internals.h"
 
-static void ellipsepoints(cucul_canvas_t *, int, int, int, int, uint32_t, int);
+static void ellipsepoints(caca_canvas_t *, int, int, int, int, uint32_t, int);
 
 /** \brief Draw a circle on the canvas using the given character.
  *
  *  This function never fails.
  *
- *  \param cv The handle to the libcucul canvas.
+ *  \param cv The handle to the libcaca canvas.
  *  \param x Center X coordinate.
  *  \param y Center Y coordinate.
  *  \param r Circle radius.
  *  \param ch UTF-32 character to be used to draw the circle outline.
  *  \return This function always returns 0.
  */
-int cucul_draw_circle(cucul_canvas_t *cv, int x, int y, int r, uint32_t ch)
+int caca_draw_circle(caca_canvas_t *cv, int x, int y, int r, uint32_t ch)
 {
     int test, dx, dy;
 
@@ -59,7 +59,7 @@ int cucul_draw_circle(cucul_canvas_t *cv, int x, int y, int r, uint32_t ch)
  *
  *  This function never fails.
  *
- *  \param cv The handle to the libcucul canvas.
+ *  \param cv The handle to the libcaca canvas.
  *  \param xo Center X coordinate.
  *  \param yo Center Y coordinate.
  *  \param a Ellipse X radius.
@@ -67,7 +67,7 @@ int cucul_draw_circle(cucul_canvas_t *cv, int x, int y, int r, uint32_t ch)
  *  \param ch UTF-32 character to be used to fill the ellipse.
  *  \return This function always returns 0.
  */
-int cucul_fill_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b,
+int caca_fill_ellipse(caca_canvas_t *cv, int xo, int yo, int a, int b,
                        uint32_t ch)
 {
     int d2;
@@ -84,15 +84,15 @@ int cucul_fill_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b,
         else
         {
             d1 += b*b*(2*x*1) + a*a*(-2*y+2);
-            cucul_draw_line(cv, xo - x, yo - y, xo + x, yo - y, ch);
-            cucul_draw_line(cv, xo - x, yo + y, xo + x, yo + y, ch);
+            caca_draw_line(cv, xo - x, yo - y, xo + x, yo - y, ch);
+            caca_draw_line(cv, xo - x, yo + y, xo + x, yo + y, ch);
             y--;
         }
         x++;
     }
 
-    cucul_draw_line(cv, xo - x, yo - y, xo + x, yo - y, ch);
-    cucul_draw_line(cv, xo - x, yo + y, xo + x, yo + y, ch);
+    caca_draw_line(cv, xo - x, yo - y, xo + x, yo - y, ch);
+    caca_draw_line(cv, xo - x, yo + y, xo + x, yo + y, ch);
 
     d2 = b*b*(x+0.5)*(x+0.5) + a*a*(y-1)*(y-1) - a*a*b*b;
     while(y > 0)
@@ -108,8 +108,8 @@ int cucul_fill_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b,
         }
 
         y--;
-        cucul_draw_line(cv, xo - x, yo - y, xo + x, yo - y, ch);
-        cucul_draw_line(cv, xo - x, yo + y, xo + x, yo + y, ch);
+        caca_draw_line(cv, xo - x, yo - y, xo + x, yo - y, ch);
+        caca_draw_line(cv, xo - x, yo + y, xo + x, yo + y, ch);
     }
 
     return 0;
@@ -119,7 +119,7 @@ int cucul_fill_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b,
  *
  *  This function never fails.
  *
- *  \param cv The handle to the libcucul canvas.
+ *  \param cv The handle to the libcaca canvas.
  *  \param xo Center X coordinate.
  *  \param yo Center Y coordinate.
  *  \param a Ellipse X radius.
@@ -127,7 +127,7 @@ int cucul_fill_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b,
  *  \param ch UTF-32 character to be used to draw the ellipse outline.
  *  \return This function always returns 0.
  */
-int cucul_draw_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b,
+int caca_draw_ellipse(caca_canvas_t *cv, int xo, int yo, int a, int b,
                        uint32_t ch)
 {
     int d2;
@@ -176,14 +176,14 @@ int cucul_draw_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b,
  *
  *  This function never fails.
  *
- *  \param cv The handle to the libcucul canvas.
+ *  \param cv The handle to the libcaca canvas.
  *  \param xo Center X coordinate.
  *  \param yo Center Y coordinate.
  *  \param a Ellipse X radius.
  *  \param b Ellipse Y radius.
  *  \return This function always returns 0.
  */
-int cucul_draw_thin_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b)
+int caca_draw_thin_ellipse(caca_canvas_t *cv, int xo, int yo, int a, int b)
 {
     /* FIXME: this is not correct */
     int d2;
@@ -234,7 +234,7 @@ int cucul_draw_thin_ellipse(cucul_canvas_t *cv, int xo, int yo, int a, int b)
     return 0;
 }
 
-static void ellipsepoints(cucul_canvas_t *cv, int xo, int yo, int x, int y,
+static void ellipsepoints(caca_canvas_t *cv, int xo, int yo, int x, int y,
                           uint32_t ch, int thin)
 {
     uint8_t b = 0;
@@ -268,7 +268,7 @@ static void ellipsepoints(cucul_canvas_t *cv, int xo, int yo, int x, int y,
             }
 
         }
-        cucul_put_char(cv, xo + x, yo + y, c);
+        caca_put_char(cv, xo + x, yo + y, c);
     }
     if((b & (0x2|0x4)) == (0x2|0x4)) {
         uint32_t c = ch;
@@ -290,7 +290,7 @@ static void ellipsepoints(cucul_canvas_t *cv, int xo, int yo, int x, int y,
             }
 
         }
-        cucul_put_char(cv, xo - x, yo + y, c);
+        caca_put_char(cv, xo - x, yo + y, c);
     }
 
 
@@ -314,7 +314,7 @@ static void ellipsepoints(cucul_canvas_t *cv, int xo, int yo, int x, int y,
             }
 
         }
-        cucul_put_char(cv, xo + x, yo - y, c);
+        caca_put_char(cv, xo + x, yo - y, c);
     }
 
     if((b & (0x2|0x8)) == (0x2|0x8)) {
@@ -337,7 +337,7 @@ static void ellipsepoints(cucul_canvas_t *cv, int xo, int yo, int x, int y,
             }
 
         }
-        cucul_put_char(cv, xo - x, yo - y, c);
+        caca_put_char(cv, xo - x, yo - y, c);
     }
 
         

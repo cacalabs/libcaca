@@ -20,12 +20,11 @@
 #   include <stdlib.h>
 #endif
 
-#include "cucul.h"
 #include "caca.h"
 
 static int refresh_screen(void);
 
-static cucul_canvas_t *cv, *image;
+static caca_canvas_t *cv, *image;
 static caca_display_t *dp;
 static int x = 0, y = 0;
 
@@ -40,7 +39,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    cv = cucul_create_canvas(0, 0);
+    cv = caca_create_canvas(0, 0);
     if(!cv)
         return 1;
     dp = caca_create_display(cv);
@@ -55,15 +54,15 @@ int main(int argc, char **argv)
 
         if(!image)
         {
-            image = cucul_create_canvas(0, 0);
-            if(cucul_import_file(image, argv[file], "ansi") < 0)
+            image = caca_create_canvas(0, 0);
+            if(caca_import_file(image, argv[file], "ansi") < 0)
             {
                 fprintf(stderr, "%s: invalid file `%s'.\n", argv[0], argv[1]);
                 return 1;
             }
 
-            ih = cucul_get_canvas_height(image);
-            iw = cucul_get_canvas_width(image);
+            ih = caca_get_canvas_height(image);
+            iw = caca_get_canvas_width(image);
             x = y = 0;
 
             caca_set_display_title(dp, argv[file]);
@@ -97,12 +96,12 @@ int main(int argc, char **argv)
                         goto quit;
                     case 'n':
                         file = file + 1 < argc ? file + 1 : 1;
-                        cucul_free_canvas(image);
+                        caca_free_canvas(image);
                         image = NULL;
                         goto stopevents;
                     case 'p':
                         file = file > 1 ? file - 1 : argc - 1;
-                        cucul_free_canvas(image);
+                        caca_free_canvas(image);
                         image = NULL;
                         goto stopevents;
                     default:
@@ -117,8 +116,8 @@ int main(int argc, char **argv)
         }
 stopevents:
 
-        w = cucul_get_canvas_width(cv);
-        h = cucul_get_canvas_height(cv);
+        w = caca_get_canvas_width(cv);
+        h = caca_get_canvas_height(cv);
 
         if(dx | dy)
         {
@@ -134,18 +133,18 @@ quit:
 
     /* Clean up */
     caca_free_display(dp);
-    cucul_free_canvas(image);
-    cucul_free_canvas(cv);
+    caca_free_canvas(image);
+    caca_free_canvas(cv);
 
     return 0;
 }
 
 static int refresh_screen(void)
 {
-    cucul_set_color_ansi(cv, CUCUL_DEFAULT, CUCUL_DEFAULT);
-    cucul_clear_canvas(cv);
+    caca_set_color_ansi(cv, CACA_DEFAULT, CACA_DEFAULT);
+    caca_clear_canvas(cv);
 
-    cucul_blit(cv, - x, - y, image, NULL);
+    caca_blit(cv, - x, - y, image, NULL);
 
     caca_refresh_display(dp);
 

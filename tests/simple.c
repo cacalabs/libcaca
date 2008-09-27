@@ -19,7 +19,7 @@
 #   include <stdlib.h>
 #endif
 
-#include "cucul.h"
+#include "caca.h"
 
 #define TEST(x) \
     do \
@@ -34,27 +34,27 @@
 
 int main(int argc, char *argv[])
 {
-    cucul_canvas_t *cv;
+    caca_canvas_t *cv;
     int tests = 0, passed = 0;
 
-    cv = cucul_create_canvas(0, 0);
-    cucul_put_char(cv, 0, 0, 'x');
-    TEST(cucul_get_char(cv, 0, 0) != 'x');
+    cv = caca_create_canvas(0, 0);
+    caca_put_char(cv, 0, 0, 'x');
+    TEST(caca_get_char(cv, 0, 0) != 'x');
 
-    cucul_set_canvas_size(cv, 1, 1);
-    TEST(cucul_get_char(cv, 0, 0) != 'x');
-    TEST(cucul_get_char(cv, 0, 0) == ' ');
+    caca_set_canvas_size(cv, 1, 1);
+    TEST(caca_get_char(cv, 0, 0) != 'x');
+    TEST(caca_get_char(cv, 0, 0) == ' ');
 
-    cucul_put_char(cv, 0, 0, 'y');
-    TEST(cucul_get_char(cv, 0, 0) == 'y');
+    caca_put_char(cv, 0, 0, 'y');
+    TEST(caca_get_char(cv, 0, 0) == 'y');
 
-    cucul_set_canvas_size(cv, 1000, 1000);
-    TEST(cucul_get_canvas_width(cv) == 1000);
+    caca_set_canvas_size(cv, 1000, 1000);
+    TEST(caca_get_canvas_width(cv) == 1000);
 
-    cucul_put_char(cv, 999, 999, 'z');
-    TEST(cucul_get_char(cv, 999, 999) == 'z');
+    caca_put_char(cv, 999, 999, 'z');
+    TEST(caca_get_char(cv, 999, 999) == 'z');
 
-    cucul_free_canvas(cv);
+    caca_free_canvas(cv);
 
     fprintf(stderr, "%i tests, %i errors\n", tests, tests - passed);
 

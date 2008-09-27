@@ -40,13 +40,13 @@ static char const pigstring[] =
 
 int main(int argc, char *argv[])
 {
-    Cucul *cv, *pig;
+    Canvas *cv, *pig;
     Caca  *dp;
 
     int x = 0, y = 0, ix = 1, iy = 1;
 
     try {
-        cv = new Cucul();
+        cv = new Canvas();
     }
     catch (int e) {
         cerr << "Error while initializing cucul (" << e << ")" << endl;
@@ -63,8 +63,8 @@ int main(int argc, char *argv[])
 
     try {
         // Import buffer into a canvas
-        pig = new Cucul();
-        pig->setColorANSI(CUCUL_LIGHTMAGENTA, CUCUL_TRANSPARENT);
+        pig = new Canvas();
+        pig->setColorANSI(CACA_LIGHTMAGENTA, CACA_TRANSPARENT);
         pig->importMemory(pigstring, strlen(pigstring), "text");
     }
     catch(int e) {
@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
         cv->Blit(x, y, pig, NULL);
 
         /* printf works */
-        cv->setColorANSI(CUCUL_LIGHTBLUE, CUCUL_BLACK);
+        cv->setColorANSI(CACA_LIGHTBLUE, CACA_BLACK);
         cv->Printf(cv->getWidth() / 2 - 10, cv->getHeight() / 2,
                    "Powered by libcaca %s", dp->getVersion());
 

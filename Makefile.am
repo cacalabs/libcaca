@@ -1,6 +1,6 @@
 # $Id$
 
-SUBDIRS = kernel cucul caca src examples tests tools csharp cxx python ruby doc
+SUBDIRS = kernel caca src examples tests tools csharp cxx python ruby doc
 DIST_SUBDIRS = $(SUBDIRS) msvc
 
 EXTRA_DIST = NOTES COPYING.GPL COPYING.LGPL bootstrap build-dos build-kernel build-win32 caca-config.in stubs.h libcaca.spec
@@ -20,7 +20,7 @@ upload-doc: doc/html FORCE
 	scp -r doc/html/* $(webhost):$(webdir)/manual/
 
 fonts: tools/makefont
-	tools/makefont mono9 "Monospace 9" 96 4 >| $(srcdir)/cucul/mono9.data
-	tools/makefont monobold12 "Monospace Bold 12" 96 4 >| $(srcdir)/cucul/monobold12.data
+	tools/makefont mono9 "Monospace 9" 96 4 >| $(srcdir)/caca/mono9.data
+	tools/makefont monobold12 "Monospace Bold 12" 96 4 >| $(srcdir)/caca/monobold12.data
 
 FORCE:

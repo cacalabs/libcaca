@@ -18,7 +18,7 @@
 #   include <stdio.h>
 #endif
 
-#include "cucul.h" /* Only necessary for CUCUL_* macros */
+#include "caca.h" /* Only necessary for CACA_* macros */
 
 static void base_colors(void);
 static void emulated_colors(void);
@@ -29,8 +29,8 @@ static int slang_assoc[16*16], palette[16*16];
 /* 6 colours in hue order */
 static unsigned int const hue_list[] =
 {
-    CUCUL_RED, CUCUL_BROWN, CUCUL_GREEN,
-    CUCUL_CYAN, CUCUL_BLUE, CUCUL_MAGENTA
+    CACA_RED, CACA_BROWN, CACA_GREEN,
+    CACA_CYAN, CACA_BLUE, CACA_MAGENTA
 };
 
 #define SETPAIR(_fg, _bg, _n) \
@@ -167,14 +167,14 @@ static void base_colors(void)
 
     /* black background colour pairs that are needed for the old renderer */
     for(i = 1; i < 16; i++)
-        SETPAIR(i, CUCUL_BLACK, cur++);
+        SETPAIR(i, CACA_BLACK, cur++);
 
     /* gray combinations used for grayscale dithering */
-    SETPAIR(CUCUL_BLACK, CUCUL_DARKGRAY, cur++);
-    SETPAIR(CUCUL_DARKGRAY, CUCUL_LIGHTGRAY, cur++);
-    SETPAIR(CUCUL_LIGHTGRAY, CUCUL_DARKGRAY, cur++);
-    SETPAIR(CUCUL_WHITE, CUCUL_LIGHTGRAY, cur++);
-    SETPAIR(CUCUL_LIGHTGRAY, CUCUL_WHITE, cur++);
+    SETPAIR(CACA_BLACK, CACA_DARKGRAY, cur++);
+    SETPAIR(CACA_DARKGRAY, CACA_LIGHTGRAY, cur++);
+    SETPAIR(CACA_LIGHTGRAY, CACA_DARKGRAY, cur++);
+    SETPAIR(CACA_WHITE, CACA_LIGHTGRAY, cur++);
+    SETPAIR(CACA_LIGHTGRAY, CACA_WHITE, cur++);
 
     /* white/light, light/dark, lightgray/light, darkgray/dark, dark/black
      * combinations often used for saturation/value dithering (the two
@@ -182,15 +182,15 @@ static void base_colors(void)
      * not considered here) */
     for(i = 1; i < 7; i++)
     {
-        SETPAIR(CUCUL_WHITE, i + 8, cur++);
-        SETPAIR(i + 8, CUCUL_WHITE, cur++);
+        SETPAIR(CACA_WHITE, i + 8, cur++);
+        SETPAIR(i + 8, CACA_WHITE, cur++);
         SETPAIR(i, i + 8, cur++);
         SETPAIR(i + 8, i, cur++);
-        SETPAIR(CUCUL_LIGHTGRAY, i + 8, cur++);
-        SETPAIR(i + 8, CUCUL_LIGHTGRAY, cur++);
-        SETPAIR(CUCUL_DARKGRAY, i, cur++);
-        SETPAIR(i, CUCUL_DARKGRAY, cur++);
-        SETPAIR(CUCUL_BLACK, i, cur++);
+        SETPAIR(CACA_LIGHTGRAY, i + 8, cur++);
+        SETPAIR(i + 8, CACA_LIGHTGRAY, cur++);
+        SETPAIR(CACA_DARKGRAY, i, cur++);
+        SETPAIR(i, CACA_DARKGRAY, cur++);
+        SETPAIR(CACA_BLACK, i, cur++);
     }
 
     /* next colour combinations for hue dithering (magenta/blue, blue/green
@@ -215,12 +215,12 @@ static void base_colors(void)
 
     /* black on light gray, black on white, white on dark gray, dark gray
      * on white, white on blue, light gray on blue (chosen arbitrarily) */
-    SETPAIR(CUCUL_BLACK, CUCUL_LIGHTGRAY, cur++);
-    SETPAIR(CUCUL_BLACK, CUCUL_WHITE, cur++);
-    SETPAIR(CUCUL_WHITE, CUCUL_DARKGRAY, cur++);
-    SETPAIR(CUCUL_DARKGRAY, CUCUL_WHITE, cur++);
-    SETPAIR(CUCUL_WHITE, CUCUL_BLUE, cur++);
-    SETPAIR(CUCUL_LIGHTGRAY, CUCUL_BLUE, cur++);
+    SETPAIR(CACA_BLACK, CACA_LIGHTGRAY, cur++);
+    SETPAIR(CACA_BLACK, CACA_WHITE, cur++);
+    SETPAIR(CACA_WHITE, CACA_DARKGRAY, cur++);
+    SETPAIR(CACA_DARKGRAY, CACA_WHITE, cur++);
+    SETPAIR(CACA_WHITE, CACA_BLUE, cur++);
+    SETPAIR(CACA_LIGHTGRAY, CACA_BLUE, cur++);
 }
 
 static void emulated_colors(void)
@@ -236,23 +236,23 @@ static void emulated_colors(void)
      * dark colour on white: emulate with light colour on white */
     for(i = 1; i < 7; i++)
     {
-        if(i != CUCUL_BLUE)
+        if(i != CACA_BLUE)
         {
-            SETPAIR(CUCUL_LIGHTGRAY, i, 128 +
+            SETPAIR(CACA_LIGHTGRAY, i, 128 +
                     slang_assoc[i + 8 + 16 * i]);
-            SETPAIR(CUCUL_WHITE, i, 128 +
-                    slang_assoc[CUCUL_LIGHTGRAY + 16 * (i + 8)]);
+            SETPAIR(CACA_WHITE, i, 128 +
+                    slang_assoc[CACA_LIGHTGRAY + 16 * (i + 8)]);
         }
-        SETPAIR(CUCUL_BLACK, i + 8,
-                128 + slang_assoc[CUCUL_DARKGRAY + 16 * i]);
-        SETPAIR(CUCUL_DARKGRAY, i + 8,
+        SETPAIR(CACA_BLACK, i + 8,
+                128 + slang_assoc[CACA_DARKGRAY + 16 * i]);
+        SETPAIR(CACA_DARKGRAY, i + 8,
                 128 + slang_assoc[i + 16 * (i + 8)]);
-        SETPAIR(i + 8, CUCUL_DARKGRAY,
-                128 + slang_assoc[i + 16 * CUCUL_DARKGRAY]);
-        SETPAIR(i, CUCUL_LIGHTGRAY,
-                128 + slang_assoc[i + 8 + 16 * CUCUL_LIGHTGRAY]);
-        SETPAIR(i, CUCUL_WHITE,
-                128 + slang_assoc[i + 8 + 16 * CUCUL_WHITE]);
+        SETPAIR(i + 8, CACA_DARKGRAY,
+                128 + slang_assoc[i + 16 * CACA_DARKGRAY]);
+        SETPAIR(i, CACA_LIGHTGRAY,
+                128 + slang_assoc[i + 8 + 16 * CACA_LIGHTGRAY]);
+        SETPAIR(i, CACA_WHITE,
+                128 + slang_assoc[i + 8 + 16 * CACA_WHITE]);
     }
 
     /* 120 degree hue pairs can be emulated as well; for instance blue on
@@ -286,13 +286,13 @@ static void emulated_colors(void)
     for(i = 0; i < 6; i++)
     {
         SETPAIR(hue_list[i], hue_list[(i + 3) % 6],
-                128 + slang_assoc[hue_list[i] + 16 * CUCUL_BLACK]);
+                128 + slang_assoc[hue_list[i] + 16 * CACA_BLACK]);
         SETPAIR(hue_list[i] + 8, hue_list[(i + 3) % 6],
-                128 + slang_assoc[hue_list[i] + 8 + 16 * CUCUL_BLACK]);
+                128 + slang_assoc[hue_list[i] + 8 + 16 * CACA_BLACK]);
         SETPAIR(hue_list[(i + 3) % 6], hue_list[i] + 8,
-                128 + slang_assoc[CUCUL_BLACK + 16 * hue_list[i]]);
+                128 + slang_assoc[CACA_BLACK + 16 * hue_list[i]]);
         SETPAIR(hue_list[(i + 3) % 6] + 8, hue_list[i] + 8,
-                128 + slang_assoc[CUCUL_WHITE + 16 * (hue_list[i] + 8)]);
+                128 + slang_assoc[CACA_WHITE + 16 * (hue_list[i] + 8)]);
     }
 }
 

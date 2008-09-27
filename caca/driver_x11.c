@@ -32,7 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "cucul.h"
+#include "caca.h"
 #include "caca.h"
 #include "caca_internals.h"
 
@@ -75,8 +75,8 @@ static int x11_init_graphics(caca_display_t *dp)
     int (*old_error_handler)(Display *, XErrorEvent *);
     char const *fonts[] = { NULL, "8x13bold", "fixed" }, **parser;
     char const *geometry;
-    int width = cucul_get_canvas_width(dp->cv);
-    int height = cucul_get_canvas_height(dp->cv);
+    int width = caca_get_canvas_width(dp->cv);
+    int height = caca_get_canvas_height(dp->cv);
     int i;
 
     dp->drv.p = malloc(sizeof(struct driver_private));
@@ -88,9 +88,9 @@ static int x11_init_graphics(caca_display_t *dp)
 #endif
 
     dp->resize.allow = 1;
-    cucul_set_canvas_size(dp->cv, width ? width : 80, height ? height : 32);
-    width = cucul_get_canvas_width(dp->cv);
-    height = cucul_get_canvas_height(dp->cv);
+    caca_set_canvas_size(dp->cv, width ? width : 80, height ? height : 32);
+    width = caca_get_canvas_width(dp->cv);
+    height = caca_get_canvas_height(dp->cv);
     dp->resize.allow = 0;
 
     dp->drv.p->dpy = XOpenDisplay(NULL);
@@ -279,20 +279,20 @@ static int x11_set_display_title(caca_display_t *dp, char const *title)
 
 static int x11_get_display_width(caca_display_t const *dp)
 {
-    return cucul_get_canvas_width(dp->cv) * dp->drv.p->font_width;
+    return caca_get_canvas_width(dp->cv) * dp->drv.p->font_width;
 }
 
 static int x11_get_display_height(caca_display_t const *dp)
 {
-    return cucul_get_canvas_height(dp->cv) * dp->drv.p->font_height;
+    return caca_get_canvas_height(dp->cv) * dp->drv.p->font_height;
 }
 
 static void x11_display(caca_display_t *dp)
 {
-    uint32_t const *cvchars = (uint32_t const *)cucul_get_canvas_chars(dp->cv);
-    uint32_t const *cvattrs = (uint32_t const *)cucul_get_canvas_attrs(dp->cv);
-    int width = cucul_get_canvas_width(dp->cv);
-    int height = cucul_get_canvas_height(dp->cv);
+    uint32_t const *cvchars = (uint32_t const *)caca_get_canvas_chars(dp->cv);
+    uint32_t const *cvattrs = (uint32_t const *)caca_get_canvas_attrs(dp->cv);
+    int width = caca_get_canvas_width(dp->cv);
+    int height = caca_get_canvas_height(dp->cv);
     int x, y, len;
 
     /* First draw the background colours. Splitting the process in two
@@ -302,11 +302,11 @@ static void x11_display(caca_display_t *dp)
         for(x = 0; x < width; x += len)
         {
             uint32_t const *attrs = cvattrs + x + y * width;
-            uint16_t bg = cucul_attr_to_rgb12_bg(*attrs);
+            uint16_t bg = caca_attr_to_rgb12_bg(*attrs);
 
             len = 1;
             while(x + len < width
-                   && cucul_attr_to_rgb12_bg(attrs[len]) == bg)
+                   && caca_attr_to_rgb12_bg(attrs[len]) == bg)
                 len++;
 
             XSetForeground(dp->drv.p->dpy, dp->drv.p->gc,
@@ -330,7 +330,7 @@ static void x11_display(caca_display_t *dp)
         for(x = 0; x < width; x++, chars++, attrs++)
         {
             XSetForeground(dp->drv.p->dpy, dp->drv.p->gc,
-                           dp->drv.p->colors[cucul_attr_to_rgb12_fg(*attrs)]);
+                           dp->drv.p->colors[caca_attr_to_rgb12_fg(*attrs)]);
 
             x11_put_glyph(dp, x * dp->drv.p->font_width,
                           y * dp->drv.p->font_height, yoff,
@@ -344,8 +344,8 @@ static void x11_display(caca_display_t *dp)
     {
         XSetForeground(dp->drv.p->dpy, dp->drv.p->gc,
                        dp->drv.p->colors[0xfff]);
-        x = cucul_get_cursor_x(dp->cv);
-        y = cucul_get_cursor_y(dp->cv);
+        x = caca_get_cursor_x(dp->cv);
+        y = caca_get_cursor_y(dp->cv);
         XFillRectangle(dp->drv.p->dpy, dp->drv.p->pixmap, dp->drv.p->gc,
                        x * dp->drv.p->font_width, y * dp->drv.p->font_height,
                        dp->drv.p->font_width, dp->drv.p->font_height);
@@ -378,8 +378,8 @@ static void x11_handle_resize(caca_display_t *dp)
 
 static int x11_get_event(caca_display_t *dp, caca_privevent_t *ev)
 {
-    int width = cucul_get_canvas_width(dp->cv);
-    int height = cucul_get_canvas_height(dp->cv);
+    int width = caca_get_canvas_width(dp->cv);
+    int height = caca_get_canvas_height(dp->cv);
     XEvent xevent;
     char key;
 
@@ -610,23 +610,23 @@ static void x11_put_glyph(caca_display_t *dp, int x, int y, int yoff,
     XChar2b ch16;
 
     /* Underline */
-    if(attr & CUCUL_UNDERLINE)
+    if(attr & CACA_UNDERLINE)
         XFillRectangle(dpy, px, gc, x, y + h - 1, w, 1);
 
     /* Skip spaces and magic stuff */
     if(ch <= 0x00000020)
         return;
 
-    if(ch == CUCUL_MAGIC_FULLWIDTH)
+    if(ch == CACA_MAGIC_FULLWIDTH)
         return;
 
     fw = w;
-    if(cucul_utf32_is_fullwidth(ch))
+    if(caca_utf32_is_fullwidth(ch))
         fw *= 2;
 
     /* We want to be able to print a few special Unicode characters
      * such as the CP437 gradients and half blocks. For unknown
-     * characters, print what cucul_utf32_to_ascii() returns. */
+     * characters, print what caca_utf32_to_ascii() returns. */
 
     if(ch >= 0x2500 && ch <= 0x256c && udlr[ch - 0x2500])
     {
@@ -771,7 +771,7 @@ static void x11_put_glyph(caca_display_t *dp, int x, int y, int yoff,
     else
     {
         ch16.byte1 = 0;
-        ch16.byte2 = cucul_utf32_to_ascii(ch);
+        ch16.byte2 = caca_utf32_to_ascii(ch);
     }
 
     XDrawString16(dpy, px, gc, x + (ch16.byte1 ? 0 : (fw - w) / 2), yoff, &ch16, 1);

@@ -19,12 +19,11 @@
 #   include <stdlib.h>
 #endif
 
-#include "cucul.h"
 #include "caca.h"
 
 int main(int argc, char *argv[])
 {
-    cucul_canvas_t *cv;
+    caca_canvas_t *cv;
     caca_display_t *dp;
 
     if(argc < 2)
@@ -34,17 +33,17 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    cv = cucul_create_canvas(0, 0);
+    cv = caca_create_canvas(0, 0);
     if(cv == NULL)
     {
         printf("Can't create canvas\n");
         return -1;
     }
 
-    if(cucul_import_file(cv, argv[1], argc >= 3 ? argv[2] : "") < 0)
+    if(caca_import_file(cv, argv[1], argc >= 3 ? argv[2] : "") < 0)
     {
 	fprintf(stderr, "%s: could not open `%s'.\n", argv[0], argv[1]);
-        cucul_free_canvas(cv);
+        caca_free_canvas(cv);
         return 1;
     }
 
@@ -60,7 +59,7 @@ int main(int argc, char *argv[])
     caca_get_event(dp, CACA_EVENT_KEY_PRESS, NULL, -1);
 
     caca_free_display(dp);
-    cucul_free_canvas(cv);
+    caca_free_canvas(cv);
 
     return 0;
 }

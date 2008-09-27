@@ -24,7 +24,6 @@
 #   include <windows.h>
 #endif
 
-#include "cucul.h"
 #include "caca.h"
 
 #include "common-image.h"
@@ -44,8 +43,8 @@
 #define GAMMA(g) (((g) < 0) ? 1.0 / gammatab[-(g)] : gammatab[(g)])
 #define PAD_STEP 0.15
 
-/* libcucul/libcaca contexts */
-cucul_canvas_t *cv; caca_display_t *dp;
+/* libcaca/libcaca contexts */
+caca_canvas_t *cv; caca_display_t *dp;
 
 /* Local functions */
 static void print_status(void);
@@ -64,7 +63,7 @@ int zoom = 0, g = 0, fullscreen = 0, mode, ww, wh;
 
 int main(int argc, char **argv)
 {
-    char const * const * algos = cucul_get_dither_algorithm_list(NULL);
+    char const * const * algos = caca_get_dither_algorithm_list(NULL);
     int dither_algorithm = 0;
 
     int quit = 0, update = 1, help = 0, status = 0;
@@ -74,11 +73,11 @@ int main(int argc, char **argv)
     int current = 0, items = 0, opts = 1;
     int i;
 
-    /* Initialise libcucul */
-    cv = cucul_create_canvas(0, 0);
+    /* Initialise libcaca */
+    cv = caca_create_canvas(0, 0);
     if(!cv)
     {
-        fprintf(stderr, "%s: unable to initialise libcucul\n", argv[0]);
+        fprintf(stderr, "%s: unable to initialise libcaca\n", argv[0]);
         return 1;
     }
 
@@ -92,8 +91,8 @@ int main(int argc, char **argv)
     /* Set the window title */
     caca_set_display_title(dp, "cacaview");
 
-    ww = cucul_get_canvas_width(cv);
-    wh = cucul_get_canvas_height(cv);
+    ww = caca_get_canvas_width(cv);
+    wh = caca_get_canvas_height(cv);
 
     /* Fill the zoom table */
     zoomtab[0] = 1.0;
@@ -180,30 +179,30 @@ int main(int argc, char **argv)
                 break;
 #if 0 /* FIXME */
             case 'b':
-                i = 1 + cucul_get_feature(cv, CUCUL_BACKGROUND);
-                if(i > CUCUL_BACKGROUND_MAX) i = CUCUL_BACKGROUND_MIN;
-                cucul_set_feature(cv, i);
+                i = 1 + caca_get_feature(cv, CACA_BACKGROUND);
+                if(i > CACA_BACKGROUND_MAX) i = CACA_BACKGROUND_MIN;
+                caca_set_feature(cv, i);
                 new_status = STATUS_BACKGROUND;
                 update = 1;
                 break;
             case 'B':
-                i = -1 + cucul_get_feature(cv, CUCUL_BACKGROUND);
-                if(i < CUCUL_BACKGROUND_MIN) i = CUCUL_BACKGROUND_MAX;
-                cucul_set_feature(cv, i);
+                i = -1 + caca_get_feature(cv, CACA_BACKGROUND);
+                if(i < CACA_BACKGROUND_MIN) i = CACA_BACKGROUND_MAX;
+                caca_set_feature(cv, i);
                 new_status = STATUS_BACKGROUND;
                 update = 1;
                 break;
             case 'a':
-                i = 1 + cucul_get_feature(cv, CUCUL_ANTIALIASING);
-                if(i > CUCUL_ANTIALIASING_MAX) i = CUCUL_ANTIALIASING_MIN;
-                cucul_set_feature(cv, i);
+                i = 1 + caca_get_feature(cv, CACA_ANTIALIASING);
+                if(i > CACA_ANTIALIASING_MAX) i = CACA_ANTIALIASING_MIN;
+                caca_set_feature(cv, i);
                 new_status = STATUS_ANTIALIASING;
                 update = 1;
                 break;
             case 'A':
-                i = -1 + cucul_get_feature(cv, CUCUL_ANTIALIASING);
-                if(i < CUCUL_ANTIALIASING_MIN) i = CUCUL_ANTIALIASING_MAX;
-                cucul_set_feature(cv, i);
+                i = -1 + caca_get_feature(cv, CACA_ANTIALIASING);
+                if(i < CACA_ANTIALIASING_MIN) i = CACA_ANTIALIASING_MAX;
+                caca_set_feature(cv, i);
                 new_status = STATUS_ANTIALIASING;
                 update = 1;
                 break;
@@ -212,7 +211,7 @@ int main(int argc, char **argv)
                 dither_algorithm++;
                 if(algos[dither_algorithm * 2] == NULL)
                     dither_algorithm = 0;
-                cucul_set_dither_algorithm(im->dither,
+                caca_set_dither_algorithm(im->dither,
                                            algos[dither_algorithm * 2]);
                 new_status = STATUS_DITHERING;
                 update = 1;
@@ -222,7 +221,7 @@ int main(int argc, char **argv)
                 if(dither_algorithm < 0)
                     while(algos[dither_algorithm * 2 + 2] != NULL)
                         dither_algorithm++;
-                cucul_set_dither_algorithm(im->dither,
+                caca_set_dither_algorithm(im->dither,
                                            algos[dither_algorithm * 2]);
                 new_status = STATUS_DITHERING;
                 update = 1;
@@ -319,11 +318,11 @@ int main(int argc, char **argv)
 
             sprintf(buffer, " Loading `%s'... ", list[current]);
             buffer[ww] = '\0';
-            cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
-            cucul_put_str(cv, (ww - strlen(buffer)) / 2, wh / 2, buffer);
+            caca_set_color_ansi(cv, CACA_WHITE, CACA_BLUE);
+            caca_put_str(cv, (ww - strlen(buffer)) / 2, wh / 2, buffer);
             caca_refresh_display(dp);
-            ww = cucul_get_canvas_width(cv);
-            wh = cucul_get_canvas_height(cv);
+            ww = caca_get_canvas_width(cv);
+            wh = caca_get_canvas_height(cv);
 
             if(im)
                 unload_image(im);
@@ -339,13 +338,13 @@ int main(int argc, char **argv)
             free(buffer);
         }
 
-        cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLACK);
-        cucul_clear_canvas(cv);
+        caca_set_color_ansi(cv, CACA_WHITE, CACA_BLACK);
+        caca_clear_canvas(cv);
 
         if(!items)
         {
-            cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
-            cucul_printf(cv, ww / 2 - 5, wh / 2, " No image. ");
+            caca_set_color_ansi(cv, CACA_WHITE, CACA_BLUE);
+            caca_printf(cv, ww / 2 - 5, wh / 2, " No image. ");
         }
         else if(!im)
         {
@@ -364,8 +363,8 @@ int main(int argc, char **argv)
 
             sprintf(buffer, ERROR_STRING, list[current]);
             buffer[ww] = '\0';
-            cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
-            cucul_put_str(cv, (ww - strlen(buffer)) / 2, wh / 2, buffer);
+            caca_set_color_ansi(cv, CACA_WHITE, CACA_BLUE);
+            caca_put_str(cv, (ww - strlen(buffer)) / 2, wh / 2, buffer);
             free(buffer);
         }
         else
@@ -383,7 +382,7 @@ int main(int argc, char **argv)
                           y + height * (1.0 - yfactor) / 2,
                           ww * xfactor, height * yfactor);
 
-            cucul_dither_bitmap(cv, ww * (1.0 - xfactor) * xdelta,
+            caca_dither_bitmap(cv, ww * (1.0 - xfactor) * xdelta,
                             y + height * (1.0 - yfactor) * ydelta,
                             ww * xfactor + 1, height * yfactor + 1,
                             im->dither, im->pixels);
@@ -393,21 +392,21 @@ int main(int argc, char **argv)
         {
             print_status();
 
-            cucul_set_color_ansi(cv, CUCUL_LIGHTGRAY, CUCUL_BLACK);
+            caca_set_color_ansi(cv, CACA_LIGHTGRAY, CACA_BLACK);
             switch(status)
             {
                 case STATUS_DITHERING:
-                    cucul_printf(cv, 0, wh - 1, "Dithering: %s",
-                                 cucul_get_dither_algorithm(im->dither));
+                    caca_printf(cv, 0, wh - 1, "Dithering: %s",
+                                 caca_get_dither_algorithm(im->dither));
                     break;
 #if 0 /* FIXME */
                 case STATUS_ANTIALIASING:
-                    cucul_printf(cv, 0, wh - 1, "Antialiasing: %s",
-                  cucul_get_feature_name(cucul_get_feature(cv, CUCUL_ANTIALIASING)));
+                    caca_printf(cv, 0, wh - 1, "Antialiasing: %s",
+                  caca_get_feature_name(caca_get_feature(cv, CACA_ANTIALIASING)));
                     break;
                 case STATUS_BACKGROUND:
-                    cucul_printf(cv, 0, wh - 1, "Background: %s",
-                  cucul_get_feature_name(cucul_get_feature(cv, CUCUL_BACKGROUND)));
+                    caca_printf(cv, 0, wh - 1, "Background: %s",
+                  caca_get_feature_name(caca_get_feature(cv, CACA_BACKGROUND)));
                     break;
 #endif
             }
@@ -426,25 +425,25 @@ int main(int argc, char **argv)
     if(im)
         unload_image(im);
     caca_free_display(dp);
-    cucul_free_canvas(cv);
+    caca_free_canvas(cv);
 
     return 0;
 }
 
 static void print_status(void)
 {
-    cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
-    cucul_draw_line(cv, 0, 0, ww - 1, 0, ' ');
-    cucul_draw_line(cv, 0, wh - 2, ww - 1, wh - 2, '-');
-    cucul_put_str(cv, 0, 0, "q:Quit  np:Next/Prev  +-x:Zoom  gG:Gamma  "
+    caca_set_color_ansi(cv, CACA_WHITE, CACA_BLUE);
+    caca_draw_line(cv, 0, 0, ww - 1, 0, ' ');
+    caca_draw_line(cv, 0, wh - 2, ww - 1, wh - 2, '-');
+    caca_put_str(cv, 0, 0, "q:Quit  np:Next/Prev  +-x:Zoom  gG:Gamma  "
                             "hjkl:Move  d:Dither  a:Antialias");
-    cucul_put_str(cv, ww - strlen("?:Help"), 0, "?:Help");
-    cucul_printf(cv, 3, wh - 2, "cacaview %s", VERSION);
-    cucul_printf(cv, ww - 30, wh - 2, "(gamma: %#.3g)", GAMMA(g));
-    cucul_printf(cv, ww - 14, wh - 2, "(zoom: %s%i)", zoom > 0 ? "+" : "", zoom);
+    caca_put_str(cv, ww - strlen("?:Help"), 0, "?:Help");
+    caca_printf(cv, 3, wh - 2, "cacaview %s", VERSION);
+    caca_printf(cv, ww - 30, wh - 2, "(gamma: %#.3g)", GAMMA(g));
+    caca_printf(cv, ww - 14, wh - 2, "(zoom: %s%i)", zoom > 0 ? "+" : "", zoom);
 
-    cucul_set_color_ansi(cv, CUCUL_LIGHTGRAY, CUCUL_BLACK);
-    cucul_draw_line(cv, 0, wh - 1, ww - 1, wh - 1, ' ');
+    caca_set_color_ansi(cv, CACA_LIGHTGRAY, CACA_BLACK);
+    caca_draw_line(cv, 0, wh - 1, ww - 1, wh - 1, ' ');
 }
 
 static void print_help(int x, int y)
@@ -471,10 +470,10 @@ static void print_help(int x, int y)
 
     int i;
 
-    cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
+    caca_set_color_ansi(cv, CACA_WHITE, CACA_BLUE);
 
     for(i = 0; help[i]; i++)
-        cucul_put_str(cv, x, y + i, help[i]);
+        caca_put_str(cv, x, y + i, help[i]);
 }
 
 static void set_zoom(int new_zoom)
@@ -489,12 +488,12 @@ static void set_zoom(int new_zoom)
     if(zoom > ZOOM_MAX) zoom = ZOOM_MAX;
     if(zoom < -ZOOM_MAX) zoom = -ZOOM_MAX;
 
-    ww = cucul_get_canvas_width(cv);
+    ww = caca_get_canvas_width(cv);
     height = fullscreen ? wh : wh - 3;
 
     xfactor = (zoom < 0) ? 1.0 / zoomtab[-zoom] : zoomtab[zoom];
     yfactor = xfactor * ww / height * im->h / im->w
-               * cucul_get_canvas_height(cv) / cucul_get_canvas_width(cv)
+               * caca_get_canvas_height(cv) / caca_get_canvas_width(cv)
                * caca_get_display_width(dp) / caca_get_display_height(dp);
 
     if(yfactor > xfactor)
@@ -515,7 +514,7 @@ static void set_gamma(int new_gamma)
     if(g > GAMMA_MAX) g = GAMMA_MAX;
     if(g < -GAMMA_MAX) g = -GAMMA_MAX;
 
-    cucul_set_dither_gamma(im->dither,
+    caca_set_dither_gamma(im->dither,
                            (g < 0) ? 1.0 / gammatab[-g] : gammatab[g]);
 }
 
@@ -523,19 +522,19 @@ static void draw_checkers(int x, int y, int w, int h)
 {
     int xn, yn;
 
-    if(x + w > (int)cucul_get_canvas_width(cv))
-        w = cucul_get_canvas_width(cv) - x;
-    if(y + h > (int)cucul_get_canvas_height(cv))
-        h = cucul_get_canvas_height(cv) - y;
+    if(x + w > (int)caca_get_canvas_width(cv))
+        w = caca_get_canvas_width(cv) - x;
+    if(y + h > (int)caca_get_canvas_height(cv))
+        h = caca_get_canvas_height(cv) - y;
 
     for(yn = y > 0 ? y : 0; yn < y + h; yn++)
         for(xn = x > 0 ? x : 0; xn < x + w; xn++)
     {
         if((((xn - x) / 5) ^ ((yn - y) / 3)) & 1)
-            cucul_set_color_ansi(cv, CUCUL_LIGHTGRAY, CUCUL_DARKGRAY);
+            caca_set_color_ansi(cv, CACA_LIGHTGRAY, CACA_DARKGRAY);
         else
-            cucul_set_color_ansi(cv, CUCUL_DARKGRAY, CUCUL_LIGHTGRAY);
-        cucul_put_char(cv, xn, yn, ' ');
+            caca_set_color_ansi(cv, CACA_DARKGRAY, CACA_LIGHTGRAY);
+        caca_put_char(cv, xn, yn, ' ');
     }
 }
 

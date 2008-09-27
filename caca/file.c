@@ -1,5 +1,5 @@
 /*
- *  libcucul      Canvas for ultrafast compositing of Unicode letters
+ *  libcaca       Colour ASCII-Art library
  *  Copyright (c) 2006-2007 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
@@ -29,15 +29,15 @@
 #   endif
 #endif
 
-#include "cucul.h"
-#include "cucul_internals.h"
+#include "caca.h"
+#include "caca_internals.h"
 
 #if !defined __KERNEL__ && defined HAVE_ZLIB_H
-static int zipread(cucul_file_t *, void *, unsigned int);
+static int zipread(caca_file_t *, void *, unsigned int);
 #endif
 
 #if !defined __KERNEL__
-struct cucul_file
+struct caca_file
 {
 #   if defined HAVE_ZLIB_H
     uint8_t read_buffer[READSIZE];
@@ -50,13 +50,13 @@ struct cucul_file
 };
 #endif
 
-cucul_file_t *cucul_file_open(char const *path, const char *mode)
+caca_file_t *caca_file_open(char const *path, const char *mode)
 {
 #if defined __KERNEL__
     seterrno(ENOSYS);
     return NULL;
 #else
-    cucul_file_t *fp = malloc(sizeof(*fp));
+    caca_file_t *fp = malloc(sizeof(*fp));
 
     fp->readonly = !!strchr(mode, 'r');
 
@@ -125,7 +125,7 @@ cucul_file_t *cucul_file_open(char const *path, const char *mode)
 #endif
 }
 
-int cucul_file_close(cucul_file_t *fp)
+int caca_file_close(caca_file_t *fp)
 {
 #if defined __KERNEL__
     seterrno(ENOSYS);
@@ -143,7 +143,7 @@ int cucul_file_close(cucul_file_t *fp)
 #endif
 }
 
-uint64_t cucul_file_tell(cucul_file_t *fp)
+uint64_t caca_file_tell(caca_file_t *fp)
 {
 #if defined __KERNEL__
     seterrno(ENOSYS);
@@ -157,7 +157,7 @@ uint64_t cucul_file_tell(cucul_file_t *fp)
 #endif
 }
 
-size_t cucul_file_read(cucul_file_t *fp, void *ptr, size_t size)
+size_t caca_file_read(caca_file_t *fp, void *ptr, size_t size)
 {
 #if defined __KERNEL__
     seterrno(ENOSYS);
@@ -171,7 +171,7 @@ size_t cucul_file_read(cucul_file_t *fp, void *ptr, size_t size)
 #endif
 }
 
-size_t cucul_file_write(cucul_file_t *fp, const void *ptr, size_t size)
+size_t caca_file_write(caca_file_t *fp, const void *ptr, size_t size)
 {
 #if defined __KERNEL__
     seterrno(ENOSYS);
@@ -194,7 +194,7 @@ size_t cucul_file_write(cucul_file_t *fp, const void *ptr, size_t size)
 #endif
 }
 
-char *cucul_file_gets(cucul_file_t *fp, char *s, int size)
+char *caca_file_gets(caca_file_t *fp, char *s, int size)
 {
 #if defined __KERNEL__
     seterrno(ENOSYS);
@@ -228,7 +228,7 @@ char *cucul_file_gets(cucul_file_t *fp, char *s, int size)
 #endif
 }
 
-int cucul_file_eof(cucul_file_t *fp)
+int caca_file_eof(caca_file_t *fp)
 {
 #if defined __KERNEL__
     return 1;
@@ -240,7 +240,7 @@ int cucul_file_eof(cucul_file_t *fp)
 }
 
 #if !defined __KERNEL__ && defined HAVE_ZLIB_H
-static int zipread(cucul_file_t *fp, void *buf, unsigned int len)
+static int zipread(caca_file_t *fp, void *buf, unsigned int len)
 {
     unsigned int total_read = 0;
 

@@ -1,5 +1,5 @@
 /*
- *  libcucul      Canvas for ultrafast compositing of Unicode letters
+ *  libcaca       Colour ASCII-Art library
  *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
@@ -22,8 +22,8 @@
 #   include <stdlib.h>
 #endif
 
-#include "cucul.h"
-#include "cucul_internals.h"
+#include "caca.h"
+#include "caca_internals.h"
 
 static uint32_t flipchar(uint32_t ch);
 static uint32_t flopchar(uint32_t ch);
@@ -43,7 +43,7 @@ static void rightpair(uint32_t pair[2]);
  *  \param cv The canvas to invert.
  *  \return This function always returns 0.
  */
-int cucul_invert(cucul_canvas_t *cv)
+int caca_invert(caca_canvas_t *cv)
 {
     uint32_t *attrs = cv->attrs;
     int i;
@@ -69,7 +69,7 @@ int cucul_invert(cucul_canvas_t *cv)
  *  \param cv The canvas to flip.
  *  \return This function always returns 0.
  */
-int cucul_flip(cucul_canvas_t *cv)
+int caca_flip(caca_canvas_t *cv)
 {
     int y;
 
@@ -104,10 +104,10 @@ int cucul_flip(cucul_canvas_t *cv)
         cright = cleft + cv->width - 1;
         for( ; cleft < cright; cleft++)
         {
-            if(cleft[0] == CUCUL_MAGIC_FULLWIDTH)
+            if(cleft[0] == CACA_MAGIC_FULLWIDTH)
             {
                 cleft[0] = cleft[1];
-                cleft[1] = CUCUL_MAGIC_FULLWIDTH;
+                cleft[1] = CACA_MAGIC_FULLWIDTH;
                 cleft++;
             }
         }
@@ -128,7 +128,7 @@ int cucul_flip(cucul_canvas_t *cv)
  *  \param cv The canvas to flop.
  *  \return This function always returns 0.
  */
-int cucul_flop(cucul_canvas_t *cv)
+int caca_flop(caca_canvas_t *cv)
 {
     int x;
 
@@ -174,7 +174,7 @@ int cucul_flop(cucul_canvas_t *cv)
  *  \param cv The canvas to rotate.
  *  \return This function always returns 0.
  */
-int cucul_rotate_180(cucul_canvas_t *cv)
+int caca_rotate_180(caca_canvas_t *cv)
 {
     uint32_t *cbegin = cv->chars;
     uint32_t *cend = cbegin + cv->width * cv->height - 1;
@@ -206,10 +206,10 @@ int cucul_rotate_180(cucul_canvas_t *cv)
         cend = cbegin + cv->width - 1;
         for( ; cbegin < cend; cbegin++)
         {
-            if(cbegin[0] == CUCUL_MAGIC_FULLWIDTH)
+            if(cbegin[0] == CACA_MAGIC_FULLWIDTH)
             {
                 cbegin[0] = cbegin[1];
-                cbegin[1] = CUCUL_MAGIC_FULLWIDTH;
+                cbegin[1] = CACA_MAGIC_FULLWIDTH;
                 cbegin++;
             }
         }
@@ -239,7 +239,7 @@ int cucul_rotate_180(cucul_canvas_t *cv)
  *  \param cv The canvas to rotate left.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_rotate_left(cucul_canvas_t *cv)
+int caca_rotate_left(caca_canvas_t *cv)
 {
     uint32_t *newchars, *newattrs;
     int x, y, w2, h2;
@@ -251,7 +251,7 @@ int cucul_rotate_left(cucul_canvas_t *cv)
     }
 
     /* Save the current frame shortcuts */
-    _cucul_save_frame_info(cv);
+    _caca_save_frame_info(cv);
 
     w2 = (cv->width + 1) / 2;
     h2 = cv->height;
@@ -330,7 +330,7 @@ int cucul_rotate_left(cucul_canvas_t *cv)
     cv->frames[cv->frame].attrs = newattrs;
 
     /* Reset the current frame shortcuts */
-    _cucul_load_frame_info(cv);
+    _caca_load_frame_info(cv);
 
     return 0;
 }
@@ -356,7 +356,7 @@ int cucul_rotate_left(cucul_canvas_t *cv)
  *  \param cv The canvas to rotate right.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_rotate_right(cucul_canvas_t *cv)
+int caca_rotate_right(caca_canvas_t *cv)
 {
     uint32_t *newchars, *newattrs;
     int x, y, w2, h2;
@@ -368,7 +368,7 @@ int cucul_rotate_right(cucul_canvas_t *cv)
     }
 
     /* Save the current frame shortcuts */
-    _cucul_save_frame_info(cv);
+    _caca_save_frame_info(cv);
 
     w2 = (cv->width + 1) / 2;
     h2 = cv->height;
@@ -447,7 +447,7 @@ int cucul_rotate_right(cucul_canvas_t *cv)
     cv->frames[cv->frame].attrs = newattrs;
 
     /* Reset the current frame shortcuts */
-    _cucul_load_frame_info(cv);
+    _caca_load_frame_info(cv);
 
     return 0;
 }
@@ -471,7 +471,7 @@ int cucul_rotate_right(cucul_canvas_t *cv)
  *  \param cv The canvas to rotate left.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_stretch_left(cucul_canvas_t *cv)
+int caca_stretch_left(caca_canvas_t *cv)
 {
     uint32_t *newchars, *newattrs;
     int x, y;
@@ -483,7 +483,7 @@ int cucul_stretch_left(cucul_canvas_t *cv)
     }
 
     /* Save the current frame shortcuts */
-    _cucul_save_frame_info(cv);
+    _caca_save_frame_info(cv);
 
     newchars = malloc(cv->width * cv->height * sizeof(uint32_t));
     if(!newchars)
@@ -538,7 +538,7 @@ int cucul_stretch_left(cucul_canvas_t *cv)
     cv->frames[cv->frame].attrs = newattrs;
 
     /* Reset the current frame shortcuts */
-    _cucul_load_frame_info(cv);
+    _caca_load_frame_info(cv);
 
     return 0;
 }
@@ -562,7 +562,7 @@ int cucul_stretch_left(cucul_canvas_t *cv)
  *  \param cv The canvas to rotate right.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_stretch_right(cucul_canvas_t *cv)
+int caca_stretch_right(caca_canvas_t *cv)
 {
     uint32_t *newchars, *newattrs;
     int x, y;
@@ -574,7 +574,7 @@ int cucul_stretch_right(cucul_canvas_t *cv)
     }
 
     /* Save the current frame shortcuts */
-    _cucul_save_frame_info(cv);
+    _caca_save_frame_info(cv);
 
     newchars = malloc(cv->width * cv->height * sizeof(uint32_t));
     if(!newchars)
@@ -629,7 +629,7 @@ int cucul_stretch_right(cucul_canvas_t *cv)
     cv->frames[cv->frame].attrs = newattrs;
 
     /* Reset the current frame shortcuts */
-    _cucul_load_frame_info(cv);
+    _caca_load_frame_info(cv);
 
     return 0;
 }
@@ -999,8 +999,8 @@ static uint32_t rightchar(uint32_t ch)
 static uint32_t const leftright2x2[] =
 {
     /* ASCII / Unicode */
-    '-', '-', 0x4e28, CUCUL_MAGIC_FULLWIDTH, /* -- 丨 */
-    '|', '|', 0x2f06, CUCUL_MAGIC_FULLWIDTH, /* || ⼆ */
+    '-', '-', 0x4e28, CACA_MAGIC_FULLWIDTH, /* -- 丨 */
+    '|', '|', 0x2f06, CACA_MAGIC_FULLWIDTH, /* || ⼆ */
     /* Unicode */
     0x2584, 0x2580, 0x2580, 0x2584, /* ▄▀ ▀▄ */
     0, 0, 0, 0
@@ -1030,22 +1030,22 @@ static uint32_t const leftright2x4[] =
     '.', '_', '.', 0x2575, 0x203e, '\'', 0x2577, '\'', /* ._ .╵ ‾' ╷' */
     '(', '_', 0x203f, '|', 0x203e, ')', '|', 0x2040,   /* (_ ‿| ‾) |⁀ */
     '(', 0x203e, '|', 0x203f, '_', ')', 0x2040, '|',   /* (‾ |‿ _) ⁀| */
-    '\\', '/', 0xff1e, CUCUL_MAGIC_FULLWIDTH,
-            '/', '\\', 0xff1c, CUCUL_MAGIC_FULLWIDTH,  /* \/ ＞ /\ ＜ */
-    ')', ' ', 0xfe35, CUCUL_MAGIC_FULLWIDTH,
-            ' ', '(', 0xfe36, CUCUL_MAGIC_FULLWIDTH,   /* )  ︵  ( ︶ */
-    '}', ' ', 0xfe37, CUCUL_MAGIC_FULLWIDTH,
-            ' ', '{', 0xfe38, CUCUL_MAGIC_FULLWIDTH,   /* }  ︷  { ︸ */
+    '\\', '/', 0xff1e, CACA_MAGIC_FULLWIDTH,
+            '/', '\\', 0xff1c, CACA_MAGIC_FULLWIDTH,  /* \/ ＞ /\ ＜ */
+    ')', ' ', 0xfe35, CACA_MAGIC_FULLWIDTH,
+            ' ', '(', 0xfe36, CACA_MAGIC_FULLWIDTH,   /* )  ︵  ( ︶ */
+    '}', ' ', 0xfe37, CACA_MAGIC_FULLWIDTH,
+            ' ', '{', 0xfe38, CACA_MAGIC_FULLWIDTH,   /* }  ︷  { ︸ */
     /* Not perfect, but better than nothing */
     '(', ' ', 0x02ce, ',', ' ', ')', 0x00b4, '`',      /* (  ˎ,  ) ´` */
     ' ', 'v', '>', ' ', 0x028c, ' ', ' ', '<',         /*  v >  ʌ   < */
     ' ', 'V', '>', ' ', 0x039b, ' ', ' ', '<',         /*  V >  Λ   < */
     'v', ' ', '>', ' ', ' ', 0x028c, ' ', '<',         /* v  >   ʌ  < */
     'V', ' ', '>', ' ', ' ', 0x039b, ' ', '<',         /* V  >   Λ  < */
-    '\\', '|', 0xff1e, CUCUL_MAGIC_FULLWIDTH,
-            '|', '\\', 0xff1c, CUCUL_MAGIC_FULLWIDTH,  /* \| ＞ |\ ＜ */
-    '|', '/', 0xff1e, CUCUL_MAGIC_FULLWIDTH,
-            '/', '|', 0xff1c, CUCUL_MAGIC_FULLWIDTH,   /* |/ ＞ /| ＜ */
+    '\\', '|', 0xff1e, CACA_MAGIC_FULLWIDTH,
+            '|', '\\', 0xff1c, CACA_MAGIC_FULLWIDTH,  /* \| ＞ |\ ＜ */
+    '|', '/', 0xff1e, CACA_MAGIC_FULLWIDTH,
+            '/', '|', 0xff1c, CACA_MAGIC_FULLWIDTH,   /* |/ ＞ /| ＜ */
     /* Unicode */
     0x2584, ' ', ' ', 0x2584, ' ', 0x2580, 0x2580, ' ',       /* ▄   ▄  ▀ ▀  */
     0x2588, ' ', 0x2584, 0x2584, ' ', 0x2588, 0x2580, 0x2580, /* █  ▄▄  █ ▀▀ */

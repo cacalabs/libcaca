@@ -33,7 +33,7 @@
 #   define myoption option
 #endif
 
-#include "cucul.h"
+#include "caca.h"
 
 #include "common-image.h"
 
@@ -57,7 +57,7 @@ static void usage(int argc, char **argv)
     fprintf(stderr, "  -c, --contrast=CONTRAST\tContrast of resulting image\n");
     fprintf(stderr, "  -g, --gamma=GAMMA\t\tGamma of resulting image\n");
     fprintf(stderr, "  -d, --dither=DITHER\t\tDithering algorithm to use :\n");
-    list = cucul_get_dither_algorithm_list(NULL);
+    list = caca_get_dither_algorithm_list(NULL);
     while(*list)
     {
         fprintf(stderr, "\t\t\t%s: %s\n", list[0], list[1]);
@@ -65,7 +65,7 @@ static void usage(int argc, char **argv)
     }
 
     fprintf(stderr, "  -f, --format=FORMAT\t\tFormat of the resulting image :\n");
-    list = cucul_get_export_list();
+    list = caca_get_export_list();
     while(*list)
     {
         fprintf(stderr, "\t\t\t%s: %s\n", list[0], list[1]);
@@ -88,12 +88,12 @@ static void version(void)
     "The latest version of img2txt is available from the web site,\n"
     "        http://libcaca.zoy.org/ in the libcaca package.\n"
     "\n",
-    cucul_get_version(), __DATE__);
+    caca_get_version(), __DATE__);
 }
 int main(int argc, char **argv)
 {
-    /* libcucul context */
-    cucul_canvas_t *cv;
+    /* libcaca context */
+    caca_canvas_t *cv;
     void *export;
     size_t len;
     struct image *i;
@@ -174,10 +174,10 @@ int main(int argc, char **argv)
     }
 
 
-    cv = cucul_create_canvas(0, 0);
+    cv = caca_create_canvas(0, 0);
     if(!cv)
     {
-        fprintf(stderr, "%s: unable to initialise libcucul\n", argv[0]);
+        fprintf(stderr, "%s: unable to initialise libcaca\n", argv[0]);
         return 1;
     }
 
@@ -185,7 +185,7 @@ int main(int argc, char **argv)
     if(!i)
     {
         fprintf(stderr, "%s: unable to load %s\n", argv[0], argv[argc-1]);
-        cucul_free_canvas(cv);
+        caca_free_canvas(cv);
         return 1;
     }
 
@@ -205,26 +205,26 @@ int main(int argc, char **argv)
     }
 
 
-    cucul_set_canvas_size(cv, cols, lines);
-    cucul_set_color_ansi(cv, CUCUL_DEFAULT, CUCUL_TRANSPARENT);
-    cucul_clear_canvas(cv);
-    if(cucul_set_dither_algorithm(i->dither, dither?dither:"fstein"))
+    caca_set_canvas_size(cv, cols, lines);
+    caca_set_color_ansi(cv, CACA_DEFAULT, CACA_TRANSPARENT);
+    caca_clear_canvas(cv);
+    if(caca_set_dither_algorithm(i->dither, dither?dither:"fstein"))
     {
         fprintf(stderr, "%s: Can't dither image with algorithm '%s'\n", argv[0], dither);
         unload_image(i);
-        cucul_free_canvas(cv);
+        caca_free_canvas(cv);
         return -1;
     }
 
-    if(brightness!=-1) cucul_set_dither_brightness (i->dither, brightness);
-    if(contrast!=-1) cucul_set_dither_contrast (i->dither, contrast);
-    if(gamma!=-1) cucul_set_dither_gamma (i->dither, gamma);
+    if(brightness!=-1) caca_set_dither_brightness (i->dither, brightness);
+    if(contrast!=-1) caca_set_dither_contrast (i->dither, contrast);
+    if(gamma!=-1) caca_set_dither_gamma (i->dither, gamma);
 
-    cucul_dither_bitmap(cv, 0, 0, cols, lines, i->dither, i->pixels);
+    caca_dither_bitmap(cv, 0, 0, cols, lines, i->dither, i->pixels);
 
     unload_image(i);
 
-    export = cucul_export_memory(cv, format?format:"ansi", &len);
+    export = caca_export_memory(cv, format?format:"ansi", &len);
     if(!export)
     {
         fprintf(stderr, "%s: Can't export to format '%s'\n", argv[0], format);
@@ -235,7 +235,7 @@ int main(int argc, char **argv)
         free(export);
     }
 
-    cucul_free_canvas(cv);
+    caca_free_canvas(cv);
 
     return 0;
 }

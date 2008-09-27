@@ -35,7 +35,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "cucul.h"
 #include "caca.h"
 #include "caca_internals.h"
 
@@ -65,7 +64,7 @@ struct driver_private
     int window;
     int width, height;
     int new_width, new_height;
-    cucul_font_t *f;
+    caca_font_t *f;
     float font_width, font_height;
     float incx, incy;
     uint32_t const *blocks;
@@ -87,8 +86,8 @@ static int gl_init_graphics(caca_display_t *dp)
     char const *geometry;
     char *argv[2] = { "", NULL };
     char const * const * fonts;
-    int width = cucul_get_canvas_width(dp->cv);
-    int height = cucul_get_canvas_height(dp->cv);
+    int width = caca_get_canvas_width(dp->cv);
+    int height = caca_get_canvas_height(dp->cv);
     int argc = 1;
 
     dp->drv.p = malloc(sizeof(struct driver_private));
@@ -102,28 +101,28 @@ static int gl_init_graphics(caca_display_t *dp)
 #endif
 
     dp->resize.allow = 1;
-    cucul_set_canvas_size(dp->cv, width ? width : 80, height ? height : 32);
+    caca_set_canvas_size(dp->cv, width ? width : 80, height ? height : 32);
     dp->resize.allow = 0;
 
-    /* Load a libcucul internal font */
-    fonts = cucul_get_font_list();
+    /* Load a libcaca internal font */
+    fonts = caca_get_font_list();
     if(fonts[0] == NULL)
     {
-        fprintf(stderr, "error: libcucul was compiled without any fonts\n");
+        fprintf(stderr, "error: libcaca was compiled without any fonts\n");
         return -1;
     }
-    dp->drv.p->f = cucul_load_font(fonts[0], 0);
+    dp->drv.p->f = caca_load_font(fonts[0], 0);
     if(dp->drv.p->f == NULL)
     {
         fprintf(stderr, "error: could not load font \"%s\"\n", fonts[0]);
         return -1;
     }
 
-    dp->drv.p->font_width = cucul_get_font_width(dp->drv.p->f);
-    dp->drv.p->font_height = cucul_get_font_height(dp->drv.p->f);
+    dp->drv.p->font_width = caca_get_font_width(dp->drv.p->f);
+    dp->drv.p->font_height = caca_get_font_height(dp->drv.p->f);
 
-    dp->drv.p->width = cucul_get_canvas_width(dp->cv) * dp->drv.p->font_width;
-    dp->drv.p->height = cucul_get_canvas_height(dp->cv) * dp->drv.p->font_height;
+    dp->drv.p->width = caca_get_canvas_width(dp->cv) * dp->drv.p->font_width;
+    dp->drv.p->height = caca_get_canvas_height(dp->cv) * dp->drv.p->font_height;
 
 #ifdef HAVE_GLUTCLOSEFUNC
     dp->drv.p->close = 0;
@@ -192,7 +191,7 @@ static int gl_end_graphics(caca_display_t *dp)
 {
     glutHideWindow();
     glutDestroyWindow(dp->drv.p->window);
-    cucul_free_font(dp->drv.p->f);
+    caca_free_font(dp->drv.p->f);
     free(dp->drv.p->txid);
     free(dp->drv.p);
     return 0;
@@ -216,9 +215,9 @@ static int gl_get_display_height(caca_display_t const *dp)
 
 static void gl_display(caca_display_t *dp)
 {
-    uint32_t const *cvchars = (uint32_t const *)cucul_get_canvas_chars(dp->cv);
-    uint32_t const *cvattrs = (uint32_t const *)cucul_get_canvas_attrs(dp->cv);
-    int width = cucul_get_canvas_width(dp->cv);
+    uint32_t const *cvchars = (uint32_t const *)caca_get_canvas_chars(dp->cv);
+    uint32_t const *cvattrs = (uint32_t const *)caca_get_canvas_attrs(dp->cv);
+    int width = caca_get_canvas_width(dp->cv);
     int x, y, line;
 
     glClear(GL_COLOR_BUFFER_BIT);
@@ -232,7 +231,7 @@ static void gl_display(caca_display_t *dp)
         /* FIXME: optimise using stride */
         for(x = 0; x < dp->drv.p->width; x += dp->drv.p->font_width)
         {
-            uint16_t bg = cucul_attr_to_rgb12_bg(*attrs++);
+            uint16_t bg = caca_attr_to_rgb12_bg(*attrs++);
 
             glColor4b(((bg & 0xf00) >> 8) * 8,
                       ((bg & 0x0f0) >> 4) * 8,
@@ -266,7 +265,7 @@ static void gl_display(caca_display_t *dp)
             uint16_t fg;
             int i, b, fullwidth;
 
-            fullwidth = cucul_utf32_is_fullwidth(ch);
+            fullwidth = caca_utf32_is_fullwidth(ch);
 
             for(b = 0, i = 0; dp->drv.p->blocks[i + 1]; i += 2)
             {
@@ -284,7 +283,7 @@ static void gl_display(caca_display_t *dp)
                               dp->drv.p->txid[b + ch
                                         - (uint32_t)dp->drv.p->blocks[i]]);
 
-                fg = cucul_attr_to_rgb12_fg(*attrs);
+                fg = caca_attr_to_rgb12_fg(*attrs);
                 glColor3b(((fg & 0xf00) >> 8) * 8,
                           ((fg & 0x0f0) >> 4) * 8,
                           (fg & 0x00f) * 8);
@@ -352,8 +351,8 @@ static int gl_get_event(caca_display_t *dp, caca_privevent_t *ev)
     if(dp->resize.resized)
     {
         ev->type = CACA_EVENT_RESIZE;
-        ev->data.resize.w = cucul_get_canvas_width(dp->cv);
-        ev->data.resize.h = cucul_get_canvas_height(dp->cv);
+        ev->data.resize.w = caca_get_canvas_width(dp->cv);
+        ev->data.resize.h = caca_get_canvas_height(dp->cv);
         return 1;
     }
 
@@ -513,36 +512,36 @@ static void _display(void)
 
 static void gl_compute_font(caca_display_t *dp)
 {
-    cucul_canvas_t *cv;
+    caca_canvas_t *cv;
     uint32_t *image;
     int i, b, w, h, x, y;
 
     /* Count how many glyphs this font has */
-    dp->drv.p->blocks = cucul_get_font_blocks(dp->drv.p->f);
+    dp->drv.p->blocks = caca_get_font_blocks(dp->drv.p->f);
 
     for(b = 0, i = 0; dp->drv.p->blocks[i + 1]; i += 2)
         b += (int)(dp->drv.p->blocks[i + 1] - dp->drv.p->blocks[i]);
 
-    /* Allocate a libcucul canvas and print all the glyphs on it */
-    cv = cucul_create_canvas(2, b);
-    cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLACK);
+    /* Allocate a libcaca canvas and print all the glyphs on it */
+    cv = caca_create_canvas(2, b);
+    caca_set_color_ansi(cv, CACA_WHITE, CACA_BLACK);
 
     for(b = 0, i = 0; dp->drv.p->blocks[i + 1]; i += 2)
     {
         int j, n = (int)(dp->drv.p->blocks[i + 1] - dp->drv.p->blocks[i]);
 
         for(j = 0; j < n; j++)
-            cucul_put_char(cv, 0, b + j, dp->drv.p->blocks[i] + j);
+            caca_put_char(cv, 0, b + j, dp->drv.p->blocks[i] + j);
 
         b += n;
     }
 
-    /* Draw the cucul canvas onto an image buffer */
+    /* Draw the caca canvas onto an image buffer */
     image = malloc(b * dp->drv.p->font_height *
                    2 * dp->drv.p->font_width * sizeof(uint32_t));
-    cucul_render_canvas(cv, dp->drv.p->f, image, 2 * dp->drv.p->font_width,
+    caca_render_canvas(cv, dp->drv.p->f, image, 2 * dp->drv.p->font_width,
                         b * dp->drv.p->font_height, 8 * dp->drv.p->font_width);
-    cucul_free_canvas(cv);
+    caca_free_canvas(cv);
 
     /* Convert all glyphs in the image buffer to GL textures */
     dp->drv.p->txid = malloc(b * sizeof(int));
@@ -560,7 +559,7 @@ static void gl_compute_font(caca_display_t *dp)
             uint32_t *glyph = image + (int)((b + j) * dp->drv.p->font_width * 2
                                             * dp->drv.p->font_height);
             int fullwidth =
-                    cucul_utf32_is_fullwidth(dp->drv.p->blocks[i] + j);
+                    caca_utf32_is_fullwidth(dp->drv.p->blocks[i] + j);
 
             memset(tmp, 0, 16 * 8 * 16);
             

@@ -33,7 +33,6 @@
 #   include <signal.h>
 #endif
 
-#include "cucul.h"
 #include "caca.h"
 #include "caca_internals.h"
 
@@ -177,7 +176,7 @@ static int slang_init_graphics(caca_display_t *dp)
 #endif
 
     dp->resize.allow = 1;
-    cucul_set_canvas_size(dp->cv, SLtt_Screen_Cols, SLtt_Screen_Rows);
+    caca_set_canvas_size(dp->cv, SLtt_Screen_Cols, SLtt_Screen_Rows);
     dp->resize.allow = 0;
 
     return 0;
@@ -210,21 +209,21 @@ static int slang_set_display_title(caca_display_t *dp, char const *title)
 static int slang_get_display_width(caca_display_t const *dp)
 {
     /* Fallback to a 6x10 font */
-    return cucul_get_canvas_width(dp->cv) * 6;
+    return caca_get_canvas_width(dp->cv) * 6;
 }
 
 static int slang_get_display_height(caca_display_t const *dp)
 {
     /* Fallback to a 6x10 font */
-    return cucul_get_canvas_height(dp->cv) * 10;
+    return caca_get_canvas_height(dp->cv) * 10;
 }
 
 static void slang_display(caca_display_t *dp)
 {
-    uint32_t const *cvchars = (uint32_t const *)cucul_get_canvas_chars(dp->cv);
-    uint32_t const *cvattrs = (uint32_t const *)cucul_get_canvas_attrs(dp->cv);
-    int width = cucul_get_canvas_width(dp->cv);
-    int height = cucul_get_canvas_height(dp->cv);
+    uint32_t const *cvchars = (uint32_t const *)caca_get_canvas_chars(dp->cv);
+    uint32_t const *cvattrs = (uint32_t const *)caca_get_canvas_attrs(dp->cv);
+    int width = caca_get_canvas_width(dp->cv);
+    int height = caca_get_canvas_height(dp->cv);
     int x, y;
 
     for(y = 0; y < (int)height; y++)
@@ -241,24 +240,24 @@ static void slang_display(caca_display_t *dp)
              * here for, and in cases where SLang does not render
              * bright backgrounds, it's just fucked up. */
 #if 0
-            uint8_t fgcolor = cucul_attr_to_ansi_fg(*cvattrs);
-            uint8_t bgcolor = cucul_attr_to_ansi_bg(*cvattrs);
+            uint8_t fgcolor = caca_attr_to_ansi_fg(*cvattrs);
+            uint8_t bgcolor = caca_attr_to_ansi_bg(*cvattrs);
 
             if(fgcolor >= 0x10)
-                fgcolor = CUCUL_LIGHTGRAY;
+                fgcolor = CACA_LIGHTGRAY;
 
             if(bgcolor >= 0x10)
-                bgcolor = CUCUL_BLACK; /* FIXME: handle transparency */
+                bgcolor = CACA_BLACK; /* FIXME: handle transparency */
 
             if(fgcolor == bgcolor)
             {
-                if(fgcolor == CUCUL_BLACK)
-                    fgcolor = CUCUL_WHITE;
-                else if(fgcolor == CUCUL_WHITE
-                         || fgcolor <= CUCUL_LIGHTGRAY)
-                    fgcolor = CUCUL_BLACK;
+                if(fgcolor == CACA_BLACK)
+                    fgcolor = CACA_WHITE;
+                else if(fgcolor == CACA_WHITE
+                         || fgcolor <= CACA_LIGHTGRAY)
+                    fgcolor = CACA_BLACK;
                 else
-                    fgcolor = CUCUL_WHITE;
+                    fgcolor = CACA_WHITE;
                 SLsmg_set_color(slang_assoc[fgcolor + 16 * bgcolor]);
                 SLsmg_write_char(' ');
                 cvattrs++;
@@ -266,16 +265,16 @@ static void slang_display(caca_display_t *dp)
             else
 #endif
             {
-                SLsmg_set_color(slang_assoc[cucul_attr_to_ansi(*cvattrs++)]);
+                SLsmg_set_color(slang_assoc[caca_attr_to_ansi(*cvattrs++)]);
                 slang_write_utf32(ch);
             }
 #else
-            SLsmg_set_color(cucul_attr_to_ansi(*cvattrs++));
+            SLsmg_set_color(caca_attr_to_ansi(*cvattrs++));
             slang_write_utf32(ch);
 #endif
         }
     }
-    SLsmg_gotorc(cucul_get_cursor_y(dp->cv), cucul_get_cursor_x(dp->cv));
+    SLsmg_gotorc(caca_get_cursor_y(dp->cv), caca_get_cursor_x(dp->cv));
     SLsmg_refresh();
 }
 
@@ -285,8 +284,8 @@ static void slang_handle_resize(caca_display_t *dp)
     dp->resize.w = SLtt_Screen_Cols;
     dp->resize.h = SLtt_Screen_Rows;
 
-    if(dp->resize.w != cucul_get_canvas_width(dp->cv)
-        || dp->resize.h != cucul_get_canvas_height(dp->cv))
+    if(dp->resize.w != caca_get_canvas_width(dp->cv)
+        || dp->resize.h != caca_get_canvas_height(dp->cv))
         SLsmg_reinit_smg();
 }
 
@@ -342,7 +341,7 @@ static int slang_get_event(caca_display_t *dp, caca_privevent_t *ev)
         }
 
         utf8[i] = '\0';
-        utf32 = cucul_utf8_to_utf32(utf8, &bytes);
+        utf32 = caca_utf8_to_utf32(utf8, &bytes);
 
         while(i > bytes)
             SLang_ungetkey(keys[--i]);
@@ -482,17 +481,17 @@ static void slang_write_utf32(uint32_t ch)
     char ascii;
 #endif
 
-    if(ch == CUCUL_MAGIC_FULLWIDTH)
+    if(ch == CACA_MAGIC_FULLWIDTH)
         return;
 
 #ifdef HAVE_SLSMG_UTF8_ENABLE
-    bytes = cucul_utf32_to_utf8(buf, ch);
+    bytes = caca_utf32_to_utf8(buf, ch);
     buf[bytes] = '\0';
     SLsmg_write_string(buf);
 #else
-    ascii = cucul_utf32_to_ascii(ch);
+    ascii = caca_utf32_to_ascii(ch);
     SLsmg_write_char(ascii);
-    if(cucul_utf32_is_fullwidth(ch))
+    if(caca_utf32_is_fullwidth(ch))
         SLsmg_write_char(ascii);
 #endif
 }

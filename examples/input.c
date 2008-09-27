@@ -19,7 +19,6 @@
 #   include <stdio.h>
 #endif
 
-#include "cucul.h"
 #include "caca.h"
 
 #define BUFFER_SIZE 75
@@ -34,11 +33,11 @@ typedef struct textentry
 int main(int argc, char *argv[])
 {
     textentry entries[TEXT_ENTRIES];
-    cucul_canvas_t *cv;
+    caca_canvas_t *cv;
     caca_display_t *dp;
     unsigned int i, e = 0, running = 1;
 
-    cv = cucul_create_canvas(0, 0);
+    cv = caca_create_canvas(0, 0);
     if(cv == NULL)
     {
         printf("Can't create canvas\n");
@@ -52,8 +51,8 @@ int main(int argc, char *argv[])
     }
     caca_set_cursor(dp, 1);
 
-    cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
-    cucul_put_str(cv, 1, 1, "Text entries - press tab to cycle");
+    caca_set_color_ansi(cv, CACA_WHITE, CACA_BLUE);
+    caca_put_str(cv, 1, 1, "Text entries - press tab to cycle");
 
     for(i = 0; i < TEXT_ENTRIES; i++)
     {
@@ -70,21 +69,21 @@ int main(int argc, char *argv[])
         {
             unsigned int j, start, size;
 
-            cucul_set_color_ansi(cv, CUCUL_BLACK, CUCUL_LIGHTGRAY);
-            cucul_fill_box(cv, 2, 3 * i + 4, 2 + BUFFER_SIZE, 3 * i + 4, ' ');
+            caca_set_color_ansi(cv, CACA_BLACK, CACA_LIGHTGRAY);
+            caca_fill_box(cv, 2, 3 * i + 4, 2 + BUFFER_SIZE, 3 * i + 4, ' ');
 
             start = 0;
             size = entries[i].size;
 
             for(j = 0; j < size; j++)
             {
-                cucul_put_char(cv, 2 + j, 3 * i + 4,
+                caca_put_char(cv, 2 + j, 3 * i + 4,
                               entries[i].buffer[start + j]);
             }
         }
 
         /* Put the cursor on the active textentry */
-        cucul_gotoxy(cv, 2 + entries[e].cursor, 3 * e + 4);
+        caca_gotoxy(cv, 2 + entries[e].cursor, 3 * e + 4);
 
         caca_refresh_display(dp);
 
@@ -149,7 +148,7 @@ int main(int argc, char *argv[])
     }
 
     caca_free_display(dp);
-    cucul_free_canvas(cv);
+    caca_free_canvas(cv);
 
     return 0;
 }

@@ -27,10 +27,10 @@
 #include "caca_internals.h"
 
 /* These variables are needed to emulate old non-thread safe behaviour */
-cucul_canvas_t *__caca0_cv = NULL;
+caca_canvas_t *__caca0_cv = NULL;
 caca_display_t *__caca0_dp = NULL;
-unsigned char __caca0_fg = CUCUL_LIGHTGRAY;
-unsigned char __caca0_bg = CUCUL_BLACK;
+unsigned char __caca0_fg = CACA_LIGHTGRAY;
+unsigned char __caca0_bg = CACA_BLACK;
 char __caca0_utf8[2] = " ";
 
 /* These functions are needed, too */
@@ -41,28 +41,28 @@ unsigned int __caca0_sqrt(unsigned int);
 int __caca0_get_feature(int);
 void __caca0_set_feature(int);
 char const *__caca0_get_feature_name(int);
-cucul_canvas_t *__caca0_load_sprite(char const *);
-cucul_dither_t *__caca0_create_bitmap(unsigned int, unsigned int,
+caca_canvas_t *__caca0_load_sprite(char const *);
+caca_dither_t *__caca0_create_bitmap(unsigned int, unsigned int,
           unsigned int, unsigned int, unsigned long int, unsigned long int,
           unsigned long int, unsigned long int);
-void __caca0_free_bitmap(cucul_dither_t *);
+void __caca0_free_bitmap(caca_dither_t *);
 extern char const *__caca0_get_color_name(unsigned char);
 
 /* Emulation functions */
 int __caca0_init(void)
 {
-    __caca0_cv = cucul_create_canvas(0, 0);
+    __caca0_cv = caca_create_canvas(0, 0);
     if(!__caca0_cv)
         return -1;
     __caca0_dp = caca_create_display(__caca0_cv);
     if(!__caca0_dp)
     {
-        cucul_free_canvas(__caca0_cv);
+        caca_free_canvas(__caca0_cv);
         __caca0_cv = NULL;
         return -1;
     }
-    __caca0_fg = CUCUL_LIGHTGRAY;
-    __caca0_bg = CUCUL_BLACK;
+    __caca0_fg = CACA_LIGHTGRAY;
+    __caca0_bg = CACA_BLACK;
     return 0;
 }
 
@@ -70,7 +70,7 @@ void __caca0_end(void)
 {
     caca_free_display(__caca0_dp);
     __caca0_dp = NULL;
-    cucul_free_canvas(__caca0_cv);
+    caca_free_canvas(__caca0_cv);
     __caca0_cv = NULL;
 }
 
@@ -144,7 +144,7 @@ static char const *features[] =
     NULL, "none", "ordered2", "ordered4", "ordered8", "random"
 };
 
-static cucul_dither_t **bitmaps = NULL;
+static caca_dither_t **bitmaps = NULL;
 static unsigned int nbitmaps = 0;
 
 static int background = 0x12;
@@ -172,21 +172,21 @@ void __caca0_set_feature(int feature)
         case 0x11: case 0x12:
             background = feature;
             for(i = 0; i < nbitmaps; i++)
-                cucul_set_dither_color(bitmaps[i], features[feature]);
+                caca_set_dither_color(bitmaps[i], features[feature]);
             break;
 
         case 0x20: feature = 0x22; /* CACA_ANTIALIASING_PREFILTER */
         case 0x21: case 0x22:
             antialiasing = feature;
             for(i = 0; i < nbitmaps; i++)
-                cucul_set_dither_antialias(bitmaps[i], features[feature]);
+                caca_set_dither_antialias(bitmaps[i], features[feature]);
             break;
 
         case 0x30: feature = 0x33; /* CACA_DITHERING_ORDERED4 */
         case 0x31: case 0x32: case 0x33: case 0x34: case 0x35:
             dithering = feature;
             for(i = 0; i < nbitmaps; i++)
-                cucul_set_dither_algorithm(bitmaps[i], features[feature]);
+                caca_set_dither_algorithm(bitmaps[i], features[feature]);
             break;
     }
 }
@@ -211,48 +211,48 @@ char const *__caca0_get_feature_name(int feature)
     }
 }
 
-cucul_canvas_t *__caca0_load_sprite(char const *file)
+caca_canvas_t *__caca0_load_sprite(char const *file)
 {
-    cucul_canvas_t *cv;
+    caca_canvas_t *cv;
 
-    cv = cucul_create_canvas(0, 0);;
-    if(cucul_import_file(cv, file, "") < 0)
+    cv = caca_create_canvas(0, 0);;
+    if(caca_import_file(cv, file, "") < 0)
     {
-        cucul_free_canvas(cv);
+        caca_free_canvas(cv);
         return NULL;
     }
 
     return cv;
 }
 
-cucul_dither_t *__caca0_create_bitmap(unsigned int bpp, unsigned int w,
+caca_dither_t *__caca0_create_bitmap(unsigned int bpp, unsigned int w,
                                       unsigned int h, unsigned int pitch,
                                       unsigned long int r, unsigned long int g,
                                       unsigned long int b, unsigned long int a)
 {
-    cucul_dither_t *d;
+    caca_dither_t *d;
 
-    d = cucul_create_dither(bpp, w, h, pitch, r, g, b, a);
+    d = caca_create_dither(bpp, w, h, pitch, r, g, b, a);
     if(!d)
         return NULL;
 
-    cucul_set_dither_color(d, features[background]);
-    cucul_set_dither_antialias(d, features[antialiasing]);
-    cucul_set_dither_algorithm(d, features[dithering]);
+    caca_set_dither_color(d, features[background]);
+    caca_set_dither_antialias(d, features[antialiasing]);
+    caca_set_dither_algorithm(d, features[dithering]);
 
     /* Store bitmap in our list */
     nbitmaps++;
-    bitmaps = realloc(bitmaps, nbitmaps * (sizeof(cucul_dither_t *)));
+    bitmaps = realloc(bitmaps, nbitmaps * (sizeof(caca_dither_t *)));
     bitmaps[nbitmaps - 1] = d;
 
     return d;
 }
 
-void __caca0_free_bitmap(cucul_dither_t *d)
+void __caca0_free_bitmap(caca_dither_t *d)
 {
     unsigned int i, found = 0;
 
-    cucul_free_dither(d);
+    caca_free_dither(d);
 
     /* Remove bitmap from our list */
     for(i = 0; i + 1 < nbitmaps; i++)

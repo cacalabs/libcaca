@@ -23,14 +23,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "cucul.h"
 #include "caca.h"
 #include "caca_internals.h"
 
 static int raw_init_graphics(caca_display_t *dp)
 {
-    int width = cucul_get_canvas_width(dp->cv);
-    int height = cucul_get_canvas_height(dp->cv);
+    int width = caca_get_canvas_width(dp->cv);
+    int height = caca_get_canvas_height(dp->cv);
     char const *geometry;
 
 #if defined(HAVE_GETENV)
@@ -40,7 +39,7 @@ static int raw_init_graphics(caca_display_t *dp)
 #endif
 
     dp->resize.allow = 1;
-    cucul_set_canvas_size(dp->cv, width ? width : 80, height ? height : 24);
+    caca_set_canvas_size(dp->cv, width ? width : 80, height ? height : 24);
     dp->resize.allow = 0;
 
     return 0;
@@ -71,7 +70,7 @@ static void raw_display(caca_display_t *dp)
     void *buffer;
     size_t len;
 
-    buffer = cucul_export_memory(dp->cv, "caca", &len);
+    buffer = caca_export_memory(dp->cv, "caca", &len);
     if(!buffer)
         return;
     fwrite(buffer, len, 1, stdout);

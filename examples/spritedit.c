@@ -20,7 +20,6 @@
 #   include <stdlib.h>
 #endif
 
-#include "cucul.h"
 #include "caca.h"
 
 /* Courtesy of Zashi */
@@ -48,46 +47,46 @@ char *guy[] = {
 
 int main(int argc, char **argv)
 {
-    cucul_canvas_t *sprite;
+    caca_canvas_t *sprite;
     size_t len;
     void *buffer;
     int i;
 
     /* Create a canvas with 4 frames */
-    sprite = cucul_create_canvas(0, 0);
+    sprite = caca_create_canvas(0, 0);
     for(i = 0; i < 3; i++)
-        cucul_create_frame(sprite, 0);
+        caca_create_frame(sprite, 0);
 
     /* Load stuff in all 4 frames */
     for(i = 0; i < 4; i++)
     {
-        cucul_set_frame(sprite, i);
-        cucul_import_memory(sprite, guy[i], strlen(guy[i]), "utf8");
+        caca_set_frame(sprite, i);
+        caca_import_memory(sprite, guy[i], strlen(guy[i]), "utf8");
     }
 
     /* Export our sprite in a memory buffer. We could save this to
      * disk afterwards. */
-    buffer = cucul_export_memory(sprite, "caca", &len);
+    buffer = caca_export_memory(sprite, "caca", &len);
 
     /* Free our sprite and reload it from the memory buffer. We could
      * load this from disk, too. */
-    cucul_free_canvas(sprite);
-    sprite = cucul_create_canvas(0, 0);
-    cucul_import_memory(sprite, buffer, len, "caca");
+    caca_free_canvas(sprite);
+    sprite = caca_create_canvas(0, 0);
+    caca_import_memory(sprite, buffer, len, "caca");
     free(buffer);
 
     /* Print each sprite frame to stdout */
     for(i = 0; i < 4; i++)
     {
-        cucul_set_frame(sprite, i);
+        caca_set_frame(sprite, i);
         printf("Frame #%i\n", i);
-        buffer = cucul_export_memory(sprite, "utf8", &len);
+        buffer = caca_export_memory(sprite, "utf8", &len);
         fwrite(buffer, len, 1, stdout);
         free(buffer);
     }
 
     /* Free our sprite */
-    cucul_free_canvas(sprite);
+    caca_free_canvas(sprite);
 
     return 0;
 }

@@ -67,11 +67,8 @@ do
     --libs | --plugin-libs)
       echo_libs=yes
       ;;
-    cucul)
-      libs="$libs -lcucul"
-      ;;
     caca)
-      libs="$libs -lcaca -lcucul"
+      libs="$libs -lcaca"
       ;;
     *)
       usage 1 1>&2
@@ -82,7 +79,7 @@ done
 
 if test "$libs" = ""
 then
-  libs="-lcaca -lcucul"
+  libs="-lcaca"
 fi
 
 if test "$local_prefix" = "yes"

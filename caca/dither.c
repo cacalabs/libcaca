@@ -1,5 +1,5 @@
 /*
- *  libcucul      Canvas for ultrafast compositing of Unicode letters
+ *  libcaca       Colour ASCII-Art library
  *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
@@ -28,8 +28,8 @@
 #   include <string.h>
 #endif
 
-#include "cucul.h"
-#include "cucul_internals.h"
+#include "caca.h"
+#include "caca_internals.h"
 
 #define CP437 0
 
@@ -115,14 +115,14 @@ enum color_mode
     COLOR_MODE_FULL16
 };
 
-struct cucul_dither
+struct caca_dither
 {
     int bpp, has_palette, has_alpha;
     int w, h, pitch;
     int rmask, gmask, bmask, amask;
     int rright, gright, bright, aright;
     int rleft, gleft, bleft, aleft;
-    void (*get_hsv)(cucul_dither_t *, char *, int, int);
+    void (*get_hsv)(caca_dither_t *, char *, int, int);
     int red[256], green[256], blue[256], alpha[256];
 
     /* Colour features */
@@ -172,7 +172,7 @@ struct cucul_dither
 static void mask2shift(uint32_t, int *, int *);
 static float gammapow(float x, float y);
 
-static void get_rgba_default(cucul_dither_t const *, uint8_t *, int, int,
+static void get_rgba_default(caca_dither_t const *, uint8_t *, int, int,
                              unsigned int *);
 static int init_lookup(void);
 
@@ -242,7 +242,7 @@ static inline void rgb2hsv_default(int r, int g, int b,
  *  Create a dither structure from its coordinates (depth, width, height and
  *  pitch) and pixel mask values. If the depth is 8 bits per pixel, the mask
  *  values are ignored and the colour palette should be set using the
- *  cucul_set_dither_palette() function. For depths greater than 8 bits per
+ *  caca_set_dither_palette() function. For depths greater than 8 bits per
  *  pixel, a zero alpha mask causes the alpha values to be ignored.
  *
  *  If an error occurs, NULL is returned and \b errno is set accordingly:
@@ -260,11 +260,11 @@ static inline void rgb2hsv_default(int r, int g, int b,
  *  \param amask Bitmask for alpha values.
  *  \return Dither object upon success, NULL if an error occurred.
  */
-cucul_dither_t *cucul_create_dither(int bpp, int w, int h, int pitch,
+caca_dither_t *caca_create_dither(int bpp, int w, int h, int pitch,
                                     uint32_t rmask, uint32_t gmask,
                                     uint32_t bmask, uint32_t amask)
 {
-    cucul_dither_t *d;
+    caca_dither_t *d;
     int i;
 
     /* Minor sanity test */
@@ -274,7 +274,7 @@ cucul_dither_t *cucul_create_dither(int bpp, int w, int h, int pitch,
         return NULL;
     }
 
-    d = malloc(sizeof(cucul_dither_t));
+    d = malloc(sizeof(caca_dither_t));
     if(!d)
     {
         seterrno(ENOMEM);
@@ -371,7 +371,7 @@ cucul_dither_t *cucul_create_dither(int bpp, int w, int h, int pitch,
  *  \param alpha Array of 256 alpha values.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_set_dither_palette(cucul_dither_t *d,
+int caca_set_dither_palette(caca_dither_t *d,
                              uint32_t red[], uint32_t green[],
                              uint32_t blue[], uint32_t alpha[])
 {
@@ -420,7 +420,7 @@ int cucul_set_dither_palette(cucul_dither_t *d,
  *  \param brightness brightness value.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_set_dither_brightness(cucul_dither_t *d, float brightness)
+int caca_set_dither_brightness(caca_dither_t *d, float brightness)
 {
     /* FIXME */
     d->brightness = brightness;
@@ -437,7 +437,7 @@ int cucul_set_dither_brightness(cucul_dither_t *d, float brightness)
  *  \param d Dither object.
  *  \return Brightness value.
  */
-float cucul_get_dither_brightness(cucul_dither_t const *d)
+float caca_get_dither_brightness(caca_dither_t const *d)
 {
     return d->brightness;
 }
@@ -454,7 +454,7 @@ float cucul_get_dither_brightness(cucul_dither_t const *d)
  *  \param gamma Gamma value.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_set_dither_gamma(cucul_dither_t *d, float gamma)
+int caca_set_dither_gamma(caca_dither_t *d, float gamma)
 {
     /* FIXME: we don't need 4096 calls to gammapow(), we could just compute
      * a few of them and do linear interpolation for the rest. This will
@@ -489,7 +489,7 @@ int cucul_set_dither_gamma(cucul_dither_t *d, float gamma)
  *  \param d Dither object.
  *  \return Gamma value.
  */
-float cucul_get_dither_gamma(cucul_dither_t const *d)
+float caca_get_dither_gamma(caca_dither_t const *d)
 {
     return d->gamma;
 }
@@ -505,7 +505,7 @@ float cucul_get_dither_gamma(cucul_dither_t const *d)
  *  \param contrast contrast value.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_set_dither_contrast(cucul_dither_t *d, float contrast)
+int caca_set_dither_contrast(caca_dither_t *d, float contrast)
 {
     /* FIXME */
     d->contrast = contrast;
@@ -522,7 +522,7 @@ int cucul_set_dither_contrast(cucul_dither_t *d, float contrast)
  *  \param d Dither object.
  *  \return Contrast value.
  */
-float cucul_get_dither_contrast(cucul_dither_t const *d)
+float caca_get_dither_contrast(caca_dither_t const *d)
 {
     return d->contrast;
 }
@@ -543,7 +543,7 @@ float cucul_get_dither_contrast(cucul_dither_t const *d)
  *         for the dithering.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_set_dither_antialias(cucul_dither_t *d, char const *str)
+int caca_set_dither_antialias(caca_dither_t *d, char const *str)
 {
     if(!strcasecmp(str, "none"))
     {
@@ -569,7 +569,7 @@ int cucul_set_dither_antialias(cucul_dither_t *d, char const *str)
  *  Return a list of available antialiasing methods for a given dither. The
  *  list is a NULL-terminated array of strings, interleaving a string
  *  containing the internal value for the antialiasing method to be used with
- *  cucul_set_dither_antialias(), and a string containing the natural
+ *  caca_set_dither_antialias(), and a string containing the natural
  *  language description for that antialiasing method.
  *
  *  This function never fails.
@@ -578,7 +578,7 @@ int cucul_set_dither_antialias(cucul_dither_t *d, char const *str)
  *  \return An array of strings.
  */
 char const * const *
-    cucul_get_dither_antialias_list(cucul_dither_t const *d)
+    caca_get_dither_antialias_list(caca_dither_t const *d)
 {
     static char const * const list[] =
     {
@@ -599,7 +599,7 @@ char const * const *
  *  \param d Dither object.
  *  \return A static string.
  */
-char const * cucul_get_dither_antialias(cucul_dither_t const *d)
+char const * caca_get_dither_antialias(caca_dither_t const *d)
 {
     return d->antialias_name;
 }
@@ -627,7 +627,7 @@ char const * cucul_get_dither_antialias(cucul_dither_t const *d)
  *         for the dithering.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_set_dither_color(cucul_dither_t *d, char const *str)
+int caca_set_dither_color(caca_dither_t *d, char const *str)
 {
     if(!strcasecmp(str, "mono"))
     {
@@ -678,7 +678,7 @@ int cucul_set_dither_color(cucul_dither_t *d, char const *str)
  *  Return a list of available colour modes for a given dither. The list
  *  is a NULL-terminated array of strings, interleaving a string containing
  *  the internal value for the colour mode, to be used with
- *  cucul_set_dither_color(), and a string containing the natural
+ *  caca_set_dither_color(), and a string containing the natural
  *  language description for that colour mode.
  *
  *  This function never fails.
@@ -687,7 +687,7 @@ int cucul_set_dither_color(cucul_dither_t *d, char const *str)
  *  \return An array of strings.
  */
 char const * const *
-    cucul_get_dither_color_list(cucul_dither_t const *d)
+    caca_get_dither_color_list(caca_dither_t const *d)
 {
     static char const * const list[] =
     {
@@ -713,7 +713,7 @@ char const * const *
  *  \param d Dither object.
  *  \return A static string.
  */
-char const * cucul_get_dither_color(cucul_dither_t const *d)
+char const * caca_get_dither_color(caca_dither_t const *d)
 {
     return d->color_name;
 }
@@ -738,7 +738,7 @@ char const * cucul_get_dither_color(cucul_dither_t const *d)
  *         for the dithering.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_set_dither_charset(cucul_dither_t *d, char const *str)
+int caca_set_dither_charset(caca_dither_t *d, char const *str)
 {
     if(!strcasecmp(str, "shades"))
     {
@@ -772,7 +772,7 @@ int cucul_set_dither_charset(cucul_dither_t *d, char const *str)
  *  Return a list of available character sets for a given dither. The list
  *  is a NULL-terminated array of strings, interleaving a string containing
  *  the internal value for the character set, to be used with
- *  cucul_set_dither_charset(), and a string containing the natural
+ *  caca_set_dither_charset(), and a string containing the natural
  *  language description for that character set.
  *
  *  This function never fails.
@@ -780,7 +780,7 @@ int cucul_set_dither_charset(cucul_dither_t *d, char const *str)
  *  \param d Dither object.
  *  \return An array of strings.
  */
-char const * const * cucul_get_dither_charset_list(cucul_dither_t const *d)
+char const * const * caca_get_dither_charset_list(caca_dither_t const *d)
 {
     static char const * const list[] =
     {
@@ -802,7 +802,7 @@ char const * const * cucul_get_dither_charset_list(cucul_dither_t const *d)
  *  \param d Dither object.
  *  \return A static string.
  */
-char const * cucul_get_dither_charset(cucul_dither_t const *d)
+char const * caca_get_dither_charset(caca_dither_t const *d)
 {
     return d->glyph_name;
 }
@@ -827,7 +827,7 @@ char const * cucul_get_dither_charset(cucul_dither_t const *d)
  *         for the dithering.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_set_dither_algorithm(cucul_dither_t *d, char const *str)
+int caca_set_dither_algorithm(caca_dither_t *d, char const *str)
 {
     if(!strcasecmp(str, "none"))
     {
@@ -885,7 +885,7 @@ int cucul_set_dither_algorithm(cucul_dither_t *d, char const *str)
  *  Return a list of available dithering algorithms for a given dither. The
  *  list is a NULL-terminated array of strings, interleaving a string
  *  containing the internal value for the dithering algorithm, to be used
- *  with cucul_set_dither_dithering(), and a string containing the natural
+ *  with caca_set_dither_dithering(), and a string containing the natural
  *  language description for that algorithm.
  *
  *  This function never fails.
@@ -893,7 +893,7 @@ int cucul_set_dither_algorithm(cucul_dither_t *d, char const *str)
  *  \param d Dither object.
  *  \return An array of strings.
  */
-char const * const * cucul_get_dither_algorithm_list(cucul_dither_t const *d)
+char const * const * caca_get_dither_algorithm_list(caca_dither_t const *d)
 {
     static char const * const list[] =
     {
@@ -918,7 +918,7 @@ char const * const * cucul_get_dither_algorithm_list(cucul_dither_t const *d)
  *  \param d Dither object.
  *  \return A static string.
  */
-char const * cucul_get_dither_algorithm(cucul_dither_t const *d)
+char const * caca_get_dither_algorithm(caca_dither_t const *d)
 {
     return d->algo_name;
 }
@@ -930,7 +930,7 @@ char const * cucul_get_dither_algorithm(cucul_dither_t const *d)
  *
  *  This function never fails.
  *
- *  \param cv A handle to the libcucul canvas.
+ *  \param cv A handle to the libcaca canvas.
  *  \param x X coordinate of the upper-left corner of the drawing area.
  *  \param y Y coordinate of the upper-left corner of the drawing area.
  *  \param w Width of the drawing area.
@@ -939,8 +939,8 @@ char const * cucul_get_dither_algorithm(cucul_dither_t const *d)
  *  \param pixels Bitmap's pixels.
  *  \return This function always returns 0.
  */
-int cucul_dither_bitmap(cucul_canvas_t *cv, int x, int y, int w, int h,
-                        cucul_dither_t const *d, void *pixels)
+int caca_dither_bitmap(caca_canvas_t *cv, int x, int y, int w, int h,
+                        caca_dither_t const *d, void *pixels)
 {
     int *floyd_steinberg, *fs_r, *fs_g, *fs_b;
     uint32_t savedattr;
@@ -950,7 +950,7 @@ int cucul_dither_bitmap(cucul_canvas_t *cv, int x, int y, int w, int h,
     if(!d || !pixels)
         return 0;
 
-    savedattr = cucul_get_attr(cv, -1, -1);
+    savedattr = caca_get_attr(cv, -1, -1);
 
     x1 = x; x2 = x + w - 1;
     y1 = y; y2 = y + h - 1;
@@ -1127,7 +1127,7 @@ int cucul_dither_bitmap(cucul_canvas_t *cv, int x, int y, int w, int h,
             if(rgba[1] > lum) lum = rgba[1];
             if(rgba[2] > lum) lum = rgba[2];
             outfg = outbg;
-            outbg = CUCUL_BLACK;
+            outbg = CACA_BLACK;
 
             ch = lum * dchmax / 0x1000;
             if(ch < 0)
@@ -1169,8 +1169,8 @@ int cucul_dither_bitmap(cucul_canvas_t *cv, int x, int y, int w, int h,
         }
 
         /* Now output the character */
-        cucul_set_color_ansi(cv, outfg, outbg);
-        cucul_put_char(cv, x, y, outch);
+        caca_set_color_ansi(cv, outfg, outbg);
+        caca_put_char(cv, x, y, outch);
 
         d->increment_dither();
     }
@@ -1179,21 +1179,21 @@ int cucul_dither_bitmap(cucul_canvas_t *cv, int x, int y, int w, int h,
 
     free(floyd_steinberg);
 
-    cucul_set_attr(cv, savedattr);
+    caca_set_attr(cv, savedattr);
 
     return 0;
 }
 
 /** \brief Free the memory associated with a dither.
  *
- *  Free the memory allocated by cucul_create_dither().
+ *  Free the memory allocated by caca_create_dither().
  *
  *  This function never fails.
  *
  *  \param d Dither object.
  *  \return This function always returns 0.
  */
-int cucul_free_dither(cucul_dither_t *d)
+int caca_free_dither(caca_dither_t *d)
 {
     if(!d)
         return 0;
@@ -1296,7 +1296,7 @@ static float gammapow(float x, float y)
 #endif
 }
 
-static void get_rgba_default(cucul_dither_t const *d, uint8_t *pixels,
+static void get_rgba_default(caca_dither_t const *d, uint8_t *pixels,
                              int x, int y, unsigned int *rgba)
 {
     uint32_t bits;
@@ -1493,7 +1493,7 @@ static void init_random_dither(int line)
 
 static int get_random_dither(void)
 {
-    return cucul_rand(0x00, 0x100);
+    return caca_rand(0x00, 0x100);
 }
 
 static void increment_random_dither(void)
@@ -1509,16 +1509,16 @@ static int init_lookup(void)
     int v, s, h;
 
     /* These ones are constant */
-    lookup_colors[0] = CUCUL_BLACK;
-    lookup_colors[1] = CUCUL_DARKGRAY;
-    lookup_colors[2] = CUCUL_LIGHTGRAY;
-    lookup_colors[3] = CUCUL_WHITE;
+    lookup_colors[0] = CACA_BLACK;
+    lookup_colors[1] = CACA_DARKGRAY;
+    lookup_colors[2] = CACA_LIGHTGRAY;
+    lookup_colors[3] = CACA_WHITE;
 
     /* These ones will be overwritten */
-    lookup_colors[4] = CUCUL_MAGENTA;
-    lookup_colors[5] = CUCUL_LIGHTMAGENTA;
-    lookup_colors[6] = CUCUL_RED;
-    lookup_colors[7] = CUCUL_LIGHTRED;
+    lookup_colors[4] = CACA_MAGENTA;
+    lookup_colors[5] = CACA_LIGHTMAGENTA;
+    lookup_colors[6] = CACA_RED;
+    lookup_colors[7] = CACA_LIGHTRED;
 
     for(v = 0; v < LOOKUP_VAL; v++)
         for(s = 0; s < LOOKUP_SAT; s++)

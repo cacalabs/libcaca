@@ -20,10 +20,9 @@
 #   include <stdlib.h>
 #endif
 
-#include "cucul.h"
 #include "caca.h"
 
-static cucul_canvas_t *cv;
+static caca_canvas_t *cv;
 static caca_display_t *dp;
 
 static void print_event(int, int, caca_event_t *);
@@ -33,7 +32,7 @@ int main(int argc, char **argv)
     caca_event_t *events;
     int i, h, quit;
 
-    cv = cucul_create_canvas(80, 24);
+    cv = caca_create_canvas(80, 24);
     if(cv == NULL)
     {
         printf("Failed to create canvas\n");
@@ -47,13 +46,13 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    h = cucul_get_canvas_height(cv) - 1;
+    h = caca_get_canvas_height(cv) - 1;
 
-    cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
-    cucul_draw_line(cv, 0, 0, cucul_get_canvas_width(cv) - 1, 0, ' ');
+    caca_set_color_ansi(cv, CACA_WHITE, CACA_BLUE);
+    caca_draw_line(cv, 0, 0, caca_get_canvas_width(cv) - 1, 0, ' ');
 
-    cucul_draw_line(cv, 0, h, cucul_get_canvas_width(cv) - 1, h, ' ');
-    cucul_put_str(cv, 0, h, "type \"quit\" to exit");
+    caca_draw_line(cv, 0, h, caca_get_canvas_width(cv) - 1, h, ' ');
+    caca_put_str(cv, 0, h, "type \"quit\" to exit");
 
     caca_refresh_display(dp);
 
@@ -91,19 +90,19 @@ int main(int argc, char **argv)
         }
         while(ret);
 
-        cucul_set_color_ansi(cv, CUCUL_LIGHTGRAY, CUCUL_BLACK);
-        cucul_clear_canvas(cv);
+        caca_set_color_ansi(cv, CACA_LIGHTGRAY, CACA_BLACK);
+        caca_clear_canvas(cv);
 
         /* Print current event */
-        cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
-        cucul_draw_line(cv, 0, 0, cucul_get_canvas_width(cv) - 1, 0, ' ');
+        caca_set_color_ansi(cv, CACA_WHITE, CACA_BLUE);
+        caca_draw_line(cv, 0, 0, caca_get_canvas_width(cv) - 1, 0, ' ');
         print_event(0, 0, events);
 
-        cucul_draw_line(cv, 0, h, cucul_get_canvas_width(cv) - 1, h, ' ');
-        cucul_printf(cv, 0, h, "type \"quit\" to exit: %s", quit_string[quit]);
+        caca_draw_line(cv, 0, h, caca_get_canvas_width(cv) - 1, h, ' ');
+        caca_printf(cv, 0, h, "type \"quit\" to exit: %s", quit_string[quit]);
 
         /* Print previous events */
-        cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLACK);
+        caca_set_color_ansi(cv, CACA_WHITE, CACA_BLACK);
         for(i = 1; i < h && caca_get_event_type(&events[i]); i++)
             print_event(0, i, events + i);
 
@@ -113,7 +112,7 @@ int main(int argc, char **argv)
     /* Clean up */
     free(events);
     caca_free_display(dp);
-    cucul_free_canvas(cv);
+    caca_free_canvas(cv);
 
     return 0;
 }
@@ -125,40 +124,40 @@ static void print_event(int x, int y, caca_event_t *ev)
     switch(caca_get_event_type(ev))
     {
     case CACA_EVENT_NONE:
-        cucul_printf(cv, x, y, "CACA_EVENT_NONE");
+        caca_printf(cv, x, y, "CACA_EVENT_NONE");
         break;
     case CACA_EVENT_KEY_PRESS:
         character = caca_get_event_key_ch(ev);
-        cucul_printf(cv, x, y, "CACA_EVENT_KEY_PRESS 0x%02x (%c)", character,
+        caca_printf(cv, x, y, "CACA_EVENT_KEY_PRESS 0x%02x (%c)", character,
                      (character > 0x1f && character < 0x80) ? character : '?');
         break;
     case CACA_EVENT_KEY_RELEASE:
         character = caca_get_event_key_ch(ev);
-        cucul_printf(cv, x, y, "CACA_EVENT_KEY_RELEASE 0x%02x (%c)", character,
+        caca_printf(cv, x, y, "CACA_EVENT_KEY_RELEASE 0x%02x (%c)", character,
                      (character > 0x1f && character < 0x80) ? character : '?');
         break;
     case CACA_EVENT_MOUSE_MOTION:
-        cucul_printf(cv, x, y, "CACA_EVENT_MOUSE_MOTION %u %u",
+        caca_printf(cv, x, y, "CACA_EVENT_MOUSE_MOTION %u %u",
                      caca_get_event_mouse_x(ev), caca_get_event_mouse_y(ev));
         break;
     case CACA_EVENT_MOUSE_PRESS:
-        cucul_printf(cv, x, y, "CACA_EVENT_MOUSE_PRESS %u",
+        caca_printf(cv, x, y, "CACA_EVENT_MOUSE_PRESS %u",
                      caca_get_event_mouse_button(ev));
         break;
     case CACA_EVENT_MOUSE_RELEASE:
-        cucul_printf(cv, x, y, "CACA_EVENT_MOUSE_RELEASE %u",
+        caca_printf(cv, x, y, "CACA_EVENT_MOUSE_RELEASE %u",
                      caca_get_event_mouse_button(ev));
         break;
     case CACA_EVENT_RESIZE:
-        cucul_printf(cv, x, y, "CACA_EVENT_RESIZE %u %u",
+        caca_printf(cv, x, y, "CACA_EVENT_RESIZE %u %u",
                      caca_get_event_resize_width(ev),
                      caca_get_event_resize_height(ev));
         break;
     case CACA_EVENT_QUIT:
-        cucul_printf(cv, x, y, "CACA_EVENT_QUIT");
+        caca_printf(cv, x, y, "CACA_EVENT_QUIT");
         break;
     default:
-        cucul_printf(cv, x, y, "CACA_EVENT_UNKNOWN");
+        caca_printf(cv, x, y, "CACA_EVENT_UNKNOWN");
     }
 }
 

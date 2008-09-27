@@ -24,9 +24,9 @@
 
 #include "caca++.h"
 
-Caca::Caca(Cucul *cv)
+Caca::Caca(Canvas *cv)
 {
-    dp = caca_create_display(cv->get_cucul_canvas_t());
+    dp = caca_create_display(cv->get_caca_canvas_t());
     if(!dp)
         throw -1;
 }
@@ -36,9 +36,9 @@ Caca::~Caca()
     caca_free_display(dp);
 }
 
-void Caca::Attach(Cucul *cv)
+void Caca::Attach(Canvas *cv)
 {
-    dp = caca_create_display(cv->get_cucul_canvas_t());
+    dp = caca_create_display(cv->get_caca_canvas_t());
     if(!dp)
         throw -1;
 }

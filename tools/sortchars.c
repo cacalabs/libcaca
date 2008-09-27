@@ -20,7 +20,7 @@
 #   include <stdlib.h>
 #endif
 
-#include "cucul.h"
+#include "caca.h"
 
 #define GLYPHS 0x7f
 #define FONT 0 /* 0 or 1 */
@@ -48,33 +48,33 @@ int main(int argc, char *argv[])
 {
     int count[DX][DY];
     char utf8[7];
-    cucul_canvas_t *cv;
-    cucul_font_t *f;
+    caca_canvas_t *cv;
+    caca_font_t *f;
     char const * const * fonts;
     uint8_t *img;
     unsigned int w, h, x, y;
     int ret, i, max;
 
-    /* Load a libcucul internal font */
-    fonts = cucul_get_font_list();
+    /* Load a libcaca internal font */
+    fonts = caca_get_font_list();
     if(fonts[FONT] == NULL)
     {
-        fprintf(stderr, "error: libcucul was compiled without any fonts\n");
+        fprintf(stderr, "error: libcaca was compiled without any fonts\n");
         return -1;
     }
-    f = cucul_load_font(fonts[FONT], 0);
+    f = caca_load_font(fonts[FONT], 0);
     if(f == NULL)
     {
         fprintf(stderr, "error: could not load font \"%s\"\n", fonts[0]);
         return -1;
     }
 
-    cv = cucul_create_canvas(1, 1);
-    cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLACK);
+    cv = caca_create_canvas(1, 1);
+    caca_set_color_ansi(cv, CACA_WHITE, CACA_BLACK);
 
     /* Create our bitmap buffer (32-bit ARGB) */
-    w = cucul_get_font_width(f);
-    h = cucul_get_font_height(f);
+    w = caca_get_font_width(f);
+    h = caca_get_font_height(f);
     img = malloc(4 * w * h);
 
     /* Zero our structures */
@@ -94,10 +94,10 @@ int main(int argc, char *argv[])
     /* Draw all glyphs and count their pixels */
     for(i = 0x20; i < GLYPHS; i++)
     {
-        cucul_put_char(cv, 0, 0, i);
+        caca_put_char(cv, 0, 0, i);
 
         /* Render the canvas onto our image buffer */
-        cucul_render_canvas(cv, f, img, w, h, 4 * w);
+        caca_render_canvas(cv, f, img, w, h, 4 * w);
 
         for(y = 0; y < h * DY; y++)
             for(x = 0; x < w * DX; x++)
@@ -165,7 +165,7 @@ int main(int argc, char *argv[])
     printf("static char const cells_to_ascii[%i] =\n{\n    ", FULLRANGE);
     for(i = 0; i < FULLRANGE; i++)
     {
-        ret = cucul_utf32_to_utf8(utf8, bestchar[i]);
+        ret = caca_utf32_to_utf8(utf8, bestchar[i]);
         utf8[ret] = '\0';
         printf("%i, ", bestchar[i]);
         if((i % 16) == 15 && i != FULLRANGE - 1)
@@ -175,7 +175,7 @@ int main(int argc, char *argv[])
     printf("static uint16_t const ascii_to_cells[%i] =\n{\n    ", GLYPHS);
     for(i = 0; i < GLYPHS; i++)
     {
-        ret = cucul_utf32_to_utf8(utf8, bestchar[i]);
+        ret = caca_utf32_to_utf8(utf8, bestchar[i]);
         utf8[ret] = '\0';
         printf("0x%03x, ", allbits[i]);
         if((i % 8) == 7 && i != GLYPHS - 1)
@@ -183,7 +183,7 @@ int main(int argc, char *argv[])
     }
     printf("\n};\n");
 
-    cucul_free_canvas(cv);
+    caca_free_canvas(cv);
 
     testcircle();
 
@@ -252,7 +252,7 @@ static void testcircle(void)
                     bits |= dst[(y * DY + j) * WIDTH * DX + x * DX + i];
                 }
 
-            ret = cucul_utf32_to_utf8(utf8, bestchar[bits]);
+            ret = caca_utf32_to_utf8(utf8, bestchar[bits]);
             utf8[ret] = '\0';
             printf("%s", utf8);
         }

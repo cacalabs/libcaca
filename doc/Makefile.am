@@ -8,10 +8,10 @@ man_MANS = caca-config.1 cacafire.1 cacaview.1 cacaserver.1 img2txt.1 cacaplay.1
 
 if BUILD_DOCUMENTATION
 htmldoc_DATA = html/doxygen.css
-htmldocdir = $(datadir)/doc/libcucul-dev/html
+htmldocdir = $(datadir)/doc/libcaca-dev/html
 if USE_LATEX
 pdfdoc_DATA = latex/libcaca.pdf
-pdfdocdir = $(datadir)/doc/libcucul-dev/pdf
+pdfdocdir = $(datadir)/doc/libcaca-dev/pdf
 endif
 endif
 
@@ -43,9 +43,9 @@ clean-local:
 
 install-data-local:
 if BUILD_DOCUMENTATION
-	$(mkinstalldirs) $(DESTDIR)$(datadir)/doc/libcucul-dev/html
+	$(mkinstalldirs) $(DESTDIR)$(datadir)/doc/libcaca-dev/html
 	cp `find html -name '*.html' -o -name '*.gif' -o -name '*.png'` \
-	  $(DESTDIR)$(datadir)/doc/libcucul-dev/html
+	  $(DESTDIR)$(datadir)/doc/libcaca-dev/html
 	$(mkinstalldirs) $(DESTDIR)$(mandir)/man3
 	for man in $$(find man -name '*.3caca'); do \
 	  sed -e 's/man3caca/man3/g' -e "s/fC'\([a-zA-Z0-9]*\)'/fC\"\1\"/g" \

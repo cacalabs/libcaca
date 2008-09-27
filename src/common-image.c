@@ -23,14 +23,14 @@
 #   include <Imlib2.h>
 #endif
 
-#include "cucul.h"
+#include "caca.h"
 
 #include "common-image.h"
 
 #if !defined(USE_IMLIB2)
-static unsigned int u32fread(cucul_file_t *);
-static unsigned int u16fread(cucul_file_t *);
-static unsigned int u8fread(cucul_file_t *);
+static unsigned int u32fread(caca_file_t *);
+static unsigned int u16fread(caca_file_t *);
+static unsigned int u8fread(caca_file_t *);
 #endif
 
 struct image * load_image(char const * name)
@@ -61,8 +61,8 @@ struct image * load_image(char const * name)
     bpp = 32;
     depth = 4;
 
-    /* Create the libcucul dither */
-    im->dither = cucul_create_dither(bpp, im->w, im->h, depth * im->w,
+    /* Create the libcaca dither */
+    im->dither = caca_create_dither(bpp, im->w, im->h, depth * im->w,
                                      rmask, gmask, bmask, amask);
     if(!im->dither)
     {
@@ -77,9 +77,9 @@ struct image * load_image(char const * name)
     /* Try to load a BMP file */
     unsigned int red[256], green[256], blue[256], alpha[256];
     unsigned int i, colors, offset, tmp, planes;
-    cucul_file_t *f;
+    caca_file_t *f;
 
-    f = cucul_file_open(name, "rb");
+    f = caca_file_open(name, "rb");
     if(!f)
     {
         free(im);
@@ -88,7 +88,7 @@ struct image * load_image(char const * name)
 
     if(u16fread(f) != 0x4d42)
     {
-        cucul_file_close(f);
+        caca_file_close(f);
         free(im);
         return NULL;
     }
@@ -110,7 +110,7 @@ struct image * load_image(char const * name)
         tmp = u32fread(f); /* compression */
         if(tmp != 0)
         {
-            cucul_file_close(f);
+            caca_file_close(f);
             free(im);
             return NULL;
         }
@@ -149,7 +149,7 @@ struct image * load_image(char const * name)
     }
     else
     {
-        cucul_file_close(f);
+        caca_file_close(f);
         free(im);
         return NULL;
     }
@@ -163,7 +163,7 @@ struct image * load_image(char const * name)
     /* Sanity check */
     if(!im->w || im->w > 0x10000 || !im->h || im->h > 0x10000 || planes != 1)
     {
-        cucul_file_close(f);
+        caca_file_close(f);
         free(im);
         return NULL;
     }
@@ -172,7 +172,7 @@ struct image * load_image(char const * name)
     im->pixels = malloc(im->w * im->h * depth);
     if(!im->pixels)
     {
-        cucul_file_close(f);
+        caca_file_close(f);
         free(im);
         return NULL;
     }
@@ -208,7 +208,7 @@ struct image * load_image(char const * name)
                 break;
             default:
                 /* Works for 8bpp, but also for 16, 24 etc. */
-                cucul_file_read(f, im->pixels + im->w * i * depth,
+                caca_file_read(f, im->pixels + im->w * i * depth,
                                 im->w * depth);
                 /* Pad reads to 4 bytes */
                 tmp = (im->w * depth) % 4;
@@ -240,10 +240,10 @@ struct image * load_image(char const * name)
         break;
     }
 
-    cucul_file_close(f);
+    caca_file_close(f);
 
-    /* Create the libcucul dither */
-    im->dither = cucul_create_dither(bpp, im->w, im->h, depth * im->w,
+    /* Create the libcaca dither */
+    im->dither = caca_create_dither(bpp, im->w, im->h, depth * im->w,
                                      rmask, gmask, bmask, amask);
     if(!im->dither)
     {
@@ -253,7 +253,7 @@ struct image * load_image(char const * name)
     }
 
     if(bpp == 8)
-        cucul_set_dither_palette(im->dither, red, green, blue, alpha);
+        caca_set_dither_palette(im->dither, red, green, blue, alpha);
 #endif
 
     return im;
@@ -267,29 +267,29 @@ void unload_image(struct image * im)
 #else
     free(im->pixels);
 #endif
-    cucul_free_dither(im->dither);
+    caca_free_dither(im->dither);
 }
 
 #if !defined(USE_IMLIB2)
-static unsigned int u32fread(cucul_file_t * f)
+static unsigned int u32fread(caca_file_t * f)
 {
     uint8_t buffer[4];
-    cucul_file_read(f, buffer, 4);
+    caca_file_read(f, buffer, 4);
     return ((unsigned int)buffer[3] << 24) | ((unsigned int)buffer[2] << 16)
              | ((unsigned int)buffer[1] << 8) | ((unsigned int)buffer[0]);
 }
 
-static unsigned int u16fread(cucul_file_t * f)
+static unsigned int u16fread(caca_file_t * f)
 {
     uint8_t buffer[2];
-    cucul_file_read(f, buffer, 2);
+    caca_file_read(f, buffer, 2);
     return ((unsigned int)buffer[1] << 8) | ((unsigned int)buffer[0]);
 }
 
-static unsigned int u8fread(cucul_file_t * f)
+static unsigned int u8fread(caca_file_t * f)
 {
     uint8_t buffer;
-    cucul_file_read(f, &buffer, 1);
+    caca_file_read(f, &buffer, 1);
     return (unsigned int)buffer;
 }
 #endif

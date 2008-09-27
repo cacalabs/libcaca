@@ -1,5 +1,5 @@
 /*
- *  libcucul Ruby bindings
+ *  libcaca Ruby bindings
  *  Copyright (c) 2007 Pascal Terjan <pterjan@linuxfr.org>
  *
  *  This library is free software. It comes without any warranty, to
@@ -10,7 +10,7 @@
  */
 
 #include <ruby.h>
-#include <cucul.h>
+#include <caca.h>
 #include <errno.h>
 #include "common.h"
 
@@ -18,7 +18,7 @@ VALUE cFont;
 
 void font_free(void *font)
 {
-    cucul_free_font((cucul_font_t *)font);
+    caca_free_font((caca_font_t *)font);
 }
 
 static VALUE font_alloc(VALUE klass)
@@ -30,9 +30,9 @@ static VALUE font_alloc(VALUE klass)
 
 static VALUE font_initialize(VALUE self, VALUE name)
 {
-    cucul_font_t *font;
+    caca_font_t *font;
 
-    font = cucul_load_font(StringValuePtr(name), 0);
+    font = caca_load_font(StringValuePtr(name), 0);
     if(font == NULL)
     {
         rb_raise(rb_eRuntimeError, strerror(errno));
@@ -46,7 +46,7 @@ static VALUE font_list(void)
     VALUE ary;
     char const* const* list;
     
-    list = cucul_get_font_list();
+    list = caca_get_font_list();
     
     ary = rb_ary_new();    
     while (*list != NULL)
@@ -60,12 +60,12 @@ static VALUE font_list(void)
 
 static VALUE get_font_width(VALUE self)
 {
-    return UINT2NUM(cucul_get_font_width(_SELF));
+    return UINT2NUM(caca_get_font_width(_SELF));
 }
 
 static VALUE get_font_height(VALUE self)
 {
-    return UINT2NUM(cucul_get_font_height(_SELF));
+    return UINT2NUM(caca_get_font_height(_SELF));
 }
 
 static VALUE get_font_blocks(VALUE self)
@@ -73,7 +73,7 @@ static VALUE get_font_blocks(VALUE self)
     VALUE ary;
     uint32_t const *list;
     
-    list = cucul_get_font_blocks(_SELF);
+    list = caca_get_font_blocks(_SELF);
     
     ary = rb_ary_new();    
     while (*list != 0L)
@@ -85,7 +85,7 @@ static VALUE get_font_blocks(VALUE self)
     return ary;
 }
 
-void Init_cucul_font(VALUE mCucul)
+void Init_caca_font(VALUE mCucul)
 {
     cFont = rb_define_class_under(mCucul, "Font", rb_cObject);
     rb_define_alloc_func(cFont, font_alloc);

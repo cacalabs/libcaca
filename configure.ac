@@ -331,20 +331,20 @@ AC_SUBST(X11_LIBS)
 AC_SUBST(GL_CFLAGS)
 AC_SUBST(GL_LIBS)
 
-# How to get the C99 types. See cucul/cucul_types.h.in for details about
-# the CUCUL_TYPES variable
+# How to get the C99 types. See caca/caca_types.h.in for details about
+# the CACA_TYPES variable
 if test "${ac_cv_my_have_vga}" = "yes"; then
-  CUCUL_TYPES=0
+  CACA_TYPES=0
 else
   AC_CHECK_HEADERS(stdint.h,
-    [CUCUL_TYPES=1],
+    [CACA_TYPES=1],
     [AC_CHECK_HEADERS(inttypes.h,
-      [CUCUL_TYPES=2],
+      [CACA_TYPES=2],
       [AC_CHECK_HEADERS(windows.h,
-        [CUCUL_TYPES=3],
-        [CUCUL_TYPES=0])])])
+        [CACA_TYPES=3],
+        [CACA_TYPES=0])])])
 fi
-AC_SUBST(CUCUL_TYPES)
+AC_SUBST(CACA_TYPES)
 
 # Optimizations
 CFLAGS="${CFLAGS} -g -O2 -fno-strength-reduce -fomit-frame-pointer"
@@ -473,7 +473,6 @@ AM_CONDITIONAL(USE_ZZUF, test "${ZZUF}" != "no")
 AC_CONFIG_FILES([
   Makefile
   kernel/Makefile
-  cucul/Makefile
   caca/Makefile
   src/Makefile
   examples/Makefile
@@ -487,12 +486,9 @@ AC_CONFIG_FILES([
   msvc/Makefile
 ])
 AC_CONFIG_FILES([
-  cucul/cucul_types.h
-  cucul/cucul.pc
+  caca/caca_types.h
   caca/caca.pc
-  csharp/cucul-sharp.dll.config
   csharp/caca-sharp.dll.config
-  cxx/cucul++.pc
   cxx/caca++.pc
   doc/doxygen.cfg
 ])

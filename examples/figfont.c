@@ -1,5 +1,5 @@
 /*
- *  figfont       libcucul FIGfont test program
+ *  figfont       libcaca FIGfont test program
  *  Copyright (c) 2007 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
@@ -19,11 +19,11 @@
 #   include <stdlib.h>
 #endif
 
-#include "cucul.h"
+#include "caca.h"
 
 int main(int argc, char *argv[])
 {
-    cucul_canvas_t *cv;
+    caca_canvas_t *cv;
     void *buffer;
     size_t len;
     uint8_t color = 0;
@@ -34,8 +34,8 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    cv = cucul_create_canvas(0, 0);
-    if(cucul_canvas_set_figfont(cv, argv[1]))
+    cv = caca_create_canvas(0, 0);
+    if(caca_canvas_set_figfont(cv, argv[1]))
     {
         fprintf(stderr, "Could not open font\n");
         return -1;
@@ -43,15 +43,15 @@ int main(int argc, char *argv[])
 
     while(argv[2][0])
     {
-        cucul_set_color_ansi(cv, 1 + ((color += 4) % 15), CUCUL_TRANSPARENT);
-        cucul_put_figchar(cv, argv[2]++[0]);
+        caca_set_color_ansi(cv, 1 + ((color += 4) % 15), CACA_TRANSPARENT);
+        caca_put_figchar(cv, argv[2]++[0]);
     }
 
-    buffer = cucul_export_memory(cv, "utf8", &len);
+    buffer = caca_export_memory(cv, "utf8", &len);
     fwrite(buffer, len, 1, stdout);
     free(buffer);
 
-    cucul_free_canvas(cv);
+    caca_free_canvas(cv);
 
     return 0;
 }

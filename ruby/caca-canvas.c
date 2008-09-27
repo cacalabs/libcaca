@@ -1,5 +1,5 @@
 /*
- *  libcucul Ruby bindings
+ *  libcaca Ruby bindings
  *  Copyright (c) 2007 Pascal Terjan <pterjan@linuxfr.org>
  *
  *  This library is free software. It comes without any warranty, to
@@ -10,10 +10,10 @@
  */
 
 #include <ruby.h>
-#include <cucul.h>
+#include <caca.h>
 #include <errno.h>
-#include "cucul-dither.h"
-#include "cucul-font.h"
+#include "caca-dither.h"
+#include "caca-font.h"
 #include "common.h"
 
 VALUE cCanvas;
@@ -21,7 +21,7 @@ VALUE cCanvas;
 #define simple_func(x)                                  \
 static VALUE x (VALUE self)                             \
 {                                                       \
-    if( cucul_##x (_SELF) <0)                           \
+    if( caca_##x (_SELF) <0)                           \
         rb_raise(rb_eRuntimeError, strerror(errno));    \
                                                         \
     return self;                                        \
@@ -30,12 +30,12 @@ static VALUE x (VALUE self)                             \
 #define get_int(x)                                      \
 static VALUE get_##x (VALUE self)                       \
 {                                                       \
-    return INT2NUM(cucul_get_##x (_SELF));              \
+    return INT2NUM(caca_get_##x (_SELF));              \
 }
 
 static void canvas_free(void * p)
 {
-    cucul_free_canvas((cucul_canvas_t *)p);
+    caca_free_canvas((caca_canvas_t *)p);
 }
 
 static VALUE canvas_alloc(VALUE klass)
@@ -45,16 +45,16 @@ static VALUE canvas_alloc(VALUE klass)
     return obj;
 }
 
-VALUE canvas_create(cucul_canvas_t *canvas)
+VALUE canvas_create(caca_canvas_t *canvas)
 {
     return Data_Wrap_Struct(cCanvas, NULL, NULL, canvas);
 }
 
 static VALUE canvas_initialize(VALUE self, VALUE width, VALUE height)
 {
-    cucul_canvas_t *canvas;
+    caca_canvas_t *canvas;
 
-    canvas = cucul_create_canvas(NUM2INT(width), NUM2INT(height));
+    canvas = caca_create_canvas(NUM2INT(width), NUM2INT(height));
 
     if(canvas == NULL)
     {
@@ -71,7 +71,7 @@ get_int(canvas_width)
 
 static VALUE set_canvas_width(VALUE self, VALUE width)
 {
-    cucul_set_canvas_size(_SELF, NUM2INT(width), cucul_get_canvas_height(_SELF));
+    caca_set_canvas_size(_SELF, NUM2INT(width), caca_get_canvas_height(_SELF));
     return width;
 }
 
@@ -83,7 +83,7 @@ static VALUE set_canvas_width2(VALUE self, VALUE width)
 
 static VALUE set_canvas_height(VALUE self, VALUE height)
 {
-    cucul_set_canvas_size(_SELF, cucul_get_canvas_width(_SELF), NUM2INT(height));
+    caca_set_canvas_size(_SELF, caca_get_canvas_width(_SELF), NUM2INT(height));
     return height;
 }
 
@@ -95,7 +95,7 @@ static VALUE set_canvas_height2(VALUE self, VALUE height)
 
 static VALUE set_canvas_size(VALUE self, VALUE height, VALUE width)
 {
-    cucul_set_canvas_size(_SELF, NUM2INT(width), NUM2INT(height));
+    caca_set_canvas_size(_SELF, NUM2INT(width), NUM2INT(height));
     return self;
 }
 
@@ -103,7 +103,7 @@ static VALUE set_canvas_size(VALUE self, VALUE height, VALUE width)
 
 static VALUE gotoxy(VALUE self, VALUE x, VALUE y)
 {
-    if( cucul_gotoxy(_SELF, NUM2INT(x), NUM2INT(y)) <0) {
+    if( caca_gotoxy(_SELF, NUM2INT(x), NUM2INT(y)) <0) {
         rb_raise(rb_eRuntimeError, strerror(errno));
     }
     return self;
@@ -116,33 +116,33 @@ simple_func(clear_canvas)
 
 static VALUE put_char(VALUE self, VALUE x, VALUE y, VALUE ch)
 {
-    cucul_put_char(_SELF, NUM2INT(x), NUM2INT(y), NUM2ULONG(ch));
+    caca_put_char(_SELF, NUM2INT(x), NUM2INT(y), NUM2ULONG(ch));
     return self;
 }
 
 static VALUE get_char(VALUE self, VALUE x, VALUE y)
 {
     unsigned long int ch;
-    ch = cucul_get_char(_SELF, NUM2INT(x), NUM2INT(y));
+    ch = caca_get_char(_SELF, NUM2INT(x), NUM2INT(y));
     return INT2NUM(ch);
 }
 
 static VALUE put_str(VALUE self, VALUE x, VALUE y, VALUE str)
 {
-    cucul_put_str(_SELF, NUM2INT(x), NUM2INT(y), StringValuePtr(str));
+    caca_put_str(_SELF, NUM2INT(x), NUM2INT(y), StringValuePtr(str));
     return self;
 }
 
 static VALUE get_attr(VALUE self, VALUE x, VALUE y)
 {
     unsigned long int ch;
-    ch = cucul_get_attr(_SELF, NUM2INT(x), NUM2INT(y));
+    ch = caca_get_attr(_SELF, NUM2INT(x), NUM2INT(y));
     return INT2NUM(ch);
 }
 
 static VALUE set_attr(VALUE self, VALUE attr)
 {
-    if(cucul_set_attr(_SELF, NUM2ULONG(attr)) <0)
+    if(caca_set_attr(_SELF, NUM2ULONG(attr)) <0)
         rb_raise(rb_eRuntimeError, strerror(errno));
 
     return self;
@@ -156,7 +156,7 @@ static VALUE set_attr2(VALUE self, VALUE attr)
 
 static VALUE put_attr(VALUE self, VALUE x, VALUE y, VALUE attr)
 {
-    if(cucul_put_attr(_SELF, NUM2INT(x), NUM2INT(y), NUM2ULONG(attr)) <0)
+    if(caca_put_attr(_SELF, NUM2INT(x), NUM2INT(y), NUM2ULONG(attr)) <0)
         rb_raise(rb_eRuntimeError, strerror(errno));
 
     return self;
@@ -164,7 +164,7 @@ static VALUE put_attr(VALUE self, VALUE x, VALUE y, VALUE attr)
 
 static VALUE set_color_ansi(VALUE self, VALUE fg, VALUE bg)
 {
-    if(cucul_set_color_ansi(_SELF, NUM2INT(fg), NUM2INT(bg)) <0)
+    if(caca_set_color_ansi(_SELF, NUM2INT(fg), NUM2INT(bg)) <0)
         rb_raise(rb_eRuntimeError, strerror(errno));
 
     return self;
@@ -172,7 +172,7 @@ static VALUE set_color_ansi(VALUE self, VALUE fg, VALUE bg)
 
 static VALUE set_color_argb(VALUE self, VALUE fg, VALUE bg)
 {
-    if(cucul_set_color_argb(_SELF, NUM2UINT(fg), NUM2UINT(bg)) <0) {
+    if(caca_set_color_argb(_SELF, NUM2UINT(fg), NUM2UINT(bg)) <0) {
         rb_raise(rb_eRuntimeError, strerror(errno));
     }
     return self;
@@ -186,7 +186,7 @@ static VALUE cprintf(int argc, VALUE* argv, VALUE self)
     x = NUM2INT(rx);
     y = NUM2INT(ry);
     string = rb_funcall2(rb_mKernel, rb_intern("sprintf"), argc-2, argv+2);
-    cucul_put_str(_SELF, x, y, StringValuePtr(string));
+    caca_put_str(_SELF, x, y, StringValuePtr(string));
     return self;
 }
 
@@ -196,13 +196,13 @@ get_int(canvas_handle_y)
 
 static VALUE set_canvas_handle(VALUE self, VALUE x, VALUE y)
 {
-    cucul_set_canvas_handle(_SELF, NUM2INT(x), NUM2INT(y));
+    caca_set_canvas_handle(_SELF, NUM2INT(x), NUM2INT(y));
     return self;
 }
 
 static VALUE blit(int argc, VALUE* argv, VALUE self) {
     VALUE x, y, src, mask;
-    cucul_canvas_t *csrc, *cmask;
+    caca_canvas_t *csrc, *cmask;
 
     rb_scan_args(argc, argv, "31", &x, &y, &src, &mask);
 
@@ -213,7 +213,7 @@ static VALUE blit(int argc, VALUE* argv, VALUE self) {
     {
         rb_raise(rb_eArgError, "src is not a Cucul::Canvas");
     }
-    Data_Get_Struct(src, cucul_canvas_t, csrc);
+    Data_Get_Struct(src, caca_canvas_t, csrc);
 
     if(!NIL_P(mask))
     {
@@ -221,12 +221,12 @@ static VALUE blit(int argc, VALUE* argv, VALUE self) {
         {
             rb_raise(rb_eArgError, "mask is not a Cucul::Canvas");
         }
-        Data_Get_Struct(mask, cucul_canvas_t, cmask);
+        Data_Get_Struct(mask, caca_canvas_t, cmask);
     }
     else
         cmask = NULL;
     
-    if(cucul_blit(_SELF, NUM2INT(x), NUM2INT(y), csrc, cmask)<0)
+    if(caca_blit(_SELF, NUM2INT(x), NUM2INT(y), csrc, cmask)<0)
         rb_raise(rb_eRuntimeError, strerror(errno));
 
     return self;
@@ -234,7 +234,7 @@ static VALUE blit(int argc, VALUE* argv, VALUE self) {
 
 static VALUE set_canvas_boundaries(VALUE self, VALUE x, VALUE y, VALUE w, VALUE h)
 {
-    if(cucul_set_canvas_boundaries(_SELF, NUM2INT(x), NUM2INT(y), NUM2UINT(w), NUM2UINT(h))<0)
+    if(caca_set_canvas_boundaries(_SELF, NUM2INT(x), NUM2INT(y), NUM2UINT(w), NUM2UINT(h))<0)
     {
         rb_raise(rb_eRuntimeError, strerror(errno));
     }
@@ -256,7 +256,7 @@ simple_func(stretch_right)
 
 static VALUE draw_line(VALUE self, VALUE x1, VALUE y1, VALUE x2, VALUE y2, VALUE ch)
 {
-    cucul_draw_line(_SELF, NUM2INT(x1), NUM2INT(y1), NUM2INT(x2), NUM2INT(y2),NUM2ULONG(ch));
+    caca_draw_line(_SELF, NUM2INT(x1), NUM2INT(y1), NUM2INT(x2), NUM2INT(y2),NUM2ULONG(ch));
     return self;
 }
 
@@ -308,7 +308,7 @@ static VALUE draw_polyline(VALUE self, VALUE points, VALUE ch)
 
     n--;
 
-    cucul_draw_polyline(_SELF, ax, ay, n, NUM2ULONG(ch));
+    caca_draw_polyline(_SELF, ax, ay, n, NUM2ULONG(ch));
 
     free(ax);
     free(ay);
@@ -318,7 +318,7 @@ static VALUE draw_polyline(VALUE self, VALUE points, VALUE ch)
 
 static VALUE draw_thin_line(VALUE self, VALUE x1, VALUE y1, VALUE x2, VALUE y2)
 {
-    cucul_draw_thin_line(_SELF, NUM2INT(x1), NUM2INT(y1), NUM2INT(x2), NUM2INT(y2));
+    caca_draw_thin_line(_SELF, NUM2INT(x1), NUM2INT(y1), NUM2INT(x2), NUM2INT(y2));
     return self;
 }
 
@@ -370,7 +370,7 @@ static VALUE draw_thin_polyline(VALUE self, VALUE points)
 
     n--;
 
-    cucul_draw_thin_polyline(_SELF, ax, ay, n);
+    caca_draw_thin_polyline(_SELF, ax, ay, n);
 
     free(ax);
     free(ay);
@@ -380,67 +380,67 @@ static VALUE draw_thin_polyline(VALUE self, VALUE points)
 
 static VALUE draw_circle(VALUE self, VALUE x, VALUE y, VALUE r, VALUE ch)
 {
-    cucul_draw_circle(_SELF, NUM2INT(x), NUM2INT(y), NUM2INT(r), NUM2ULONG(ch));
+    caca_draw_circle(_SELF, NUM2INT(x), NUM2INT(y), NUM2INT(r), NUM2ULONG(ch));
     return self;
 }
 
 static VALUE draw_ellipse(VALUE self, VALUE x, VALUE y, VALUE a, VALUE b, VALUE ch)
 {
-    cucul_draw_ellipse(_SELF, NUM2INT(x), NUM2INT(y), NUM2INT(a), NUM2INT(b), NUM2ULONG(ch));
+    caca_draw_ellipse(_SELF, NUM2INT(x), NUM2INT(y), NUM2INT(a), NUM2INT(b), NUM2ULONG(ch));
     return self;
 }
 
 static VALUE draw_thin_ellipse(VALUE self, VALUE x, VALUE y, VALUE a, VALUE b)
 {
-    cucul_draw_thin_ellipse(_SELF, NUM2INT(x), NUM2INT(y), NUM2INT(a), NUM2INT(b));
+    caca_draw_thin_ellipse(_SELF, NUM2INT(x), NUM2INT(y), NUM2INT(a), NUM2INT(b));
     return self;
 }
 
 static VALUE fill_ellipse(VALUE self, VALUE x, VALUE y, VALUE a, VALUE b, VALUE ch)
 {
-    cucul_fill_ellipse(_SELF, NUM2INT(x), NUM2INT(y), NUM2INT(a), NUM2INT(b), NUM2ULONG(ch));
+    caca_fill_ellipse(_SELF, NUM2INT(x), NUM2INT(y), NUM2INT(a), NUM2INT(b), NUM2ULONG(ch));
     return self;
 }
 
 static VALUE draw_box(VALUE self, VALUE x, VALUE y, VALUE w, VALUE h, VALUE ch)
 {
-    cucul_draw_box(_SELF, NUM2INT(x), NUM2INT(y), NUM2INT(w), NUM2INT(h), NUM2ULONG(ch));
+    caca_draw_box(_SELF, NUM2INT(x), NUM2INT(y), NUM2INT(w), NUM2INT(h), NUM2ULONG(ch));
     return self;
 }
 
 static VALUE draw_thin_box(VALUE self, VALUE x, VALUE y, VALUE w, VALUE h)
 {
-    cucul_draw_thin_box(_SELF, NUM2INT(x), NUM2INT(y), NUM2INT(w), NUM2INT(h));
+    caca_draw_thin_box(_SELF, NUM2INT(x), NUM2INT(y), NUM2INT(w), NUM2INT(h));
     return self;
 }
 
 static VALUE draw_cp437_box(VALUE self, VALUE x, VALUE y, VALUE w, VALUE h)
 {
-    cucul_draw_cp437_box(_SELF, NUM2INT(x), NUM2INT(y), NUM2INT(w), NUM2INT(h));
+    caca_draw_cp437_box(_SELF, NUM2INT(x), NUM2INT(y), NUM2INT(w), NUM2INT(h));
     return self;
 }
 
 static VALUE fill_box(VALUE self, VALUE x, VALUE y, VALUE w, VALUE h, VALUE ch)
 {
-    cucul_fill_box(_SELF, NUM2INT(x), NUM2INT(y), NUM2INT(w), NUM2INT(h), NUM2ULONG(ch));
+    caca_fill_box(_SELF, NUM2INT(x), NUM2INT(y), NUM2INT(w), NUM2INT(h), NUM2ULONG(ch));
     return self;
 }
 
 static VALUE draw_triangle(VALUE self, VALUE x1, VALUE y1, VALUE x2, VALUE y2, VALUE x3, VALUE y3, VALUE ch)
 {
-    cucul_draw_triangle(_SELF, NUM2INT(x1), NUM2INT(y1), NUM2INT(x2), NUM2INT(y2),  NUM2INT(x3), NUM2INT(y3), NUM2ULONG(ch));
+    caca_draw_triangle(_SELF, NUM2INT(x1), NUM2INT(y1), NUM2INT(x2), NUM2INT(y2),  NUM2INT(x3), NUM2INT(y3), NUM2ULONG(ch));
     return self;
 }
 
 static VALUE draw_thin_triangle(VALUE self, VALUE x1, VALUE y1, VALUE x2, VALUE y2, VALUE x3, VALUE y3)
 {
-    cucul_draw_thin_triangle(_SELF, NUM2INT(x1), NUM2INT(y1), NUM2INT(x2), NUM2INT(y2),  NUM2INT(x3), NUM2INT(y3));
+    caca_draw_thin_triangle(_SELF, NUM2INT(x1), NUM2INT(y1), NUM2INT(x2), NUM2INT(y2),  NUM2INT(x3), NUM2INT(y3));
     return self;
 }
 
 static VALUE fill_triangle(VALUE self, VALUE x1, VALUE y1, VALUE x2, VALUE y2, VALUE x3, VALUE y3, VALUE ch)
 {
-    cucul_fill_triangle(_SELF, NUM2INT(x1), NUM2INT(y1), NUM2INT(x2), NUM2INT(y2),  NUM2INT(x3), NUM2INT(y3), NUM2ULONG(ch));
+    caca_fill_triangle(_SELF, NUM2INT(x1), NUM2INT(y1), NUM2INT(x2), NUM2INT(y2),  NUM2INT(x3), NUM2INT(y3), NUM2ULONG(ch));
     return self;
 }
 
@@ -450,7 +450,7 @@ static VALUE dither_bitmap(VALUE self, VALUE x, VALUE y, VALUE w, VALUE h, VALUE
         rb_raise(rb_eArgError, "d is not a Cucul::Dither");
     Check_Type(pixels, T_STRING);
 
-    cucul_dither_bitmap(_SELF, NUM2INT(x), NUM2INT(y), NUM2INT(w), NUM2INT(h), DATA_PTR(d), StringValuePtr(pixels));
+    caca_dither_bitmap(_SELF, NUM2INT(x), NUM2INT(y), NUM2INT(w), NUM2INT(h), DATA_PTR(d), StringValuePtr(pixels));
     return self;
 }
 
@@ -460,7 +460,7 @@ get_int(frame_count)
 
 static VALUE set_frame(VALUE self, VALUE id)
 {
-    if(cucul_set_frame(_SELF, NUM2INT(id))<0)
+    if(caca_set_frame(_SELF, NUM2INT(id))<0)
         rb_raise(rb_eArgError, strerror(errno));
 
     return self;
@@ -474,12 +474,12 @@ static VALUE set_frame2(VALUE self, VALUE id)
 
 static VALUE get_frame_name(VALUE self)
 {
-    return rb_str_new2(cucul_get_frame_name(_SELF));
+    return rb_str_new2(caca_get_frame_name(_SELF));
 }
 
 static VALUE set_frame_name(VALUE self, VALUE name)
 {
-    if(cucul_set_frame_name(_SELF, StringValuePtr(name))<0)
+    if(caca_set_frame_name(_SELF, StringValuePtr(name))<0)
         rb_raise(rb_eRuntimeError, strerror(errno));
 
     return self;
@@ -493,7 +493,7 @@ static VALUE set_frame_name2(VALUE self, VALUE name)
 
 static VALUE create_frame(VALUE self, VALUE id)
 {
-    if(cucul_create_frame(_SELF, NUM2INT(id))<0) {
+    if(caca_create_frame(_SELF, NUM2INT(id))<0) {
         rb_raise(rb_eRuntimeError, strerror(errno));
     }
     return self;
@@ -501,7 +501,7 @@ static VALUE create_frame(VALUE self, VALUE id)
 
 static VALUE free_frame(VALUE self, VALUE id)
 {
-    if(cucul_free_frame(_SELF, NUM2INT(id))<0) {
+    if(caca_free_frame(_SELF, NUM2INT(id))<0) {
         rb_raise(rb_eArgError, strerror(errno));
     }
     return self;
@@ -512,7 +512,7 @@ static VALUE free_frame(VALUE self, VALUE id)
 static VALUE render_canvas(VALUE self, VALUE font, VALUE width, VALUE height, VALUE pitch)
 {
     void *buf;
-    cucul_font_t *f;
+    caca_font_t *f;
     VALUE b;
 
     if(CLASS_OF(font) != cFont)
@@ -527,7 +527,7 @@ static VALUE render_canvas(VALUE self, VALUE font, VALUE width, VALUE height, VA
     }
 
     f = DATA_PTR(font);
-    cucul_render_canvas(_SELF, f, buf, NUM2UINT(width), NUM2UINT(height), NUM2UINT(pitch));
+    caca_render_canvas(_SELF, f, buf, NUM2UINT(width), NUM2UINT(height), NUM2UINT(pitch));
 
     b = rb_str_new(buf, width*height*4);
     free(buf);
@@ -537,7 +537,7 @@ static VALUE render_canvas(VALUE self, VALUE font, VALUE width, VALUE height, VA
 static VALUE import_memory(VALUE self, VALUE data, VALUE format)
 {
     long int bytes;
-    bytes = cucul_import_memory (_SELF, StringValuePtr(data), RSTRING(StringValue(data))->len, StringValuePtr(format));
+    bytes = caca_import_memory (_SELF, StringValuePtr(data), RSTRING(StringValue(data))->len, StringValuePtr(format));
     if(bytes <= 0)
         rb_raise(rb_eRuntimeError, strerror(errno));
 
@@ -547,7 +547,7 @@ static VALUE import_memory(VALUE self, VALUE data, VALUE format)
 static VALUE import_file(VALUE self, VALUE filename, VALUE format)
 {
     long int bytes;
-    bytes = cucul_import_file (_SELF, StringValuePtr(filename), StringValuePtr(format));
+    bytes = caca_import_file (_SELF, StringValuePtr(filename), StringValuePtr(format));
     if(bytes <= 0)
         rb_raise(rb_eRuntimeError, strerror(errno));
 
@@ -559,7 +559,7 @@ static VALUE export_memory(VALUE self, VALUE format)
     unsigned long int bytes;
     void *result;
     VALUE ret;
-    result = cucul_export_memory (_SELF, StringValuePtr(format), &bytes);
+    result = caca_export_memory (_SELF, StringValuePtr(format), &bytes);
     ret = rb_str_new(result, bytes);
     free(result);
     return ret;
@@ -570,7 +570,7 @@ get_singleton_double_list(import)
 
 /****/
 
-void Init_cucul_canvas(VALUE mCucul)
+void Init_caca_canvas(VALUE mCucul)
 {
     cCanvas = rb_define_class_under(mCucul, "Canvas", rb_cObject);
     rb_define_alloc_func(cCanvas, canvas_alloc);

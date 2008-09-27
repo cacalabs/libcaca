@@ -16,7 +16,7 @@ struct image
 {
     char *pixels;
     unsigned int w, h;
-    struct cucul_dither *dither;
+    struct caca_dither *dither;
     void *priv;
 };
 

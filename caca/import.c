@@ -1,5 +1,5 @@
 /*
- *  libcucul      Canvas for ultrafast compositing of Unicode letters
+ *  libcaca       Colour ASCII-Art library
  *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
@@ -23,8 +23,8 @@
 #   include <string.h>
 #endif
 
-#include "cucul.h"
-#include "cucul_internals.h"
+#include "caca.h"
+#include "caca_internals.h"
 
 static inline uint32_t sscanu32(void const *s)
 {
@@ -51,16 +51,16 @@ struct import
     uint8_t faint, strike, proportional; /* unsupported */
 };
 
-static ssize_t import_caca(cucul_canvas_t *, void const *, size_t);
-static ssize_t import_text(cucul_canvas_t *, void const *, size_t);
-static ssize_t import_ansi(cucul_canvas_t *, void const *, size_t, int);
+static ssize_t import_caca(caca_canvas_t *, void const *, size_t);
+static ssize_t import_text(caca_canvas_t *, void const *, size_t);
+static ssize_t import_ansi(caca_canvas_t *, void const *, size_t, int);
 
-static void ansi_parse_grcm(cucul_canvas_t *, struct import *,
+static void ansi_parse_grcm(caca_canvas_t *, struct import *,
                             unsigned int, unsigned int const *);
 
 /** \brief Import a memory buffer into a canvas
  *
- *  Import a memory buffer into the given libcucul canvas's current
+ *  Import a memory buffer into the given libcaca canvas's current
  *  frame. The current frame is resized accordingly and its contents are
  *  replaced with the imported data.
  *
@@ -78,14 +78,14 @@ static void ansi_parse_grcm(cucul_canvas_t *, struct import *,
  *  - \c ENOMEM Not enough memory to allocate canvas.
  *  - \c EINVAL Invalid format requested.
  *
- *  \param cv A libcucul canvas in which to import the file.
+ *  \param cv A libcaca canvas in which to import the file.
  *  \param data A memory area containing the data to be loaded into the canvas.
  *  \param len The size in bytes of the memory area.
  *  \param format A string describing the input format.
  *  \return The number of bytes read, or 0 if there was not enough data,
  *  or -1 if an error occurred.
  */
-ssize_t cucul_import_memory(cucul_canvas_t *cv, void const *data,
+ssize_t caca_import_memory(caca_canvas_t *cv, void const *data,
                             size_t len, char const *format)
 {
     if(!strcasecmp("caca", format))
@@ -123,7 +123,7 @@ ssize_t cucul_import_memory(cucul_canvas_t *cv, void const *data,
 
 /** \brief Import a file into a canvas
  *
- *  Import a file into the given libcucul canvas's current frame. The
+ *  Import a file into the given libcaca canvas's current frame. The
  *  current frame is resized accordingly and its contents are replaced
  *  with the imported data.
  *
@@ -141,48 +141,48 @@ ssize_t cucul_import_memory(cucul_canvas_t *cv, void const *data,
  *  - \c ENOSYS File access is not implemented on this system.
  *  - \c ENOMEM Not enough memory to allocate canvas.
  *  - \c EINVAL Invalid format requested.
- *  cucul_import_file() may also fail and set \b errno for any of the
+ *  caca_import_file() may also fail and set \b errno for any of the
  *  errors specified for the routine fopen().
  *
- *  \param cv A libcucul canvas in which to import the file.
+ *  \param cv A libcaca canvas in which to import the file.
  *  \param filename The name of the file to load.
  *  \param format A string describing the input format.
  *  \return The number of bytes read, or 0 if there was not enough data,
  *  or -1 if an error occurred.
  */
-ssize_t cucul_import_file(cucul_canvas_t *cv, char const *filename,
+ssize_t caca_import_file(caca_canvas_t *cv, char const *filename,
                           char const *format)
 {
 #if defined __KERNEL__
     seterrno(ENOSYS);
     return -1;
 #else
-    cucul_file_t *f;
+    caca_file_t *f;
     char *data = NULL;
     ssize_t size = 0;
     int ret;
 
-    f = cucul_file_open(filename, "rb");
+    f = caca_file_open(filename, "rb");
     if(!f)
         return -1; /* fopen already set errno */
 
-    while(!cucul_file_eof(f))
+    while(!caca_file_eof(f))
     {
         data = realloc(data, size + 1024);
         if(!data)
         {
-            cucul_file_close(f);
+            caca_file_close(f);
             seterrno(ENOMEM);
             return -1;
         }
 
-        ret = cucul_file_read(f, data + size, 1024);
+        ret = caca_file_read(f, data + size, 1024);
         if(ret >= 0)
             size += ret;
     }
-    cucul_file_close(f);
+    caca_file_close(f);
 
-    ret = cucul_import_memory(cv, data, size, format);
+    ret = caca_import_memory(cv, data, size, format);
     free(data);
 
     return ret;
@@ -193,14 +193,14 @@ ssize_t cucul_import_file(cucul_canvas_t *cv, char const *filename,
  *
  *  Return a list of available import formats. The list is a NULL-terminated
  *  array of strings, interleaving a string containing the internal value for
- *  the import format, to be used with cucul_import_canvas(), and a string
+ *  the import format, to be used with caca_import_canvas(), and a string
  *  containing the natural language description for that import format.
  *
  *  This function never fails.
  *
  *  \return An array of strings.
  */
-char const * const * cucul_get_import_list(void)
+char const * const * caca_get_import_list(void)
 {
     static char const * const list[] =
     {
@@ -219,7 +219,7 @@ char const * const * cucul_get_import_list(void)
  * XXX: the following functions are local.
  */
 
-static ssize_t import_caca(cucul_canvas_t *cv, void const *data, size_t size)
+static ssize_t import_caca(caca_canvas_t *cv, void const *data, size_t size)
 {
     uint8_t const *buf = (uint8_t const *)data;
     size_t control_size, data_size, expected_size;
@@ -284,12 +284,12 @@ static ssize_t import_caca(cucul_canvas_t *cv, void const *data, size_t size)
         goto invalid_caca;
     }
 
-    cucul_set_canvas_size(cv, 0, 0);
-    cucul_set_canvas_size(cv, xmax - xmin, ymax - ymin);
+    caca_set_canvas_size(cv, 0, 0);
+    caca_set_canvas_size(cv, xmax - xmin, ymax - ymin);
 
-    for (f = cucul_get_frame_count(cv); f--; )
+    for (f = caca_get_frame_count(cv); f--; )
     {
-        cucul_free_frame(cv, f);
+        caca_free_frame(cv, f);
     }
 
     for (offset = 0, f = 0; f < frames; f ++)
@@ -298,8 +298,8 @@ static ssize_t import_caca(cucul_canvas_t *cv, void const *data, size_t size)
 
         width = sscanu32(buf + 4 + 16 + f * 32);
         height = sscanu32(buf + 4 + 16 + f * 32 + 4);
-        cucul_create_frame(cv, f);
-        cucul_set_frame(cv, f);
+        caca_create_frame(cv, f);
+        caca_set_frame(cv, f);
 
         cv->curattr = sscanu32(buf + 4 + 16 + f * 32 + 12);
         cv->frames[f].x = (int32_t)sscanu32(buf + 4 + 16 + f * 32 + 16);
@@ -314,9 +314,9 @@ static ssize_t import_caca(cucul_canvas_t *cv, void const *data, size_t size)
             int x = (n % width) - cv->frames[f].handlex - xmin;
             int y = (n / width) - cv->frames[f].handley - ymin;
 
-            cucul_put_char(cv, x, y, sscanu32(buf + 4 + control_size
+            caca_put_char(cv, x, y, sscanu32(buf + 4 + control_size
                                                + offset + 8 * n));
-            cucul_put_attr(cv, x, y, sscanu32(buf + 4 + control_size
+            caca_put_attr(cv, x, y, sscanu32(buf + 4 + control_size
                                                + offset + 8 * n + 4));
         }
         offset += width * height * 8;
@@ -327,7 +327,7 @@ static ssize_t import_caca(cucul_canvas_t *cv, void const *data, size_t size)
         cv->frames[f].handley = -ymin;
     }
 
-    cucul_set_frame(cv, 0);
+    caca_set_frame(cv, 0);
 
     return 4 + control_size + data_size;
 
@@ -336,12 +336,12 @@ invalid_caca:
     return -1;
 }
 
-static ssize_t import_text(cucul_canvas_t *cv, void const *data, size_t size)
+static ssize_t import_text(caca_canvas_t *cv, void const *data, size_t size)
 {
     char const *text = (char const *)data;
     unsigned int width = 0, height = 0, x = 0, y = 0, i;
 
-    cucul_set_canvas_size(cv, width, height);
+    caca_set_canvas_size(cv, width, height);
 
     for(i = 0; i < size; i++)
     {
@@ -365,20 +365,20 @@ static ssize_t import_text(cucul_canvas_t *cv, void const *data, size_t size)
             if(y >= height)
                 height = y + 1;
 
-            cucul_set_canvas_size(cv, width, height);
+            caca_set_canvas_size(cv, width, height);
         }
 
-        cucul_put_char(cv, x, y, ch);
+        caca_put_char(cv, x, y, ch);
         x++;
     }
 
     if(y > height)
-        cucul_set_canvas_size(cv, width, height = y);
+        caca_set_canvas_size(cv, width, height = y);
 
     return size;
 }
 
-static ssize_t import_ansi(cucul_canvas_t *cv, void const *data,
+static ssize_t import_ansi(caca_canvas_t *cv, void const *data,
                            size_t size, int utf8)
 {
     struct import im;
@@ -399,24 +399,24 @@ static ssize_t import_ansi(cucul_canvas_t *cv, void const *data,
     }
     else
     {
-        cucul_set_canvas_size(cv, width = 80, height = 0);
+        caca_set_canvas_size(cv, width = 80, height = 0);
         growx = 0;
         growy = 1;
     }
 
     if(utf8)
     {
-        im.dfg = CUCUL_DEFAULT;
-        im.dbg = CUCUL_TRANSPARENT;
+        im.dfg = CACA_DEFAULT;
+        im.dbg = CACA_TRANSPARENT;
     }
     else
     {
-        im.dfg = CUCUL_LIGHTGRAY;
-        im.dbg = CUCUL_BLACK;
+        im.dfg = CACA_LIGHTGRAY;
+        im.dbg = CACA_BLACK;
     }
 
-    cucul_set_color_ansi(cv, im.dfg, im.dbg);
-    im.clearattr = cucul_get_attr(cv, -1, -1);
+    caca_set_color_ansi(cv, im.dfg, im.dbg);
+    im.clearattr = caca_get_attr(cv, -1, -1);
 
     ansi_parse_grcm(cv, &im, 1, &dummy);
 
@@ -554,31 +554,31 @@ static ssize_t import_ansi(cucul_canvas_t *cv, void const *data,
                 x = (argc && argv[0] > 0) ? argv[0] - 1 : 0;
                 break;
             case 'J': /* ED (0x4a) - Erase In Page */
-                savedattr = cucul_get_attr(cv, -1, -1);
-                cucul_set_attr(cv, im.clearattr);
+                savedattr = caca_get_attr(cv, -1, -1);
+                caca_set_attr(cv, im.clearattr);
                 if(!argc || argv[0] == 0)
                 {
-                    cucul_draw_line(cv, x, y, width, y, ' ');
-                    cucul_fill_box(cv, 0, y + 1, width - 1, height - 1, ' ');
+                    caca_draw_line(cv, x, y, width, y, ' ');
+                    caca_fill_box(cv, 0, y + 1, width - 1, height - 1, ' ');
                 }
                 else if(argv[0] == 1)
                 {
-                    cucul_fill_box(cv, 0, 0, width - 1, y - 1, ' ');
-                    cucul_draw_line(cv, 0, y, x, y, ' ');
+                    caca_fill_box(cv, 0, 0, width - 1, y - 1, ' ');
+                    caca_draw_line(cv, 0, y, x, y, ' ');
                 }
                 else if(argv[0] == 2)
                     //x = y = 0;
-                    cucul_fill_box(cv, 0, 0, width - 1, height - 1, ' ');
-                cucul_set_attr(cv, savedattr);
+                    caca_fill_box(cv, 0, 0, width - 1, height - 1, ' ');
+                caca_set_attr(cv, savedattr);
                 break;
             case 'K': /* EL (0x4b) - Erase In Line */
                 if(!argc || argv[0] == 0)
-                    cucul_draw_line(cv, x, y, width, y, ' ');
+                    caca_draw_line(cv, x, y, width, y, ' ');
                 else if(argv[0] == 1)
-                    cucul_draw_line(cv, 0, y, x, y, ' ');
+                    caca_draw_line(cv, 0, y, x, y, ' ');
                 else if(argv[0] == 2)
                     if((unsigned int)x < width)
-                        cucul_draw_line(cv, x, y, width - 1, y, ' ');
+                        caca_draw_line(cv, x, y, width - 1, y, ' ');
                 //x = width;
                 break;
             case 'P': /* DCH (0x50) - Delete Character */
@@ -586,25 +586,25 @@ static ssize_t import_ansi(cucul_canvas_t *cv, void const *data,
                     argv[0] = 1; /* echo -ne 'foobar\r\e[0P\n' */
                 for(j = 0; (unsigned int)(j + argv[0]) < width; j++)
                 {
-                    cucul_put_char(cv, j, y,
-                                   cucul_get_char(cv, j + argv[0], y));
-                    cucul_put_attr(cv, j, y,
-                                   cucul_get_attr(cv, j + argv[0], y));
+                    caca_put_char(cv, j, y,
+                                   caca_get_char(cv, j + argv[0], y));
+                    caca_put_attr(cv, j, y,
+                                   caca_get_attr(cv, j + argv[0], y));
                 }
 #if 0
-                savedattr = cucul_get_attr(cv, -1, -1);
-                cucul_set_attr(cv, im.clearattr);
+                savedattr = caca_get_attr(cv, -1, -1);
+                caca_set_attr(cv, im.clearattr);
                 for( ; (unsigned int)j < width; j++)
-                    cucul_put_char(cv, j, y, ' ');
-                cucul_set_attr(cv, savedattr);
+                    caca_put_char(cv, j, y, ' ');
+                caca_set_attr(cv, savedattr);
 #endif
             case 'X': /* ECH (0x58) - Erase Character */
                 if(argc && argv[0])
                 {
-                    savedattr = cucul_get_attr(cv, -1, -1);
-                    cucul_set_attr(cv, im.clearattr);
-                    cucul_draw_line(cv, x, y, x + argv[0] - 1, y, ' ');
-                    cucul_set_attr(cv, savedattr);
+                    savedattr = caca_get_attr(cv, -1, -1);
+                    caca_set_attr(cv, im.clearattr);
+                    caca_draw_line(cv, x, y, x + argv[0] - 1, y, ' ');
+                    caca_set_attr(cv, savedattr);
                 }
             case 'd': /* VPA (0x64) - Line Position Absolute */
                 y = (argc && argv[0] > 0) ? argv[0] - 1 : 0;
@@ -683,14 +683,14 @@ static ssize_t import_ansi(cucul_canvas_t *cv, void const *data,
             size_t bytes;
 
             if(i + 6 < size)
-                ch = cucul_utf8_to_utf32((char const *)(buffer + i), &bytes);
+                ch = caca_utf8_to_utf32((char const *)(buffer + i), &bytes);
             else
             {
                 /* Add a trailing zero to what we're going to read */
                 char tmp[7];
                 memcpy(tmp, buffer + i, size - i);
                 tmp[size - i] = '\0';
-                ch = cucul_utf8_to_utf32(tmp, &bytes);
+                ch = caca_utf8_to_utf32(tmp, &bytes);
             }
 
             if(!bytes)
@@ -699,12 +699,12 @@ static ssize_t import_ansi(cucul_canvas_t *cv, void const *data,
                 ch = buffer[i];
                 bytes = 1;
             }
-            wch = cucul_utf32_is_fullwidth(ch) ? 2 : 1;
+            wch = caca_utf32_is_fullwidth(ch) ? 2 : 1;
             skip += bytes - 1;
         }
         else
         {
-            ch = cucul_cp437_to_utf32(buffer[i]);
+            ch = caca_cp437_to_utf32(buffer[i]);
             wch = 1;
         }
 
@@ -713,10 +713,10 @@ static ssize_t import_ansi(cucul_canvas_t *cv, void const *data,
         {
             if(growx)
             {
-                savedattr = cucul_get_attr(cv, -1, -1);
-                cucul_set_attr(cv, im.clearattr);
-                cucul_set_canvas_size(cv, width = x + wch, height);
-                cucul_set_attr(cv, savedattr);
+                savedattr = caca_get_attr(cv, -1, -1);
+                caca_set_attr(cv, im.clearattr);
+                caca_set_canvas_size(cv, width = x + wch, height);
+                caca_set_attr(cv, savedattr);
             }
             else
             {
@@ -728,11 +728,11 @@ static ssize_t import_ansi(cucul_canvas_t *cv, void const *data,
         /* Scroll or grow vertically */
         if((unsigned int)y >= height)
         {
-            savedattr = cucul_get_attr(cv, -1, -1);
-            cucul_set_attr(cv, im.clearattr);
+            savedattr = caca_get_attr(cv, -1, -1);
+            caca_set_attr(cv, im.clearattr);
             if(growy)
             {
-                cucul_set_canvas_size(cv, width, height = y + 1);
+                caca_set_canvas_size(cv, width, height = y + 1);
             }
             else
             {
@@ -745,63 +745,63 @@ static ssize_t import_ansi(cucul_canvas_t *cv, void const *data,
                     memcpy(cv->chars + j * cv->width,
                            cv->chars + (j + lines) * cv->width, cv->width * 4);
                 }
-                cucul_fill_box(cv, 0, height - lines,
+                caca_fill_box(cv, 0, height - lines,
                                    cv->width - 1, height - 1, ' ');
                 y -= lines;
             }
-            cucul_set_attr(cv, savedattr);
+            caca_set_attr(cv, savedattr);
         }
 
         /* Now paste our character, if any */
         if(wch)
         {
-            cucul_put_char(cv, x, y, ch);
+            caca_put_char(cv, x, y, ch);
             x += wch;
         }
     }
 
     if(growy && (unsigned int)y > height)
     {
-        savedattr = cucul_get_attr(cv, -1, -1);
-        cucul_set_attr(cv, im.clearattr);
-        cucul_set_canvas_size(cv, width, height = y);
-        cucul_set_attr(cv, savedattr);
+        savedattr = caca_get_attr(cv, -1, -1);
+        caca_set_attr(cv, im.clearattr);
+        caca_set_canvas_size(cv, width, height = y);
+        caca_set_attr(cv, savedattr);
     }
 
     cv->frames[cv->frame].x = x;
     cv->frames[cv->frame].y = y;
 
 //    if(utf8)
-//        cucul_set_attr(cv, savedattr);
+//        caca_set_attr(cv, savedattr);
 
     return i;
 }
 
 /* XXX : ANSI loader helper */
 
-static void ansi_parse_grcm(cucul_canvas_t *cv, struct import *im,
+static void ansi_parse_grcm(caca_canvas_t *cv, struct import *im,
                             unsigned int argc, unsigned int const *argv)
 {
-    static uint8_t const ansi2cucul[] =
+    static uint8_t const ansi2caca[] =
     {
-        CUCUL_BLACK, CUCUL_RED, CUCUL_GREEN, CUCUL_BROWN,
-        CUCUL_BLUE, CUCUL_MAGENTA, CUCUL_CYAN, CUCUL_LIGHTGRAY
+        CACA_BLACK, CACA_RED, CACA_GREEN, CACA_BROWN,
+        CACA_BLUE, CACA_MAGENTA, CACA_CYAN, CACA_LIGHTGRAY
     };
 
     unsigned int j;
-    uint8_t efg, ebg; /* Effective (libcucul) fg/bg */
+    uint8_t efg, ebg; /* Effective (libcaca) fg/bg */
 
     for(j = 0; j < argc; j++)
     {
         /* Defined in ECMA-48 8.3.117: SGR - SELECT GRAPHIC RENDITION */
         if(argv[j] >= 30 && argv[j] <= 37)
-            im->fg = ansi2cucul[argv[j] - 30];
+            im->fg = ansi2caca[argv[j] - 30];
         else if(argv[j] >= 40 && argv[j] <= 47)
-            im->bg = ansi2cucul[argv[j] - 40];
+            im->bg = ansi2caca[argv[j] - 40];
         else if(argv[j] >= 90 && argv[j] <= 97)
-            im->fg = ansi2cucul[argv[j] - 90] + 8;
+            im->fg = ansi2caca[argv[j] - 90] + 8;
         else if(argv[j] >= 100 && argv[j] <= 107)
-            im->bg = ansi2cucul[argv[j] - 100] + 8;
+            im->bg = ansi2caca[argv[j] - 100] + 8;
         else switch(argv[j])
         {
         case 0: /* default rendition */
@@ -892,7 +892,7 @@ static void ansi_parse_grcm(cucul_canvas_t *cv, struct import *im,
 
     if(im->concealed)
     {
-        efg = ebg = CUCUL_TRANSPARENT;
+        efg = ebg = CACA_TRANSPARENT;
     }
     else
     {
@@ -903,11 +903,11 @@ static void ansi_parse_grcm(cucul_canvas_t *cv, struct import *im,
         {
             if(efg < 8)
                 efg += 8;
-            else if(efg == CUCUL_DEFAULT)
-                efg = CUCUL_WHITE;
+            else if(efg == CACA_DEFAULT)
+                efg = CACA_WHITE;
         }
     }
 
-    cucul_set_color_ansi(cv, efg, ebg);
+    caca_set_color_ansi(cv, efg, ebg);
 }
 

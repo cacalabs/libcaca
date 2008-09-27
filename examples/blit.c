@@ -19,7 +19,6 @@
 #   include <string.h>
 #endif
 
-#include "cucul.h"
 #include "caca.h"
 
 static char const pig[] =
@@ -40,10 +39,10 @@ static char const pig[] =
 
 int main(int argc, char *argv[])
 {
-    cucul_canvas_t *cv, *sprite;
+    caca_canvas_t *cv, *sprite;
     caca_display_t *dp;
 
-    cv = cucul_create_canvas(80, 24);
+    cv = caca_create_canvas(80, 24);
     if(cv == NULL)
     {
         printf("Failed to create canvas\n");
@@ -57,25 +56,25 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    sprite = cucul_create_canvas(0, 0);
-    cucul_set_color_ansi(sprite, CUCUL_LIGHTRED, CUCUL_BLACK);
-    cucul_import_memory(sprite, pig, strlen(pig), "text");
-    cucul_set_canvas_handle(sprite, cucul_get_canvas_width(sprite) / 2,
-                                    cucul_get_canvas_height(sprite) / 2);
+    sprite = caca_create_canvas(0, 0);
+    caca_set_color_ansi(sprite, CACA_LIGHTRED, CACA_BLACK);
+    caca_import_memory(sprite, pig, strlen(pig), "text");
+    caca_set_canvas_handle(sprite, caca_get_canvas_width(sprite) / 2,
+                                    caca_get_canvas_height(sprite) / 2);
 
-    cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
-    cucul_put_str(cv, 0, 0, "Centered sprite");
+    caca_set_color_ansi(cv, CACA_WHITE, CACA_BLUE);
+    caca_put_str(cv, 0, 0, "Centered sprite");
 
-    cucul_blit(cv, cucul_get_canvas_width(cv) / 2,
-                   cucul_get_canvas_height(cv) / 2, sprite, NULL);
+    caca_blit(cv, caca_get_canvas_width(cv) / 2,
+                   caca_get_canvas_height(cv) / 2, sprite, NULL);
 
     caca_refresh_display(dp);
 
     caca_get_event(dp, CACA_EVENT_KEY_PRESS, NULL, -1);
 
     caca_free_display(dp);
-    cucul_free_canvas(sprite);
-    cucul_free_canvas(cv);
+    caca_free_canvas(sprite);
+    caca_free_canvas(cv);
 
     return 0;
 }

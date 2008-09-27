@@ -1,5 +1,5 @@
 /*
- *  libcucul++    C++ bindings for libcucul
+ *  libcaca++    C++ bindings for libcaca
  *  Copyright (c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                All Rights Reserved
  *
@@ -12,28 +12,28 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
-/** \file cucul++.h
+/** \file caca++.h
  *  \version \$Id$
  *  \author Jean-Yves Lamoureux <jylam@lnxscene.org>
- *  \brief The \e libcucul++ public header.
+ *  \brief The \e libcaca++ public header.
  *
  *  This header contains the public types and functions that applications
- *  using \e libcucul++ may use.
+ *  using \e libcaca++ may use.
  */
 
 #ifndef _CUCUL_PP_H
 #define _CUCUL_PP_H
 
-#include <cucul.h>
+#include <caca.h>
 
 #undef __class
-#if defined(_WIN32) && defined(__LIBCUCUL_PP__)
+#if defined(_WIN32) && defined(__LIBCACA_PP__)
 #   define __class class __declspec(dllexport)
 #else
 #   define __class class
 #endif
 
-class Cucul;
+class Canvas;
 
 __class Charset
 {
@@ -53,12 +53,12 @@ __class Font
     char const *const * getList(void);
     unsigned int getWidth();
     unsigned int getHeight();
-    void renderCanvas(Cucul *, uint8_t *, unsigned int,
+    void renderCanvas(Canvas *, uint8_t *, unsigned int,
                                unsigned int, unsigned int);
     uint32_t const *getBlocks();
 
  private:
-    cucul_font *font;
+    caca_font *font;
 };
 
 __class Dither
@@ -81,21 +81,21 @@ __class Dither
     char const *const * getCharsetList();
     void setMode(char const *);
     char const *const * getModeList();
-    void Bitmap(Cucul *, int, int, int, int, void *);
+    void Bitmap(Canvas *, int, int, int, int, void *);
 
  private:
-    cucul_dither *dither;
+    caca_dither *dither;
 };
 
-__class Cucul
+__class Canvas
 {
     friend class Caca;
     friend class Dither;
     friend class Font;
  public:
-    Cucul();
-    Cucul(int width, int height);
-    ~Cucul();
+    Canvas();
+    Canvas(int width, int height);
+    ~Canvas();
 
     void setSize(unsigned int w, unsigned int h);
     unsigned int getWidth(void);
@@ -109,7 +109,7 @@ __class Cucul
     uint32_t getChar(int, int);
     void putStr(int x, int y, char *str);
     void Clear(void);
-    void Blit(int, int, Cucul* c1, Cucul* c2);
+    void Blit(int, int, Canvas* c1, Canvas* c2);
     void Invert();
     void Flip();
     void Flop();
@@ -131,7 +131,7 @@ __class Cucul
     void drawTriangle(int, int, int, int, int, int, uint32_t);
     void drawThinTriangle(int, int, int, int, int, int);
     void fillTriangle(int, int, int, int, int, int, uint32_t);
-    int setBoundaries(cucul_canvas_t *, int, int, unsigned int, unsigned int);
+    int setBoundaries(caca_canvas_t *, int, int, unsigned int, unsigned int);
     unsigned int getFrameCount();
     int setFrame(unsigned int);
     int createFrame(unsigned int);
@@ -147,10 +147,10 @@ __class Cucul
     static char const * getVersion();
 
  protected:
-    cucul_canvas_t *get_cucul_canvas_t();
+    caca_canvas_t *get_caca_canvas_t();
 
  private:
-    cucul_canvas_t *cv;
+    caca_canvas_t *cv;
 };
 
 #endif /* _CUCUL_PP_H */

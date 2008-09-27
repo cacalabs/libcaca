@@ -1,5 +1,5 @@
 /*
- *  libcucul      Canvas for ultrafast compositing of Unicode letters
+ *  libcaca       Colour ASCII-Art library
  *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
@@ -23,8 +23,8 @@
 #   include <stdlib.h>
 #endif
 
-#include "cucul.h"
-#include "cucul_internals.h"
+#include "caca.h"
+#include "caca_internals.h"
 
 #if !defined(_DOXYGEN_SKIP_ME)
 struct line
@@ -32,20 +32,20 @@ struct line
     int x1, y1;
     int x2, y2;
     uint32_t ch;
-    void (*draw) (cucul_canvas_t *, struct line*);
+    void (*draw) (caca_canvas_t *, struct line*);
 };
 #endif
 
-static void clip_line(cucul_canvas_t*, struct line*);
-static uint8_t clip_bits(cucul_canvas_t*, int, int);
-static void draw_solid_line(cucul_canvas_t*, struct line*);
-static void draw_thin_line(cucul_canvas_t*, struct line*);
+static void clip_line(caca_canvas_t*, struct line*);
+static uint8_t clip_bits(caca_canvas_t*, int, int);
+static void draw_solid_line(caca_canvas_t*, struct line*);
+static void draw_thin_line(caca_canvas_t*, struct line*);
 
 /** \brief Draw a line on the canvas using the given character.
  *
  *  This function never fails.
  *
- *  \param cv The handle to the libcucul canvas.
+ *  \param cv The handle to the libcaca canvas.
  *  \param x1 X coordinate of the first point.
  *  \param y1 Y coordinate of the first point.
  *  \param x2 X coordinate of the second point.
@@ -53,7 +53,7 @@ static void draw_thin_line(cucul_canvas_t*, struct line*);
  *  \param ch UTF-32 character to be used to draw the line.
  *  \return This function always returns 0.
  */
-int cucul_draw_line(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
+int caca_draw_line(caca_canvas_t *cv, int x1, int y1, int x2, int y2,
                     uint32_t ch)
 {
     struct line s;
@@ -77,14 +77,14 @@ int cucul_draw_line(cucul_canvas_t *cv, int x1, int y1, int x2, int y2,
  *
  *  This function never fails.
  *
- *  \param cv The handle to the libcucul canvas.
+ *  \param cv The handle to the libcaca canvas.
  *  \param x Array of X coordinates. Must have \p n + 1 elements.
  *  \param y Array of Y coordinates. Must have \p n + 1 elements.
  *  \param n Number of lines to draw.
  *  \param ch UTF-32 character to be used to draw the lines.
  *  \return This function always returns 0.
  */
-int cucul_draw_polyline(cucul_canvas_t *cv, int const x[], int const y[],
+int caca_draw_polyline(caca_canvas_t *cv, int const x[], int const y[],
                         int n, uint32_t ch)
 {
     int i;
@@ -108,14 +108,14 @@ int cucul_draw_polyline(cucul_canvas_t *cv, int const x[], int const y[],
  *
  *  This function never fails.
  *
- *  \param cv The handle to the libcucul canvas.
+ *  \param cv The handle to the libcaca canvas.
  *  \param x1 X coordinate of the first point.
  *  \param y1 Y coordinate of the first point.
  *  \param x2 X coordinate of the second point.
  *  \param y2 Y coordinate of the second point.
  *  \return This function always returns 0.
  */
-int cucul_draw_thin_line(cucul_canvas_t *cv, int x1, int y1, int x2, int y2)
+int caca_draw_thin_line(caca_canvas_t *cv, int x1, int y1, int x2, int y2)
 {
     struct line s;
     s.x1 = x1;
@@ -137,13 +137,13 @@ int cucul_draw_thin_line(cucul_canvas_t *cv, int x1, int y1, int x2, int y2)
  *
  *  This function never fails.
  *
- *  \param cv The handle to the libcucul canvas.
+ *  \param cv The handle to the libcaca canvas.
  *  \param x Array of X coordinates. Must have \p n + 1 elements.
  *  \param y Array of Y coordinates. Must have \p n + 1 elements.
  *  \param n Number of lines to draw.
  *  \return This function always returns 0.
  */
-int cucul_draw_thin_polyline(cucul_canvas_t *cv, int const x[], int const y[],
+int caca_draw_thin_polyline(caca_canvas_t *cv, int const x[], int const y[],
                              int n)
 {
     int i;
@@ -167,7 +167,7 @@ int cucul_draw_thin_polyline(cucul_canvas_t *cv, int const x[], int const y[],
  */
 
 /* Generic Cohen-Sutherland line clipping function. */
-static void clip_line(cucul_canvas_t *cv, struct line* s)
+static void clip_line(caca_canvas_t *cv, struct line* s)
 {
     uint8_t bits1, bits2;
 
@@ -219,7 +219,7 @@ static void clip_line(cucul_canvas_t *cv, struct line* s)
 }
 
 /* Helper function for clip_line(). */
-static uint8_t clip_bits(cucul_canvas_t *cv, int x, int y)
+static uint8_t clip_bits(caca_canvas_t *cv, int x, int y)
 {
     uint8_t b = 0;
 
@@ -238,7 +238,7 @@ static uint8_t clip_bits(cucul_canvas_t *cv, int x, int y)
 
 /* Solid line drawing function, using Bresenham's mid-point line
  * scan-conversion algorithm. */
-static void draw_solid_line(cucul_canvas_t *cv, struct line* s)
+static void draw_solid_line(caca_canvas_t *cv, struct line* s)
 {
     int x1, y1, x2, y2;
     int dx, dy;
@@ -260,7 +260,7 @@ static void draw_solid_line(cucul_canvas_t *cv, struct line* s)
 
         for(; dx>=0; dx--)
         {
-            cucul_put_char(cv, x1, y1, s->ch);
+            caca_put_char(cv, x1, y1, s->ch);
             if(delta > 0)
             {
                 x1 += xinc;
@@ -282,7 +282,7 @@ static void draw_solid_line(cucul_canvas_t *cv, struct line* s)
 
         for(; dy >= 0; dy--)
         {
-            cucul_put_char(cv, x1, y1, s->ch);
+            caca_put_char(cv, x1, y1, s->ch);
             if(delta > 0)
             {
                 x1 += xinc;
@@ -300,7 +300,7 @@ static void draw_solid_line(cucul_canvas_t *cv, struct line* s)
 
 /* Thin line drawing function, using Bresenham's mid-point line
  * scan-conversion algorithm and ASCII art graphics. */
-static void draw_thin_line(cucul_canvas_t *cv, struct line* s)
+static void draw_thin_line(caca_canvas_t *cv, struct line* s)
 {
     uint32_t charmapx[2], charmapy[2];
     int x1, y1, x2, y2;
@@ -347,7 +347,7 @@ static void draw_thin_line(cucul_canvas_t *cv, struct line* s)
         {
             if(delta > 0)
             {
-                cucul_put_char(cv, x1, y1, charmapy[1]);
+                caca_put_char(cv, x1, y1, charmapy[1]);
                 x1++;
                 y1 += yinc;
                 delta += dpru;
@@ -356,9 +356,9 @@ static void draw_thin_line(cucul_canvas_t *cv, struct line* s)
             else
             {
                 if(prev)
-                    cucul_put_char(cv, x1, y1, charmapy[0]);
+                    caca_put_char(cv, x1, y1, charmapy[0]);
                 else
-                    cucul_put_char(cv, x1, y1, '-');
+                    caca_put_char(cv, x1, y1, '-');
                 x1++;
                 delta += dpr;
                 prev = 0;
@@ -375,15 +375,15 @@ static void draw_thin_line(cucul_canvas_t *cv, struct line* s)
         {
             if(delta > 0)
             {
-                cucul_put_char(cv, x1, y1, charmapx[0]);
-                cucul_put_char(cv, x1 + 1, y1, charmapx[1]);
+                caca_put_char(cv, x1, y1, charmapx[0]);
+                caca_put_char(cv, x1 + 1, y1, charmapx[1]);
                 x1++;
                 y1 += yinc;
                 delta += dpru;
             }
             else
             {
-                cucul_put_char(cv, x1, y1, '|');
+                caca_put_char(cv, x1, y1, '|');
                 y1 += yinc;
                 delta += dpr;
             }

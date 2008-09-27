@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "cucul_types.h"
+#include "caca_types.h"
 
 #include "mygetopt.h"
 

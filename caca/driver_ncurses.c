@@ -50,7 +50,6 @@
 #   include <termios.h>
 #endif
 
-#include "cucul.h"
 #include "caca.h"
 #include "caca_internals.h"
 
@@ -302,7 +301,7 @@ static int ncurses_init_graphics(caca_display_t *dp)
         }
 
     dp->resize.allow = 1;
-    cucul_set_canvas_size(dp->cv, COLS, LINES);
+    caca_set_canvas_size(dp->cv, COLS, LINES);
     dp->resize.allow = 0;
 
     return 0;
@@ -335,21 +334,21 @@ static int ncurses_set_display_title(caca_display_t *dp, char const *title)
 static int ncurses_get_display_width(caca_display_t const *dp)
 {
     /* Fallback to a 6x10 font */
-    return cucul_get_canvas_width(dp->cv) * 6;
+    return caca_get_canvas_width(dp->cv) * 6;
 }
 
 static int ncurses_get_display_height(caca_display_t const *dp)
 {
     /* Fallback to a 6x10 font */
-    return cucul_get_canvas_height(dp->cv) * 10;
+    return caca_get_canvas_height(dp->cv) * 10;
 }
 
 static void ncurses_display(caca_display_t *dp)
 {
-    uint32_t const *cvchars = (uint32_t const *)cucul_get_canvas_chars(dp->cv);
-    uint32_t const *cvattrs = (uint32_t const *)cucul_get_canvas_attrs(dp->cv);
-    int width = cucul_get_canvas_width(dp->cv);
-    int height = cucul_get_canvas_height(dp->cv);
+    uint32_t const *cvchars = (uint32_t const *)caca_get_canvas_chars(dp->cv);
+    uint32_t const *cvattrs = (uint32_t const *)caca_get_canvas_attrs(dp->cv);
+    int width = caca_get_canvas_width(dp->cv);
+    int height = caca_get_canvas_height(dp->cv);
     int x, y;
 
     for(y = 0; y < (int)height; y++)
@@ -357,13 +356,13 @@ static void ncurses_display(caca_display_t *dp)
         move(y, 0);
         for(x = width; x--; )
         {
-            attrset(dp->drv.p->attr[cucul_attr_to_ansi(*cvattrs++)]);
+            attrset(dp->drv.p->attr[caca_attr_to_ansi(*cvattrs++)]);
             ncurses_write_utf32(*cvchars++);
         }
     }
     
-    x = cucul_get_cursor_x(dp->cv);
-    y = cucul_get_cursor_y(dp->cv);
+    x = caca_get_cursor_x(dp->cv);
+    y = caca_get_cursor_y(dp->cv);
     move(y, x);
 
     refresh();
@@ -389,8 +388,8 @@ static void ncurses_handle_resize(caca_display_t *dp)
 #endif
 
     /* Fallback */
-    dp->resize.w = cucul_get_canvas_width(dp->cv);
-    dp->resize.h = cucul_get_canvas_height(dp->cv);
+    dp->resize.w = caca_get_canvas_width(dp->cv);
+    dp->resize.h = caca_get_canvas_height(dp->cv);
 }
 
 static int ncurses_get_event(caca_display_t *dp, caca_privevent_t *ev)
@@ -432,7 +431,7 @@ static int ncurses_get_event(caca_display_t *dp, caca_privevent_t *ev)
         }
 
         utf8[i] = '\0';
-        utf32 = cucul_utf8_to_utf32(utf8, &bytes);
+        utf32 = caca_utf8_to_utf32(utf8, &bytes);
 
         while(i > bytes)
             ungetch(keys[--i]);
@@ -615,11 +614,11 @@ static void ncurses_write_utf32(uint32_t ch)
     int bytes;
 #endif
 
-    if(ch == CUCUL_MAGIC_FULLWIDTH)
+    if(ch == CACA_MAGIC_FULLWIDTH)
         return;
 
 #if defined HAVE_NCURSESW_NCURSES_H
-    bytes = cucul_utf32_to_utf8(buf, ch);
+    bytes = caca_utf32_to_utf8(buf, ch);
     buf[bytes] = '\0';
     addstr(buf);
 #else
@@ -814,7 +813,7 @@ static void ncurses_write_utf32(uint32_t ch)
             break;
         }
         addch(cch);
-        if(cucul_utf32_is_fullwidth(ch))
+        if(caca_utf32_is_fullwidth(ch))
         {
             addch(cch2);
         }

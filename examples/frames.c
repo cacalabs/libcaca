@@ -18,18 +18,17 @@
 #   include <stdio.h>
 #endif
 
-#include "cucul.h"
 #include "caca.h"
 
 int main(int argc, char *argv[])
 {
-    cucul_canvas_t *cv;
+    caca_canvas_t *cv;
     caca_display_t *dp;
 
     int n, frame;
 
     /* Create a canvas with 200 frames */
-    cv = cucul_create_canvas(0, 0);
+    cv = caca_create_canvas(0, 0);
     if(cv == NULL)
     {
         printf("Can't create canvas\n");
@@ -37,44 +36,44 @@ int main(int argc, char *argv[])
     }
 
     for(frame = 1; frame < 200; frame++)
-        cucul_create_frame(cv, frame);
+        caca_create_frame(cv, frame);
 
     fprintf(stderr, "canvas created, size is %ix%i\n",
-            cucul_get_canvas_width(cv), cucul_get_canvas_height(cv));
+            caca_get_canvas_width(cv), caca_get_canvas_height(cv));
 
     /* Resize it to 150 x 80 (around 19MB) */
-    cucul_set_canvas_size(cv, 150, 80);
+    caca_set_canvas_size(cv, 150, 80);
 
     fprintf(stderr, "canvas expanded, size is %ix%i\n",
-            cucul_get_canvas_width(cv), cucul_get_canvas_height(cv));
+            caca_get_canvas_width(cv), caca_get_canvas_height(cv));
 
     /* Fill the first 16 frames with a different colour */
     for(frame = 0; frame < 16; frame++)
     {
-        cucul_set_frame(cv, frame);
-        cucul_set_color_ansi(cv, CUCUL_WHITE, frame);
-        cucul_fill_box(cv, 0, 0, 40, 15, ':');
-        cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
-        cucul_put_str(cv, frame * 5 / 2, frame, "カカ");
-        cucul_set_color_ansi(cv, CUCUL_DEFAULT, CUCUL_TRANSPARENT);
+        caca_set_frame(cv, frame);
+        caca_set_color_ansi(cv, CACA_WHITE, frame);
+        caca_fill_box(cv, 0, 0, 40, 15, ':');
+        caca_set_color_ansi(cv, CACA_WHITE, CACA_BLUE);
+        caca_put_str(cv, frame * 5 / 2, frame, "カカ");
+        caca_set_color_ansi(cv, CACA_DEFAULT, CACA_TRANSPARENT);
     }
 
     /* Resize it to a more decent size */
-    cucul_set_canvas_size(cv, 41, 16);
+    caca_set_canvas_size(cv, 41, 16);
 
     fprintf(stderr, "canvas shrinked, size is %ix%i\n",
-            cucul_get_canvas_width(cv), cucul_get_canvas_height(cv));
+            caca_get_canvas_width(cv), caca_get_canvas_height(cv));
 
     dp = caca_create_display(cv);
     caca_set_display_time(dp, 50000);
 
     fprintf(stderr, "display attached, size is %ix%i\n",
-            cucul_get_canvas_width(cv), cucul_get_canvas_height(cv));
+            caca_get_canvas_width(cv), caca_get_canvas_height(cv));
 
     n = 0;
     while(!caca_get_event(dp, CACA_EVENT_KEY_PRESS, NULL, 0))
     {
-        cucul_set_frame(cv, n % 16);
+        caca_set_frame(cv, n % 16);
         caca_refresh_display(dp);
         n++;
     }
@@ -83,7 +82,7 @@ int main(int argc, char *argv[])
 
     /* It is possible, though not necessary, to free all additional frames
      * separately. */
-    cucul_free_canvas(cv);
+    caca_free_canvas(cv);
 
     return 0;
 }

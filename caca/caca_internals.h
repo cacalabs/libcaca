@@ -19,10 +19,54 @@
 
 typedef struct caca_timer caca_timer_t;
 typedef struct caca_privevent caca_privevent_t;
+typedef struct caca_figfont caca_figfont_t;
 
 #if !defined(_DOXYGEN_SKIP_ME)
 #   define EVENTBUF_LEN 10
 #endif
+
+struct caca_frame
+{
+    /* Frame size */
+    int width, height;
+
+    /* Cell information */
+    uint32_t *chars;
+    uint32_t *attrs;
+
+    /* Painting context */
+    int x, y;
+    int handlex, handley;
+    uint32_t curattr;
+
+    /* Frame name */
+    char *name;
+};
+
+struct caca_canvas
+{
+    /* XXX: look at caca_set_canvas_boundaries() before adding anything
+     * to this structure. The function is quite hacky. */
+
+    /* Frame information */
+    int frame, framecount;
+    struct caca_frame *frames;
+
+    /* Canvas management */
+    int refcount;
+    int autoinc;
+    int (*resize_callback)(void *);
+    void *resize_data;
+
+    /* Shortcut to the active frame information */
+    int width, height;
+    uint32_t *chars;
+    uint32_t *attrs;
+    uint32_t curattr;
+
+    /* FIGfont management */
+    caca_figfont_t *ff;
+};
 
 /* Graphics driver */
 enum caca_driver
@@ -104,8 +148,8 @@ struct caca_privevent
 /* Internal caca display context */
 struct caca_display
 {
-    /* A link to our cucul canvas */
-    cucul_canvas_t *cv;
+    /* A link to our caca canvas */
+    caca_canvas_t *cv;
     int autorelease;
 
 #if defined(USE_PLUGINS)
@@ -167,6 +211,14 @@ struct caca_display
 #endif
     } events;
 };
+
+/* Colour functions */
+extern uint32_t _caca_attr_to_rgb24fg(uint32_t);
+extern uint32_t _caca_attr_to_rgb24bg(uint32_t);
+
+/* Frames functions */
+extern void _caca_save_frame_info(caca_canvas_t *);
+extern void _caca_load_frame_info(caca_canvas_t *);
 
 /* Internal timer functions */
 extern void _caca_sleep(int);

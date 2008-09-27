@@ -18,17 +18,16 @@
 #   include <stdio.h>
 #endif
 
-#include "cucul.h"
 #include "caca.h"
 
 int main(int argc, char *argv[])
 {
-    cucul_canvas_t *cv;
+    caca_canvas_t *cv;
     caca_display_t *dp;
 
     int x, y;
 
-    cv = cucul_create_canvas(32, 16);
+    cv = caca_create_canvas(32, 16);
     if(cv == NULL)
     {
         printf("Failed to create canvas\n");
@@ -48,19 +47,19 @@ int main(int argc, char *argv[])
         uint16_t bgcolor = 0xff00 | (y << 4) | x;
         uint16_t fgcolor = 0xf000 | ((15 - y) << 4) | ((15 - x) << 8);
 
-        cucul_set_color_argb(cv, fgcolor, bgcolor);
-        cucul_put_str(cv, x * 2, y, "CA");
+        caca_set_color_argb(cv, fgcolor, bgcolor);
+        caca_put_str(cv, x * 2, y, "CA");
     }
 
-    cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_LIGHTBLUE);
-    cucul_put_str(cv, 2, 1, " truecolor libcaca ");
+    caca_set_color_ansi(cv, CACA_WHITE, CACA_LIGHTBLUE);
+    caca_put_str(cv, 2, 1, " truecolor libcaca ");
 
     caca_refresh_display(dp);
 
     caca_get_event(dp, CACA_EVENT_KEY_PRESS, NULL, -1);
 
     caca_free_display(dp);
-    cucul_free_canvas(cv);
+    caca_free_canvas(cv);
 
     return 0;
 }

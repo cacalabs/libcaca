@@ -20,13 +20,12 @@
 #   include <stdlib.h>
 #endif
 
-#include "cucul.h"
 #include "caca.h"
 
 int main(int argc, char **argv)
 {
     char cmd[BUFSIZ];
-    static cucul_canvas_t *cv, *app;
+    static caca_canvas_t *cv, *app;
     static caca_display_t *dp;
     uint8_t *buf[4];
     long int bytes[4], total[4];
@@ -39,8 +38,8 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    cv = cucul_create_canvas(0, 0);
-    app = cucul_create_canvas(0, 0);
+    cv = caca_create_canvas(0, 0);
+    app = caca_create_canvas(0, 0);
     dp = caca_create_display(cv);
 
     if(cv == NULL || app == NULL )
@@ -54,15 +53,15 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    w = (cucul_get_canvas_width(cv) - 4) / 2;
-    h = (cucul_get_canvas_height(cv) - 6) / 2;
+    w = (caca_get_canvas_width(cv) - 4) / 2;
+    h = (caca_get_canvas_height(cv) - 6) / 2;
 
     if(w < 0 || h < 0)
         return 1;
 
-    cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLUE);
-    cucul_draw_line(cv, 0, 0, cucul_get_canvas_width(cv) - 1, 0, ' ');
-    cucul_printf(cv, cucul_get_canvas_width(cv) / 2 - 10, 0,
+    caca_set_color_ansi(cv, CACA_WHITE, CACA_BLUE);
+    caca_draw_line(cv, 0, 0, caca_get_canvas_width(cv) - 1, 0, ' ');
+    caca_printf(cv, caca_get_canvas_width(cv) / 2 - 10, 0,
                  "libcaca multiplexer");
 
     for(i = 0; i < 4; i++)
@@ -74,7 +73,7 @@ int main(int argc, char **argv)
         f[i] = popen(cmd, "r");
         if(!f[i])
             return 1;
-        cucul_printf(cv, (w + 2) * (i / 2) + 1,
+        caca_printf(cv, (w + 2) * (i / 2) + 1,
                          (h + 2) * ((i % 2) + 1), "%s", argv[i + 1]);
     }
 
@@ -88,14 +87,14 @@ int main(int argc, char **argv)
 
         for(i = 0; i < 4; i++)
         {
-            bytes[i] = cucul_import_memory(app, buf[i], total[i], "caca");
+            bytes[i] = caca_import_memory(app, buf[i], total[i], "caca");
 
             if(bytes[i] > 0)
             {
                 total[i] -= bytes[i];
                 memmove(buf[i], buf[i] + bytes[i], total[i]);
 
-                cucul_blit(cv, (w + 2) * (i / 2) + 1,
+                caca_blit(cv, (w + 2) * (i / 2) + 1,
                                (h + 2) * (i % 2) + 2, app, NULL);
                 caca_refresh_display(dp);
             }
@@ -115,8 +114,8 @@ int main(int argc, char **argv)
 
     /* Clean up */
     caca_free_display(dp);
-    cucul_free_canvas(cv);
-    cucul_free_canvas(app);
+    caca_free_canvas(cv);
+    caca_free_canvas(app);
 
     return 0;
 }

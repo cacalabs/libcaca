@@ -35,15 +35,15 @@ extern unsigned int __caca0_sqrt(unsigned int);
 extern int __caca0_get_feature(int);
 extern void __caca0_set_feature(int);
 extern char const *__caca0_get_feature_name(int);
-extern cucul_canvas_t *__caca0_load_sprite(char const *);
-extern cucul_dither_t *__caca0_create_bitmap(unsigned int, unsigned int,
+extern caca_canvas_t *__caca0_load_sprite(char const *);
+extern caca_dither_t *__caca0_create_bitmap(unsigned int, unsigned int,
           unsigned int, unsigned int, unsigned long int, unsigned long int,
           unsigned long int, unsigned long int);
-extern void __caca0_free_bitmap(cucul_dither_t *);
+extern void __caca0_free_bitmap(caca_dither_t *);
 extern char const *__caca0_get_color_name(unsigned char);
 
 /* These variables are needed to emulate old non-thread safe behaviour */
-extern cucul_canvas_t *__caca0_cv;
+extern caca_canvas_t *__caca0_cv;
 extern caca_display_t *__caca0_dp;
 extern unsigned char __caca0_fg;
 extern unsigned char __caca0_bg;
@@ -51,22 +51,22 @@ extern unsigned char __caca0_bg;
 /* These enums and macros changed names or values */
 enum caca_color
 {
-    CACA_COLOR_BLACK = CUCUL_BLACK,
-    CACA_COLOR_BLUE = CUCUL_BLUE,
-    CACA_COLOR_GREEN = CUCUL_GREEN,
-    CACA_COLOR_CYAN = CUCUL_CYAN,
-    CACA_COLOR_RED = CUCUL_RED,
-    CACA_COLOR_MAGENTA = CUCUL_MAGENTA,
-    CACA_COLOR_BROWN = CUCUL_BROWN,
-    CACA_COLOR_LIGHTGRAY = CUCUL_LIGHTGRAY,
-    CACA_COLOR_DARKGRAY = CUCUL_DARKGRAY,
-    CACA_COLOR_LIGHTBLUE = CUCUL_LIGHTBLUE,
-    CACA_COLOR_LIGHTGREEN = CUCUL_LIGHTGREEN,
-    CACA_COLOR_LIGHTCYAN = CUCUL_LIGHTCYAN,
-    CACA_COLOR_LIGHTRED = CUCUL_LIGHTRED,
-    CACA_COLOR_LIGHTMAGENTA = CUCUL_LIGHTMAGENTA,
-    CACA_COLOR_YELLOW = CUCUL_YELLOW,
-    CACA_COLOR_WHITE = CUCUL_WHITE,
+    CACA_COLOR_BLACK = CACA_BLACK,
+    CACA_COLOR_BLUE = CACA_BLUE,
+    CACA_COLOR_GREEN = CACA_GREEN,
+    CACA_COLOR_CYAN = CACA_CYAN,
+    CACA_COLOR_RED = CACA_RED,
+    CACA_COLOR_MAGENTA = CACA_MAGENTA,
+    CACA_COLOR_BROWN = CACA_BROWN,
+    CACA_COLOR_LIGHTGRAY = CACA_LIGHTGRAY,
+    CACA_COLOR_DARKGRAY = CACA_DARKGRAY,
+    CACA_COLOR_LIGHTBLUE = CACA_LIGHTBLUE,
+    CACA_COLOR_LIGHTGREEN = CACA_LIGHTGREEN,
+    CACA_COLOR_LIGHTCYAN = CACA_LIGHTCYAN,
+    CACA_COLOR_LIGHTRED = CACA_LIGHTRED,
+    CACA_COLOR_LIGHTMAGENTA = CACA_LIGHTMAGENTA,
+    CACA_COLOR_YELLOW = CACA_YELLOW,
+    CACA_COLOR_WHITE = CACA_WHITE,
 };
 
 enum caca_feature
@@ -117,8 +117,8 @@ enum caca_feature
 #define caca_set_feature __caca0_set_feature
 #define caca_get_feature_name __caca0_get_feature_name
 #define caca_get_rendertime() caca_get_display_time(__caca0_dp)
-#define caca_get_width() cucul_get_canvas_width(__caca0_cv)
-#define caca_get_height() cucul_get_canvas_height(__caca0_cv)
+#define caca_get_width() caca_get_canvas_width(__caca0_cv)
+#define caca_get_height() caca_get_canvas_height(__caca0_cv)
 #define caca_set_window_title(s) caca_set_display_title(__caca0_dp, s)
 #define caca_get_window_width() caca_get_display_width(__caca0_dp)
 #define caca_get_window_height() caca_get_display_height(__caca0_dp)
@@ -131,62 +131,62 @@ enum caca_feature
 #define caca_get_mouse_y() caca_get_mouse_y(__caca0_dp)
 
 #define caca_set_color(x, y) \
-    (__caca0_fg = (x), __caca0_bg = (y), cucul_set_color_ansi(__caca0_cv, x, y))
+    (__caca0_fg = (x), __caca0_bg = (y), caca_set_color_ansi(__caca0_cv, x, y))
 #define caca_get_fg_color() __caca0_fg
 #define caca_get_bg_color() __caca0_bg
 #define caca_get_color_name __caca0_get_color_name
-#define caca_putchar(x, y, c) cucul_put_char(__caca0_cv, x, y, c)
-#define caca_putstr(x, y, s) cucul_put_str(__caca0_cv, x, y, s)
-#define caca_printf(x, y, f, z...) cucul_printf(__caca0_cv, x, y, f, ##z)
-#define caca_clear() cucul_clear_canvas(__caca0_cv)
+#define caca_putchar(x, y, c) caca_put_char(__caca0_cv, x, y, c)
+#define caca_putstr(x, y, s) caca_put_str(__caca0_cv, x, y, s)
+#define caca_printf(x, y, f, z...) caca_printf(__caca0_cv, x, y, f, ##z)
+#define caca_clear() caca_clear_canvas(__caca0_cv)
 
 #define caca_draw_line(x, y, z, t, c) \
-    cucul_draw_line(__caca0_cv, x, y, z, t, c)
+    caca_draw_line(__caca0_cv, x, y, z, t, c)
 #define caca_draw_polyline(x, y, z, c) \
-    cucul_draw_polyline(__caca0_cv, x, y, z, c)
+    caca_draw_polyline(__caca0_cv, x, y, z, c)
 #define caca_draw_thin_line(x, y, z, t) \
-    cucul_draw_thin_line(__caca0_cv, x, y, z, t)
+    caca_draw_thin_line(__caca0_cv, x, y, z, t)
 #define caca_draw_thin_polyline(x, y, z) \
-    cucul_draw_thin_polyline(__caca0_cv, x, y, z)
+    caca_draw_thin_polyline(__caca0_cv, x, y, z)
 #define caca_draw_circle(x, y, z, c) \
-    cucul_draw_circle(__caca0_cv, x, y, z, c)
+    caca_draw_circle(__caca0_cv, x, y, z, c)
 #define caca_draw_ellipse(x, y, z, t, c) \
-    cucul_draw_ellipse(__caca0_cv, x, y, z, t, c)
+    caca_draw_ellipse(__caca0_cv, x, y, z, t, c)
 #define caca_draw_thin_ellipse(x, y, z, t) \
-    cucul_draw_thin_ellipse(__caca0_cv, x, y, z, t)
+    caca_draw_thin_ellipse(__caca0_cv, x, y, z, t)
 #define caca_fill_ellipse(x, y, z, t, c) \
-    cucul_fill_ellipse(__caca0_cv, x, y, z, t, c)
+    caca_fill_ellipse(__caca0_cv, x, y, z, t, c)
 #define caca_draw_box(x, y, z, t, c) \
-    cucul_draw_box(__caca0_cv, x, y, z, t, c)
+    caca_draw_box(__caca0_cv, x, y, z, t, c)
 #define caca_draw_thin_box(x, y, z, t) \
-    cucul_draw_thin_box(__caca0_cv, x, y, z, t)
+    caca_draw_thin_box(__caca0_cv, x, y, z, t)
 #define caca_fill_box(x, y, z, t, c) \
-    cucul_fill_box(__caca0_cv, x, y, z, t, c)
+    caca_fill_box(__caca0_cv, x, y, z, t, c)
 #define caca_draw_triangle(x, y, z, t, u, v, c) \
-    cucul_draw_triangle(__caca0_cv, x, y, z, t, u, v, c)
+    caca_draw_triangle(__caca0_cv, x, y, z, t, u, v, c)
 #define caca_draw_thin_triangle(x, y, z, t, u, v) \
-    cucul_draw_thin_triangle(__caca0_cv, x, y, z, t, u, v)
+    caca_draw_thin_triangle(__caca0_cv, x, y, z, t, u, v)
 #define caca_fill_triangle(x, y, z, t, u, v, c) \
-    cucul_fill_triangle(__caca0_cv, x, y, z, t, u, v, c)
+    caca_fill_triangle(__caca0_cv, x, y, z, t, u, v, c)
 
-#define caca_rand(a, b) cucul_rand(a, (b)+1)
+#define caca_rand(a, b) caca_rand(a, (b)+1)
 #define caca_sqrt __caca0_sqrt
 
-#define caca_sprite cucul_canvas
+#define caca_sprite caca_canvas
 #define caca_load_sprite __caca0_load_sprite
 #define caca_get_sprite_frames(c) 1
-#define caca_get_sprite_width(c, f) cucul_get_canvas_width(c)
-#define caca_get_sprite_height(c, f) cucul_get_canvas_height(c)
+#define caca_get_sprite_width(c, f) caca_get_canvas_width(c)
+#define caca_get_sprite_height(c, f) caca_get_canvas_height(c)
 #define caca_get_sprite_dx(c, f) 0
 #define caca_get_sprite_dx(c, f) 0
-#define caca_draw_sprite(x, y, c, f) cucul_blit(__caca0_cv, x, y, c, NULL)
-#define caca_free_sprite cucul_free_canvas
+#define caca_draw_sprite(x, y, c, f) caca_blit(__caca0_cv, x, y, c, NULL)
+#define caca_free_sprite caca_free_canvas
 
-#define caca_bitmap cucul_dither
+#define caca_bitmap caca_dither
 #define caca_create_bitmap __caca0_create_bitmap
-#define caca_set_bitmap_palette cucul_set_dither_palette
+#define caca_set_bitmap_palette caca_set_dither_palette
 #define caca_draw_bitmap(x, y, z, t, b, p) \
-    cucul_dither_bitmap(__caca0_cv, x, y, z, t, b, p)
+    caca_dither_bitmap(__caca0_cv, x, y, z, t, b, p)
 #define caca_free_bitmap __caca0_free_bitmap
 
 #ifdef __cplusplus

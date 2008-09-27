@@ -1,5 +1,5 @@
 /*
- *  libcucul      Canvas for ultrafast compositing of Unicode letters
+ *  libcaca       Colour ASCII-Art library
  *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
@@ -35,8 +35,8 @@
 #   endif
 #endif
 
-#include "cucul.h"
-#include "cucul_internals.h"
+#include "caca.h"
+#include "caca_internals.h"
 
 /** \brief Set cursor position.
  *
@@ -46,12 +46,12 @@
  *
  *  This function never fails.
  *
- *  \param cv A handle to the libcucul canvas.
+ *  \param cv A handle to the libcaca canvas.
  *  \param x X cursor coordinate.
  *  \param y Y cursor coordinate.
  *  \return This function always returns 0.
  */
-int cucul_gotoxy(cucul_canvas_t *cv, int x, int y)
+int caca_gotoxy(caca_canvas_t *cv, int x, int y)
 {
     cv->frames[cv->frame].x = x;
     cv->frames[cv->frame].y = y;
@@ -65,10 +65,10 @@ int cucul_gotoxy(cucul_canvas_t *cv, int x, int y)
  *
  *  This function never fails.
  *
- *  \param cv A handle to the libcucul canvas.
+ *  \param cv A handle to the libcaca canvas.
  *  \return The cursor's X coordinate.
  */
-int cucul_get_cursor_x(cucul_canvas_t const *cv)
+int caca_get_cursor_x(caca_canvas_t const *cv)
 {
     return cv->frames[cv->frame].x;
 }
@@ -79,10 +79,10 @@ int cucul_get_cursor_x(cucul_canvas_t const *cv)
  *
  *  This function never fails.
  *
- *  \param cv A handle to the libcucul canvas.
+ *  \param cv A handle to the libcaca canvas.
  *  \return The cursor's Y coordinate.
  */
-int cucul_get_cursor_y(cucul_canvas_t const *cv)
+int caca_get_cursor_y(caca_canvas_t const *cv)
 {
     return cv->frames[cv->frame].y;
 }
@@ -99,17 +99,17 @@ int cucul_get_cursor_y(cucul_canvas_t const *cv)
  *
  *  The behaviour when printing non-printable characters or invalid UTF-32
  *  characters is undefined. To print a sequence of bytes forming an UTF-8
- *  character instead of an UTF-32 character, use the cucul_put_str() function.
+ *  character instead of an UTF-32 character, use the caca_put_str() function.
  *
  *  This function never fails.
  *
- *  \param cv A handle to the libcucul canvas.
+ *  \param cv A handle to the libcaca canvas.
  *  \param x X coordinate.
  *  \param y Y coordinate.
  *  \param ch The character to print.
  *  \return This function always returns 0.
  */
-int cucul_put_char(cucul_canvas_t *cv, int x, int y, uint32_t ch)
+int caca_put_char(caca_canvas_t *cv, int x, int y, uint32_t ch)
 {
     uint32_t *curchar, *curattr, attr;
     int fullwidth;
@@ -117,10 +117,10 @@ int cucul_put_char(cucul_canvas_t *cv, int x, int y, uint32_t ch)
     if(x >= (int)cv->width || y < 0 || y >= (int)cv->height)
         return 0;
 
-    if(ch == CUCUL_MAGIC_FULLWIDTH)
+    if(ch == CACA_MAGIC_FULLWIDTH)
         return 0;
 
-    fullwidth = cucul_utf32_is_fullwidth(ch);
+    fullwidth = caca_utf32_is_fullwidth(ch);
 
     if(x == -1 && fullwidth)
     {
@@ -137,7 +137,7 @@ int cucul_put_char(cucul_canvas_t *cv, int x, int y, uint32_t ch)
 
     /* When overwriting the right part of a fullwidth character,
      * replace its left part with a space. */
-    if(x && curchar[0] == CUCUL_MAGIC_FULLWIDTH)
+    if(x && curchar[0] == CACA_MAGIC_FULLWIDTH)
         curchar[-1] = ' ';
 
     if(fullwidth)
@@ -148,10 +148,10 @@ int cucul_put_char(cucul_canvas_t *cv, int x, int y, uint32_t ch)
         {
             /* When overwriting the left part of a fullwidth character,
              * replace its right part with a space. */
-            if(x + 2 < (int)cv->width && curchar[2] == CUCUL_MAGIC_FULLWIDTH)
+            if(x + 2 < (int)cv->width && curchar[2] == CACA_MAGIC_FULLWIDTH)
                 curchar[2] = ' ';
 
-            curchar[1] = CUCUL_MAGIC_FULLWIDTH;
+            curchar[1] = CACA_MAGIC_FULLWIDTH;
             curattr[1] = attr;
         }
     }
@@ -159,7 +159,7 @@ int cucul_put_char(cucul_canvas_t *cv, int x, int y, uint32_t ch)
     {
         /* When overwriting the left part of a fullwidth character,
          * replace its right part with a space. */
-        if(x + 1 != (int)cv->width && curchar[1] == CUCUL_MAGIC_FULLWIDTH)
+        if(x + 1 != (int)cv->width && curchar[1] == CACA_MAGIC_FULLWIDTH)
             curchar[1] = ' ';
     }
 
@@ -179,19 +179,19 @@ int cucul_put_char(cucul_canvas_t *cv, int x, int y, uint32_t ch)
  *  If the coordinates are outside the canvas boundaries, a space (0x20)
  *  is returned.
  *
- *  A special exception is when CUCUL_MAGIC_FULLWIDTH is returned. This
+ *  A special exception is when CACA_MAGIC_FULLWIDTH is returned. This
  *  value is guaranteed not to be a valid Unicode character, and indicates
  *  that the character at the left of the requested one is a fullwidth
  *  character.
  *
  *  This function never fails.
  *
- *  \param cv A handle to the libcucul canvas.
+ *  \param cv A handle to the libcaca canvas.
  *  \param x X coordinate.
  *  \param y Y coordinate.
  *  \return This function always returns 0.
  */
-uint32_t cucul_get_char(cucul_canvas_t const *cv, int x, int y)
+uint32_t caca_get_char(caca_canvas_t const *cv, int x, int y)
 {
     if(x < 0 || x >= (int)cv->width || y < 0 || y >= (int)cv->height)
         return ' ';
@@ -206,18 +206,18 @@ uint32_t cucul_get_char(cucul_canvas_t const *cv, int x, int y)
  *  canvas boundaries (eg. a negative Y coordinate) and the string will
  *  be cropped accordingly if it is too long.
  *
- *  See cucul_put_char() for more information on how fullwidth characters
+ *  See caca_put_char() for more information on how fullwidth characters
  *  are handled when overwriting each other or at the canvas' boundaries.
  *
  *  This function never fails.
  *
- *  \param cv A handle to the libcucul canvas.
+ *  \param cv A handle to the libcaca canvas.
  *  \param x X coordinate.
  *  \param y Y coordinate.
  *  \param s The string to print.
  *  \return This function always returns 0.
  */
-int cucul_put_str(cucul_canvas_t *cv, int x, int y, char const *s)
+int caca_put_str(caca_canvas_t *cv, int x, int y, char const *s)
 {
     size_t rd;
 
@@ -226,15 +226,15 @@ int cucul_put_str(cucul_canvas_t *cv, int x, int y, char const *s)
 
     while(*s && x < -1)
     {
-        x += cucul_utf32_is_fullwidth(cucul_utf8_to_utf32(s, &rd)) ? 2 : 1;
+        x += caca_utf32_is_fullwidth(caca_utf8_to_utf32(s, &rd)) ? 2 : 1;
         s += rd;
     }
 
     while(*s && x < (int)cv->width)
     {
-        uint32_t ch = cucul_utf8_to_utf32(s, &rd);
-        cucul_put_char(cv, x, y, ch);
-        x += cucul_utf32_is_fullwidth(ch) ? 2 : 1;
+        uint32_t ch = caca_utf8_to_utf32(s, &rd);
+        caca_put_char(cv, x, y, ch);
+        x += caca_utf32_is_fullwidth(ch) ? 2 : 1;
         s += rd;
     }
 
@@ -251,14 +251,14 @@ int cucul_put_str(cucul_canvas_t *cv, int x, int y, char const *s)
  *
  *  This function never fails.
  *
- *  \param cv A handle to the libcucul canvas.
+ *  \param cv A handle to the libcaca canvas.
  *  \param x X coordinate.
  *  \param y Y coordinate.
  *  \param format The format string to print.
  *  \param ... Arguments to the format string.
  *  \return This function always returns 0.
  */
-int cucul_printf(cucul_canvas_t *cv, int x, int y, char const *format, ...)
+int caca_printf(caca_canvas_t *cv, int x, int y, char const *format, ...)
 {
     char tmp[BUFSIZ];
     char *buf = tmp;
@@ -279,7 +279,7 @@ int cucul_printf(cucul_canvas_t *cv, int x, int y, char const *format, ...)
     buf[cv->width - x] = '\0';
     va_end(args);
 
-    cucul_put_str(cv, x, y, buf);
+    caca_put_str(cv, x, y, buf);
 
     if(buf != tmp)
         free(buf);
@@ -296,7 +296,7 @@ int cucul_printf(cucul_canvas_t *cv, int x, int y, char const *format, ...)
  *  \param cv The canvas to clear.
  *  \return This function always returns 0.
  */
-int cucul_clear_canvas(cucul_canvas_t *cv)
+int caca_clear_canvas(caca_canvas_t *cv)
 {
     uint32_t attr = cv->curattr;
     int n;
@@ -317,12 +317,12 @@ int cucul_clear_canvas(cucul_canvas_t *cv)
  *
  *  This function never fails.
  *
- *  \param cv A handle to the libcucul canvas.
+ *  \param cv A handle to the libcaca canvas.
  *  \param x X handle coordinate.
  *  \param y Y handle coordinate.
  *  \return This function always returns 0.
  */
-int cucul_set_canvas_handle(cucul_canvas_t *cv, int x, int y)
+int caca_set_canvas_handle(caca_canvas_t *cv, int x, int y)
 {
     cv->frames[cv->frame].handlex = x;
     cv->frames[cv->frame].handley = y;
@@ -336,10 +336,10 @@ int cucul_set_canvas_handle(cucul_canvas_t *cv, int x, int y)
  *
  *  This function never fails.
  *
- *  \param cv A handle to the libcucul canvas.
+ *  \param cv A handle to the libcaca canvas.
  *  \return The canvas' handle's X coordinate.
  */
-int cucul_get_canvas_handle_x(cucul_canvas_t const *cv)
+int caca_get_canvas_handle_x(caca_canvas_t const *cv)
 {
     return cv->frames[cv->frame].handlex;
 }
@@ -350,10 +350,10 @@ int cucul_get_canvas_handle_x(cucul_canvas_t const *cv)
  *
  *  This function never fails.
  *
- *  \param cv A handle to the libcucul canvas.
+ *  \param cv A handle to the libcaca canvas.
  *  \return The canvas' handle's Y coordinate.
  */
-int cucul_get_canvas_handle_y(cucul_canvas_t const *cv)
+int caca_get_canvas_handle_y(caca_canvas_t const *cv)
 {
     return cv->frames[cv->frame].handley;
 }
@@ -374,8 +374,8 @@ int cucul_get_canvas_handle_y(cucul_canvas_t const *cv)
  *  \param mask The mask canvas.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_blit(cucul_canvas_t *dst, int x, int y,
-               cucul_canvas_t const *src, cucul_canvas_t const *mask)
+int caca_blit(caca_canvas_t *dst, int x, int y,
+               caca_canvas_t const *src, caca_canvas_t const *mask)
 {
     int i, j, starti, startj, endi, endj;
 
@@ -404,11 +404,11 @@ int cucul_blit(cucul_canvas_t *dst, int x, int y,
         int stride = endi - starti;
 
         /* FIXME: we are ignoring the mask here */
-        if((starti + x) && dst->chars[dstix] == CUCUL_MAGIC_FULLWIDTH)
+        if((starti + x) && dst->chars[dstix] == CACA_MAGIC_FULLWIDTH)
             dst->chars[dstix - 1] = ' ';
 
         if(endi + x < dst->width
-                && dst->chars[dstix + stride] == CUCUL_MAGIC_FULLWIDTH)
+                && dst->chars[dstix + stride] == CACA_MAGIC_FULLWIDTH)
             dst->chars[dstix + stride] = ' ';
 
         if(mask)
@@ -429,10 +429,10 @@ int cucul_blit(cucul_canvas_t *dst, int x, int y,
         }
 
         /* Fix split fullwidth chars */
-        if(src->chars[srcix] == CUCUL_MAGIC_FULLWIDTH)
+        if(src->chars[srcix] == CACA_MAGIC_FULLWIDTH)
             dst->chars[dstix] = ' ';
 
-        if(endi < src->width && src->chars[endi] == CUCUL_MAGIC_FULLWIDTH)
+        if(endi < src->width && src->chars[endi] == CACA_MAGIC_FULLWIDTH)
             dst->chars[dstix + stride - 1] = ' ';
     }
 
@@ -458,9 +458,9 @@ int cucul_blit(cucul_canvas_t *dst, int x, int y,
  *  \param h The height of the cropped area.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_set_canvas_boundaries(cucul_canvas_t *cv, int x, int y, int w, int h)
+int caca_set_canvas_boundaries(caca_canvas_t *cv, int x, int y, int w, int h)
 {
-    cucul_canvas_t *new;
+    caca_canvas_t *new;
     int f, saved_f, framecount;
 
     if(cv->refcount)
@@ -475,19 +475,19 @@ int cucul_set_canvas_boundaries(cucul_canvas_t *cv, int x, int y, int w, int h)
         return -1;
     }
 
-    new = cucul_create_canvas(w, h);
+    new = caca_create_canvas(w, h);
 
-    framecount = cucul_get_frame_count(cv);
+    framecount = caca_get_frame_count(cv);
     saved_f = cv->frame;
 
     for(f = 0; f < framecount; f++)
     {
         if(f)
-            cucul_create_frame(new, framecount);
+            caca_create_frame(new, framecount);
 
-        cucul_set_frame(cv, f);
-        cucul_set_frame(new, f);
-        cucul_blit(new, -x, -y, cv, NULL);
+        caca_set_frame(cv, f);
+        caca_set_frame(new, f);
+        caca_blit(new, -x, -y, cv, NULL);
         free(cv->frames[f].chars);
         free(cv->frames[f].attrs);
     }
@@ -496,9 +496,9 @@ int cucul_set_canvas_boundaries(cucul_canvas_t *cv, int x, int y, int w, int h)
     cv->frames = new->frames;
     free(new);
 
-    cucul_set_frame(cv, saved_f); 
-    _cucul_load_frame_info(cv);
-    
+    caca_set_frame(cv, saved_f);
+    _caca_load_frame_info(cv);
+
     return 0;
 }
 

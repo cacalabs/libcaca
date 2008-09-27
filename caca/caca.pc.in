@@ -6,7 +6,7 @@ includedir=@includedir@
 Name: caca
 Description: Colour ASCII-Art library
 Version: @VERSION@
-Requires: cucul = @VERSION@
+Requires: caca = @VERSION@
 Conflicts: 
-Libs: -L${libdir} -lcaca -lcucul
+Libs: -L${libdir} -lcaca -lcaca
 Cflags: -I${includedir}

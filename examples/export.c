@@ -1,5 +1,5 @@
 /*
- *  export        libcucul export test program
+ *  export        libcaca export test program
  *  Copyright (c) 2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
@@ -20,7 +20,7 @@
 #   include <string.h>
 #endif
 
-#include "cucul.h"
+#include "caca.h"
 
 #define WIDTH 80
 #define HEIGHT 32
@@ -29,15 +29,15 @@ uint32_t pixels[256*256];
 
 int main(int argc, char *argv[])
 {
-    cucul_canvas_t *cv;
-    cucul_dither_t *dither;
+    caca_canvas_t *cv;
+    caca_dither_t *dither;
     void *buffer;
     char *file, *format;
     char const * const * exports, * const * p;
     size_t len;
     int x, y;
 
-    exports = cucul_get_export_list();
+    exports = caca_get_export_list();
 
     if(argc < 2 || argc > 3)
     {
@@ -75,8 +75,8 @@ int main(int argc, char *argv[])
 
     if(file)
     {
-        cv = cucul_create_canvas(0, 0);
-        if(cucul_import_file(cv, file, "") < 0)
+        cv = caca_create_canvas(0, 0);
+        if(caca_import_file(cv, file, "") < 0)
         {
             fprintf(stderr, "%s: `%s' has unknown format\n", argv[0], file);
             exit(-1);
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-        cv = cucul_create_canvas(WIDTH, HEIGHT);
+        cv = caca_create_canvas(WIDTH, HEIGHT);
 
         for(y = 0; y < 256; y++)
         {
@@ -97,62 +97,62 @@ int main(int argc, char *argv[])
             }
         }
 
-        dither = cucul_create_dither(32, 256, 256, 4 * 256,
+        dither = caca_create_dither(32, 256, 256, 4 * 256,
                                      0x00ff0000, 0x0000ff00, 0x000000ff, 0x0);
         if(!strcmp(format, "ansi") || !strcmp(format, "utf8"))
-            cucul_set_dither_charset(dither, "shades");
-        cucul_dither_bitmap(cv, 0, 0, cucul_get_canvas_width(cv),
-                            cucul_get_canvas_height(cv), dither, pixels);
-        cucul_free_dither(dither);
+            caca_set_dither_charset(dither, "shades");
+        caca_dither_bitmap(cv, 0, 0, caca_get_canvas_width(cv),
+                            caca_get_canvas_height(cv), dither, pixels);
+        caca_free_dither(dither);
 
-        cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_BLACK);
-        cucul_draw_thin_box(cv, 0, 0, WIDTH - 1, HEIGHT - 1);
+        caca_set_color_ansi(cv, CACA_WHITE, CACA_BLACK);
+        caca_draw_thin_box(cv, 0, 0, WIDTH - 1, HEIGHT - 1);
 
-        cucul_set_color_ansi(cv, CUCUL_BLACK, CUCUL_WHITE);
-        cucul_fill_ellipse(cv, WIDTH / 2, HEIGHT / 2,
+        caca_set_color_ansi(cv, CACA_BLACK, CACA_WHITE);
+        caca_fill_ellipse(cv, WIDTH / 2, HEIGHT / 2,
                                WIDTH / 4, HEIGHT / 4, ' ');
 
-        cucul_set_color_ansi(cv, CUCUL_LIGHTGRAY, CUCUL_BLACK);
-        cucul_put_str(cv, WIDTH / 2 - 12, HEIGHT / 2 - 6,
+        caca_set_color_ansi(cv, CACA_LIGHTGRAY, CACA_BLACK);
+        caca_put_str(cv, WIDTH / 2 - 12, HEIGHT / 2 - 6,
                       "   lightgray on black   ");
-        cucul_set_color_ansi(cv, CUCUL_DEFAULT, CUCUL_TRANSPARENT);
-        cucul_put_str(cv, WIDTH / 2 - 12, HEIGHT / 2 - 5,
+        caca_set_color_ansi(cv, CACA_DEFAULT, CACA_TRANSPARENT);
+        caca_put_str(cv, WIDTH / 2 - 12, HEIGHT / 2 - 5,
                       " default on transparent ");
-        cucul_set_color_ansi(cv, CUCUL_BLACK, CUCUL_WHITE);
-        cucul_put_str(cv, WIDTH / 2 - 12, HEIGHT / 2 - 4,
+        caca_set_color_ansi(cv, CACA_BLACK, CACA_WHITE);
+        caca_put_str(cv, WIDTH / 2 - 12, HEIGHT / 2 - 4,
                       "     black on white     ");
 
-        cucul_set_color_ansi(cv, CUCUL_BLACK, CUCUL_WHITE);
-        cucul_put_str(cv, WIDTH / 2 - 8, HEIGHT / 2 - 3, "[<><><><> <>--<>]");
-        cucul_put_str(cv, WIDTH / 2 - 8, HEIGHT / 2 - 2, "[ドラゴン ボーレ]");
-        cucul_put_str(cv, WIDTH / 2 - 7, HEIGHT / 2 + 2, "äβç ░▒▓█▓▒░ ΔЗҒ");
-        cucul_put_str(cv, WIDTH / 2 - 5, HEIGHT / 2 + 4, "(\") \\o/ <&>");
+        caca_set_color_ansi(cv, CACA_BLACK, CACA_WHITE);
+        caca_put_str(cv, WIDTH / 2 - 8, HEIGHT / 2 - 3, "[<><><><> <>--<>]");
+        caca_put_str(cv, WIDTH / 2 - 8, HEIGHT / 2 - 2, "[ドラゴン ボーレ]");
+        caca_put_str(cv, WIDTH / 2 - 7, HEIGHT / 2 + 2, "äβç ░▒▓█▓▒░ ΔЗҒ");
+        caca_put_str(cv, WIDTH / 2 - 5, HEIGHT / 2 + 4, "(\") \\o/ <&>");
 
-        cucul_set_attr(cv, CUCUL_BOLD);
-        cucul_put_str(cv, WIDTH / 2 - 16, HEIGHT / 2 + 3, "Bold");
-        cucul_set_attr(cv, CUCUL_BLINK);
-        cucul_put_str(cv, WIDTH / 2 - 9, HEIGHT / 2 + 3, "Blink");
-        cucul_set_attr(cv, CUCUL_ITALICS);
-        cucul_put_str(cv, WIDTH / 2 - 1, HEIGHT / 2 + 3, "Italics");
-        cucul_set_attr(cv, CUCUL_UNDERLINE);
-        cucul_put_str(cv, WIDTH / 2 + 8, HEIGHT / 2 + 3, "Underline");
-        cucul_set_attr(cv, 0);
+        caca_set_attr(cv, CACA_BOLD);
+        caca_put_str(cv, WIDTH / 2 - 16, HEIGHT / 2 + 3, "Bold");
+        caca_set_attr(cv, CACA_BLINK);
+        caca_put_str(cv, WIDTH / 2 - 9, HEIGHT / 2 + 3, "Blink");
+        caca_set_attr(cv, CACA_ITALICS);
+        caca_put_str(cv, WIDTH / 2 - 1, HEIGHT / 2 + 3, "Italics");
+        caca_set_attr(cv, CACA_UNDERLINE);
+        caca_put_str(cv, WIDTH / 2 + 8, HEIGHT / 2 + 3, "Underline");
+        caca_set_attr(cv, 0);
 
-        cucul_set_color_ansi(cv, CUCUL_WHITE, CUCUL_LIGHTBLUE);
-        cucul_put_str(cv, WIDTH / 2 - 7, HEIGHT / 2, "    LIBCACA    ");
+        caca_set_color_ansi(cv, CACA_WHITE, CACA_LIGHTBLUE);
+        caca_put_str(cv, WIDTH / 2 - 7, HEIGHT / 2, "    LIBCACA    ");
 
         for(x = 0; x < 16; x++)
         {
-            cucul_set_color_argb(cv, 0xff00 | x, 0xf00f | (x << 4));
-            cucul_put_char(cv, WIDTH / 2 - 7 + x, HEIGHT / 2 + 6, '#');
+            caca_set_color_argb(cv, 0xff00 | x, 0xf00f | (x << 4));
+            caca_put_char(cv, WIDTH / 2 - 7 + x, HEIGHT / 2 + 6, '#');
         }
     }
 
-    buffer = cucul_export_memory(cv, format, &len);
+    buffer = caca_export_memory(cv, format, &len);
     fwrite(buffer, len, 1, stdout);
     free(buffer);
 
-    cucul_free_canvas(cv);
+    caca_free_canvas(cv);
 
     return 0;
 }

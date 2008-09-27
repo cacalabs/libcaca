@@ -1,5 +1,5 @@
 /*
- *  libcucul      Canvas for ultrafast compositing of Unicode letters
+ *  libcaca       Colour ASCII-Art library
  *  Copyright (c) 2002-2007 Sam Hocevar <sam@zoy.org>
  *                2007 Ben Wiley Sittler <bsittler@gmail.com>
  *                All Rights Reserved
@@ -24,8 +24,8 @@
 #   include <string.h>
 #endif
 
-#include "cucul.h"
-#include "cucul_internals.h"
+#include "caca.h"
+#include "caca_internals.h"
 
 /*
  * UTF-8 handling
@@ -111,7 +111,7 @@ static uint32_t const cp437_lookup2[] =
  *  \return The corresponding UTF-32 character, or zero if the character
  *  is incomplete.
  */
-uint32_t cucul_utf8_to_utf32(char const *s, size_t *bytes)
+uint32_t caca_utf8_to_utf32(char const *s, size_t *bytes)
 {
     int todo = trailing[(int)(unsigned char)*s];
     int i = 0;
@@ -150,7 +150,7 @@ uint32_t cucul_utf8_to_utf32(char const *s, size_t *bytes)
  *  \param ch The UTF-32 character.
  *  \return The number of bytes written.
  */
-size_t cucul_utf32_to_utf8(char *buf, uint32_t ch)
+size_t caca_utf32_to_utf8(char *buf, uint32_t ch)
 {
     static const uint8_t mark[7] =
     {
@@ -190,7 +190,7 @@ size_t cucul_utf32_to_utf8(char *buf, uint32_t ch)
  *  \param ch The UTF-32 character.
  *  \return The corresponding CP437 character, or "?" if not representable.
  */
-uint8_t cucul_utf32_to_cp437(uint32_t ch)
+uint8_t caca_utf32_to_cp437(uint32_t ch)
 {
     unsigned int i;
 
@@ -222,7 +222,7 @@ uint8_t cucul_utf32_to_cp437(uint32_t ch)
  *  \param ch The CP437 character.
  *  \return The corresponding UTF-32 character, or zero if not representable.
  */
-uint32_t cucul_cp437_to_utf32(uint8_t ch)
+uint32_t caca_cp437_to_utf32(uint8_t ch)
 {
     if(ch > 0x7f)
         return cp437_lookup2[ch - 0x7f];
@@ -248,7 +248,7 @@ uint32_t cucul_cp437_to_utf32(uint8_t ch)
  *  \return The corresponding ASCII character, or a graphically close
  *  equivalent if found, or "?" if not representable.
  */
-char cucul_utf32_to_ascii(uint32_t ch)
+char caca_utf32_to_ascii(uint32_t ch)
 {
     /* Standard ASCII */
     if(ch < 0x80)
@@ -387,7 +387,7 @@ char cucul_utf32_to_ascii(uint32_t ch)
  *  \param ch The UTF-32 character.
  *  \return 1 if the character is fullwidth, 0 otherwise.
  */
-int cucul_utf32_is_fullwidth(uint32_t ch)
+int caca_utf32_is_fullwidth(uint32_t ch)
 {
     if(ch < 0x2e80) /* Standard stuff */
         return 0;

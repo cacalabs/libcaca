@@ -20,7 +20,7 @@
 #   include <stdlib.h>
 #endif
 
-#include "cucul.h"
+#include "caca.h"
 
 #define STRING \
   "              |_| \n" \
@@ -35,16 +35,16 @@
 
 int main(int argc, char *argv[])
 {
-    cucul_canvas_t *cv, *pig;
+    caca_canvas_t *cv, *pig;
     void *buffer;
     size_t len;
     int i, j;
 
-    pig = cucul_create_canvas(0, 0);
-    cucul_import_memory(pig, STRING, strlen(STRING), "text");
+    pig = caca_create_canvas(0, 0);
+    caca_import_memory(pig, STRING, strlen(STRING), "text");
 
-    cv = cucul_create_canvas(cucul_get_canvas_width(pig) * 2,
-                             cucul_get_canvas_height(pig) * 2);
+    cv = caca_create_canvas(caca_get_canvas_width(pig) * 2,
+                             caca_get_canvas_height(pig) * 2);
 
     if(cv == NULL || pig == NULL)
     {
@@ -52,41 +52,41 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    cucul_blit(cv, 0, 0, pig, NULL);
-    cucul_flip(pig);
-    cucul_blit(cv, cucul_get_canvas_width(pig), 0, pig, NULL);
-    cucul_flip(pig);
-    cucul_flop(pig);
-    cucul_blit(cv, 0, cucul_get_canvas_height(pig), pig, NULL);
-    cucul_flop(pig);
-    cucul_rotate_180(pig);
-    cucul_blit(cv, cucul_get_canvas_width(pig),
-                   cucul_get_canvas_height(pig), pig, NULL);
+    caca_blit(cv, 0, 0, pig, NULL);
+    caca_flip(pig);
+    caca_blit(cv, caca_get_canvas_width(pig), 0, pig, NULL);
+    caca_flip(pig);
+    caca_flop(pig);
+    caca_blit(cv, 0, caca_get_canvas_height(pig), pig, NULL);
+    caca_flop(pig);
+    caca_rotate_180(pig);
+    caca_blit(cv, caca_get_canvas_width(pig),
+                   caca_get_canvas_height(pig), pig, NULL);
 
-    for(j = 0; j < cucul_get_canvas_height(cv); j++)
+    for(j = 0; j < caca_get_canvas_height(cv); j++)
     {
-        for(i = 0; i < cucul_get_canvas_width(cv); i += 2)
+        for(i = 0; i < caca_get_canvas_width(cv); i += 2)
         {
             unsigned long int a;
-            cucul_set_color_ansi(cv, CUCUL_LIGHTBLUE + (i + j) % 6,
-                                 CUCUL_DEFAULT);
-            a = cucul_get_attr(cv, -1, -1);
-            cucul_put_attr(cv, i, j, a);
-            cucul_put_attr(cv, i + 1, j, a);
+            caca_set_color_ansi(cv, CACA_LIGHTBLUE + (i + j) % 6,
+                                 CACA_DEFAULT);
+            a = caca_get_attr(cv, -1, -1);
+            caca_put_attr(cv, i, j, a);
+            caca_put_attr(cv, i + 1, j, a);
         }
     }
 
-    buffer = cucul_export_memory(cv, "utf8", &len);
+    buffer = caca_export_memory(cv, "utf8", &len);
     fwrite(buffer, len, 1, stdout);
     free(buffer);
 
-    cucul_rotate_left(cv);
-    buffer = cucul_export_memory(cv, "utf8", &len);
+    caca_rotate_left(cv);
+    buffer = caca_export_memory(cv, "utf8", &len);
     fwrite(buffer, len, 1, stdout);
     free(buffer);
 
-    cucul_free_canvas(pig);
-    cucul_free_canvas(cv);
+    caca_free_canvas(pig);
+    caca_free_canvas(cv);
 
     return 0;
 }

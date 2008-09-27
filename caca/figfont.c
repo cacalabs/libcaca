@@ -1,5 +1,5 @@
 /*
- *  libcucul      Canvas for ultrafast compositing of Unicode letters
+ *  libcaca       Colour ASCII-Art library
  *  Copyright (c) 2006-2007 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
@@ -28,10 +28,10 @@
 #   include <string.h>
 #endif
 
-#include "cucul.h"
-#include "cucul_internals.h"
+#include "caca.h"
+#include "caca_internals.h"
 
-struct cucul_figfont
+struct caca_figfont
 {
     int term_width;
     int x, y, w, h, lines;
@@ -43,18 +43,18 @@ struct cucul_figfont
     int old_layout;
     int print_direction, full_layout, codetag_count;
     int glyphs;
-    cucul_canvas_t *fontcv, *charcv;
+    caca_canvas_t *fontcv, *charcv;
     int *left, *right; /* Unused yet */
     uint32_t *lookup;
 };
 
 static uint32_t hsmush(uint32_t ch1, uint32_t ch2, int rule);
-static cucul_figfont_t * open_figfont(char const *);
-static int free_figfont(cucul_figfont_t *);
+static caca_figfont_t * open_figfont(char const *);
+static int free_figfont(caca_figfont_t *);
 
-int cucul_canvas_set_figfont(cucul_canvas_t *cv, char const *path)
+int caca_canvas_set_figfont(caca_canvas_t *cv, char const *path)
 {
-    cucul_figfont_t *ff = NULL;
+    caca_figfont_t *ff = NULL;
 
     if(path)
     {
@@ -65,7 +65,7 @@ int cucul_canvas_set_figfont(cucul_canvas_t *cv, char const *path)
 
     if(cv->ff)
     {
-        cucul_free_canvas(cv->ff->charcv);
+        caca_free_canvas(cv->ff->charcv);
         free(cv->ff->left);
         free(cv->ff->right);
         free_figfont(cv->ff);
@@ -84,7 +84,7 @@ int cucul_canvas_set_figfont(cucul_canvas_t *cv, char const *path)
     ff->x = ff->y = 0;
     ff->w = ff->h = 0;
     ff->lines = 0;
-    cucul_set_canvas_size(cv, 0, 0); /* XXX */
+    caca_set_canvas_size(cv, 0, 0); /* XXX */
 
     /* from TOIlet’s figlet.c */
     if(ff->full_layout & 0x3f)
@@ -117,7 +117,7 @@ int cucul_canvas_set_figfont(cucul_canvas_t *cv, char const *path)
         break;
     }
 
-    ff->charcv = cucul_create_canvas(ff->max_length - 2, ff->height);
+    ff->charcv = caca_create_canvas(ff->max_length - 2, ff->height);
 
     ff->left = malloc(ff->height * sizeof(int));
     ff->right = malloc(ff->height * sizeof(int));
@@ -127,9 +127,9 @@ int cucul_canvas_set_figfont(cucul_canvas_t *cv, char const *path)
     return 0;
 }
 
-int cucul_put_figchar(cucul_canvas_t *cv, uint32_t ch)
+int caca_put_figchar(caca_canvas_t *cv, uint32_t ch)
 {
-    cucul_figfont_t *ff = cv->ff;
+    caca_figfont_t *ff = cv->ff;
     int c, w, h, x, y, overlap, extra, xleft, xright;
 
     switch(ch)
@@ -154,8 +154,8 @@ int cucul_put_figchar(cucul_canvas_t *cv, uint32_t ch)
     w = ff->lookup[c * 2 + 1];
     h = ff->height;
 
-    cucul_set_canvas_handle(ff->fontcv, 0, c * ff->height);
-    cucul_blit(ff->charcv, 0, 0, ff->fontcv, NULL);
+    caca_set_canvas_handle(ff->fontcv, 0, c * ff->height);
+    caca_blit(ff->charcv, 0, 0, ff->fontcv, NULL);
 
     /* Check whether we reached the end of the screen */
     if(ff->x && ff->x + w > ff->term_width)
@@ -176,12 +176,12 @@ int cucul_put_figchar(cucul_canvas_t *cv, uint32_t ch)
         {
             /* Compute how much spaces we can eat from the new glyph */
             for(xright = 0; xright < overlap; xright++)
-                if(cucul_get_char(ff->charcv, xright, y) != ' ')
+                if(caca_get_char(ff->charcv, xright, y) != ' ')
                     break;
 
             /* Compute how much spaces we can eat from the previous glyph */
             for(xleft = 0; xright + xleft < overlap && xleft < ff->x; xleft++)
-                if(cucul_get_char(cv, ff->x - 1 - xleft, ff->y + y) != ' ')
+                if(caca_get_char(cv, ff->x - 1 - xleft, ff->y + y) != ' ')
                     break;
 
             /* Handle overlapping */
@@ -192,8 +192,8 @@ int cucul_put_figchar(cucul_canvas_t *cv, uint32_t ch)
             if(ff->hmode == H_SMUSH)
             {
                 if(xleft < ff->x &&
-                    hsmush(cucul_get_char(cv, ff->x - 1 - xleft, ff->y + y),
-                          cucul_get_char(ff->charcv, xright, y),
+                    hsmush(caca_get_char(cv, ff->x - 1 - xleft, ff->y + y),
+                          caca_get_char(ff->charcv, xright, y),
                           ff->hsmushrule))
                     xleft++;
             }
@@ -219,29 +219,29 @@ int cucul_put_figchar(cucul_canvas_t *cv, uint32_t ch)
 
 #if 0 /* deactivated for libcaca insertion */
     if(attr)
-        cucul_set_attr(cv, attr);
+        caca_set_attr(cv, attr);
 #endif
-    cucul_set_canvas_size(cv, ff->w, ff->h);
+    caca_set_canvas_size(cv, ff->w, ff->h);
 
-    /* Render our char (FIXME: create a rect-aware cucul_blit_canvas?) */
+    /* Render our char (FIXME: create a rect-aware caca_blit_canvas?) */
     for(y = 0; y < h; y++)
         for(x = 0; x < w; x++)
     {
         uint32_t ch1, ch2;
-        //uint32_t tmpat = cucul_get_attr(ff->fontcv, x, y + c * ff->height);
-        ch2 = cucul_get_char(ff->charcv, x, y);
+        //uint32_t tmpat = caca_get_attr(ff->fontcv, x, y + c * ff->height);
+        ch2 = caca_get_char(ff->charcv, x, y);
         if(ch2 == ' ')
             continue;
-        ch1 = cucul_get_char(cv, ff->x + x - overlap, ff->y + y);
-        /* FIXME: this could be changed to cucul_put_attr() when the
-         * function is fixed in libcucul */
-        //cucul_set_attr(cv, tmpat);
+        ch1 = caca_get_char(cv, ff->x + x - overlap, ff->y + y);
+        /* FIXME: this could be changed to caca_put_attr() when the
+         * function is fixed in libcaca */
+        //caca_set_attr(cv, tmpat);
         if(ch1 == ' ' || ff->hmode != H_SMUSH)
-            cucul_put_char(cv, ff->x + x - overlap, ff->y + y, ch2);
+            caca_put_char(cv, ff->x + x - overlap, ff->y + y, ch2);
         else
-            cucul_put_char(cv, ff->x + x - overlap, ff->y + y,
+            caca_put_char(cv, ff->x + x - overlap, ff->y + y,
                            hsmush(ch1, ch2, ff->hsmushrule));
-        //cucul_put_attr(cv, ff->x + x, ff->y + y, tmpat);
+        //caca_put_attr(cv, ff->x + x, ff->y + y, tmpat);
     }
 
     /* Advance cursor */
@@ -250,32 +250,32 @@ int cucul_put_figchar(cucul_canvas_t *cv, uint32_t ch)
     return 0;
 }
 
-int cucul_flush_figlet(cucul_canvas_t *cv)
+int caca_flush_figlet(caca_canvas_t *cv)
 {
-    cucul_figfont_t *ff = cv->ff;
+    caca_figfont_t *ff = cv->ff;
     int x, y;
 
     //ff->torender = cv;
-    //cucul_set_canvas_size(ff->torender, ff->w, ff->h);
-    cucul_set_canvas_size(cv, ff->w, ff->h);
+    //caca_set_canvas_size(ff->torender, ff->w, ff->h);
+    caca_set_canvas_size(cv, ff->w, ff->h);
 
     /* FIXME: do this somewhere else, or record hardblank positions */
     for(y = 0; y < ff->h; y++)
         for(x = 0; x < ff->w; x++)
-            if(cucul_get_char(cv, x, y) == 0xa0)
+            if(caca_get_char(cv, x, y) == 0xa0)
             {
-                uint32_t attr = cucul_get_attr(cv, x, y);
-                cucul_put_char(cv, x, y, ' ');
-                cucul_put_attr(cv, x, y, attr);
+                uint32_t attr = caca_get_attr(cv, x, y);
+                caca_put_char(cv, x, y, ' ');
+                caca_put_attr(cv, x, y, attr);
             }
 
     ff->x = ff->y = 0;
     ff->w = ff->h = 0;
 
-    //cv = cucul_create_canvas(1, 1); /* XXX */
+    //cv = caca_create_canvas(1, 1); /* XXX */
 
     /* from render.c */
-    ff->lines += cucul_get_canvas_height(cv);
+    ff->lines += caca_get_canvas_height(cv);
 
     return 0;
 }
@@ -283,17 +283,17 @@ int cucul_flush_figlet(cucul_canvas_t *cv)
 #define STD_GLYPHS (127 - 32)
 #define EXT_GLYPHS (STD_GLYPHS + 7)
 
-static cucul_figfont_t * open_figfont(char const *path)
+static caca_figfont_t * open_figfont(char const *path)
 {
     char altpath[2048];
     char buf[2048];
     char hardblank[10];
-    cucul_figfont_t *ff;
+    caca_figfont_t *ff;
     char *data = NULL;
-    cucul_file_t *f;
+    caca_file_t *f;
     int i, j, size, comment_lines;
 
-    ff = malloc(sizeof(cucul_figfont_t));
+    ff = malloc(sizeof(caca_figfont_t));
     if(!ff)
     {
         seterrno(ENOMEM);
@@ -301,7 +301,7 @@ static cucul_figfont_t * open_figfont(char const *path)
     }
 
     /* Open font: if not found, try .tlf, then .flf */
-    f = cucul_file_open(path, "r");
+    f = caca_file_open(path, "r");
 #if !defined __KERNEL__ && defined HAVE_SNPRINTF
 
 #if (! defined(snprintf)) && ( defined(_WIN32) || defined(WIN32) ) && (! defined(__CYGWIN__))
@@ -312,13 +312,13 @@ static cucul_figfont_t * open_figfont(char const *path)
     {
         snprintf(altpath, 2047, "%s.tlf", path);
         altpath[2047] = '\0';
-        f = cucul_file_open(altpath, "r");
+        f = caca_file_open(altpath, "r");
     }
     if(!f)
     {
         snprintf(altpath, 2047, "%s.flf", path);
         altpath[2047] = '\0';
-        f = cucul_file_open(altpath, "r");
+        f = caca_file_open(altpath, "r");
     }
 #endif
     if(!f)
@@ -332,14 +332,14 @@ static cucul_figfont_t * open_figfont(char const *path)
     ff->print_direction = 0;
     ff->full_layout = 0;
     ff->codetag_count = 0;
-    cucul_file_gets(f, buf, 2048);
+    caca_file_gets(f, buf, 2048);
     if(sscanf(buf, "%*[ft]lf2a%6s %u %u %u %i %u %u %u %u\n", hardblank,
               &ff->height, &ff->baseline, &ff->max_length,
               &ff->old_layout, &comment_lines, &ff->print_direction,
               &ff->full_layout, &ff->codetag_count) < 6)
     {
         debug("figfont error: `%s' has invalid header: %s", path, buf);
-        cucul_file_close(f);
+        caca_file_close(f);
         free(ff);
         seterrno(EINVAL);
         return NULL;
@@ -351,24 +351,24 @@ static cucul_figfont_t * open_figfont(char const *path)
     {
         debug("figfont error: `%s' has invalid layout %i/%u",
                 path, ff->old_layout, ff->full_layout);
-        cucul_file_close(f);
+        caca_file_close(f);
         free(ff);
         seterrno(EINVAL);
         return NULL;
     }
 
-    ff->hardblank = cucul_utf8_to_utf32(hardblank, NULL);
+    ff->hardblank = caca_utf8_to_utf32(hardblank, NULL);
 
     /* Skip comment lines */
     for(i = 0; i < comment_lines; i++)
-        cucul_file_gets(f, buf, 2048);
+        caca_file_gets(f, buf, 2048);
 
     /* Read mandatory characters (32-127, 196, 214, 220, 228, 246, 252, 223)
      * then read additional characters. */
     ff->glyphs = 0;
     ff->lookup = NULL;
 
-    for(i = 0, size = 0; !cucul_file_eof(f); ff->glyphs++)
+    for(i = 0, size = 0; !caca_file_eof(f); ff->glyphs++)
     {
         if((ff->glyphs % 2048) == 0)
             ff->lookup = realloc(ff->lookup,
@@ -385,7 +385,7 @@ static cucul_figfont_t * open_figfont(char const *path)
         }
         else
         {
-            if(cucul_file_gets(f, buf, 2048) == NULL)
+            if(caca_file_gets(f, buf, 2048) == NULL)
                 break;
 
             /* Ignore blank lines, as in jacky.flf */
@@ -396,7 +396,7 @@ static cucul_figfont_t * open_figfont(char const *path)
             if(buf[0] == '-')
             {
                 for(j = 0; j < ff->height; j++)
-                    cucul_file_gets(f, buf, 2048);
+                    caca_file_gets(f, buf, 2048);
                 continue;
             }
 
@@ -423,12 +423,12 @@ static cucul_figfont_t * open_figfont(char const *path)
             if(i + 2048 >= size)
                 data = realloc(data, size += 2048);
 
-            cucul_file_gets(f, data + i, 2048);
+            caca_file_gets(f, data + i, 2048);
             i = (uintptr_t)strchr(data + i, 0) - (uintptr_t)data;
         }
     }
 
-    cucul_file_close(f);
+    caca_file_close(f);
 
     if(ff->glyphs < EXT_GLYPHS)
     {
@@ -442,8 +442,8 @@ static cucul_figfont_t * open_figfont(char const *path)
     }
 
     /* Import buffer into canvas */
-    ff->fontcv = cucul_create_canvas(0, 0);
-    cucul_import_memory(ff->fontcv, data, i, "utf8");
+    ff->fontcv = caca_create_canvas(0, 0);
+    caca_import_memory(ff->fontcv, data, i, "utf8");
     free(data);
 
     /* Remove EOL characters. For now we ignore hardblanks, don’t do any
@@ -454,11 +454,11 @@ static cucul_figfont_t * open_figfont(char const *path)
 
         for(i = ff->max_length; i--;)
         {
-            ch = cucul_get_char(ff->fontcv, i, j);
+            ch = caca_get_char(ff->fontcv, i, j);
 
             /* Replace hardblanks with U+00A0 NO-BREAK SPACE */
             if(ch == ff->hardblank)
-                cucul_put_char(ff->fontcv, i, j, ch = 0xa0);
+                caca_put_char(ff->fontcv, i, j, ch = 0xa0);
 
             if(oldch && ch != oldch)
             {
@@ -466,11 +466,11 @@ static cucul_figfont_t * open_figfont(char const *path)
                     ff->lookup[j / ff->height * 2 + 1] = i + 1;
             }
             else if(oldch && ch == oldch)
-                cucul_put_char(ff->fontcv, i, j, ' ');
+                caca_put_char(ff->fontcv, i, j, ' ');
             else if(ch != ' ')
             {
                 oldch = ch;
-                cucul_put_char(ff->fontcv, i, j, ' ');
+                caca_put_char(ff->fontcv, i, j, ' ');
             }
         }
     }
@@ -478,9 +478,9 @@ static cucul_figfont_t * open_figfont(char const *path)
     return ff;
 }
 
-int free_figfont(cucul_figfont_t *ff)
+int free_figfont(caca_figfont_t *ff)
 {
-    cucul_free_canvas(ff->fontcv);
+    caca_free_canvas(ff->fontcv);
     free(ff->lookup);
     free(ff);
 

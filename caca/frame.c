@@ -1,5 +1,5 @@
 /*
- *  libcucul      Canvas for ultrafast compositing of Unicode letters
+ *  libcaca       Colour ASCII-Art library
  *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
@@ -24,8 +24,8 @@
 #   include <string.h>
 #endif
 
-#include "cucul.h"
-#include "cucul_internals.h"
+#include "caca.h"
+#include "caca_internals.h"
 
 /** \brief Get the number of frames in a canvas.
  *
@@ -33,10 +33,10 @@
  *
  *  This function never fails.
  *
- *  \param cv A libcucul canvas
+ *  \param cv A libcaca canvas
  *  \return The frame count
  */
-int cucul_get_frame_count(cucul_canvas_t const *cv)
+int caca_get_frame_count(caca_canvas_t const *cv)
 {
     return cv->framecount;
 }
@@ -45,18 +45,18 @@ int cucul_get_frame_count(cucul_canvas_t const *cv)
  *
  *  Set the active canvas frame. All subsequent drawing operations will
  *  be performed on that frame. The current painting context set by
- *  cucul_set_attr() is inherited.
+ *  caca_set_attr() is inherited.
  *
  *  If the frame index is outside the canvas' frame range, nothing happens.
  *
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
  *  - \c EINVAL Requested frame is out of range.
  *
- *  \param cv A libcucul canvas
+ *  \param cv A libcaca canvas
  *  \param id The canvas frame to activate
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_set_frame(cucul_canvas_t *cv, int id)
+int caca_set_frame(caca_canvas_t *cv, int id)
 {
     if(id < 0 || id >= cv->framecount)
     {
@@ -64,9 +64,9 @@ int cucul_set_frame(cucul_canvas_t *cv, int id)
         return -1;
     }
 
-    _cucul_save_frame_info(cv);
+    _caca_save_frame_info(cv);
     cv->frame = id;
-    _cucul_load_frame_info(cv);
+    _caca_load_frame_info(cv);
 
     return 0;
 }
@@ -74,15 +74,15 @@ int cucul_set_frame(cucul_canvas_t *cv, int id)
 /** \brief Get the current frame's name.
  *
  *  Return the current frame's name. The returned string is valid until
- *  the frame is deleted or cucul_set_frame_name() is called to change
+ *  the frame is deleted or caca_set_frame_name() is called to change
  *  the frame name again.
  *
  *  This function never fails.
  *
- *  \param cv A libcucul canvas.
+ *  \param cv A libcaca canvas.
  *  \return The current frame's name.
  */
-char const *cucul_get_frame_name(cucul_canvas_t const *cv)
+char const *caca_get_frame_name(caca_canvas_t const *cv)
 {
     return cv->frames[cv->frame].name;
 }
@@ -96,11 +96,11 @@ char const *cucul_get_frame_name(cucul_canvas_t const *cv)
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
  *  - \c ENOMEM Not enough memory to allocate new frame.
  *
- *  \param cv A libcucul canvas.
+ *  \param cv A libcaca canvas.
  *  \param name The name to give to the current frame.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_set_frame_name(cucul_canvas_t *cv, char const *name)
+int caca_set_frame_name(caca_canvas_t *cv, char const *name)
 {
     char *newname = strdup(name);
 
@@ -133,11 +133,11 @@ int cucul_set_frame_name(cucul_canvas_t *cv, char const *name)
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
  *  - \c ENOMEM Not enough memory to allocate new frame.
  *
- *  \param cv A libcucul canvas
+ *  \param cv A libcaca canvas
  *  \param id The index where to insert the new frame
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_create_frame(cucul_canvas_t *cv, int id)
+int caca_create_frame(caca_canvas_t *cv, int id)
 {
     int size = cv->width * cv->height;
     int f;
@@ -149,7 +149,7 @@ int cucul_create_frame(cucul_canvas_t *cv, int id)
 
     cv->framecount++;
     cv->frames = realloc(cv->frames,
-                         sizeof(struct cucul_frame) * cv->framecount);
+                         sizeof(struct caca_frame) * cv->framecount);
 
     for(f = cv->framecount - 1; f > id; f--)
         cv->frames[f] = cv->frames[f - 1];
@@ -193,11 +193,11 @@ int cucul_create_frame(cucul_canvas_t *cv, int id)
  *  - \c EINVAL Requested frame is out of range, or attempt to delete the
  *    last frame of the canvas.
  *
- *  \param cv A libcucul canvas
+ *  \param cv A libcaca canvas
  *  \param id The index of the frame to delete
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int cucul_free_frame(cucul_canvas_t *cv, int id)
+int caca_free_frame(caca_canvas_t *cv, int id)
 {
     int f;
 
@@ -222,14 +222,14 @@ int cucul_free_frame(cucul_canvas_t *cv, int id)
 
     cv->framecount--;
     cv->frames = realloc(cv->frames,
-                         sizeof(struct cucul_frame) * cv->framecount);
+                         sizeof(struct caca_frame) * cv->framecount);
 
     if(cv->frame > id)
         cv->frame--;
     else if(cv->frame == id)
     {
         cv->frame = 0;
-        _cucul_load_frame_info(cv);
+        _caca_load_frame_info(cv);
     }
 
     return 0;
@@ -239,7 +239,7 @@ int cucul_free_frame(cucul_canvas_t *cv, int id)
  * XXX: the following functions are local.
  */
 
-void _cucul_save_frame_info(cucul_canvas_t *cv)
+void _caca_save_frame_info(caca_canvas_t *cv)
 {
     cv->frames[cv->frame].width = cv->width;
     cv->frames[cv->frame].height = cv->height;
@@ -247,7 +247,7 @@ void _cucul_save_frame_info(cucul_canvas_t *cv)
     cv->frames[cv->frame].curattr = cv->curattr;
 }
 
-void _cucul_load_frame_info(cucul_canvas_t *cv)
+void _caca_load_frame_info(caca_canvas_t *cv)
 {
     cv->width = cv->frames[cv->frame].width;
     cv->height = cv->frames[cv->frame].height;

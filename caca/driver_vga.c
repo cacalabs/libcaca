@@ -20,7 +20,6 @@
 
 #if defined(USE_VGA)
 
-#include "cucul.h"
 #include "caca.h"
 #include "caca_internals.h"
 
@@ -75,7 +74,7 @@ static int vga_init_graphics(caca_display_t *dp)
 
     /* We don't have much choice */
     dp->resize.allow = 1;
-    cucul_set_canvas_size(dp->cv, 80, 25);
+    caca_set_canvas_size(dp->cv, 80, 25);
     dp->resize.allow = 0;
 
     return 0;
@@ -116,33 +115,33 @@ static int vga_get_display_height(caca_display_t const *dp)
 static void vga_display(caca_display_t *dp)
 {
     char *screen = (char *)(intptr_t)0x000b8000;
-    uint32_t const *cvchars = (uint32_t const *)cucul_get_canvas_chars(dp->cv);
-    uint32_t const *cvattrs = (uint32_t const *)cucul_get_canvas_attrs(dp->cv);
-    int width = cucul_get_canvas_width(dp->cv);
-    int height = cucul_get_canvas_height(dp->cv);
+    uint32_t const *cvchars = (uint32_t const *)caca_get_canvas_chars(dp->cv);
+    uint32_t const *cvattrs = (uint32_t const *)caca_get_canvas_attrs(dp->cv);
+    int width = caca_get_canvas_width(dp->cv);
+    int height = caca_get_canvas_height(dp->cv);
     int n;
 
     for(n = height * width; n--; )
     {
-        char ch = cucul_utf32_to_cp437(*cvchars++);
-        if(n && *cvchars == CUCUL_MAGIC_FULLWIDTH)
+        char ch = caca_utf32_to_cp437(*cvchars++);
+        if(n && *cvchars == CACA_MAGIC_FULLWIDTH)
         {
             *screen++ = '[';
-            *screen++ = cucul_attr_to_ansi(*cvattrs++);
+            *screen++ = caca_attr_to_ansi(*cvattrs++);
             ch = ']';
             cvchars++;
             n--;
         }
         *screen++ = ch;
-        *screen++ = cucul_attr_to_ansi(*cvattrs++);
+        *screen++ = caca_attr_to_ansi(*cvattrs++);
     }
 }
 
 static void vga_handle_resize(caca_display_t *dp)
 {
     /* We know nothing about our window */
-    dp->resize.w = cucul_get_canvas_width(dp->cv);
-    dp->resize.h = cucul_get_canvas_height(dp->cv);
+    dp->resize.w = caca_get_canvas_width(dp->cv);
+    dp->resize.h = caca_get_canvas_height(dp->cv);
 }
 
 static int vga_get_event(caca_display_t *dp, caca_privevent_t *ev)

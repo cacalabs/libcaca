@@ -1,5 +1,5 @@
 /*
- *  libcucul      Canvas for ultrafast compositing of Unicode letters
+ *  libcaca       Colour ASCII-Art library
  *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
  *                2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                All Rights Reserved
@@ -25,8 +25,8 @@
 #   include <string.h>
 #endif
 
-#include "cucul.h"
-#include "cucul_internals.h"
+#include "caca.h"
+#include "caca_internals.h"
 
 static inline int sprintu32(char *s, uint32_t x)
 {
@@ -44,20 +44,20 @@ static inline int sprintu16(char *s, uint16_t x)
     return 2;
 }
 
-static void *export_caca(cucul_canvas_t const *, size_t *);
-static void *export_ansi(cucul_canvas_t const *, size_t *);
-static void *export_utf8(cucul_canvas_t const *, size_t *, int);
-static void *export_html(cucul_canvas_t const *, size_t *);
-static void *export_html3(cucul_canvas_t const *, size_t *);
-static void *export_bbfr(cucul_canvas_t const *, size_t *);
-static void *export_irc(cucul_canvas_t const *, size_t *);
-static void *export_ps(cucul_canvas_t const *, size_t *);
-static void *export_svg(cucul_canvas_t const *, size_t *);
-static void *export_tga(cucul_canvas_t const *, size_t *);
+static void *export_caca(caca_canvas_t const *, size_t *);
+static void *export_ansi(caca_canvas_t const *, size_t *);
+static void *export_utf8(caca_canvas_t const *, size_t *, int);
+static void *export_html(caca_canvas_t const *, size_t *);
+static void *export_html3(caca_canvas_t const *, size_t *);
+static void *export_bbfr(caca_canvas_t const *, size_t *);
+static void *export_irc(caca_canvas_t const *, size_t *);
+static void *export_ps(caca_canvas_t const *, size_t *);
+static void *export_svg(caca_canvas_t const *, size_t *);
+static void *export_tga(caca_canvas_t const *, size_t *);
 
 /** \brief Export a canvas into a foreign format.
  *
- *  This function exports a libcucul canvas into various foreign formats such
+ *  This function exports a libcaca canvas into various foreign formats such
  *  as ANSI art, HTML, IRC colours, etc. The returned pointer should be passed
  *  to free() to release the allocated storage when it is no longer needed.
  *
@@ -76,13 +76,13 @@ static void *export_tga(cucul_canvas_t const *, size_t *);
  *  - \c EINVAL Unsupported format requested.
  *  - \c ENOMEM Not enough memory to allocate output buffer.
  *
- *  \param cv A libcucul canvas
+ *  \param cv A libcaca canvas
  *  \param format A string describing the requested output format.
  *  \param bytes A pointer to a size_t where the number of allocated bytes
  *         will be written.
  *  \return A pointer to the exported memory area, or NULL in case of error.
  */
-void *cucul_export_memory(cucul_canvas_t const *cv, char const *format,
+void *caca_export_memory(caca_canvas_t const *cv, char const *format,
                           size_t *bytes)
 {
     if(!strcasecmp("caca", format))
@@ -126,14 +126,14 @@ void *cucul_export_memory(cucul_canvas_t const *cv, char const *format,
  *
  *  Return a list of available export formats. The list is a NULL-terminated
  *  array of strings, interleaving a string containing the internal value for
- *  the export format, to be used with cucul_export_memory(), and a string
+ *  the export format, to be used with caca_export_memory(), and a string
  *  containing the natural language description for that export format.
  *
  *  This function never fails.
  *
  *  \return An array of strings.
  */
-char const * const * cucul_get_export_list(void)
+char const * const * caca_get_export_list(void)
 {
     static char const * const list[] =
     {
@@ -159,7 +159,7 @@ char const * const * cucul_get_export_list(void)
  */
 
 /* Generate a native libcaca canvas file. */
-static void *export_caca(cucul_canvas_t const *cv, size_t *bytes)
+static void *export_caca(caca_canvas_t const *cv, size_t *bytes)
 {
     char *data, *cur;
     int f, n;
@@ -212,7 +212,7 @@ static void *export_caca(cucul_canvas_t const *cv, size_t *bytes)
 }
 
 /* Generate UTF-8 representation of current canvas. */
-static void *export_utf8(cucul_canvas_t const *cv, size_t *bytes,
+static void *export_utf8(caca_canvas_t const *cv, size_t *bytes,
                          int cr)
 {
     static uint8_t const palette[] =
@@ -244,11 +244,11 @@ static void *export_utf8(cucul_canvas_t const *cv, size_t *bytes,
             uint32_t ch = linechar[x];
             uint8_t ansifg, ansibg, fg, bg;
 
-            if(ch == CUCUL_MAGIC_FULLWIDTH)
+            if(ch == CACA_MAGIC_FULLWIDTH)
                 continue;
 
-            ansifg = cucul_attr_to_ansi_fg(attr);
-            ansibg = cucul_attr_to_ansi_bg(attr);
+            ansifg = caca_attr_to_ansi_fg(attr);
+            ansibg = caca_attr_to_ansi_bg(attr);
 
             fg = ansifg < 0x10 ? palette[ansifg] : 0x10;
             bg = ansibg < 0x10 ? palette[ansibg] : 0x10;
@@ -271,7 +271,7 @@ static void *export_utf8(cucul_canvas_t const *cv, size_t *bytes,
                 cur += sprintf(cur, "m");
             }
 
-            cur += cucul_utf32_to_utf8(cur, ch);
+            cur += caca_utf32_to_utf8(cur, ch);
 
             prevfg = fg;
             prevbg = bg;
@@ -293,7 +293,7 @@ static void *export_utf8(cucul_canvas_t const *cv, size_t *bytes,
 }
 
 /* Generate ANSI representation of current canvas. */
-static void *export_ansi(cucul_canvas_t const *cv, size_t *bytes)
+static void *export_ansi(caca_canvas_t const *cv, size_t *bytes)
 {
     static uint8_t const palette[] =
     {
@@ -320,13 +320,13 @@ static void *export_ansi(cucul_canvas_t const *cv, size_t *bytes)
 
         for(x = 0; x < cv->width; x++)
         {
-            uint8_t ansifg = cucul_attr_to_ansi_fg(lineattr[x]);
-            uint8_t ansibg = cucul_attr_to_ansi_bg(lineattr[x]);
-            uint8_t fg = ansifg < 0x10 ? palette[ansifg] : CUCUL_LIGHTGRAY;
-            uint8_t bg = ansibg < 0x10 ? palette[ansibg] : CUCUL_BLACK;
+            uint8_t ansifg = caca_attr_to_ansi_fg(lineattr[x]);
+            uint8_t ansibg = caca_attr_to_ansi_bg(lineattr[x]);
+            uint8_t fg = ansifg < 0x10 ? palette[ansifg] : CACA_LIGHTGRAY;
+            uint8_t bg = ansibg < 0x10 ? palette[ansibg] : CACA_BLACK;
             uint32_t ch = linechar[x];
 
-            if(ch == CUCUL_MAGIC_FULLWIDTH)
+            if(ch == CACA_MAGIC_FULLWIDTH)
                 ch = '?';
 
             if(fg != prevfg || bg != prevbg)
@@ -345,7 +345,7 @@ static void *export_ansi(cucul_canvas_t const *cv, size_t *bytes)
                         cur += sprintf(cur, "5;1;3%d;4%dm", fg - 8, bg - 8);
             }
 
-            *cur++ = cucul_utf32_to_cp437(ch);
+            *cur++ = caca_utf32_to_cp437(ch);
 
             prevfg = fg;
             prevbg = bg;
@@ -373,7 +373,7 @@ static void *export_ansi(cucul_canvas_t const *cv, size_t *bytes)
 }
 
 /* Generate HTML representation of current canvas. */
-static void *export_html(cucul_canvas_t const *cv, size_t *bytes)
+static void *export_html(caca_canvas_t const *cv, size_t *bytes)
 {
     char *data, *cur;
     int x, y, len;
@@ -390,7 +390,7 @@ static void *export_html(cucul_canvas_t const *cv, size_t *bytes)
     /* HTML header */
     cur += sprintf(cur, "<html><head>\n");
     cur += sprintf(cur, "<title>Generated by libcaca %s</title>\n",
-                        cucul_get_version());
+                        caca_get_version());
     cur += sprintf(cur, "</head><body>\n");
 
     cur += sprintf(cur, "<div cellpadding='0' cellspacing='0' style='%s'>\n",
@@ -404,19 +404,19 @@ static void *export_html(cucul_canvas_t const *cv, size_t *bytes)
         for(x = 0; x < cv->width; x += len)
         {
             cur += sprintf(cur, "<span style=\"");
-            if(cucul_attr_to_ansi_fg(lineattr[x]) < 0x10)
+            if(caca_attr_to_ansi_fg(lineattr[x]) < 0x10)
                 cur += sprintf(cur, ";color:#%.03x",
-                               cucul_attr_to_rgb12_fg(lineattr[x]));
-            if(cucul_attr_to_ansi_bg(lineattr[x]) < 0x10)
+                               caca_attr_to_rgb12_fg(lineattr[x]));
+            if(caca_attr_to_ansi_bg(lineattr[x]) < 0x10)
                 cur += sprintf(cur, ";background-color:#%.03x",
-                               cucul_attr_to_rgb12_bg(lineattr[x]));
-            if(lineattr[x] & CUCUL_BOLD)
+                               caca_attr_to_rgb12_bg(lineattr[x]));
+            if(lineattr[x] & CACA_BOLD)
                 cur += sprintf(cur, ";font-weight:bold");
-            if(lineattr[x] & CUCUL_ITALICS)
+            if(lineattr[x] & CACA_ITALICS)
                 cur += sprintf(cur, ";font-style:italic");
-            if(lineattr[x] & CUCUL_UNDERLINE)
+            if(lineattr[x] & CACA_UNDERLINE)
                 cur += sprintf(cur, ";text-decoration:underline");
-            if(lineattr[x] & CUCUL_BLINK)
+            if(lineattr[x] & CACA_BLINK)
                 cur += sprintf(cur, ";text-decoration:blink");
             cur += sprintf(cur, "\">");
 
@@ -424,7 +424,7 @@ static void *export_html(cucul_canvas_t const *cv, size_t *bytes)
                 x + len < cv->width && lineattr[x + len] == lineattr[x];
                 len++)
             {
-                if(linechar[x + len] == CUCUL_MAGIC_FULLWIDTH)
+                if(linechar[x + len] == CACA_MAGIC_FULLWIDTH)
                     ;
                 else if(linechar[x + len] <= 0x00000020)
                     cur += sprintf(cur, "&nbsp;");
@@ -455,7 +455,7 @@ static void *export_html(cucul_canvas_t const *cv, size_t *bytes)
  * but permits viewing in old browsers (or limited ones such as links). It
  * will not work under gecko (mozilla rendering engine) unless you set a
  * correct header. */
-static void *export_html3(cucul_canvas_t const *cv, size_t *bytes)
+static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
 {
     char *data, *cur;
     int x, y, len;
@@ -492,33 +492,33 @@ static void *export_html3(cucul_canvas_t const *cv, size_t *bytes)
 
             cur += sprintf(cur, "<td");
 
-            if(cucul_attr_to_ansi_fg(lineattr[x]) < 0x10)
+            if(caca_attr_to_ansi_fg(lineattr[x]) < 0x10)
                 cur += sprintf(cur, " bgcolor=#%.06lx", (unsigned long int)
-                               _cucul_attr_to_rgb24bg(lineattr[x]));
+                               _caca_attr_to_rgb24bg(lineattr[x]));
 
             if(len > 1)
                 cur += sprintf(cur, " colspan=%d", len);
 
             cur += sprintf(cur, ">");
 
-            needfont = cucul_attr_to_ansi_bg(lineattr[x]) < 0x10;
+            needfont = caca_attr_to_ansi_bg(lineattr[x]) < 0x10;
 
             if(needfont)
                 cur += sprintf(cur, "<font color=#%.06lx>", (unsigned long int)
-                               _cucul_attr_to_rgb24fg(lineattr[x]));
+                               _caca_attr_to_rgb24fg(lineattr[x]));
 
-            if(lineattr[x] & CUCUL_BOLD)
+            if(lineattr[x] & CACA_BOLD)
                 cur += sprintf(cur, "<b>");
-            if(lineattr[x] & CUCUL_ITALICS)
+            if(lineattr[x] & CACA_ITALICS)
                 cur += sprintf(cur, "<i>");
-            if(lineattr[x] & CUCUL_UNDERLINE)
+            if(lineattr[x] & CACA_UNDERLINE)
                 cur += sprintf(cur, "<u>");
-            if(lineattr[x] & CUCUL_BLINK)
+            if(lineattr[x] & CACA_BLINK)
                 cur += sprintf(cur, "<blink>");
 
             for(i = 0; i < len; i++)
             {
-                if(linechar[x + i] == CUCUL_MAGIC_FULLWIDTH)
+                if(linechar[x + i] == CACA_MAGIC_FULLWIDTH)
                     ;
                 else if(linechar[x + i] <= 0x00000020)
                     cur += sprintf(cur, "&nbsp;");
@@ -528,13 +528,13 @@ static void *export_html3(cucul_canvas_t const *cv, size_t *bytes)
                     cur += sprintf(cur, "&#%i;", (unsigned int)linechar[x + i]);
             }
 
-            if(lineattr[x] & CUCUL_BLINK)
+            if(lineattr[x] & CACA_BLINK)
                 cur += sprintf(cur, "</blink>");
-            if(lineattr[x] & CUCUL_UNDERLINE)
+            if(lineattr[x] & CACA_UNDERLINE)
                 cur += sprintf(cur, "</u>");
-            if(lineattr[x] & CUCUL_ITALICS)
+            if(lineattr[x] & CACA_ITALICS)
                 cur += sprintf(cur, "</i>");
-            if(lineattr[x] & CUCUL_BOLD)
+            if(lineattr[x] & CACA_BOLD)
                 cur += sprintf(cur, "</b>");
 
             if(needfont)
@@ -556,7 +556,7 @@ static void *export_html3(cucul_canvas_t const *cv, size_t *bytes)
     return data;
 }
 
-static void *export_bbfr(cucul_canvas_t const *cv, size_t *bytes)
+static void *export_bbfr(caca_canvas_t const *cv, size_t *bytes)
 {
     char *data, *cur;
     int x, y, len;
@@ -594,46 +594,46 @@ static void *export_bbfr(cucul_canvas_t const *cv, size_t *bytes)
                         && linechar[x] != ' ')
                     len++;
 
-            needback = cucul_attr_to_ansi_bg(lineattr[x]) < 0x10;
-            needfront = cucul_attr_to_ansi_fg(lineattr[x]) < 0x10;
+            needback = caca_attr_to_ansi_bg(lineattr[x]) < 0x10;
+            needfront = caca_attr_to_ansi_fg(lineattr[x]) < 0x10;
 
             if(needback)
                 cur += sprintf(cur, "[f=#%.06lx]", (unsigned long int)
-                               _cucul_attr_to_rgb24bg(lineattr[x]));
+                               _caca_attr_to_rgb24bg(lineattr[x]));
 
             if(linechar[x] == ' ')
                 cur += sprintf(cur, "[c=#%.06lx]", (unsigned long int)
-                               _cucul_attr_to_rgb24bg(lineattr[x]));
+                               _caca_attr_to_rgb24bg(lineattr[x]));
             else if(needfront)
                 cur += sprintf(cur, "[c=#%.06lx]", (unsigned long int)
-                               _cucul_attr_to_rgb24fg(lineattr[x]));
+                               _caca_attr_to_rgb24fg(lineattr[x]));
 
-            if(lineattr[x] & CUCUL_BOLD)
+            if(lineattr[x] & CACA_BOLD)
                 cur += sprintf(cur, "[g]");
-            if(lineattr[x] & CUCUL_ITALICS)
+            if(lineattr[x] & CACA_ITALICS)
                 cur += sprintf(cur, "[i]");
-            if(lineattr[x] & CUCUL_UNDERLINE)
+            if(lineattr[x] & CACA_UNDERLINE)
                 cur += sprintf(cur, "[s]");
-            if(lineattr[x] & CUCUL_BLINK)
+            if(lineattr[x] & CACA_BLINK)
                 ; /* FIXME */
 
             for(i = 0; i < len; i++)
             {
-                if(linechar[x + i] == CUCUL_MAGIC_FULLWIDTH)
+                if(linechar[x + i] == CACA_MAGIC_FULLWIDTH)
                     ;
                 else if(linechar[x + i] == ' ')
                     *cur++ = '_';
                 else
-                    cur += cucul_utf32_to_utf8(cur, linechar[x + i]);
+                    cur += caca_utf32_to_utf8(cur, linechar[x + i]);
             }
 
-            if(lineattr[x] & CUCUL_BLINK)
+            if(lineattr[x] & CACA_BLINK)
                 ; /* FIXME */
-            if(lineattr[x] & CUCUL_UNDERLINE)
+            if(lineattr[x] & CACA_UNDERLINE)
                 cur += sprintf(cur, "[/s]");
-            if(lineattr[x] & CUCUL_ITALICS)
+            if(lineattr[x] & CACA_ITALICS)
                 cur += sprintf(cur, "[/i]");
-            if(lineattr[x] & CUCUL_BOLD)
+            if(lineattr[x] & CACA_BOLD)
                 cur += sprintf(cur, "[/g]");
 
             if(linechar[x] == ' ' || needfront)
@@ -657,7 +657,7 @@ static void *export_bbfr(cucul_canvas_t const *cv, size_t *bytes)
 }
 
 /* Export a text file with IRC colours */
-static void *export_irc(cucul_canvas_t const *cv, size_t *bytes)
+static void *export_irc(caca_canvas_t const *cv, size_t *bytes)
 {
     static uint8_t const palette[] =
     {
@@ -695,11 +695,11 @@ static void *export_irc(cucul_canvas_t const *cv, size_t *bytes)
             uint32_t ch = linechar[x];
             uint8_t ansifg, ansibg, fg, bg;
 
-            if(ch == CUCUL_MAGIC_FULLWIDTH)
+            if(ch == CACA_MAGIC_FULLWIDTH)
                 continue;
 
-            ansifg = cucul_attr_to_ansi_fg(attr);
-            ansibg = cucul_attr_to_ansi_bg(attr);
+            ansifg = caca_attr_to_ansi_fg(attr);
+            ansibg = caca_attr_to_ansi_bg(attr);
 
             fg = ansifg < 0x10 ? palette[ansifg] : 0x10;
             bg = ansibg < 0x10 ? palette[ansibg] : 0x10;
@@ -741,7 +741,7 @@ static void *export_irc(cucul_canvas_t const *cv, size_t *bytes)
                     cur += sprintf(cur, "\x02\x02");
             }
 
-            cur += cucul_utf32_to_utf8(cur, ch);
+            cur += caca_utf32_to_utf8(cur, ch);
             prevfg = fg;
             prevbg = bg;
         }
@@ -764,7 +764,7 @@ static void *export_irc(cucul_canvas_t const *cv, size_t *bytes)
 }
 
 /* Export a PostScript document. */
-static void *export_ps(cucul_canvas_t const *cv, size_t *bytes)
+static void *export_ps(caca_canvas_t const *cv, size_t *bytes)
 {
     static char const *ps_header =
         "%!\n"
@@ -810,7 +810,7 @@ static void *export_ps(cucul_canvas_t const *cv, size_t *bytes)
         for(x = 0; x < cv->width; x++)
         {
             uint8_t argb[8];
-            cucul_attr_to_argb64(*lineattr++, argb);
+            caca_attr_to_argb64(*lineattr++, argb);
             cur += sprintf(cur, "1 0 translate\n %f %f %f csquare\n",
                            (float)argb[1] * (1.0 / 0xf),
                            (float)argb[2] * (1.0 / 0xf),
@@ -834,7 +834,7 @@ static void *export_ps(cucul_canvas_t const *cv, size_t *bytes)
             uint8_t argb[8];
             uint32_t ch = *linechar++;
 
-            cucul_attr_to_argb64(*lineattr++, argb);
+            caca_attr_to_argb64(*lineattr++, argb);
 
             cur += sprintf(cur, "newpath\n");
             cur += sprintf(cur, "%d %d moveto\n", (x + 1) * 6, y * 10 + 2);
@@ -873,7 +873,7 @@ static void *export_ps(cucul_canvas_t const *cv, size_t *bytes)
 }
 
 /* Export an SVG vector image */
-static void *export_svg(cucul_canvas_t const *cv, size_t *bytes)
+static void *export_svg(caca_canvas_t const *cv, size_t *bytes)
 {
     static char const svg_header[] =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -905,7 +905,7 @@ static void *export_svg(cucul_canvas_t const *cv, size_t *bytes)
         {
             cur += sprintf(cur, "<rect style=\"fill:#%.03x\" x=\"%d\" y=\"%d\""
                                 " width=\"6\" height=\"10\"/>\n",
-                                cucul_attr_to_rgb12_bg(*lineattr++),
+                                caca_attr_to_rgb12_bg(*lineattr++),
                                 x * 6, y * 10);
         }
     }
@@ -920,7 +920,7 @@ static void *export_svg(cucul_canvas_t const *cv, size_t *bytes)
         {
             uint32_t ch = *linechar++;
 
-            if(ch == ' ' || ch == CUCUL_MAGIC_FULLWIDTH)
+            if(ch == ' ' || ch == CACA_MAGIC_FULLWIDTH)
             {
                 lineattr++;
                 continue;
@@ -928,13 +928,13 @@ static void *export_svg(cucul_canvas_t const *cv, size_t *bytes)
 
             cur += sprintf(cur, "<text style=\"fill:#%.03x\" "
                                 "x=\"%d\" y=\"%d\">",
-                                cucul_attr_to_rgb12_fg(*lineattr++),
+                                caca_attr_to_rgb12_fg(*lineattr++),
                                 x * 6, (y * 10) + 8);
 
             if(ch < 0x00000020)
                 *cur++ = '?';
             else if(ch > 0x0000007f)
-                cur += cucul_utf32_to_utf8(cur, ch);
+                cur += caca_utf32_to_utf8(cur, ch);
             else switch((uint8_t)ch)
             {
                 case '>': cur += sprintf(cur, "&gt;"); break;
@@ -959,24 +959,24 @@ static void *export_svg(cucul_canvas_t const *cv, size_t *bytes)
 }
 
 /* Export a TGA image */
-static void *export_tga(cucul_canvas_t const *cv, size_t *bytes)
+static void *export_tga(caca_canvas_t const *cv, size_t *bytes)
 {
     char const * const *fontlist;
     char *data, *cur;
-    cucul_font_t *f;
+    caca_font_t *f;
     int i, w, h;
 
-    fontlist = cucul_get_font_list();
+    fontlist = caca_get_font_list();
     if(!fontlist[0])
     {
         seterrno(EINVAL);
         return NULL;
     }
 
-    f = cucul_load_font(fontlist[0], 0);
+    f = caca_load_font(fontlist[0], 0);
 
-    w = cucul_get_canvas_width(cv) * cucul_get_font_width(f);
-    h = cucul_get_canvas_height(cv) * cucul_get_font_height(f);
+    w = caca_get_canvas_width(cv) * caca_get_font_width(f);
+    h = caca_get_canvas_height(cv) * caca_get_font_height(f);
 
     *bytes = w * h * 4 + 18; /* 32 bpp + 18 bytes for the header */
     cur = data = malloc(*bytes);
@@ -1002,7 +1002,7 @@ static void *export_tga(cucul_canvas_t const *cv, size_t *bytes)
     /* Color Map Data: no colormap */
 
     /* Image Data */
-    cucul_render_canvas(cv, f, cur, w, h, 4 * w);
+    caca_render_canvas(cv, f, cur, w, h, 4 * w);
 
     /* Swap bytes. What a waste of time. */
     for(i = 0; i < w * h * 4; i += 4)
@@ -1012,7 +1012,7 @@ static void *export_tga(cucul_canvas_t const *cv, size_t *bytes)
         c = cur[i + 1]; cur[i + 1] = cur[i + 2]; cur[i + 2] = c;
     }
 
-    cucul_free_font(f);
+    caca_free_font(f);
 
     return data;
 }

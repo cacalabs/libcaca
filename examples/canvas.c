@@ -19,30 +19,29 @@
 #   include <string.h>
 #endif
 
-#include "cucul.h"
 #include "caca.h"
 
 #define ITER 128
 
 int main(int argc, char *argv[])
 {
-    cucul_canvas_t *cv;
+    caca_canvas_t *cv;
     unsigned int i, j, w, h;
 
-    fprintf(stderr, "testing cucul_create_canvas()\n");
+    fprintf(stderr, "testing caca_create_canvas()\n");
     for(i = 0; i < ITER; i++)
     {
-        w = cucul_rand(1, 1000);
-        h = cucul_rand(1, 1000);
-        cv = cucul_create_canvas(w, h);
-        cucul_put_char(cv, w - 1, h - 1, 'x');
-        if(cucul_get_char(cv, w - 1, h - 1) != 'x')
+        w = caca_rand(1, 1000);
+        h = caca_rand(1, 1000);
+        cv = caca_create_canvas(w, h);
+        caca_put_char(cv, w - 1, h - 1, 'x');
+        if(caca_get_char(cv, w - 1, h - 1) != 'x')
             fprintf(stderr, "  failed (%ux%u)\n", w, h);
-        cucul_free_canvas(cv);
+        caca_free_canvas(cv);
     }
 
-    fprintf(stderr, "testing cucul_set_frame_name()\n");
-    cv = cucul_create_canvas(1, 1);
+    fprintf(stderr, "testing caca_set_frame_name()\n");
+    cv = caca_create_canvas(1, 1);
     if(cv == NULL)
     {
         printf("Failed to create canvas\n");
@@ -51,17 +50,17 @@ int main(int argc, char *argv[])
 
     for(i = 0; i < ITER; i++)
     {
-        cucul_create_frame(cv, 0);
+        caca_create_frame(cv, 0);
         for(j = 0; j < ITER; j++)
         {
             char buf[BUFSIZ];
-            w = cucul_rand(1, 1000);
+            w = caca_rand(1, 1000);
             memset(buf, 'x', w);
             buf[w] = '\0';
-            cucul_set_frame_name(cv, buf);
+            caca_set_frame_name(cv, buf);
         }
     }
-    cucul_free_canvas(cv);
+    caca_free_canvas(cv);
 
     fprintf(stderr, "all tests passed\n");
     return 0;

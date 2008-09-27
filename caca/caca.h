@@ -24,7 +24,7 @@
 #ifndef __CACA_H__
 #define __CACA_H__
 
-#include <cucul.h>
+#include <caca_types.h>
 
 #undef __extern
 #if defined(_DOXYGEN_SKIP_ME)
@@ -42,10 +42,48 @@ extern "C"
 {
 #endif
 
+/** \e libcaca canvas */
+typedef struct caca_canvas caca_canvas_t;
+/** dither structure */
+typedef struct caca_dither caca_dither_t;
+/** font structure */
+typedef struct caca_font caca_font_t;
+/** file handle structure */
+typedef struct caca_file caca_file_t;
 /** \e libcaca display context */
 typedef struct caca_display caca_display_t;
 /** \e libcaca event structure */
 typedef struct caca_event caca_event_t;
+
+/** \defgroup caca_attr libcaca attribute definitions
+ *
+ *  Colours and styles that can be used with caca_set_attr().
+ *
+ *  @{ */
+#define CACA_BLACK 0x00 /**< The colour index for black. */
+#define CACA_BLUE 0x01 /**< The colour index for blue. */
+#define CACA_GREEN 0x02 /**< The colour index for green. */
+#define CACA_CYAN 0x03 /**< The colour index for cyan. */
+#define CACA_RED 0x04 /**< The colour index for red. */
+#define CACA_MAGENTA 0x05 /**< The colour index for magenta. */
+#define CACA_BROWN 0x06 /**< The colour index for brown. */
+#define CACA_LIGHTGRAY 0x07 /**< The colour index for light gray. */
+#define CACA_DARKGRAY 0x08 /**< The colour index for dark gray. */
+#define CACA_LIGHTBLUE 0x09 /**< The colour index for blue. */
+#define CACA_LIGHTGREEN 0x0a /**< The colour index for light green. */
+#define CACA_LIGHTCYAN 0x0b /**< The colour index for light cyan. */
+#define CACA_LIGHTRED 0x0c /**< The colour index for light red. */
+#define CACA_LIGHTMAGENTA 0x0d /**< The colour index for light magenta. */
+#define CACA_YELLOW 0x0e /**< The colour index for yellow. */
+#define CACA_WHITE 0x0f /**< The colour index for white. */
+#define CACA_DEFAULT 0x10 /**< The output driver's default colour. */
+#define CACA_TRANSPARENT 0x20 /**< The transparent colour. */
+
+#define CACA_BOLD 0x01 /**< The style mask for bold. */
+#define CACA_ITALICS 0x02 /**< The style mask for italics. */
+#define CACA_UNDERLINE 0x04 /**< The style mask for underline. */
+#define CACA_BLINK 0x08 /**< The style mask for blink. */
+/*  @} */
 
 /** \brief User event type enumeration.
  *
@@ -158,18 +196,247 @@ enum caca_key
 
 /** \defgroup libcaca libcaca basic functions
  *
- *  These functions provide the basic \e libcaca routines for driver
+ *  These functions provide the basic \e libcaca routines for library
  *  initialisation, system information retrieval and configuration.
  *
  *  @{ */
-__extern caca_display_t * caca_create_display(cucul_canvas_t *);
-__extern caca_display_t * caca_create_display_with_driver(cucul_canvas_t *,
+__extern caca_canvas_t * caca_create_canvas(int, int);
+__extern int caca_manage_canvas(caca_canvas_t *, int (*)(void *), void *);
+__extern int caca_unmanage_canvas(caca_canvas_t *, int (*)(void *), void *);
+__extern int caca_set_canvas_size(caca_canvas_t *, int, int);
+__extern int caca_get_canvas_width(caca_canvas_t const *);
+__extern int caca_get_canvas_height(caca_canvas_t const *);
+__extern uint8_t const * caca_get_canvas_chars(caca_canvas_t const *);
+__extern uint8_t const * caca_get_canvas_attrs(caca_canvas_t const *);
+__extern int caca_free_canvas(caca_canvas_t *);
+__extern int caca_rand(int, int);
+__extern char const * caca_get_version(void);
+/*  @} */
+
+/** \defgroup caca_canvas libcaca canvas drawing
+ *
+ *  These functions provide low-level character printing routines and
+ *  higher level graphics functions.
+ *
+ *  @{ */
+#define CACA_MAGIC_FULLWIDTH 0x000ffffe /**< Used to indicate that the previous character was a fullwidth glyph. */
+__extern int caca_gotoxy(caca_canvas_t *, int, int);
+__extern int caca_get_cursor_x(caca_canvas_t const *);
+__extern int caca_get_cursor_y(caca_canvas_t const *);
+__extern int caca_put_char(caca_canvas_t *, int, int, uint32_t);
+__extern uint32_t caca_get_char(caca_canvas_t const *, int, int);
+__extern int caca_put_str(caca_canvas_t *, int, int, char const *);
+__extern uint32_t caca_get_attr(caca_canvas_t const *, int, int);
+__extern int caca_set_attr(caca_canvas_t *, uint32_t);
+__extern int caca_put_attr(caca_canvas_t *, int, int, uint32_t);
+__extern int caca_set_color_ansi(caca_canvas_t *, uint8_t, uint8_t);
+__extern int caca_set_color_argb(caca_canvas_t *, uint16_t, uint16_t);
+__extern int caca_printf(caca_canvas_t *, int, int, char const *, ...);
+__extern int caca_clear_canvas(caca_canvas_t *);
+__extern int caca_set_canvas_handle(caca_canvas_t *, int, int);
+__extern int caca_get_canvas_handle_x(caca_canvas_t const *);
+__extern int caca_get_canvas_handle_y(caca_canvas_t const *);
+__extern int caca_blit(caca_canvas_t *, int, int, caca_canvas_t const *,
+                        caca_canvas_t const *);
+__extern int caca_set_canvas_boundaries(caca_canvas_t *, int, int, int, int);
+/*  @} */
+
+/** \defgroup caca_transform libcaca canvas transformation
+ *
+ *  These functions perform horizontal and vertical canvas flipping.
+ *
+ *  @{ */
+__extern int caca_invert(caca_canvas_t *);
+__extern int caca_flip(caca_canvas_t *);
+__extern int caca_flop(caca_canvas_t *);
+__extern int caca_rotate_180(caca_canvas_t *);
+__extern int caca_rotate_left(caca_canvas_t *);
+__extern int caca_rotate_right(caca_canvas_t *);
+__extern int caca_stretch_left(caca_canvas_t *);
+__extern int caca_stretch_right(caca_canvas_t *);
+/*  @} */
+
+/** \defgroup caca_attributes libcaca attribute conversions
+ *
+ *  These functions perform conversions between attribute values.
+ *
+ *  @{ */
+__extern uint8_t caca_attr_to_ansi(uint32_t);
+__extern uint8_t caca_attr_to_ansi_fg(uint32_t);
+__extern uint8_t caca_attr_to_ansi_bg(uint32_t);
+__extern uint16_t caca_attr_to_rgb12_fg(uint32_t);
+__extern uint16_t caca_attr_to_rgb12_bg(uint32_t);
+__extern void caca_attr_to_argb64(uint32_t, uint8_t[8]);
+/*  @} */
+
+/** \defgroup caca_charset libcaca character set conversions
+ *
+ *  These functions perform conversions between usual character sets.
+ *
+ *  @{ */
+__extern uint32_t caca_utf8_to_utf32(char const *, size_t *);
+__extern size_t caca_utf32_to_utf8(char *, uint32_t);
+__extern uint8_t caca_utf32_to_cp437(uint32_t);
+__extern uint32_t caca_cp437_to_utf32(uint8_t);
+__extern char caca_utf32_to_ascii(uint32_t);
+__extern int caca_utf32_is_fullwidth(uint32_t);
+/*  @} */
+
+/** \defgroup caca_primitives libcaca primitives drawing
+ *
+ *  These functions provide routines for primitive drawing, such as lines,
+ *  boxes, triangles and ellipses.
+ *
+ *  @{ */
+__extern int caca_draw_line(caca_canvas_t *, int, int, int, int, uint32_t);
+__extern int caca_draw_polyline(caca_canvas_t *, int const x[],
+                                 int const y[], int, uint32_t);
+__extern int caca_draw_thin_line(caca_canvas_t *, int, int, int, int);
+__extern int caca_draw_thin_polyline(caca_canvas_t *, int const x[],
+                                      int const y[], int);
+
+__extern int caca_draw_circle(caca_canvas_t *, int, int, int, uint32_t);
+__extern int caca_draw_ellipse(caca_canvas_t *, int, int, int, int, uint32_t);
+__extern int caca_draw_thin_ellipse(caca_canvas_t *, int, int, int, int);
+__extern int caca_fill_ellipse(caca_canvas_t *, int, int, int, int, uint32_t);
+
+__extern int caca_draw_box(caca_canvas_t *, int, int, int, int, uint32_t);
+__extern int caca_draw_thin_box(caca_canvas_t *, int, int, int, int);
+__extern int caca_draw_cp437_box(caca_canvas_t *, int, int, int, int);
+__extern int caca_fill_box(caca_canvas_t *, int, int, int, int, uint32_t);
+
+__extern int caca_draw_triangle(caca_canvas_t *, int, int, int, int, int,
+                                 int, uint32_t);
+__extern int caca_draw_thin_triangle(caca_canvas_t *, int, int, int, int,
+                                      int, int);
+__extern int caca_fill_triangle(caca_canvas_t *, int, int, int, int, int,
+                                 int, uint32_t);
+/*  @} */
+
+/** \defgroup caca_frame libcaca canvas frame handling
+ *
+ *  These functions provide high level routines for canvas frame insertion,
+ *  removal, copying etc.
+ *
+ *  @{ */
+__extern int caca_get_frame_count(caca_canvas_t const *);
+__extern int caca_set_frame(caca_canvas_t *, int);
+__extern char const *caca_get_frame_name(caca_canvas_t const *);
+__extern int caca_set_frame_name(caca_canvas_t *, char const *);
+__extern int caca_create_frame(caca_canvas_t *, int);
+__extern int caca_free_frame(caca_canvas_t *, int);
+/*  @} */
+
+/** \defgroup caca_dither libcaca bitmap dithering
+ *
+ *  These functions provide high level routines for dither allocation and
+ *  rendering.
+ *
+ *  @{ */
+__extern caca_dither_t *caca_create_dither(int, int, int, int,
+                                             uint32_t, uint32_t,
+                                             uint32_t, uint32_t);
+__extern int caca_set_dither_palette(caca_dither_t *,
+                                      uint32_t r[], uint32_t g[],
+                                      uint32_t b[], uint32_t a[]);
+__extern int caca_set_dither_brightness(caca_dither_t *, float);
+__extern float caca_get_dither_brightness(caca_dither_t const *);
+__extern int caca_set_dither_gamma(caca_dither_t *, float);
+__extern float caca_get_dither_gamma(caca_dither_t const *);
+__extern int caca_set_dither_contrast(caca_dither_t *, float);
+__extern float caca_get_dither_contrast(caca_dither_t const *);
+__extern int caca_set_dither_antialias(caca_dither_t *, char const *);
+__extern char const * const * caca_get_dither_antialias_list(caca_dither_t
+                                                              const *);
+__extern char const * caca_get_dither_antialias(caca_dither_t const *);
+__extern int caca_set_dither_color(caca_dither_t *, char const *);
+__extern char const * const * caca_get_dither_color_list(caca_dither_t
+                                                          const *);
+__extern char const * caca_get_dither_color(caca_dither_t const *);
+__extern int caca_set_dither_charset(caca_dither_t *, char const *);
+__extern char const * const * caca_get_dither_charset_list(caca_dither_t
+                                                            const *);
+__extern char const * caca_get_dither_charset(caca_dither_t const *);
+__extern int caca_set_dither_algorithm(caca_dither_t *, char const *);
+__extern char const * const * caca_get_dither_algorithm_list(caca_dither_t
+                                                              const *);
+__extern char const * caca_get_dither_algorithm(caca_dither_t const *);
+__extern int caca_dither_bitmap(caca_canvas_t *, int, int, int, int,
+                         caca_dither_t const *, void *);
+__extern int caca_free_dither(caca_dither_t *);
+/*  @} */
+
+/** \defgroup caca_font libcaca font handling
+ *
+ *  These functions provide font handling routines and high quality
+ *  canvas to bitmap rendering.
+ *
+ *  @{ */
+__extern caca_font_t *caca_load_font(void const *, size_t);
+__extern char const * const * caca_get_font_list(void);
+__extern int caca_get_font_width(caca_font_t const *);
+__extern int caca_get_font_height(caca_font_t const *);
+__extern uint32_t const *caca_get_font_blocks(caca_font_t const *);
+__extern int caca_render_canvas(caca_canvas_t const *, caca_font_t const *,
+                                 void *, int, int, int);
+__extern int caca_free_font(caca_font_t *);
+/*  @} */
+
+/** \defgroup caca_figfont libcaca FIGfont handling
+ *
+ *  These functions provide FIGlet and TOIlet font handling routines.
+ *
+ *  @{ */
+__extern int caca_canvas_set_figfont(caca_canvas_t *, char const *);
+__extern int caca_put_figchar(caca_canvas_t *, uint32_t);
+__extern int caca_flush_figlet(caca_canvas_t *);
+/*  @} */
+
+/** \defgroup caca_file libcaca file IO
+ *
+ *  These functions allow to read and write files in a platform-independent
+ *  way.
+ *  @{ */
+__extern caca_file_t *caca_file_open(char const *, const char *);
+__extern int caca_file_close(caca_file_t *);
+__extern uint64_t caca_file_tell(caca_file_t *);
+__extern size_t caca_file_read(caca_file_t *, void *, size_t);
+__extern size_t caca_file_write(caca_file_t *, const void *, size_t);
+__extern char * caca_file_gets(caca_file_t *, char *, int);
+__extern int caca_file_eof(caca_file_t *);
+/*  @} */
+
+/** \defgroup caca_importexport libcaca importers/exporters from/to various
+ *  formats
+ *
+ *  These functions import various file formats into a new canvas, or export
+ *  the current canvas to various text formats.
+ *
+ *  @{ */
+__extern ssize_t caca_import_memory(caca_canvas_t *, void const *,
+                                     size_t, char const *);
+__extern ssize_t caca_import_file(caca_canvas_t *, char const *,
+                                   char const *);
+__extern char const * const * caca_get_import_list(void);
+__extern void *caca_export_memory(caca_canvas_t const *, char const *,
+                                   size_t *);
+__extern char const * const * caca_get_export_list(void);
+/*  @} */
+
+/** \defgroup caca_display libcaca display functions
+ *
+ *  These functions provide the basic \e libcaca routines for display
+ *  initialisation, system information retrieval and configuration.
+ *
+ *  @{ */
+__extern caca_display_t * caca_create_display(caca_canvas_t *);
+__extern caca_display_t * caca_create_display_with_driver(caca_canvas_t *,
                                                           char const *);
 __extern char const * const * caca_get_display_driver_list(void);
 __extern char const * caca_get_display_driver(caca_display_t *);
 __extern int caca_set_display_driver(caca_display_t *, char const *);
 __extern int caca_free_display(caca_display_t *);
-__extern cucul_canvas_t * caca_get_canvas(caca_display_t *);
+__extern caca_canvas_t * caca_get_canvas(caca_display_t *);
 __extern int caca_refresh_display(caca_display_t *);
 __extern int caca_set_display_time(caca_display_t *, int);
 __extern int caca_get_display_time(caca_display_t const *);
@@ -178,7 +445,6 @@ __extern int caca_get_display_height(caca_display_t const *);
 __extern int caca_set_display_title(caca_display_t *, char const *);
 __extern int caca_set_mouse(caca_display_t *, int);
 __extern int caca_set_cursor(caca_display_t *, int);
-__extern char const * caca_get_version(void);
 /*  @} */
 
 /** \defgroup caca_event libcaca event handling
@@ -200,6 +466,77 @@ __extern int caca_get_event_mouse_y(caca_event_t const *);
 __extern int caca_get_event_resize_width(caca_event_t const *);
 __extern int caca_get_event_resize_height(caca_event_t const *);
 /*  @} */
+
+#if !defined(_DOXYGEN_SKIP_ME)
+    /* Legacy stuff from beta versions, will probably disappear in 1.0 */
+typedef struct cucul_buffer cucul_buffer_t;
+#define cucul_canvas_t caca_canvas_t
+#define cucul_dither_t caca_dither_t
+#define cucul_font_t caca_font_t
+#define cucul_file_t caca_file_t
+#define cucul_display_t caca_display_t
+#define cucul_event_t caca_event_t
+
+#   if defined __GNUC__ && __GNUC__ >= 3
+#       define CACA_DEPRECATED __attribute__ ((__deprecated__))
+#   else
+#       define CACA_DEPRECATED
+#   endif
+__extern int cucul_putchar(cucul_canvas_t *, int, int,
+                           unsigned long int) CACA_DEPRECATED;
+__extern unsigned long int cucul_getchar(cucul_canvas_t *,
+                                         int, int) CACA_DEPRECATED;
+__extern int cucul_putstr(cucul_canvas_t *, int, int,
+                          char const *) CACA_DEPRECATED;
+__extern int cucul_set_color(cucul_canvas_t *, unsigned char,
+                             unsigned char) CACA_DEPRECATED;
+__extern int cucul_set_truecolor(cucul_canvas_t *, unsigned int,
+                                 unsigned int) CACA_DEPRECATED;
+__extern unsigned int cucul_get_canvas_frame_count(cucul_canvas_t *)
+                                                   CACA_DEPRECATED;
+__extern int cucul_set_canvas_frame(cucul_canvas_t *,
+                                    unsigned int) CACA_DEPRECATED;
+__extern int cucul_create_canvas_frame(cucul_canvas_t *,
+                                       unsigned int) CACA_DEPRECATED;
+__extern int cucul_free_canvas_frame(cucul_canvas_t *,
+                                     unsigned int) CACA_DEPRECATED;
+__extern cucul_buffer_t *cucul_load_memory(void *,
+                                           unsigned long int) CACA_DEPRECATED;
+__extern cucul_buffer_t *cucul_load_file(char const *) CACA_DEPRECATED;
+__extern unsigned long int cucul_get_buffer_size(cucul_buffer_t *)
+                                                 CACA_DEPRECATED;
+__extern void * cucul_get_buffer_data(cucul_buffer_t *) CACA_DEPRECATED;
+__extern int cucul_free_buffer(cucul_buffer_t *) CACA_DEPRECATED;
+__extern cucul_buffer_t * cucul_export_canvas(cucul_canvas_t *,
+                                              char const *) CACA_DEPRECATED;
+__extern cucul_canvas_t * cucul_import_canvas(cucul_buffer_t *,
+                                              char const *) CACA_DEPRECATED;
+__extern int cucul_rotate(cucul_canvas_t *) CACA_DEPRECATED;
+__extern int cucul_set_dither_invert(cucul_dither_t *, int) CACA_DEPRECATED;
+__extern int cucul_set_dither_mode(cucul_dither_t *,
+                                   char const *) CACA_DEPRECATED;
+__extern char const * const * cucul_get_dither_mode_list(cucul_dither_t
+                                                         const *)
+                                                         CACA_DEPRECATED;
+#   define CUCUL_COLOR_BLACK CACA_BLACK
+#   define CUCUL_COLOR_BLUE CACA_BLUE
+#   define CUCUL_COLOR_GREEN CACA_GREEN
+#   define CUCUL_COLOR_CYAN CACA_CYAN
+#   define CUCUL_COLOR_RED CACA_RED
+#   define CUCUL_COLOR_MAGENTA CACA_MAGENTA
+#   define CUCUL_COLOR_BROWN CACA_BROWN
+#   define CUCUL_COLOR_LIGHTGRAY CACA_LIGHTGRAY
+#   define CUCUL_COLOR_DARKGRAY CACA_DARKGRAY
+#   define CUCUL_COLOR_LIGHTBLUE CACA_LIGHTBLUE
+#   define CUCUL_COLOR_LIGHTGREEN CACA_LIGHTGREEN
+#   define CUCUL_COLOR_LIGHTCYAN CACA_LIGHTCYAN
+#   define CUCUL_COLOR_LIGHTRED CACA_LIGHTRED
+#   define CUCUL_COLOR_LIGHTMAGENTA CACA_LIGHTMAGENTA
+#   define CUCUL_COLOR_YELLOW CACA_YELLOW
+#   define CUCUL_COLOR_WHITE CACA_YELLOW
+#   define CUCUL_COLOR_DEFAULT CACA_DEFAULT
+#   define CUCUL_COLOR_TRANSPARENT CACA_TRANSPARENT
+#endif
 
 #ifdef __cplusplus
 }

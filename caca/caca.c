@@ -31,7 +31,6 @@
 #   endif
 #endif
 
-#include "cucul.h"
 #include "caca.h"
 #include "caca_internals.h"
 
@@ -48,14 +47,14 @@ static int caca_select_driver(caca_display_t *, char const *);
 static int caca_plugin_install(caca_display_t *, char const *);
 #endif
 
-/** \brief Attach a caca graphical context to a cucul canvas.
+/** \brief Attach a caca graphical context to a caca canvas.
  *
  *  Create a graphical context using device-dependent features (ncurses for
  *  terminals, an X11 window, a DOS command window...) that attaches to a
- *  libcucul canvas. Everything that gets drawn in the libcucul canvas can
+ *  libcaca canvas. Everything that gets drawn in the libcaca canvas can
  *  then be displayed by the libcaca driver.
  *
- *  If no cucul canvas is provided, a new one is created. Its handle can be
+ *  If no caca canvas is provided, a new one is created. Its handle can be
  *  retrieved using caca_get_canvas() and it is automatically destroyed when
  *  caca_free_display() is called.
  *
@@ -65,22 +64,22 @@ static int caca_plugin_install(caca_display_t *, char const *);
  *  - \c ENOMEM Not enough memory.
  *  - \c ENODEV Graphical device could not be initialised.
  *
- *  \param cv The cucul canvas or NULL to create a canvas automatically.
+ *  \param cv The caca canvas or NULL to create a canvas automatically.
  *  \return The caca graphical context or NULL if an error occurred.
  */
-caca_display_t * caca_create_display(cucul_canvas_t *cv)
+caca_display_t * caca_create_display(caca_canvas_t *cv)
 {
     return caca_create_display_with_driver(cv, NULL);
 }
 
-/** \brief Attach a specific caca graphical context to a cucul canvas.
+/** \brief Attach a specific caca graphical context to a caca canvas.
  *
  *  Create a graphical context using device-dependent features (ncurses for
  *  terminals, an X11 window, a DOS command window...) that attaches to a
- *  libcucul canvas. Everything that gets drawn in the libcucul canvas can
+ *  libcaca canvas. Everything that gets drawn in the libcaca canvas can
  *  then be displayed by the libcaca driver.
  *
- *  If no cucul canvas is provided, a new one is created. Its handle can be
+ *  If no caca canvas is provided, a new one is created. Its handle can be
  *  retrieved using caca_get_canvas() and it is automatically destroyed when
  *  caca_free_display() is called.
  *
@@ -93,12 +92,12 @@ caca_display_t * caca_create_display(cucul_canvas_t *cv)
  *  - \c ENOMEM Not enough memory.
  *  - \c ENODEV Graphical device could not be initialised.
  *
- *  \param cv The cucul canvas or NULL to create a canvas automatically.
+ *  \param cv The caca canvas or NULL to create a canvas automatically.
  *  \param driver A string describing the desired output driver or NULL to
  *                choose the best driver automatically.
  *  \return The caca graphical context or NULL if an error occurred.
  */
-caca_display_t * caca_create_display_with_driver(cucul_canvas_t *cv,
+caca_display_t * caca_create_display_with_driver(caca_canvas_t *cv,
                                                  char const *driver)
 {
     caca_display_t *dp = malloc(sizeof(caca_display_t));
@@ -111,15 +110,15 @@ caca_display_t * caca_create_display_with_driver(cucul_canvas_t *cv,
 
     if((dp->autorelease = (cv == NULL)))
     {
-        cv = cucul_create_canvas(0, 0);
+        cv = caca_create_canvas(0, 0);
     }
 
     dp->cv = cv;
 
-    if(cucul_manage_canvas(cv, (int (*)(void *))caca_can_resize, (void *)dp))
+    if(caca_manage_canvas(cv, (int (*)(void *))caca_can_resize, (void *)dp))
     {
         if(dp->autorelease)
-            cucul_free_canvas(dp->cv);
+            caca_free_canvas(dp->cv);
         free(dp);
         seterrno(EBUSY);
         return NULL;
@@ -127,9 +126,9 @@ caca_display_t * caca_create_display_with_driver(cucul_canvas_t *cv,
 
     if(caca_install_driver(dp, driver))
     {
-        cucul_unmanage_canvas(cv, (int (*)(void *))caca_can_resize, (void *)dp);
+        caca_unmanage_canvas(cv, (int (*)(void *))caca_can_resize, (void *)dp);
         if(dp->autorelease)
-            cucul_free_canvas(dp->cv);
+            caca_free_canvas(dp->cv);
         free(dp);
         seterrno(ENODEV);
         return NULL;
@@ -223,13 +222,13 @@ int caca_set_display_driver(caca_display_t *dp, char const *driver)
     return 0;
 }
 
-/** \brief Detach a caca graphical context from a cucul backend context.
+/** \brief Detach a caca graphical context from a caca backend context.
  *
- *  Detach a graphical context from its cucul backend and destroy it. The
- *  libcucul canvas continues to exist and other graphical contexts can be
+ *  Detach a graphical context from its caca backend and destroy it. The
+ *  libcaca canvas continues to exist and other graphical contexts can be
  *  attached to it afterwards.
  *
- *  If the cucul canvas was automatically created by caca_create_display(),
+ *  If the caca canvas was automatically created by caca_create_display(),
  *  it is automatically destroyed and any handle to it becomes invalid.
  *
  *  This function never fails.
@@ -240,9 +239,9 @@ int caca_set_display_driver(caca_display_t *dp, char const *driver)
 int caca_free_display(caca_display_t *dp)
 {
     caca_uninstall_driver(dp);
-    cucul_unmanage_canvas(dp->cv, (int (*)(void *))caca_can_resize, (void *)dp);
+    caca_unmanage_canvas(dp->cv, (int (*)(void *))caca_can_resize, (void *)dp);
     if(dp->autorelease)
-        cucul_free_canvas(dp->cv);
+        caca_free_canvas(dp->cv);
     free(dp);
 
     return 0;
@@ -250,15 +249,15 @@ int caca_free_display(caca_display_t *dp)
 
 /** \brief Get the canvas attached to a caca graphical context.
  *
- *  Return a handle on the \e cucul_canvas_t object that was either attached
+ *  Return a handle on the \e caca_canvas_t object that was either attached
  *  or created by caca_create_display().
  *
  *  This function never fails.
  *
  *  \param dp The libcaca graphical context.
- *  \return The libcucul canvas.
+ *  \return The libcaca canvas.
  */
-cucul_canvas_t * caca_get_canvas(caca_display_t *dp)
+caca_canvas_t * caca_get_canvas(caca_display_t *dp)
 {
     return dp->cv;
 }
@@ -330,8 +329,8 @@ static int caca_install_driver(caca_display_t *dp, char const *driver)
     dp->lastticks = 0;
 
     /* Mouse position */
-    dp->mouse.x = cucul_get_canvas_width(dp->cv) / 2;
-    dp->mouse.y = cucul_get_canvas_height(dp->cv) / 2;
+    dp->mouse.x = caca_get_canvas_width(dp->cv) / 2;
+    dp->mouse.y = caca_get_canvas_height(dp->cv) / 2;
 
     /* Resize events */
     dp->resize.resized = 0;

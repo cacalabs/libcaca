@@ -4,12 +4,12 @@ NULL =
 
 EXTRA_DIST = libcaca.sln \
              config.h \
-             cucul_types.h \
-             libcucul.vcproj \
+             caca_types.h \
+             libcaca.vcproj \
              libcaca.vcproj \
              cacafire.vcproj \
              cacademo.vcproj \
-             cucul-sharp.csproj \
+             caca-sharp.csproj \
              caca-sharp.csproj \
              test-csharp.csproj \
              $(NULL)
