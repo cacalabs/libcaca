@@ -1,6 +1,9 @@
-#!/usr/bin/ruby -Ilib -I.libs
+#!/usr/bin/ruby
 
 require 'test/unit'
+
+$LOAD_PATH.unshift(".libs").unshift("lib")
+
 Dir.glob("t/tc*.rb").each{ |t|
 	require t
 }
