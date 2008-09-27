@@ -21,3 +21,11 @@ endif
 cxxtest_SOURCES = cxxtest.cpp
 cxxtest_LDADD = libcaca++.la ../caca/libcaca.la
 
+install-exec-hook:
+	ln -sf libcaca++.so $(DESTDIR)$(libdir)/libcucul++.so
+	ln -sf libcaca++.so.0 $(DESTDIR)$(libdir)/libcucul++.so.0
+
+uninstall-hook:
+	rm -f $(DESTDIR)$(libdir)/libcucul++.so
+	rm -f $(DESTDIR)$(libdir)/libcucul++.so.0
+
