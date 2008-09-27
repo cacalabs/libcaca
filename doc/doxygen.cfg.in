@@ -485,7 +485,6 @@ WARN_LOGFILE           =
 
 INPUT                  = @top_srcdir@ \
                          @top_srcdir@/doc \
-                         @top_srcdir@/cucul \
                          @top_srcdir@/caca \
                          @top_srcdir@/ruby
 
@@ -505,7 +504,6 @@ INPUT_ENCODING         = UTF-8
 
 FILE_PATTERNS          = *.dox \
                          *.c \
-                         cucul.h \
                          caca.h \
                          AUTHORS \
                          NEWS \

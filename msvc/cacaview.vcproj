@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\src;..\msvc;..\caca;..\cucul;&quot;C:\Program Files\Microsoft Platform SDK\Include&quot;"
+				AdditionalIncludeDirectories="..\src;..\msvc;..\caca;&quot;C:\Program Files\Microsoft Platform SDK\Include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"

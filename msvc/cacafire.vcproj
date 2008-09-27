@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\src;..\msvc;..\caca;..\cucul"
+				AdditionalIncludeDirectories="..\src;..\msvc;..\caca"
 				PreprocessorDefinitions="LIBCACA=1"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -124,7 +124,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				OmitFramePointers="true"
-				AdditionalIncludeDirectories="..\src;..\msvc;..\caca;..\cucul"
+				AdditionalIncludeDirectories="..\src;..\msvc;..\caca"
 				PreprocessorDefinitions="LIBCACA=1"
 				StringPooling="true"
 				RuntimeLibrary="0"

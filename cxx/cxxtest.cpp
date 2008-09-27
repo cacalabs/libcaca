@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
         cv = new Canvas();
     }
     catch (int e) {
-        cerr << "Error while initializing cucul (" << e << ")" << endl;
+        cerr << "Error while creating canvas (" << e << ")" << endl;
         return -1;
     }
 
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
         dp = new Caca(cv);
     }
     catch(int e) {
-        cerr << "Error while attaching cucul to caca (" << e << ")" << endl;
+        cerr << "Error while attaching canvas to display (" << e << ")" << endl;
         return -1;
     }
 

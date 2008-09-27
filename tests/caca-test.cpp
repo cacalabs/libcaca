@@ -1,5 +1,5 @@
 /*
- *  cucul-test     testsuite program for libcucul
+ *  caca-test     testsuite program for libcaca
  *  Copyright (c) 2008 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *

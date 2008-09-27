@@ -7,9 +7,9 @@
 
  \section foo1 Overview
 
- The most important changes in the 1.0 API of \e libcaca are the
- \e libcaca / \e libcucul split and the object-oriented design. See these
- two examples for a rough idea of what changed:
+ The most important change in the 1.0 API of \e libcaca is the
+ object-oriented design. See these two examples for a rough idea of
+ what changed:
 
 <table border="0"><tr><td valign="top">
 \code
@@ -39,24 +39,23 @@ int main(void)
 \endcode
 </td><td>
 \code
-#include <cucul.h>
 #include <caca.h>
 
 /* libcaca program - 1.0 API */
 int main(void)
 {
     /* Initialise libcaca */
-    cucul_canvas_t *cv;
+    caca_canvas_t *cv;
     caca_display_t *dp;
     dp = caca_create_display(cv);
     cv = caca_get_canvas(dp);
     /* Set window title */
     caca_set_display_title(dp, "Window");
     /* Choose drawing colours */
-    cucul_set_color_ansi(cv, CUCUL_BLACK,
-                             CUCUL_WHITE);
+    caca_set_color_ansi(cv, CACA_BLACK,
+                            CACA_WHITE);
     /* Draw a string at (0, 0) */
-    cucul_put_str(cv, 0, 0, "Hello world!");
+    caca_put_str(cv, 0, 0, "Hello world!");
     /* Refresh display */
     caca_refresh_display();
     /* Wait for a key press event */
@@ -74,7 +73,7 @@ int main(void)
 
  - Functions now take an object handle as their first argument.
  - All input/output functions start with \b caca_ and all
-   drawing and text handling functions start with \b cucul_ .
+   drawing and text handling functions start with \b caca_ .
 
  \section foo2 Migration strategy
 
@@ -110,24 +109,24 @@ int main(void)
 
  \subsection bar1 Basic functions
 
- - \b caca_init(): use cucul_create_canvas() to create a \e libcucul canvas,
+ - \b caca_init(): use caca_create_canvas() to create a \e libcaca canvas,
    followed by caca_create_display() to attach a \e libcaca display to it.
  - \b caca_set_delay(): use caca_set_display_time().
  - \b caca_get_feature(): deprecated.
- - \b caca_set_feature(): deprecated, see cucul_set_dither_antialias(),
-   cucul_set_dither_color() and cucul_set_dither_mode() instead.
- - \b caca_get_feature_name(): deprecated, see cucul_get_dither_mode_list(),
-   cucul_get_dither_antialias_list() and cucul_get_dither_color_list()
+ - \b caca_set_feature(): deprecated, see caca_set_dither_antialias(),
+   caca_set_dither_color() and caca_set_dither_mode() instead.
+ - \b caca_get_feature_name(): deprecated, see caca_get_dither_mode_list(),
+   caca_get_dither_antialias_list() and caca_get_dither_color_list()
    instead.
  - \b caca_get_rendertime(): use caca_get_display_time().
- - \b caca_get_width(): use cucul_get_canvas_width().
- - \b caca_get_height(): use cucul_get_canvas_height().
+ - \b caca_get_width(): use caca_get_canvas_width().
+ - \b caca_get_height(): use caca_get_canvas_height().
  - \b caca_set_window_title(): use caca_set_display_title().
  - \b caca_get_window_width(): use caca_get_display_width().
  - \b caca_get_window_height(): use caca_get_display_height().
  - \b caca_refresh(): use caca_refresh_display().
  - \b caca_end(): use caca_free_display() to detach the \e libcaca display,
-   followed by cucul_free_canvas() to free the underlying \e libcucul canvas.
+   followed by caca_free_canvas() to free the underlying \e libcaca canvas.
 
  \subsection bar2 Event handling
 
@@ -140,42 +139,42 @@ int main(void)
 
  \subsection bar3 Character printing
 
- - \b caca_set_color(): use cucul_set_color_ansi() or cucul_set_color_argb().
- - \b caca_get_fg_color(): use cucul_get_attr().
- - \b caca_get_bg_color(): use cucul_get_attr().
+ - \b caca_set_color(): use caca_set_color_ansi() or caca_set_color_argb().
+ - \b caca_get_fg_color(): use caca_get_attr().
+ - \b caca_get_bg_color(): use caca_get_attr().
  - \b caca_get_color_name(): this function is now deprecated due to major
    uselessness.
- - \b caca_putchar(): use cucul_put_char().
- - \b caca_putstr(): use cucul_put_str().
- - \b caca_printf(): use cucul_printf().
- - \b caca_clear(): use cucul_clear_canvas().
+ - \b caca_putchar(): use caca_put_char().
+ - \b caca_putstr(): use caca_put_str().
+ - \b caca_printf(): use caca_printf().
+ - \b caca_clear(): use caca_clear_canvas().
 
  \subsection bar4 Primitives drawing
 
  These functions are almost unchanged, except for Unicode support and the
  fact that they now act on a given canvas.
 
- - \b caca_draw_line(): use cucul_draw_line().
- - \b caca_draw_polyline(): use cucul_draw_polyline().
- - \b caca_draw_thin_line(): use cucul_draw_thin_line().
- - \b caca_draw_thin_polyline(): use cucul_draw_thin_polyline().
+ - \b caca_draw_line(): use caca_draw_line().
+ - \b caca_draw_polyline(): use caca_draw_polyline().
+ - \b caca_draw_thin_line(): use caca_draw_thin_line().
+ - \b caca_draw_thin_polyline(): use caca_draw_thin_polyline().
 
- - \b caca_draw_circle(): use cucul_draw_circle().
- - \b caca_draw_ellipse(): use cucul_draw_ellipse().
- - \b caca_draw_thin_ellipse(): use cucul_draw_thin_ellipse().
- - \b caca_fill_ellipse(): use cucul_fill_ellipse().
+ - \b caca_draw_circle(): use caca_draw_circle().
+ - \b caca_draw_ellipse(): use caca_draw_ellipse().
+ - \b caca_draw_thin_ellipse(): use caca_draw_thin_ellipse().
+ - \b caca_fill_ellipse(): use caca_fill_ellipse().
 
- - \b caca_draw_box(): use cucul_draw_box().
- - \b caca_draw_thin_box(): use cucul_draw_thin_box() or cucul_draw_cp437_box().
- - \b caca_fill_box(): use cucul_fill_box().
+ - \b caca_draw_box(): use caca_draw_box().
+ - \b caca_draw_thin_box(): use caca_draw_thin_box() or caca_draw_cp437_box().
+ - \b caca_fill_box(): use caca_fill_box().
 
- - \b caca_draw_triangle(): use cucul_draw_triangle().
- - \b caca_draw_thin_triangle(): use cucul_draw_thin_triangle().
- - \b caca_fill_triangle(): use cucul_fill_triangle().
+ - \b caca_draw_triangle(): use caca_draw_triangle().
+ - \b caca_draw_thin_triangle(): use caca_draw_thin_triangle().
+ - \b caca_fill_triangle(): use caca_fill_triangle().
 
  \subsection bar5 Mathematical functions
 
- - \b caca_rand(): use cucul_rand(). The second argument is different, make
+ - \b caca_rand(): use caca_rand(). The second argument is different, make
    sure you take that into account.
  - \b caca_sqrt(): this function is now deprecated, use your system's
    \b sqrt() call instead.
@@ -185,24 +184,24 @@ int main(void)
  The newly introduced canvases can have several frames. Sprites are hence
  completely deprecated.
 
- - \b caca_load_sprite(): use cucul_import_file().
- - \b caca_get_sprite_frames(): use cucul_get_frame_count().
- - \b caca_get_sprite_width(): use cucul_get_canvas_width().
- - \b caca_get_sprite_height(): use cucul_get_canvas_height().
- - \b caca_get_sprite_dx(): use cucul_get_canvas_handle_x().
- - \b caca_get_sprite_dy(): use cucul_get_canvas_handle_y().
- - \b caca_draw_sprite(): use cucul_set_frame() and cucul_blit().
- - \b caca_free_sprite(): use cucul_free_canvas().
+ - \b caca_load_sprite(): use caca_import_file().
+ - \b caca_get_sprite_frames(): use caca_get_frame_count().
+ - \b caca_get_sprite_width(): use caca_get_canvas_width().
+ - \b caca_get_sprite_height(): use caca_get_canvas_height().
+ - \b caca_get_sprite_dx(): use caca_get_canvas_handle_x().
+ - \b caca_get_sprite_dy(): use caca_get_canvas_handle_y().
+ - \b caca_draw_sprite(): use caca_set_frame() and caca_blit().
+ - \b caca_free_sprite(): use caca_free_canvas().
 
  \subsection bar7 Bitmap handling
 
  Bitmaps have been renamed to dithers, because these objects do not in fact
  store any pixels, they just have information on how bitmaps will be dithered.
 
- - \b caca_create_bitmap(): use cucul_create_dither().
- - \b caca_set_bitmap_palette(): use cucul_set_dither_palette().
- - \b caca_draw_bitmap(): use cucul_dither_bitmap().
- - \b caca_free_bitmap(): use cucul_free_dither().
+ - \b caca_create_bitmap(): use caca_create_dither().
+ - \b caca_set_bitmap_palette(): use caca_set_dither_palette().
+ - \b caca_draw_bitmap(): use caca_dither_bitmap().
+ - \b caca_free_bitmap(): use caca_free_dither().
 
  \section foo4 Compilation
 

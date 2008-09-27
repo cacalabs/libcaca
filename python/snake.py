@@ -78,12 +78,12 @@ class Snake(object):
 
     def draw(self):
         global cv
-        lcaca.cucul_set_color_ansi(cv, 0x05, 0x00)
+        lcaca.caca_set_color_ansi(cv, 0x05, 0x00)
 
         for p in self.body:
-            lcaca.cucul_put_char(cv, p[0], p[1], ord('o'))
-        lcaca.cucul_set_color_ansi(cv, 0x02, 0x00)
-        lcaca.cucul_put_char(cv, self.head[0], self.head[1], ord('@'))
+            lcaca.caca_put_char(cv, p[0], p[1], ord('o'))
+        lcaca.caca_set_color_ansi(cv, 0x02, 0x00)
+        lcaca.caca_put_char(cv, self.head[0], self.head[1], ord('@'))
         lcaca.caca_refresh_display(dp)
 
 class Target(object):
@@ -101,13 +101,13 @@ class Target(object):
 
     def draw(self):
         global cv
-        lcaca.cucul_set_color_ansi(cv, 0x03, 0x00)
-        lcaca.cucul_put_char(cv, self.x, self.y, ord(str(self.value)))
+        lcaca.caca_set_color_ansi(cv, 0x03, 0x00)
+        lcaca.caca_put_char(cv, self.x, self.y, ord(str(self.value)))
         lcaca.caca_refresh_display(dp)
 
 def draw_border():
-    lcaca.cucul_set_color_ansi(cv, 0x04, 0x00)
-    lcaca.cucul_draw_box(cv,
+    lcaca.caca_set_color_ansi(cv, 0x04, 0x00)
+    lcaca.caca_draw_box(cv,
                          0,
                          0,
                          CANVAS_WIDTH - 1,
@@ -116,7 +116,7 @@ def draw_border():
 
 event = ev()
 lcaca = C.cdll.LoadLibrary('libcaca.so.0')
-cv = lcaca.cucul_create_canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
+cv = lcaca.caca_create_canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
 dp = lcaca.caca_create_display(cv)
 lcaca.caca_set_display_title(dp, "snake.py - playing with ctypes and libcaca")
 
@@ -160,7 +160,7 @@ while True:
         t.random(CANVAS_WIDTH - 2, CANVAS_HEIGHT - 2)
         s.grow()
 
-    lcaca.cucul_clear_canvas(cv)
+    lcaca.caca_clear_canvas(cv)
     draw_border()
     s.draw()
     t.draw()

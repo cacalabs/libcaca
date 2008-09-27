@@ -24,14 +24,9 @@
 
  \section devel Developer's documentation
 
- \e libcaca relies on a low-level, device independent library, called
- \e libcucul. \e libcucul can be used alone as a simple ASCII and/or
- Unicode compositing canvas.
+ The complete \e libcaca programming interface is
+ available from the following header:
 
- The complete \e libcucul and \e libcaca programming interface is
- available from the following headers:
-
- - cucul.h
  - caca.h
 
  There is language-specific documentation for the various bindings:

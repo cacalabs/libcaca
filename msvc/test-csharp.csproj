@@ -44,10 +44,6 @@
       <Project>{046BD004-7B02-4521-BF01-9D9042F19AD5}</Project>
       <Name>caca-sharp</Name>
     </ProjectReference>
-    <ProjectReference Include="cucul-sharp.csproj">
-      <Project>{C05C1521-F4E2-48D8-BD83-786EF345A887}</Project>
-      <Name>cucul-sharp</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Drawing" />

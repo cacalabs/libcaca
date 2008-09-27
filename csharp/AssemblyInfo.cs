@@ -16,6 +16,6 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-[assembly: AssemblyTitle("Cucul")]
-[assembly: AssemblyDescription("libcucul .NET bindings")]
+[assembly: AssemblyTitle("Caca")]
+[assembly: AssemblyDescription("libcaca .NET bindings")]
 [assembly: AssemblyCopyright("(c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org")]
