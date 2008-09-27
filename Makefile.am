@@ -9,7 +9,7 @@ AUTOMAKE_OPTIONS = dist-bzip2
 bin_SCRIPTS = caca-config
 
 webhost = poulet.zoy.org
-webdir = /srv/libcaca.zoy.org/var/www/
+webdir = /srv/caca.zoy.org/var/www/
 
 upload: upload-source upload-doc
 

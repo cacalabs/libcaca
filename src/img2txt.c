@@ -86,7 +86,7 @@ static void version(void)
     "img2txt, along with its documentation, may be freely copied and distributed.\n"
     "\n"
     "The latest version of img2txt is available from the web site,\n"
-    "        http://libcaca.zoy.org/ in the libcaca package.\n"
+    "        http://caca.zoy.org/wiki/libcaca in the libcaca package.\n"
     "\n",
     caca_get_version(), __DATE__);
 }
