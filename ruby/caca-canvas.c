@@ -556,7 +556,7 @@ static VALUE import_file(VALUE self, VALUE filename, VALUE format)
 
 static VALUE export_memory(VALUE self, VALUE format)
 {
-    unsigned long int bytes;
+    size_t bytes;
     void *result;
     VALUE ret;
     result = caca_export_memory (_SELF, StringValuePtr(format), &bytes);
