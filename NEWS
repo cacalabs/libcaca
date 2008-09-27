@@ -1,5 +1,9 @@
 /* $Id$ */ /** \page libcaca-news Libcaca news
 
+\section news0_99_beta15 Changes between 0.9.beta15 and 0.99.beta14
+
+ - libcucul was merged back into libcaca for more clarity
+
 \section news0_99_beta14 Changes between 0.9.beta14 and 0.99.beta13
 
  - internal FIGlet font support
