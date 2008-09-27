@@ -520,3 +520,18 @@ int caca_render_canvas(caca_canvas_t const *cv, caca_font_t const *f,
     return 0;
 }
 
+/*
+ * XXX: The following functions are aliases.
+ */
+
+cucul_font_t *cucul_load_font(void const *, size_t) CACA_ALIAS(caca_load_font);
+char const * const * cucul_get_font_list(void) CACA_ALIAS(caca_get_font_list);
+int cucul_get_font_width(cucul_font_t const *) CACA_ALIAS(caca_get_font_width);
+int cucul_get_font_height(cucul_font_t const *)
+         CACA_ALIAS(caca_get_font_height);
+uint32_t const *cucul_get_font_blocks(cucul_font_t const *)
+         CACA_ALIAS(caca_get_font_blocks);
+int cucul_render_canvas(cucul_canvas_t const *, cucul_font_t const *,
+                        void *, int, int, int) CACA_ALIAS(caca_render_canvas);
+int cucul_free_font(cucul_font_t *) CACA_ALIAS(caca_free_font);
+

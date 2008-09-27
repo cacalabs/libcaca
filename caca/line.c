@@ -391,3 +391,18 @@ static void draw_thin_line(caca_canvas_t *cv, struct line* s)
     }
 }
 
+/*
+ * XXX: The following functions are aliases.
+ */
+
+int cucul_draw_line(cucul_canvas_t *, int, int, int, int, uint32_t)
+         CACA_ALIAS(caca_draw_line);
+int cucul_draw_polyline(cucul_canvas_t *, int const x[],
+                        int const y[], int, uint32_t)
+         CACA_ALIAS(caca_draw_polyline);
+int cucul_draw_thin_line(cucul_canvas_t *, int, int, int, int)
+         CACA_ALIAS(caca_draw_thin_line);
+int cucul_draw_thin_polyline(cucul_canvas_t *, int const x[],
+                             int const y[], int)
+         CACA_ALIAS(caca_draw_thin_polyline);
+

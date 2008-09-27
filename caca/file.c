@@ -287,3 +287,19 @@ static int zipread(caca_file_t *fp, void *buf, unsigned int len)
 }
 #endif
 
+/*
+ * XXX: The following functions are aliases.
+ */
+
+cucul_file_t *cucul_file_open(char const *, const char *)
+         CACA_ALIAS(caca_file_open);
+int cucul_file_close(cucul_file_t *) CACA_ALIAS(caca_file_close);
+uint64_t cucul_file_tell(cucul_file_t *) CACA_ALIAS(caca_file_tell);
+size_t cucul_file_read(cucul_file_t *, void *, size_t)
+         CACA_ALIAS(caca_file_read);
+size_t cucul_file_write(cucul_file_t *, const void *, size_t)
+         CACA_ALIAS(caca_file_write);
+char * cucul_file_gets(cucul_file_t *, char *, int)
+         CACA_ALIAS(caca_file_gets);
+int cucul_file_eof(cucul_file_t *) CACA_ALIAS(caca_file_eof);
+

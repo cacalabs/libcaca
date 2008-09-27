@@ -552,3 +552,12 @@ static uint32_t hsmush(uint32_t ch1, uint32_t ch2, int rule)
     return 0;
 }
 
+/*
+ * XXX: The following functions are aliases.
+ */
+
+int cucul_canvas_set_figfont(cucul_canvas_t *, char const *)
+         CACA_ALIAS(caca_canvas_set_figfont);
+int cucul_put_figchar(cucul_canvas_t *, uint32_t) CACA_ALIAS(caca_put_figchar);
+int cucul_flush_figlet(cucul_canvas_t *) CACA_ALIAS(caca_flush_figlet);
+

@@ -461,3 +461,23 @@ uint32_t _caca_attr_to_rgb24bg(uint32_t attr)
     return RGB12TO24(caca_attr_to_rgb12_bg(attr));
 }
 
+/*
+ * XXX: The following functions are aliases.
+ */
+
+uint32_t cucul_get_attr(cucul_canvas_t const *, int, int)
+         CACA_ALIAS(caca_get_attr);
+int cucul_set_attr(cucul_canvas_t *, uint32_t) CACA_ALIAS(caca_set_attr);
+int cucul_put_attr(cucul_canvas_t *, int, int, uint32_t)
+         CACA_ALIAS(caca_put_attr);
+int cucul_set_color_ansi(cucul_canvas_t *, uint8_t, uint8_t)
+         CACA_ALIAS(caca_set_color_ansi);
+int cucul_set_color_argb(cucul_canvas_t *, uint16_t, uint16_t)
+         CACA_ALIAS(caca_set_color_argb);
+uint8_t cucul_attr_to_ansi(uint32_t) CACA_ALIAS(caca_attr_to_ansi);
+uint8_t cucul_attr_to_ansi_fg(uint32_t) CACA_ALIAS(caca_attr_to_ansi_fg);
+uint8_t cucul_attr_to_ansi_bg(uint32_t) CACA_ALIAS(caca_attr_to_ansi_bg);
+uint16_t cucul_attr_to_rgb12_fg(uint32_t) CACA_ALIAS(caca_attr_to_rgb12_fg);
+uint16_t cucul_attr_to_rgb12_bg(uint32_t) CACA_ALIAS(caca_attr_to_rgb12_bg);
+void cucul_attr_to_argb64(uint32_t, uint8_t[8]) CACA_ALIAS(caca_attr_to_argb64);
+

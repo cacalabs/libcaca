@@ -911,3 +911,14 @@ static void ansi_parse_grcm(caca_canvas_t *cv, struct import *im,
     caca_set_color_ansi(cv, efg, ebg);
 }
 
+/*
+ * XXX: The following functions are aliases.
+ */
+
+ssize_t cucul_import_memory(cucul_canvas_t *, void const *, size_t,
+                            char const *) CACA_ALIAS(caca_import_memory);
+ssize_t cucul_import_file(cucul_canvas_t *, char const *,
+                          char const *) CACA_ALIAS(caca_import_file);
+char const * const * cucul_get_import_list(void)
+         CACA_ALIAS(caca_get_import_list);
+

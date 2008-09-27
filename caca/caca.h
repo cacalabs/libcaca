@@ -226,11 +226,6 @@ __extern int caca_get_cursor_y(caca_canvas_t const *);
 __extern int caca_put_char(caca_canvas_t *, int, int, uint32_t);
 __extern uint32_t caca_get_char(caca_canvas_t const *, int, int);
 __extern int caca_put_str(caca_canvas_t *, int, int, char const *);
-__extern uint32_t caca_get_attr(caca_canvas_t const *, int, int);
-__extern int caca_set_attr(caca_canvas_t *, uint32_t);
-__extern int caca_put_attr(caca_canvas_t *, int, int, uint32_t);
-__extern int caca_set_color_ansi(caca_canvas_t *, uint8_t, uint8_t);
-__extern int caca_set_color_argb(caca_canvas_t *, uint16_t, uint16_t);
 __extern int caca_printf(caca_canvas_t *, int, int, char const *, ...);
 __extern int caca_clear_canvas(caca_canvas_t *);
 __extern int caca_set_canvas_handle(caca_canvas_t *, int, int);
@@ -261,6 +256,11 @@ __extern int caca_stretch_right(caca_canvas_t *);
  *  These functions perform conversions between attribute values.
  *
  *  @{ */
+__extern uint32_t caca_get_attr(caca_canvas_t const *, int, int);
+__extern int caca_set_attr(caca_canvas_t *, uint32_t);
+__extern int caca_put_attr(caca_canvas_t *, int, int, uint32_t);
+__extern int caca_set_color_ansi(caca_canvas_t *, uint8_t, uint8_t);
+__extern int caca_set_color_argb(caca_canvas_t *, uint16_t, uint16_t);
 __extern uint8_t caca_attr_to_ansi(uint32_t);
 __extern uint8_t caca_attr_to_ansi_fg(uint32_t);
 __extern uint8_t caca_attr_to_ansi_bg(uint32_t);
@@ -470,35 +470,33 @@ __extern int caca_get_event_resize_height(caca_event_t const *);
 #if !defined(_DOXYGEN_SKIP_ME)
     /* Legacy stuff from beta versions, will probably disappear in 1.0 */
 typedef struct cucul_buffer cucul_buffer_t;
-#define cucul_canvas_t caca_canvas_t
-#define cucul_dither_t caca_dither_t
-#define cucul_font_t caca_font_t
-#define cucul_file_t caca_file_t
-#define cucul_display_t caca_display_t
-#define cucul_event_t caca_event_t
 
 #   if defined __GNUC__ && __GNUC__ >= 3
 #       define CACA_DEPRECATED __attribute__ ((__deprecated__))
+#       define CACA_ALIAS(x) __attribute__ ((alias(#x)))
 #   else
 #       define CACA_DEPRECATED
+#       define CACA_ALIAS(x)
 #   endif
-__extern int cucul_putchar(cucul_canvas_t *, int, int,
+
+/* Aliases from old libcucul functions */
+__extern int cucul_putchar(caca_canvas_t *, int, int,
                            unsigned long int) CACA_DEPRECATED;
-__extern unsigned long int cucul_getchar(cucul_canvas_t *,
+__extern unsigned long int cucul_getchar(caca_canvas_t *,
                                          int, int) CACA_DEPRECATED;
-__extern int cucul_putstr(cucul_canvas_t *, int, int,
+__extern int cucul_putstr(caca_canvas_t *, int, int,
                           char const *) CACA_DEPRECATED;
-__extern int cucul_set_color(cucul_canvas_t *, unsigned char,
+__extern int cucul_set_color(caca_canvas_t *, unsigned char,
                              unsigned char) CACA_DEPRECATED;
-__extern int cucul_set_truecolor(cucul_canvas_t *, unsigned int,
+__extern int cucul_set_truecolor(caca_canvas_t *, unsigned int,
                                  unsigned int) CACA_DEPRECATED;
-__extern unsigned int cucul_get_canvas_frame_count(cucul_canvas_t *)
+__extern unsigned int cucul_get_canvas_frame_count(caca_canvas_t *)
                                                    CACA_DEPRECATED;
-__extern int cucul_set_canvas_frame(cucul_canvas_t *,
+__extern int cucul_set_canvas_frame(caca_canvas_t *,
                                     unsigned int) CACA_DEPRECATED;
-__extern int cucul_create_canvas_frame(cucul_canvas_t *,
+__extern int cucul_create_canvas_frame(caca_canvas_t *,
                                        unsigned int) CACA_DEPRECATED;
-__extern int cucul_free_canvas_frame(cucul_canvas_t *,
+__extern int cucul_free_canvas_frame(caca_canvas_t *,
                                      unsigned int) CACA_DEPRECATED;
 __extern cucul_buffer_t *cucul_load_memory(void *,
                                            unsigned long int) CACA_DEPRECATED;
@@ -507,16 +505,15 @@ __extern unsigned long int cucul_get_buffer_size(cucul_buffer_t *)
                                                  CACA_DEPRECATED;
 __extern void * cucul_get_buffer_data(cucul_buffer_t *) CACA_DEPRECATED;
 __extern int cucul_free_buffer(cucul_buffer_t *) CACA_DEPRECATED;
-__extern cucul_buffer_t * cucul_export_canvas(cucul_canvas_t *,
+__extern cucul_buffer_t * cucul_export_canvas(caca_canvas_t *,
                                               char const *) CACA_DEPRECATED;
-__extern cucul_canvas_t * cucul_import_canvas(cucul_buffer_t *,
+__extern caca_canvas_t * cucul_import_canvas(cucul_buffer_t *,
                                               char const *) CACA_DEPRECATED;
-__extern int cucul_rotate(cucul_canvas_t *) CACA_DEPRECATED;
-__extern int cucul_set_dither_invert(cucul_dither_t *, int) CACA_DEPRECATED;
-__extern int cucul_set_dither_mode(cucul_dither_t *,
+__extern int cucul_rotate(caca_canvas_t *) CACA_DEPRECATED;
+__extern int cucul_set_dither_invert(caca_dither_t *, int) CACA_DEPRECATED;
+__extern int cucul_set_dither_mode(caca_dither_t *,
                                    char const *) CACA_DEPRECATED;
-__extern char const * const * cucul_get_dither_mode_list(cucul_dither_t
-                                                         const *)
+__extern char const * const * cucul_get_dither_mode_list(caca_dither_t const *)
                                                          CACA_DEPRECATED;
 #   define CUCUL_COLOR_BLACK CACA_BLACK
 #   define CUCUL_COLOR_BLUE CACA_BLUE
@@ -536,6 +533,152 @@ __extern char const * const * cucul_get_dither_mode_list(cucul_dither_t
 #   define CUCUL_COLOR_WHITE CACA_YELLOW
 #   define CUCUL_COLOR_DEFAULT CACA_DEFAULT
 #   define CUCUL_COLOR_TRANSPARENT CACA_TRANSPARENT
+
+/* Aliases from the libcucul/libcaca merge */
+#   define cucul_canvas_t caca_canvas_t
+#   define cucul_dither_t caca_dither_t
+#   define cucul_font_t caca_font_t
+#   define cucul_file_t caca_file_t
+#   define cucul_display_t caca_display_t
+#   define cucul_event_t caca_event_t
+
+#   define CUCUL_BLACK CACA_BLACK
+#   define CUCUL_BLUE CACA_BLUE
+#   define CUCUL_GREEN CACA_GREEN
+#   define CUCUL_CYAN CACA_CYAN
+#   define CUCUL_RED CACA_RED
+#   define CUCUL_MAGENTA CACA_MAGENTA
+#   define CUCUL_BROWN CACA_BROWN
+#   define CUCUL_LIGHTGRAY CACA_LIGHTGRAY
+#   define CUCUL_DARKGRAY CACA_DARKGRAY
+#   define CUCUL_LIGHTBLUE CACA_LIGHTBLUE
+#   define CUCUL_LIGHTGREEN CACA_LIGHTGREEN
+#   define CUCUL_LIGHTCYAN CACA_LIGHTCYAN
+#   define CUCUL_LIGHTRED CACA_LIGHTRED
+#   define CUCUL_LIGHTMAGENTA CACA_LIGHTMAGENTA
+#   define CUCUL_YELLOW CACA_YELLOW
+#   define CUCUL_WHITE CACA_YELLOW
+#   define CUCUL_DEFAULT CACA_DEFAULT
+#   define CUCUL_TRANSPARENT CACA_TRANSPARENT
+
+#   if !defined __LIBCACA__
+#       define cucul_draw_triangle caca_draw_triangle
+#       define cucul_draw_thin_triangle caca_draw_thin_triangle
+#       define cucul_fill_triangle caca_fill_triangle
+#       define cucul_load_font caca_load_font
+#       define cucul_get_font_list caca_get_font_list
+#       define cucul_get_font_width caca_get_font_width
+#       define cucul_get_font_height caca_get_font_height
+#       define cucul_get_font_blocks caca_get_font_blocks
+#       define cucul_render_canvas caca_render_canvas
+#       define cucul_free_font caca_free_font
+#       define cucul_gotoxy caca_gotoxy
+#       define cucul_get_cursor_x caca_get_cursor_x
+#       define cucul_get_cursor_y caca_get_cursor_y
+#       define cucul_put_char caca_put_char
+#       define cucul_get_char caca_get_char
+#       define cucul_put_str caca_put_str
+#       define cucul_printf caca_printf
+#       define cucul_clear_canvas caca_clear_canvas
+#       define cucul_set_canvas_handle caca_set_canvas_handle
+#       define cucul_get_canvas_handle_x caca_get_canvas_handle_x
+#       define cucul_get_canvas_handle_y caca_get_canvas_handle_y
+#       define cucul_blit caca_blit
+#       define cucul_set_canvas_boundaries caca_set_canvas_boundaries
+#       define cucul_import_memory caca_import_memory
+#       define cucul_import_file caca_import_file
+#       define cucul_get_import_list caca_get_import_list
+#       define cucul_create_canvas caca_create_canvas
+#       define cucul_manage_canvas caca_manage_canvas
+#       define cucul_unmanage_canvas caca_unmanage_canvas
+#       define cucul_set_canvas_size caca_set_canvas_size
+#       define cucul_get_canvas_width caca_get_canvas_width
+#       define cucul_get_canvas_height caca_get_canvas_height
+#       define cucul_get_canvas_chars caca_get_canvas_chars
+#       define cucul_get_canvas_attrs caca_get_canvas_attrs
+#       define cucul_free_canvas caca_free_canvas
+#       define cucul_rand caca_rand
+#       define cucul_export_memory caca_export_memory
+#       define cucul_get_export_list caca_get_export_list
+#       define cucul_get_version caca_get_version
+#       define cucul_utf8_to_utf32 caca_utf8_to_utf32
+#       define cucul_utf32_to_utf8 caca_utf32_to_utf8
+#       define cucul_utf32_to_cp437 caca_utf32_to_cp437
+#       define cucul_cp437_to_utf32 caca_cp437_to_utf32
+#       define cucul_utf32_to_ascii caca_utf32_to_ascii
+#       define cucul_utf32_is_fullwidth caca_utf32_is_fullwidth
+#       define cucul_draw_circle caca_draw_circle
+#       define cucul_draw_ellipse caca_draw_ellipse
+#       define cucul_draw_thin_ellipse caca_draw_thin_ellipse
+#       define cucul_fill_ellipse caca_fill_ellipse
+#       define cucul_canvas_set_figfont caca_canvas_set_figfont
+#       define cucul_put_figchar caca_put_figchar
+#       define cucul_flush_figlet caca_flush_figlet
+#       define cucul_putchar caca_putchar
+#       define cucul_getchar caca_getchar
+#       define cucul_get_attr caca_get_attr
+#       define cucul_set_attr caca_set_attr
+#       define cucul_put_attr caca_put_attr
+#       define cucul_set_color_ansi caca_set_color_ansi
+#       define cucul_set_color_argb caca_set_color_argb
+#       define cucul_attr_to_ansi caca_attr_to_ansi
+#       define cucul_attr_to_ansi_fg caca_attr_to_ansi_fg
+#       define cucul_attr_to_ansi_bg caca_attr_to_ansi_bg
+#       define cucul_attr_to_rgb12_fg caca_attr_to_rgb12_fg
+#       define cucul_attr_to_rgb12_bg caca_attr_to_rgb12_bg
+#       define cucul_attr_to_argb64 caca_attr_to_argb64
+#       define cucul_invert caca_invert
+#       define cucul_flip caca_flip
+#       define cucul_flop caca_flop
+#       define cucul_rotate_180 caca_rotate_180
+#       define cucul_rotate_left caca_rotate_left
+#       define cucul_rotate_right caca_rotate_right
+#       define cucul_stretch_left caca_stretch_left
+#       define cucul_stretch_right caca_stretch_right
+#       define cucul_file_open caca_file_open
+#       define cucul_file_close caca_file_close
+#       define cucul_file_tell caca_file_tell
+#       define cucul_file_read caca_file_read
+#       define cucul_file_write caca_file_write
+#       define cucul_file_gets caca_file_gets
+#       define cucul_file_eof caca_file_eof
+#       define cucul_create_dither caca_create_dither
+#       define cucul_set_dither_palette caca_set_dither_palette
+#       define cucul_set_dither_brightness caca_set_dither_brightness
+#       define cucul_get_dither_brightness caca_get_dither_brightness
+#       define cucul_set_dither_gamma caca_set_dither_gamma
+#       define cucul_get_dither_gamma caca_get_dither_gamma
+#       define cucul_set_dither_contrast caca_set_dither_contrast
+#       define cucul_get_dither_contrast caca_get_dither_contrast
+#       define cucul_set_dither_antialias caca_set_dither_antialias
+#       define cucul_get_dither_antialias_list caca_get_dither_antialias_list
+#       define cucul_get_dither_antialias caca_get_dither_antialias
+#       define cucul_set_dither_color caca_set_dither_color
+#       define cucul_get_dither_color_list caca_get_dither_color_list
+#       define cucul_get_dither_color caca_get_dither_color
+#       define cucul_set_dither_charset caca_set_dither_charset
+#       define cucul_get_dither_charset_list caca_get_dither_charset_list
+#       define cucul_get_dither_charset caca_get_dither_charset
+#       define cucul_set_dither_algorithm caca_set_dither_algorithm
+#       define cucul_get_dither_algorithm_list caca_get_dither_algorithm_list
+#       define cucul_get_dither_algorithm caca_get_dither_algorithm
+#       define cucul_dither_bitmap caca_dither_bitmap
+#       define cucul_free_dither caca_free_dither
+#       define cucul_draw_line caca_draw_line
+#       define cucul_draw_polyline caca_draw_polyline
+#       define cucul_draw_thin_line caca_draw_thin_line
+#       define cucul_draw_thin_polyline caca_draw_thin_polyline
+#       define cucul_draw_box caca_draw_box
+#       define cucul_draw_thin_box caca_draw_thin_box
+#       define cucul_draw_cp437_box caca_draw_cp437_box
+#       define cucul_fill_box caca_fill_box
+#       define cucul_get_frame_count caca_get_frame_count
+#       define cucul_set_frame caca_set_frame
+#       define cucul_get_frame_name caca_get_frame_name
+#       define cucul_set_frame_name caca_set_frame_name
+#       define cucul_create_frame caca_create_frame
+#       define cucul_free_frame caca_free_frame
+#   endif
 #endif
 
 #ifdef __cplusplus

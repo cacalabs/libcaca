@@ -502,3 +502,30 @@ int caca_set_canvas_boundaries(caca_canvas_t *cv, int x, int y, int w, int h)
     return 0;
 }
 
+/*
+ * XXX: The following functions are aliases.
+ */
+
+int cucul_gotoxy(cucul_canvas_t *, int, int) CACA_ALIAS(caca_gotoxy);
+int cucul_get_cursor_x(cucul_canvas_t const *) CACA_ALIAS(caca_get_cursor_x);
+int cucul_get_cursor_y(cucul_canvas_t const *) CACA_ALIAS(caca_get_cursor_y);
+int cucul_put_char(cucul_canvas_t *, int, int, uint32_t)
+         CACA_ALIAS(caca_put_char);
+uint32_t cucul_get_char(cucul_canvas_t const *, int, int)
+         CACA_ALIAS(caca_get_char);
+int cucul_put_str(cucul_canvas_t *, int, int, char const *)
+         CACA_ALIAS(caca_put_str);
+int cucul_printf(cucul_canvas_t *, int, int, char const *, ...)
+         CACA_ALIAS(caca_printf);
+int cucul_clear_canvas(cucul_canvas_t *) CACA_ALIAS(caca_clear_canvas);
+int cucul_set_canvas_handle(cucul_canvas_t *, int, int)
+         CACA_ALIAS(caca_set_canvas_handle);
+int cucul_get_canvas_handle_x(cucul_canvas_t const *)
+         CACA_ALIAS(caca_get_canvas_handle_x);
+int cucul_get_canvas_handle_y(cucul_canvas_t const *)
+         CACA_ALIAS(caca_get_canvas_handle_y);
+int cucul_blit(cucul_canvas_t *, int, int, cucul_canvas_t const *,
+                        cucul_canvas_t const *) CACA_ALIAS(caca_blit);
+int cucul_set_canvas_boundaries(cucul_canvas_t *, int, int, int, int)
+         CACA_ALIAS(caca_set_canvas_boundaries);
+

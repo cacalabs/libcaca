@@ -1562,3 +1562,54 @@ static int init_lookup(void)
     return 0;
 }
 
+/*
+ * XXX: The following functions are aliases.
+ */
+
+cucul_dither_t *cucul_create_dither(int, int, int, int, uint32_t, uint32_t,
+                                    uint32_t, uint32_t)
+         CACA_ALIAS(caca_create_dither);
+int cucul_set_dither_palette(cucul_dither_t *, uint32_t r[], uint32_t g[],
+                             uint32_t b[], uint32_t a[])
+         CACA_ALIAS(caca_set_dither_palette);
+int cucul_set_dither_brightness(cucul_dither_t *, float)
+         CACA_ALIAS(caca_set_dither_brightness);
+float cucul_get_dither_brightness(cucul_dither_t const *)
+         CACA_ALIAS(caca_get_dither_brightness);
+int cucul_set_dither_gamma(cucul_dither_t *, float)
+         CACA_ALIAS(caca_set_dither_gamma);
+float cucul_get_dither_gamma(cucul_dither_t const *)
+         CACA_ALIAS(caca_get_dither_gamma);
+int cucul_set_dither_contrast(cucul_dither_t *, float)
+         CACA_ALIAS(caca_set_dither_contrast);
+float cucul_get_dither_contrast(cucul_dither_t const *)
+         CACA_ALIAS(caca_get_dither_contrast);
+int cucul_set_dither_antialias(cucul_dither_t *, char const *)
+         CACA_ALIAS(caca_set_dither_antialias);
+char const * const * cucul_get_dither_antialias_list(cucul_dither_t const *)
+         CACA_ALIAS(caca_get_dither_antialias_list);
+char const * cucul_get_dither_antialias(cucul_dither_t const *)
+         CACA_ALIAS(caca_get_dither_antialias);
+int cucul_set_dither_color(cucul_dither_t *, char const *)
+         CACA_ALIAS(caca_set_dither_color);
+char const * const * cucul_get_dither_color_list(cucul_dither_t const *)
+         CACA_ALIAS(caca_get_dither_color_list);
+char const * cucul_get_dither_color(cucul_dither_t const *)
+         CACA_ALIAS(caca_get_dither_color);
+int cucul_set_dither_charset(cucul_dither_t *, char const *)
+         CACA_ALIAS(caca_set_dither_charset);
+char const * const * cucul_get_dither_charset_list(cucul_dither_t const *)
+         CACA_ALIAS(caca_get_dither_charset_list);
+char const * cucul_get_dither_charset(cucul_dither_t const *)
+         CACA_ALIAS(caca_get_dither_charset);
+int cucul_set_dither_algorithm(cucul_dither_t *, char const *)
+         CACA_ALIAS(caca_set_dither_algorithm);
+char const * const * cucul_get_dither_algorithm_list(cucul_dither_t const *)
+         CACA_ALIAS(caca_get_dither_algorithm_list);
+char const * cucul_get_dither_algorithm(cucul_dither_t const *)
+         CACA_ALIAS(caca_get_dither_algorithm);
+int cucul_dither_bitmap(cucul_canvas_t *, int, int, int, int,
+                        cucul_dither_t const *, void *)
+         CACA_ALIAS(caca_dither_bitmap);
+int cucul_free_dither(cucul_dither_t *) CACA_ALIAS(caca_free_dither);
+

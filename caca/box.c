@@ -224,3 +224,16 @@ int caca_fill_box(caca_canvas_t *cv, int x, int y, int w, int h,
     return 0;
 }
 
+/*
+ * XXX: The following functions are aliases.
+ */
+
+int cucul_draw_box(cucul_canvas_t *, int, int, int, int, uint32_t)
+         CACA_ALIAS(caca_draw_box);
+int cucul_draw_thin_box(cucul_canvas_t *, int, int, int, int)
+         CACA_ALIAS(caca_draw_thin_box);
+int cucul_draw_cp437_box(cucul_canvas_t *, int, int, int, int)
+         CACA_ALIAS(caca_draw_cp437_box);
+int cucul_fill_box(cucul_canvas_t *, int, int, int, int, uint32_t)
+         CACA_ALIAS(caca_fill_box);
+

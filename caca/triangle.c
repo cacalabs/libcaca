@@ -155,3 +155,14 @@ int caca_fill_triangle(caca_canvas_t *cv, int x1, int y1, int x2, int y2,
     return 0;
 }
 
+/*
+ * XXX: The following functions are aliases.
+ */
+
+int cucul_draw_triangle(cucul_canvas_t *, int, int, int, int, int,
+                      int, uint32_t) CACA_ALIAS(caca_draw_triangle);
+int cucul_draw_thin_triangle(cucul_canvas_t *, int, int, int, int,
+                             int, int) CACA_ALIAS(caca_draw_thin_triangle);
+int cucul_fill_triangle(cucul_canvas_t *, int, int, int, int, int,
+                        int, uint32_t) CACA_ALIAS(caca_fill_triangle);
+

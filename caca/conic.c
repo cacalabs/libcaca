@@ -207,8 +207,8 @@ int caca_draw_thin_ellipse(caca_canvas_t *cv, int xo, int yo, int a, int b)
             ellipsepoints(cv, xo, yo, x + 1, y, '1', 1);
         }
         x++;
-       
-        
+
+
     }
 
     d2 = b*b*(x+0.5)*(x+0.5) + a*a*(y-1)*(y-1) - a*a*b*b;
@@ -227,8 +227,8 @@ int caca_draw_thin_ellipse(caca_canvas_t *cv, int xo, int yo, int a, int b)
         }
 
         y--;
-        
-       
+
+
     }
 
     return 0;
@@ -250,7 +250,7 @@ static void ellipsepoints(caca_canvas_t *cv, int xo, int yo, int x, int y,
 
     if((b & (0x1|0x4)) == (0x1|0x4)) {
         uint32_t c = ch;
-        
+
         if(thin) {
             switch(c) {
             case '0':
@@ -272,7 +272,7 @@ static void ellipsepoints(caca_canvas_t *cv, int xo, int yo, int x, int y,
     }
     if((b & (0x2|0x4)) == (0x2|0x4)) {
         uint32_t c = ch;
-        
+
         if(thin) {
             switch(c) {
             case '0':
@@ -296,7 +296,7 @@ static void ellipsepoints(caca_canvas_t *cv, int xo, int yo, int x, int y,
 
     if((b & (0x1|0x8)) == (0x1|0x8)) {
         uint32_t c = ch;
-        
+
         if(thin) {
             switch(c) {
             case '0':
@@ -319,7 +319,7 @@ static void ellipsepoints(caca_canvas_t *cv, int xo, int yo, int x, int y,
 
     if((b & (0x2|0x8)) == (0x2|0x8)) {
         uint32_t c = ch;
-        
+
         if(thin) {
             switch(c) {
             case '0':
@@ -339,7 +339,18 @@ static void ellipsepoints(caca_canvas_t *cv, int xo, int yo, int x, int y,
         }
         caca_put_char(cv, xo - x, yo - y, c);
     }
-
-        
 }
+
+/*
+ * XXX: The following functions are aliases.
+ */
+
+int cucul_draw_circle(cucul_canvas_t *, int, int, int, uint32_t)
+         CACA_ALIAS(caca_draw_circle);
+int cucul_draw_ellipse(cucul_canvas_t *, int, int, int, int, uint32_t)
+         CACA_ALIAS(caca_draw_ellipse);
+int cucul_draw_thin_ellipse(cucul_canvas_t *, int, int, int, int)
+         CACA_ALIAS(caca_draw_thin_ellipse);
+int cucul_fill_ellipse(cucul_canvas_t *, int, int, int, int, uint32_t)
+         CACA_ALIAS(caca_fill_ellipse);
 

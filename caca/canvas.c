@@ -500,3 +500,25 @@ int caca_resize(caca_canvas_t *cv, int width, int height)
     return 0;
 }
 
+/*
+ * XXX: The following functions are aliases.
+ */
+
+cucul_canvas_t * cucul_create_canvas(int, int) CACA_ALIAS(caca_create_canvas);
+int cucul_manage_canvas(cucul_canvas_t *, int (*)(void *), void *)
+    CACA_ALIAS(caca_manage_canvas);
+int cucul_unmanage_canvas(cucul_canvas_t *, int (*)(void *), void *)
+    CACA_ALIAS(caca_unmanage_canvas);
+int cucul_set_canvas_size(cucul_canvas_t *, int, int)
+    CACA_ALIAS(caca_set_canvas_size);
+int cucul_get_canvas_width(cucul_canvas_t const *)
+    CACA_ALIAS(caca_get_canvas_width);
+int cucul_get_canvas_height(cucul_canvas_t const *)
+    CACA_ALIAS(caca_get_canvas_height);
+uint8_t const * cucul_get_canvas_chars(cucul_canvas_t const *)
+    CACA_ALIAS(caca_get_canvas_chars);
+uint8_t const * cucul_get_canvas_attrs(cucul_canvas_t const *)
+    CACA_ALIAS(caca_get_canvas_attrs);
+int cucul_free_canvas(cucul_canvas_t *) CACA_ALIAS(caca_free_canvas);
+int cucul_rand(int, int) CACA_ALIAS(caca_rand);
+

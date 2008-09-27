@@ -451,3 +451,9 @@ static int caca_plugin_install(caca_display_t *dp, char const *driver)
 }
 #endif
 
+/*
+ * XXX: The following functions are aliases.
+ */
+
+char const * cucul_get_version(void) CACA_ALIAS(caca_get_version);
+

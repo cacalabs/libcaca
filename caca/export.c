@@ -1017,3 +1017,12 @@ static void *export_tga(caca_canvas_t const *cv, size_t *bytes)
     return data;
 }
 
+/*
+ * XXX: The following functions are aliases.
+ */
+
+void *cucul_export_memory(cucul_canvas_t const *, char const *,
+                          size_t *) CACA_ALIAS(caca_export_memory);
+char const * const * cucul_get_export_list(void)
+         CACA_ALIAS(caca_get_export_list);
+

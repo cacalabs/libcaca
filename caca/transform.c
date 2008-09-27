@@ -1100,3 +1100,16 @@ static void rightpair(uint32_t pair[2])
         }
 }
 
+/*
+ * XXX: The following functions are aliases.
+ */
+
+int cucul_invert(cucul_canvas_t *) CACA_ALIAS(caca_invert);
+int cucul_flip(cucul_canvas_t *) CACA_ALIAS(caca_flip);
+int cucul_flop(cucul_canvas_t *) CACA_ALIAS(caca_flop);
+int cucul_rotate_180(cucul_canvas_t *) CACA_ALIAS(caca_rotate_180);
+int cucul_rotate_left(cucul_canvas_t *) CACA_ALIAS(caca_rotate_left);
+int cucul_rotate_right(cucul_canvas_t *) CACA_ALIAS(caca_rotate_right);
+int cucul_stretch_left(cucul_canvas_t *) CACA_ALIAS(caca_stretch_left);
+int cucul_stretch_right(cucul_canvas_t *) CACA_ALIAS(caca_stretch_right);
+

@@ -258,3 +258,17 @@ void _caca_load_frame_info(caca_canvas_t *cv)
     cv->curattr = cv->frames[cv->frame].curattr;
 }
 
+/*
+ * XXX: The following functions are aliases.
+ */
+
+int cucul_get_frame_count(cucul_canvas_t const *)
+         CACA_ALIAS(caca_get_frame_count);
+int cucul_set_frame(cucul_canvas_t *, int) CACA_ALIAS(caca_set_frame);
+char const *cucul_get_frame_name(cucul_canvas_t const *)
+         CACA_ALIAS(caca_get_frame_name);
+int cucul_set_frame_name(cucul_canvas_t *, char const *)
+         CACA_ALIAS(caca_set_frame_name);
+int cucul_create_frame(cucul_canvas_t *, int) CACA_ALIAS(caca_create_frame);
+int cucul_free_frame(cucul_canvas_t *, int) CACA_ALIAS(caca_free_frame);
+

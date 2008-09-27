@@ -420,3 +420,15 @@ int caca_utf32_is_fullwidth(uint32_t ch)
     return 0;
 }
 
+/*
+ * XXX: The following functions are aliases.
+ */
+
+uint32_t cucul_utf8_to_utf32(char const *, size_t *)
+         CACA_ALIAS(caca_utf8_to_utf32);
+size_t cucul_utf32_to_utf8(char *, uint32_t) CACA_ALIAS(caca_utf32_to_utf8);
+uint8_t cucul_utf32_to_cp437(uint32_t) CACA_ALIAS(caca_utf32_to_cp437);
+uint32_t cucul_cp437_to_utf32(uint8_t) CACA_ALIAS(caca_cp437_to_utf32);
+char cucul_utf32_to_ascii(uint32_t) CACA_ALIAS(caca_utf32_to_ascii);
+int cucul_utf32_is_fullwidth(uint32_t) CACA_ALIAS(caca_utf32_is_fullwidth);
+
