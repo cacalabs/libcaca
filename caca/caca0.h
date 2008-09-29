@@ -22,31 +22,39 @@
 
 #include <caca.h>
 
+#undef __extern
+#if defined(_DOXYGEN_SKIP_ME)
+#elif defined(_WIN32) && defined(__LIBCACA__)
+#   define __extern extern __declspec(dllexport)
+#else
+#   define __extern extern
+#endif
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
 /* Function emulation */
-extern int __caca0_init(void);
-extern void __caca0_end(void);
-extern unsigned int __caca0_get_event(unsigned int, int);
-extern unsigned int __caca0_sqrt(unsigned int);
-extern int __caca0_get_feature(int);
-extern void __caca0_set_feature(int);
-extern char const *__caca0_get_feature_name(int);
-extern caca_canvas_t *__caca0_load_sprite(char const *);
-extern caca_dither_t *__caca0_create_bitmap(unsigned int, unsigned int,
-          unsigned int, unsigned int, unsigned long int, unsigned long int,
-          unsigned long int, unsigned long int);
-extern void __caca0_free_bitmap(caca_dither_t *);
-extern char const *__caca0_get_color_name(unsigned char);
+__extern int __caca0_init(void);
+__extern void __caca0_end(void);
+__extern unsigned int __caca0_get_event(unsigned int, int);
+__extern unsigned int __caca0_sqrt(unsigned int);
+__extern int __caca0_get_feature(int);
+__extern void __caca0_set_feature(int);
+__extern char const *__caca0_get_feature_name(int);
+__extern caca_canvas_t *__caca0_load_sprite(char const *);
+__extern caca_dither_t *__caca0_create_bitmap(unsigned int, unsigned int,
+            unsigned int, unsigned int, unsigned long int, unsigned long int,
+            unsigned long int, unsigned long int);
+__extern void __caca0_free_bitmap(caca_dither_t *);
+__extern char const *__caca0_get_color_name(unsigned char);
 
 /* These variables are needed to emulate old non-thread safe behaviour */
-extern caca_canvas_t *__caca0_cv;
-extern caca_display_t *__caca0_dp;
-extern unsigned char __caca0_fg;
-extern unsigned char __caca0_bg;
+__extern caca_canvas_t *__caca0_cv;
+__extern caca_display_t *__caca0_dp;
+__extern unsigned char __caca0_fg;
+__extern unsigned char __caca0_bg;
 
 /* These enums and macros changed names or values */
 enum caca_color
@@ -91,6 +99,8 @@ enum caca_feature
 #define CACA_DITHERING_MAX    0x35
     CACA_FEATURE_UNKNOWN = 0xffff
 };
+
+#if ! defined __LIBCACA__
 
 /* This enum still exists in libcaca 1.x, thus cannot be redefined */
 #define CACA_EVENT_NONE          0x00000000
@@ -188,6 +198,8 @@ enum caca_feature
 #define caca_draw_bitmap(x, y, z, t, b, p) \
     caca_dither_bitmap(__caca0_cv, x, y, z, t, b, p)
 #define caca_free_bitmap __caca0_free_bitmap
+
+#endif /* ! defined __LIBCACA__ */
 
 #ifdef __cplusplus
 }

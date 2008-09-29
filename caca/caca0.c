@@ -23,8 +23,7 @@
 #   include <stdlib.h>
 #endif
 
-#include "caca.h"
-#include "caca_internals.h"
+#include "caca0.h"
 
 /* These variables are needed to emulate old non-thread safe behaviour */
 caca_canvas_t *__caca0_cv = NULL;
