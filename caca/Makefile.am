@@ -58,21 +58,20 @@ libcaca_la_LIBADD = @CACA_LIBS@ $(ZLIB_LIBS)
 
 install-exec-local:
 	$(mkinstalldirs) $(DESTDIR)$(libdir)
-	dllext=$$(grep dlname libcaca.la | cut -f2 -d.); \
-	ln -sf libcaca.$$dllext $(DESTDIR)$(libdir)/libcucul.$$dllext; \
-	ln -sf libcaca.$$dllext.0 $(DESTDIR)$(libdir)/libcucul.$$dllext.0
+	. libcaca.la; \
+	for x in $$library_names; do \
+	  ln -sf $$x $(DESTDIR)$(libdir)/$$(echo $$x | sed 's/caca/cucul/g'); \
+	done
 
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(pkgconfigdir)
 	ln -sf caca.pc $(DESTDIR)$(pkgconfigdir)/cucul.pc
 
 uninstall-local:
-	rm -f $(DESTDIR)$(libdir)/libcucul.so
-	rm -f $(DESTDIR)$(libdir)/libcucul.so.0
-	rm -f $(DESTDIR)$(libdir)/libcucul.sl
-	rm -f $(DESTDIR)$(libdir)/libcucul.sl.0
-	rm -f $(DESTDIR)$(libdir)/libcucul.dylib
-	rm -f $(DESTDIR)$(libdir)/libcucul.dylib.0
+	. libcaca.la; \
+	for x in $$library_names; do \
+	  rm -f $(DESTDIR)$(libdir)/$$(echo $$x | sed 's/caca/cucul/g'); \
+	done
 	rmdir $(DESTDIR)$(libdir) 2>/dev/null || true
 	rm -f $(DESTDIR)$(pkgconfigdir)/cucul.pc
 	rmdir $(DESTDIR)$(pkgconfigdir) 2>/dev/null || true
