@@ -561,6 +561,11 @@ __extern char const * const * cucul_get_dither_mode_list(caca_dither_t const *)
 #   define CUCUL_DEFAULT CACA_DEFAULT
 #   define CUCUL_TRANSPARENT CACA_TRANSPARENT
 
+#   define CUCUL_BOLD CACA_BOLD
+#   define CUCUL_ITALICS CACA_ITALICS
+#   define CUCUL_UNDERLINE CACA_UNDERLINE
+#   define CUCUL_BLINK CACA_BLINK
+
 #   if !defined __LIBCACA__
 #       define cucul_draw_triangle caca_draw_triangle
 #       define cucul_draw_thin_triangle caca_draw_thin_triangle
