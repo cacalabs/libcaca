@@ -23,8 +23,9 @@ cxxtest_LDADD = libcaca++.la ../caca/libcaca.la
 
 install-exec-local:
 	$(mkinstalldirs) $(DESTDIR)$(libdir)
-	ln -sf libcaca++.so $(DESTDIR)$(libdir)/libcucul++.so
-	ln -sf libcaca++.so.0 $(DESTDIR)$(libdir)/libcucul++.so.0
+	dllext=$$(grep dlname libcaca++.la | cut -f2 -d.); \
+	ln -sf libcaca++.$$dllext $(DESTDIR)$(libdir)/libcucul++.$$dllext; \
+	ln -sf libcaca++.$$dllext.0 $(DESTDIR)$(libdir)/libcucul++.$$dllext.0
 
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(pkgconfigdir)
@@ -33,6 +34,10 @@ install-data-local:
 uninstall-local:
 	rm -f $(DESTDIR)$(libdir)/libcucul++.so
 	rm -f $(DESTDIR)$(libdir)/libcucul++.so.0
+	rm -f $(DESTDIR)$(libdir)/libcucul++.sl
+	rm -f $(DESTDIR)$(libdir)/libcucul++.sl.0
+	rm -f $(DESTDIR)$(libdir)/libcucul++.dylib
+	rm -f $(DESTDIR)$(libdir)/libcucul++.dylib.0
 	rmdir $(DESTDIR)$(libdir) 2>/dev/null || true
 	rm -f $(DESTDIR)$(pkgconfigdir)/cucul++.pc
 	rmdir $(DESTDIR)$(pkgconfigdir) 2>/dev/null || true
