@@ -1,6 +1,7 @@
 # $Id$
 
-AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/caca -DDATADIR=\"$(pkgdatadir)\"
+AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/caca -I$(top_builddir)/caca \
+		-DDATADIR=\"$(pkgdatadir)\"
 
 noinst_PROGRAMS = blit canvas colors demo demo0 dithering driver event export figfont font font2tga frames fullwidth gamma hsv input spritedit swallow text transform truecolor unicode import
 
