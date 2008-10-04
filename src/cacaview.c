@@ -438,7 +438,7 @@ static void print_status(void)
     caca_put_str(cv, 0, 0, "q:Quit  np:Next/Prev  +-x:Zoom  gG:Gamma  "
                             "hjkl:Move  d:Dither  a:Antialias");
     caca_put_str(cv, ww - strlen("?:Help"), 0, "?:Help");
-    caca_printf(cv, 3, wh - 2, "cacaview %s", VERSION);
+    caca_printf(cv, 3, wh - 2, "cacaview %s", PACKAGE_VERSION);
     caca_printf(cv, ww - 30, wh - 2, "(gamma: %#.3g)", GAMMA(g));
     caca_printf(cv, ww - 14, wh - 2, "(zoom: %s%i)", zoom > 0 ? "+" : "", zoom);
 

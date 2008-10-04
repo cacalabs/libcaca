@@ -272,7 +272,7 @@ caca_canvas_t * caca_get_canvas(caca_display_t *dp)
  */
 char const * caca_get_version(void)
 {
-    return VERSION;
+    return PACKAGE_VERSION;
 }
 
 /*
