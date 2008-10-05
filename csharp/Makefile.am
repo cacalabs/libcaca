@@ -2,7 +2,15 @@
 
 cacadir = $(libdir)/caca-sharp
 
-caca_sources = $(srcdir)/AssemblyInfo.cs $(srcdir)/Caca.cs
+caca_sources = \
+	$(srcdir)/AssemblyInfo.cs \
+	$(srcdir)/Caca.cs \
+	$(srcdir)/Attr.cs \
+	$(srcdir)/Canvas.cs \
+	$(srcdir)/Display.cs \
+	$(srcdir)/Dither.cs \
+	$(srcdir)/Event.cs \
+	$(srcdir)/Font.cs
 
 if USE_CSHARP
 caca_DATA = caca-sharp.dll caca-sharp.dll.config

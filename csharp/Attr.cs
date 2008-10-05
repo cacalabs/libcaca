@@ -20,23 +20,37 @@ using System.Drawing;
 
 namespace Caca
 {
-    /* Static libcaca stuff that does not fit in any object */
-    public static class Libcaca
+    public class Attr
     {
-        [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
-         SuppressUnmanagedCodeSecurity]
-        private static extern int caca_rand(int min, int max);
-        public static int Rand(int min, int max)
+        private uint _attr;
+
+        public Attr(uint attr)
         {
-            return caca_rand(min, max);
+            _attr = attr;
         }
 
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
-        private static extern IntPtr caca_get_version();
-        public static string getVersion()
+        private static extern byte caca_attr_to_ansi(uint a);
+        public byte toAnsi()
         {
-            return Marshal.PtrToStringAnsi(caca_get_version());
+            return caca_attr_to_ansi(_attr);
+        }
+
+        [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern byte caca_attr_to_ansi_fg(uint a);
+        public byte toAnsiFg()
+        {
+            return caca_attr_to_ansi_fg(_attr);
+        }
+
+        [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
+         SuppressUnmanagedCodeSecurity]
+        private static extern byte caca_attr_to_ansi_bg(uint a);
+        public byte toAnsiBg()
+        {
+            return caca_attr_to_ansi_bg(_attr);
         }
     }
 }

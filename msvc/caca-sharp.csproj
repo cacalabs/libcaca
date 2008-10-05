@@ -35,6 +35,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\csharp\Caca.cs" />
+    <Compile Include="..\csharp\Canvas.cs" />
+    <Compile Include="..\csharp\Attr.cs" />
+    <Compile Include="..\csharp\Font.cs" />
+    <Compile Include="..\csharp\Dither.cs" />
+    <Compile Include="..\csharp\Display.cs" />
+    <Compile Include="..\csharp\Event.cs" />
     <Compile Include="..\csharp\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

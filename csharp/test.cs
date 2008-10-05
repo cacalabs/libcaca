@@ -20,13 +20,13 @@ using System.Runtime.InteropServices;
 
 using Caca;
 
-class DemoCanvas : CacaCanvas
+class DemoCanvas : Canvas
 {
     private uint[,] image;
 
     private DateTime startTime;
-    private CacaDither d;
-    private CacaCanvas scroll;
+    private Dither d;
+    private Canvas scroll;
 
     public DemoCanvas()
     {
@@ -34,15 +34,15 @@ class DemoCanvas : CacaCanvas
 
         string message = " --- POWERED BY LIBCACA --- OLDSCHOOL TEXT EFFECTS ARE 100% PURE WIN";
 
-        scroll = new CacaCanvas(new Size(message.Length, 1));
-        scroll.setColorAnsi(Libcaca.WHITE, Libcaca.TRANSPARENT);
+        scroll = new Canvas(new Size(message.Length, 1));
+        scroll.setColorAnsi(AnsiColor.WHITE, AnsiColor.TRANSPARENT);
         scroll.putStr(new Point(0, 0), message);
 
-        CacaFont f = new CacaFont(CacaFont.getList()[1]);
+        Caca.Font f = new Caca.Font(Caca.Font.getList()[1]);
         int w = f.Size.Width * message.Length;
         int h = f.Size.Height;
         image = new uint[w, h];
-        d = new CacaDither(32, new Size(w, h), w * 4,
+        d = new Dither(32, new Size(w, h), w * 4,
                             0xff00, 0xff0000, 0xff000000, 0xff);
         f.Render(scroll, image, image.GetLength(0) * 4);
     }
@@ -54,7 +54,7 @@ class DemoCanvas : CacaCanvas
 
         Clear();
 
-        setColorAnsi(Libcaca.WHITE, Libcaca.BLACK);
+        setColorAnsi(AnsiColor.WHITE, AnsiColor.BLACK);
         for(int i = 0; i < barCount; i++)
         {
             double v = ((Math.Sin((t / 500.0)
@@ -62,7 +62,7 @@ class DemoCanvas : CacaCanvas
             Point p1 = new Point(0, (int)v);
             Point p2 = new Point(Size.Width - 1, (int)v);
 
-            setColorAnsi((uint)(i + 9), Libcaca.BLACK);
+            setColorAnsi((uint)(i + 9), AnsiColor.BLACK);
             /* drawLine is already clipped, we don't care about overflows */
             drawLine(p1 + new Size(0, -2), p2 + new Size(0, -2), '-');
             drawLine(p1 + new Size(0, -1), p2 + new Size(0, -1), '*');
@@ -78,13 +78,13 @@ class DemoCanvas : CacaCanvas
         ditherBitmap(new Rectangle(- x, h / 2 - y, w * 12, y * 2), d, image);
         ditherBitmap(new Rectangle(12 * w - x, h / 2 - y, w * 12, y * 2), d, image);
 
-        setColorAnsi(Libcaca.WHITE, Libcaca.BLUE);
+        setColorAnsi(AnsiColor.WHITE, AnsiColor.BLUE);
         putStr(new Point(-30, -2) + Size, " -=[ Powered by libcaca ]=- ");
-        setColorAnsi(Libcaca.WHITE, Libcaca.BLACK);
+        setColorAnsi(AnsiColor.WHITE, AnsiColor.BLACK);
     }
 }
 
-class DemoDisplay : CacaDisplay
+class DemoDisplay : Display
 {
     private DemoCanvas cv;
 
@@ -97,9 +97,9 @@ class DemoDisplay : CacaDisplay
 
     public void EventLoop()
     {
-        CacaEvent ev;
+        Event ev;
 
-        while((ev = getEvent(CacaEventType.KEY_RELEASE, 10)).Type == 0)
+        while((ev = getEvent(EventType.KEY_RELEASE, 10)).Type == 0)
         {
             cv.Draw();
 
