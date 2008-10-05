@@ -12,20 +12,22 @@ caca_sources = \
 	$(srcdir)/Event.cs \
 	$(srcdir)/Font.cs
 
+test_sources = \
+	$(srcdir)/test.cs
+
 if USE_CSHARP
 caca_DATA = caca-sharp.dll caca-sharp.dll.config
 noinst_DATA = test.exe
 endif
 
-EXTRA_DIST = $(caca_sources) caca-sharp.dll.config.in \
-             $(srcdir)/test.cs
+EXTRA_DIST = $(caca_sources) $(test_sources) caca-sharp.dll.config.in
 
 caca-sharp.dll: $(caca_sources)
 	gmcs -unsafe $(caca_sources) -out:$@ -target:library \
 	  -r:System.Drawing.dll
 
-test.exe: $(srcdir)/test.cs caca-sharp.dll
-	gmcs $(srcdir)/test.cs -out:$@ -lib:./ \
+test.exe: $(test_sources) caca-sharp.dll
+	gmcs $(test_sources) -out:$@ -lib:./ \
 	  -r:System.Drawing.dll -r:./caca-sharp.dll
 
 clean-local:
