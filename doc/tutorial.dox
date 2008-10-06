@@ -2,31 +2,26 @@
 
 /** \page libcaca-tutorial A libcaca tutorial
 
-First, a working program, very simple, to check you can compile and run it:
+First, a very simple working program, to check for basic libcaca
+functionalities.
 
 \code
 
 #include <caca.h>
-#include <caca.h>
 
 int main(void)
 {
-    /* Initialise libcaca */
     caca_canvas_t *cv; caca_display_t *dp; caca_event_t ev;
+
     dp = caca_create_display(NULL);
     if(!dp) return 1;
     cv = caca_get_canvas(dp);
-    /* Set window title */
+
     caca_set_display_title(dp, "Hello!");
-    /* Choose drawing colours */
     caca_set_color_ansi(cv, CACA_BLACK, CACA_WHITE);
-    /* Draw a string at coordinates (0, 0) */
     caca_put_str(cv, 0, 0, "This is a message");
-    /* Refresh display */
     caca_refresh_display(dp);
-    /* Wait for a key press event */
     caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
-    /* Clean up library */
     caca_free_display(dp);
 
     return 0;
@@ -34,28 +29,24 @@ int main(void)
 
 \endcode
 
+What does it do?
+ - Create a display. Physically, the display is either a window or a context
+   in a terminal (ncurses, slang) or even the whole screen (VGA).
+ - Get the display's associated canvas. A canvas is the surface where
+   everything happens: writing characters, sprites, strings, images... It is
+   unavoidable. Here the size of the canvas is set by the display.
+ - Set the display's window name (only available in windowed displays, does
+   nothing otherwise).
+ - Set the current canvas colours to black background and white foreground.
+ - Write the string "This is a message" using the current colors onto the
+   canvas.
+ - Refresh the display.
+ - Wait for an event of type "CACA_EVENT_KEY_PRESS".
+ - Free the display (release memory). Since it was created together with the
+   display, the canvas will be automatically freed as well.
 
-What does it do ? (we skip variable definitions, guessing you have a brain) : 
-- Create a caca canvas. A canvas is where everything happens. Writing characters, sprites, strings, images, everything. It is mandatory and is the reason of libcacas' beeing. Size is there a width of 0 pixels, and a height of 0 pixels. It'll be resized according to contents you put in it.
-
-- Create a caca display. This is basically the window. Physically it can be a window (most of the displays), a console (ncurses, slang) or a real display (VGA). 
-
-- Set the window name of our display (only available in windowed displays, does nothing otherwise). (so this is libcaca related)
- 
-- Set current colors to black background, and white foreground of our canvas (so this is libcaca related)
-
-- Put a string "This is a message" with current colors in our libcaca canvas.
-
-- Refresh our caca display, whish was firstly attached to our canvas
-
-- Wait for an event of type "CACA_EVENT_KEY_PRESS", which seems obvious.
-
-- Free display (release memory)
-
-- Free canvas (release memory and close window if any)
-
-
-You can then compile this code under UNIX-like systems with following command : (you'll need pkg-config and gcc)
+You can then compile this code on an UNIX-like system using the following
+comman (requiring pkg-config and gcc):
 \code
 gcc `pkg-config --libs --cflags caca` example.c -o example
 \endcode
