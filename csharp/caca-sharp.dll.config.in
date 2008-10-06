@@ -1,5 +1,3 @@
 <configuration>
-    <dllmap dll="libcaca.dll" target="libcaca.so.@LT_MAJOR@" />
-    <dllmap dll="libcaca.dll" target="libcaca.dylib.@LT_MAJOR@" />
-    <dllmap dll="libcaca.dll" target="libcaca.sl.@LT_MAJOR@" />
+    <dllmap dll="libcaca.dll" target="libcaca@LT_SUFFIX@" />
 </configuration>
