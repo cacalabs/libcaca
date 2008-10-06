@@ -17,6 +17,7 @@ upload-source: FORCE
 	scp $(distdir).tar.gz $(webhost):$(webdir)/files/
 
 upload-doc: doc/html FORCE
+	ssh $(webhost) rm -f '$(webdir)/manual/*'
 	scp -r doc/html/* $(webhost):$(webdir)/manual/
 
 fonts: tools/makefont
