@@ -3,6 +3,9 @@
 *.la
 *.exe
 *.pc
+*.userprefs
+*.usertasks
+*.pidb
 .auto
 .libs
 .deps
