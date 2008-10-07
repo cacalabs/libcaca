@@ -47,10 +47,10 @@ if test "${build}" != "${host}" -a "${PKG_CONFIG_LIBDIR}" = ""; then
 fi
 
 AC_MSG_CHECKING(for library suffix)
-LT_SUFFIX="`./libtool -n --mode=link gcc -o libTEST.la -version-number 123:666:999 -rpath / | xargs -n 1 | sed -ne 's/.*libTEST\(@<:@^, ()0-9@:>@*\)123\(@<:@^, ()0-9@:>@*\).*/\1'$LT_MAJOR'\2/p' | grep -v '\.$' | head -n 1`"
+LT_SUFFIX="`./libtool -n --mode=link gcc -o libTEST.la -no-undefined -version-number 123:666:999 -rpath / | xargs -n 1 | sed -ne 's/.*libTEST\(@<:@^, ()0-9@:>@*\)123\(@<:@^, ()0-9@:>@*\).*/\1'$LT_MAJOR'\2/p' | grep -v '\.$' | head -n 1`"
 if test "$LT_SUFFIX" = ""; then
   LT_SUFFIX=".so.$LT_MAJOR"
-  AC_MSG_RESULT(unknown, defaulting to $LT_SUFFIX)
+  AC_MSG_RESULT([unknown, defaulting to $LT_SUFFIX])
 else
   AC_MSG_RESULT($LT_SUFFIX)
 fi
