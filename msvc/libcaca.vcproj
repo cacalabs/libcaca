@@ -311,15 +311,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\stubs.h"
+				RelativePath="..\caca\caca_stubs.h"
 				>
 			</File>
 			<File
 				RelativePath=".\config.h"
-				>
-			</File>
-			<File
-				RelativePath=".\stubs.h"
 				>
 			</File>
 		</Filter>

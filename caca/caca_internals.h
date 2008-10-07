@@ -15,7 +15,7 @@
 #ifndef __CACA_INTERNALS_H__
 #define __CACA_INTERNALS_H__
 
-#include "stubs.h"
+#include "caca_stubs.h"
 
 typedef struct caca_timer caca_timer_t;
 typedef struct caca_privevent caca_privevent_t;

@@ -17,6 +17,7 @@ libcaca_la_SOURCES = \
 	caca.h \
 	caca_types.h \
 	caca_internals.h \
+	caca_stubs.h \
 	caca0.c \
 	caca0.h \
 	canvas.c \
