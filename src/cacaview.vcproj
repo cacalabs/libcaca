@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="cacademo"
-	ProjectGUID="{EE082122-5ECD-4DB4-93C7-145392074F8B}"
+	Name="cacaview"
+	ProjectGUID="{62E567BD-73B7-4C1E-9919-6423C8A8F72E}"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -40,8 +40,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\src;..\msvc;..\caca"
-				PreprocessorDefinitions="LIBCACA=1"
+				AdditionalIncludeDirectories="..\msvc;..\caca;&quot;C:\Program Files\Microsoft Platform SDK\Include&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -49,8 +49,6 @@
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
-				CompileAs="1"
-				DisableSpecificWarnings="4996;4142"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -63,11 +61,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)/cacademo.exe"
+				OutputFile="$(OutDir)/cacaview.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;C:\Program Files\Microsoft Platform SDK\Lib&quot;"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/cacademo.pdb"
+				ProgramDatabaseFile="$(OutDir)/cacaview.pdb"
 				SubSystem="1"
 				TargetMachine="1"
 			/>
@@ -124,8 +122,8 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				OmitFramePointers="true"
-				AdditionalIncludeDirectories="..\src;..\msvc;..\caca"
-				PreprocessorDefinitions="LIBCACA=1"
+				AdditionalIncludeDirectories="..\msvc"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
@@ -133,8 +131,6 @@
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
-				CompileAs="1"
-				DisableSpecificWarnings="4996;4142"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -147,7 +143,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)/cacademo.exe"
+				OutputFile="$(OutDir)/cacaview.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -182,17 +178,33 @@
 		</Configuration>
 	</Configurations>
 	<References>
+		<ProjectReference
+			ReferencedProjectIdentifier="{8951ECB0-7CFE-41AB-A426-98D7C441BEA4}"
+			RelativePathToProject=".\caca\libcaca.vcproj"
+		/>
 	</References>
 	<Files>
 		<Filter
-			Name="Source Files"
-			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm"
+			Name="Header Files"
+			Filter="h;hpp;hxx;hm;inl;inc"
 			>
 			<File
-				RelativePath="..\src\cacademo.c"
+				RelativePath=".\common-image.h"
+				>
+			</File>
+			<File
+				RelativePath="..\msvc\config.h"
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath="cacaview.c"
+			>
+		</File>
+		<File
+			RelativePath=".\common-image.c"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

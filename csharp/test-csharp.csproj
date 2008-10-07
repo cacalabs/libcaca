@@ -1,14 +1,15 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{046BD004-7B02-4521-BF01-9D9042F19AD5}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{6EB34142-45E0-4BF3-8F75-81F4F604EAAA}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>caca_sharp</RootNamespace>
-    <AssemblyName>caca-sharp</AssemblyName>
+    <RootNamespace>test_csharp</RootNamespace>
+    <AssemblyName>test-csharp</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -27,22 +28,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\csharp\Caca.cs" />
-    <Compile Include="..\csharp\Canvas.cs" />
-    <Compile Include="..\csharp\Attr.cs" />
-    <Compile Include="..\csharp\Font.cs" />
-    <Compile Include="..\csharp\Dither.cs" />
-    <Compile Include="..\csharp\Display.cs" />
-    <Compile Include="..\csharp\Event.cs" />
-    <Compile Include="..\csharp\AssemblyInfo.cs" />
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -51,4 +36,16 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Compile Include="test.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="caca-sharp.csproj">
+      <Project>{046BD004-7B02-4521-BF01-9D9042F19AD5}</Project>
+      <Name>caca-sharp</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
 </Project>

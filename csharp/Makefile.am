@@ -20,7 +20,9 @@ caca_DATA = caca-sharp.dll caca-sharp.dll.config
 noinst_DATA = test.exe
 endif
 
-EXTRA_DIST = $(caca_sources) $(test_sources) caca-sharp.dll.config.in
+EXTRA_DIST = $(caca_sources) $(test_sources) \
+             caca-sharp.dll.config.in \
+             caca-sharp.csproj test-csharp.csproj
 
 caca-sharp.dll: $(caca_sources)
 	gmcs -unsafe $(caca_sources) -out:$@ -target:library \

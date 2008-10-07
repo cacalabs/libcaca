@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
-	Name="cacaview"
-	ProjectGUID="{62E567BD-73B7-4C1E-9919-6423C8A8F72E}"
-	Keyword="Win32Proj"
+	Version="8.00"
+	Name="libcaca++"
+	ProjectGUID="{5AAFB727-094F-4104-A765-A94B32497C7D}"
 	>
 	<Platforms>
 		<Platform
@@ -16,10 +15,9 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="Debug"
-			IntermediateDirectory="Debug"
-			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="2"
 			CharacterSet="2"
 			>
 			<Tool
@@ -40,15 +38,16 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\src;..\msvc;..\caca;&quot;C:\Program Files\Microsoft Platform SDK\Include&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
+				AdditionalIncludeDirectories="..\msvc;..\caca"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;__LIBCACA_PP__"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
-				UsePrecompiledHeader="0"
+				RuntimeLibrary="3"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
+				CompileAs="2"
+				DisableSpecificWarnings="4996;4142"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -61,12 +60,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)/cacaview.exe"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;C:\Program Files\Microsoft Platform SDK\Lib&quot;"
+				ModuleDefinitionFile=".\libcaca++.def"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/cacaview.pdb"
-				SubSystem="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -96,11 +91,11 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="Release"
-			IntermediateDirectory="Release"
-			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="2"
 			CharacterSet="2"
+			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -119,18 +114,14 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
-				InlineFunctionExpansion="1"
-				OmitFramePointers="true"
-				AdditionalIncludeDirectories="..\src;..\msvc"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
-				StringPooling="true"
-				RuntimeLibrary="0"
-				EnableFunctionLevelLinking="true"
-				UsePrecompiledHeader="0"
+				AdditionalIncludeDirectories="..\msvc;..\caca"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;__LIBCACA_PP__"
+				RuntimeLibrary="2"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
+				CompileAs="2"
+				DisableSpecificWarnings="4996;4142"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -143,10 +134,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)/cacaview.exe"
-				LinkIncremental="1"
+				ModuleDefinitionFile=".\libcaca++.def"
 				GenerateDebugInformation="true"
-				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				TargetMachine="1"
@@ -181,24 +170,26 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source Files"
-			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm"
+			Name="Header Files"
+			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			>
 			<File
-				RelativePath="..\src\cacaview.c"
+				RelativePath="caca++.h"
+				>
+			</File>
+			<File
+				RelativePath="..\msvc\config.h"
 				>
 			</File>
 		</Filter>
-		<Filter
-			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl;inc"
+		<File
+			RelativePath="caca++.cpp"
 			>
-		</Filter>
-		<Filter
-			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+		</File>
+		<File
+			RelativePath=".\libcaca++.def"
 			>
-		</Filter>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

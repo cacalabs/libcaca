@@ -2,6 +2,7 @@
 
 AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/caca -I../caca
 
+EXTRA_DIST = libcaca++.vcproj libcaca++.def test-cxx.vcproj
 if USE_CXX
 pkgconfig_DATA = caca++.pc
 pkgconfigdir = $(libdir)/pkgconfig

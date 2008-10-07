@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
-	Name="libcaca++"
-	ProjectGUID="{5AAFB727-094F-4104-A765-A94B32497C7D}"
+	Version="8.00"
+	Name="libcaca"
+	ProjectGUID="{8951ECB0-7CFE-41AB-A426-98D7C441BEA4}"
 	>
 	<Platforms>
 		<Platform
@@ -38,15 +38,15 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\msvc;..\caca;..\cxx"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;__LIBCACA_PP__"
+				AdditionalIncludeDirectories="..\msvc"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;__LIBCACA__"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
-				CompileAs="2"
+				CompileAs="1"
 				DisableSpecificWarnings="4996;4142"
 			/>
 			<Tool
@@ -60,7 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				ModuleDefinitionFile=".\libcaca++.def"
+				ModuleDefinitionFile=".\libcaca.def"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>
@@ -114,13 +114,13 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\msvc;..\caca;..\cxx"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;__LIBCACA_PP__"
+				AdditionalIncludeDirectories="..\msvc"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;__LIBCACA__"
 				RuntimeLibrary="2"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
-				CompileAs="2"
+				CompileAs="1"
 				DisableSpecificWarnings="4996;4142"
 			/>
 			<Tool
@@ -134,7 +134,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				ModuleDefinitionFile=".\libcaca++.def"
+				ModuleDefinitionFile=".\libcaca.def"
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
@@ -170,27 +170,150 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source Files"
-			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
-			>
-			<File
-				RelativePath="..\cxx\caca++.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\libcaca++.def"
-				>
-			</File>
-		</Filter>
-		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			>
 			<File
-				RelativePath="..\cxx\caca++.h"
+				RelativePath="caca.h"
+				>
+			</File>
+			<File
+				RelativePath="caca_internals.h"
+				>
+			</File>
+			<File
+				RelativePath="caca_stubs.h"
+				>
+			</File>
+			<File
+				RelativePath="..\msvc\caca_types.h"
+				>
+			</File>
+			<File
+				RelativePath="..\msvc\config.h"
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\attr.c"
+			>
+		</File>
+		<File
+			RelativePath=".\box.c"
+			>
+		</File>
+		<File
+			RelativePath=".\caca.c"
+			>
+		</File>
+		<File
+			RelativePath=".\canvas.c"
+			>
+		</File>
+		<File
+			RelativePath=".\charset.c"
+			>
+		</File>
+		<File
+			RelativePath=".\conic.c"
+			>
+		</File>
+		<File
+			RelativePath=".\dither.c"
+			>
+		</File>
+		<File
+			RelativePath=".\driver_conio.c"
+			>
+		</File>
+		<File
+			RelativePath=".\driver_gl.c"
+			>
+		</File>
+		<File
+			RelativePath=".\driver_ncurses.c"
+			>
+		</File>
+		<File
+			RelativePath=".\driver_raw.c"
+			>
+		</File>
+		<File
+			RelativePath=".\driver_slang.c"
+			>
+		</File>
+		<File
+			RelativePath=".\driver_vga.c"
+			>
+		</File>
+		<File
+			RelativePath=".\driver_win32.c"
+			>
+		</File>
+		<File
+			RelativePath=".\driver_x11.c"
+			>
+		</File>
+		<File
+			RelativePath=".\event.c"
+			>
+		</File>
+		<File
+			RelativePath=".\export.c"
+			>
+		</File>
+		<File
+			RelativePath=".\figfont.c"
+			>
+		</File>
+		<File
+			RelativePath=".\file.c"
+			>
+		</File>
+		<File
+			RelativePath=".\font.c"
+			>
+		</File>
+		<File
+			RelativePath=".\frame.c"
+			>
+		</File>
+		<File
+			RelativePath=".\graphics.c"
+			>
+		</File>
+		<File
+			RelativePath=".\import.c"
+			>
+		</File>
+		<File
+			RelativePath=".\legacy.c"
+			>
+		</File>
+		<File
+			RelativePath=".\libcaca.def"
+			>
+		</File>
+		<File
+			RelativePath=".\line.c"
+			>
+		</File>
+		<File
+			RelativePath=".\string.c"
+			>
+		</File>
+		<File
+			RelativePath=".\time.c"
+			>
+		</File>
+		<File
+			RelativePath=".\transform.c"
+			>
+		</File>
+		<File
+			RelativePath=".\triangle.c"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

@@ -2,8 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="cacafire"
-	ProjectGUID="{F25D1237-9ED8-4343-B958-308C95FE392F}"
+	Name="cacademo"
+	ProjectGUID="{EE082122-5ECD-4DB4-93C7-145392074F8B}"
+	RootNamespace="cacademo"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -40,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\src;..\msvc;..\caca"
+				AdditionalIncludeDirectories="..\msvc;..\caca"
 				PreprocessorDefinitions="LIBCACA=1"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -63,11 +64,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)/cacafire.exe"
+				OutputFile="$(OutDir)/cacademo.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;C:\Program Files\Microsoft Platform SDK\Lib&quot;"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/cacafire.pdb"
+				ProgramDatabaseFile="$(OutDir)/cacademo.pdb"
 				SubSystem="1"
 				TargetMachine="1"
 			/>
@@ -124,7 +125,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				OmitFramePointers="true"
-				AdditionalIncludeDirectories="..\src;..\msvc;..\caca"
+				AdditionalIncludeDirectories="..\msvc;..\caca"
 				PreprocessorDefinitions="LIBCACA=1"
 				StringPooling="true"
 				RuntimeLibrary="0"
@@ -147,7 +148,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)/cacafire.exe"
+				OutputFile="$(OutDir)/cacademo.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -185,14 +186,17 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source Files"
-			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm"
+			Name="Header Files"
 			>
 			<File
-				RelativePath="..\src\aafire.c"
+				RelativePath="..\msvc\config.h"
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath="cacademo.c"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
