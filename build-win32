@@ -8,7 +8,7 @@ set -e
 
 # Clean up our working directory
 SRCDIR="`pwd`"
-DIRNAME="libcaca-win32-`sed -ne 's/^AM_INIT_AUTOMAKE(.*, \(.*\)).*/\1/p' configure.ac`"
+DIRNAME="libpipi-win32-`sed -ne 's/^AC_INIT(.*, \(.*\)).*/\1/p' configure.ac`"
 INSTALLDIR="`pwd`/${DIRNAME}"
 BUILDDIR="${INSTALLDIR}/build"
 rm -Rf "${INSTALLDIR}"
@@ -20,7 +20,7 @@ make distclean || true
 
 cd "${BUILDDIR}"
 # Build for win32
-"${SRCDIR}/configure" --host=i586-mingw32msvc --prefix=/ --bindir=/bin --libdir=/lib --disable-imlib2 --disable-doc
+"${SRCDIR}/configure" --host=i586-mingw32msvc --prefix=/ --bindir=/bin --libdir=/lib --disable-imlib2 --disable-doc "$@"
 make pkglibdir=/lib pkgdatadir=/data bindir=/bin
 # Install into our private directory
 make install DESTDIR="${INSTALLDIR}" pkglibdir=/lib/ pkgdatadir=/ bindir=/bin/
@@ -30,8 +30,8 @@ rm -Rf "${BUILDDIR}"
 mv "${INSTALLDIR}/bin/"* "${INSTALLDIR}/"
 mv "${INSTALLDIR}/lib/"* "${INSTALLDIR}/"
 rm -f "${INSTALLDIR}/caca-config.exe" # Just in case. *sigh*.
-i586-mingw32msvc-strip "${INSTALLDIR}/"*.exe
-i586-mingw32msvc-strip "${INSTALLDIR}/"*.dll
+i586-mingw32msvc-strip "${INSTALLDIR}/"*.exe || true
+i586-mingw32msvc-strip "${INSTALLDIR}/"*.dll || true
 rmdir "${INSTALLDIR}/bin"
 rmdir "${INSTALLDIR}/lib"
 
