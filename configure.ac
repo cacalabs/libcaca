@@ -494,7 +494,7 @@ AC_CONFIG_FILES([
   python/Makefile
   ruby/Makefile
   doc/Makefile
-  msvc/Makefile
+  win32/Makefile
 ])
 AC_CONFIG_FILES([
   caca/caca_types.h

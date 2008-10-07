@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\msvc;..\caca"
+				AdditionalIncludeDirectories="..\win32;..\caca"
 				PreprocessorDefinitions="LIBCACA=1"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -125,7 +125,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				OmitFramePointers="true"
-				AdditionalIncludeDirectories="..\msvc;..\caca"
+				AdditionalIncludeDirectories="..\win32;..\caca"
 				PreprocessorDefinitions="LIBCACA=1"
 				StringPooling="true"
 				RuntimeLibrary="0"
@@ -189,7 +189,7 @@
 			Name="Header Files"
 			>
 			<File
-				RelativePath="..\msvc\config.h"
+				RelativePath="..\win32\config.h"
 				>
 			</File>
 		</Filter>

@@ -36,12 +36,11 @@
 #define HAVE_WINDOWS_H 1
 /* #undef HAVE_X11_XKBLIB_H */
 /* #undef NO_MINUS_C_MINUS_O */
-#define PACKAGE "libcaca"
 #define PACKAGE_BUGREPORT ""
-#define PACKAGE_NAME ""
+#define PACKAGE_NAME "libcaca"
 #define PACKAGE_STRING ""
 #define PACKAGE_TARNAME ""
-#define PACKAGE_VERSION ""
+#define PACKAGE_VERSION "0.99.beta15"
 /* #undef RETSIGTYPE */
 /* #undef SCREENUPDATE_IN_PC_H */
 #define STDC_HEADERS 1
@@ -50,7 +49,6 @@
 /* #undef USE_SLANG */
 #define USE_WIN32 1
 /* #undef USE_X11 */
-#define VERSION "0.99.beta14"
 /* #undef const */
 #ifndef __cplusplus
 #define inline __inline
