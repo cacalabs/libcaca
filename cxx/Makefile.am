@@ -22,6 +22,7 @@ endif
 cxxtest_SOURCES = cxxtest.cpp
 cxxtest_LDADD = libcaca++.la ../caca/libcaca.la
 
+if USE_CXX
 install-exec-local:
 	$(mkinstalldirs) $(DESTDIR)$(libdir)
 	. libcaca++.la; \
@@ -32,6 +33,7 @@ install-exec-local:
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(pkgconfigdir)
 	ln -sf caca++.pc $(DESTDIR)$(pkgconfigdir)/cucul++.pc
+endif
 
 uninstall-local:
 	. libcaca++.la; \
