@@ -489,7 +489,7 @@ AC_CONFIG_FILES([
   examples/Makefile
   tests/Makefile
   tools/Makefile
-  csharp/Makefile
+  caca-sharp/Makefile
   cxx/Makefile
   python/Makefile
   ruby/Makefile
@@ -499,7 +499,7 @@ AC_CONFIG_FILES([
 AC_CONFIG_FILES([
   caca/caca_types.h
   caca/caca.pc
-  csharp/caca-sharp.dll.config
+  caca-sharp/caca-sharp.dll.config
   cxx/caca++.pc
   doc/doxygen.cfg
 ])

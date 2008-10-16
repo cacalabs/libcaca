@@ -1,6 +1,6 @@
 # $Id$
 
-SUBDIRS = kernel caca src examples tests tools csharp cxx python ruby doc
+SUBDIRS = kernel caca src examples tests tools caca-sharp cxx python ruby doc
 DIST_SUBDIRS = $(SUBDIRS) win32
 
 EXTRA_DIST = NOTES COPYING.GPL COPYING.LGPL bootstrap build-dos build-kernel build-win32 caca-config.in libcaca.spec
