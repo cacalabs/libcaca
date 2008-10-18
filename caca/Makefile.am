@@ -75,6 +75,7 @@ install-exec-local:
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(pkgconfigdir)
 	ln -sf caca.pc $(DESTDIR)$(pkgconfigdir)/cucul.pc
+	ln -sf caca.h $(DESTDIR)$(includedir)/cucul.h
 
 uninstall-local:
 	. libcaca.la; \
@@ -84,6 +85,7 @@ uninstall-local:
 	rmdir $(DESTDIR)$(libdir) 2>/dev/null || true
 	rm -f $(DESTDIR)$(pkgconfigdir)/cucul.pc
 	rmdir $(DESTDIR)$(pkgconfigdir) 2>/dev/null || true
+	rm -f $(DESTDIR)$(includedir)/cucul.h
 
 if USE_PLUGINS
 plugin_LTLIBRARIES = libx11_plugin.la libgl_plugin.la
