@@ -223,35 +223,35 @@
 			>
 		</File>
 		<File
-			RelativePath=".\driver_conio.c"
+			RelativePath=".\driver\conio.c"
 			>
 		</File>
 		<File
-			RelativePath=".\driver_gl.c"
+			RelativePath=".\driver\gl.c"
 			>
 		</File>
 		<File
-			RelativePath=".\driver_ncurses.c"
+			RelativePath=".\driver\ncurses.c"
 			>
 		</File>
 		<File
-			RelativePath=".\driver_raw.c"
+			RelativePath=".\driver\raw.c"
 			>
 		</File>
 		<File
-			RelativePath=".\driver_slang.c"
+			RelativePath=".\driver\slang.c"
 			>
 		</File>
 		<File
-			RelativePath=".\driver_vga.c"
+			RelativePath=".\driver\vga.c"
 			>
 		</File>
 		<File
-			RelativePath=".\driver_win32.c"
+			RelativePath=".\driver\win32.c"
 			>
 		</File>
 		<File
-			RelativePath=".\driver_x11.c"
+			RelativePath=".\driver\x11.c"
 			>
 		</File>
 		<File
@@ -259,7 +259,7 @@
 			>
 		</File>
 		<File
-			RelativePath=".\export.c"
+			RelativePath=".\codec\export.c"
 			>
 		</File>
 		<File
@@ -283,7 +283,7 @@
 			>
 		</File>
 		<File
-			RelativePath=".\import.c"
+			RelativePath=".\codec\import.c"
 			>
 		</File>
 		<File
