@@ -96,7 +96,7 @@ initialize (void)
 {
   int i;
 #ifdef LIBCACA
-  unsigned int r[256], g[256], b[256], a[256];
+  uint32_t r[256], g[256], b[256], a[256];
 #endif
 
 #ifdef LIBCACA

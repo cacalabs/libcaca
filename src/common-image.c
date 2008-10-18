@@ -75,7 +75,7 @@ struct image * load_image(char const * name)
 
 #else
     /* Try to load a BMP file */
-    unsigned int red[256], green[256], blue[256], alpha[256];
+    uint32_t red[256], green[256], blue[256], alpha[256];
     unsigned int i, colors, offset, tmp, planes;
     caca_file_t *f;
 
