@@ -285,7 +285,9 @@ int caca_flush_figlet(caca_canvas_t *cv)
 
 static caca_figfont_t * open_figfont(char const *path)
 {
+#if !defined __KERNEL__ && defined HAVE_SNPRINTF
     char altpath[2048];
+#endif
     char buf[2048];
     char hardblank[10];
     caca_figfont_t *ff;
