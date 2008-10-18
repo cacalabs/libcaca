@@ -75,6 +75,7 @@ install-exec-local:
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(pkgconfigdir)
 	ln -sf caca.pc $(DESTDIR)$(pkgconfigdir)/cucul.pc
+	$(mkinstalldirs) $(DESTDIR)$(includedir)
 	ln -sf caca.h $(DESTDIR)$(includedir)/cucul.h
 
 uninstall-local:
