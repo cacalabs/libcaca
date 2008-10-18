@@ -40,7 +40,7 @@
 #define PACKAGE_NAME "libcaca"
 #define PACKAGE_STRING ""
 #define PACKAGE_TARNAME ""
-#define PACKAGE_VERSION "0.99.beta15"
+#define PACKAGE_VERSION "0.99.beta16"
 /* #undef RETSIGTYPE */
 /* #undef SCREENUPDATE_IN_PC_H */
 #define STDC_HEADERS 1

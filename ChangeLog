@@ -1,4 +1,309 @@
 ------------------------------------------------------------------------
+r2963 | sam | 2008-10-18 11:07:14 +0000 (Sat, 18 Oct 2008) | 1 line
+Changed paths:
+   M /libcaca/trunk/caca/Makefile.am
+
+Add a cucul.h symbolic link upon installation.
+------------------------------------------------------------------------
+r2962 | sam | 2008-10-18 11:07:05 +0000 (Sat, 18 Oct 2008) | 1 line
+Changed paths:
+   M /libcaca/trunk/caca/Makefile.am
+   A /libcaca/trunk/caca/codec
+   A /libcaca/trunk/caca/codec/export.c (from /libcaca/trunk/caca/export.c:2961)
+   A /libcaca/trunk/caca/codec/import.c (from /libcaca/trunk/caca/import.c:2961)
+   A /libcaca/trunk/caca/driver
+   A /libcaca/trunk/caca/driver/cocoa.m (from /libcaca/trunk/caca/driver_cocoa.m:2961)
+   A /libcaca/trunk/caca/driver/conio.c (from /libcaca/trunk/caca/driver_conio.c:2961)
+   A /libcaca/trunk/caca/driver/gl.c (from /libcaca/trunk/caca/driver_gl.c:2961)
+   A /libcaca/trunk/caca/driver/ncurses.c (from /libcaca/trunk/caca/driver_ncurses.c:2961)
+   A /libcaca/trunk/caca/driver/raw.c (from /libcaca/trunk/caca/driver_raw.c:2961)
+   A /libcaca/trunk/caca/driver/slang.c (from /libcaca/trunk/caca/driver_slang.c:2961)
+   A /libcaca/trunk/caca/driver/vga.c (from /libcaca/trunk/caca/driver_vga.c:2961)
+   A /libcaca/trunk/caca/driver/win32.c (from /libcaca/trunk/caca/driver_win32.c:2961)
+   A /libcaca/trunk/caca/driver/x11.c (from /libcaca/trunk/caca/driver_x11.c:2961)
+   D /libcaca/trunk/caca/driver_cocoa.m
+   D /libcaca/trunk/caca/driver_conio.c
+   D /libcaca/trunk/caca/driver_gl.c
+   D /libcaca/trunk/caca/driver_ncurses.c
+   D /libcaca/trunk/caca/driver_raw.c
+   D /libcaca/trunk/caca/driver_slang.c
+   D /libcaca/trunk/caca/driver_vga.c
+   D /libcaca/trunk/caca/driver_win32.c
+   D /libcaca/trunk/caca/driver_x11.c
+   D /libcaca/trunk/caca/export.c
+   D /libcaca/trunk/caca/import.c
+   M /libcaca/trunk/caca/libcaca.vcproj
+
+libcaca: move codecs and import/export functions into subdirectories.
+------------------------------------------------------------------------
+r2961 | sam | 2008-10-18 11:06:58 +0000 (Sat, 18 Oct 2008) | 1 line
+Changed paths:
+   M /libcaca/trunk/src/aafire.c
+   M /libcaca/trunk/src/common-image.c
+
+Fix compilation warnings on platforms without Imlib2.
+------------------------------------------------------------------------
+r2960 | sam | 2008-10-18 11:06:49 +0000 (Sat, 18 Oct 2008) | 1 line
+Changed paths:
+   M /libcaca/trunk/caca/figfont.c
+
+libcaca: fix a minor warning on DOS targets.
+------------------------------------------------------------------------
+r2959 | sam | 2008-10-16 23:44:49 +0000 (Thu, 16 Oct 2008) | 1 line
+Changed paths:
+   M /libcaca/trunk/Makefile.am
+   M /libcaca/trunk/src/Makefile.am
+   M /libcaca/trunk/win32/Makefile.am
+
+Minor build system cosmetic changes.
+------------------------------------------------------------------------
+r2958 | sam | 2008-10-16 23:21:23 +0000 (Thu, 16 Oct 2008) | 2 lines
+Changed paths:
+   M /libcaca/trunk/cxx/Makefile.am
+
+Do not attempt to create libcaca++ symlinks if C++ support was disabled.
+
+------------------------------------------------------------------------
+r2956 | sam | 2008-10-16 23:03:47 +0000 (Thu, 16 Oct 2008) | 2 lines
+Changed paths:
+   M /libcaca/trunk/caca-sharp/caca-sharp.csproj
+   M /libcaca/trunk/caca-sharp/test-csharp.csproj
+   M /libcaca/trunk/cxx/test-cxx.vcproj
+
+Remove executable bit from files that do not need it.
+
+------------------------------------------------------------------------
+r2955 | sam | 2008-10-16 22:59:04 +0000 (Thu, 16 Oct 2008) | 2 lines
+Changed paths:
+   M /libcaca/trunk/Makefile.am
+   A /libcaca/trunk/caca-sharp (from /libcaca/trunk/csharp:2954)
+   M /libcaca/trunk/configure.ac
+   D /libcaca/trunk/csharp
+   M /libcaca/trunk/libcaca.sln
+
+Rename csharp/ into caca-sharp/.
+
+------------------------------------------------------------------------
+r2901 | sam | 2008-10-07 23:43:53 +0000 (Tue, 07 Oct 2008) | 2 lines
+Changed paths:
+   M /libcaca/trunk/build-win32
+
+Update the Win32 cross-build script to reflect recent reorganisation.
+
+------------------------------------------------------------------------
+r2900 | sam | 2008-10-07 23:27:41 +0000 (Tue, 07 Oct 2008) | 2 lines
+Changed paths:
+   M /libcaca/trunk/Makefile.am
+   M /libcaca/trunk/caca/libcaca.vcproj
+   M /libcaca/trunk/configure.ac
+   M /libcaca/trunk/cxx/libcaca++.vcproj
+   M /libcaca/trunk/cxx/test-cxx.vcproj
+   D /libcaca/trunk/msvc
+   M /libcaca/trunk/src/cacademo.vcproj
+   M /libcaca/trunk/src/cacafire.vcproj
+   M /libcaca/trunk/src/cacaview.vcproj
+   A /libcaca/trunk/win32 (from /libcaca/trunk/msvc:2899)
+   M /libcaca/trunk/win32/config.h
+
+Renamed msvc into win32.
+
+------------------------------------------------------------------------
+r2898 | sam | 2008-10-07 21:26:56 +0000 (Tue, 07 Oct 2008) | 1 line
+Changed paths:
+   M /libcaca/trunk/caca/Makefile.am
+   A /libcaca/trunk/caca/libcaca.def (from /libcaca/trunk/msvc/libcaca.def:2897)
+   A /libcaca/trunk/caca/libcaca.vcproj (from /libcaca/trunk/msvc/libcaca.vcproj:2897)
+   M /libcaca/trunk/csharp/Makefile.am
+   A /libcaca/trunk/csharp/caca-sharp.csproj (from /libcaca/trunk/msvc/caca-sharp.csproj:2897)
+   A /libcaca/trunk/csharp/test-csharp.csproj (from /libcaca/trunk/msvc/test-csharp.csproj:2897)
+   M /libcaca/trunk/cxx/Makefile.am
+   A /libcaca/trunk/cxx/libcaca++.def (from /libcaca/trunk/msvc/libcaca++.def:2897)
+   A /libcaca/trunk/cxx/libcaca++.vcproj (from /libcaca/trunk/msvc/libcaca++.vcproj:2897)
+   A /libcaca/trunk/cxx/test-cxx.vcproj (from /libcaca/trunk/msvc/test-cxx.vcproj:2897)
+   A /libcaca/trunk/libcaca.sln (from /libcaca/trunk/msvc/libcaca.sln:2897)
+   M /libcaca/trunk/msvc/Makefile.am
+   D /libcaca/trunk/msvc/caca-sharp.csproj
+   D /libcaca/trunk/msvc/cacademo.vcproj
+   D /libcaca/trunk/msvc/cacafire.vcproj
+   D /libcaca/trunk/msvc/cacaview.vcproj
+   D /libcaca/trunk/msvc/libcaca++.def
+   D /libcaca/trunk/msvc/libcaca++.vcproj
+   D /libcaca/trunk/msvc/libcaca.def
+   D /libcaca/trunk/msvc/libcaca.sln
+   D /libcaca/trunk/msvc/libcaca.vcproj
+   D /libcaca/trunk/msvc/test-csharp.csproj
+   D /libcaca/trunk/msvc/test-cxx.vcproj
+   M /libcaca/trunk/src/Makefile.am
+   A /libcaca/trunk/src/cacademo.vcproj (from /libcaca/trunk/msvc/cacademo.vcproj:2897)
+   A /libcaca/trunk/src/cacafire.vcproj (from /libcaca/trunk/msvc/cacafire.vcproj:2897)
+   A /libcaca/trunk/src/cacaview.vcproj (from /libcaca/trunk/msvc/cacaview.vcproj:2897)
+
+Reorganise MSVC files so that each project is with its source code.
+------------------------------------------------------------------------
+r2896 | sam | 2008-10-07 16:06:08 +0000 (Tue, 07 Oct 2008) | 1 line
+Changed paths:
+   M /libcaca/trunk/Makefile.am
+   M /libcaca/trunk/caca/Makefile.am
+   M /libcaca/trunk/caca/caca_internals.h
+   A /libcaca/trunk/caca/caca_stubs.h (from /libcaca/trunk/stubs.h:2895)
+   M /libcaca/trunk/msvc/libcaca.vcproj
+   D /libcaca/trunk/stubs.h
+
+Move stubs.h to caca/caca_stubs.h since it's only used by the library.
+------------------------------------------------------------------------
+r2895 | sam | 2008-10-07 16:06:02 +0000 (Tue, 07 Oct 2008) | 1 line
+Changed paths:
+   M /libcaca/trunk/configure.ac
+
+Fix the library suffix detection.
+------------------------------------------------------------------------
+r2888 | sam | 2008-10-06 20:45:02 +0000 (Mon, 06 Oct 2008) | 1 line
+Changed paths:
+   M /libcaca/trunk/configure.ac
+   M /libcaca/trunk/csharp/caca-sharp.dll.config.in
+
+Detect shared library suffix at configure stage.
+------------------------------------------------------------------------
+r2882 | sam | 2008-10-06 19:33:28 +0000 (Mon, 06 Oct 2008) | 1 line
+Changed paths:
+   M /libcaca/trunk/csharp/caca-sharp.dll.config.in
+
+caca-sharp: support systems with .dylib or .sl shared libraries.
+------------------------------------------------------------------------
+r2881 | sam | 2008-10-06 19:33:24 +0000 (Mon, 06 Oct 2008) | 1 line
+Changed paths:
+   M /libcaca/trunk/.gitignore
+
+.gitignore: ignore files generated by MonoDevelop.
+------------------------------------------------------------------------
+r2880 | sam | 2008-10-06 19:33:20 +0000 (Mon, 06 Oct 2008) | 1 line
+Changed paths:
+   M /libcaca/trunk/Makefile.am
+
+Clean up the web server directories before copying the documentation there.
+------------------------------------------------------------------------
+r2879 | sam | 2008-10-06 19:33:15 +0000 (Mon, 06 Oct 2008) | 1 line
+Changed paths:
+   M /libcaca/trunk/doc/tutorial.dox
+
+doc: rewrite the tutorial to reflect recent API updates.
+------------------------------------------------------------------------
+r2878 | sam | 2008-10-06 19:33:06 +0000 (Mon, 06 Oct 2008) | 1 line
+Changed paths:
+   M /libcaca/trunk/caca/caca.pc.in
+
+libcaca: fix an infinite loop in the .pc file.
+------------------------------------------------------------------------
+r2871 | sam | 2008-10-05 15:50:11 +0000 (Sun, 05 Oct 2008) | 2 lines
+Changed paths:
+   M /libcaca/trunk/configure.ac
+
+Fix detection of floating point assembly instructions. They were
+incorrectly detcted as present because gcc was optimising them away.
+------------------------------------------------------------------------
+r2868 | sam | 2008-10-05 01:37:25 +0000 (Sun, 05 Oct 2008) | 1 line
+Changed paths:
+   M /libcaca/trunk/csharp/Makefile.am
+
+Tidy the .NET Makefile.
+------------------------------------------------------------------------
+r2867 | sam | 2008-10-05 00:56:17 +0000 (Sun, 05 Oct 2008) | 1 line
+Changed paths:
+   A /libcaca/trunk/csharp/Attr.cs
+   M /libcaca/trunk/csharp/Caca.cs
+   A /libcaca/trunk/csharp/Canvas.cs
+   A /libcaca/trunk/csharp/Display.cs
+   A /libcaca/trunk/csharp/Dither.cs
+   A /libcaca/trunk/csharp/Event.cs
+   A /libcaca/trunk/csharp/Font.cs
+   M /libcaca/trunk/csharp/Makefile.am
+   M /libcaca/trunk/csharp/test.cs
+   M /libcaca/trunk/msvc/caca-sharp.csproj
+
+Split the C# bindings into separate files.
+------------------------------------------------------------------------
+r2864 | sam | 2008-10-04 13:05:13 +0000 (Sat, 04 Oct 2008) | 1 line
+Changed paths:
+   M /libcaca/trunk/caca/caca.c
+   M /libcaca/trunk/configure.ac
+   M /libcaca/trunk/src/cacaview.c
+
+configure.ac: use more modern autoconf syntax.
+------------------------------------------------------------------------
+r2860 | sam | 2008-09-29 23:03:38 +0000 (Mon, 29 Sep 2008) | 1 line
+Changed paths:
+   M /libcaca/trunk/examples/Makefile.am
+
+Fix separate directory build failure caused by caca_types.h.
+------------------------------------------------------------------------
+r2859 | sam | 2008-09-29 23:03:34 +0000 (Mon, 29 Sep 2008) | 1 line
+Changed paths:
+   M /libcaca/trunk/build-win32
+
+Fix the Win32 build.
+------------------------------------------------------------------------
+r2858 | sam | 2008-09-29 23:03:30 +0000 (Mon, 29 Sep 2008) | 1 line
+Changed paths:
+   M /libcaca/trunk/caca/caca0.c
+   M /libcaca/trunk/caca/caca0.h
+
+Properly export legacy 0.9 symbols.
+------------------------------------------------------------------------
+r2854 | sam | 2008-09-29 22:02:45 +0000 (Mon, 29 Sep 2008) | 1 line
+Changed paths:
+   M /libcaca/trunk/caca/Makefile.am
+   M /libcaca/trunk/cxx/Makefile.am
+
+Fix for the libcucul symlinks installation, courtesy of Ben Wiley Sittler.
+------------------------------------------------------------------------
+r2853 | bsittler | 2008-09-29 21:28:37 +0000 (Mon, 29 Sep 2008) | 1 line
+Changed paths:
+   M /libcaca/trunk/caca/caca.h
+
+switch to weak aliases so it at least compiles on Mac OS X; note that the aliases do not actually work, so there is no cucul binary compatiblity in fact
+------------------------------------------------------------------------
+r2852 | bsittler | 2008-09-29 21:26:49 +0000 (Mon, 29 Sep 2008) | 1 line
+Changed paths:
+   M /libcaca/trunk/caca/driver_cocoa.m
+
+remove reference to obsolete common.h
+------------------------------------------------------------------------
+r2851 | bsittler | 2008-09-29 21:26:05 +0000 (Mon, 29 Sep 2008) | 1 line
+Changed paths:
+   M /libcaca/trunk/caca/caca.h
+
+add missing CUCUL_* compatiblity constants
+------------------------------------------------------------------------
+r2850 | sam | 2008-09-29 21:16:52 +0000 (Mon, 29 Sep 2008) | 1 line
+Changed paths:
+   M /libcaca/trunk/caca/Makefile.am
+   M /libcaca/trunk/cxx/Makefile.am
+
+Support for platforms where shared libraries are not called *.so.
+------------------------------------------------------------------------
+r2835 | sam | 2008-09-27 21:30:09 +0000 (Sat, 27 Sep 2008) | 1 line
+Changed paths:
+   M /libcaca/trunk/doc/Makefile.am
+
+Fix documentation installation. This is the real 0.99.beta15 release.
+------------------------------------------------------------------------
+r2833 | sam | 2008-09-27 21:09:37 +0000 (Sat, 27 Sep 2008) | 1 line
+Changed paths:
+   M /libcaca/trunk/Makefile.am
+   M /libcaca/trunk/src/img2txt.c
+
+Change the website name to caca.zoy.org.
+------------------------------------------------------------------------
+r2832 | sam | 2008-09-27 18:11:01 +0000 (Sat, 27 Sep 2008) | 3 lines
+Changed paths:
+   M /libcaca/trunk/ChangeLog
+   M /libcaca/trunk/NEWS
+   M /libcaca/trunk/configure.ac
+
+Set version to 0.99.beta14.
+Updated NEWS and ChangeLog.
+
+------------------------------------------------------------------------
 r2831 | sam | 2008-09-27 17:56:49 +0000 (Sat, 27 Sep 2008) | 1 line
 Changed paths:
    M /libcaca/trunk/caca/Makefile.am

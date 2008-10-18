@@ -1,6 +1,6 @@
 # $Id$
 
-AC_INIT(libcaca, 0.99.beta15)
+AC_INIT(libcaca, 0.99.beta16)
 AC_PREREQ(2.50)
 AC_CONFIG_AUX_DIR(.auto)
 AC_CANONICAL_SYSTEM
