@@ -248,7 +248,7 @@ if test "${enable_cocoa}" != "no"; then
       MACOSX_SDK_LDFLAGS="-L${MACOSX_SDK}/usr/lib/gcc/darwin -L${MACOSX_SDK}/usr/lib/gcc/darwin/${GCC_VERSION} -L${MACOSX_SDK}/usr/lib"
       ;;
     x*86*darwin*)
-      MACOSX_SDK=/Developer/SDKs/MacOSX10.4u.sdk
+      MACOSX_SDK=/Developer/SDKs/MacOSX10.5.sdk
       GCC_VERSION=4.0
       ARCH="-arch i386"
       MACOSX_SDK_CFLAGS="-isysroot ${MACOSX_SDK}"
