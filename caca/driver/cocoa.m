@@ -215,8 +215,11 @@ static BOOL s_quitting = NO;
             free(_bkg_colors);
         _bkg_colors = malloc(_w * _h * sizeof(NSColor*));
 
-        [[self window] setContentSize: NSMakeSize(caca_get_canvas_width(dp->cv) * _font_rect.size.width,
-                                                  caca_get_canvas_height(dp->cv) * _font_rect.size.height)];
+      //  [[self window] setContentSize: NSMakeSize(caca_get_canvas_width(dp->cv) * _font_rect.size.width,
+     //                                             caca_get_canvas_height(dp->cv) * _font_rect.size.height)];
+          [[self window] setContentSize: NSMakeSize(caca_get_canvas_width(dp->cv) * 8,
+                                                    caca_get_canvas_height(dp->cv) * 13)];
+
     }
 }
 
@@ -248,8 +251,8 @@ static BOOL s_quitting = NO;
     }
 
     int x, y;
-    float fw = _font_rect.size.width;
-    float fh = _font_rect.size.height;
+    float fw = 8;//_font_rect.size.width;
+    float fh = 13;//_font_rect.size.height;
     uint32_t* attrs;
     uint32_t* chars = _chars;
 
