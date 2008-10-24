@@ -300,6 +300,19 @@ PHP_MINIT_FUNCTION(caca) {
 	} \
 	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas); 
 
+#define FETCH_DISPLAY(display) \
+	zval *_zval; \
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &_zval) == FAILURE) { \
+		RETURN_FALSE; \
+	} \
+	ZEND_FETCH_RESOURCE(display, caca_display_t*, &_zval, -1, PHP_CACA_DISPLAY_RES_NAME, le_caca_display); 
+
+#define FETCH_EVENT(event) \
+	zval *_zval; \
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &_zval) == FAILURE) { \
+		RETURN_FALSE; \
+	} \
+	ZEND_FETCH_RESOURCE(event, caca_event_t*, &_zval, -1, PHP_CACA_EVENT_RES_NAME, le_caca_event); 
 
 //-------CACA'S FUNCTIONS----------------//
 
@@ -680,30 +693,70 @@ PHP_FUNCTION(caca_set_display_time) {
 }
 
 PHP_FUNCTION(caca_get_display_time) {
+	caca_display_t *display;
+	FETCH_DISPLAY(display);
+	RETURN_LONG(caca_get_display_time(display)); //TODO: check return value
 }
 
 PHP_FUNCTION(caca_get_display_width) {
+	caca_display_t *display;
+	FETCH_DISPLAY(display);
+	RETURN_LONG(caca_get_display_width(display));
 }
 
 PHP_FUNCTION(caca_get_display_height) {
+	caca_display_t *display;
+	FETCH_DISPLAY(display);
+	RETURN_LONG(caca_get_display_height(display));
 }
 
 PHP_FUNCTION(caca_set_display_title) {
+	zval *_zval;
+	char *str;
+	long str_len = 0;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &_zval, &str, &str_len) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_display_t *display;
+	ZEND_FETCH_RESOURCE(display, caca_display_t*, &_zval, -1, PHP_CACA_DISPLAY_RES_NAME, le_caca_display);
+	RETURN_BOOL(caca_set_display(display, str) == 0);
 }
 
 PHP_FUNCTION(caca_set_mouse) {
+	zval *_zval;
+	long value = 0;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &_zval, &value) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_display_t *display;
+	ZEND_FETCH_RESOURCE(display, caca_display_t*, &_zval, -1, PHP_CACA_DISPLAY_RES_NAME, le_caca_display);
+	RETURN_BOOL(caca_set_display(display, value) == 0);
 }
 
 PHP_FUNCTION(caca_set_cursor) {
+	zval *_zval;
+	long value = 0;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &_zval, &value) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_display_t *display;
+	ZEND_FETCH_RESOURCE(display, caca_display_t*, &_zval, -1, PHP_CACA_DISPLAY_RES_NAME, le_caca_display);
+	RETURN_BOOL(caca_set_cursor(display, value) == 0);
 }
 
 PHP_FUNCTION(caca_get_event) {
 }
 
 PHP_FUNCTION(caca_get_mouse_x) {
+	caca_display_t *display;
+	FETCH_DISPLAY(display);
+	RETURN_LONG(caca_get_mouse_x(display));
 }
 
 PHP_FUNCTION(caca_get_mouse_y) {
+	caca_display_t *display;
+	FETCH_DISPLAY(display);
+	RETURN_LONG(caca_get_mouse_y(display));
 }
 
 PHP_FUNCTION(caca_get_event_type) {
@@ -713,17 +766,32 @@ PHP_FUNCTION(caca_get_event_key_ch) {
 }
 
 PHP_FUNCTION(caca_get_event_mouse_button) {
+	caca_event_t *event;
+	FETCH_EVENT(event);
+	RETURN_LONG(caca_get_event_mouse_button(event));
 }
 
 PHP_FUNCTION(caca_get_event_mouse_x) {
+	caca_event_t *event;
+	FETCH_EVENT(event);
+	RETURN_LONG(caca_get_event_mouse_x(event));
 }
 
 PHP_FUNCTION(caca_get_event_mouse_y) {
+	caca_event_t *event;
+	FETCH_EVENT(event);
+	RETURN_LONG(caca_get_event_mouse_y(event));
 }
 
 PHP_FUNCTION(caca_get_event_resize_width) {
+	caca_event_t *event;
+	FETCH_EVENT(event);
+	RETURN_LONG(caca_get_event_resize_width(event));
 }
 
 PHP_FUNCTION(caca_get_event_resize_height) {
+	caca_event_t *event;
+	FETCH_EVENT(event);
+	RETURN_LONG(caca_get_event_resize_height(event));
 }
 
