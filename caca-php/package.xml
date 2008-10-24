@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE package SYSTEM "http://pear.php.net/dtd/package-1.0">
+<package version="1.0" packagerversion="1.4.8">
+ <name>caca</name>
+ <summary>PHP binding for libcaca</summary>
+ <description>This extension allows PHP scripts to use libcaca.
+ </description>
+ <maintainers>
+  <maintainer>
+   <user>zMoo</user>
+   <name>Nicolas Vion</name>
+   <email>nico@yojik.eu</email>
+   <role>lead</role>
+  </maintainer>
+  </maintainers>
+ <release>
+  <version>0.0</version>
+  <date>2008-10-15</date>
+  <license>WTFPL</license>
+  <state>alpha</state>
+  <notes>See included ChangeLog for details...
+  </notes>
+  <deps>
+   <dep type="php" rel="ge" version="5.0.0"/>
+  </deps>
+  <filelist>
+   <file role="data" name="examples/example1.php"/>
+   <file role="src" name="config.m4"/>
+   <file role="src" name="php_caca.c"/>
+   <file role="src" name="php_caca.h"/>
+  </filelist>
+ </release>
+</package>
