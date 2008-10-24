@@ -304,6 +304,11 @@ PHP_MINIT_FUNCTION(caca) {
 //-------CACA'S FUNCTIONS----------------//
 
 PHP_FUNCTION(caca_create_canvas) {
+	long width, height = 0;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ll", &width, &height) == FAILURE) {
+		RETURN_FALSE;
+	}
+	RETURN_BOOL(caca_create_canvas(width, height) == 0);
 }
 
 PHP_FUNCTION(caca_manage_canvas) {
@@ -316,18 +321,35 @@ PHP_FUNCTION(caca_set_canvas_size) {
 }
 
 PHP_FUNCTION(caca_get_canvas_width) {
+	caca_canvas_t *canvas;
+	FETCH_CANVAS(canvas);
+	RETURN_LONG(caca_get_canvas_width(canvas));
 }
 
 PHP_FUNCTION(caca_get_canvas_height) {
+	caca_canvas_t *canvas;
+	FETCH_CANVAS(canvas);
+	RETURN_LONG(caca_get_canvas_height(canvas));
 }
 
 PHP_FUNCTION(caca_get_canvas_chars) {
+	caca_canvas_t *canvas;
+	FETCH_CANVAS(canvas);
+	RETURN_STRING(estrdup(caca_get_canvas_chars(canvas)), 0); //TODO: check that return \0 terminated string
 }
 
 PHP_FUNCTION(caca_get_canvas_attrs) {
+	caca_canvas_t *canvas;
+	FETCH_CANVAS(canvas);
+	RETURN_STRING(estrdup(caca_get_canvas_attrs(canvas)), 0); //TODO: check that return \0 terminated string
 }
 
 PHP_FUNCTION(caca_rand) {
+	long min, max = 0;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ll", &min, &max) == FAILURE) {
+		RETURN_FALSE;
+	}
+	RETURN_LONG(caca_rand(min, max));
 }
 
 PHP_FUNCTION(caca_get_version) {
@@ -335,6 +357,14 @@ PHP_FUNCTION(caca_get_version) {
 }
 
 PHP_FUNCTION(caca_gotoxy) {
+	zval *_zval;
+	long x, y = 0;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rll", &_zval, &x, &y) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_canvas_t *canvas;
+	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
+	RETURN_BOOL(caca_gotoxy(canvas, x, y) == 0);
 }
 
 PHP_FUNCTION(caca_get_cursor_x) {
