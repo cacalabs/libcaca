@@ -15,25 +15,41 @@
 
 #include <caca.h>
 
-
 #define PHP_CACA_VERSION "0.0"
 #define PHP_CACA_EXTNAME "caca"
+
+#define PHP_CACA_CANVAS_RES_NAME "caca_canvas"
+#define PHP_CACA_DITHER_RES_NAME "caca_dither"
+#define PHP_CACA_FONT_RES_NAME "caca_font"
+#define PHP_CACA_FILE_RES_NAME "caca_file"
+#define PHP_CACA_DISPLAY_RES_NAME "caca_display"
+#define PHP_CACA_EVENT_RES_NAME "caca_event"
+
+int le_caca_canvas;
+int le_caca_dither;
+int le_caca_font;
+int le_caca_file;
+int le_caca_display;
+int le_caca_event;
 
 PHP_MINIT_FUNCTION(caca);
 PHP_MINFO_FUNCTION(caca);
 
+PHP_FUNCTION(caca_create_canvas);
 PHP_FUNCTION(caca_manage_canvas);
 PHP_FUNCTION(caca_unmanage_canvas);
 PHP_FUNCTION(caca_set_canvas_size);
 PHP_FUNCTION(caca_get_canvas_width);
 PHP_FUNCTION(caca_get_canvas_height);
-PHP_FUNCTION(caca_free_canvas);
+PHP_FUNCTION(caca_get_canvas_chars);
+PHP_FUNCTION(caca_get_canvas_attrs);
 PHP_FUNCTION(caca_rand);
 PHP_FUNCTION(caca_get_version);
 PHP_FUNCTION(caca_gotoxy);
 PHP_FUNCTION(caca_get_cursor_x);
 PHP_FUNCTION(caca_get_cursor_y);
 PHP_FUNCTION(caca_put_char);
+PHP_FUNCTION(caca_get_char);
 PHP_FUNCTION(caca_put_str);
 PHP_FUNCTION(caca_printf);
 PHP_FUNCTION(caca_clear_canvas);
@@ -50,6 +66,7 @@ PHP_FUNCTION(caca_rotate_left);
 PHP_FUNCTION(caca_rotate_right);
 PHP_FUNCTION(caca_stretch_left);
 PHP_FUNCTION(caca_stretch_right);
+PHP_FUNCTION(caca_get_attr);
 PHP_FUNCTION(caca_set_attr);
 PHP_FUNCTION(caca_put_attr);
 PHP_FUNCTION(caca_set_color_ansi);
@@ -98,12 +115,10 @@ PHP_FUNCTION(caca_set_dither_algorithm);
 PHP_FUNCTION(caca_get_dither_algorithm_list);
 PHP_FUNCTION(caca_get_dither_algorithm);
 PHP_FUNCTION(caca_dither_bitmap);
-PHP_FUNCTION(caca_free_dither);
 PHP_FUNCTION(caca_get_font_list);
 PHP_FUNCTION(caca_get_font_width);
 PHP_FUNCTION(caca_get_font_height);
 PHP_FUNCTION(caca_render_canvas);
-PHP_FUNCTION(caca_free_font);
 PHP_FUNCTION(caca_canvas_set_figfont);
 PHP_FUNCTION(caca_put_figchar);
 PHP_FUNCTION(caca_flush_figlet);
@@ -116,7 +131,6 @@ PHP_FUNCTION(caca_get_export_list);
 PHP_FUNCTION(caca_get_display_driver_list);
 PHP_FUNCTION(caca_get_display_driver);
 PHP_FUNCTION(caca_set_display_driver);
-PHP_FUNCTION(caca_free_display);
 PHP_FUNCTION(caca_refresh_display);
 PHP_FUNCTION(caca_set_display_time);
 PHP_FUNCTION(caca_get_display_time);
