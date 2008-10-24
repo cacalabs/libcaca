@@ -53,6 +53,9 @@ static function_entry caca_functions[] = {
 	PHP_FE(caca_put_attr, NULL)
 	PHP_FE(caca_set_color_ansi, NULL)
 	PHP_FE(caca_set_color_argb, NULL)
+	PHP_FE(caca_attr_to_ansi, NULL)
+	PHP_FE(caca_attr_to_ansi_fg, NULL)
+	PHP_FE(caca_attr_to_ansi_bg, NULL)
 	PHP_FE(caca_draw_line, NULL)
 	PHP_FE(caca_draw_polyline, NULL)
 	PHP_FE(caca_draw_thin_line, NULL)
@@ -69,7 +72,6 @@ static function_entry caca_functions[] = {
 	PHP_FE(caca_fill_triangle, NULL)
 	PHP_FE(caca_get_frame_count, NULL)
 	PHP_FE(caca_set_frame, NULL)
-	PHP_FE(caca_get_frame_name, NULL)
 	PHP_FE(caca_set_frame_name, NULL)
 	PHP_FE(caca_create_frame, NULL)
 	PHP_FE(caca_free_frame, NULL)
@@ -101,14 +103,21 @@ static function_entry caca_functions[] = {
 	PHP_FE(caca_put_figchar, NULL)
 	PHP_FE(caca_flush_figlet, NULL)
 	PHP_FE(caca_file_close, NULL)
+	PHP_FE(caca_file_tell, NULL)
+	PHP_FE(caca_file_read, NULL)
+	PHP_FE(caca_file_write, NULL)
 	PHP_FE(caca_file_gets, NULL)
 	PHP_FE(caca_file_eof, NULL)
+	PHP_FE(caca_import_memory, NULL)
+	PHP_FE(caca_import_file, NULL)
 	PHP_FE(caca_get_import_list, NULL)
-	PHP_FE(caca_export_memory, NULL)
 	PHP_FE(caca_get_export_list, NULL)
+	PHP_FE(caca_create_display, NULL)
+	PHP_FE(caca_create_display_with_driver, NULL)
 	PHP_FE(caca_get_display_driver_list, NULL)
 	PHP_FE(caca_get_display_driver, NULL)
 	PHP_FE(caca_set_display_driver, NULL)
+	PHP_FE(caca_get_canvas, NULL)
 	PHP_FE(caca_refresh_display, NULL)
 	PHP_FE(caca_set_display_time, NULL)
 	PHP_FE(caca_get_display_time, NULL)
@@ -353,9 +362,6 @@ PHP_FUNCTION(caca_printf) {
 }
 
 PHP_FUNCTION(caca_clear_canvas) {
-	caca_canvas_t *canvas;
-	FETCH_CANVAS(canvas);
-	RETURN_BOOL(caca_clear_canvas(canvas) == 0);
 }
 
 PHP_FUNCTION(caca_set_canvas_handle) {
@@ -442,13 +448,13 @@ PHP_FUNCTION(caca_set_color_ansi) {
 PHP_FUNCTION(caca_set_color_argb) {
 }
 
-PHP_FUNCTION(caca_attr_to_argb64) {
+PHP_FUNCTION(caca_attr_to_ansi) {
 }
 
-PHP_FUNCTION(caca_utf32_to_ascii) {
+PHP_FUNCTION(caca_attr_to_ansi_fg) {
 }
 
-PHP_FUNCTION(caca_utf32_is_fullwidth) {
+PHP_FUNCTION(caca_attr_to_ansi_bg) {
 }
 
 PHP_FUNCTION(caca_draw_line) {
@@ -481,9 +487,6 @@ PHP_FUNCTION(caca_draw_box) {
 PHP_FUNCTION(caca_draw_thin_box) {
 }
 
-PHP_FUNCTION(caca_draw_cp437_box) {
-}
-
 PHP_FUNCTION(caca_fill_box) {
 }
 
@@ -500,9 +503,6 @@ PHP_FUNCTION(caca_get_frame_count) {
 }
 
 PHP_FUNCTION(caca_set_frame) {
-}
-
-PHP_FUNCTION(caca_get_frame_name) {
 }
 
 PHP_FUNCTION(caca_set_frame_name) {
@@ -598,19 +598,37 @@ PHP_FUNCTION(caca_flush_figlet) {
 PHP_FUNCTION(caca_file_close) {
 }
 
+PHP_FUNCTION(caca_file_tell) {
+}
+
+PHP_FUNCTION(caca_file_read) {
+}
+
+PHP_FUNCTION(caca_file_write) {
+}
+
 PHP_FUNCTION(caca_file_gets) {
 }
 
 PHP_FUNCTION(caca_file_eof) {
 }
 
+PHP_FUNCTION(caca_import_memory) {
+}
+
+PHP_FUNCTION(caca_import_file) {
+}
+
 PHP_FUNCTION(caca_get_import_list) {
 }
 
-PHP_FUNCTION(caca_export_memory) {
+PHP_FUNCTION(caca_get_export_list) {
 }
 
-PHP_FUNCTION(caca_get_export_list) {
+PHP_FUNCTION(caca_create_display) {
+}
+
+PHP_FUNCTION(caca_create_display_with_driver) {
 }
 
 PHP_FUNCTION(caca_get_display_driver_list) {
@@ -620,6 +638,9 @@ PHP_FUNCTION(caca_get_display_driver) {
 }
 
 PHP_FUNCTION(caca_set_display_driver) {
+}
+
+PHP_FUNCTION(caca_get_canvas) {
 }
 
 PHP_FUNCTION(caca_refresh_display) {
@@ -661,9 +682,6 @@ PHP_FUNCTION(caca_get_event_type) {
 PHP_FUNCTION(caca_get_event_key_ch) {
 }
 
-PHP_FUNCTION(caca_get_event_key_utf8) {
-}
-
 PHP_FUNCTION(caca_get_event_mouse_button) {
 }
 
@@ -678,5 +696,4 @@ PHP_FUNCTION(caca_get_event_resize_width) {
 
 PHP_FUNCTION(caca_get_event_resize_height) {
 }
-
 
