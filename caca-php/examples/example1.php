@@ -35,6 +35,7 @@ if (!$display) {
 
 
 caca_set_color_ansi($pig, CACA_LIGHTMAGENTA, CACA_TRANSPARENT);
+caca_set_color_ansi($canvas, CACA_LIGHTBLUE, CACA_TRANSPARENT);
 caca_import_memory($pig, $pig_str, "text");
 caca_set_display_time($display, 30000);
 
@@ -50,13 +51,15 @@ while (caca_get_event($display, CACA_EVENT_KEY_PRESS)) {
 
 	caca_clear_canvas($canvas);
 
-	// Draw pig 
+	// Draw
 	caca_blit($canvas, $x, $y, $pig);
+        caca_put_str($canvas, caca_get_canvas_width($canvas) / 2 - 10, caca_get_canvas_height($canvas) / 2, "Powered by libcaca ".caca_get_version());
 	caca_refresh_display($display);
 
+
+	// Move cursor
 	$x += $ix;
 	$y += $iy;
-
 	if ($x + caca_get_canvas_width($pig) >= caca_get_canvas_width($canvas) || $x < 0 )
 		$ix = -$ix;
 	if ($y + caca_get_canvas_height($pig) >= caca_get_canvas_height($canvas) || $y < 0 )
