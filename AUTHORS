@@ -23,4 +23,7 @@ Pascal Terjan <pterjan@linuxfr.org>
 Daniele "Eriol" Tricoli <eriol@mornie.org>
  - Python CTypes sample program
 
+Nicolas Vion <nico@picapo.net>
+ - PHP bindings
+
 */
