@@ -805,6 +805,14 @@ PHP_FUNCTION(caca_refresh_display) {
 }
 
 PHP_FUNCTION(caca_set_display_time) {
+	zval *_zval;
+	long value = 0;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &_zval, &value) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_display_t *display;
+	ZEND_FETCH_RESOURCE(display, caca_display_t*, &_zval, -1, PHP_CACA_DISPLAY_RES_NAME, le_caca_display);
+	RETURN_BOOL(caca_set_display_time(display, value) == 0);
 }
 
 PHP_FUNCTION(caca_get_display_time) {
@@ -860,6 +868,19 @@ PHP_FUNCTION(caca_set_cursor) {
 }
 
 PHP_FUNCTION(caca_get_event) {
+	zval *_zval1, *_zval2 = NULL;
+	long g, aa = 0;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl|rl", &_zval1, &g, &_zval2, &aa) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_display_t *display;
+	ZEND_FETCH_RESOURCE(display, caca_display_t*, &_zval1, -1, PHP_CACA_DISPLAY_RES_NAME, le_caca_display);
+
+	caca_event_t *event = NULL;
+	if (_zval2) {
+		ZEND_FETCH_RESOURCE(event, caca_event_t*, &_zval2, -1, PHP_CACA_EVENT_RES_NAME, le_caca_event);
+	}
+	RETURN_BOOL(caca_get_event(display, g, event, aa) == 0);
 }
 
 PHP_FUNCTION(caca_get_mouse_x) {
