@@ -584,12 +584,32 @@ PHP_FUNCTION(caca_attr_to_ansi_bg) {
 }
 
 PHP_FUNCTION(caca_draw_line) {
+	zval *_zval;
+	char *str;
+	long str_len, xa, ya, xb, yb = 0;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlllls", &_zval, &xa, &ya, &xb, &yb, &str, &str_len) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_canvas_t *canvas;
+	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
+	if (str_len != 1) {
+		RETURN_FALSE;
+	}
+	RETURN_BOOL(caca_draw_line(canvas, xa, ya, xb, yb, str[0]) == 0);
 }
 
 PHP_FUNCTION(caca_draw_polyline) {
 }
 
 PHP_FUNCTION(caca_draw_thin_line) {
+	zval *_zval;
+	long xa, ya, xb, yb = 0;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rllll", &_zval, &xa, &ya, &xb, &yb) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_canvas_t *canvas;
+	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
+	RETURN_BOOL(caca_draw_thin_line(canvas, xa, ya, xb, yb) == 0);
 }
 
 PHP_FUNCTION(caca_draw_thin_polyline) {
@@ -853,7 +873,7 @@ PHP_FUNCTION(caca_set_mouse) {
 	}
 	caca_display_t *display;
 	ZEND_FETCH_RESOURCE(display, caca_display_t*, &_zval, -1, PHP_CACA_DISPLAY_RES_NAME, le_caca_display);
-	RETURN_BOOL(caca_set_display(display, value) == 0);
+	RETURN_BOOL(caca_set_mouse(display, value) == 0);
 }
 
 PHP_FUNCTION(caca_set_cursor) {
