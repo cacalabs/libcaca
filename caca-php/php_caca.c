@@ -956,6 +956,18 @@ PHP_FUNCTION(caca_set_dither_color) {
 }
 
 PHP_FUNCTION(caca_get_dither_color_list) {
+	zval *_zval;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &_zval) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_dither_t *dither;
+	ZEND_FETCH_RESOURCE(dither, caca_dither_t*, &_zval, -1, PHP_CACA_DITHER_RES_NAME, le_caca_dither);
+
+	char const * const *list = caca_get_dither_antialias_list(dither);
+	int i;
+	array_init(return_value);	
+	for(i = 0; list[i]; i += 2)
+		add_assoc_string(return_value, (char*) list[i], (char*) list[i + 1], 1);
 }
 
 PHP_FUNCTION(caca_get_dither_color) {
@@ -965,6 +977,18 @@ PHP_FUNCTION(caca_set_dither_charset) {
 }
 
 PHP_FUNCTION(caca_get_dither_charset_list) {
+	zval *_zval;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &_zval) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_dither_t *dither;
+	ZEND_FETCH_RESOURCE(dither, caca_dither_t*, &_zval, -1, PHP_CACA_DITHER_RES_NAME, le_caca_dither);
+
+	char const * const *list = caca_get_dither_charset_list(dither);
+	int i;
+	array_init(return_value);	
+	for(i = 0; list[i]; i += 2)
+		add_assoc_string(return_value, (char*) list[i], (char*) list[i + 1], 1);
 }
 
 PHP_FUNCTION(caca_get_dither_charset) {
@@ -974,6 +998,18 @@ PHP_FUNCTION(caca_set_dither_algorithm) {
 }
 
 PHP_FUNCTION(caca_get_dither_algorithm_list) {
+	zval *_zval;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &_zval) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_dither_t *dither;
+	ZEND_FETCH_RESOURCE(dither, caca_dither_t*, &_zval, -1, PHP_CACA_DITHER_RES_NAME, le_caca_dither);
+
+	char const * const *list = caca_get_dither_algorithm_list(dither);
+	int i;
+	array_init(return_value);	
+	for(i = 0; list[i]; i += 2)
+		add_assoc_string(return_value, (char*) list[i], (char*) list[i + 1], 1);
 }
 
 PHP_FUNCTION(caca_get_dither_algorithm) {
@@ -983,12 +1019,31 @@ PHP_FUNCTION(caca_dither_bitmap) {
 }
 
 PHP_FUNCTION(caca_get_font_list) {
+	char const * const *list = caca_get_font_list();
+	int i;
+	array_init(return_value);	
+	for(i = 0; list[i]; i += 1)
+		add_next_index_string(return_value, (char*) list[i], 1);
 }
 
 PHP_FUNCTION(caca_get_font_width) {
+	zval *_zval;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &_zval) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_font_t *font;
+	ZEND_FETCH_RESOURCE(font, caca_font_t*, &_zval, -1, PHP_CACA_FONT_RES_NAME, le_caca_font);
+	RETURN_LONG(caca_get_font_width(font));
 }
 
 PHP_FUNCTION(caca_get_font_height) {
+	zval *_zval;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &_zval) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_font_t *font;
+	ZEND_FETCH_RESOURCE(font, caca_font_t*, &_zval, -1, PHP_CACA_FONT_RES_NAME, le_caca_font);
+	RETURN_LONG(caca_get_font_height(font));
 }
 
 PHP_FUNCTION(caca_render_canvas) {
@@ -1061,6 +1116,11 @@ PHP_FUNCTION(caca_export_string) {
 }
 
 PHP_FUNCTION(caca_get_export_list) {
+	char const * const *list = caca_get_export_list();
+	int i;
+	array_init(return_value);	
+	for(i = 0; list[i]; i += 2)
+		add_assoc_string(return_value, (char*) list[i], (char*) list[i + 1], 1);
 }
 
 PHP_FUNCTION(caca_create_display) {
