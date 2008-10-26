@@ -1,5 +1,19 @@
 #!/usr/bin/php5
 <?
+/*
+ *  demo.php      demo for libcaca php binding
+ *  Copyright (c) 2008 Nicolas Vion <nico@yojik.eu>
+ *
+ *  This file is a Php port of the official libcaca's sample program "demo.c" 
+ *  which is: 
+ *  Copyright (c) 2003 Sam Hocevar <sam@zoy.org>
+ *
+ *  This program is free software. It comes without any warranty, to
+ *  the extent permitted by applicable law. You can redistribute it
+ *  and/or modify it under the terms of the Do What The Fuck You Want
+ *  To Public License, Version 2, as published by Sam Hocevar. See
+ *  http://sam.zoy.org/wtfpl/COPYING for more details.
+ */
 
 function main() {
 	$cv = caca_create_canvas(0, 0);
@@ -12,7 +26,6 @@ function main() {
 		die("Error while attaching canvas to display\n");
 	}
 
-
 	caca_set_display_time($dp, 40000);
 
 	/* Disable cursor */
@@ -21,7 +34,6 @@ function main() {
 	/* Main menu */
 	display_menu($cv, $dp, $bounds, $outline);
 	caca_refresh_display($dp);
-
 
 	/* Go ! */
 	$bounds = $outline = $dithering = 0;

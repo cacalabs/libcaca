@@ -42,7 +42,7 @@ caca_set_display_time($display, 30000);
 $x = $y = 0;
 $ix = $iy = 1;
 
-while (caca_get_event($display, CACA_EVENT_KEY_PRESS)) {
+while (!caca_get_event($display, CACA_EVENT_KEY_PRESS)) {
 	// In case of resize ...
 	if ($x + caca_get_canvas_width($pig) - 1 >= caca_get_canvas_width($canvas) || $x < 0 )
 		$x = 0;
