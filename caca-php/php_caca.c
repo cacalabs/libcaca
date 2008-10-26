@@ -119,9 +119,10 @@ static function_entry caca_functions[] = {
 	PHP_FE(caca_file_write, NULL)
 	PHP_FE(caca_file_gets, NULL)
 	PHP_FE(caca_file_eof, NULL)
-	PHP_FE(caca_import_memory, NULL)
+	PHP_FE(caca_import_string, NULL)
 	PHP_FE(caca_import_file, NULL)
 	PHP_FE(caca_get_import_list, NULL)
+	PHP_FE(caca_export_string, NULL)
 	PHP_FE(caca_get_export_list, NULL)
 	PHP_FE(caca_create_display, NULL)
 	PHP_FE(caca_create_display_with_driver, NULL)
@@ -586,6 +587,14 @@ PHP_FUNCTION(caca_get_attr) {
 }
 
 PHP_FUNCTION(caca_set_attr) {
+	zval *_zval;
+	long attr = 0;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rll", &_zval, &attr) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_canvas_t *canvas;
+	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
+	RETURN_SUCCESS(caca_set_attr(canvas, attr));
 }
 
 PHP_FUNCTION(caca_put_attr) {
@@ -944,7 +953,7 @@ PHP_FUNCTION(caca_file_gets) {
 PHP_FUNCTION(caca_file_eof) {
 }
 
-PHP_FUNCTION(caca_import_memory) {
+PHP_FUNCTION(caca_import_string) {
 	zval *_zval;
 	char *src, *type;
 	long src_len, type_len = 0;
@@ -961,6 +970,26 @@ PHP_FUNCTION(caca_import_file) {
 }
 
 PHP_FUNCTION(caca_get_import_list) {
+}
+
+PHP_FUNCTION(caca_export_string) {
+	zval *_zval;
+	char *type;
+	long type_len;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &_zval, &type, &type_len) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_canvas_t *canvas;
+	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
+
+	void *buffer;
+	size_t len;
+	buffer = caca_export_memory(canvas, type, &len);
+	return_value->type = IS_STRING;
+	return_value->value.str.len = len;
+	return_value->value.str.val = emalloc(len);
+	memcpy(return_value->value.str.val, buffer, len);
+	free(buffer);
 }
 
 PHP_FUNCTION(caca_get_export_list) {
