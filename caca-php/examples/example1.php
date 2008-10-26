@@ -36,7 +36,7 @@ if (!$display) {
 
 caca_set_color_ansi($pig, CACA_LIGHTMAGENTA, CACA_TRANSPARENT);
 caca_set_color_ansi($canvas, CACA_LIGHTBLUE, CACA_TRANSPARENT);
-caca_import_memory($pig, $pig_str, "text");
+caca_import_string($pig, $pig_str, "text");
 caca_set_display_time($display, 30000);
 
 $x = $y = 0;
