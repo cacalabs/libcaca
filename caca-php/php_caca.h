@@ -35,6 +35,8 @@ int le_caca_event;
 PHP_MINIT_FUNCTION(caca);
 PHP_MINFO_FUNCTION(caca);
 
+PHP_FUNCTION(caca_create_event);
+
 PHP_FUNCTION(caca_create_canvas);
 PHP_FUNCTION(caca_manage_canvas);
 PHP_FUNCTION(caca_unmanage_canvas);
@@ -51,7 +53,6 @@ PHP_FUNCTION(caca_get_cursor_y);
 PHP_FUNCTION(caca_put_char);
 PHP_FUNCTION(caca_get_char);
 PHP_FUNCTION(caca_put_str);
-PHP_FUNCTION(caca_printf);
 PHP_FUNCTION(caca_clear_canvas);
 PHP_FUNCTION(caca_set_canvas_handle);
 PHP_FUNCTION(caca_get_canvas_handle_x);
@@ -83,6 +84,7 @@ PHP_FUNCTION(caca_draw_thin_ellipse);
 PHP_FUNCTION(caca_fill_ellipse);
 PHP_FUNCTION(caca_draw_box);
 PHP_FUNCTION(caca_draw_thin_box);
+PHP_FUNCTION(caca_draw_cp437_box);
 PHP_FUNCTION(caca_fill_box);
 PHP_FUNCTION(caca_draw_triangle);
 PHP_FUNCTION(caca_draw_thin_triangle);

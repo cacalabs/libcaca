@@ -18,6 +18,7 @@
 #include "php_caca.h"
 
 static function_entry caca_functions[] = {
+	PHP_FE(caca_create_event, NULL)
 	PHP_FE(caca_create_canvas, NULL)
 	PHP_FE(caca_manage_canvas, NULL)
 	PHP_FE(caca_unmanage_canvas, NULL)
@@ -34,7 +35,6 @@ static function_entry caca_functions[] = {
 	PHP_FE(caca_put_char, NULL)
 	PHP_FE(caca_get_char, NULL)
 	PHP_FE(caca_put_str, NULL)
-	PHP_FE(caca_printf, NULL)
 	PHP_FE(caca_clear_canvas, NULL)
 	PHP_FE(caca_set_canvas_handle, NULL)
 	PHP_FE(caca_get_canvas_handle_x, NULL)
@@ -66,6 +66,7 @@ static function_entry caca_functions[] = {
 	PHP_FE(caca_fill_ellipse, NULL)
 	PHP_FE(caca_draw_box, NULL)
 	PHP_FE(caca_draw_thin_box, NULL)
+	PHP_FE(caca_draw_cp437_box, NULL)
 	PHP_FE(caca_fill_box, NULL)
 	PHP_FE(caca_draw_triangle, NULL)
 	PHP_FE(caca_draw_thin_triangle, NULL)
@@ -167,7 +168,7 @@ PHP_MINFO_FUNCTION(caca) {
 	php_info_print_table_end();
 }
 
-//--------CACA'S RESSOURCES DESTRUCTORS-----------//
+//-------- Caca's ressources destructors -----------//
 
 static void php_caca_canvas_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC) {
 	caca_free_canvas(rsrc->ptr);
@@ -189,9 +190,10 @@ static void php_caca_display_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC) {
 }
 
 static void php_caca_event_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC) {
+	efree((caca_event_t *) rsrc->ptr);
 }
 
-//--------INITIALIZATION---------//
+//-------- Initialization ---------//
 
 PHP_MINIT_FUNCTION(caca) {
 
@@ -291,7 +293,7 @@ PHP_MINIT_FUNCTION(caca) {
 	return SUCCESS;
 }
 
-//----------SOME USEFULL MACROS---------------//
+//---------- Some usefull macros ---------------//
 
 #define FETCH_CANVAS(canvas) \
 	zval *_zval; \
@@ -320,8 +322,15 @@ PHP_MINIT_FUNCTION(caca) {
 	str[1] = '\0'; \
 	RETURN_STRING(str, 0);
 
+//------- PHP Binding's specific functions ----------//
 
-//-------CACA'S FUNCTIONS----------------//
+PHP_FUNCTION(caca_create_event) {
+	caca_event_t *event;
+	event = emalloc(sizeof(caca_event_t));
+	ZEND_REGISTER_RESOURCE(return_value, event, le_caca_event);
+}
+
+//------- Caca's functions ----------------//
 
 PHP_FUNCTION(caca_create_canvas) {
 	long width, height = 0;
@@ -413,13 +422,17 @@ PHP_FUNCTION(caca_get_cursor_y) {
 
 PHP_FUNCTION(caca_put_char) {
 	zval *_zval;
-	long x, y, c = 0;
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlll", &_zval, &x, &y, &c) == FAILURE) {
+	char *str;
+	long str_len, x, y = 0;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlls", &_zval, &x, &y, &str, &str_len) == FAILURE) {
 		RETURN_FALSE;
 	}
 	caca_canvas_t *canvas;
 	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
-	RETURN_BOOL(caca_put_char(canvas, x, y, c) == 0);
+	if (str_len != 1) {
+		RETURN_FALSE;
+	}
+	RETURN_BOOL(caca_put_char(canvas, x, y, str[0]) == 0);
 }
 
 PHP_FUNCTION(caca_get_char) {
@@ -443,9 +456,6 @@ PHP_FUNCTION(caca_put_str) {
 	caca_canvas_t *canvas;
 	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
 	RETURN_BOOL(caca_put_str(canvas, x, y, str) == 0);
-}
-
-PHP_FUNCTION(caca_printf) {
 }
 
 PHP_FUNCTION(caca_clear_canvas) {
@@ -619,21 +629,96 @@ PHP_FUNCTION(caca_draw_circle) {
 }
 
 PHP_FUNCTION(caca_draw_ellipse) {
+	zval *_zval;
+	char *str;
+	long str_len, xa, ya, xb, yb = 0;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlllls", &_zval, &xa, &ya, &xb, &yb, &str, &str_len) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_canvas_t *canvas;
+	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
+	if (str_len != 1) {
+		RETURN_FALSE;
+	}
+	RETURN_BOOL(caca_draw_ellipse(canvas, xa, ya, xb, yb, str[0]) == 0);
 }
 
 PHP_FUNCTION(caca_draw_thin_ellipse) {
+	zval *_zval;
+	long xa, ya, xb, yb = 0;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rllll", &_zval, &xa, &ya, &xb, &yb) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_canvas_t *canvas;
+	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
+	RETURN_BOOL(caca_draw_thin_ellipse(canvas, xa, ya, xb, yb) == 0);
 }
 
 PHP_FUNCTION(caca_fill_ellipse) {
+	zval *_zval;
+	char *str;
+	long str_len, xa, ya, xb, yb = 0;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlllls", &_zval, &xa, &ya, &xb, &yb, &str, &str_len) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_canvas_t *canvas;
+	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
+	if (str_len != 1) {
+		RETURN_FALSE;
+	}
+	RETURN_BOOL(caca_fill_ellipse(canvas, xa, ya, xb, yb, str[0]) == 0);
 }
 
 PHP_FUNCTION(caca_draw_box) {
+	zval *_zval;
+	char *str;
+	long str_len, xa, ya, xb, yb = 0;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlllls", &_zval, &xa, &ya, &xb, &yb, &str, &str_len) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_canvas_t *canvas;
+	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
+	if (str_len != 1) {
+		RETURN_FALSE;
+	}
+	RETURN_BOOL(caca_draw_box(canvas, xa, ya, xb, yb, str[0]) == 0);
 }
 
 PHP_FUNCTION(caca_draw_thin_box) {
+	zval *_zval;
+	long xa, ya, xb, yb = 0;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rllll", &_zval, &xa, &ya, &xb, &yb) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_canvas_t *canvas;
+	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
+	RETURN_BOOL(caca_draw_thin_box(canvas, xa, ya, xb, yb) == 0);
+}
+
+PHP_FUNCTION(caca_draw_cp437_box) {
+	zval *_zval;
+	long xa, ya, xb, yb = 0;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rllll", &_zval, &xa, &ya, &xb, &yb) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_canvas_t *canvas;
+	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
+	RETURN_BOOL(caca_draw_cp437_box(canvas, xa, ya, xb, yb) == 0);
 }
 
 PHP_FUNCTION(caca_fill_box) {
+	zval *_zval;
+	char *str;
+	long str_len, xa, ya, xb, yb = 0;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlllls", &_zval, &xa, &ya, &xb, &yb, &str, &str_len) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_canvas_t *canvas;
+	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
+	if (str_len != 1) {
+		RETURN_FALSE;
+	}
+	RETURN_BOOL(caca_fill_box(canvas, xa, ya, xb, yb, str[0]) == 0);
 }
 
 PHP_FUNCTION(caca_draw_triangle) {
@@ -900,7 +985,7 @@ PHP_FUNCTION(caca_get_event) {
 	if (_zval2) {
 		ZEND_FETCH_RESOURCE(event, caca_event_t*, &_zval2, -1, PHP_CACA_EVENT_RES_NAME, le_caca_event);
 	}
-	RETURN_BOOL(caca_get_event(display, g, event, aa) == 0);
+	RETURN_LONG(caca_get_event(display, g, event, aa));
 }
 
 PHP_FUNCTION(caca_get_mouse_x) {
@@ -916,9 +1001,15 @@ PHP_FUNCTION(caca_get_mouse_y) {
 }
 
 PHP_FUNCTION(caca_get_event_type) {
+	caca_event_t *event;
+	FETCH_EVENT(event);
+	RETURN_LONG(caca_get_event_type(event));
 }
 
 PHP_FUNCTION(caca_get_event_key_ch) {
+	caca_event_t *event;
+	FETCH_EVENT(event);
+	RETURN_LONG(caca_get_event_key_ch(event));
 }
 
 PHP_FUNCTION(caca_get_event_mouse_button) {
