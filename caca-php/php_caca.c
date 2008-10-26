@@ -971,6 +971,13 @@ PHP_FUNCTION(caca_get_dither_color_list) {
 }
 
 PHP_FUNCTION(caca_get_dither_color) {
+	zval *_zval;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &_zval) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_dither_t *dither;
+	ZEND_FETCH_RESOURCE(dither, caca_dither_t*, &_zval, -1, PHP_CACA_DITHER_RES_NAME, le_caca_dither);
+	RETURN_STRING((char *) caca_get_dither_color(dither), 1);
 }
 
 PHP_FUNCTION(caca_set_dither_charset) {
@@ -992,6 +999,13 @@ PHP_FUNCTION(caca_get_dither_charset_list) {
 }
 
 PHP_FUNCTION(caca_get_dither_charset) {
+	zval *_zval;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &_zval) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_dither_t *dither;
+	ZEND_FETCH_RESOURCE(dither, caca_dither_t*, &_zval, -1, PHP_CACA_DITHER_RES_NAME, le_caca_dither);
+	RETURN_STRING((char *) caca_get_dither_charset(dither), 1);
 }
 
 PHP_FUNCTION(caca_set_dither_algorithm) {
@@ -1013,6 +1027,13 @@ PHP_FUNCTION(caca_get_dither_algorithm_list) {
 }
 
 PHP_FUNCTION(caca_get_dither_algorithm) {
+	zval *_zval;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &_zval) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_dither_t *dither;
+	ZEND_FETCH_RESOURCE(dither, caca_dither_t*, &_zval, -1, PHP_CACA_DITHER_RES_NAME, le_caca_dither);
+	RETURN_STRING((char *) caca_get_dither_algorithm(dither), 1);
 }
 
 PHP_FUNCTION(caca_dither_bitmap) {
