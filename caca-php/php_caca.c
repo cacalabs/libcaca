@@ -626,6 +626,18 @@ PHP_FUNCTION(caca_draw_thin_polyline) {
 }
 
 PHP_FUNCTION(caca_draw_circle) {
+	zval *_zval;
+	char *str;
+	long str_len, x, y, r = 0;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rllls", &_zval, &x, &y, &r, &str, &str_len) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_canvas_t *canvas;
+	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
+	if (str_len != 1) {
+		RETURN_FALSE;
+	}
+	RETURN_BOOL(caca_draw_circle(canvas, x, y, r, str[0]) == 0);
 }
 
 PHP_FUNCTION(caca_draw_ellipse) {
@@ -722,12 +734,44 @@ PHP_FUNCTION(caca_fill_box) {
 }
 
 PHP_FUNCTION(caca_draw_triangle) {
+	zval *_zval;
+	char *str;
+	long str_len, xa, ya, xb, yb, xc, yc = 0;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlllllls", &_zval, &xa, &ya, &xb, &yb, &xc, &yc, &str, &str_len) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_canvas_t *canvas;
+	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
+	if (str_len != 1) {
+		RETURN_FALSE;
+	}
+	RETURN_BOOL(caca_draw_triangle(canvas, xa, ya, xb, yb, xc, yc, str[0]) == 0);
 }
 
 PHP_FUNCTION(caca_draw_thin_triangle) {
+	zval *_zval;
+	long xa, ya, xb, yb, xc, yc = 0;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rllllll", &_zval, &xa, &ya, &xb, &yb, &xc, &yc) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_canvas_t *canvas;
+	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
+	RETURN_BOOL(caca_draw_thin_triangle(canvas, xa, ya, xb, yb, xc, yc) == 0);
 }
 
 PHP_FUNCTION(caca_fill_triangle) {
+	zval *_zval;
+	char *str;
+	long str_len, xa, ya, xb, yb, xc, yc = 0;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlllllls", &_zval, &xa, &ya, &xb, &yb, &xc, &yc, &str, &str_len) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_canvas_t *canvas;
+	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
+	if (str_len != 1) {
+		RETURN_FALSE;
+	}
+	RETURN_BOOL(caca_fill_triangle(canvas, xa, ya, xb, yb, xc, yc, str[0]) == 0);
 }
 
 PHP_FUNCTION(caca_get_frame_count) {
