@@ -343,15 +343,35 @@ PHP_MINIT_FUNCTION(caca) {
 #define RETURN_SUCCESS(i) \
 	RETURN_BOOL((i) == 0);
 
-//------- Function that allows to fetch external php resources such as gd resouces
+//---------- Some usefull functions --------------------//
+
+//Fetch external php resources such as gd resouces
 
 void *fetch_external_resource(zval *_zval, char const *type_name) {
 	int resource_id = _zval->value.lval;
 	int resource_type;
 	void *result = zend_list_find(resource_id, &resource_type);
+	if (!result) 
+		return NULL;
 	char *resource_type_name = zend_rsrc_list_get_rsrc_type(resource_id);
 	return (strcmp(resource_type_name, type_name) == 0) ? result : NULL;
 }
+
+//Fetch buffer of pixels from gdImage
+
+void *gd_get_pixels(gdImage *img) {
+	if (img->trueColor) {
+		int line_size = img->sx * sizeof(int);
+		void *result = malloc(img->sy * line_size);
+		int j;		
+		for (j = 0; j < img->sy; j++)
+			memcpy(result + (j * line_size), (const void *) img->tpixels[j], line_size);
+		return result;
+	}
+	return NULL;
+}
+
+
 
 //------- PHP Binding's specific functions ----------//
 
@@ -1162,11 +1182,14 @@ PHP_FUNCTION(caca_dither_bitmap_gd) {
 		RETURN_FALSE;
 	}
 
-	printf("image size: %i x %i\n", img->sx, img->sy);
-	if (img->trueColor) {
-		printf("image is true color\n");
-		RETURN_SUCCESS(caca_dither_bitmap(canvas, x, y, w, h, dither, (void *) *(img->tpixels)));
+	void *pixels = gd_get_pixels(img);
+	if (!pixels) {
+		RETURN_FALSE;
 	}
+
+	caca_dither_bitmap(canvas, x, y, w, h, dither, pixels);
+	free(pixels);
+	RETURN_TRUE;
 }
 
 PHP_FUNCTION(caca_get_font_list) {
