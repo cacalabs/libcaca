@@ -855,7 +855,7 @@ static uint32_t rotatechar(uint32_t ch)
          'Y', 0x2144, /* Y ⅄ */
          'a', 0x0250, /* a ɐ */
          'c', 0x0254, /* c ɔ */
-         'e', 0x0259, /* e ə */
+         'e', 0x01dd, /* e ǝ */
          'f', 0x025f, /* f ɟ */
          'g', 0x1d77, /* g ᵷ */
          'h', 0x0265, /* h ɥ */
@@ -869,6 +869,12 @@ static uint32_t rotatechar(uint32_t ch)
          'v', 0x028c, /* v ʌ */
          'w', 0x028d, /* w ʍ */
          'y', 0x028e, /* y ʎ */
+         /* Unicode-ASCII to match third-party software */
+         0x0183, 'g', /* ƃ g */
+         0x0259, 'e', /* ə e */
+         0x027e, 'j', /* ɾ j */
+         0x02d9, '.', /* ˙ . */
+         0x05df, 'l', /* ן l */
          /* Not perfect, but better than nothing */
          '"', 0x201e, /* " „ */
          /* Misc Unicode */
