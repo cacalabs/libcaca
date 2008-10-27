@@ -1259,6 +1259,9 @@ PHP_FUNCTION(caca_export_string) {
 	void *buffer;
 	size_t len;
 	buffer = caca_export_memory(canvas, type, &len);
+	if (!buffer) {
+		RETURN_FALSE;
+	}
 	return_value->type = IS_STRING;
 	return_value->value.str.len = len;
 	return_value->value.str.val = emalloc(len);
