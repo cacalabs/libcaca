@@ -16,6 +16,7 @@
 
 #include "php.h"
 #include "php_caca.h"
+#include <gd.h>
 
 static function_entry caca_functions[] = {
 	PHP_FE(caca_create_event, NULL)
@@ -105,7 +106,7 @@ static function_entry caca_functions[] = {
 	PHP_FE(caca_set_dither_algorithm, NULL)
 	PHP_FE(caca_get_dither_algorithm_list, NULL)
 	PHP_FE(caca_get_dither_algorithm, NULL)
-	PHP_FE(caca_dither_bitmap, NULL)
+	PHP_FE(caca_dither_bitmap_gd, NULL)
 	PHP_FE(caca_get_font_list, NULL)
 	PHP_FE(caca_get_font_width, NULL)
 	PHP_FE(caca_get_font_height, NULL)
@@ -340,6 +341,16 @@ PHP_MINIT_FUNCTION(caca) {
 
 #define RETURN_SUCCESS(i) \
 	RETURN_BOOL((i) == 0);
+
+//------- Function that allows to fetch external php resources such as gd resouces
+
+void *fetch_external_resource(zval *_zval, char const *type_name) {
+	int resource_id = _zval->value.lval;
+	int resource_type;
+	void *result = zend_list_find(resource_id, &resource_type);
+	char *resource_type_name = zend_rsrc_list_get_rsrc_type(resource_id);
+	return (strcmp(resource_type_name, type_name) == 0) ? result : NULL;
+}
 
 //------- PHP Binding's specific functions ----------//
 
@@ -1124,18 +1135,15 @@ PHP_FUNCTION(caca_get_dither_algorithm) {
 	RETURN_STRING((char *) caca_get_dither_algorithm(dither), 1);
 }
 
-PHP_FUNCTION(caca_dither_bitmap) {
-	zval *_zval1, *_zval2;
-	int x, y, w, h = 0;
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rllllr", &_zval1, &x, &y, &w, &h, &_zval2) == FAILURE) {
+PHP_FUNCTION(caca_dither_bitmap_gd) {
+	zval *_zval;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &_zval) == FAILURE) {
 		RETURN_FALSE;
 	}
-	caca_canvas_t *canvas;
-	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval1, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
-	caca_dither_t *dither;
-	ZEND_FETCH_RESOURCE(dither, caca_dither_t*, &_zval2, -1, PHP_CACA_DITHER_RES_NAME, le_caca_dither);
-/*	RETURN_SUCCESS(caca_dither_bitmap(canvas, x, y, x, h, dither, pixels); //TODO: Use gd ressouces for pixels?
-*/
+	gdImage *img = fetch_external_resource(_zval, "gd");
+	if (img) {
+		printf("image size: %i x %i\n", img->sx, img->sy);
+	}
 }
 
 PHP_FUNCTION(caca_get_font_list) {

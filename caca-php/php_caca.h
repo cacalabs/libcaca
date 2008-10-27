@@ -123,7 +123,7 @@ PHP_FUNCTION(caca_get_dither_charset);
 PHP_FUNCTION(caca_set_dither_algorithm);
 PHP_FUNCTION(caca_get_dither_algorithm_list);
 PHP_FUNCTION(caca_get_dither_algorithm);
-PHP_FUNCTION(caca_dither_bitmap);
+PHP_FUNCTION(caca_dither_bitmap_gd);
 PHP_FUNCTION(caca_get_font_list);
 PHP_FUNCTION(caca_get_font_width);
 PHP_FUNCTION(caca_get_font_height);
