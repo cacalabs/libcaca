@@ -7,7 +7,7 @@ if (!$dither)
 
 $canvas = caca_create_canvas(0, 0);
 $display = caca_create_display($canvas);
-if (!$dither) 
+if (!$display) 
 	die("Can not create display.\n");
 
 caca_dither_bitmap_gd($canvas, 0, 0, caca_get_canvas_width($canvas), caca_get_canvas_height($canvas), $dither, $img);
