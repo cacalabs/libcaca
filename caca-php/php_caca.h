@@ -104,6 +104,7 @@ PHP_FUNCTION(caca_set_frame);
 PHP_FUNCTION(caca_set_frame_name);
 PHP_FUNCTION(caca_create_frame);
 PHP_FUNCTION(caca_free_frame);
+PHP_FUNCTION(caca_create_dither);
 PHP_FUNCTION(caca_set_dither_palette);
 PHP_FUNCTION(caca_set_dither_brightness);
 PHP_FUNCTION(caca_get_dither_brightness);
