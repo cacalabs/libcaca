@@ -88,6 +88,7 @@ static function_entry caca_functions[] = {
 	PHP_FE(caca_create_frame, NULL)
 	PHP_FE(caca_free_frame, NULL)
 	PHP_FE(caca_create_dither, NULL)
+	PHP_FE(caca_create_dither_gd, NULL)
 	PHP_FE(caca_set_dither_palette, NULL)
 	PHP_FE(caca_set_dither_brightness, NULL)
 	PHP_FE(caca_get_dither_brightness, NULL)
@@ -960,6 +961,20 @@ PHP_FUNCTION(caca_create_dither) {
 		RETURN_FALSE;
 	}
 	caca_dither_t *dither = caca_create_dither(bpp, w, h, pitch, rmask, gmask, bmask, amask);
+	ZEND_REGISTER_RESOURCE(return_value, dither, le_caca_dither);
+}
+
+PHP_FUNCTION(caca_create_dither_gd) {
+	zval *_zval;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &_zval) == FAILURE) {
+		RETURN_FALSE;
+	}
+
+	gdImage *img = fetch_external_resource(_zval, "gd");
+	if (!img | !img->trueColor) {
+		RETURN_FALSE;
+	}
+	caca_dither_t *dither = caca_create_dither(sizeof(int) * 8, img->sx, img->sy, img->sx * sizeof(int), 0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000);
 	ZEND_REGISTER_RESOURCE(return_value, dither, le_caca_dither);
 }
 
