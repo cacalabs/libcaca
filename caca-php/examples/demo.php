@@ -160,9 +160,9 @@ function demo_all($cv, $dp, $bounds, $outline) {
 
 	$j = 15 + sin(0.03 * $i) * 8;
 	caca_set_color_ansi($cv, CACA_WHITE, CACA_BLACK);
-	caca_fill_ellipse($cv, $xo, $yo, $j, $j / 2, '#');
+	caca_fill_ellipse($cv, $xo, $yo, $j, $j / 2, ord('#'));
 	caca_set_color_ansi($cv, CACA_YELLOW, CACA_BLACK);
-	caca_draw_ellipse($cv, $xo, $yo, $j, $j / 2, '#');
+	caca_draw_ellipse($cv, $xo, $yo, $j, $j / 2, ord('#'));
 
 	/* Draw the pyramid */
 	$xo = caca_get_canvas_width($cv) * 5 / 8;
@@ -178,17 +178,17 @@ function demo_all($cv, $dp, $bounds, $outline) {
 	$yc = caca_get_canvas_height($cv) * 3 / 4 + cos(0.02 * $i) * 5;
 
 	caca_set_color_ansi($cv, CACA_GREEN, CACA_BLACK);
-	caca_fill_triangle($cv, $xo, $yo, $xb, $yb, $xa, $ya, '%');
+	caca_fill_triangle($cv, $xo, $yo, $xb, $yb, $xa, $ya, ord('%'));
 	caca_set_color_ansi($cv, CACA_YELLOW, CACA_BLACK);
 	caca_draw_thin_triangle($cv, $xo, $yo, $xb, $yb, $xa, $ya);
 
 	caca_set_color_ansi($cv, CACA_RED, CACA_BLACK);
-	caca_fill_triangle($cv, $xa, $ya, $xb, $yb, $xc, $yc, '#');
+	caca_fill_triangle($cv, $xa, $ya, $xb, $yb, $xc, $yc, ord('#'));
 	caca_set_color_ansi($cv, CACA_YELLOW, CACA_BLACK);
 	caca_draw_thin_triangle($cv, $xa, $ya, $xb, $yb, $xc, $yc);
 
 	caca_set_color_ansi($cv, CACA_BLUE, CACA_BLACK);
-	caca_fill_triangle($cv, $xo, $yo, $xb, $yb, $xc, $yc, '%');
+	caca_fill_triangle($cv, $xo, $yo, $xb, $yb, $xc, $yc, ord('%'));
 	caca_set_color_ansi($cv, CACA_YELLOW, CACA_BLACK);
 	caca_draw_thin_triangle($cv, $xo, $yo, $xb, $yb, $xc, $yc);
 
@@ -219,7 +219,7 @@ function demo_all($cv, $dp, $bounds, $outline) {
 		caca_put_char($cv, 
 			caca_get_canvas_width($cv) / 2 + cos(0.02 * $j) * ($delta + caca_get_canvas_width($cv) / 4),
 			caca_get_canvas_height($cv) / 2 + sin(0.02 * $j) * ($delta + caca_get_canvas_height($cv) / 3),
-			'#');
+			ord('#'));
 	}
 }
 
@@ -264,7 +264,7 @@ function demo_dots($cv, $bounds, $outline, $dithering) {
 	for ($i = 1000; $i--;) {
 		/* Putpixel */
 		caca_set_color_ansi($cv, caca_rand(0, 16), caca_rand(0, 16));
-		caca_put_char($cv, caca_rand(0, $xmax), caca_rand(0, $ymax), $chars[caca_rand(0, 9)]);
+		caca_put_char($cv, caca_rand(0, $xmax), caca_rand(0, $ymax), ord($chars[caca_rand(0, 9)]));
 	}
 }
 
@@ -285,7 +285,7 @@ function demo_lines($cv, $bounds, $outline, $dithering) {
 	if ($outline > 1)
 		caca_draw_thin_line($cv, $xa, $ya, $xb, $yb);
 	else
-		caca_draw_line($cv, $xa, $ya, $xb, $yb, '#');
+		caca_draw_line($cv, $xa, $ya, $xb, $yb, ord('#'));
 }
 
 function demo_boxes($cv, $bounds, $outline, $dithering) {
@@ -302,13 +302,13 @@ function demo_boxes($cv, $bounds, $outline, $dithering) {
 	}
 
 	caca_set_color_ansi($cv, caca_rand(0, 16), caca_rand(0, 16));
-	caca_fill_box($cv, $xa, $ya, $xb, $yb, '#');
+	caca_fill_box($cv, $xa, $ya, $xb, $yb, ord('#'));
 
 	caca_set_color_ansi($cv, caca_rand(0, 16), CACA_BLACK);
 	if($outline == 2)
 		caca_draw_thin_box($cv, $xa, $ya, $xb, $yb);
 	else if($outline == 1)
-		caca_draw_box($cv, $xa, $ya, $xb, $yb, '#');
+		caca_draw_box($cv, $xa, $ya, $xb, $yb, ord('#'));
 }
 
 function demo_ellipses($cv, $bounds, $outline, $dithering) {
@@ -327,13 +327,13 @@ function demo_ellipses($cv, $bounds, $outline, $dithering) {
 	}
 
 	caca_set_color_ansi($cv, caca_rand(0, 16), caca_rand(0, 16));
-	caca_fill_ellipse($cv, $x, $y, $a, $b, '#');
+	caca_fill_ellipse($cv, $x, $y, $a, $b, ord('#'));
 
 	caca_set_color_ansi($cv, caca_rand(0, 16), CACA_BLACK);
 	if ($outline == 2)
 		caca_draw_thin_ellipse($cv, $x, $y, $a, $b);
 	else if ($outline == 1)
-		caca_draw_ellipse($cv, $x, $y, $a, $b, '#');
+		caca_draw_ellipse($cv, $x, $y, $a, $b, ord('#'));
 }
 
 function demo_triangles($cv, $bounds, $outline, $dithering) {
@@ -352,13 +352,13 @@ function demo_triangles($cv, $bounds, $outline, $dithering) {
 	}
 
 	caca_set_color_ansi($cv, caca_rand(0, 16), caca_rand(0, 16));
-	caca_fill_triangle($cv, $xa, $ya, $xb, $yb, $xc, $yc, '#');
+	caca_fill_triangle($cv, $xa, $ya, $xb, $yb, $xc, $yc, ord('#'));
 
 	caca_set_color_ansi($cv, caca_rand(0, 16), CACA_BLACK);
 	if ($outline == 2)
 		caca_draw_thin_triangle($cv, $xa, $ya, $xb, $yb, $xc, $yc);
 	else if ($outline == 1)
-		caca_draw_triangle($cv, $xa, $ya, $xb, $yb, $xc, $yc, '#');
+		caca_draw_triangle($cv, $xa, $ya, $xb, $yb, $xc, $yc, ord('#'));
 }
 
 function demo_render($cv, $bounds, $outline, $dithering) {

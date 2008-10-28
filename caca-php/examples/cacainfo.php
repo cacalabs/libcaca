@@ -28,6 +28,9 @@ EOT;
 	}
 	caca_set_color_ansi($cv, CACA_LIGHTGREEN, CACA_DEFAULT);
 	caca_put_str($cv, 8, 0, "Moo!");
+	caca_set_color_ansi($cv, CACA_LIGHTRED, CACA_DEFAULT);
+	caca_put_char($cv, 8, 1, hexdec("2765")); //U+2765
+	caca_put_char($cv, 10, 1, hexdec("2764")); //U+2764
 	echo caca_export_string($cv, "utf8");
 }
 	

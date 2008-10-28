@@ -473,17 +473,13 @@ PHP_FUNCTION(caca_get_cursor_y) {
 
 PHP_FUNCTION(caca_put_char) {
 	zval *_zval;
-	char *str;
-	long str_len, x, y = 0;
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlls", &_zval, &x, &y, &str, &str_len) == FAILURE) {
+	long x, y, c;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlll", &_zval, &x, &y, &c) == FAILURE) {
 		RETURN_FALSE;
 	}
 	caca_canvas_t *canvas;
 	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
-	if (str_len != 1) {
-		RETURN_FALSE;
-	}
-	RETURN_SUCCESS(caca_put_char(canvas, x, y, str[0]));
+	RETURN_SUCCESS(caca_put_char(canvas, x, y, c));
 }
 
 PHP_FUNCTION(caca_get_char) {
@@ -720,29 +716,20 @@ PHP_FUNCTION(caca_utf32_is_fullwidth) {
 
 PHP_FUNCTION(caca_draw_line) {
 	zval *_zval;
-	char *str;
-	long str_len, xa, ya, xb, yb = 0;
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlllls", &_zval, &xa, &ya, &xb, &yb, &str, &str_len) == FAILURE) {
+	long xa, ya, xb, yb, c;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlllll", &_zval, &xa, &ya, &xb, &yb, &c) == FAILURE) {
 		RETURN_FALSE;
 	}
 	caca_canvas_t *canvas;
 	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
-	if (str_len != 1) {
-		RETURN_FALSE;
-	}
-	RETURN_SUCCESS(caca_draw_line(canvas, xa, ya, xb, yb, str[0]));
+	RETURN_SUCCESS(caca_draw_line(canvas, xa, ya, xb, yb, c));
 }
 
 PHP_FUNCTION(caca_draw_polyline) {
 	zval *zval_res, *zval_arr;
-	char *c;
-	long c_len;
+	long c;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ras", &zval_res, &zval_arr, &c, &c_len) == FAILURE) {
-		RETURN_FALSE;
-	}
-
-	if (c_len != 1) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ral", &zval_res, &zval_arr, &c) == FAILURE) {
 		RETURN_FALSE;
 	}
 
@@ -775,7 +762,7 @@ PHP_FUNCTION(caca_draw_polyline) {
 			tbl_count++;
 		}
 	}
-	int res = caca_draw_polyline(canvas, tbl_x, tbl_y, tbl_count - 1, c[0]);
+	int res = caca_draw_polyline(canvas, tbl_x, tbl_y, tbl_count - 1, c);
 	free(tbl_x);
 	free(tbl_y);
 	RETURN_SUCCESS(res);
@@ -835,32 +822,24 @@ PHP_FUNCTION(caca_draw_thin_polyline) {
 
 PHP_FUNCTION(caca_draw_circle) {
 	zval *_zval;
-	char *str;
-	long str_len, x, y, r = 0;
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rllls", &_zval, &x, &y, &r, &str, &str_len) == FAILURE) {
+	long x, y, r, c;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rllll", &_zval, &x, &y, &r, &c) == FAILURE) {
 		RETURN_FALSE;
 	}
 	caca_canvas_t *canvas;
 	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
-	if (str_len != 1) {
-		RETURN_FALSE;
-	}
-	RETURN_SUCCESS(caca_draw_circle(canvas, x, y, r, str[0]));
+	RETURN_SUCCESS(caca_draw_circle(canvas, x, y, r, c));
 }
 
 PHP_FUNCTION(caca_draw_ellipse) {
 	zval *_zval;
-	char *str;
-	long str_len, xa, ya, xb, yb = 0;
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlllls", &_zval, &xa, &ya, &xb, &yb, &str, &str_len) == FAILURE) {
+	long xa, ya, xb, yb, c = 0;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlllll", &_zval, &xa, &ya, &xb, &yb, &c) == FAILURE) {
 		RETURN_FALSE;
 	}
 	caca_canvas_t *canvas;
 	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
-	if (str_len != 1) {
-		RETURN_FALSE;
-	}
-	RETURN_SUCCESS(caca_draw_ellipse(canvas, xa, ya, xb, yb, str[0]));
+	RETURN_SUCCESS(caca_draw_ellipse(canvas, xa, ya, xb, yb, c));
 }
 
 PHP_FUNCTION(caca_draw_thin_ellipse) {
@@ -876,32 +855,24 @@ PHP_FUNCTION(caca_draw_thin_ellipse) {
 
 PHP_FUNCTION(caca_fill_ellipse) {
 	zval *_zval;
-	char *str;
-	long str_len, xa, ya, xb, yb = 0;
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlllls", &_zval, &xa, &ya, &xb, &yb, &str, &str_len) == FAILURE) {
+	long xa, ya, xb, yb, c;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlllll", &_zval, &xa, &ya, &xb, &yb, &c) == FAILURE) {
 		RETURN_FALSE;
 	}
 	caca_canvas_t *canvas;
 	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
-	if (str_len != 1) {
-		RETURN_FALSE;
-	}
-	RETURN_SUCCESS(caca_fill_ellipse(canvas, xa, ya, xb, yb, str[0]));
+	RETURN_SUCCESS(caca_fill_ellipse(canvas, xa, ya, xb, yb, c));
 }
 
 PHP_FUNCTION(caca_draw_box) {
 	zval *_zval;
-	char *str;
-	long str_len, xa, ya, xb, yb = 0;
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlllls", &_zval, &xa, &ya, &xb, &yb, &str, &str_len) == FAILURE) {
+	long xa, ya, xb, yb, c;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlllll", &_zval, &xa, &ya, &xb, &yb, &c) == FAILURE) {
 		RETURN_FALSE;
 	}
 	caca_canvas_t *canvas;
 	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
-	if (str_len != 1) {
-		RETURN_FALSE;
-	}
-	RETURN_SUCCESS(caca_draw_box(canvas, xa, ya, xb, yb, str[0]));
+	RETURN_SUCCESS(caca_draw_box(canvas, xa, ya, xb, yb, c));
 }
 
 PHP_FUNCTION(caca_draw_thin_box) {
@@ -917,7 +888,7 @@ PHP_FUNCTION(caca_draw_thin_box) {
 
 PHP_FUNCTION(caca_draw_cp437_box) {
 	zval *_zval;
-	long xa, ya, xb, yb = 0;
+	long xa, ya, xb, yb;
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rllll", &_zval, &xa, &ya, &xb, &yb) == FAILURE) {
 		RETURN_FALSE;
 	}
@@ -928,32 +899,24 @@ PHP_FUNCTION(caca_draw_cp437_box) {
 
 PHP_FUNCTION(caca_fill_box) {
 	zval *_zval;
-	char *str;
-	long str_len, xa, ya, xb, yb = 0;
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlllls", &_zval, &xa, &ya, &xb, &yb, &str, &str_len) == FAILURE) {
+	long xa, ya, xb, yb, c;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlllll", &_zval, &xa, &ya, &xb, &yb, &c) == FAILURE) {
 		RETURN_FALSE;
 	}
 	caca_canvas_t *canvas;
 	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
-	if (str_len != 1) {
-		RETURN_FALSE;
-	}
-	RETURN_SUCCESS(caca_fill_box(canvas, xa, ya, xb, yb, str[0]));
+	RETURN_SUCCESS(caca_fill_box(canvas, xa, ya, xb, yb, c));
 }
 
 PHP_FUNCTION(caca_draw_triangle) {
 	zval *_zval;
-	char *str;
-	long str_len, xa, ya, xb, yb, xc, yc = 0;
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlllllls", &_zval, &xa, &ya, &xb, &yb, &xc, &yc, &str, &str_len) == FAILURE) {
+	long xa, ya, xb, yb, xc, yc, c;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlllllll", &_zval, &xa, &ya, &xb, &yb, &xc, &yc, &c) == FAILURE) {
 		RETURN_FALSE;
 	}
 	caca_canvas_t *canvas;
 	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
-	if (str_len != 1) {
-		RETURN_FALSE;
-	}
-	RETURN_SUCCESS(caca_draw_triangle(canvas, xa, ya, xb, yb, xc, yc, str[0]));
+	RETURN_SUCCESS(caca_draw_triangle(canvas, xa, ya, xb, yb, xc, yc, c));
 }
 
 PHP_FUNCTION(caca_draw_thin_triangle) {
@@ -969,17 +932,13 @@ PHP_FUNCTION(caca_draw_thin_triangle) {
 
 PHP_FUNCTION(caca_fill_triangle) {
 	zval *_zval;
-	char *str;
-	long str_len, xa, ya, xb, yb, xc, yc = 0;
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlllllls", &_zval, &xa, &ya, &xb, &yb, &xc, &yc, &str, &str_len) == FAILURE) {
+	long xa, ya, xb, yb, xc, yc, c = 0;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlllllll", &_zval, &xa, &ya, &xb, &yb, &xc, &yc, &c) == FAILURE) {
 		RETURN_FALSE;
 	}
 	caca_canvas_t *canvas;
 	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
-	if (str_len != 1) {
-		RETURN_FALSE;
-	}
-	RETURN_SUCCESS(caca_fill_triangle(canvas, xa, ya, xb, yb, xc, yc, str[0]));
+	RETURN_SUCCESS(caca_fill_triangle(canvas, xa, ya, xb, yb, xc, yc, c));
 }
 
 PHP_FUNCTION(caca_get_frame_count) {
