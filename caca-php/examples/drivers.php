@@ -1,6 +1,5 @@
 #!/usr/bin/php5
-<?
-
+<?php
 
 //--- Just for fun ---//
 
@@ -44,10 +43,16 @@ foreach($list as $type => $name)
 	echo "* $name ($type)\n";
 echo "\n";
 
-echo "Available export modules:\n";
+echo "Available import formats:\n";
+$list = caca_get_import_list();
+foreach($list as $format => $name)
+	echo "* $name ($format)\n";
+echo "\n";
+
+echo "Available export formats:\n";
 $list = caca_get_export_list();
-foreach($list as $type => $name)
-	echo "* $name ($type)\n";
+foreach($list as $format => $name)
+	echo "* $name ($format)\n";
 echo "\n";
 
 echo "Available caca fonts:\n";

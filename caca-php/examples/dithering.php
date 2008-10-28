@@ -1,6 +1,10 @@
 #!/usr/bin/php5
-<?
+<?php
+
 $img = imagecreatefrompng(dirname(__FILE__)."/logo-caca.png");
+if (!$img) 
+	die("Can not open image.\n");
+
 $dither = caca_create_dither_gd($img);
 if (!$dither) 
 	die("Can not create dither. Maybe this image is not truecolor.\n");

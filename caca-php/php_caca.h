@@ -38,8 +38,6 @@ PHP_MINFO_FUNCTION(caca);
 PHP_FUNCTION(caca_create_event);
 
 PHP_FUNCTION(caca_create_canvas);
-PHP_FUNCTION(caca_manage_canvas);
-PHP_FUNCTION(caca_unmanage_canvas);
 PHP_FUNCTION(caca_set_canvas_size);
 PHP_FUNCTION(caca_get_canvas_width);
 PHP_FUNCTION(caca_get_canvas_height);
@@ -133,6 +131,7 @@ PHP_FUNCTION(caca_render_canvas);
 PHP_FUNCTION(caca_canvas_set_figfont);
 PHP_FUNCTION(caca_put_figchar);
 PHP_FUNCTION(caca_flush_figlet);
+PHP_FUNCTION(caca_file_open);
 PHP_FUNCTION(caca_file_close);
 PHP_FUNCTION(caca_file_tell);
 PHP_FUNCTION(caca_file_read);

@@ -1,5 +1,5 @@
 #!/usr/bin/php5
-<?
+<?php
 
 $pig_str = <<<EOT
                                    
