@@ -375,6 +375,7 @@ void *gd_get_pixels(gdImage *img) {
 
 //------- PHP Binding's specific functions ----------//
 
+//TODO: register new resources in caca_get_event and remove caca_create_event
 PHP_FUNCTION(caca_create_event) {
 	caca_event_t *event;
 	event = emalloc(sizeof(caca_event_t));
@@ -424,13 +425,15 @@ PHP_FUNCTION(caca_get_canvas_height) {
 PHP_FUNCTION(caca_get_canvas_chars) {
 	caca_canvas_t *canvas;
 	FETCH_CANVAS(canvas);
-	RETURN_STRING((char *) caca_get_canvas_chars(canvas), 1); //TODO: check that return \0 terminated string
+	RETURN_STRING((char *) caca_get_canvas_chars(canvas), 1); 
+	//TODO: check that return \0 terminated string
 }
 
 PHP_FUNCTION(caca_get_canvas_attrs) {
 	caca_canvas_t *canvas;
 	FETCH_CANVAS(canvas);
-	RETURN_STRING((char *) caca_get_canvas_attrs(canvas), 1); //TODO: check that return \0 terminated string
+	RETURN_STRING((char *) caca_get_canvas_attrs(canvas), 1);
+	//TODO: check that return \0 terminated string
 }
 
 PHP_FUNCTION(caca_rand) {
@@ -731,6 +734,51 @@ PHP_FUNCTION(caca_draw_line) {
 }
 
 PHP_FUNCTION(caca_draw_polyline) {
+	zval *zval_res, *zval_arr;
+	char *c;
+	long c_len;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ras", &zval_res, &zval_arr, &c, &c_len) == FAILURE) {
+		RETURN_FALSE;
+	}
+
+	if (c_len != 1) {
+		RETURN_FALSE;
+	}
+
+	caca_canvas_t *canvas;
+	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &zval_res, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
+
+	HashTable *arr_hash = Z_ARRVAL_P(zval_arr);
+	int lenmax = zend_hash_num_elements(arr_hash);
+	int *tbl_x, *tbl_y;
+	int tbl_count = 0;
+	tbl_x = malloc(sizeof(int) * lenmax);
+	tbl_y = malloc(sizeof(int) * lenmax);
+	
+	HashPosition pos;
+	zval **pt, **x, **y;
+	for (
+		zend_hash_internal_pointer_reset_ex(arr_hash, &pos); 
+		zend_hash_get_current_data_ex(arr_hash, (void**) &pt, &pos) == SUCCESS; 
+		zend_hash_move_forward_ex(arr_hash, &pos)
+	) {
+		if (
+			Z_TYPE_P(*pt) == IS_ARRAY 
+			&& (zend_hash_index_find(Z_ARRVAL_P(*pt), 0, (void**) &x) != FAILURE)
+			&& (zend_hash_index_find(Z_ARRVAL_P(*pt), 1, (void**) &y) != FAILURE)
+		) {
+			convert_to_long_ex(x);
+			convert_to_long_ex(y);
+			tbl_x[tbl_count] = Z_LVAL_PP(x);
+			tbl_y[tbl_count] = Z_LVAL_PP(y);
+			tbl_count++;
+		}
+	}
+	int res = caca_draw_polyline(canvas, tbl_x, tbl_y, tbl_count - 1, c[0]);
+	free(tbl_x);
+	free(tbl_y);
+	RETURN_SUCCESS(res);
 }
 
 PHP_FUNCTION(caca_draw_thin_line) {
@@ -745,6 +793,44 @@ PHP_FUNCTION(caca_draw_thin_line) {
 }
 
 PHP_FUNCTION(caca_draw_thin_polyline) {
+	zval *zval_res, *zval_arr;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ra", &zval_res, &zval_arr) == FAILURE) {
+		RETURN_FALSE;
+	}
+
+	caca_canvas_t *canvas;
+	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &zval_res, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
+
+	HashTable *arr_hash = Z_ARRVAL_P(zval_arr);
+	int lenmax = zend_hash_num_elements(arr_hash);
+	int *tbl_x, *tbl_y;
+	int tbl_count = 0;
+	tbl_x = malloc(sizeof(int) * lenmax);
+	tbl_y = malloc(sizeof(int) * lenmax);
+	
+	HashPosition pos;
+	zval **pt, **x, **y;
+	for (
+		zend_hash_internal_pointer_reset_ex(arr_hash, &pos); 
+		zend_hash_get_current_data_ex(arr_hash, (void**) &pt, &pos) == SUCCESS; 
+		zend_hash_move_forward_ex(arr_hash, &pos)
+	) {
+		if (
+			Z_TYPE_P(*pt) == IS_ARRAY 
+			&& (zend_hash_index_find(Z_ARRVAL_P(*pt), 0, (void**) &x) != FAILURE)
+			&& (zend_hash_index_find(Z_ARRVAL_P(*pt), 1, (void**) &y) != FAILURE)
+		) {
+			convert_to_long_ex(x);
+			convert_to_long_ex(y);
+			tbl_x[tbl_count] = Z_LVAL_PP(x);
+			tbl_y[tbl_count] = Z_LVAL_PP(y);
+			tbl_count++;
+		}
+	}
+	int res = caca_draw_thin_polyline(canvas, tbl_x, tbl_y, tbl_count - 1);
+	free(tbl_x);
+	free(tbl_y);
+	RETURN_SUCCESS(res);
 }
 
 PHP_FUNCTION(caca_draw_circle) {
@@ -1281,8 +1367,7 @@ PHP_FUNCTION(caca_put_figchar) {
 	caca_canvas_t *canvas;
 	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
 
-	//TODO: get a string instead of a long
-	caca_put_figchar(canvas, c);
+	RETURN_SUCCESS(caca_put_figchar(canvas, c));
 }
 
 PHP_FUNCTION(caca_flush_figlet) {
