@@ -426,14 +426,12 @@ PHP_FUNCTION(caca_get_canvas_chars) {
 	caca_canvas_t *canvas;
 	FETCH_CANVAS(canvas);
 	RETURN_STRING((char *) caca_get_canvas_chars(canvas), 1); 
-	//TODO: check that return \0 terminated string
 }
 
 PHP_FUNCTION(caca_get_canvas_attrs) {
 	caca_canvas_t *canvas;
 	FETCH_CANVAS(canvas);
 	RETURN_STRING((char *) caca_get_canvas_attrs(canvas), 1);
-	//TODO: check that return \0 terminated string
 }
 
 PHP_FUNCTION(caca_rand) {
@@ -1020,6 +1018,30 @@ PHP_FUNCTION(caca_create_dither_gd) {
 }
 
 PHP_FUNCTION(caca_set_dither_palette) {
+	zval *zval_res, *arr;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ra", &zval_res, &arr) == FAILURE) {
+		RETURN_FALSE;
+	}
+
+	caca_dither_t *dither;
+	ZEND_FETCH_RESOURCE(dither, caca_dither_t*, &zval_res, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_dither);
+
+	uint32_t tbl[4][256];
+	zval **color, **value;
+	int i, j;
+	for (i = 0; i < 256; i++) {
+		if (zend_hash_index_find(Z_ARRVAL_P(arr), i, (void**) &color) == FAILURE | Z_TYPE_P(*color) != IS_ARRAY) {
+			RETURN_FALSE;
+		}
+		for (j = 0; j < 4; j++) {
+			if (zend_hash_index_find(Z_ARRVAL_P(*color), j, (void**) &value) == FAILURE) {
+				RETURN_FALSE;
+			}
+			convert_to_long_ex(value);
+			tbl[j][i] = Z_LVAL_PP(value);
+		}
+	}
+	RETURN_SUCCESS(caca_set_dither_palette(dither, &tbl[0][0], &tbl[1][0], &tbl[2][0], &tbl[3][0]));
 }
 
 PHP_FUNCTION(caca_set_dither_brightness) {
