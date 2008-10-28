@@ -378,6 +378,9 @@ void *gd_get_pixels(gdImage *img) {
 PHP_FUNCTION(caca_create_event) {
 	caca_event_t *event;
 	event = emalloc(sizeof(caca_event_t));
+	if (!event) {
+		RETURN_FALSE;
+	}
 	ZEND_REGISTER_RESOURCE(return_value, event, le_caca_event);
 }
 
@@ -1302,7 +1305,13 @@ PHP_FUNCTION(caca_file_read) {
 	caca_file_t *file;
 	ZEND_FETCH_RESOURCE(file, caca_file_t*, &_zval, -1, PHP_CACA_FILE_RES_NAME, le_caca_file);
 
+	if (len < 1) {
+		RETURN_FALSE;
+	}
 	char *buffer = emalloc(len);
+	if (!buffer) {
+		RETURN_FALSE;
+	}
 	caca_file_read(file, buffer, len);
 
 	return_value->type = IS_STRING;
@@ -1323,6 +1332,28 @@ PHP_FUNCTION(caca_file_write) {
 }
 
 PHP_FUNCTION(caca_file_gets) {
+	zval *_zval;
+	long len = 0;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &_zval, &len) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_file_t *file;
+	ZEND_FETCH_RESOURCE(file, caca_file_t*, &_zval, -1, PHP_CACA_FILE_RES_NAME, le_caca_file);
+
+	if (len < 1) {
+		RETURN_FALSE;
+	}
+	char *buffer = emalloc(len);
+	if (!buffer) {
+		RETURN_FALSE;
+	}
+	char *result = caca_file_gets(file, buffer, len);
+	if (!result) {
+		RETURN_FALSE;
+	}
+	return_value->type = IS_STRING;
+	return_value->value.str.len = len;
+	return_value->value.str.val = result;
 }
 
 PHP_FUNCTION(caca_file_eof) {
@@ -1379,17 +1410,19 @@ PHP_FUNCTION(caca_export_string) {
 	caca_canvas_t *canvas;
 	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
 
-	void *buffer;
+	void *buffer, *copy;
 	size_t len;
 	buffer = caca_export_memory(canvas, type, &len);
-	if (!buffer) {
+	copy = emalloc(len);
+	if (!buffer | !copy) {
 		RETURN_FALSE;
 	}
+	memcpy(copy, buffer, len);
+	free(buffer);
+
 	return_value->type = IS_STRING;
 	return_value->value.str.len = len;
-	return_value->value.str.val = emalloc(len);
-	memcpy(return_value->value.str.val, buffer, len);
-	free(buffer);
+	return_value->value.str.val = copy;
 }
 
 PHP_FUNCTION(caca_get_export_list) {
