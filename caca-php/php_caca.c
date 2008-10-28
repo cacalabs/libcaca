@@ -111,7 +111,7 @@ static function_entry caca_functions[] = {
 	PHP_FE(caca_get_font_list, NULL)
 	PHP_FE(caca_get_font_width, NULL)
 	PHP_FE(caca_get_font_height, NULL)
-	PHP_FE(caca_get_font_bloc, NULL)
+	PHP_FE(caca_get_font_blocks, NULL)
 	PHP_FE(caca_render_canvas, NULL)
 	PHP_FE(caca_canvas_set_figfont, NULL)
 	PHP_FE(caca_put_figchar, NULL)
@@ -1204,6 +1204,13 @@ PHP_FUNCTION(caca_dither_bitmap_gd) {
 }
 
 PHP_FUNCTION(caca_load_font) {
+	char *str;
+	long str_len;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &str, &str_len) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_font_t *font = caca_load_font(str, str_len);
+	ZEND_REGISTER_RESOURCE(return_value, font, le_caca_font);
 }
 
 PHP_FUNCTION(caca_get_font_list) {
@@ -1234,7 +1241,20 @@ PHP_FUNCTION(caca_get_font_height) {
 	RETURN_LONG(caca_get_font_height(font));
 }
 
-PHP_FUNCTION(caca_get_font_bloc) {
+PHP_FUNCTION(caca_get_font_blocks) {
+	zval *_zval;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &_zval) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_font_t *font;
+	ZEND_FETCH_RESOURCE(font, caca_font_t*, &_zval, -1, PHP_CACA_FONT_RES_NAME, le_caca_font);
+
+	uint32_t const *list = caca_get_font_blocks(font);
+
+	int i;
+	array_init(return_value);	
+	for(i = 0; list[i]; i += 1)
+		add_next_index_long(return_value, list[i]);
 }
 
 PHP_FUNCTION(caca_render_canvas) {
@@ -1253,6 +1273,16 @@ PHP_FUNCTION(caca_canvas_set_figfont) {
 }
 
 PHP_FUNCTION(caca_put_figchar) {
+	zval *_zval;
+	long c;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &_zval, &c) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_canvas_t *canvas;
+	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
+
+	//TODO: get a string instead of a long
+	caca_put_figchar(canvas, c);
 }
 
 PHP_FUNCTION(caca_flush_figlet) {

@@ -128,7 +128,7 @@ PHP_FUNCTION(caca_load_font);
 PHP_FUNCTION(caca_get_font_list);
 PHP_FUNCTION(caca_get_font_width);
 PHP_FUNCTION(caca_get_font_height);
-PHP_FUNCTION(caca_get_font_bloc);
+PHP_FUNCTION(caca_get_font_blocks);
 PHP_FUNCTION(caca_render_canvas);
 PHP_FUNCTION(caca_canvas_set_figfont);
 PHP_FUNCTION(caca_put_figchar);
