@@ -107,9 +107,11 @@ static function_entry caca_functions[] = {
 	PHP_FE(caca_get_dither_algorithm_list, NULL)
 	PHP_FE(caca_get_dither_algorithm, NULL)
 	PHP_FE(caca_dither_bitmap_gd, NULL)
+	PHP_FE(caca_load_font, NULL)
 	PHP_FE(caca_get_font_list, NULL)
 	PHP_FE(caca_get_font_width, NULL)
 	PHP_FE(caca_get_font_height, NULL)
+	PHP_FE(caca_get_font_bloc, NULL)
 	PHP_FE(caca_render_canvas, NULL)
 	PHP_FE(caca_canvas_set_figfont, NULL)
 	PHP_FE(caca_put_figchar, NULL)
@@ -1198,6 +1200,9 @@ PHP_FUNCTION(caca_dither_bitmap_gd) {
 	RETURN_TRUE;
 }
 
+PHP_FUNCTION(caca_load_font) {
+}
+
 PHP_FUNCTION(caca_get_font_list) {
 	char const * const *list = caca_get_font_list();
 	int i;
@@ -1224,6 +1229,9 @@ PHP_FUNCTION(caca_get_font_height) {
 	caca_font_t *font;
 	ZEND_FETCH_RESOURCE(font, caca_font_t*, &_zval, -1, PHP_CACA_FONT_RES_NAME, le_caca_font);
 	RETURN_LONG(caca_get_font_height(font));
+}
+
+PHP_FUNCTION(caca_get_font_bloc) {
 }
 
 PHP_FUNCTION(caca_render_canvas) {
@@ -1286,9 +1294,32 @@ PHP_FUNCTION(caca_file_tell) {
 }
 
 PHP_FUNCTION(caca_file_read) {
+	zval *_zval;
+	long len;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &_zval, &len) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_file_t *file;
+	ZEND_FETCH_RESOURCE(file, caca_file_t*, &_zval, -1, PHP_CACA_FILE_RES_NAME, le_caca_file);
+
+	char *buffer = emalloc(len);
+	caca_file_read(file, buffer, len);
+
+	return_value->type = IS_STRING;
+	return_value->value.str.len = len;
+	return_value->value.str.val = buffer;
 }
 
 PHP_FUNCTION(caca_file_write) {
+	zval *_zval;
+	char *buf;
+	long buf_len = 0;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &_zval, &buf, &buf_len) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_file_t *file;
+	ZEND_FETCH_RESOURCE(file, caca_file_t*, &_zval, -1, PHP_CACA_FILE_RES_NAME, le_caca_file);
+	RETURN_LONG(caca_file_write(file, buf, buf_len));
 }
 
 PHP_FUNCTION(caca_file_gets) {

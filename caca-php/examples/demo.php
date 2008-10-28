@@ -361,6 +361,8 @@ function demo_triangles($cv, $bounds, $outline, $dithering) {
 		caca_draw_triangle($cv, $xa, $ya, $xb, $yb, $xc, $yc, '#');
 }
 
+function demo_render($cv, $bounds, $outline, $dithering) {
+}
 
 
 main();
