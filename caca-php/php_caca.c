@@ -88,6 +88,7 @@ static function_entry caca_functions[] = {
 	PHP_FE(caca_create_dither, NULL)
 	PHP_FE(caca_create_dither_gd, NULL)
 	PHP_FE(caca_set_dither_palette, NULL)
+	PHP_FE(caca_set_dither_palette_gd, NULL)
 	PHP_FE(caca_set_dither_brightness, NULL)
 	PHP_FE(caca_get_dither_brightness, NULL)
 	PHP_FE(caca_set_dither_gamma, NULL)
@@ -362,15 +363,22 @@ void *fetch_external_resource(zval *_zval, char const *type_name) {
 //Fetch buffer of pixels from gdImage
 
 void *gd_get_pixels(gdImage *img) {
-	if (!img->trueColor) 
-		return NULL;
-
-	int line_size = img->sx * sizeof(int);
-	void *result = malloc(img->sy * line_size);
-	int j;		
-	for (j = 0; j < img->sy; j++)
-		memcpy(result + (j * line_size), (const void *) img->tpixels[j], line_size);
-	return result;
+	if (img->trueColor)  {
+		int line_size = img->sx * sizeof(int);
+		void *result = malloc(img->sy * line_size);
+		int j;		
+		for (j = 0; j < img->sy; j++)
+			memcpy(result + (j * line_size), (const void *) img->tpixels[j], line_size);
+		return result;
+	}
+	else {
+		int line_size = img->sx * sizeof(char);
+		void *result = malloc(img->sy * line_size);
+		int j;		
+		for (j = 0; j < img->sy; j++)
+			memcpy(result + (j * line_size), (const void *) img->pixels[j], line_size);
+		return result;
+	}
 }
 
 //------- PHP Binding's specific functions ----------//
@@ -1019,10 +1027,16 @@ PHP_FUNCTION(caca_create_dither_gd) {
 	}
 
 	gdImage *img = fetch_external_resource(_zval, "gd");
-	if (!img | !img->trueColor) {
+	if (!img) {
 		RETURN_FALSE;
 	}
-	caca_dither_t *dither = caca_create_dither(sizeof(int) * 8, img->sx, img->sy, img->sx * sizeof(int), 0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000);
+
+	caca_dither_t *dither;
+	if (img->trueColor)
+		dither = caca_create_dither(sizeof(int) * 8, img->sx, img->sy, img->sx * sizeof(int), 0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000);
+	else
+		dither = caca_create_dither(sizeof(char) * 8, img->sx, img->sy, img->sx * sizeof(char), 0, 0, 0, 0);
+
 	ZEND_REGISTER_RESOURCE(return_value, dither, le_caca_dither);
 }
 
@@ -1050,7 +1064,33 @@ PHP_FUNCTION(caca_set_dither_palette) {
 			tbl[j][i] = Z_LVAL_PP(value);
 		}
 	}
-	RETURN_SUCCESS(caca_set_dither_palette(dither, &tbl[0][0], &tbl[1][0], &tbl[2][0], &tbl[3][0]));
+	RETURN_SUCCESS(caca_set_dither_palette(dither, tbl[0], tbl[1], tbl[2], tbl[3]));
+}
+
+PHP_FUNCTION(caca_set_dither_palette_gd) {
+	zval *_zval1, *_zval2;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rr", &_zval1, &_zval2) == FAILURE) {
+		RETURN_FALSE;
+	}
+
+	caca_dither_t *dither;
+	ZEND_FETCH_RESOURCE(dither, caca_dither_t*, &_zval1, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_dither);
+
+	gdImage *img = fetch_external_resource(_zval2, "gd");
+	if (!img | img->trueColor | gdMaxColors != 256) {
+		RETURN_FALSE;
+	}
+
+	uint32_t r[256], g[256], b[256], a[256];
+	int i;
+	for (i = 0; i < 256; i++) {
+		r[i] = img->red[i] << 4;
+		g[i] = img->green[i] << 4;
+		b[i] = img->blue[i] << 4;
+		a[i] = img->alpha[i] << 4;
+	}
+
+	RETURN_SUCCESS(caca_set_dither_palette(dither, &r[0], &g[0], &b[0], &a[0]));
 }
 
 PHP_FUNCTION(caca_set_dither_brightness) {

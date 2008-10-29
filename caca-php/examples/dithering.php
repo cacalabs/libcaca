@@ -1,7 +1,7 @@
 #!/usr/bin/php5
 <?php
-
 $img = imagecreatefrompng(dirname(__FILE__)."/logo-caca.png");
+//$img = imagecreatefromgif(dirname(__FILE__)."/logo-caca-idx.gif");
 if (!$img) 
 	die("Can not open image.\n");
 
@@ -14,6 +14,7 @@ $display = caca_create_display($canvas);
 if (!$display) 
 	die("Can not create display.\n");
 
+//caca_set_dither_palette_gd($dither, $img);
 caca_dither_bitmap_gd($canvas, 0, 0, caca_get_canvas_width($canvas), caca_get_canvas_height($canvas), $dither, $img);
 caca_refresh_display($display);
 
