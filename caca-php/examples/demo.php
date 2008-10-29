@@ -366,3 +366,5 @@ function demo_render($cv, $bounds, $outline, $dithering) {
 
 
 main();
+
+?>

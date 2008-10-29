@@ -19,6 +19,4 @@ caca_refresh_display($display);
 
 sleep(5);
 
-
-
-
+?>

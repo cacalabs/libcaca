@@ -66,3 +66,4 @@ while (!caca_get_event($display, CACA_EVENT_KEY_PRESS)) {
 		$iy = -$iy;
 }
 
+?>

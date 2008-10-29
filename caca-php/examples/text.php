@@ -58,5 +58,4 @@ echo caca_export_string($cv, "utf8");
 caca_rotate_left($cv);
 echo caca_export_string($cv, "utf8");
 
-
-
+?>

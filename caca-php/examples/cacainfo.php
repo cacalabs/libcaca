@@ -63,3 +63,5 @@ $list = caca_get_font_list();
 foreach($list as $name)
 	echo "* $name\n";
 echo "\n";
+
+?>

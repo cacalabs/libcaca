@@ -40,3 +40,4 @@ caca_put_str($canvas, 1, 1, "Caca forever...");
 caca_refresh_display($display);
 sleep(5);
 
+?>

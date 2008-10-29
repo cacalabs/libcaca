@@ -33,4 +33,4 @@ foreach ($chars as $c) {
 
 echo caca_export_string($cv, "utf8");
 
-
+?>
