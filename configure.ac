@@ -111,7 +111,7 @@ AC_CHECK_FUNCS(getopt_long,
    [ac_cv_have_getopt_long="yes"
     GETOPT_LIBS="${GETOPT_LIBS} -lgnugetopt"])])
 if test "$ac_cv_have_getopt_long" != "no"; then
-  AC_DEFINE(HAVE_GETOPT_LONG, 1, Define to 1 if you have the `getopt_long' function.)
+  AC_DEFINE(HAVE_GETOPT_LONG, 1, Define to 1 if you have the ‘getopt_long’ function.)
 fi
 AM_CONDITIONAL(NEED_GETOPT_LONG, test "$ac_cv_have_getopt_long" = "no")
 AC_SUBST(GETOPT_LIBS)
@@ -119,19 +119,19 @@ AC_SUBST(GETOPT_LIBS)
 AC_MSG_CHECKING(for Sleep)
 AC_TRY_COMPILE([#include <windows.h>],[Sleep(42);],
  [AC_MSG_RESULT(yes)
-  AC_DEFINE(HAVE_SLEEP, 1, [Define to 1 if you have the `Sleep' function.])],
+  AC_DEFINE(HAVE_SLEEP, 1, [Define to 1 if you have the ‘Sleep’ function.])],
  [AC_MSG_RESULT(no)])
 
 AC_MSG_CHECKING(for fsin/fcos)
-AC_TRY_COMPILE([],[double x; asm volatile("fsin\n\tfcos":"=t"(x):);],
+AC_TRY_COMPILE([],[double x; asm volatile("fsin; fcos":"=t"(x):);],
  [AC_MSG_RESULT(yes)
-  AC_DEFINE(HAVE_FSIN_FCOS, 1, [Define to 1 if you have the `fsin' and `fcos' instructions.])],
+  AC_DEFINE(HAVE_FSIN_FCOS, 1, [Define to 1 if you have the ‘fsin’ and ‘fcos’ instructions.])],
  [AC_MSG_RESULT(no)])
 
 AC_MSG_CHECKING(for fldln2/fxch/fyl2x)
 AC_TRY_COMPILE([],[double x; asm volatile("fldln2; fldln2; fxch; fyl2x":"=t"(x):);],
  [AC_MSG_RESULT(yes)
-  AC_DEFINE(HAVE_FLDLN2, 1, [Define to 1 if you have the `fldln2' and other floating point instructions.])],
+  AC_DEFINE(HAVE_FLDLN2, 1, [Define to 1 if you have the ‘fldln2’ and other floating point instructions.])],
  [AC_MSG_RESULT(no)])
 
 AC_CHECK_HEADERS(zlib.h)
@@ -181,7 +181,7 @@ if test "${enable_slang}" != "no"; then
    [ac_cv_my_have_slang="yes"
     AC_DEFINE(USE_SLANG, 1, Define to 1 to activate the slang backend driver)
     AC_CHECK_LIB(slang, SLsmg_utf8_enable,
-     [AC_DEFINE(HAVE_SLSMG_UTF8_ENABLE, 1, Define to 1 if you have the `SLsmg_utf8_enable' function.)])
+     [AC_DEFINE(HAVE_SLSMG_UTF8_ENABLE, 1, Define to 1 if you have the ‘SLsmg_utf8_enable’ function.)])
     CPPFLAGS="${CPPFLAGS} -DOPTIMISE_SLANG_PALETTE=1"
     CACA_LIBS="${CACA_LIBS} -lslang"
     CACA_DRIVERS="${CACA_DRIVERS} slang"
@@ -214,12 +214,12 @@ if test "${enable_gl}" != "no"; then
   AC_CHECK_HEADERS(GL/gl.h OpenGL/gl.h,
    [AC_CHECK_HEADERS(GL/glut.h,
      [AC_CHECK_LIB(glut, glutCloseFunc,
-       [AC_DEFINE(HAVE_GLUTCLOSEFUNC, 1, Define to 1 if you have the `glutCloseFunc' function.)])
+       [AC_DEFINE(HAVE_GLUTCLOSEFUNC, 1, Define to 1 if you have the ‘glutCloseFunc’ function.)])
       AC_CHECK_LIB(glut, glutMainLoopEvent,
        [ac_cv_my_have_gl="yes"])
       AC_CHECK_LIB(glut, glutCheckLoop,
        [ac_cv_my_have_gl="yes"
-        AC_DEFINE(HAVE_GLUTCHECKLOOP, 1, Define to 1 if you have the `glutCheckLoop' function.)])])
+        AC_DEFINE(HAVE_GLUTCHECKLOOP, 1, Define to 1 if you have the ‘glutCheckLoop’ function.)])])
       break])
   if test "${ac_cv_my_have_gl}" = "yes"; then
     AC_DEFINE(USE_GL, 1, Define to 1 to activate the OpenGL backend driver)
