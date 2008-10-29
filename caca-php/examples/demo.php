@@ -15,6 +15,8 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
+
+
 function main() {
 	$cv = caca_create_canvas(0, 0);
 	if (!$cv) {
@@ -33,21 +35,14 @@ function main() {
 
 	/* Main menu */
 	display_menu($cv, $dp, $bounds, $outline);
-	caca_refresh_display($dp);
 
 	/* Go ! */
 	$bounds = $outline = $dithering = 0;
-
+	$need_refresh = false;
 	$ev = caca_create_event();
 	while(!$quit) {
-		$menu = $mouse = $xmouse = $ymouse = 0;
-
-		while (caca_get_event($dp, CACA_EVENT_ANY, $ev, 0)) {
-			if ($demo and (caca_get_event_type($ev) & CACA_EVENT_KEY_PRESS)) {
-				$menu = 1;
-				$demo = false;
-			}
-			else if (caca_get_event_type($ev) & CACA_EVENT_KEY_PRESS) {
+		while (caca_get_event($dp, CACA_EVENT_ANY, $ev, 1000)) {
+			if (caca_get_event_type($ev) & CACA_EVENT_KEY_PRESS) {
 				switch (caca_get_event_key_ch($ev)) {
 					case ord('q'):
 					case ord('Q'):
@@ -73,73 +68,75 @@ function main() {
 						break;
 					case ord('f'):
 					case ord('F'):
-						$demo = "demo_all";
+						demo_go($dp, "demo_all", $cv, $bounds, $outline);
 						break;
 					case ord('1'):
-						$demo = "demo_dots";
+						demo_go($dp, "demo_dots", $cv, $bounds, $outline);
 						break;
 					case ord('2'):
-						$demo = "demo_lines";
+						demo_go($dp, "demo_lines", $cv, $bounds, $outline);
 						break;
 					case ord('3'):
-						$demo = "demo_boxes";
+						demo_go($dp, "demo_boxes", $cv, $bounds, $outline);
 						break;
 					case ord('4'):
-						$demo = "demo_triangles";
+						demo_go($dp, "demo_triangles", $cv, $bounds, $outline);
 						break;
 					case ord('5'):
-						$demo = "demo_ellipses";
+						demo_go($dp, "demo_ellipses", $cv, $bounds, $outline);
 						break;
 					case ord('s'):
 					case ord('S'):
-						$demo = "demo_sprites";
+						demo_go($dp, "demo_sprites", $cv, $bounds, $outline);
 						break;
 					case ord('r'):
 					case ord('R'):
-						$demo = "demo_render";
+						demo_go($dp, "demo_render", $cv, $bounds, $outline);
 						break;
-				}
-
-				if ($demo) {
-					caca_set_color_ansi($cv, CACA_LIGHTGRAY, CACA_BLACK);
-					caca_clear_canvas($cv);
 				}
 			}
 			else if(caca_get_event_type($ev) & CACA_EVENT_MOUSE_MOTION) {
-				$mouse = 1;
-				$xmouse = caca_get_event_mouse_x($ev);
-				$ymouse = caca_get_event_mouse_y($ev);
+				$x = caca_get_event_mouse_x($ev);
+				$y = caca_get_event_mouse_y($ev);
+				display_menu($cv, $dp, $bounds, $outline, false);
+				caca_set_color_ansi($cv, CACA_RED, CACA_BLACK);
+				caca_put_str($cv, $x, $y, ".");
+				caca_put_str($cv, $x, $y + 1, "|\\");
+				$need_refresh = true;
 			}
 			else if(caca_get_event_type($ev) & CACA_EVENT_RESIZE) {
-				$mouse = 1; /* old hack */
+				display_menu($cv, $dp, $bounds, $outline);
 			}
 		}
 
-		if ($menu || ($mouse && !$demo)) {
-			display_menu($cv, $dp, $bounds, $outline);
-			if ($mouse && !$demo) {
-				caca_set_color_ansi($cv, CACA_RED, CACA_BLACK);
-				caca_put_str($cv, $xmouse, $ymouse,".");
-				caca_put_str($cv, $xmouse, $ymouse + 1, "|\\");
-			}
+		if ($need_refresh) {
 			caca_refresh_display($dp);
-			$mouse = $menu = 0;
-		}
-
-		if ($demo) {
-			if (function_exists($demo))
-				$demo($cv, $bounds, $outline, $dithering);
-
-			caca_set_color_ansi($cv, CACA_LIGHTGRAY, CACA_BLACK);
-			caca_draw_thin_box($cv, 1, 1, caca_get_canvas_width($cv) - 2, caca_get_canvas_height($cv) - 2);
-			$rate = sprintf("%01.2f", 1000000 / caca_get_display_time($dp));
-			caca_put_str($cv, 4, 1, "[$rate fps]----");
-			caca_refresh_display($dp);
+			$need_refresh = false;
 		}
 	}
 }
 
-function demo_all($cv, $dp, $bounds, $outline) {
+function demo_go($dp, $demo, $cv, $bounds, $outline) {
+	caca_set_color_ansi($cv, CACA_LIGHTGRAY, CACA_BLACK);
+	caca_clear_canvas($cv);
+
+	while (!caca_get_event($dp, CACA_EVENT_KEY_PRESS)) {
+		if (function_exists($demo))
+			$demo($cv, $bounds, $outline);
+
+		caca_set_color_ansi($cv, CACA_LIGHTGRAY, CACA_BLACK);
+		caca_draw_thin_box($cv, 1, 1, caca_get_canvas_width($cv) - 2, caca_get_canvas_height($cv) - 2);
+		$rate = sprintf("%01.2f", 1000000 / caca_get_display_time($dp));
+		caca_put_str($cv, 4, 1, "[$rate fps]----");
+		caca_refresh_display($dp);
+	}
+
+	display_menu($cv, $dp, $bounds, $outline);
+	caca_refresh_display($dp);
+}
+
+
+function demo_all($cv, $bounds, $outline) {
 	global $i;
 
 	$i++;
@@ -223,7 +220,7 @@ function demo_all($cv, $dp, $bounds, $outline) {
 	}
 }
 
-function display_menu($cv, $dp, $bounds, $outline) {
+function display_menu($cv, $dp, $bounds, $outline, $refresh = true) {
 	$xo = caca_get_canvas_width($cv) - 2;
 	$yo = caca_get_canvas_height($cv) - 2;
 
@@ -252,10 +249,11 @@ function display_menu($cv, $dp, $bounds, $outline) {
 	caca_put_str($cv, 4, 18, "'b': drawing boundaries: ".(($bounds == 0) ? "screen" : "infinite"));
 	caca_put_str($cv, 4, $yo - 2, "'q': quit");
 
-	caca_refresh_display($dp);
+	if ($refresh)
+		caca_refresh_display($dp);
 }
 
-function demo_dots($cv, $bounds, $outline, $dithering) {
+function demo_dots($cv, $bounds, $outline) {
 	$xmax = caca_get_canvas_width($cv);
 	$ymax = caca_get_canvas_height($cv);
 
@@ -268,7 +266,7 @@ function demo_dots($cv, $bounds, $outline, $dithering) {
 	}
 }
 
-function demo_lines($cv, $bounds, $outline, $dithering) {
+function demo_lines($cv, $bounds, $outline) {
 	$w = caca_get_canvas_width($cv);
 	$h = caca_get_canvas_height($cv);
 
@@ -288,7 +286,7 @@ function demo_lines($cv, $bounds, $outline, $dithering) {
 		caca_draw_line($cv, $xa, $ya, $xb, $yb, ord('#'));
 }
 
-function demo_boxes($cv, $bounds, $outline, $dithering) {
+function demo_boxes($cv, $bounds, $outline) {
 	$w = caca_get_canvas_width($cv);
 	$h = caca_get_canvas_height($cv);
 
@@ -311,7 +309,7 @@ function demo_boxes($cv, $bounds, $outline, $dithering) {
 		caca_draw_box($cv, $xa, $ya, $xb, $yb, ord('#'));
 }
 
-function demo_ellipses($cv, $bounds, $outline, $dithering) {
+function demo_ellipses($cv, $bounds, $outline) {
 	$w = caca_get_canvas_width($cv);
 	$h = caca_get_canvas_height($cv);
 
@@ -336,7 +334,7 @@ function demo_ellipses($cv, $bounds, $outline, $dithering) {
 		caca_draw_ellipse($cv, $x, $y, $a, $b, ord('#'));
 }
 
-function demo_triangles($cv, $bounds, $outline, $dithering) {
+function demo_triangles($cv, $bounds, $outline) {
 	$w = caca_get_canvas_width($cv);
 	$h = caca_get_canvas_height($cv);
 
@@ -361,10 +359,8 @@ function demo_triangles($cv, $bounds, $outline, $dithering) {
 		caca_draw_triangle($cv, $xa, $ya, $xb, $yb, $xc, $yc, ord('#'));
 }
 
-function demo_render($cv, $bounds, $outline, $dithering) {
+function demo_render($cv, $bounds, $outline) {
 }
 
 
 main();
-
-?>
