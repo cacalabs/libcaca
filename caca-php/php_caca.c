@@ -701,12 +701,21 @@ PHP_FUNCTION(caca_utf32_to_utf8) {
 }
 
 PHP_FUNCTION(caca_utf32_to_cp437) {
+	long l;
+	FETCH_LONG(l);
+	RETURN_LONG(caca_utf32_to_cp437(l));
 }
 
 PHP_FUNCTION(caca_cp437_to_utf32) {
+	long l;
+	FETCH_LONG(l);
+	RETURN_LONG(caca_cp437_to_utf32(l));
 }
 
 PHP_FUNCTION(caca_utf32_to_ascii) {
+	long l;
+	FETCH_LONG(l);
+	RETURN_CHAR(caca_utf32_to_ascii(l));
 }
 
 PHP_FUNCTION(caca_utf32_is_fullwidth) {

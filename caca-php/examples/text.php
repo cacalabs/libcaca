@@ -1,5 +1,5 @@
 #!/usr/bin/php5
-<?
+<?php
 /*
  *  demo.php      demo for libcaca php binding
  *  Copyright (c) 2008 Nicolas Vion <nico@yojik.eu>
