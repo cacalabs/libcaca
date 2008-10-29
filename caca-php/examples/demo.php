@@ -362,5 +362,6 @@ function demo_triangles($cv, $bounds, $outline) {
 function demo_render($cv, $bounds, $outline) {
 }
 
-
 main();
+
+?>
