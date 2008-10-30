@@ -5,6 +5,7 @@ rubysitedir = $(RUBY_SITELIBDIR)
 
 if USE_RUBY
 rubylib_LTLIBRARIES = caca.la
+rubylib_LDFLAGS = -module
 rubysite_DATA = lib/caca.rb
 TESTS = test
 endif
