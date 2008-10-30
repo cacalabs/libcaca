@@ -1400,18 +1400,21 @@ PHP_FUNCTION(caca_render_canvas) {
 		RETURN_FALSE;
 	}
 
-	int pitch = img->sx * sizeof(int);
-	void *buffer = malloc(pitch * img->sy);
+	int pitch = img->sx * 4;
+	uint8_t *buffer = malloc(pitch * img->sy);
 	if (!buffer) {
 		RETURN_FALSE;
 	}
 
-	caca_render_canvas(canvas, font, buffer, img->sx, img->sy, pitch);
-	int i;
-	for (i = 0; i < img->sy; i++)
-		memcpy(img->tpixels[i], buffer + (i * pitch), pitch);
+	caca_render_canvas(canvas, font, (void *) buffer, img->sx, img->sy, pitch);
+	int i, j;
+	for (i = 0; i < img->sy; i++) {
+		for (j = 0; j < img->sx; j++) {
+			uint8_t *src = buffer + i * pitch + j * 4;
+			img->tpixels[i][j] = *(src + 3)	| (*(src + 2) << 8) | (*(src + 1) << 16) | (*(src + 0) << 24);
+		}
+	}
 	
-	//TODO: fix colors order
 	free(buffer);
 	RETURN_TRUE;
 }
@@ -1470,8 +1473,12 @@ PHP_FUNCTION(caca_file_close) {
 	}
 	caca_file_t *file;
 	ZEND_FETCH_RESOURCE(file, caca_file_t*, &_zval, -1, PHP_CACA_FILE_RES_NAME, le_caca_file);
-	//TODO: check that file was not already closed
-	RETURN_SUCCESS(caca_file_close(file));
+
+	int res = caca_file_close(file);
+
+	//Delete php resource
+	zend_list_delete(_zval->value.lval);
+	RETURN_SUCCESS(res);
 }
 
 PHP_FUNCTION(caca_file_tell) {
