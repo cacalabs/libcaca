@@ -16,7 +16,10 @@
 
 #include "php.h"
 #include "php_caca.h"
+
+#ifdef HAVE_GD
 #include <gd.h>
+#endif
 
 static function_entry caca_functions[] = {
 	PHP_FE(caca_create_canvas, NULL)
@@ -361,6 +364,7 @@ void *fetch_external_resource(zval *_zval, char const *type_name) {
 
 //Fetch buffer of pixels from gdImage
 
+#ifdef HAVE_GD
 void *gd_get_pixels(gdImage *img) {
 	void *result;
 	int j, pitch;		
@@ -395,7 +399,7 @@ int gd_load_palette(gdImage *img, caca_dither_t *dither) {
 
 	return caca_set_dither_palette(dither, &r[0], &g[0], &b[0], &a[0]);
 }
-
+#endif
 //------- Caca's functions ----------------//
 
 PHP_FUNCTION(caca_create_canvas) {
@@ -1026,7 +1030,7 @@ PHP_FUNCTION(caca_create_dither) {
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &_zval) == FAILURE) {
 		RETURN_FALSE;
 	}
-
+#ifdef HAVE_GD
 	gdImage *img = fetch_external_resource(_zval, "gd");
 	if (!img) {
 		RETURN_FALSE;
@@ -1043,6 +1047,9 @@ PHP_FUNCTION(caca_create_dither) {
 	}
 
 	ZEND_REGISTER_RESOURCE(return_value, dither, le_caca_dither);
+#else
+	RETURN_FALSE
+#endif
 }
 
 PHP_FUNCTION(caca_set_dither_palette) {
@@ -1296,6 +1303,7 @@ PHP_FUNCTION(caca_dither_bitmap) {
 	caca_dither_t *dither;
 	ZEND_FETCH_RESOURCE(dither, caca_dither_t*, &_zval2, -1, PHP_CACA_DITHER_RES_NAME, le_caca_dither);
 
+#ifdef HAVE_GD
 	gdImage *img = fetch_external_resource(_zval3, "gd");
 	if (!img) {
 		RETURN_FALSE;
@@ -1314,6 +1322,9 @@ PHP_FUNCTION(caca_dither_bitmap) {
 	caca_dither_bitmap(canvas, x, y, w, h, dither, pixels);
 	free(pixels);
 	RETURN_TRUE;
+#else
+	RETURN_FALSE;
+#endif
 }
 
 PHP_FUNCTION(caca_load_font) {
@@ -1396,6 +1407,7 @@ PHP_FUNCTION(caca_render_canvas) {
 	caca_font_t *font;
 	ZEND_FETCH_RESOURCE(font, caca_font_t*, &_zval2, -1, PHP_CACA_FONT_RES_NAME, le_caca_font);
 
+#ifdef HAVE_GD
 	gdImage *img = fetch_external_resource(_zval3, "gd");
 	if (!img || !img->trueColor) {
 		RETURN_FALSE;
@@ -1418,6 +1430,9 @@ PHP_FUNCTION(caca_render_canvas) {
 	
 	free(buffer);
 	RETURN_TRUE;
+#else
+	RETURN_FALSE;
+#endif
 }
 
 PHP_FUNCTION(caca_canvas_set_figfont) {
