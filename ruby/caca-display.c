@@ -26,7 +26,7 @@ void display_free(void *display)
 static VALUE display_alloc(VALUE klass)
 {
     VALUE obj;
-    obj = Data_Wrap_Struct(klass, 0, display_free, NULL);    
+    obj = Data_Wrap_Struct(klass, 0, display_free, NULL);
     return obj;
 }
 
@@ -230,14 +230,14 @@ static VALUE driver_list(void)
 {
     VALUE ary;
     char const* const* list;
-    
+
     list = caca_get_display_driver_list();
-    
-    ary = rb_ary_new();    
-    while (*list != NULL)
+
+    ary = rb_hash_new();
+    while (*list != NULL && *(list+1) != NULL)
     {
-        rb_ary_push(ary, rb_str_new2(*list));
-        list++;
+        rb_hash_aset(ary, rb_str_new2(*list), rb_str_new2(*(list+1)));
+        list+=2;
     }
 
     return ary;
