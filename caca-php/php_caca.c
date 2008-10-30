@@ -197,6 +197,7 @@ static void php_caca_font_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC) {
 }
 
 static void php_caca_file_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC) {
+	caca_file_close(rsrc->ptr);
 }
 
 static void php_caca_display_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC) {
