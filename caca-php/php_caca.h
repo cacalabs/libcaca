@@ -122,6 +122,7 @@ PHP_FUNCTION(caca_get_dither_algorithm_list);
 PHP_FUNCTION(caca_get_dither_algorithm);
 PHP_FUNCTION(caca_dither_bitmap);
 PHP_FUNCTION(caca_load_font);
+PHP_FUNCTION(caca_load_builtin_font);
 PHP_FUNCTION(caca_get_font_list);
 PHP_FUNCTION(caca_get_font_width);
 PHP_FUNCTION(caca_get_font_height);

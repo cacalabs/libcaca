@@ -106,6 +106,7 @@ static function_entry caca_functions[] = {
 	PHP_FE(caca_get_dither_algorithm, NULL)
 	PHP_FE(caca_dither_bitmap, NULL)
 	PHP_FE(caca_load_font, NULL)
+	PHP_FE(caca_load_builtin_font, NULL)
 	PHP_FE(caca_get_font_list, NULL)
 	PHP_FE(caca_get_font_width, NULL)
 	PHP_FE(caca_get_font_height, NULL)
@@ -360,22 +361,21 @@ void *fetch_external_resource(zval *_zval, char const *type_name) {
 //Fetch buffer of pixels from gdImage
 
 void *gd_get_pixels(gdImage *img) {
+	void *result;
+	int j, pitch;		
 	if (img->trueColor)  {
-		int line_size = img->sx * sizeof(int);
-		void *result = malloc(img->sy * line_size);
-		int j;		
+		pitch = img->sx * sizeof(int);
+		result = malloc(img->sy * pitch);
 		for (j = 0; j < img->sy; j++)
-			memcpy(result + (j * line_size), (const void *) img->tpixels[j], line_size);
-		return result;
+			memcpy(result + (j * pitch), (const void *) img->tpixels[j], pitch);
 	}
 	else {
-		int line_size = img->sx * sizeof(char);
-		void *result = malloc(img->sy * line_size);
-		int j;		
+		pitch = img->sx * sizeof(char);
+		result = malloc(img->sy * pitch);
 		for (j = 0; j < img->sy; j++)
-			memcpy(result + (j * line_size), (const void *) img->pixels[j], line_size);
-		return result;
+			memcpy(result + (j * pitch), (const void *) img->pixels[j], pitch);
 	}
+	return result;
 }
 
 int gd_load_palette(gdImage *img, caca_dither_t *dither) {
@@ -1037,6 +1037,10 @@ PHP_FUNCTION(caca_create_dither) {
 	else
 		dither = caca_create_dither(sizeof(char) * 8, img->sx, img->sy, img->sx * sizeof(char), 0, 0, 0, 0);
 
+	if (!dither) {
+		RETURN_FALSE;
+	}
+
 	ZEND_REGISTER_RESOURCE(return_value, dither, le_caca_dither);
 }
 
@@ -1143,7 +1147,18 @@ PHP_FUNCTION(caca_set_dither_antialias) {
 }
 
 PHP_FUNCTION(caca_get_dither_antialias_list) {
-	//TODO: write
+	zval *_zval;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &_zval) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_dither_t *dither;
+	ZEND_FETCH_RESOURCE(dither, caca_dither_t*, &_zval, -1, PHP_CACA_DITHER_RES_NAME, le_caca_dither);
+
+	char const * const *list = caca_get_dither_antialias_list(dither);
+	int i;
+	array_init(return_value);	
+	for(i = 0; list[i]; i += 1)
+		add_next_index_string(return_value, (char*) list[i], 1);
 }
 
 PHP_FUNCTION(caca_get_dither_antialias) {
@@ -1307,6 +1322,22 @@ PHP_FUNCTION(caca_load_font) {
 		RETURN_FALSE;
 	}
 	caca_font_t *font = caca_load_font(str, str_len);
+	if (!font) {
+		RETURN_FALSE;
+	}
+	ZEND_REGISTER_RESOURCE(return_value, font, le_caca_font);
+}
+
+PHP_FUNCTION(caca_load_builtin_font) {
+	char *str;
+	long str_len;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &str, &str_len) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_font_t *font = caca_load_font(str, 0);
+	if (!font) {
+		RETURN_FALSE;
+	}
 	ZEND_REGISTER_RESOURCE(return_value, font, le_caca_font);
 }
 
@@ -1355,7 +1386,34 @@ PHP_FUNCTION(caca_get_font_blocks) {
 }
 
 PHP_FUNCTION(caca_render_canvas) {
-	//TODO: write
+	zval *_zval1, *_zval2, *_zval3;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rrr", &_zval1, &_zval2, &_zval3) == FAILURE) {
+		RETURN_FALSE;
+	}
+	caca_canvas_t *canvas;
+	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval1, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
+	caca_font_t *font;
+	ZEND_FETCH_RESOURCE(font, caca_font_t*, &_zval2, -1, PHP_CACA_FONT_RES_NAME, le_caca_font);
+
+	gdImage *img = fetch_external_resource(_zval3, "gd");
+	if (!img || !img->trueColor) {
+		RETURN_FALSE;
+	}
+
+	int pitch = img->sx * sizeof(int);
+	void *buffer = malloc(pitch * img->sy);
+	if (!buffer) {
+		RETURN_FALSE;
+	}
+
+	caca_render_canvas(canvas, font, buffer, img->sx, img->sy, pitch);
+	int i;
+	for (i = 0; i < img->sy; i++)
+		memcpy(img->tpixels[i], buffer + (i * pitch), pitch);
+	
+	//TODO: fix colors order
+	free(buffer);
+	RETURN_TRUE;
 }
 
 PHP_FUNCTION(caca_canvas_set_figfont) {
@@ -1399,6 +1457,9 @@ PHP_FUNCTION(caca_file_open) {
 		RETURN_FALSE;
 	}
 	caca_file_t *file = caca_file_open(path, mode);
+	if (!file) {
+		RETURN_FALSE;
+	}
 	ZEND_REGISTER_RESOURCE(return_value, file, le_caca_file);
 }
 
@@ -1565,6 +1626,9 @@ PHP_FUNCTION(caca_create_display) {
 	FETCH_CANVAS(canvas);
 
 	caca_display_t *display = caca_create_display(canvas);
+	if (!display) {
+		RETURN_FALSE;
+	}
 	ZEND_REGISTER_RESOURCE(return_value, display, le_caca_display);
 }
 
@@ -1623,6 +1687,9 @@ PHP_FUNCTION(caca_get_canvas) {
 	caca_display_t *display;
 	ZEND_FETCH_RESOURCE(display, caca_display_t*, &_zval, -1, PHP_CACA_DISPLAY_RES_NAME, le_caca_display);
 	caca_canvas_t *canvas = caca_get_canvas(display);
+	if (!canvas) {
+		RETURN_FALSE;
+	}
 	ZEND_REGISTER_RESOURCE(return_value, canvas, le_caca_canvas);
 }
 
