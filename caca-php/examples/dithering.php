@@ -5,7 +5,7 @@ $img = imagecreatefrompng(dirname(__FILE__)."/logo-caca.png");
 if (!$img) 
 	die("Can not open image.\n");
 
-$dither = caca_create_dither_gd($img);
+$dither = caca_create_dither($img);
 if (!$dither) 
 	die("Can not create dither. Maybe this image is not truecolor.\n");
 
@@ -14,8 +14,7 @@ $display = caca_create_display($canvas);
 if (!$display) 
 	die("Can not create display.\n");
 
-//caca_set_dither_palette_gd($dither, $img);
-caca_dither_bitmap_gd($canvas, 0, 0, caca_get_canvas_width($canvas), caca_get_canvas_height($canvas), $dither, $img);
+caca_dither_bitmap($canvas, 0, 0, caca_get_canvas_width($canvas), caca_get_canvas_height($canvas), $dither, $img);
 caca_refresh_display($display);
 
 sleep(5);
