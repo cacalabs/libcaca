@@ -458,6 +458,9 @@ PHP_FUNCTION(caca_rand) {
 }
 
 PHP_FUNCTION(caca_get_version) {
+	if (ZEND_NUM_ARGS() != 0) {
+		WRONG_PARAM_COUNT;
+	}
 	RETURN_STRING((char *) caca_get_version(), 1);
 }
 
@@ -737,6 +740,7 @@ PHP_FUNCTION(caca_utf32_to_ascii) {
 }
 
 PHP_FUNCTION(caca_utf32_is_fullwidth) {
+	//TODO: write or delete
 }
 
 PHP_FUNCTION(caca_draw_line) {
@@ -1354,6 +1358,9 @@ PHP_FUNCTION(caca_load_builtin_font) {
 }
 
 PHP_FUNCTION(caca_get_font_list) {
+	if (ZEND_NUM_ARGS() != 0) {
+		WRONG_PARAM_COUNT;
+	}
 	char const * const *list = caca_get_font_list();
 	int i;
 	array_init(return_value);	
@@ -1604,6 +1611,9 @@ PHP_FUNCTION(caca_import_file) {
 }
 
 PHP_FUNCTION(caca_get_import_list) {
+	if (ZEND_NUM_ARGS() != 0) {
+		WRONG_PARAM_COUNT;
+	}
 	char const * const *list = caca_get_import_list();
 	int i;
 	array_init(return_value);	
@@ -1637,6 +1647,9 @@ PHP_FUNCTION(caca_export_string) {
 }
 
 PHP_FUNCTION(caca_get_export_list) {
+	if (ZEND_NUM_ARGS() != 0) {
+		WRONG_PARAM_COUNT;
+	}
 	char const * const *list = caca_get_export_list();
 	int i;
 	array_init(return_value);	
@@ -1673,6 +1686,9 @@ PHP_FUNCTION(caca_create_display_with_driver) {
 }
 
 PHP_FUNCTION(caca_get_display_driver_list) {
+	if (ZEND_NUM_ARGS() != 0) {
+		WRONG_PARAM_COUNT;
+	}
 	char const * const *list = caca_get_display_driver_list();
 	int i;
 	array_init(return_value);	
