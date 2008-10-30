@@ -687,12 +687,15 @@ PHP_FUNCTION(caca_attr_to_rgb12_bg) {
 }
 
 PHP_FUNCTION(caca_attr_to_argb64) {
+	//TODO: write or delete
 }
 
 PHP_FUNCTION(caca_utf8_to_utf32) {
+	//TODO: write or delete
 }
 
 PHP_FUNCTION(caca_utf32_to_utf8) {
+	//TODO: write or delete
 }
 
 PHP_FUNCTION(caca_utf32_to_cp437) {
@@ -796,6 +799,10 @@ PHP_FUNCTION(caca_draw_thin_polyline) {
 	int tbl_count = 0;
 	tbl_x = malloc(sizeof(int) * lenmax);
 	tbl_y = malloc(sizeof(int) * lenmax);
+
+	if (!tbl_x || !tbl_y) {
+		RETURN_FALSE;
+	}
 	
 	HashPosition pos;
 	zval **pt, **x, **y;
@@ -1040,7 +1047,7 @@ PHP_FUNCTION(caca_set_dither_palette) {
 	zval **color, **value;
 	int i, j;
 	for (i = 0; i < 256; i++) {
-		if (zend_hash_index_find(Z_ARRVAL_P(arr), i, (void**) &color) == FAILURE | Z_TYPE_P(*color) != IS_ARRAY) {
+		if (zend_hash_index_find(Z_ARRVAL_P(arr), i, (void**) &color) == FAILURE || Z_TYPE_P(*color) != IS_ARRAY) {
 			RETURN_FALSE;
 		}
 		for (j = 0; j < 4; j++) {
@@ -1064,7 +1071,7 @@ PHP_FUNCTION(caca_set_dither_palette_gd) {
 	ZEND_FETCH_RESOURCE(dither, caca_dither_t*, &_zval1, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_dither);
 
 	gdImage *img = fetch_external_resource(_zval2, "gd");
-	if (!img | img->trueColor | gdMaxColors != 256) {
+	if (!img || img->trueColor || gdMaxColors != 256) {
 		RETURN_FALSE;
 	}
 
@@ -1156,6 +1163,7 @@ PHP_FUNCTION(caca_set_dither_antialias) {
 }
 
 PHP_FUNCTION(caca_get_dither_antialias_list) {
+	//TODO: write
 }
 
 PHP_FUNCTION(caca_get_dither_antialias) {
@@ -1361,6 +1369,7 @@ PHP_FUNCTION(caca_get_font_blocks) {
 }
 
 PHP_FUNCTION(caca_render_canvas) {
+	//TODO: write
 }
 
 PHP_FUNCTION(caca_canvas_set_figfont) {
@@ -1546,7 +1555,7 @@ PHP_FUNCTION(caca_export_string) {
 	size_t len;
 	buffer = caca_export_memory(canvas, type, &len);
 	copy = emalloc(len);
-	if (!buffer | !copy) {
+	if (!buffer || !copy) {
 		RETURN_FALSE;
 	}
 	memcpy(copy, buffer, len);
