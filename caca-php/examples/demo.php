@@ -15,8 +15,6 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
-
-
 function main() {
 	$cv = caca_create_canvas(0, 0);
 	if (!$cv) {
@@ -30,7 +28,7 @@ function main() {
 
 	caca_set_display_time($dp, 40000);
 
-	/* Disable cursor */
+	/* Disable X cursor */
 	caca_set_mouse($dp, 0);
 
 	/* Main menu */
@@ -39,9 +37,8 @@ function main() {
 	/* Go ! */
 	$bounds = $outline = $dithering = 0;
 	$need_refresh = false;
-	$ev = caca_create_event();
 	while(!$quit) {
-		while (caca_get_event($dp, CACA_EVENT_ANY, $ev, 1000)) {
+		while ($ev = caca_get_event($dp, CACA_EVENT_ANY, 1000)) {
 			if (caca_get_event_type($ev) & CACA_EVENT_KEY_PRESS) {
 				switch (caca_get_event_key_ch($ev)) {
 					case ord('q'):
@@ -114,6 +111,39 @@ function main() {
 			$need_refresh = false;
 		}
 	}
+}
+
+function display_menu($cv, $dp, $bounds, $outline, $refresh = true) {
+	$xo = caca_get_canvas_width($cv) - 2;
+	$yo = caca_get_canvas_height($cv) - 2;
+
+	caca_set_color_ansi($cv, CACA_LIGHTGRAY, CACA_BLACK);
+	caca_clear_canvas($cv);
+	caca_draw_thin_box($cv, 1, 1, $xo, $yo);
+
+	caca_put_str($cv, ($xo - strlen("libcaca demo")) / 2, 3, "libcaca demo");
+	caca_put_str($cv, ($xo - strlen("==============")) / 2, 4, "==============");
+
+	caca_put_str($cv, 4, 6, "demos:");
+	caca_put_str($cv, 4, 7, "'f': full");
+	caca_put_str($cv, 4, 8, "'1': dots");
+	caca_put_str($cv, 4, 9, "'2': lines");
+	caca_put_str($cv, 4, 10, "'3': boxes");
+	caca_put_str($cv, 4, 11, "'4': triangles");
+	caca_put_str($cv, 4, 12, "'5': ellipses");
+	caca_put_str($cv, 4, 13, "'c': colour");
+	caca_put_str($cv, 4, 14, "'r': render");
+
+	if ($sprite)
+		caca_put_str($cv, 4, 15, "'s': sprites");
+
+	caca_put_str($cv, 4, 16, "settings:");
+	caca_put_str($cv, 4, 17, "'o': outline: ".(($outline == 0) ? "none" : (($outline == 1) ? "solid" : "thin")));
+	caca_put_str($cv, 4, 18, "'b': drawing boundaries: ".(($bounds == 0) ? "screen" : "infinite"));
+	caca_put_str($cv, 4, $yo - 2, "'q': quit");
+
+	if ($refresh)
+		caca_refresh_display($dp);
 }
 
 function demo_go($dp, $demo, $cv, $bounds, $outline) {
@@ -218,39 +248,6 @@ function demo_all($cv, $bounds, $outline) {
 			caca_get_canvas_height($cv) / 2 + sin(0.02 * $j) * ($delta + caca_get_canvas_height($cv) / 3),
 			ord('#'));
 	}
-}
-
-function display_menu($cv, $dp, $bounds, $outline, $refresh = true) {
-	$xo = caca_get_canvas_width($cv) - 2;
-	$yo = caca_get_canvas_height($cv) - 2;
-
-	caca_set_color_ansi($cv, CACA_LIGHTGRAY, CACA_BLACK);
-	caca_clear_canvas($cv);
-	caca_draw_thin_box($cv, 1, 1, $xo, $yo);
-
-	caca_put_str($cv, ($xo - strlen("libcaca demo")) / 2, 3, "libcaca demo");
-	caca_put_str($cv, ($xo - strlen("==============")) / 2, 4, "==============");
-
-	caca_put_str($cv, 4, 6, "demos:");
-	caca_put_str($cv, 4, 7, "'f': full");
-	caca_put_str($cv, 4, 8, "'1': dots");
-	caca_put_str($cv, 4, 9, "'2': lines");
-	caca_put_str($cv, 4, 10, "'3': boxes");
-	caca_put_str($cv, 4, 11, "'4': triangles");
-	caca_put_str($cv, 4, 12, "'5': ellipses");
-	caca_put_str($cv, 4, 13, "'c': colour");
-	caca_put_str($cv, 4, 14, "'r': render");
-
-	if ($sprite)
-		caca_put_str($cv, 4, 15, "'s': sprites");
-
-	caca_put_str($cv, 4, 16, "settings:");
-	caca_put_str($cv, 4, 17, "'o': outline: ".(($outline == 0) ? "none" : (($outline == 1) ? "solid" : "thin")));
-	caca_put_str($cv, 4, 18, "'b': drawing boundaries: ".(($bounds == 0) ? "screen" : "infinite"));
-	caca_put_str($cv, 4, $yo - 2, "'q': quit");
-
-	if ($refresh)
-		caca_refresh_display($dp);
 }
 
 function demo_dots($cv, $bounds, $outline) {

@@ -35,8 +35,6 @@ int le_caca_event;
 PHP_MINIT_FUNCTION(caca);
 PHP_MINFO_FUNCTION(caca);
 
-PHP_FUNCTION(caca_create_event);
-
 PHP_FUNCTION(caca_create_canvas);
 PHP_FUNCTION(caca_set_canvas_size);
 PHP_FUNCTION(caca_get_canvas_width);

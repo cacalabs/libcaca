@@ -19,7 +19,6 @@
 #include <gd.h>
 
 static function_entry caca_functions[] = {
-	PHP_FE(caca_create_event, NULL)
 	PHP_FE(caca_create_canvas, NULL)
 	PHP_FE(caca_set_canvas_size, NULL)
 	PHP_FE(caca_get_canvas_width, NULL)
@@ -379,18 +378,6 @@ void *gd_get_pixels(gdImage *img) {
 			memcpy(result + (j * line_size), (const void *) img->pixels[j], line_size);
 		return result;
 	}
-}
-
-//------- PHP Binding's specific functions ----------//
-
-//TODO: register new resources in caca_get_event and remove caca_create_event
-PHP_FUNCTION(caca_create_event) {
-	caca_event_t *event;
-	event = emalloc(sizeof(caca_event_t));
-	if (!event) {
-		RETURN_FALSE;
-	}
-	ZEND_REGISTER_RESOURCE(return_value, event, le_caca_event);
 }
 
 //------- Caca's functions ----------------//
@@ -1714,19 +1701,26 @@ PHP_FUNCTION(caca_set_cursor) {
 }
 
 PHP_FUNCTION(caca_get_event) {
-	zval *_zval1, *_zval2 = NULL;
+	zval *_zval = NULL;
 	long g, aa = 0;
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl|rl", &_zval1, &g, &_zval2, &aa) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl|l", &_zval, &g, &aa) == FAILURE) {
 		RETURN_FALSE;
 	}
 	caca_display_t *display;
-	ZEND_FETCH_RESOURCE(display, caca_display_t*, &_zval1, -1, PHP_CACA_DISPLAY_RES_NAME, le_caca_display);
+	ZEND_FETCH_RESOURCE(display, caca_display_t*, &_zval, -1, PHP_CACA_DISPLAY_RES_NAME, le_caca_display);
 
-	caca_event_t *event = NULL;
-	if (_zval2) {
-		ZEND_FETCH_RESOURCE(event, caca_event_t*, &_zval2, -1, PHP_CACA_EVENT_RES_NAME, le_caca_event);
+	caca_event_t *event = emalloc(sizeof(caca_event_t));
+	if (!event) {
+		RETURN_FALSE;
 	}
-	RETURN_LONG(caca_get_event(display, g, event, aa));
+
+	caca_get_event(display, g, event, aa);
+
+	if (caca_get_event_type(event) == CACA_EVENT_NONE) {
+		efree(event);	
+		RETURN_FALSE;
+	}
+	ZEND_REGISTER_RESOURCE(return_value, event, le_caca_event);
 }
 
 PHP_FUNCTION(caca_get_mouse_x) {
