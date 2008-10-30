@@ -7,7 +7,7 @@ if (!$img)
 
 $dither = caca_create_dither($img);
 if (!$dither) 
-	die("Can not create dither. Maybe this image is not truecolor.\n");
+	die("Can not create dither. Maybe you compiled caca-php without gd support.\n");
 
 $canvas = caca_create_canvas(0, 0);
 $display = caca_create_display($canvas);

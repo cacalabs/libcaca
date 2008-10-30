@@ -8,7 +8,7 @@ if test "$PHP_CACA" = "yes"; then
 		AC_MSG_ERROR(libcaca development files required !)
 	])
 
-	PHP_CHECK_LIBRARY(gd, gdImageSetPixel, [
+	AC_CHECK_LIB(gd, gdImageSetPixel, [
 		PHP_ADD_LIBRARY(gd,, CACA_SHARED_LIBADD)
 		AC_DEFINE(HAVE_GD, 1, [Wheter you have development files of gd])
 	])
