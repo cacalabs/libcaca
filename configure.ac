@@ -240,19 +240,19 @@ if test "${enable_cocoa}" != "no"; then
     case x${target} in
     xpowerpc*darwin*)
       # 10.3 needed to link with X11
-      MACOSX_SDK=/Developer/SDKs/MacOSX10.3.9.sdk
-      GCC_VERSION=3.3
-      ARCH="-arch ppc"
-      MACOSX_SDK_CFLAGS="-nostdinc -isystem ${MACOSX_SDK}/usr/include/gcc/darwin/${GCC_VERSION} -isystem ${MACOSX_SDK}/usr/include"
-      MACOSX_SDK_CXXFLAGS="-nostdinc++ -I${MACOSX_SDK}/usr/include/gcc/darwin/${GCC_VERSION}/c++ -I${MACOSX_SDK}/usr/include/gcc/darwin/${GCC_VERSION}/c++/ppc-darwin -I${MACOSX_SDK}/usr/include/gcc/darwin/${GCC_VERSION}/c++/backward"
-      MACOSX_SDK_LDFLAGS="-L${MACOSX_SDK}/usr/lib/gcc/darwin -L${MACOSX_SDK}/usr/lib/gcc/darwin/${GCC_VERSION} -L${MACOSX_SDK}/usr/lib"
+      MACOSX_SDK="${MACOSX_SDK:-/Developer/SDKs/MacOSX10.3.9.sdk}"
+      GCC_VERSION="${GCC_VERSION:-3.3}"
+      ARCH="${ARCH:--arch ppc}"
+      MACOSX_SDK_CFLAGS="${MACOSX_SDK_CFLAGS:--nostdinc -isystem ${MACOSX_SDK}/usr/include/gcc/darwin/${GCC_VERSION} -isystem ${MACOSX_SDK}/usr/include}"
+      MACOSX_SDK_CXXFLAGS="${MACOSX_SDK_CXXFLAGS:--nostdinc++ -I${MACOSX_SDK}/usr/include/gcc/darwin/${GCC_VERSION}/c++ -I${MACOSX_SDK}/usr/include/gcc/darwin/${GCC_VERSION}/c++/ppc-darwin -I${MACOSX_SDK}/usr/include/gcc/darwin/${GCC_VERSION}/c++/backward}"
+      MACOSX_SDK_LDFLAGS="${MACOSX_SDK_LDFLAGS:--L${MACOSX_SDK}/usr/lib/gcc/darwin -L${MACOSX_SDK}/usr/lib/gcc/darwin/${GCC_VERSION} -L${MACOSX_SDK}/usr/lib}"
       ;;
     x*86*darwin*)
-      MACOSX_SDK=/Developer/SDKs/MacOSX10.5.sdk
-      GCC_VERSION=4.0
-      ARCH="-arch i386"
-      MACOSX_SDK_CFLAGS="-isysroot ${MACOSX_SDK}"
-      MACOSX_SDK_CXXFLAGS="${MACOSX_SDK_CFLAGS}"
+      MACOSX_SDK="${MACOSX_SDK:-/Developer/SDKs/MacOSX10.5.sdk}"
+      GCC_VERSION="${GCC_VERSION:-4.0}"
+      ARCH="${ARCH:--arch i386}"
+      MACOSX_SDK_CFLAGS="${MACOSX_SDK_CFLAGS:--isysroot ${MACOSX_SDK}}"
+      MACOSX_SDK_CXXFLAGS="${MACOSX_SDK_CXXFLAGS:-${MACOSX_SDK_CFLAGS}}"
       ;;
     esac
     CC=gcc-${GCC_VERSION}
