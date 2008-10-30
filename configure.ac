@@ -247,8 +247,15 @@ if test "${enable_cocoa}" != "no"; then
       MACOSX_SDK_CXXFLAGS="${MACOSX_SDK_CXXFLAGS:--nostdinc++ -I${MACOSX_SDK}/usr/include/gcc/darwin/${GCC_VERSION}/c++ -I${MACOSX_SDK}/usr/include/gcc/darwin/${GCC_VERSION}/c++/ppc-darwin -I${MACOSX_SDK}/usr/include/gcc/darwin/${GCC_VERSION}/c++/backward}"
       MACOSX_SDK_LDFLAGS="${MACOSX_SDK_LDFLAGS:--L${MACOSX_SDK}/usr/lib/gcc/darwin -L${MACOSX_SDK}/usr/lib/gcc/darwin/${GCC_VERSION} -L${MACOSX_SDK}/usr/lib}"
       ;;
-    x*86*darwin*)
+    x*86_64*darwin*)
       MACOSX_SDK="${MACOSX_SDK:-/Developer/SDKs/MacOSX10.5.sdk}"
+      GCC_VERSION="${GCC_VERSION:-4.0}"
+      ARCH="${ARCH:--arch i386}"
+      MACOSX_SDK_CFLAGS="${MACOSX_SDK_CFLAGS:--isysroot ${MACOSX_SDK}}"
+      MACOSX_SDK_CXXFLAGS="${MACOSX_SDK_CXXFLAGS:-${MACOSX_SDK_CFLAGS}}"
+      ;;
+    x*86*darwin*)
+      MACOSX_SDK="${MACOSX_SDK:-/Developer/SDKs/MacOSX10.4u.sdk}"
       GCC_VERSION="${GCC_VERSION:-4.0}"
       ARCH="${ARCH:--arch i386}"
       MACOSX_SDK_CFLAGS="${MACOSX_SDK_CFLAGS:--isysroot ${MACOSX_SDK}}"
