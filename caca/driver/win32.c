@@ -205,8 +205,9 @@ static void win32_display(caca_display_t *dp)
     for(n = height * width; n--; )
     {
         uint32_t ch = *cvchars++;
-        uint8_t fg = caca_attr_to_ansi_fg(*cvattrs);
-        uint8_t bg = caca_attr_to_ansi_bg(*cvattrs);
+        uint16_t bgfg = caca_attr_to_ansi(*cvattrs);
+        uint8_t fg = bgfg & 0xf;
+        uint8_t bg = bgfg >> 4;
 
 #if 0
         if(ch > 0x00000020 && ch < 0x00000080)
