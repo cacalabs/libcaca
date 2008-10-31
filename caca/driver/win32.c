@@ -277,6 +277,79 @@ static int win32_get_event(caca_display_t *dp, caca_privevent_t *ev)
 
                 return 1;
             }
+            else
+            {
+                switch (rec.Event.KeyEvent.wVirtualKeyCode)
+                {
+                case VK_TAB:        ev->data.key.ch = '\t';              break;
+                case VK_RETURN:     ev->data.key.ch = '\r';              break;
+                case VK_ESCAPE:     ev->data.key.ch = '\x1b';            break;
+                case VK_SPACE:      ev->data.key.ch = ' ';               break;
+                case VK_DELETE:     ev->data.key.ch = '\x7f';            break;
+
+                case VK_LEFT:       ev->data.key.ch = CACA_KEY_LEFT;     break;
+                case VK_RIGHT:      ev->data.key.ch = CACA_KEY_RIGHT;    break;
+                case VK_UP:         ev->data.key.ch = CACA_KEY_UP;       break;
+                case VK_DOWN:       ev->data.key.ch = CACA_KEY_DOWN;     break;
+
+                case VK_INSERT:     ev->data.key.ch = CACA_KEY_INSERT;   break;
+                case VK_HOME:       ev->data.key.ch = CACA_KEY_HOME;     break;
+                case VK_END:        ev->data.key.ch = CACA_KEY_END;      break;
+                case VK_PRIOR:      ev->data.key.ch = CACA_KEY_PAGEUP;   break;
+                case VK_NEXT:       ev->data.key.ch = CACA_KEY_PAGEDOWN; break;
+
+                case VK_F1:         ev->data.key.ch = CACA_KEY_F1;       break;
+                case VK_F2:         ev->data.key.ch = CACA_KEY_F2;       break;
+                case VK_F3:         ev->data.key.ch = CACA_KEY_F3;       break;
+                case VK_F4:         ev->data.key.ch = CACA_KEY_F4;       break;
+                case VK_F5:         ev->data.key.ch = CACA_KEY_F5;       break;
+                case VK_F6:         ev->data.key.ch = CACA_KEY_F6;       break;
+                case VK_F7:         ev->data.key.ch = CACA_KEY_F7;       break;
+                case VK_F8:         ev->data.key.ch = CACA_KEY_F8;       break;
+                case VK_F9:         ev->data.key.ch = CACA_KEY_F9;       break;
+                case VK_F10:        ev->data.key.ch = CACA_KEY_F10;      break;
+                case VK_F11:        ev->data.key.ch = CACA_KEY_F11;      break;
+                case VK_F12:        ev->data.key.ch = CACA_KEY_F12;      break;
+                case VK_F13:        ev->data.key.ch = CACA_KEY_F13;      break;
+                case VK_F14:        ev->data.key.ch = CACA_KEY_F14;      break;
+                case VK_F15:        ev->data.key.ch = CACA_KEY_F15;      break;
+
+                case VK_NUMPAD0:    ev->data.key.ch = '0';               break;
+                case VK_NUMPAD1:    ev->data.key.ch = '1';               break;
+                case VK_NUMPAD2:    ev->data.key.ch = '2';               break;
+                case VK_NUMPAD3:    ev->data.key.ch = '3';               break;
+                case VK_NUMPAD4:    ev->data.key.ch = '4';               break;
+                case VK_NUMPAD5:    ev->data.key.ch = '5';               break;
+                case VK_NUMPAD6:    ev->data.key.ch = '6';               break;
+                case VK_NUMPAD7:    ev->data.key.ch = '7';               break;
+                case VK_NUMPAD8:    ev->data.key.ch = '8';               break;
+                case VK_NUMPAD9:    ev->data.key.ch = '9';               break;
+                case VK_MULTIPLY:   ev->data.key.ch = '*';               break;
+                case VK_ADD:        ev->data.key.ch = '+';               break;
+                case VK_SEPARATOR:  ev->data.key.ch = ',';               break;
+                case VK_SUBTRACT:   ev->data.key.ch = '-';               break;
+                case VK_DECIMAL:    ev->data.key.ch = '.';               break;
+                case VK_DIVIDE:     ev->data.key.ch = '/';               break;
+
+                default: ev->type = CACA_EVENT_NONE; return 0;
+                }
+
+                if ((ev->data.key.ch > 0)
+                    &&
+                    (ev->data.key.ch <= 0x7f))
+                {
+                    ev->data.key.utf32 = (uint32_t)ev->data.key.ch;
+                    ev->data.key.utf8[0] = ev->data.key.ch;
+                    ev->data.key.utf8[1] = '\0';
+                }
+                else
+                {
+                    ev->data.key.utf32 = 0;
+                    ev->data.key.utf8[0] = '\0';
+                }
+
+                return 1;
+            }
         }
 
         if(rec.EventType == MOUSE_EVENT)
