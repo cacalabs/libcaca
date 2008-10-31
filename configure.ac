@@ -262,9 +262,9 @@ if test "${enable_cocoa}" != "no"; then
       MACOSX_SDK_CXXFLAGS="${MACOSX_SDK_CXXFLAGS:-${MACOSX_SDK_CFLAGS}}"
       ;;
     esac
-    CC=gcc-${GCC_VERSION}
-    CXX=g++-${GCC_VERSION}
-    MACOSX_SDK_FRAMEWORKS="-F${MACOSX_SDK}/System/Library/Frameworks"
+    CC="${CC:-gcc-${GCC_VERSION}}"
+    CXX="${CXX:-g++-${GCC_VERSION}}"
+    MACOSX_SDK_FRAMEWORKS="${MACOSX_SDK_FRAMEWORKS:--F${MACOSX_SDK}/System/Library/Frameworks}"
     CPPFLAGS="${CPPFLAGS} ${ARCH} ${MACOSX_SDK_FRAMEWORKS}"
     CFLAGS="${CFLAGS} ${MACOSX_SDK_CFLAGS}"
     CXXFLAGS="${CXXFLAGS} ${MACOSX_SDK_CXXFLAGS}"
