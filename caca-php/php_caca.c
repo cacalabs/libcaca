@@ -182,6 +182,12 @@ ZEND_GET_MODULE(caca)
 PHP_MINFO_FUNCTION(caca) {
 	php_info_print_table_start();
 	php_info_print_table_row(2, "Caca library version", caca_get_version());
+#ifdef HAVE_GD
+	php_info_print_table_row(2, "Compiled with gd support", "YES");
+	php_info_print_table_row(2, "Gd API version", GD_VERSION_STRING);
+#else
+	php_info_print_table_row(2, "Compiled with gd support", "NO");
+#endif
 	php_info_print_table_end();
 }
 
