@@ -1,23 +1,3 @@
-<html>
-<head>
-<title>sample program for libcaca php binding</title>
-<style type="text/css">
-<!--
-table, tr
-{
-    display: block;
-}
-td
-{ 
-    display: inline;
-    padding: 0px;
-}
--->
-</style>
-<basefont face="Monaco, Liberation Mono, Courier New, monospace" />
-</head>
-<body text="white" bgcolor="black">
-<pre>
 <?php
 /*
  *  cacainfo.php      sample program for libcaca php binding
@@ -29,7 +9,15 @@ td
  *  To Public License, Version 2, as published by Sam Hocevar. See
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
-
+?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<title>sample program for libcaca php binding</title>
+<link rel="StyleSheet" href="caca-php.css" >
+</head>
+<body text="white" bgcolor="black">
+<?php
 
 //--- Just for fun ---//
 
@@ -66,6 +54,10 @@ EOT;
 	
 
 just_for_fun();
+
+?>
+<pre>
+<?php
 
 //--- Show caca's information ---//
 
