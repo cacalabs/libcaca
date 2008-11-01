@@ -32,11 +32,13 @@ function main() {
 	caca_set_mouse($dp, 0);
 
 	/* Main menu */
+	$bounds = $outline = $dithering = 0;
+
 	display_menu($cv, $dp, $bounds, $outline);
 
 	/* Go ! */
-	$bounds = $outline = $dithering = 0;
 	$need_refresh = false;
+	$quit = 0;
 	while(!$quit) {
 		while ($ev = caca_get_event($dp, CACA_EVENT_ANY, 1000)) {
 			if (caca_get_event_type($ev) & CACA_EVENT_KEY_PRESS) {
@@ -134,8 +136,7 @@ function display_menu($cv, $dp, $bounds, $outline, $refresh = true) {
 //	caca_put_str($cv, 4, 13, "'c': colour");
 //	caca_put_str($cv, 4, 14, "'r': render");
 
-	if ($sprite)
-		caca_put_str($cv, 4, 15, "'s': sprites");
+//	caca_put_str($cv, 4, 15, "'s': sprites");
 
 	caca_put_str($cv, 4, 16, "settings:");
 	caca_put_str($cv, 4, 17, "'o': outline: ".(($outline == 0) ? "none" : (($outline == 1) ? "solid" : "thin")));
