@@ -16,7 +16,7 @@
 <title>sample program for libcaca php binding</title>
 <link rel="StyleSheet" href="caca-php.css" >
 </head>
-<body text="white" bgcolor="black">
+<body text="silver" bgcolor="black">
 <?php
 
 //--- Just for fun ---//
@@ -56,37 +56,48 @@ EOT;
 just_for_fun();
 
 ?>
-<pre>
 <?php
 
 //--- Show caca's information ---//
 
-echo "libcaca version: ".caca_get_version()."\n\n";
-echo "Available drivers:\n";
+?>
+<p>libcaca version: <?php echo htmlspecialchars(caca_get_version()); ?></p>
+
+<p>Available drivers:</p>
+<ul>
+<?php
 $list = caca_get_display_driver_list();
 foreach($list as $type => $name)
-	echo "* $name ($type)\n";
-echo "\n";
+	echo '<li>' . htmlspecialchars("$name ($type)") . '</li>';
+?>
+</ul>
 
-echo "Available import formats:\n";
+<p>Available import formats:</p>
+<ul>
+<?php
 $list = caca_get_import_list();
 foreach($list as $format => $name)
-	echo "* $name ($format)\n";
-echo "\n";
+	echo '<li>' . htmlspecialchars("$name ($format)") . '</li>';
+?>
+</ul>
 
-echo "Available export formats:\n";
+<p>Available export formats:<p>
+<ul>
+<?php
 $list = caca_get_export_list();
 foreach($list as $format => $name)
-	echo "* $name ($format)\n";
-echo "\n";
+	echo '<li>' . htmlspecialchars("$name ($format)") . '</li>';
+?>
+</ul>
 
-echo "Available caca fonts:\n";
+<p>Available caca fonts:</p>
+<ul>
+<?php
 $list = caca_get_font_list();
 foreach($list as $name)
-	echo "* $name\n";
-echo "\n";
-
+	echo '<li>' . htmlspecialchars("$name") . '</li>';
 ?>
-</pre>
+</ul>
+
 </body>
 </html>
