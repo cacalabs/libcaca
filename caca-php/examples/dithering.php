@@ -27,6 +27,6 @@ if (!$display)
 caca_dither_bitmap($canvas, 0, 0, caca_get_canvas_width($canvas), caca_get_canvas_height($canvas), $dither, $img);
 caca_refresh_display($display);
 
-sleep(5);
+caca_get_event($display, CACA_EVENT_KEY_PRESS, 5000000);
 
 ?>

@@ -48,6 +48,6 @@ for ($i = 0; $i < 10; $i++) {
 
 caca_put_str($canvas, 1, 1, "Caca forever...");
 caca_refresh_display($display);
-sleep(5);
+caca_get_event($display, CACA_EVENT_KEY_PRESS, 5000000);
 
 ?>
