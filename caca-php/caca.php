@@ -14,7 +14,7 @@
 
 
 class Canvas {
-	private var cv;
+	private $cv;
 
 	function setSize($width, $height) {
 		return caca_set_canvas_width($this->cv, $width, $height);
@@ -149,10 +149,54 @@ class Canvas {
 	}
 
 	function __construct($width = 0, $height = 0) {
-		cv = caca_create_canvas($width, $height);
+		$this->cv = caca_create_canvas($width, $height);
 	}
 	
 	function get_resource() {
 		return $this->cv;
+	}
+}
+
+class Display {
+	private $dp;
+
+	function setDisplayTime($time) {
+		return caca_set_display_time($this->dp, $time);
+	}
+
+	function getDisplayTime() {
+		return caca_get_display_time($this->dp);
+	}
+
+	function getWidth() {
+		return caca_get_display_width($this->dp);
+	}
+
+	function getHeight() {
+		return caca_get_display_height($this->dp);
+	}
+
+	function setTitle($title) {
+		return caca_set_display_title($this->dp, $title);
+	}
+
+	function getMouseX() {
+		return caca_get_mouse_x($this->dp);
+	}
+
+	function getMouseY() {
+		return caca_get_mouse_y($this->dp);
+	}
+
+	function setMouse($state) {
+		return caca_set_mouse($this->dp, $state);
+	}
+
+	function __construct($canvas) {
+		$this->dp = caca_create_display($canvas->get_resource());
+	} 
+
+	function get_resource() {
+		return $this->dp;
 	}
 }
