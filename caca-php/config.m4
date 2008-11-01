@@ -9,7 +9,7 @@ if test "$PHP_CACA" = "yes"; then
 	])
 
 	AC_CHECK_LIB(gd, gdImageSetPixel, [
-		PHP_ADD_LIBRARY(gd,, CACA_SHARED_LIBADD)
+dnl		PHP_ADD_LIBRARY(gd,, CACA_SHARED_LIBADD)
 		AC_DEFINE(HAVE_GD, 1, [Wheter you have development files of gd])
 	])
 
