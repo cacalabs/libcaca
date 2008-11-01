@@ -461,15 +461,6 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
     int x, y, len;
     int maxcols;
 
-    /* The HTML table markup: less than 1000 bytes
-     * A line: 10 chars for "<tr></tr>\n"
-     * A glyph: 40 chars for "<td bgcolor=#xxxxxx><font color=#xxxxxx>"
-     *          up to 36 chars for "<b><i><u><blink></blink></u></i></b>"
-     *          up to 48 chars for "&#xxxxxx;", or "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" (\t); far less for pure ASCII
-     *          12 chars for "</font></td>" */
-    *bytes = 1000 + cv->height * (10 + cv->width * (40 + 36 + 48 + 12));
-    cur = data = malloc(*bytes);
-
     /* Table */
     maxcols = 0;
     for(y = 0; y < cv->height; y++)
@@ -488,8 +479,16 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
             maxcols = cols;
     }
     
-    cur += sprintf(cur, "<table border='0' cols='%d' cellpadding='0' cellspacing='0'>\n",
-                        maxcols);
+    /* The HTML table markup: less than 1000 bytes
+     * A line: 10 chars for "<tr></tr>\n"
+     * A glyph: up to 44 chars for "<td bgcolor=\"#xxxxxx\"><font color=\"#xxxxxx\">"
+     *          up to 45 chars for "<tt><b><i><u><blink></blink></u></i></b></tt>"
+     *          up to 9 chars for "&#xxxxxx;" (far less for pure ASCII)
+     *          12 chars for "</font></td>" */
+    *bytes = 1000 + cv->height * (10 + maxcols * (44 + 45 + 9 + 12));
+    cur = data = malloc(*bytes);
+
+    cur += sprintf(cur, "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n");
 
     for(y = 0; y < cv->height; y++)
     {
@@ -518,20 +517,21 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
             cur += sprintf(cur, "<td");
 
             if(caca_attr_to_ansi_bg(lineattr[x]) < 0x10)
-                cur += sprintf(cur, " bgcolor=#%.06lx", (unsigned long int)
+                cur += sprintf(cur, " bgcolor=\"#%.06lx\"", (unsigned long int)
                                _caca_attr_to_rgb24bg(lineattr[x]));
 
             if((len + thistab) > 1)
-                cur += sprintf(cur, " colspan=%d", len + thistab);
+                cur += sprintf(cur, " colspan=\"%d\"", len + thistab);
 
             cur += sprintf(cur, ">");
 
             needfont = caca_attr_to_ansi_fg(lineattr[x]) < 0x10;
 
             if(needfont)
-                cur += sprintf(cur, "<font color=#%.06lx>", (unsigned long int)
+                cur += sprintf(cur, "<font color=\"#%.06lx\">", (unsigned long int)
                                _caca_attr_to_rgb24fg(lineattr[x]));
 
+            cur += sprintf(cur, "<tt>");
             if(lineattr[x] & CACA_BOLD)
                 cur += sprintf(cur, "<b>");
             if(lineattr[x] & CACA_ITALICS)
@@ -581,6 +581,7 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
                 cur += sprintf(cur, "</i>");
             if(lineattr[x] & CACA_BOLD)
                 cur += sprintf(cur, "</b>");
+            cur += sprintf(cur, "</tt>");
 
             if(needfont)
                 cur += sprintf(cur, "</font>");
