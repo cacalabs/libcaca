@@ -1638,7 +1638,7 @@ PHP_FUNCTION(caca_export_string) {
 	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
 
 	void *buffer, *copy;
-	size_t len;
+	size_t len = 0;
 	buffer = caca_export_memory(canvas, type, &len);
 	copy = emalloc(len);
 	if (!buffer || !copy) {
