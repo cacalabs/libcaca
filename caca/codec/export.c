@@ -459,36 +459,61 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
 {
     char *data, *cur;
     int x, y, len;
+    int maxcols;
 
     /* The HTML table markup: less than 1000 bytes
      * A line: 10 chars for "<tr></tr>\n"
      * A glyph: 40 chars for "<td bgcolor=#xxxxxx><font color=#xxxxxx>"
      *          up to 36 chars for "<b><i><u><blink></blink></u></i></b>"
-     *          up to 9 chars for "&#xxxxxx;", far less for pure ASCII
+     *          up to 48 chars for "&#xxxxxx;", or "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" (\t); far less for pure ASCII
      *          12 chars for "</font></td>" */
-    *bytes = 1000 + cv->height * (10 + cv->width * (40 + 36 + 9 + 12));
+    *bytes = 1000 + cv->height * (10 + cv->width * (40 + 36 + 48 + 12));
     cur = data = malloc(*bytes);
 
     /* Table */
+    maxcols = 0;
+    for(y = 0; y < cv->height; y++)
+    {
+        uint32_t *linechar = cv->chars + y * cv->width;
+        int cols = 0;
+
+        for(x = 0; x < cv->width; x++)
+        {
+            if(linechar[x] == 0x00000009)
+                while((cols + 1) % 8)
+                    cols ++;
+            cols ++;
+        }
+        if (cols > maxcols)
+            maxcols = cols;
+    }
+    
     cur += sprintf(cur, "<table cols='%d' cellpadding='0' cellspacing='0'>\n",
-                        cv->height);
+                        maxcols);
 
     for(y = 0; y < cv->height; y++)
     {
         uint32_t *lineattr = cv->attrs + y * cv->width;
         uint32_t *linechar = cv->chars + y * cv->width;
+        int taboff = 0;
 
         cur += sprintf(cur, "<tr>");
 
         for(x = 0; x < cv->width; x += len)
         {
             int i, needfont;
+            int thistab = 0;
 
             /* Use colspan option to factor cells with same attributes
              * (see below) */
             len = 1;
-            while(x + len < cv->width && lineattr[x + len] == lineattr[x])
+            while((x + len < cv->width) && (lineattr[x + len] == lineattr[x]))
                 len++;
+
+            for(i = 0; i < len; i++)
+                if(linechar[x + i] == 0x00000009)
+                    while((x + i + taboff + thistab + 1) % 8)
+                        thistab ++;
 
             cur += sprintf(cur, "<td");
 
@@ -496,8 +521,8 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
                 cur += sprintf(cur, " bgcolor=#%.06lx", (unsigned long int)
                                _caca_attr_to_rgb24bg(lineattr[x]));
 
-            if(len > 1)
-                cur += sprintf(cur, " colspan=%d", len);
+            if((len + thistab) > 1)
+                cur += sprintf(cur, " colspan=%d", len + thistab);
 
             cur += sprintf(cur, ">");
 
@@ -521,7 +546,17 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
                 if(linechar[x + i] == CACA_MAGIC_FULLWIDTH)
                     ;
                 else if(linechar[x + i] <= 0x00000020)
+                {
+                    if(linechar[x + i] == 0x00000009)
+                    {
+                        while((x + i + taboff + 1) % 8)
+                        {
+                            cur += sprintf(cur, "&nbsp;");
+                            taboff ++;
+                        }
+                    }
                     cur += sprintf(cur, "&nbsp;");
+                }
                 else if(linechar[x + i] < 0x00000080)
                     cur += sprintf(cur, "%c", (uint8_t)linechar[x + i]);
                 else
