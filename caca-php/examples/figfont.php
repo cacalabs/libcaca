@@ -23,8 +23,9 @@ function unistr_to_ords($str, $encoding = 'UTF-8'){
 	return $result;
 }
 
-if (!posix_isatty(STDOUT))
+if (php_sapi_name() != "cli") {
 	die("You have to run this program with php-cli!\n");
+}
 
 if ($argc < 3) {
 	die("Too few arguments.\nUsage: cmd <path of font> <utf8 string>\n");

@@ -11,21 +11,25 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
-if (!posix_isatty(STDOUT))
+if (php_sapi_name() != "cli") {
 	die("You have to run this program with php-cli!\n");
+}
 
 $img = imagecreatefrompng(dirname(__FILE__)."/logo-caca.png");
-if (!$img) 
+if (!$img)  {
 	die("Can not open image.\n");
+}
 
 $dither = caca_create_dither($img);
-if (!$dither) 
+if (!$dither)  {
 	die("Can not create dither. Maybe you compiled caca-php without gd support.\n");
+}
 
 $canvas = caca_create_canvas(0, 0);
 $display = caca_create_display($canvas);
-if (!$display) 
+if (!$display)  {
 	die("Can not create display.\n");
+}
 
 caca_dither_bitmap($canvas, 0, 0, caca_get_canvas_width($canvas), caca_get_canvas_height($canvas), $dither, $img);
 caca_refresh_display($display);

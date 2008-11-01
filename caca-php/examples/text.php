@@ -15,8 +15,9 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
-if (!posix_isatty(STDOUT))
+if (php_sapi_name() != "cli") {
 	die("You have to run this program with php-cli!\n");
+}
 
 $string =  <<<EOT
               |_| 

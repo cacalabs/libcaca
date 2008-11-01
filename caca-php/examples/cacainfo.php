@@ -46,8 +46,9 @@ EOT;
 }
 	
 
-if (!posix_isatty(STDOUT))
+if (php_sapi_name() != "cli") {
 	die("You have to run this program with php-cli!\n");
+}
 
 just_for_fun();
 

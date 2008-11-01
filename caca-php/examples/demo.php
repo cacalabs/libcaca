@@ -361,8 +361,9 @@ function demo_render($cv, $bounds, $outline) {
 }
 
 
-if (!posix_isatty(STDOUT))
+if (php_sapi_name() != "cli") {
 	die("You have to run this program with php-cli!\n");
+}
 
 main();
 
