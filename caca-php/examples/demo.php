@@ -359,6 +359,10 @@ function demo_triangles($cv, $bounds, $outline) {
 function demo_render($cv, $bounds, $outline) {
 }
 
+
+if (!posix_isatty(STDOUT))
+	die("You have to run this program with php-cli!\n");
+
 main();
 
 ?>

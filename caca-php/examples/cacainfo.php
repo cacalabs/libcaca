@@ -46,6 +46,9 @@ EOT;
 }
 	
 
+if (!posix_isatty(STDOUT))
+	die("You have to run this program with php-cli!\n");
+
 just_for_fun();
 
 //--- Show caca's information ---//

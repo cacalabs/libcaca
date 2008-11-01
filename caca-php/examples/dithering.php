@@ -11,6 +11,9 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
+if (!posix_isatty(STDOUT))
+	die("You have to run this program with php-cli!\n");
+
 $img = imagecreatefrompng(dirname(__FILE__)."/logo-caca.png");
 if (!$img) 
 	die("Can not open image.\n");
@@ -27,6 +30,6 @@ if (!$display)
 caca_dither_bitmap($canvas, 0, 0, caca_get_canvas_width($canvas), caca_get_canvas_height($canvas), $dither, $img);
 caca_refresh_display($display);
 
-caca_get_event($display, CACA_EVENT_KEY_PRESS, 5000000);
+caca_get_event($display, CACA_EVENT_KEY_PRESS, -1);
 
 ?>

@@ -18,6 +18,9 @@ function transform($tbl, $tx, $ty, $sx, $sy) {
 	return $result;
 }
 
+if (!posix_isatty(STDOUT))
+	die("You have to run this program with php-cli!\n");
+
 $canvas = caca_create_canvas(0, 0);
 $display = caca_create_display($canvas);
 if (!$display) {
