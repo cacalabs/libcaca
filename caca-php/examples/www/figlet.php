@@ -8,7 +8,7 @@
 <body>
 <?php
 /*
- *  figfont.php      sample program for libcaca php binding
+ *  figlet.php      sample program for libcaca php binding
  *  Copyright (c) 2008 Nicolas Vion <nico@yojik.eu>
  *
  *  This program is free software. It comes without any warranty, to
@@ -47,7 +47,12 @@ function show_figlet($str, $font) {
 	echo caca_export_string($cv, "html3");
 }
 
-$dir = opendir($path = "/usr/share/figlet/");
+$path = "/usr/share/figlet/";
+if (!is_dir($path)) {
+	die("can not open directory $path.\n");
+}
+
+$dir = opendir($path);
 while (($it = readdir($dir)) != false) {
 	if (is_file($path.$it) and ereg("\.[tf]lf$", $it)) {
 		echo "<b>font : $it</b>\n<pre>";
