@@ -488,7 +488,7 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
             maxcols = cols;
     }
     
-    cur += sprintf(cur, "<table cols='%d' cellpadding='0' cellspacing='0'>\n",
+    cur += sprintf(cur, "<table border='0' cols='%d' cellpadding='0' cellspacing='0'>\n",
                         maxcols);
 
     for(y = 0; y < cv->height; y++)
@@ -517,7 +517,7 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
 
             cur += sprintf(cur, "<td");
 
-            if(caca_attr_to_ansi_fg(lineattr[x]) < 0x10)
+            if(caca_attr_to_ansi_bg(lineattr[x]) < 0x10)
                 cur += sprintf(cur, " bgcolor=#%.06lx", (unsigned long int)
                                _caca_attr_to_rgb24bg(lineattr[x]));
 
@@ -526,7 +526,7 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
 
             cur += sprintf(cur, ">");
 
-            needfont = caca_attr_to_ansi_bg(lineattr[x]) < 0x10;
+            needfont = caca_attr_to_ansi_fg(lineattr[x]) < 0x10;
 
             if(needfont)
                 cur += sprintf(cur, "<font color=#%.06lx>", (unsigned long int)
@@ -557,6 +557,16 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
                     }
                     cur += sprintf(cur, "&nbsp;");
                 }
+                else if(linechar[x + i] == '&')
+                    cur += sprintf(cur, "&amp;");
+                else if(linechar[x + i] == '<')
+                    cur += sprintf(cur, "&lt;");
+                else if(linechar[x + i] == '>')
+                    cur += sprintf(cur, "&gt;");
+                else if(linechar[x + i] == '\"')
+                    cur += sprintf(cur, "&quot;");
+                else if(linechar[x + i] == '\'')
+                    cur += sprintf(cur, "&#39;");
                 else if(linechar[x + i] < 0x00000080)
                     cur += sprintf(cur, "%c", (uint8_t)linechar[x + i]);
                 else
