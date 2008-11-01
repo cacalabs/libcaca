@@ -1,8 +1,22 @@
 <html>
 <head>
 <title>sample program for libcaca php binding</title>
+<style type="text/css">
+<!--
+table, tr
+{
+    display: block;
+}
+td
+{ 
+    display: inline;
+    padding: 0px;
+}
+-->
+</style>
+<basefont face="Monaco, liberation Mono" />
 </head>
-<body text="white" bgcolor="blue">
+<body text="white" bgcolor="black">
 <pre>
 <?php
 /*
