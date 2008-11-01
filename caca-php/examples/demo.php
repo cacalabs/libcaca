@@ -131,8 +131,8 @@ function display_menu($cv, $dp, $bounds, $outline, $refresh = true) {
 	caca_put_str($cv, 4, 10, "'3': boxes");
 	caca_put_str($cv, 4, 11, "'4': triangles");
 	caca_put_str($cv, 4, 12, "'5': ellipses");
-	caca_put_str($cv, 4, 13, "'c': colour");
-	caca_put_str($cv, 4, 14, "'r': render");
+//	caca_put_str($cv, 4, 13, "'c': colour");
+//	caca_put_str($cv, 4, 14, "'r': render");
 
 	if ($sprite)
 		caca_put_str($cv, 4, 15, "'s': sprites");
