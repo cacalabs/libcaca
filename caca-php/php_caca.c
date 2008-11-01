@@ -1538,9 +1538,7 @@ PHP_FUNCTION(caca_file_read) {
 	}
 	caca_file_read(file, buffer, len);
 
-	return_value->type = IS_STRING;
-	return_value->value.str.len = len;
-	return_value->value.str.val = buffer;
+	RETURN_STRINGL(buffer, len, 1); 
 }
 
 PHP_FUNCTION(caca_file_write) {
@@ -1575,9 +1573,7 @@ PHP_FUNCTION(caca_file_gets) {
 	if (!result) {
 		RETURN_FALSE;
 	}
-	return_value->type = IS_STRING;
-	return_value->value.str.len = len;
-	return_value->value.str.val = result;
+	RETURN_STRINGL(result, len, 1); 
 }
 
 PHP_FUNCTION(caca_file_eof) {
@@ -1647,9 +1643,7 @@ PHP_FUNCTION(caca_export_string) {
 	memcpy(copy, buffer, len);
 	free(buffer);
 
-	return_value->type = IS_STRING;
-	return_value->value.str.len = len;
-	return_value->value.str.val = copy;
+	RETURN_STRINGL((char*) copy, len, 0); 
 }
 
 PHP_FUNCTION(caca_get_export_list) {
