@@ -14,7 +14,7 @@ td
 }
 -->
 </style>
-<basefont face="Monaco, liberation Mono" />
+<basefont face="Monaco, Liberation Mono, Courier New, monospace" />
 </head>
 <body text="white" bgcolor="black">
 <pre>
