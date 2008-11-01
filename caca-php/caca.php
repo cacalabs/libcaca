@@ -28,10 +28,12 @@ class Canvas {
 		return caca_get_canvas_height($this->cv);
 	}
 	
-	function getAttr(, ) {
+	function getAttr($x, $y) {
+		return caca_get_attr($this->cv, $x, $y);
 	}
 
-	function setAttr() {
+	function setAttr($attr) {
+		return caca_set_attr($this->cv, $x, $y, $attr);
 	}
 
 	function setColorANSI($foreground, $background) {
@@ -39,6 +41,7 @@ class Canvas {
 	}
 
 	function setColorARGB($foreground, $background) {
+		return caca_set_color_argb($this->cv, $foreground, $background);
 	}
 
 	function putChar($x, $y, $c) {
@@ -57,7 +60,8 @@ class Canvas {
 		return caca_canvas_clear($this->cv);
 	}
 
-	function Blit(, , $c1, $c2) {
+	function Blit($x, $y, $canvas, $mask = false) {
+		return caca_blit($this->cv, $x, $y, $canvas->get_resource(), ($mask != false) ? $mask->get_resource() : false );
 	}
 
 	function Invert() {
@@ -84,52 +88,71 @@ class Canvas {
 		return caca_rotate_right($this->cv);
 	}
 
-	function drawLine(, , , , ) {
+	function drawLine($x1, $y1, $x2, $y2, $char) {
+		return caca_draw_line($this->cv, $x1, $y1, $x2, $y2, $color);
 	}
 
-	function drawPolyline() {
+	function drawPolyline($points, $char) {
+		return caca_draw_polyline($this->cv, $points, $char);
 	}
 
-	function drawThinLine(, , , ) {
+	function drawThinLine($x1, $y1, $x2, $y2) {
+		return caca_draw_thin_line($this->cv, $x1, $y1, $x2, $y2);
 	}
 
-	function drawThinPolyline() {
+	function drawThinPolyline($points) {
+		return caca_draw_thin_polyline($this->cv, $points);
 	}
 
-	function drawCircle(, , , ) {
+	function drawCircle($x, $y, $radius, $char) {
+		return caca_draw_circle($this->cv, $x, $y, $radius, $char);
 	}
 
-	function drawEllipse(, , , , ) {
+	function drawEllipse($x1, $y1, $x2, $y2, $char) {
+		caca_draw_ellipse($this->cv, $x1, $y1, $x2, $y2, $char);	
 	}
 
-	function drawThinEllipse(, , , ) {
+	function drawThinEllipse($x1, $y1, $x2, $y2) {
+		caca_draw_ellipse($this->cv, $x1, $y1, $x2, $y2);	
 	}
 
-	function fillEllipse(, , , , ) {
+	function fillEllipse($x1, $y1, $x2, $y2, $char) {
+		caca_fill_ellipse($this->cv, $x1, $y1, $x2, $y2, $char);	
 	}
 
-	function drawBox(, , , , ) {
+	function drawBox($x1, $y1, $x2, $y2, $char) {
+		caca_draw_box($this->cv, $x1, $y1, $x2, $y2, $char);
 	}
 
-	function drawThinBox(, , , ) {
+	function drawThinBox($x1, $y1, $x2, $y2) {
+		caca_draw_thin_box($this->cv, $x1, $y1, $x2, $y2);
 	}
 
-	function drawCP437Box(, , , ) {
+	function drawCP437Box($x1, $y1, $x2, $y2) {
+		caca_draw_cp437_box($this->cv, $x1, $y1, $x2, $y2);
 	}
 
-	function fillBox(, , , , ) {
+	function fillBox($x1, $y1, $x2, $y2, $char) {
+		caca_fill_box($this->cv, $x1, $y1, $x2, $y2, $char);
 	}
 
-	function drawTriangle(, , , , , , ) {
+	function drawTriangle($x1, $y1, $x2, $y2, $x3, $y3, $char) {
+		caca_draw_triangle($this->cv, $x1, $y1, $x2, $y2, $x3, $y3, $char);
 	}
 
-	function drawThriangle(, , , , , ) {
+	function drawThinTriangle($x1, $y1, $x2, $y2, $x3, $y3) {
+		caca_draw_thin_triangle($this->cv, $x1, $y1, $x2, $y2, $x3, $y3);
 	}
 
-	function fillTriangle(, , , , , , ) {
+	function fillTriangle($x1, $y1, $x2, $y2, $x3, $y3, $char) {
+		caca_fill_triangle($this->cv, $x1, $y1, $x2, $y2, $x3, $y3, $char);
 	}
 
 	function __construct($width = 0, $height = 0) {
 		cv = caca_create_canvas($width, $height);
+	}
+	
+	function get_resource() {
+		return $this->cv;
 	}
 }
