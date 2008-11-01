@@ -1,3 +1,7 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <?php
 /*
  *  cacainfo.php      sample program for libcaca php binding
@@ -10,11 +14,9 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-<html>
 <head>
 <title>sample program for libcaca php binding</title>
-<link rel="StyleSheet" href="caca-php.css" >
+<link rel="StyleSheet" href="caca-php.css" type="text/css" />
 </head>
 <body text="silver" bgcolor="black">
 <?php
@@ -81,7 +83,7 @@ foreach($list as $format => $name)
 ?>
 </ul>
 
-<p>Available export formats:<p>
+<p>Available export formats:</p>
 <ul>
 <?php
 $list = caca_get_export_list();
