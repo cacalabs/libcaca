@@ -38,7 +38,7 @@ $canvas = caca_create_canvas(100, 40);
 caca_dither_bitmap($canvas, 0, 0, caca_get_canvas_width($canvas), caca_get_canvas_height($canvas), $dither, $img);
 
 echo caca_export_string($canvas, "html3");
-echo "<img src=\"./$src\" alt="" />";
+echo "<img src=\"./$src\" alt=\"\" />";
 
 ?>
 </body>
