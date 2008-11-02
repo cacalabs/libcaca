@@ -17,12 +17,12 @@
 function just_for_fun() {
 
 $moo = <<<EOT
-	 (__)  
-	 (oo) 
+         (__)
+         (oo)
    /------\/ 
-  / |    ||   
- *  /\---/\ 
-    ~~   ~~   
+  / |    ||  
+ *  /\---/\  
+    ~~   ~~  
 EOT;
 
 	$cv = caca_create_canvas(0, 0);
@@ -37,11 +37,12 @@ EOT;
 			caca_put_attr($cv, $i + 1, $j, $a);
 		}
 	}
+	caca_set_canvas_size($cv, 18, 6);
 	caca_set_color_ansi($cv, CACA_LIGHTGREEN, CACA_DEFAULT);
-	caca_put_str($cv, 8, 0, "Moo!");
+	caca_put_str($cv, 14, 0, "Moo!");
 	caca_set_color_ansi($cv, CACA_LIGHTRED, CACA_DEFAULT);
-	caca_put_char($cv, 8, 1, hexdec("2765")); //U+2765
-	caca_put_char($cv, 10, 1, hexdec("2764")); //U+2764
+	caca_put_char($cv, 14, 1, hexdec("2765")); //U+2765
+	caca_put_char($cv, 16, 1, hexdec("2764")); //U+2764
 	echo caca_export_string($cv, "utf8");
 }
 	
