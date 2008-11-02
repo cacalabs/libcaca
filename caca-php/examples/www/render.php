@@ -59,11 +59,12 @@ caca_render_canvas($canvas, $font, $img);
 if ($pngmode)
     imagepng($img);
 else
-    echo 'Please, open <a href="?png=true">new created png file</a>.';
-
-if (! $pngmode)
 {
 ?>
+<form action="#">
+<label for="png">Please, open new created png file:</label>
+<input type="submit" id="png" name="png" value="Display" />
+</form>
 </body>
 </html>
 <?php
