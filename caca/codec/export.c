@@ -503,9 +503,9 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
      * A line: 10 chars for "<tr></tr>\n"
      * A glyph: up to 48 chars for "<td bgcolor=\"#xxxxxx\"><tt><font color=\"#xxxxxx\">"
      *          up to 36 chars for "<b><i><u><blink></blink></u></i></b>"
-     *          up to 9 chars for "&#xxxxxx;" (far less for pure ASCII)
+     *          up to 10 chars for "&#xxxxxxx;" (far less for pure ASCII)
      *          17 chars for "</font></tt></td>" */
-    *bytes = 1000 + cv->height * (10 + maxcols * (48 + 36 + 9 + 17));
+    *bytes = 1000 + cv->height * (10 + maxcols * (48 + 36 + 10 + 17));
     cur = data = malloc(*bytes);
 
     cur += sprintf(cur, "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" summary=\"[libcaca canvas html3 export]\">\n");
@@ -583,7 +583,11 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
 
                 if(linechar[x + i] == CACA_MAGIC_FULLWIDTH)
                     ;
-                else if(linechar[x + i] <= 0x00000020)
+                else if((linechar[x + i] <= 0x00000020)
+                        ||
+                        ((linechar[x + i] >= 0x0000007f)
+                         &&
+                         (linechar[x + i] <= 0x0000009f)))
                 {
                     /* Control characters and space converted to
                      * U+00A0 NO-BREAK SPACE, a.k.a. "&nbsp;" in HTML,
@@ -613,8 +617,18 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
                     cur += sprintf(cur, "&#39;");
                 else if(linechar[x + i] < 0x00000080)
                     cur += sprintf(cur, "%c", (uint8_t)linechar[x + i]);
-                else
+                else if((linechar[x + i] <= 0x0010fffd)
+                        &&
+                        ((linechar[x + i] & 0x0000fffe) != 0x0000fffe)
+                        &&
+                        ((linechar[x + i] < 0x0000d800)
+                         ||
+                         (linechar[x + i] > 0x0000dfff)))
                     cur += sprintf(cur, "&#%i;", (unsigned int)linechar[x + i]);
+                else
+                    /* non-character codepoints become U+FFFD
+                     * REPLACEMENT CHARACTER */
+                    cur += sprintf(cur, "&#%i;", (unsigned int)0x0000fffd);
 
                 if (((i + 1) == len) || (lineattr[x + i + 1] != lineattr[x + i]))
                 {
