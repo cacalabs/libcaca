@@ -460,16 +460,36 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
     char *data, *cur;
     int x, y, len;
     int maxcols;
+    int has_multi_cell_row = 0;
 
     /* Table */
     maxcols = 0;
     for(y = 0; y < cv->height; y++)
     {
+        uint32_t *lineattr = cv->attrs + y * cv->width;
         uint32_t *linechar = cv->chars + y * cv->width;
         int cols = 0;
 
         for(x = 0; x < cv->width; x++)
         {
+            if((! has_multi_cell_row)
+               &&
+               (x > 1)
+               &&
+               (caca_attr_to_ansi_bg(lineattr[x - 1])
+                !=
+                caca_attr_to_ansi_bg(lineattr[x]))
+               &&
+               ((caca_attr_to_ansi_bg(lineattr[x]) < 0x10)
+                ?
+                (_caca_attr_to_rgb24bg(lineattr[x - 1])
+                 !=
+                 _caca_attr_to_rgb24bg(lineattr[x]))
+                :
+                0))
+            {
+                has_multi_cell_row = 1;
+            }
             if(linechar[x] == 0x00000009)
                 while((cols + 1) % 8)
                     cols ++;
@@ -506,7 +526,9 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
             /* Use colspan option to factor cells with same attributes
              * (see below) */
             len = 1;
-            while((x + len < cv->width)
+            while((y || ! has_multi_cell_row)
+                  &&
+                  (x + len < cv->width)
                   &&
                   (caca_attr_to_ansi_bg(lineattr[x + len])
                    ==
@@ -515,7 +537,7 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
                   ((caca_attr_to_ansi_bg(lineattr[x]) < 0x10)
                    ?
                    (_caca_attr_to_rgb24bg(lineattr[x + len])
-                    &&
+                    ==
                     _caca_attr_to_rgb24bg(lineattr[x]))
                    :
                    1))
@@ -543,7 +565,7 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
             {
                 if((! i) || (lineattr[x + i] != lineattr[x + i - 1]))
                 {
-                    needfont = caca_attr_to_ansi_fg(lineattr[x + i]) < 0x10;
+                    needfont = (caca_attr_to_ansi_fg(lineattr[x + i]) != CACA_DEFAULT);
 
                     if(needfont)
                         cur += sprintf(cur, "<font color=\"#%.06lx\">", (unsigned long int)
