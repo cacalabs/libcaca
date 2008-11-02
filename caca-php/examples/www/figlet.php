@@ -9,6 +9,7 @@ header('Content-Type: text/html; charset=UTF-8');
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
 <body>
+<form method="get" action=""><input name="str"/><input type="submit" value="OK"/></form>
 <?php
 /*
  *  figlet.php      sample program for libcaca php binding
@@ -59,7 +60,7 @@ $dir = opendir($path);
 while (($it = readdir($dir)) != false) {
 	if (is_file($path.$it) and ereg("\.[tf]lf$", $it)) {
 		echo "<b>font : $it</b>\n";
-		show_figlet("Libcaca", $path.$it);
+		show_figlet(isset($_GET["str"]) ? $_GET["str"] : "Libcaca", $path.$it);
 	}
 }
 ?>
