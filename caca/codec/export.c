@@ -481,11 +481,11 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
     
     /* The HTML table markup: less than 1000 bytes
      * A line: 10 chars for "<tr></tr>\n"
-     * A glyph: up to 44 chars for "<td bgcolor=\"#xxxxxx\"><font color=\"#xxxxxx\">"
-     *          up to 45 chars for "<tt><b><i><u><blink></blink></u></i></b></tt>"
+     * A glyph: up to 48 chars for "<td bgcolor=\"#xxxxxx\"><tt><font color=\"#xxxxxx\">"
+     *          up to 36 chars for "<b><i><u><blink></blink></u></i></b>"
      *          up to 9 chars for "&#xxxxxx;" (far less for pure ASCII)
-     *          12 chars for "</font></td>" */
-    *bytes = 1000 + cv->height * (10 + maxcols * (44 + 45 + 9 + 12));
+     *          17 chars for "</font></tt></td>" */
+    *bytes = 1000 + cv->height * (10 + maxcols * (48 + 36 + 9 + 17));
     cur = data = malloc(*bytes);
 
     cur += sprintf(cur, "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n");
@@ -500,13 +500,25 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
 
         for(x = 0; x < cv->width; x += len)
         {
-            int i, needfont;
+            int i, needfont = 0;
             int thistab = 0;
 
             /* Use colspan option to factor cells with same attributes
              * (see below) */
             len = 1;
-            while((x + len < cv->width) && (lineattr[x + len] == lineattr[x]))
+            while((x + len < cv->width)
+                  &&
+                  (caca_attr_to_ansi_bg(lineattr[x + len])
+                   ==
+                   caca_attr_to_ansi_bg(lineattr[x]))
+                  &&
+                  ((caca_attr_to_ansi_bg(lineattr[x]) < 0x10)
+                   ?
+                   (_caca_attr_to_rgb24bg(lineattr[x + len])
+                    &&
+                    _caca_attr_to_rgb24bg(lineattr[x]))
+                   :
+                   1))
                 len++;
 
             for(i = 0; i < len; i++)
@@ -525,37 +537,47 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
 
             cur += sprintf(cur, ">");
 
-            needfont = caca_attr_to_ansi_fg(lineattr[x]) < 0x10;
-
-            if(needfont)
-                cur += sprintf(cur, "<font color=\"#%.06lx\">", (unsigned long int)
-                               _caca_attr_to_rgb24fg(lineattr[x]));
-
             cur += sprintf(cur, "<tt>");
-            if(lineattr[x] & CACA_BOLD)
-                cur += sprintf(cur, "<b>");
-            if(lineattr[x] & CACA_ITALICS)
-                cur += sprintf(cur, "<i>");
-            if(lineattr[x] & CACA_UNDERLINE)
-                cur += sprintf(cur, "<u>");
-            if(lineattr[x] & CACA_BLINK)
-                cur += sprintf(cur, "<blink>");
 
             for(i = 0; i < len; i++)
             {
+                if((! i) || (lineattr[x + i] != lineattr[x + i - 1]))
+                {
+                    needfont = caca_attr_to_ansi_fg(lineattr[x + i]) < 0x10;
+
+                    if(needfont)
+                        cur += sprintf(cur, "<font color=\"#%.06lx\">", (unsigned long int)
+                                       _caca_attr_to_rgb24fg(lineattr[x + i]));
+
+                    if(lineattr[x + i] & CACA_BOLD)
+                        cur += sprintf(cur, "<b>");
+                    if(lineattr[x + i] & CACA_ITALICS)
+                        cur += sprintf(cur, "<i>");
+                    if(lineattr[x + i] & CACA_UNDERLINE)
+                        cur += sprintf(cur, "<u>");
+                    if(lineattr[x + i] & CACA_BLINK)
+                        cur += sprintf(cur, "<blink>");
+                }
+
                 if(linechar[x + i] == CACA_MAGIC_FULLWIDTH)
                     ;
                 else if(linechar[x + i] <= 0x00000020)
                 {
+                    /* Control characters and space converted to
+                     * U+00A0 NO-BREAK SPACE, a.k.a. "&nbsp;" in HTML,
+                     * but we use the equivalent numeric character
+                     * reference &#160; so this will work in plain
+                     * XHTML with no DTD too. We also expand tabs
+                     * here, since they are not honored in HTML. */
                     if(linechar[x + i] == 0x00000009)
                     {
                         while((x + i + taboff + 1) % 8)
                         {
-                            cur += sprintf(cur, "&nbsp;");
+                            cur += sprintf(cur, "&#160;");
                             taboff ++;
                         }
                     }
-                    cur += sprintf(cur, "&nbsp;");
+                    cur += sprintf(cur, "&#160;");
                 }
                 else if(linechar[x + i] == '&')
                     cur += sprintf(cur, "&amp;");
@@ -571,20 +593,24 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
                     cur += sprintf(cur, "%c", (uint8_t)linechar[x + i]);
                 else
                     cur += sprintf(cur, "&#%i;", (unsigned int)linechar[x + i]);
+
+                if (((i + 1) == len) || (lineattr[x + i + 1] != lineattr[x + i]))
+                {
+                    if(lineattr[x + i] & CACA_BLINK)
+                        cur += sprintf(cur, "</blink>");
+                    if(lineattr[x + i] & CACA_UNDERLINE)
+                        cur += sprintf(cur, "</u>");
+                    if(lineattr[x + i] & CACA_ITALICS)
+                        cur += sprintf(cur, "</i>");
+                    if(lineattr[x + i] & CACA_BOLD)
+                        cur += sprintf(cur, "</b>");
+
+                    if(needfont)
+                        cur += sprintf(cur, "</font>");
+                }
             }
 
-            if(lineattr[x] & CACA_BLINK)
-                cur += sprintf(cur, "</blink>");
-            if(lineattr[x] & CACA_UNDERLINE)
-                cur += sprintf(cur, "</u>");
-            if(lineattr[x] & CACA_ITALICS)
-                cur += sprintf(cur, "</i>");
-            if(lineattr[x] & CACA_BOLD)
-                cur += sprintf(cur, "</b>");
             cur += sprintf(cur, "</tt>");
-
-            if(needfont)
-                cur += sprintf(cur, "</font>");
             cur += sprintf(cur, "</td>");
         }
         cur += sprintf(cur, "</tr>\n");
