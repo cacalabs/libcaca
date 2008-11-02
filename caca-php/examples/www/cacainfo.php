@@ -29,8 +29,8 @@ header('Content-Type: text/html; charset=UTF-8');
 function just_for_fun() {
 
 $moo = <<<EOT
-	 (__)  
-	 (oo) 
+         (__)  
+         (oo) 
    /------\/ 
   / |    ||   
  *  /\---/\ 
