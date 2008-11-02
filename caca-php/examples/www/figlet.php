@@ -44,7 +44,7 @@ function show_figlet($str, $font) {
 	$chars = unistr_to_ords($str);
 	$color = 0;
 	foreach ($chars as $c) {
-		caca_set_color_ansi($cv, 1 + (($color += 4) % 15), CACA_WHITE);
+		caca_set_color_ansi($cv, 1 + (($color += 1) % 13), CACA_WHITE);
 		caca_put_figchar($cv, $c);
 	}
 
