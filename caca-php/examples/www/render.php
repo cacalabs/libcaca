@@ -51,7 +51,7 @@ $render_php = isset($_SERVER['SCRIPT_NAME'])
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <title>Я люблю Либкаку</title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body text="silver" bgcolor="black">
 

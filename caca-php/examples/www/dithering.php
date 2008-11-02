@@ -7,7 +7,7 @@ header('Content-Type: text/html; charset=UTF-8');
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 <title>Caca power!</title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
 <?php
@@ -38,7 +38,7 @@ $canvas = caca_create_canvas(100, 40);
 caca_dither_bitmap($canvas, 0, 0, caca_get_canvas_width($canvas), caca_get_canvas_height($canvas), $dither, $img);
 
 echo caca_export_string($canvas, "html3");
-echo "<img src='./$src' alt=''/>";
+echo "<img src=\"./$src\" alt="" />";
 
 ?>
 </body>

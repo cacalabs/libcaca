@@ -6,7 +6,7 @@ header('Content-Type: text/html; charset=UTF-8');
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 <title>Caca power!</title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
 <form method="get" action="#"><input name="str" value="<?= htmlspecialchars(isset($_GET["str"]) ? $_GET["str"] : "Libcaca") ?>" /><input type="submit" value="OK" /></form>
