@@ -1,3 +1,6 @@
+<?php
+header('Content-Type: text/html; charset=UTF-8');
+?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -20,6 +23,7 @@
 ?>
 <head>
 <title>demo for libcaca php binding</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <link rel="StyleSheet" href="caca-php.css" type="text/css" />
 </head>
 <body text="silver" bgcolor="black">

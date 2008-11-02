@@ -13,7 +13,7 @@ table, table tr
 {
     display: block;
 }
-table td
+table tr td
 { 
     display: inline;
     padding: 0px;
