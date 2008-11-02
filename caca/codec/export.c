@@ -488,7 +488,7 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
     *bytes = 1000 + cv->height * (10 + maxcols * (48 + 36 + 9 + 17));
     cur = data = malloc(*bytes);
 
-    cur += sprintf(cur, "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n");
+    cur += sprintf(cur, "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" summary=\"[libcaca canvas html3 export]\">\n");
 
     for(y = 0; y < cv->height; y++)
     {
