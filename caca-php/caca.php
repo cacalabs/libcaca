@@ -16,8 +16,64 @@
 class Canvas {
 	private $cv;
 
+	function putFigchar($char) {
+		return caca_put_figchar($this->cv, $char);
+	}
+
+	function setFigfont($path) {
+		return caca_canvas_set_figfont($this->cv, $path);
+	}
+
+	function getFrameCount() {
+		return caca_get_frame_count($this->cv); 
+	}
+
+	function putAttr($attr) {
+		return caca_put_attr($this->cv, $attr); 
+	}
+
+	function stretchRight() {
+		return caca_stretch_right($this->cv); 
+	}
+
+	function stretchLeft() {
+		return caca_stretch_left($this->cv); 
+	}
+
+	function setBoundaries($width, $height) {
+		return caca_set_canvas_boundaries($this->cv, $width, $height);
+	}
+
+	function setHandle($x, $y) {
+		return caca_set_canvas_handle($this->cv, $x, $y);
+	}
+
+	function getHandleX() {
+		return caca_get_canvas_handle_x($this->cv); 
+	}
+
+	function getHandleY() {
+		return caca_get_canvas_handle_y($this->cv); 
+	}
+
+	function getCursorX() {
+		return caca_get_cursor_x($this->cv); 
+	}
+
+	function getCursorY() {
+		return caca_get_cursor_y($this->cv); 
+	}
+
+	function getChars() {
+		return caca_get_canvas_chars($this->cv); 
+	}
+
+	function getAttrs() {
+		return caca_get_canvas_attrs($this->cv); 
+	}
+
 	function setSize($width, $height) {
-		return caca_set_canvas_width($this->cv, $width, $height);
+		return caca_set_canvas_size($this->cv, $width, $height);
 	}
 
 	function getWidth() {
@@ -57,7 +113,7 @@ class Canvas {
 	}
 
 	function Clear() {
-		return caca_canvas_clear($this->cv);
+		return caca_clear_canvas($this->cv);
 	}
 
 	function Blit($x, $y, $canvas, $mask = false) {
@@ -109,43 +165,43 @@ class Canvas {
 	}
 
 	function drawEllipse($x1, $y1, $x2, $y2, $char) {
-		caca_draw_ellipse($this->cv, $x1, $y1, $x2, $y2, $char);	
+		return caca_draw_ellipse($this->cv, $x1, $y1, $x2, $y2, $char);	
 	}
 
 	function drawThinEllipse($x1, $y1, $x2, $y2) {
-		caca_draw_ellipse($this->cv, $x1, $y1, $x2, $y2);	
+		return caca_draw_thin_ellipse($this->cv, $x1, $y1, $x2, $y2);	
 	}
 
 	function fillEllipse($x1, $y1, $x2, $y2, $char) {
-		caca_fill_ellipse($this->cv, $x1, $y1, $x2, $y2, $char);	
+		return caca_fill_ellipse($this->cv, $x1, $y1, $x2, $y2, $char);	
 	}
 
 	function drawBox($x1, $y1, $x2, $y2, $char) {
-		caca_draw_box($this->cv, $x1, $y1, $x2, $y2, $char);
+		return caca_draw_box($this->cv, $x1, $y1, $x2, $y2, $char);
 	}
 
 	function drawThinBox($x1, $y1, $x2, $y2) {
-		caca_draw_thin_box($this->cv, $x1, $y1, $x2, $y2);
+		return caca_draw_thin_box($this->cv, $x1, $y1, $x2, $y2);
 	}
 
 	function drawCP437Box($x1, $y1, $x2, $y2) {
-		caca_draw_cp437_box($this->cv, $x1, $y1, $x2, $y2);
+		return caca_draw_cp437_box($this->cv, $x1, $y1, $x2, $y2);
 	}
 
 	function fillBox($x1, $y1, $x2, $y2, $char) {
-		caca_fill_box($this->cv, $x1, $y1, $x2, $y2, $char);
+		return caca_fill_box($this->cv, $x1, $y1, $x2, $y2, $char);
 	}
 
 	function drawTriangle($x1, $y1, $x2, $y2, $x3, $y3, $char) {
-		caca_draw_triangle($this->cv, $x1, $y1, $x2, $y2, $x3, $y3, $char);
+		return caca_draw_triangle($this->cv, $x1, $y1, $x2, $y2, $x3, $y3, $char);
 	}
 
 	function drawThinTriangle($x1, $y1, $x2, $y2, $x3, $y3) {
-		caca_draw_thin_triangle($this->cv, $x1, $y1, $x2, $y2, $x3, $y3);
+		return caca_draw_thin_triangle($this->cv, $x1, $y1, $x2, $y2, $x3, $y3);
 	}
 
 	function fillTriangle($x1, $y1, $x2, $y2, $x3, $y3, $char) {
-		caca_fill_triangle($this->cv, $x1, $y1, $x2, $y2, $x3, $y3, $char);
+		return caca_fill_triangle($this->cv, $x1, $y1, $x2, $y2, $x3, $y3, $char);
 	}
 
 	function __construct($width = 0, $height = 0) {
@@ -159,6 +215,18 @@ class Canvas {
 
 class Display {
 	private $dp;
+
+	function refresh() {
+		return caca_refresh_display($this->dp);
+	}
+
+	function getDriver() {
+		return caca_get_display_driver($this->dp);
+	}
+
+	function setDriver($name) {
+		return caca_set_display_driver($this->dp, $name);
+	}
 
 	function setDisplayTime($time) {
 		return caca_set_display_time($this->dp, $time);
@@ -180,6 +248,10 @@ class Display {
 		return caca_set_display_title($this->dp, $title);
 	}
 
+	function gotoXY($x, $y) {
+		return caca_gotoxy($this->dp, $x, $y);
+	}
+
 	function getMouseX() {
 		return caca_get_mouse_x($this->dp);
 	}
@@ -192,8 +264,11 @@ class Display {
 		return caca_set_mouse($this->dp, $state);
 	}
 
-	function __construct($canvas) {
-		$this->dp = caca_create_display($canvas->get_resource());
+	function __construct($canvas, $driver = false) {
+		if ($driver)
+			$this->dp = caca_create_display_with_driver($canvas->get_resource(), $driver);
+		else
+			$this->dp = caca_create_display($canvas->get_resource());
 	} 
 
 	function get_resource() {
