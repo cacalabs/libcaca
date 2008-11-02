@@ -58,9 +58,8 @@ if (!is_dir($path)) {
 $dir = opendir($path);
 while (($it = readdir($dir)) != false) {
 	if (is_file($path.$it) and ereg("\.[tf]lf$", $it)) {
-		echo "<b>font : $it</b>\n<pre>";
+		echo "<b>font : $it</b>\n";
 		show_figlet("Libcaca", $path.$it);
-		echo "</pre>";
 	}
 }
 ?>

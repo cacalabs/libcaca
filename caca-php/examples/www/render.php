@@ -52,7 +52,6 @@ $render_php = isset($_SERVER['SCRIPT_NAME'])
 <head>
 <title>Я люблю Либкаку</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-<link rel="StyleSheet" href="caca-php.css" type="text/css" />
 </head>
 <body text="silver" bgcolor="black">
 

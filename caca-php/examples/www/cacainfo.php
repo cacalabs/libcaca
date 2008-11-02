@@ -20,7 +20,6 @@ header('Content-Type: text/html; charset=UTF-8');
 <head>
 <title>sample program for libcaca php binding</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-<link rel="StyleSheet" href="caca-php.css" type="text/css" />
 </head>
 <body text="silver" bgcolor="black">
 <?php

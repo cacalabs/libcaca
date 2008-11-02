@@ -8,8 +8,6 @@ header('Content-Type: text/html; charset=UTF-8');
 <head>
 <title>Caca power!</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-<style type="text/css">
-</style>
 </head>
 <body>
 <?php
