@@ -53,7 +53,7 @@ else {
 <?echo caca_export_string(pig(), "html3");?>
 
 <h1>Generated image:</h1>
-<img src="render.php?png=1"/>
+<a href="render.php?png=1"><img alt="[PNG]" src="render.php?png=1" border="0" /></a>
 </body>
 </html>
 
