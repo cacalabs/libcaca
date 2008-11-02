@@ -1,4 +1,7 @@
-#!/usr/bin/php5
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <?php
 /*
  *  demo.php      demo for libcaca php binding
@@ -14,10 +17,13 @@
  *  To Public License, Version 2, as published by Sam Hocevar. See
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
-
-if (php_sapi_name() != "cli") {
-	die("You have to run this program with php-cli!\n");
-}
+?>
+<head>
+<title>demo for libcaca php binding</title>
+<link rel="StyleSheet" href="caca-php.css" type="text/css" />
+</head>
+<body text="silver" bgcolor="black">
+<?php
 
 $string =  <<<EOT
               |_| 
@@ -58,8 +64,10 @@ for($j = 0; $j < caca_get_canvas_height($cv); $j++) {
 	}
 }
 
-echo caca_export_string($cv, "utf8");
+echo caca_export_string($cv, "html3");
 caca_rotate_left($cv);
-echo caca_export_string($cv, "utf8");
+echo caca_export_string($cv, "html3");
 
 ?>
+</body>
+</html>
