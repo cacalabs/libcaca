@@ -526,7 +526,7 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
             /* Use colspan option to factor cells with same attributes
              * (see below) */
             len = 1;
-            while((y || ! has_multi_cell_row)
+            while((y || (! has_multi_cell_row) || (cv->height == 1))
                   &&
                   (x + len < cv->width)
                   &&
