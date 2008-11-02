@@ -200,3 +200,93 @@ class Display {
 		return $this->dp;
 	}
 }
+
+class Dither {
+	private $dt;
+	private $img;
+
+	function setPalette($colors) {
+		caca_set_dither_palette($this->dt, $colors);
+	}
+
+	function setBrightness($value) {
+		caca_set_dither_brightness($this->dt, $value);
+	}
+
+	function getBrightness() {
+		caca_get_dither_brightness($this->dt);
+	}
+	
+	function setGamme($value) {
+		caca_set_dither_gamma($this->dt, $value);
+	}
+	
+	function getGamma() {
+		caca_get_dither_gamma($this->dt);
+	}
+	
+	function setContrast($value) {
+		caca_set_dither_contrast($this->dt, $value);
+	}
+	
+	function getContrast() {
+		caca_get_dither_contrast($this->dt);
+	}
+	
+	function setAntialias($value) {
+		caca_set_dither_antialias($this->dt, $value);
+	}
+	
+	function getAntialiasList() {
+		caca_get_dither_antialias_list($this->dt);
+	}
+	
+	function getAntialias() {
+		caca_get_dither_antialias($this->dt);
+	}
+	
+	function setColor($color) {
+		caca_set_dither_color($this->dt, $color);
+	}
+	
+	function getColorList() {
+		caca_get_dither_color_list($this->dt);
+	}
+	
+	function getColor() {
+		caca_get_dither_color($this->dt);
+	}
+	
+	function setCharset($value) {
+		caca_set_dither_charset($this->dt, $value);
+	}
+	
+	function getCharsetList() {
+		caca_get_dither_charset_list($this->dt);
+	}
+	
+	function getCharset() {
+		caca_get_dither_charset($this->dt);
+	}
+	
+	function setAlgorithm($name) {
+		caca_set_dither_algorithm($this->dt, $name);
+	}
+	
+	function getAlgorithmList() {
+		caca_get_dither_algorithm_list($this->dt);
+	}
+	
+	function getAlgorithm() {
+		caca_get_dither_algorithm($this->dt);
+	}
+	
+	function bitmap($canvas, $x, $y, $width, $height, $load_palette = true) {
+		caca_dither_bitmap($canvas, $x, $y, $width, $height, $this->dt, $this->img, $load_palette);
+	}
+
+	function __construct($image) {
+		$this->dt = caca_create_dither($image);
+		$this->img = $image;
+	} 
+}
