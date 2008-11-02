@@ -33,7 +33,7 @@ $moo = <<<EOT
          (oo)
    /------\/ 
   / |    ||  
- *  /\---/\ 
+ *  /\---/\  
     ~~   ~~  
 EOT;
 
@@ -49,7 +49,7 @@ EOT;
 			caca_put_attr($cv, $i + 1, $j, $a);
 		}
 	}
-	caca_set_canvas_size($cv, 24, 6);
+	caca_set_canvas_size($cv, 18, 6);
 	caca_set_color_ansi($cv, CACA_LIGHTGREEN, CACA_DEFAULT);
 	caca_put_str($cv, 14, 0, "Moo!");
 	caca_set_color_ansi($cv, CACA_LIGHTRED, CACA_DEFAULT);
