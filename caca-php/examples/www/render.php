@@ -38,6 +38,9 @@ if (isset($_GET["png"])) {
 	imagepng($img);
 }
 else {
+
+$render_php = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : 'render.php';
+
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -53,7 +56,7 @@ else {
 <?echo caca_export_string(pig(), "html3");?>
 
 <h1>Generated image:</h1>
-<a href="render.php?png=1"><img alt="[PNG]" src="render.php?png=1" border="0" /></a>
+<a href="<?= htmlspecialchars($render_php) ?>?png=1"><img alt="[PNG]" src="<?= htmlspecialchars($render_php) ?>?png=1" border="0" /></a>
 </body>
 </html>
 
