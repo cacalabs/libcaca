@@ -531,6 +531,8 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
                        :
                        has_multi_cell_row))
                    ||
+                   (linechar[x + len] == CACA_MAGIC_FULLWIDTH)
+                   ||
                    (cv->height == 1))
                   &&
                   (caca_attr_to_ansi_bg(lineattr[x + len])
