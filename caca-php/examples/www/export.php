@@ -151,6 +151,9 @@ $content_type_map = array(
 
 $extension_map = array(
 	'ansi' => 'txt',
+	'utf8' => 'txt',
+	'utf8cr' => 'txt',
+	'irc' => 'txt',
 	'tga' => 'tga'
 	);
 
