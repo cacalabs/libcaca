@@ -57,7 +57,7 @@ update_preview = function (select)
 		{
 			newLocation = self.location.pathname + '?format=' + encodeURIComponent(format);
 		}
-		self.frames[0].location = newLocation;
+		self.frames[0].location.replace(newLocation, true);
 	}
 	catch (e)
 	{
