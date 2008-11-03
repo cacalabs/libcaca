@@ -64,7 +64,7 @@ if($file)
 	$cv = caca_create_canvas(0, 0);
 	if(caca_import_file($cv, $file, "") < 0)
 	{
-		die($argv[0] . ": `" . $file . "' has unknown $format\n");
+		die($argv[0] . ": `" . $file . "' has unknown format\n");
 	}
 }
 else
