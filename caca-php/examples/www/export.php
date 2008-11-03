@@ -150,6 +150,7 @@ $content_type_map = array(
 	);
 
 $download_extension_map = array(
+	'caca' => 'caca',
 	'ansi' => 'txt',
 	'utf8' => 'txt',
 	'utf8cr' => 'txt',
