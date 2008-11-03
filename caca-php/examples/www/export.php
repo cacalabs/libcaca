@@ -149,12 +149,18 @@ $content_type_map = array(
 	'tga' => 'image/x-targa'
 	);
 
-$extension_map = array(
+$download_extension_map = array(
 	'ansi' => 'txt',
 	'utf8' => 'txt',
 	'utf8cr' => 'txt',
 	'irc' => 'txt',
 	'tga' => 'tga'
+	);
+
+$inline_extension_map = array(
+	'bbfr' => 'txt',
+	'ps' => 'ps',
+	'svg' => 'svg'
 	);
 
 if (! array_key_exists($format, $content_type_map))
@@ -163,8 +169,10 @@ else
 	$content_type = $content_type_map[$format];
 
 header('Content-Type: ' . $content_type);
-if (array_key_exists($format, $extension_map))
-	header('Content-Disposition: attachment; filename=export.' . $extension_map[$format]);
+if (array_key_exists($format, $download_extension_map))
+	header('Content-Disposition: attachment; filename=export.' . $download_extension_map[$format]);
+else if (array_key_exists($format, $inline_extension_map))
+	header('Content-Disposition: inline; filename=export.' . $inline_extension_map[$format]);
 
 echo caca_export_string($cv, $format);
 
