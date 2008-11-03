@@ -1,4 +1,10 @@
-#!/usr/bin/php5
+<?php
+header('Content-Type: text/html; charset=UTF-8');
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <?php
 /*
  *  fullwidth     libcaca fullwidth Unicode characters test program
@@ -17,18 +23,20 @@
  *  To Public License, Version 2, as published by Sam Hocevar. See
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
+?>
+<head>
+<title>sample program for libcaca php binding</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body text="silver" bgcolor="black">
+<?php
 
 define('CACA', "쫊쫊쫊쫊쫊쫊쫊쫊쫊쫊쫊쫊쫊쫊쫊");
 
-$cv = caca_create_canvas(0, 0);
+$cv = caca_create_canvas(36, 12);
 if(! $cv)
 {
 	die("Can't created canvas\n");
-}
-$dp = caca_create_display($cv);
-if(! $dp)
-{
-	die("Can't create display\n");
 }
 
 $caca = caca_create_canvas(6, 10);
@@ -68,8 +76,8 @@ for($i = 0; $i < 10; $i++)
 
 caca_blit($cv, 29, 1, $caca);
 
-caca_refresh_display($dp);
-
-caca_get_event($dp, CACA_EVENT_KEY_PRESS, -1);
+echo caca_export_string($cv, "html3");
 
 ?>
+</body>
+</html>
