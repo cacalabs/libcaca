@@ -38,16 +38,45 @@ if((! $format) || (! array_key_exists($format, $exports)))
 <head>
 <title>libcaca export test program</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<script type="text/javascript">
+/*<![CDATA[*/
+update_preview = function (select)
+{
+	var iframe_map = {
+		'html': true,
+		'html3': true,
+		'bbfr': true,
+		'svg': true
+	};
+	var e;
+	try
+	{
+		var format = select.options[select.selectedIndex].value;
+		var newLocation = 'about:blank';
+		if (iframe_map[format])
+		{
+			newLocation = self.location.pathname + '?format=' + encodeURIComponent(format);
+		}
+		self.frames[0].location = newLocation;
+	}
+	catch (e)
+	{
+		alert('e' + e);
+	}
+	return true;
+};
+/*]]>*/
+</script>
 </head>
-<body>
+<body onload="update_preview(document.forms.exportform.elements.format);">
 
-<form action="#" enctype="multipart/form-data" method="post">
+<form id="exportform" name="exportform" action="#" enctype="multipart/form-data" method="post">
 <label for="file">File:</label>
 <input name="file" type="file" /> <em>(optional)</em>
 <br />
 <input type="submit" value="Export" />
 <label for="format">as</label>
-<select name="format" id="format">
+<select name="format" id="format" onchange="update_preview(this);">
 <?php
 	foreach($exports as $format => $name)
 	{
@@ -58,6 +87,13 @@ if((! $format) || (! array_key_exists($format, $exports)))
 ?>
 </select>
 </form>
+<?php
+$export_php = isset($_SERVER['SCRIPT_NAME'])
+		?
+		$_SERVER['SCRIPT_NAME']
+		:
+		'export.php';
+?><iframe name="preview" id="preview" src="<?= htmlspecialchars($export_php) ?>?format=html" width="820" height="620" style="margin: 0; padding: 0; border: none; width: 100%"></iframe>
 </body>
 </html>
 <?php
