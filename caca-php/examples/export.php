@@ -52,7 +52,7 @@ else
 
 if(! array_key_exists($format, $exports))
 {
-    $msg = ($argv[0] . ": unknown $format `" . $format . "'\n" .
+    $msg = ($argv[0] . ": unknown format `" . $format . "'\n" .
             "please use one of:\n");
     foreach($exports as $format => $name)
         $msg .= " \"" . $name . "\" (" . $format . ")\n";
