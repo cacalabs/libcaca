@@ -16,16 +16,44 @@
 class Canvas {
 	private $cv;
 
+	function importFile($path, $codec) {
+		return caca_import_file($this->cv, $path, $codec);
+	}
+
+	function importString($codec) {
+		return caca_import_string($this->cv, $codec);
+	}
+
+	function exportString($codec) {
+		return caca_export_string($this->cv, $codec);
+	}
+
+	function freeFrame($id) {
+		return caca_free_frame($this->cv, $id);
+	}
+
+	function frameCount() {
+		return caca_get_frame_count($this->cv);
+	}
+
+	function createFrame($id) {
+		return caca_create_frame($this->cv, $id);
+	}
+
+	function setFrameName($name) {
+		return caca_set_frame_name($this->cv, $name);
+	}
+
+	function setFrame($id) {
+		return caca_set_frame($this->cv, $id);
+	}
+
 	function putFigchar($char) {
 		return caca_put_figchar($this->cv, $char);
 	}
 
 	function setFigfont($path) {
 		return caca_canvas_set_figfont($this->cv, $path);
-	}
-
-	function getFrameCount() {
-		return caca_get_frame_count($this->cv); 
 	}
 
 	function putAttr($attr) {
@@ -216,6 +244,10 @@ class Canvas {
 class Display {
 	private $dp;
 
+	function setCursor($visible) {
+		return caca_set_cursor($this->dp, $visible);
+	}
+
 	function refresh() {
 		return caca_refresh_display($this->dp);
 	}
@@ -363,5 +395,25 @@ class Dither {
 	function __construct($image) {
 		$this->dt = caca_create_dither($image);
 		$this->img = $image;
+	} 
+}
+
+class Font {
+	private $f;
+	
+	function getWidth() {
+		return caca_get_font_width($this->f);
+	}
+
+	function getHeight() {
+		return caca_get_font_height($this->f);
+	}
+
+	function getBlocks() {
+		return caca_get_font_blocks($this->f);
+	}
+
+	function __construct($name) {
+		$this->f = caca_load_builtin_font($name);
 	} 
 }
