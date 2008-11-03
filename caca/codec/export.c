@@ -459,44 +459,40 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
 {
     char *data, *cur;
     int x, y, len;
-    int maxcols;
     int has_multi_cell_row = 0;
+    unsigned char *cell_boundary_bitmap;
 
     /* Table */
-    maxcols = 0;
+    cell_boundary_bitmap = (unsigned char *) malloc((cv->width + 7) / 8);
+    if(cell_boundary_bitmap)
+        memset((void *) cell_boundary_bitmap, 0, (cv->width + 7) / 8);
     for(y = 0; y < cv->height; y++)
     {
         uint32_t *lineattr = cv->attrs + y * cv->width;
-        uint32_t *linechar = cv->chars + y * cv->width;
-        int cols = 0;
 
-        for(x = 0; x < cv->width; x++)
-        {
-            if((! has_multi_cell_row)
+        for(x = 1; x < cv->width; x++)
+            if((! (cell_boundary_bitmap
+                   ?
+                   (cell_boundary_bitmap[x / 8] & (1 << (x % 8)))
+                   :
+                   has_multi_cell_row))
                &&
-               (x > 1)
-               &&
-               (caca_attr_to_ansi_bg(lineattr[x - 1])
-                !=
-                caca_attr_to_ansi_bg(lineattr[x]))
-               &&
-               ((caca_attr_to_ansi_bg(lineattr[x]) < 0x10)
-                ?
-                (_caca_attr_to_rgb24bg(lineattr[x - 1])
+               ((caca_attr_to_ansi_bg(lineattr[x - 1])
                  !=
-                 _caca_attr_to_rgb24bg(lineattr[x]))
-                :
-                0))
+                 caca_attr_to_ansi_bg(lineattr[x]))
+                ||
+                ((caca_attr_to_ansi_bg(lineattr[x]) < 0x10)
+                 ?
+                 (_caca_attr_to_rgb24bg(lineattr[x - 1])
+                  !=
+                  _caca_attr_to_rgb24bg(lineattr[x]))
+                 :
+                 0)))
             {
                 has_multi_cell_row = 1;
+                if(cell_boundary_bitmap)
+                    cell_boundary_bitmap[x / 8] |= 1 << (x % 8);
             }
-            if(linechar[x] == 0x00000009)
-                while((cols + 1) % 8)
-                    cols ++;
-            cols ++;
-        }
-        if (cols > maxcols)
-            maxcols = cols;
     }
     
     /* The HTML table markup: less than 1000 bytes
@@ -505,30 +501,37 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
      *          up to 36 chars for "<b><i><u><blink></blink></u></i></b>"
      *          up to 10 chars for "&#xxxxxxx;" (far less for pure ASCII)
      *          17 chars for "</font></tt></td>" */
-    *bytes = 1000 + cv->height * (10 + maxcols * (48 + 36 + 10 + 17));
+    *bytes = 1000 + cv->height * (10 + cv->width * (48 + 36 + 10 + 17));
     cur = data = malloc(*bytes);
 
-    cur += sprintf(cur, "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" summary=\"[libcaca canvas html3 export]\">\n");
+    cur += sprintf(cur, "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" summary=\"[libcaca canvas export]\">\n");
 
     for(y = 0; y < cv->height; y++)
     {
         uint32_t *lineattr = cv->attrs + y * cv->width;
         uint32_t *linechar = cv->chars + y * cv->width;
-        int taboff = 0;
 
         cur += sprintf(cur, "<tr>");
 
         for(x = 0; x < cv->width; x += len)
         {
             int i, needfont = 0;
-            int thistab = 0;
+            int nonblank = 0;
 
             /* Use colspan option to factor cells with same attributes
              * (see below) */
             len = 1;
-            while((y || (! has_multi_cell_row) || (cv->height == 1))
+            while((x + len < cv->width)
                   &&
-                  (x + len < cv->width)
+                  (y
+                   ||
+                   (! (cell_boundary_bitmap
+                       ?
+                       (cell_boundary_bitmap[(x + len) / 8] & (1 << ((x + len) % 8)))
+                       :
+                       has_multi_cell_row))
+                   ||
+                   (cv->height == 1))
                   &&
                   (caca_attr_to_ansi_bg(lineattr[x + len])
                    ==
@@ -544,9 +547,12 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
                 len++;
 
             for(i = 0; i < len; i++)
-                if(linechar[x + i] == 0x00000009)
-                    while((x + i + taboff + thistab + 1) % 8)
-                        thistab ++;
+                if(! ((linechar[x + i] <= 0x00000020)
+                      ||
+                      ((linechar[x + i] >= 0x0000007f)
+                       &&
+                       (linechar[x + i] <= 0x000000a0))))
+                    nonblank = 1;
 
             cur += sprintf(cur, "<td");
 
@@ -554,8 +560,22 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
                 cur += sprintf(cur, " bgcolor=\"#%.06lx\"", (unsigned long int)
                                _caca_attr_to_rgb24bg(lineattr[x]));
 
-            if((len + thistab) > 1)
-                cur += sprintf(cur, " colspan=\"%d\"", len + thistab);
+            if(has_multi_cell_row && (len > 1))
+            {
+                int colspan;
+
+                colspan = len;
+                if(cell_boundary_bitmap)
+                    for(i = 0; i < len; i ++)
+                        if(i
+                           &&
+                           ! (cell_boundary_bitmap[(x + i) / 8]
+                              &
+                              (1 << ((x + i) % 8))))
+                            colspan --;
+                if(colspan > 1)
+                    cur += sprintf(cur, " colspan=\"%d\"", colspan);
+            }
 
             cur += sprintf(cur, ">");
 
@@ -563,12 +583,19 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
 
             for(i = 0; i < len; i++)
             {
-                if((! i) || (lineattr[x + i] != lineattr[x + i - 1]))
+                if(nonblank
+                   &&
+                   ((! i)
+                    ||
+                    (lineattr[x + i] != lineattr[x + i - 1])))
                 {
-                    needfont = (caca_attr_to_ansi_fg(lineattr[x + i]) != CACA_DEFAULT);
+                    needfont = (caca_attr_to_ansi_fg(lineattr[x + i])
+                                !=
+                                CACA_DEFAULT);
 
                     if(needfont)
-                        cur += sprintf(cur, "<font color=\"#%.06lx\">", (unsigned long int)
+                        cur += sprintf(cur, "<font color=\"#%.06lx\">",
+                                       (unsigned long int)
                                        _caca_attr_to_rgb24fg(lineattr[x + i]));
 
                     if(lineattr[x + i] & CACA_BOLD)
@@ -587,22 +614,13 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
                         ||
                         ((linechar[x + i] >= 0x0000007f)
                          &&
-                         (linechar[x + i] <= 0x0000009f)))
+                         (linechar[x + i] <= 0x000000a0)))
                 {
                     /* Control characters and space converted to
                      * U+00A0 NO-BREAK SPACE, a.k.a. "&nbsp;" in HTML,
                      * but we use the equivalent numeric character
                      * reference &#160; so this will work in plain
-                     * XHTML with no DTD too. We also expand tabs
-                     * here, since they are not honored in HTML. */
-                    if(linechar[x + i] == 0x00000009)
-                    {
-                        while((x + i + taboff + 1) % 8)
-                        {
-                            cur += sprintf(cur, "&#160;");
-                            taboff ++;
-                        }
-                    }
+                     * XHTML with no DTD too. */
                     cur += sprintf(cur, "&#160;");
                 }
                 else if(linechar[x + i] == '&')
@@ -630,7 +648,11 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
                      * REPLACEMENT CHARACTER */
                     cur += sprintf(cur, "&#%i;", (unsigned int)0x0000fffd);
 
-                if (((i + 1) == len) || (lineattr[x + i + 1] != lineattr[x + i]))
+                if (nonblank
+                    &&
+                    (((i + 1) == len)
+                     ||
+                     (lineattr[x + i + 1] != lineattr[x + i])))
                 {
                     if(lineattr[x + i] & CACA_BLINK)
                         cur += sprintf(cur, "</blink>");
@@ -654,6 +676,10 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
 
     /* Footer */
     cur += sprintf(cur, "</table>\n");
+
+    /* Free working memory */
+    if (cell_boundary_bitmap)
+        free((void *) cell_boundary_bitmap);
 
     /* Crop to really used size */
     debug("html3 export: alloc %lu bytes, realloc %lu",
