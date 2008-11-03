@@ -72,7 +72,7 @@ update_preview = function (select)
 
 <form id="exportform" name="exportform" action="#" enctype="multipart/form-data" method="post">
 <label for="file">File:</label>
-<input name="file" type="file" /> <em>(optional)</em>
+<input id="file" name="file" type="file" /> <em>(optional)</em>
 <br />
 <input type="submit" value="Export" />
 <label for="format">as</label>
