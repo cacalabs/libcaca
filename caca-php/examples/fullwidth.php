@@ -2,6 +2,10 @@
 <?php
 /*
  *  fullwidth     libcaca fullwidth Unicode characters test program
+ *  Copyright (c) 2008 Benjamin C. Wiley Sittler <bsittler@gmail.com>
+ *
+ *  This file is a Php port of "examples/fullwidth.c"
+ *  which is: 
  *  Copyright (c) 2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
  *
