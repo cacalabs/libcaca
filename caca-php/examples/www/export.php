@@ -45,9 +45,14 @@ update_preview = function (select)
 	var iframe_map = {
 		'html': true,
 		'html3': true,
-		'bbfr': true,
-		'svg': true
+		'bbfr': true
 	};
+	if (self.opera
+		||
+		(('' + navigator.userAgent).match(/.*(WebKit|Gecko).*/)))
+	{
+		iframe_map['svg'] = true;
+	}
 	var e;
 	try
 	{
