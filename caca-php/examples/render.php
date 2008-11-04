@@ -1,6 +1,10 @@
 #!/usr/bin/php5
 <?
 
+if (php_sapi_name() != "cli") {
+	die("You have to run this program with php-cli!\n");
+}
+
 $pig_str = <<<EOT
                                    
     _._ _..._ .-',     _.._(`))    

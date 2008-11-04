@@ -17,6 +17,10 @@
    *  http://sam.zoy.org/wtfpl/COPYING for more details.
    */
 
+if (php_sapi_name() != "cli") {
+	die("You have to run this program with php-cli!\n");
+}
+
 $cv = caca_create_canvas(80, 24);
 if(!$cv)
 {
