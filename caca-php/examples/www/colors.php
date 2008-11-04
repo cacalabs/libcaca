@@ -52,13 +52,13 @@ for($i = 0; $i < 16; $i++)
 
 caca_set_color_ansi($cv, CACA_LIGHTGRAY, CACA_BLACK);
 caca_put_str($cv, 3, 20, "This is bold    This is blink    This is italics    This is underline");
-caca_set_attr($cv, CACA_BOLD, CACA_DEFAULT);
+caca_set_attr($cv, CACA_BOLD);
 caca_put_str($cv, 3 + 8, 20, "bold");
-caca_set_attr($cv, CACA_BLINK, CACA_DEFAULT);
+caca_set_attr($cv, CACA_BLINK);
 caca_put_str($cv, 3 + 24, 20, "blink");
-caca_set_attr($cv, CACA_ITALICS, CACA_DEFAULT);
+caca_set_attr($cv, CACA_ITALICS);
 caca_put_str($cv, 3 + 41, 20, "italics");
-caca_set_attr($cv, CACA_UNDERLINE, CACA_DEFAULT);
+caca_set_attr($cv, CACA_UNDERLINE);
 caca_put_str($cv, 3 + 60, 20, "underline");
 
 echo caca_export_string($cv, "html3");

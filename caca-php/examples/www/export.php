@@ -157,15 +157,15 @@ else
 	caca_put_str($cv, WIDTH / 2 - 7, HEIGHT / 2 + 2, "äβç ░▒▓█▓▒░ ΔЗҒ");
 	caca_put_str($cv, WIDTH / 2 - 5, HEIGHT / 2 + 4, "(\") \\o/ <&>");
 
-	caca_set_attr($cv, CACA_BOLD, CACA_DEFAULT);
+	caca_set_attr($cv, CACA_BOLD);
 	caca_put_str($cv, WIDTH / 2 - 16, HEIGHT / 2 + 3, "Bold");
-	caca_set_attr($cv, CACA_BLINK, CACA_DEFAULT);
+	caca_set_attr($cv, CACA_BLINK);
 	caca_put_str($cv, WIDTH / 2 - 9, HEIGHT / 2 + 3, "Blink");
-	caca_set_attr($cv, CACA_ITALICS, CACA_DEFAULT);
+	caca_set_attr($cv, CACA_ITALICS);
 	caca_put_str($cv, WIDTH / 2 - 1, HEIGHT / 2 + 3, "Italics");
-	caca_set_attr($cv, CACA_UNDERLINE, CACA_DEFAULT);
+	caca_set_attr($cv, CACA_UNDERLINE);
 	caca_put_str($cv, WIDTH / 2 + 8, HEIGHT / 2 + 3, "Underline");
-	caca_set_attr($cv, 0, CACA_DEFAULT);
+	caca_set_attr($cv, 0);
 
 	caca_set_color_ansi($cv, CACA_WHITE, CACA_LIGHTBLUE);
 	caca_put_str($cv, WIDTH / 2 - 7, HEIGHT / 2, "    LIBCACA    ");
