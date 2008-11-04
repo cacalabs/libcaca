@@ -1048,7 +1048,7 @@ PHP_FUNCTION(caca_create_dither) {
 
 	caca_dither_t *dither;
 	if (img->trueColor)
-		dither = caca_create_dither(sizeof(int) * 8, img->sx, img->sy, img->sx * sizeof(int), 0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000);
+		dither = caca_create_dither(sizeof(int) * 8, img->sx, img->sy, img->sx * sizeof(int), 0x00ff0000, 0x0000ff00, 0x000000ff, 0x7f000000);
 	else
 		dither = caca_create_dither(sizeof(char) * 8, img->sx, img->sy, img->sx * sizeof(char), 0, 0, 0, 0);
 
@@ -1326,6 +1326,7 @@ PHP_FUNCTION(caca_dither_bitmap) {
 
 	//load palette if image is not true color
 	if (load_palette && !img->trueColor && gd_load_palette(img, dither) != 0) {
+		free(pixels);
 		RETURN_FALSE;
 	}
 
@@ -1437,7 +1438,7 @@ PHP_FUNCTION(caca_render_canvas) {
 	for (i = 0; i < img->sy; i++) {
 		for (j = 0; j < img->sx; j++) {
 			uint8_t *src = buffer + i * pitch + j * 4;
-			img->tpixels[i][j] = *(src + 3)	| (*(src + 2) << 8) | (*(src + 1) << 16) | (*(src + 0) << 24);
+			img->tpixels[i][j] = *(src + 3)	| (*(src + 2) << 8) | (*(src + 1) << 16) | ((*(src + 0) & 0xfe) << 23);
 		}
 	}
 	
@@ -1776,7 +1777,7 @@ PHP_FUNCTION(caca_set_display_title) {
 	}
 	caca_display_t *display;
 	ZEND_FETCH_RESOURCE(display, caca_display_t*, &_zval, -1, PHP_CACA_DISPLAY_RES_NAME, le_caca_display);
-	RETURN_SUCCESS(caca_set_display(display, str));
+	RETURN_SUCCESS(caca_set_display_title(display, str));
 }
 
 PHP_FUNCTION(caca_set_mouse) {
