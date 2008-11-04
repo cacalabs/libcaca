@@ -77,6 +77,11 @@ if($file)
 	
 	echo caca_export_string($cv, "html3");
 }
+else
+{
+	?>See <a href="export.php">libcaca export test program</a> for an <a
+href="export.php?format=caca">example file</a>.<?php
+}
 
 ?>
 </body>
