@@ -1,5 +1,11 @@
+#!/usr/bin/php5
+<?php
 /*
  *  import        libcaca importers test program
+ *  Copyright (c) 2008 Benjamin C. Wiley Sittler <bsittler@gmail.com>
+ *
+ *  This file is a Php port of "examples/import.c"
+ *  which is: 
  *  Copyright (c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                All Rights Reserved
  *
@@ -12,55 +18,31 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
-#include "config.h"
-
-#if !defined(__KERNEL__)
-#   include <stdio.h>
-#   include <stdlib.h>
-#endif
-
-#include "caca.h"
-
-int main(int argc, char *argv[])
+if($argc < 2)
 {
-    caca_canvas_t *cv;
-    caca_display_t *dp;
-
-    if(argc < 2)
-    {
-        fprintf(stderr, "%s: missing argument (filename).\n", argv[0]);
-        fprintf(stderr, "usage: %s <filename> [<format>]\n", argv[0]);
-        return 1;
-    }
-
-    cv = caca_create_canvas(0, 0);
-    if(cv == NULL)
-    {
-        printf("Can't create canvas\n");
-        return -1;
-    }
-
-    if(caca_import_file(cv, argv[1], argc >= 3 ? argv[2] : "") < 0)
-    {
-	fprintf(stderr, "%s: could not open `%s'.\n", argv[0], argv[1]);
-        caca_free_canvas(cv);
-        return 1;
-    }
-
-    dp = caca_create_display(cv);
-    if(dp == NULL)
-    {
-        printf("Can't create display\n");
-        return -1;
-    }
-
-    caca_refresh_display(dp);
-
-    caca_get_event(dp, CACA_EVENT_KEY_PRESS, NULL, -1);
-
-    caca_free_display(dp);
-    caca_free_canvas(cv);
-
-    return 0;
+	die($argv[0] . ": missing argument (filename).\n" .
+		"usage: " . $argv[0] . " <filename> [<format>]\n");
 }
 
+$cv = caca_create_canvas(0, 0);
+if(! $cv)
+{
+	die("Can't create canvas\n");
+}
+
+if(caca_import_file($cv, $argv[1], $argc >= 3 ? $argv[2] : "") < 0)
+{
+	die($argv[0] . ": could not open `" . $argv[1] . "'.\n");
+}
+
+$dp = caca_create_display($cv);
+if(! $dp)
+{
+	die("Can't create display\n");
+}
+
+caca_refresh_display($dp);
+
+caca_get_event($dp, CACA_EVENT_KEY_PRESS, -1);
+
+?>
