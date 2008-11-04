@@ -18,6 +18,10 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
+if (php_sapi_name() != "cli") {
+	die("You have to run this program with php-cli!\n");
+}
+
 $imports = caca_get_import_list();
 
 if($argc < 2 || $argc > 3)
