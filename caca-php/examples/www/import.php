@@ -1,4 +1,10 @@
-#!/usr/bin/php5
+<?php
+header('Content-Type: text/html; charset=UTF-8');
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <?php
 /*
  *  import        libcaca importers test program
@@ -20,35 +26,58 @@
 
 $imports = caca_get_import_list();
 
-if($argc < 2 || $argc > 3)
-{
-	$msg = ($argv[0] . ": wrong argument count\n" .
-			"usage: " . $argv[0] . " file [<format>]\n" .
-			"where <format> is one of:\n");
-	foreach($imports as $format => $name)
-		$msg .= " \"" . $name . "\" (" . $format . ")\n";
-	die($msg);
-}
-
-$cv = caca_create_canvas(0, 0);
-if(! $cv)
-{
-	die("Can't create canvas\n");
-}
-
-if(caca_import_file($cv, $argv[1], $argc >= 3 ? $argv[2] : "") < 0)
-{
-	die($argv[0] . ": could not open `" . $argv[1] . "'.\n");
-}
-
-$dp = caca_create_display($cv);
-if(! $dp)
-{
-	die("Can't create display\n");
-}
-
-caca_refresh_display($dp);
-
-caca_get_event($dp, CACA_EVENT_KEY_PRESS, -1);
+$file = isset($_FILES['file']) ? $_FILES['file']['tmp_name'] : NULL;
+$filename = isset($_FILES['file']) ? $_FILES['file']['name'] : NULL;
+$format = isset($_REQUEST['format']) ? $_REQUEST['format'] : NULL;
 
 ?>
+<head>
+<title><?= ($filename == NULL) ? '' : htmlspecialchars($filename . ' | ') ?>libcaca importers test program</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<?php
+
+if ($file == NULL)
+{
+    ?>
+<form id="importform" name="importform" action="#" enctype="multipart/form-data" method="post">
+<label for="file">File:</label>
+<input id="file" name="file" type="file" />
+<br />
+<input type="submit" value="Import" />
+<label for="format">as</label>
+<select name="format" id="format" onchange="update_preview(this);">
+<?php
+	foreach($imports as $import_format => $name)
+	{
+		?><option value="<?= htmlspecialchars($import_format) ?>"<?=
+			($format == $import_format) ? ' selected="selected"' : '' ?>><?=
+			htmlspecialchars($name . " (" . $import_format . ")") ?></option><?php
+	}
+?>
+</select>
+</form>
+<?php
+      ;
+}
+
+if($file)
+{
+	$cv = caca_create_canvas(0, 0);
+	if(! $cv)
+	{
+		die("Can't create canvas\n");
+	}
+	
+	if(caca_import_file($cv, $file, ($format == NULL) ? "" : $format) < 0)
+	{
+		die("could not import `" . htmlspecialchars($filename) . "'.\n");
+	}
+	
+	echo caca_export_string($cv, "html3");
+}
+
+?>
+</body>
+</html>
