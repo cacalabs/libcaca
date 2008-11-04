@@ -1,4 +1,10 @@
-#!/usr/bin/php5
+<?php
+header('Content-Type: text/html; charset=UTF-8');
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <?php
 /*
  *  unicode       libcaca Unicode rendering test program
@@ -17,20 +23,18 @@
  *  To Public License, Version 2, as published by Sam Hocevar. See
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
+?>
+<head>
+<title>libcaca Unicode rendering test program</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body text="silver" bgcolor="black">
+<?php
 
-if (php_sapi_name() != "cli") {
-	die("You have to run this program with php-cli!\n");
-}
-
-$cv = caca_create_canvas(0, 0);
+$cv = caca_create_canvas(80, 25);
 if(! $cv)
 {
 	die("Can't created canvas\n");
-}
-$dp = caca_create_display($cv);
-if(! $dp)
-{
-	die("Can't create display\n");
 }
 caca_set_color_ansi($cv, CACA_WHITE, CACA_BLUE);
 caca_put_str($cv, 1, 1, "Basic Unicode support");
@@ -86,8 +90,8 @@ caca_put_str($cv, 1, 22, "drawing blocks: ███ ▓▓▓ ▒▒▒ ░░�
 caca_put_str($cv, 1, 23, "more drawing: ┬ ┴ ┼ ═ ║ ╒ ╓ ╔ ╕ ╖ ╗ ╘ ╙ ╚ ╛ ╜ ╝ ╞ ╟ ╠ ╡ ╢ ╣ ╤ ╥ ╦ ╧ ╨ ╩ ╪ ╫ ╬");
 caca_put_str($cv, 1, 24, "misc Unicode: ● ☭ ☮ ☯ ♔ ♛ ♙ ♞ ⚒ ⚓ ⚠");
 
-caca_refresh_display($dp);
-
-caca_get_event($dp, CACA_EVENT_KEY_PRESS, -1);
+echo caca_export_string($cv, "html3");
 
 ?>
+</body>
+</html>
