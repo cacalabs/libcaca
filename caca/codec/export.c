@@ -512,7 +512,9 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
                    :
                    has_multi_cell_row))
                &&
-               ((linechar[x - 1] == CACA_MAGIC_FULLWIDTH)
+               (((linechar[x - 1] == CACA_MAGIC_FULLWIDTH)
+                 &&
+                 (! caca_utf32_is_fullwidth(linechar[x])))
                 ||
                 (caca_attr_to_ansi_bg(lineattr[x - 1])
                  !=
@@ -560,7 +562,13 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
             len = 1;
             while((x + len < cv->width)
                   &&
-                  (y
+                  ((y
+                    &&
+                    (linechar[x + len] > 0x00000020)
+                    &&
+                    ((linechar[x + len] < 0x0000007f)
+                     ||
+                     (linechar[x + len] > 0x000000a0)))
                    ||
                    (! (cell_boundary_bitmap
                        ?
@@ -572,7 +580,9 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
                    ||
                    (cv->height == 1))
                   &&
-                  (linechar[x + len - 1] != CACA_MAGIC_FULLWIDTH)
+                  ((linechar[x + len - 1] != CACA_MAGIC_FULLWIDTH)
+                   ||
+                   caca_utf32_is_fullwidth(linechar[x + len]))
                   &&
                   (caca_attr_to_ansi_bg(lineattr[x + len])
                    ==
