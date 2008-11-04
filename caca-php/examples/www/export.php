@@ -25,6 +25,7 @@ $pixels = imagecreatetruecolor(256, 256);
 $exports = caca_get_export_list();
 
 $file = isset($_FILES['file']) ? $_FILES['file']['tmp_name'] : NULL;
+$filename = isset($_FILES['file']) ? $_FILES['file']['name'] : NULL;
 $format = isset($_REQUEST['format']) ? $_REQUEST['format'] : NULL;
 
 if((! $format) || (! array_key_exists($format, $exports)))
@@ -110,7 +111,7 @@ if($file)
 	$cv = caca_create_canvas(0, 0);
 	if(caca_import_file($cv, $file, "") < 0)
 	{
-		die($argv[0] . ": `" . $file . "' has unknown format\n");
+		die("`" . htmlspecialchars($filename) . "' has unknown format\n");
 	}
 }
 else
