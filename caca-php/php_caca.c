@@ -644,7 +644,7 @@ PHP_FUNCTION(caca_get_attr) {
 PHP_FUNCTION(caca_set_attr) {
 	zval *_zval;
 	long attr = 0;
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rll", &_zval, &attr) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &_zval, &attr) == FAILURE) {
 		RETURN_FALSE;
 	}
 	caca_canvas_t *canvas;
