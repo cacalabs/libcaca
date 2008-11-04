@@ -173,7 +173,7 @@ class Canvas {
 	}
 
 	function drawLine($x1, $y1, $x2, $y2, $char) {
-		return caca_draw_line($this->cv, $x1, $y1, $x2, $y2, $color);
+		return caca_draw_line($this->cv, $x1, $y1, $x2, $y2, $char);
 	}
 
 	function drawPolyline($points, $char) {
@@ -241,6 +241,38 @@ class Canvas {
 	}
 }
 
+class Event {
+	private $ev;
+
+	function getType() {
+		return caca_get_event_type($this->ev);
+	}
+
+	function getKeyCh() {
+		return caca_get_event_key_ch($this->ev);
+	}
+
+	function getMouseX() {
+		return caca_get_event_mouse_x($this->ev);
+	}
+
+	function getResizeWidth() {
+		return caca_get_event_resize_width($this->ev);
+	}
+
+	function getResizeHeight() {
+		return caca_get_event_resize_height($this->ev);
+	}
+
+	function __construct($_ev) {
+		$this->ev = $_ev;
+	}
+	
+	function get_resource() {
+		return $this->ev;
+	}
+}
+
 class Display {
 	private $dp;
 
@@ -294,6 +326,14 @@ class Display {
 
 	function setMouse($state) {
 		return caca_set_mouse($this->dp, $state);
+	}
+
+	function getEvent($t, $timeout) {
+		$ev = caca_get_event($this->dp, $t, $timeout);
+		if(! $ev) {
+			return NULL;
+		}
+		return new Event($ev);
 	}
 
 	function __construct($canvas, $driver = false) {
@@ -389,7 +429,7 @@ class Dither {
 	}
 	
 	function bitmap($canvas, $x, $y, $width, $height, $load_palette = true) {
-		return caca_dither_bitmap($canvas, $x, $y, $width, $height, $this->dt, $this->img, $load_palette);
+		return caca_dither_bitmap($canvas->get_resource(), $x, $y, $width, $height, $this->dt, $this->img, $load_palette);
 	}
 
 	function __construct($image) {
@@ -411,6 +451,14 @@ class Font {
 
 	function getBlocks() {
 		return caca_get_font_blocks($this->f);
+	}
+
+	function Render($cv, $image) {
+		return caca_render_canvas($cv->get_resource(), $this->f, $image);
+	}
+
+	static function getList() {
+		return caca_get_font_list();
 	}
 
 	function __construct($name) {
