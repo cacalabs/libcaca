@@ -1,4 +1,10 @@
-#!/usr/bin/php5
+<?php
+header('Content-Type: text/html; charset=UTF-8');
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <?php
 /*
  *  transform       transformation test program
@@ -17,10 +23,13 @@
  *  To Public License, Version 2, as published by Sam Hocevar. See
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
-
-if (php_sapi_name() != "cli") {
-	die("You have to run this program with php-cli!\n");
-}
+?>
+<head>
+<title>transformation test program</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body text="silver" bgcolor="black">
+<?php
 
 $pig = (
 	",--.   ,--.\n" .
@@ -37,15 +46,10 @@ $duck = (
 	"\\ <_. )   (  .__)   )\n" .
 	" `---'     `-.____,'\n");
 
-$cv = caca_create_canvas(0, 0);
+$cv = caca_create_canvas(80, 25);
 if(! $cv)
 {
 	die("Can't created canvas\n");
-}
-$dp = caca_create_display($cv);
-if(! $dp)
-{
-	die("Can't create display\n");
 }
 
 $image = caca_create_canvas(70, 6);
@@ -97,7 +101,8 @@ caca_blit($tmp, 0, 0, $image);
 caca_rotate_180($tmp);
 caca_blit($cv, 10, 18, $tmp);
 
-caca_refresh_display($dp);
+echo caca_export_string($cv, "html3");
 
-caca_get_event($dp, CACA_EVENT_KEY_PRESS, -1);
 ?>
+</body>
+</html>
