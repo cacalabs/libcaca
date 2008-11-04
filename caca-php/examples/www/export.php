@@ -98,7 +98,7 @@ $export_php = isset($_SERVER['SCRIPT_NAME'])
 		$_SERVER['SCRIPT_NAME']
 		:
 		'export.php';
-?><iframe name="preview" id="preview" src="<?= htmlspecialchars($export_php) ?>?format=html" width="820" height="620" style="margin: 0; padding: 0; border: none; width: 100%"></iframe>
+?><iframe name="preview" id="preview" width="820" height="620" style="margin: 0; padding: 0; border: none; width: 100%"></iframe>
 </body>
 </html>
 <?php
