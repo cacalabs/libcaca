@@ -18,10 +18,16 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
-if($argc < 2)
+$imports = caca_get_import_list();
+
+if($argc < 2 || $argc > 3)
 {
-	die($argv[0] . ": missing argument (filename).\n" .
-		"usage: " . $argv[0] . " <filename> [<format>]\n");
+	$msg = ($argv[0] . ": wrong argument count\n" .
+			"usage: " . $argv[0] . " file [<format>]\n" .
+			"where <format> is one of:\n");
+	foreach($imports as $format => $name)
+		$msg .= " \"" . $name . "\" (" . $format . ")\n";
+	die($msg);
 }
 
 $cv = caca_create_canvas(0, 0);
