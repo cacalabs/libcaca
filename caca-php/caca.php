@@ -12,6 +12,29 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
+class AnsiColor
+{
+	const BLACK = CACA_BLACK;
+	const BLUE = CACA_BLUE;
+	const GREEN = CACA_GREEN;
+	const CYAN = CACA_CYAN;
+	const RED = CACA_RED;
+	const MAGENTA = CACA_MAGENTA;
+	const BROWN = CACA_BROWN;
+	const LIGHTGRAY = CACA_LIGHTGRAY;
+	const DARKGRAY = CACA_DARKGRAY;
+	const LIGHTBLUE = CACA_LIGHTBLUE;
+	const LIGHTGREEN = CACA_LIGHTGREEN;
+	const LIGHTCYAN = CACA_LIGHTCYAN;
+	const LIGHTRED = CACA_LIGHTRED;
+	const LIGHTMAGENTA = CACA_LIGHTMAGENTA;
+	const YELLOW = CACA_YELLOW;
+	const WHITE = CACA_WHITE;
+	/* NOTE: We can't call this one DEFAULT because that's a reserved
+	 * token in PHP. */
+	const DEFAULTCOLOR = CACA_DEFAULT;
+	const TRANSPARENT = CACA_TRANSPARENT;
+}
 
 class Canvas {
 	private $cv;
@@ -239,6 +262,84 @@ class Canvas {
 	function get_resource() {
 		return $this->cv;
 	}
+}
+
+class EventType
+{
+	const NONE = CACA_EVENT_NONE;
+
+	const KEY_PRESS = CACA_EVENT_KEY_PRESS;
+	const KEY_RELEASE = CACA_EVENT_KEY_RELEASE;
+	const MOUSE_PRESS = CACA_EVENT_MOUSE_PRESS;
+	const MOUSE_RELEASE = CACA_EVENT_MOUSE_RELEASE;
+	const MOUSE_MOTION = CACA_EVENT_MOUSE_MOTION;
+	const RESIZE = CACA_EVENT_RESIZE;
+	const QUIT = CACA_EVENT_QUIT;
+
+	const ANY = CACA_EVENT_ANY;
+}
+    
+class EventKey
+{
+	const UNKNOWN = CACA_KEY_UNKNOWN;
+
+	const CTRL_A = CACA_KEY_CTRL_A;
+	const CTRL_B = CACA_KEY_CTRL_B;
+	const CTRL_C = CACA_KEY_CTRL_C;
+	const CTRL_D = CACA_KEY_CTRL_D;
+	const CTRL_E = CACA_KEY_CTRL_E;
+	const CTRL_F = CACA_KEY_CTRL_F;
+	const CTRL_G = CACA_KEY_CTRL_G;
+	const BACKSPACE = CACA_KEY_BACKSPACE;
+	const TAB = CACA_KEY_TAB;
+	const CTRL_J = CACA_KEY_CTRL_J;
+	const CTRL_K = CACA_KEY_CTRL_K;
+	const CTRL_L = CACA_KEY_CTRL_L;
+	/* NOTE: We can't call this one RETURN because that's a
+	 * reserved token in PHP */
+	const RETURN_KEY = CACA_KEY_RETURN;
+	const CTRL_N = CACA_KEY_CTRL_N;
+	const CTRL_O = CACA_KEY_CTRL_O;
+	const CTRL_P = CACA_KEY_CTRL_P;
+	const CTRL_Q = CACA_KEY_CTRL_Q;
+	const CTRL_R = CACA_KEY_CTRL_R;
+	const PAUSE = CACA_KEY_PAUSE;
+	const CTRL_T = CACA_KEY_CTRL_T;
+	const CTRL_U = CACA_KEY_CTRL_U;
+	const CTRL_V = CACA_KEY_CTRL_V;
+	const CTRL_W = CACA_KEY_CTRL_W;
+	const CTRL_X = CACA_KEY_CTRL_X;
+	const CTRL_Y = CACA_KEY_CTRL_Y;
+	const CTRL_Z = CACA_KEY_CTRL_Z;
+	const ESCAPE = CACA_KEY_ESCAPE;
+	const DELETE = CACA_KEY_DELETE;
+
+	const UP = CACA_KEY_UP;
+	const DOWN = CACA_KEY_DOWN;
+	const LEFT = CACA_KEY_LEFT;
+	const RIGHT = CACA_KEY_RIGHT;
+
+	const INSERT = CACA_KEY_INSERT;
+	const HOME = CACA_KEY_HOME;
+	const END = CACA_KEY_END;
+	const PAGEUP = CACA_KEY_PAGEUP;
+	const PAGEDOWN = CACA_KEY_PAGEDOWN;
+
+	const F1 = CACA_KEY_F1;
+	const F2 = CACA_KEY_F2;
+	const F3 = CACA_KEY_F3;
+	const F4 = CACA_KEY_F4;
+	const F5 = CACA_KEY_F5;
+	const F6 = CACA_KEY_F6;
+	const F7 = CACA_KEY_F7;
+	const F8 = CACA_KEY_F8;
+	const F9 = CACA_KEY_F9;
+	const F10 = CACA_KEY_F10;
+	const F11 = CACA_KEY_F11;
+	const F12 = CACA_KEY_F12;
+	const F13 = CACA_KEY_F13;
+	const F14 = CACA_KEY_F14;
+	const F15 = CACA_KEY_F15;
 }
 
 class Event {

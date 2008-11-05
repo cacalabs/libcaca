@@ -41,7 +41,7 @@ class DemoCanvas extends Canvas
 		$message = " --- POWERED BY LIBCACA --- OLDSCHOOL TEXT EFFECTS ARE 100% PURE WIN";
 
 		$this->scroll = new Canvas(strlen($message), 1);
-		$this->scroll->setColorAnsi(CACA_WHITE, CACA_TRANSPARENT);
+		$this->scroll->setColorAnsi(AnsiColor::WHITE, AnsiColor::TRANSPARENT);
 		$this->scroll->putStr(0, 0, $message);
 
 		$fontList = Font::getList();
@@ -64,7 +64,7 @@ class DemoCanvas extends Canvas
 
 		$this->Clear();
 
-		$this->setColorAnsi(CACA_WHITE, CACA_BLACK);
+		$this->setColorAnsi(AnsiColor::WHITE, AnsiColor::BLACK);
 		for($i = 0; $i < $barCount; $i++)
 		{
 			$v = ((sin(($t / 500.0)
@@ -72,7 +72,7 @@ class DemoCanvas extends Canvas
 			$p1_x = 0; $p1_y = intval($v);
 			$p2_x = $this->getWidth() - 1; $p2_y = intval($v);
 
-			$this->setColorAnsi(($i + 9), CACA_BLACK);
+			$this->setColorAnsi(($i + 9), AnsiColor::BLACK);
 			/* drawLine is already clipped, we don't care about overflows */
 			$this->drawLine($p1_x + 0, $p1_y - 2, $p2_x + 0, $p2_y - 2, ord('-'));
 			$this->drawLine($p1_x + 0, $p1_y - 1, $p2_x + 0, $p2_y - 1, ord('*'));
@@ -88,9 +88,9 @@ class DemoCanvas extends Canvas
 		$this->d->bitmap($this, - $x, $h / 2 - $y, $w * 12, $y * 2);
 		$this->d->bitmap($this, 12 * $w - $x, $h / 2 - $y, $w * 12, $y * 2);
   
-		$this->setColorAnsi(CACA_WHITE, CACA_BLUE);
+		$this->setColorAnsi(AnsiColor::WHITE, AnsiColor::BLUE);
 		$this->putStr($this->getWidth() - 30, $this->getHeight() - 2, " -=[ Powered by libcaca ]=- ");
-		$this->setColorAnsi(CACA_WHITE, CACA_BLACK);
+		$this->setColorAnsi(AnsiColor::WHITE, AnsiColor::BLACK);
 	}
 }
 
@@ -108,7 +108,7 @@ class DemoDisplay extends Display
 
 	function EventLoop()
 	{
-		while(! ($ev = $this->getEvent(CACA_EVENT_KEY_RELEASE, 10)))
+		while(! ($ev = $this->getEvent(EventType::KEY_RELEASE, 10)))
 		{
 			$this->cv->Draw();
 
