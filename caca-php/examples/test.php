@@ -1,136 +1,150 @@
-/*
- *  Test          .NET bindings test program
- *  Copyright (c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
- *                2007 Sam Hocevar <sam@zoy.org>
- *                All Rights Reserved
- *
- *  $Id$
- *
- *  This program is free software. It comes without any warranty, to
- *  the extent permitted by applicable law. You can redistribute it
- *  and/or modify it under the terms of the Do What The Fuck You Want
- *  To Public License, Version 2, as published by Sam Hocevar. See
- *  http://sam.zoy.org/wtfpl/COPYING for more details.
- */
+#!/usr/bin/php5
+<?php
+  /*
+   *  Test          PHP bindings test program
+   *  Copyright (c) 2008 Benjamin C. Wiley Sittler <bsittler@gmail.com>
+   *
+   *  This file is a Php port of "caca-sharp/test.cs"
+   *  which is: 
+   *  Copyright (c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
+   *                2007 Sam Hocevar <sam@zoy.org>
+   *                All Rights Reserved
+   *
+   *  $Id$
+   *
+   *  This program is free software. It comes without any warranty, to
+   *  the extent permitted by applicable law. You can redistribute it
+   *  and/or modify it under the terms of the Do What The Fuck You Want
+   *  To Public License, Version 2, as published by Sam Hocevar. See
+   *  http://sam.zoy.org/wtfpl/COPYING for more details.
+   */
 
-
-using System;
-using System.Drawing;
-using System.Runtime.InteropServices;
-
-using Caca;
-
-class DemoCanvas : Canvas
-{
-    private uint[,] image;
-
-    private DateTime startTime;
-    private Dither d;
-    private Canvas scroll;
-
-    public DemoCanvas()
-    {
-        startTime = DateTime.Now;
-
-        string message = " --- POWERED BY LIBCACA --- OLDSCHOOL TEXT EFFECTS ARE 100% PURE WIN";
-
-        scroll = new Canvas(new Size(message.Length, 1));
-        scroll.setColorAnsi(AnsiColor.WHITE, AnsiColor.TRANSPARENT);
-        scroll.putStr(new Point(0, 0), message);
-
-        Caca.Font f = new Caca.Font(Caca.Font.getList()[1]);
-        int w = f.Size.Width * message.Length;
-        int h = f.Size.Height;
-        image = new uint[w, h];
-        d = new Dither(32, new Size(w, h), w * 4,
-                            0xff00, 0xff0000, 0xff000000, 0xff);
-        f.Render(scroll, image, image.GetLength(0) * 4);
-    }
-
-    public void Draw()
-    {
-        int barCount = 6;
-        double t = (DateTime.Now - startTime).TotalMilliseconds;
-
-        Clear();
-
-        setColorAnsi(AnsiColor.WHITE, AnsiColor.BLACK);
-        for(int i = 0; i < barCount; i++)
-        {
-            double v = ((Math.Sin((t / 500.0)
-                          + (i / ((double)barCount))) + 1) / 2) * Size.Height;
-            Point p1 = new Point(0, (int)v);
-            Point p2 = new Point(Size.Width - 1, (int)v);
-
-            setColorAnsi((uint)(i + 9), AnsiColor.BLACK);
-            /* drawLine is already clipped, we don't care about overflows */
-            drawLine(p1 + new Size(0, -2), p2 + new Size(0, -2), '-');
-            drawLine(p1 + new Size(0, -1), p2 + new Size(0, -1), '*');
-            drawLine(p1,                   p2,                   '#');
-            drawLine(p1 + new Size(0,  1), p2 + new Size(0,  1), '*');
-            drawLine(p1 + new Size(0,  2), p2 + new Size(0,  2), '-');
-        }
-
-        int w = Size.Width;
-        int h = Size.Height;
-        int x = (int)(t / 10) % (12 * w);
-        int y = (int)(h * (2.0 + Math.Sin(t / 200.0)) / 4);
-        ditherBitmap(new Rectangle(- x, h / 2 - y, w * 12, y * 2), d, image);
-        ditherBitmap(new Rectangle(12 * w - x, h / 2 - y, w * 12, y * 2), d, image);
-
-        setColorAnsi(AnsiColor.WHITE, AnsiColor.BLUE);
-        putStr(new Point(-30, -2) + Size, " -=[ Powered by libcaca ]=- ");
-        setColorAnsi(AnsiColor.WHITE, AnsiColor.BLACK);
-    }
+if (php_sapi_name() != "cli") {
+	die("You have to run this program with php-cli!\n");
 }
 
-class DemoDisplay : Display
+include dirname($argv[0]) . '/../caca.php';
+
+class DemoCanvas extends Canvas
 {
-    private DemoCanvas cv;
+	private $image;
 
-    public DemoDisplay(DemoCanvas _cv) : base(_cv)
-    {
-        Title = "libcaca .NET Bindings test suite";
-        DisplayTime = 20000; // Refresh every 20 ms
-        cv = _cv;
-    }
+	private $startTime;
+	private $d;
+	private $scroll;
 
-    public void EventLoop()
-    {
-        Event ev;
+	function __construct()
+	{
+		parent::__construct();
+		$this->startTime = gettimeofday(true);
 
-        while((ev = getEvent(EventType.KEY_RELEASE, 10)).Type == 0)
-        {
-            cv.Draw();
+		$message = " --- POWERED BY LIBCACA --- OLDSCHOOL TEXT EFFECTS ARE 100% PURE WIN";
 
-            Refresh();
-        }
+		$this->scroll = new Canvas(strlen($message), 1);
+		$this->scroll->setColorAnsi(CACA_WHITE, CACA_TRANSPARENT);
+		$this->scroll->putStr(0, 0, $message);
 
-        if(ev.KeyCh > 0x20 && ev.KeyCh < 0x7f)
-            Console.WriteLine("Key pressed: {0}", ev.KeyUtf8);
-        else
-            Console.WriteLine("Key pressed: 0x{0:x}", ev.KeyCh);
-    }
+		$fontList = Font::getList();
+		$f = new Font($fontList[1]);
+		$w = $f->getWidth() * strlen($message);
+		$h = $f->getHeight();
+		$this->image = imagecreatetruecolor($w, $h);
+		imagefilledrectangle($this->image, 0, 0, $w - 1, $h - 1, imagecolorallocatealpha($this->image, 0, 0, 0, 127));
+		imagealphablending($this->image, false);
+		imagesavealpha($this->image, true);
+		$this->d = new Dither($this->image);
+		$f->Render($this->scroll, $this->image);
+		imagepng($this->image, "out.png");
+	}
+
+	function Draw()
+	{
+		$barCount = 6;
+		$t = (gettimeofday(true) - $this->startTime) * 1000;
+
+		$this->Clear();
+
+		$this->setColorAnsi(CACA_WHITE, CACA_BLACK);
+		for($i = 0; $i < $barCount; $i++)
+		{
+			$v = ((sin(($t / 500.0)
+   					+ (1.0 * $i / $barCount)) + 1) / 2) * $this->getHeight();
+			$p1_x = 0; $p1_y = intval($v);
+			$p2_x = $this->getWidth() - 1; $p2_y = intval($v);
+
+			$this->setColorAnsi(($i + 9), CACA_BLACK);
+			/* drawLine is already clipped, we don't care about overflows */
+			$this->drawLine($p1_x + 0, $p1_y - 2, $p2_x + 0, $p2_y - 2, ord('-'));
+			$this->drawLine($p1_x + 0, $p1_y - 1, $p2_x + 0, $p2_y - 1, ord('*'));
+			$this->drawLine($p1_x,     $p1_y,     $p2_x,     $p2_y,     ord('#'));
+			$this->drawLine($p1_x + 0, $p1_y + 1, $p2_x + 0, $p2_y + 1, ord('*'));
+			$this->drawLine($p1_x + 0, $p1_y + 2, $p2_x + 0, $p2_y + 2, ord('-'));
+		}
+
+		$w = $this->getWidth();
+		$h = $this->getHeight();
+		$x = intval(($t / 10) % (12 * $w));
+		$y = intval($h * (2.0 + sin($t / 200.0)) / 4);
+		$this->d->bitmap($this, - $x, $h / 2 - $y, $w * 12, $y * 2);
+		$this->d->bitmap($this, 12 * $w - $x, $h / 2 - $y, $w * 12, $y * 2);
+  
+		$this->setColorAnsi(CACA_WHITE, CACA_BLUE);
+		$this->putStr($this->getWidth() - 30, $this->getHeight() - 2, " -=[ Powered by libcaca ]=- ");
+		$this->setColorAnsi(CACA_WHITE, CACA_BLACK);
+	}
+}
+
+class DemoDisplay extends Display
+{
+	private $cv;
+
+	function __construct(DemoCanvas $_cv)
+	{
+		parent::__construct($_cv);
+		$this->setTitle("libcaca PHP Bindings test suite");
+		$this->setDisplayTime(20000); // Refresh every 20 ms
+		$this->cv = $_cv;
+	}
+
+	function EventLoop()
+	{
+		while(! ($ev = $this->getEvent(CACA_EVENT_KEY_RELEASE, 10)))
+		{
+			$this->cv->Draw();
+
+			$this->Refresh();
+		}
+
+		if($ev->getKeyCh() > 0x20 && $ev->getKeyCh() < 0x7f)
+			printf("Key pressed: %c\n", $ev->getKeyCh());
+		else
+			printf("Key pressed: 0x%x\n", $ev->getKeyCh());
+	}
 }
 
 class Test
 {
-    public static void Main()
-    {
-        Console.WriteLine("libcaca {0} .NET test", Libcaca.getVersion());
-        Console.WriteLine("(c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>");
+	static function Main()
+	{
+		printf("libcaca %s PHP test\n", caca_get_version());
+		printf("(c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>\n");
+		printf("(c) 2007 Sam Hocevar <sam@zoy.org>\n");
+		printf("(c) 2008 Benjamin C. Wiley Sittler <bsittler@gmail.com>\n");
 
-        /* Instanciate a caca canvas */
-        DemoCanvas cv = new DemoCanvas();
+		/* Instanciate a caca canvas */
+		$cv = new DemoCanvas();
 
-        /* We have a proper canvas, let's display it using Caca */
-        DemoDisplay dp = new DemoDisplay(cv);
+		/* We have a proper canvas, let's display it using Caca */
+		$dp = new DemoDisplay($cv);
 
-        /* Random number. This is a static method,
-           not to be used with previous instance */
-        Console.WriteLine("A random number: {0}", Libcaca.Rand(0, 1337));
+		/* Random number. This is a static method,
+ 		not to be used with previous instance */
+		printf("A random number: %d\n", caca_rand(0, 1337));
 
-        dp.EventLoop();
-    }
+		$dp->EventLoop();
+	}
 }
 
+Test::Main();
+
+?>
