@@ -5,7 +5,7 @@
    *  Copyright (c) 2008 Benjamin C. Wiley Sittler <bsittler@gmail.com>
    *
    *  This file is a Php port of "caca-sharp/test.cs"
-   *  which is: 
+   *  which is:
    *  Copyright (c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
    *                2007 Sam Hocevar <sam@zoy.org>
    *                All Rights Reserved
@@ -68,7 +68,7 @@ class DemoCanvas extends Canvas
 		for($i = 0; $i < $barCount; $i++)
 		{
 			$v = ((sin(($t / 500.0)
-   					+ (1.0 * $i / $barCount)) + 1) / 2) * $this->getHeight();
+					   + (1.0 * $i / $barCount)) + 1) / 2) * $this->getHeight();
 			$p1_x = 0; $p1_y = intval($v);
 			$p2_x = $this->getWidth() - 1; $p2_y = intval($v);
 
@@ -87,7 +87,7 @@ class DemoCanvas extends Canvas
 		$y = intval($h * (2.0 + sin($t / 200.0)) / 4);
 		$this->d->bitmap($this, - $x, $h / 2 - $y, $w * 12, $y * 2);
 		$this->d->bitmap($this, 12 * $w - $x, $h / 2 - $y, $w * 12, $y * 2);
-  
+
 		$this->setColorAnsi(AnsiColor::WHITE, AnsiColor::BLUE);
 		$this->putStr($this->getWidth() - 30, $this->getHeight() - 2, " -=[ Powered by libcaca ]=- ");
 		$this->setColorAnsi(AnsiColor::WHITE, AnsiColor::BLACK);
@@ -126,7 +126,7 @@ class Test
 {
 	static function Main()
 	{
-		printf("libcaca %s PHP test\n", caca_get_version());
+		printf("libcaca %s PHP test\n", Libcaca::getVersion());
 		printf("(c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>\n");
 		printf("(c) 2007 Sam Hocevar <sam@zoy.org>\n");
 		printf("(c) 2008 Benjamin C. Wiley Sittler <bsittler@gmail.com>\n");
@@ -138,8 +138,8 @@ class Test
 		$dp = new DemoDisplay($cv);
 
 		/* Random number. This is a static method,
- 		not to be used with previous instance */
-		printf("A random number: %d\n", caca_rand(0, 1337));
+		 not to be used with previous instance */
+		printf("A random number: %d\n", Libcaca::Rand(0, 1337));
 
 		$dp->EventLoop();
 	}
