@@ -227,7 +227,7 @@ PHP_MINIT_FUNCTION(caca) {
 	le_caca_file = zend_register_list_destructors_ex(php_caca_file_dtor, NULL, PHP_CACA_FILE_RES_NAME, module_number);
 	le_caca_display = zend_register_list_destructors_ex(php_caca_display_dtor, NULL, PHP_CACA_DISPLAY_RES_NAME, module_number);
 	le_caca_event = zend_register_list_destructors_ex(php_caca_event_dtor, NULL, PHP_CACA_EVENT_RES_NAME, module_number);
-	
+
 	REGISTER_LONG_CONSTANT("CACA_BLACK", CACA_BLACK, CONST_CS | CONST_PERSISTENT);
 	REGISTER_LONG_CONSTANT("CACA_BLUE", CACA_BLUE, CONST_CS | CONST_PERSISTENT);
 	REGISTER_LONG_CONSTANT("CACA_GREEN", CACA_GREEN, CONST_CS | CONST_PERSISTENT);
@@ -325,21 +325,21 @@ PHP_MINIT_FUNCTION(caca) {
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &_zval) == FAILURE) { \
 		RETURN_FALSE; \
 	} \
-	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas); 
+	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
 
 #define FETCH_DISPLAY(display) \
 	zval *_zval; \
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &_zval) == FAILURE) { \
 		RETURN_FALSE; \
 	} \
-	ZEND_FETCH_RESOURCE(display, caca_display_t*, &_zval, -1, PHP_CACA_DISPLAY_RES_NAME, le_caca_display); 
+	ZEND_FETCH_RESOURCE(display, caca_display_t*, &_zval, -1, PHP_CACA_DISPLAY_RES_NAME, le_caca_display);
 
 #define FETCH_EVENT(event) \
 	zval *_zval; \
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &_zval) == FAILURE) { \
 		RETURN_FALSE; \
 	} \
-	ZEND_FETCH_RESOURCE(event, caca_event_t*, &_zval, -1, PHP_CACA_EVENT_RES_NAME, le_caca_event); 
+	ZEND_FETCH_RESOURCE(event, caca_event_t*, &_zval, -1, PHP_CACA_EVENT_RES_NAME, le_caca_event);
 
 #define FETCH_LONG(l) \
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &l) == FAILURE) { \
@@ -363,7 +363,7 @@ void *fetch_external_resource(zval *_zval, char const *type_name) {
 	int resource_id = _zval->value.lval;
 	int resource_type;
 	void *result = zend_list_find(resource_id, &resource_type);
-	if (!result) 
+	if (!result)
 		return NULL;
 	char *resource_type_name = zend_rsrc_list_get_rsrc_type(resource_id);
 	return (strcmp(resource_type_name, type_name) == 0) ? result : NULL;
@@ -374,12 +374,23 @@ void *fetch_external_resource(zval *_zval, char const *type_name) {
 #ifdef HAVE_GD
 void *gd_get_pixels(gdImage *img) {
 	void *result;
-	int j, pitch;		
+	int i, j, pitch;
 	if (img->trueColor)  {
 		pitch = img->sx * sizeof(int);
 		result = malloc(img->sy * pitch);
-		for (j = 0; j < img->sy; j++)
-			memcpy(result + (j * pitch), (const void *) img->tpixels[j], pitch);
+		if (result)
+		{
+			for (i = 0; i < img->sy; i++) {
+				for (j = 0; j < img->sx; j++) {
+					uint8_t *dst = ((uint8_t *) result) + i * pitch + j * 4;
+
+					dst[0] = (127 - (img->tpixels[i][j] & 0x7f000000) >> 24);
+					dst[1] = (img->tpixels[i][j] & 0x00ff0000) >> 16;
+					dst[2] = (img->tpixels[i][j] & 0x0000ff00) >> 8;
+					dst[3] = img->tpixels[i][j] & 0x000000ff;
+				}
+			}
+		}
 	}
 	else {
 		pitch = img->sx * sizeof(char);
@@ -447,7 +458,7 @@ PHP_FUNCTION(caca_get_canvas_height) {
 PHP_FUNCTION(caca_get_canvas_chars) {
 	caca_canvas_t *canvas;
 	FETCH_CANVAS(canvas);
-	RETURN_STRING((char *) caca_get_canvas_chars(canvas), 1); 
+	RETURN_STRING((char *) caca_get_canvas_chars(canvas), 1);
 }
 
 PHP_FUNCTION(caca_get_canvas_attrs) {
@@ -778,16 +789,16 @@ PHP_FUNCTION(caca_draw_polyline) {
 	int tbl_count = 0;
 	tbl_x = malloc(sizeof(int) * lenmax);
 	tbl_y = malloc(sizeof(int) * lenmax);
-	
+
 	HashPosition pos;
 	zval **pt, **x, **y;
 	for (
-		zend_hash_internal_pointer_reset_ex(arr_hash, &pos); 
-		zend_hash_get_current_data_ex(arr_hash, (void**) &pt, &pos) == SUCCESS; 
+		zend_hash_internal_pointer_reset_ex(arr_hash, &pos);
+		zend_hash_get_current_data_ex(arr_hash, (void**) &pt, &pos) == SUCCESS;
 		zend_hash_move_forward_ex(arr_hash, &pos)
 	) {
 		if (
-			Z_TYPE_P(*pt) == IS_ARRAY 
+			Z_TYPE_P(*pt) == IS_ARRAY
 			&& (zend_hash_index_find(Z_ARRVAL_P(*pt), 0, (void**) &x) != FAILURE)
 			&& (zend_hash_index_find(Z_ARRVAL_P(*pt), 1, (void**) &y) != FAILURE)
 		) {
@@ -834,16 +845,16 @@ PHP_FUNCTION(caca_draw_thin_polyline) {
 	if (!tbl_x || !tbl_y) {
 		RETURN_FALSE;
 	}
-	
+
 	HashPosition pos;
 	zval **pt, **x, **y;
 	for (
-		zend_hash_internal_pointer_reset_ex(arr_hash, &pos); 
-		zend_hash_get_current_data_ex(arr_hash, (void**) &pt, &pos) == SUCCESS; 
+		zend_hash_internal_pointer_reset_ex(arr_hash, &pos);
+		zend_hash_get_current_data_ex(arr_hash, (void**) &pt, &pos) == SUCCESS;
 		zend_hash_move_forward_ex(arr_hash, &pos)
 	) {
 		if (
-			Z_TYPE_P(*pt) == IS_ARRAY 
+			Z_TYPE_P(*pt) == IS_ARRAY
 			&& (zend_hash_index_find(Z_ARRVAL_P(*pt), 0, (void**) &x) != FAILURE)
 			&& (zend_hash_index_find(Z_ARRVAL_P(*pt), 1, (void**) &y) != FAILURE)
 		) {
@@ -1175,7 +1186,7 @@ PHP_FUNCTION(caca_get_dither_antialias_list) {
 
 	char const * const *list = caca_get_dither_antialias_list(dither);
 	int i;
-	array_init(return_value);	
+	array_init(return_value);
 	for(i = 0; list[i]; i += 1)
 		add_next_index_string(return_value, (char*) list[i], 1);
 }
@@ -1212,7 +1223,7 @@ PHP_FUNCTION(caca_get_dither_color_list) {
 
 	char const * const *list = caca_get_dither_antialias_list(dither);
 	int i;
-	array_init(return_value);	
+	array_init(return_value);
 	for(i = 0; list[i]; i += 2)
 		add_assoc_string(return_value, (char*) list[i], (char*) list[i + 1], 1);
 }
@@ -1249,7 +1260,7 @@ PHP_FUNCTION(caca_get_dither_charset_list) {
 
 	char const * const *list = caca_get_dither_charset_list(dither);
 	int i;
-	array_init(return_value);	
+	array_init(return_value);
 	for(i = 0; list[i]; i += 2)
 		add_assoc_string(return_value, (char*) list[i], (char*) list[i + 1], 1);
 }
@@ -1286,7 +1297,7 @@ PHP_FUNCTION(caca_get_dither_algorithm_list) {
 
 	char const * const *list = caca_get_dither_algorithm_list(dither);
 	int i;
-	array_init(return_value);	
+	array_init(return_value);
 	for(i = 0; list[i]; i += 2)
 		add_assoc_string(return_value, (char*) list[i], (char*) list[i + 1], 1);
 }
@@ -1371,7 +1382,7 @@ PHP_FUNCTION(caca_get_font_list) {
 	}
 	char const * const *list = caca_get_font_list();
 	int i;
-	array_init(return_value);	
+	array_init(return_value);
 	for(i = 0; list[i]; i += 1)
 		add_next_index_string(return_value, (char*) list[i], 1);
 }
@@ -1407,7 +1418,7 @@ PHP_FUNCTION(caca_get_font_blocks) {
 	uint32_t const *list = caca_get_font_blocks(font);
 
 	int i;
-	array_init(return_value);	
+	array_init(return_value);
 	for(i = 0; list[i]; i += 1)
 		add_next_index_long(return_value, list[i]);
 }
@@ -1439,10 +1450,10 @@ PHP_FUNCTION(caca_render_canvas) {
 	for (i = 0; i < img->sy; i++) {
 		for (j = 0; j < img->sx; j++) {
 			uint8_t *src = buffer + i * pitch + j * 4;
-			img->tpixels[i][j] = *(src + 3)	| (*(src + 2) << 8) | (*(src + 1) << 16) | ((*(src + 0) & 0xfe) << 23);
+			img->tpixels[i][j] = *(src + 3)	| (*(src + 2) << 8) | (*(src + 1) << 16) | (((127 - *(src + 0)) & 0xfe) << 23);
 		}
 	}
-	
+
 	free(buffer);
 	RETURN_TRUE;
 #else
@@ -1540,7 +1551,7 @@ PHP_FUNCTION(caca_file_read) {
 	}
 	caca_file_read(file, buffer, len);
 
-	RETURN_STRINGL(buffer, len, 1); 
+	RETURN_STRINGL(buffer, len, 1);
 }
 
 PHP_FUNCTION(caca_file_write) {
@@ -1575,7 +1586,7 @@ PHP_FUNCTION(caca_file_gets) {
 	if (!result) {
 		RETURN_FALSE;
 	}
-	RETURN_STRINGL(result, len, 1); 
+	RETURN_STRINGL(result, len, 1);
 }
 
 PHP_FUNCTION(caca_file_eof) {
@@ -1620,7 +1631,7 @@ PHP_FUNCTION(caca_get_import_list) {
 	}
 	char const * const *list = caca_get_import_list();
 	int i;
-	array_init(return_value);	
+	array_init(return_value);
 	for(i = 0; list[i]; i += 2)
 		add_assoc_string(return_value, (char*) list[i], (char*) list[i + 1], 1);
 }
@@ -1645,7 +1656,7 @@ PHP_FUNCTION(caca_export_string) {
 	memcpy(copy, buffer, len);
 	free(buffer);
 
-	RETURN_STRINGL((char*) copy, len, 0); 
+	RETURN_STRINGL((char*) copy, len, 0);
 }
 
 PHP_FUNCTION(caca_get_export_list) {
@@ -1654,7 +1665,7 @@ PHP_FUNCTION(caca_get_export_list) {
 	}
 	char const * const *list = caca_get_export_list();
 	int i;
-	array_init(return_value);	
+	array_init(return_value);
 	for(i = 0; list[i]; i += 2)
 		add_assoc_string(return_value, (char*) list[i], (char*) list[i + 1], 1);
 }
@@ -1693,7 +1704,7 @@ PHP_FUNCTION(caca_get_display_driver_list) {
 	}
 	char const * const *list = caca_get_display_driver_list();
 	int i;
-	array_init(return_value);	
+	array_init(return_value);
 	for(i = 0; list[i]; i += 2)
 		add_assoc_string(return_value, (char*) list[i], (char*) list[i + 1], 1);
 }
@@ -1820,7 +1831,7 @@ PHP_FUNCTION(caca_get_event) {
 	caca_get_event(display, g, event, aa);
 
 	if (caca_get_event_type(event) == CACA_EVENT_NONE) {
-		efree(event);	
+		efree(event);
 		RETURN_FALSE;
 	}
 	ZEND_REGISTER_RESOURCE(return_value, event, le_caca_event);
