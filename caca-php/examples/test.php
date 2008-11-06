@@ -49,12 +49,10 @@ class DemoCanvas extends Canvas
 		$w = $f->getWidth() * strlen($message);
 		$h = $f->getHeight();
 		$this->image = imagecreatetruecolor($w, $h);
-		imagefilledrectangle($this->image, 0, 0, $w - 1, $h - 1, imagecolorallocatealpha($this->image, 0, 0, 0, 127));
 		imagealphablending($this->image, false);
 		imagesavealpha($this->image, true);
 		$this->d = new Dither($this->image);
 		$f->Render($this->scroll, $this->image);
-		imagepng($this->image, "out.png");
 	}
 
 	function Draw()
