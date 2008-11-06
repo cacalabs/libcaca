@@ -382,12 +382,12 @@ void *gd_get_pixels(gdImage *img) {
 		{
 			for (i = 0; i < img->sy; i++) {
 				for (j = 0; j < img->sx; j++) {
-					uint8_t *dst = ((uint8_t *) result) + i * pitch + j * 4;
+					uint8_t *dst = ((uint8_t *) result) + i * pitch + j * sizeof(int);
 
-					dst[0] = 255 - ((img->tpixels[i][j] & 0x7f000000) >> 23);
-					dst[1] = (img->tpixels[i][j] & 0x00ff0000) >> 16;
-					dst[2] = (img->tpixels[i][j] & 0x0000ff00) >> 8;
-					dst[3] = img->tpixels[i][j] & 0x000000ff;
+					dst[3] = 255 - (uint8_t) ((((uint32_t) img->tpixels[i][j]) & 0x7f000000) >> 23);
+					dst[2] = (((uint32_t) img->tpixels[i][j]) & 0x00ff0000) >> 16;
+					dst[1] = (((uint32_t) img->tpixels[i][j]) & 0x0000ff00) >> 8;
+					dst[0] = ((uint32_t) img->tpixels[i][j]) & 0x000000ff;
 				}
 			}
 		}
@@ -1450,7 +1450,7 @@ PHP_FUNCTION(caca_render_canvas) {
 	for (i = 0; i < img->sy; i++) {
 		for (j = 0; j < img->sx; j++) {
 			uint8_t *src = buffer + i * pitch + j * 4;
-			img->tpixels[i][j] = src[3] | (src[2] << 8) | (src[1] << 16) | (((255 - src[0]) & 0xfe) << 23);
+			img->tpixels[i][j] = ((int) src[3]) | (((int) src[2]) << 8) | (((int) src[1]) << 16) | (((255 - (int) src[0]) & 0xfe) << 23);
 		}
 	}
 
