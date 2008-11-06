@@ -1,3 +1,5 @@
+#!/usr/bin/php5
+<?php
 /*
  *  img2txt       image to text converter
  *  Copyright (c) 2006 Sam Hocevar <sam@zoy.org>
@@ -13,230 +15,197 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
-#include "config.h"
-
-#if !defined(__KERNEL__)
-#   include <stdio.h>
-#   include <string.h>
-#   include <stdlib.h>
-#endif
-
-#if !defined HAVE_GETOPT_LONG
-#   include "mygetopt.h"
-#elif defined HAVE_GETOPT_H
-#   include <getopt.h>
-#endif
-#if defined HAVE_GETOPT_LONG
-#   define mygetopt getopt_long
-#   define myoptind optind
-#   define myoptarg optarg
-#   define myoption option
-#endif
-
-#include "caca.h"
-
-#include "common-image.h"
-
-#define IMG2TXTVERSION "0.1"
-
-static void usage(int argc, char **argv)
-{
-    char const * const * list;
-
-    fprintf(stderr, "Usage: %s [OPTIONS]... <IMAGE>\n", argv[0]);
-    fprintf(stderr, "Convert IMAGE to any text based available format.\n");
-    fprintf(stderr, "Example : %s -w 80 -f ansi ./caca.png\n\n", argv[0]);
-    fprintf(stderr, "Options:\n");
-    fprintf(stderr, "  -h, --help\t\t\tThis help\n");
-    fprintf(stderr, "  -v, --version\t\t\tVersion of the program\n");
-    fprintf(stderr, "  -W, --width=WIDTH\t\tWidth of resulting image\n");
-    fprintf(stderr, "  -H, --height=HEIGHT\t\tHeight of resulting image\n");
-    fprintf(stderr, "  -x, --font-width=WIDTH\t\tWidth of output font\n");
-    fprintf(stderr, "  -y, --font-height=HEIGHT\t\tHeight of output font\n");
-    fprintf(stderr, "  -b, --brightness=BRIGHTNESS\tBrightness of resulting image\n");
-    fprintf(stderr, "  -c, --contrast=CONTRAST\tContrast of resulting image\n");
-    fprintf(stderr, "  -g, --gamma=GAMMA\t\tGamma of resulting image\n");
-    fprintf(stderr, "  -d, --dither=DITHER\t\tDithering algorithm to use :\n");
-    list = caca_get_dither_algorithm_list(NULL);
-    while(*list)
-    {
-        fprintf(stderr, "\t\t\t%s: %s\n", list[0], list[1]);
-        list += 2;
-    }
-
-    fprintf(stderr, "  -f, --format=FORMAT\t\tFormat of the resulting image :\n");
-    list = caca_get_export_list();
-    while(*list)
-    {
-        fprintf(stderr, "\t\t\t%s: %s\n", list[0], list[1]);
-        list += 2;
-    }
-
-#if !defined(USE_IMLIB2)
-    fprintf(stderr, "NOTE: This program has NOT been built with Imlib2 support. Only BMP loading is supported.\n");
-#endif
+if (php_sapi_name() != "cli") {
+	die("You have to run this program with php-cli!\n");
 }
 
-static void version(void)
+function usage($argc, $argv)
 {
-    printf(
-    "img2txt Copyright 2006-2007 Sam Hocevar and Jean-Yves Lamoureux\n"
-    "Internet: <sam@zoy.org> <jylam@lnxscene.org> Version: %s, date: %s\n"
-    "\n"
-    "img2txt, along with its documentation, may be freely copied and distributed.\n"
-    "\n"
-    "The latest version of img2txt is available from the web site,\n"
-    "        http://caca.zoy.org/wiki/libcaca in the libcaca package.\n"
-    "\n",
-    caca_get_version(), __DATE__);
-}
-int main(int argc, char **argv)
-{
-    /* libcaca context */
-    caca_canvas_t *cv;
-    void *export;
-    size_t len;
-    struct image *i;
-    unsigned int cols = 0, lines = 0, font_width = 6, font_height = 10;
-    char *format = NULL;
-    char *dither = NULL;
-    float gamma = -1, brightness = -1, contrast = -1;
+	fprintf(STDERR, "Usage: %s [OPTIONS]... <IMAGE>\n", $argv[0]);
+	fprintf(STDERR, "Convert IMAGE to any text based available format.\n");
+	fprintf(STDERR, "Example : %s -w 80 -f ansi ./caca.png\n\n", $argv[0]);
+	fprintf(STDERR, "Options:\n");
+	fprintf(STDERR, "  -h, --help\t\t\tThis help\n");
+	fprintf(STDERR, "  -v, --version\t\t\tVersion of the program\n");
+	fprintf(STDERR, "  -W, --width=WIDTH\t\tWidth of resulting image\n");
+	fprintf(STDERR, "  -H, --height=HEIGHT\t\tHeight of resulting image\n");
+	fprintf(STDERR, "  -x, --font-width=WIDTH\t\tWidth of output font\n");
+	fprintf(STDERR, "  -y, --font-height=HEIGHT\t\tHeight of output font\n");
+	fprintf(STDERR, "  -b, --brightness=BRIGHTNESS\tBrightness of resulting image\n");
+	fprintf(STDERR, "  -c, --contrast=CONTRAST\tContrast of resulting image\n");
+	fprintf(STDERR, "  -g, --gamma=GAMMA\t\tGamma of resulting image\n");
+	fprintf(STDERR, "  -d, --dither=DITHER\t\tDithering algorithm to use :\n");
+	$list = caca_get_dither_algorithm_list(caca_create_dither(imagecreate(1, 1)));
+	foreach($list as $type => $name)
+	{
+		fprintf(STDERR, "\t\t\t%s: %s\n", $type, $name);
+	}
 
-    if(argc < 2)
-    {
-        fprintf(stderr, "%s: wrong argument count\n", argv[0]);
-        usage(argc, argv);
-        return 1;
-    }
-
-    for(;;)
-    {
-        int option_index = 0;
-        static struct myoption long_options[] =
-        {
-            { "width",       1, NULL, 'W' },
-            { "height",      1, NULL, 'H' },
-            { "font-width",  1, NULL, 'x' },
-            { "font-height", 1, NULL, 'y' },
-            { "format",      1, NULL, 'f' },
-            { "dither",      1, NULL, 'd' },
-            { "gamma",       1, NULL, 'g' },
-            { "brightness",  1, NULL, 'b' },
-            { "contrast",    1, NULL, 'c' },
-            { "help",        0, NULL, 'h' },
-            { "version",     0, NULL, 'v' },
-        };
-        int c = mygetopt(argc, argv, "W:H:f:d:g:b:c:hvx:y:", long_options, &option_index);
-        if(c == -1)
-            break;
-
-        switch(c)
-        {
-        case 'W': /* --width */
-            cols = atoi(myoptarg);
-            break;
-        case 'H': /* --height */
-            lines = atoi(myoptarg);
-            break;
-        case 'x': /* --width */
-            font_width = atoi(myoptarg);
-            break;
-        case 'y': /* --height */
-            font_height = atoi(myoptarg);
-            break;
-        case 'f': /* --format */
-            format = myoptarg;
-            break;
-        case 'd': /* --dither */
-            dither = myoptarg;
-            break;
-        case 'g': /* --gamma */
-            gamma = atof(myoptarg);
-            break;
-        case 'b': /* --brightness */
-            brightness = atof(myoptarg);
-            break;
-        case 'c': /* --contrast */
-            contrast = atof(myoptarg);
-            break;
-        case 'h': /* --help */
-            usage(argc, argv);
-            return 0;
-            break;
-        case 'v': /* --version */
-            version();
-            return 0;
-            break;
-        default:
-            return 1;
-            break;
-        }
-    }
-
-
-    cv = caca_create_canvas(0, 0);
-    if(!cv)
-    {
-        fprintf(stderr, "%s: unable to initialise libcaca\n", argv[0]);
-        return 1;
-    }
-
-    i = load_image(argv[argc-1]);
-    if(!i)
-    {
-        fprintf(stderr, "%s: unable to load %s\n", argv[0], argv[argc-1]);
-        caca_free_canvas(cv);
-        return 1;
-    }
-
-    /* Assume a 6×10 font */
-    if(!cols && !lines)
-    {
-        cols = 60;
-        lines = cols * i->h * font_width / i->w / font_height;
-    }
-    else if(cols && !lines)
-    {
-        lines = cols * i->h * font_width / i->w / font_height;
-    }
-    else if(!cols && lines)
-    {
-        cols = lines * i->w * font_height / i->h / font_width;
-    }
-
-
-    caca_set_canvas_size(cv, cols, lines);
-    caca_set_color_ansi(cv, CACA_DEFAULT, CACA_TRANSPARENT);
-    caca_clear_canvas(cv);
-    if(caca_set_dither_algorithm(i->dither, dither?dither:"fstein"))
-    {
-        fprintf(stderr, "%s: Can't dither image with algorithm '%s'\n", argv[0], dither);
-        unload_image(i);
-        caca_free_canvas(cv);
-        return -1;
-    }
-
-    if(brightness!=-1) caca_set_dither_brightness (i->dither, brightness);
-    if(contrast!=-1) caca_set_dither_contrast (i->dither, contrast);
-    if(gamma!=-1) caca_set_dither_gamma (i->dither, gamma);
-
-    caca_dither_bitmap(cv, 0, 0, cols, lines, i->dither, i->pixels);
-
-    unload_image(i);
-
-    export = caca_export_memory(cv, format?format:"ansi", &len);
-    if(!export)
-    {
-        fprintf(stderr, "%s: Can't export to format '%s'\n", argv[0], format);
-    }
-    else
-    {
-        fwrite(export, len, 1, stdout);
-        free(export);
-    }
-
-    caca_free_canvas(cv);
-
-    return 0;
+	fprintf(STDERR, "  -f, --format=FORMAT\t\tFormat of the resulting image :\n");
+	$list = caca_get_export_list();
+	foreach($list as $type => $name)
+	{
+		fprintf(STDERR, "\t\t\t%s: %s\n", $type, $name);
+	}
 }
 
+function version()
+{
+	printf(
+	"img2txt Copyright 2006-2007 Sam Hocevar and Jean-Yves Lamoureux\n" .
+	"Internet: <sam@zoy.org> <jylam@lnxscene.org> Version: %s\n" .
+	"\n" .
+	"img2txt, along with its documentation, may be freely copied and distributed.\n" .
+	"\n" .
+	"The latest version of img2txt is available from the web site,\n" .
+	"        http://caca.zoy.org/wiki/libcaca in the libcaca package.\n" .
+	"\n",
+	caca_get_version());
+}
+function main()
+{
+	global $argc, $argv;
+	$cols = 0;
+	$lines = 0;
+	$font_width = 6;
+	$font_height = 10;
+	$format = NULL;
+	$dither = NULL;
+	$gamma = $brightness = $contrast = -1.0;
+
+	if($argc < 2)
+	{
+		fprintf(STDERR, "%s: wrong argument count\n", $argv[0]);
+		usage($argc, $argv);
+		return 1;
+	}
+
+	$long_options = array(
+		"width:"       => 'W',
+		"height:"      => 'H',
+		"font-width:"  => 'x',
+		"font-height:" => 'y',
+		"format:"      => 'f',
+		"dither:"      => 'd',
+		"gamma:"       => 'g',
+		"brightness:"  => 'b',
+		"contrast:"    => 'c',
+		"help"	       => 'h',
+		"version"      => 'v'
+		);
+	$options = getopt("W:H:f:d:g:b:c:hvx:y:", array_keys($long_options));
+	if (! $options)
+	{
+		/* PHP before 5.3 or so does not have long option support in
+		 * most cases */
+		$options = getopt("W:H:f:d:g:b:c:hvx:y:");
+	}
+
+	foreach($options as $opt => $arg)
+	{
+		if (array_key_exists($opt + (isset($arg) ? ':' : ''), $long_options))
+		{
+			$opt = $long_options[$opt + (isset($arg) ? ':' : '')];
+		}
+		switch($opt)
+		{
+		case 'W': /* --width */
+			$cols = intval($arg);
+			break;
+		case 'H': /* --height */
+			$lines = intval($arg);
+			break;
+		case 'x': /* --width */
+			$font_width = intval($arg);
+			break;
+		case 'y': /* --height */
+			$font_height = intval($arg);
+			break;
+		case 'f': /* --format */
+			$format = $arg;
+			break;
+		case 'd': /* --dither */
+			$dither = $arg;
+			break;
+		case 'g': /* --gamma */
+			$gamma = floatval($arg);
+			break;
+		case 'b': /* --brightness */
+			$brightness = floatval($arg);
+			break;
+		case 'c': /* --contrast */
+			$contrast = floatval($arg);
+			break;
+		case 'h': /* --help */
+			usage($argc, $argv);
+			return 0;
+		case 'v': /* --version */
+			version();
+			return 0;
+		default:
+			return 1;
+		}
+	}
+
+
+	$cv = caca_create_canvas(0, 0);
+	if(!$cv)
+	{
+		fprintf(STDERR, "%s: unable to initialise libcaca\n", $argv[0]);
+		return 1;
+	}
+
+	$i_str = file_get_contents($argv[$argc-1]);
+	$i = $i_str ? imagecreatefromstring($i_str) : NULL;
+	if(!$i)
+	{
+		fprintf(STDERR, "%s: unable to load %s\n", $argv[0], $argv[$argc-1]);
+		return 1;
+	}
+
+	/* Assume a 6×10 font */
+	if(!$cols && !$lines)
+	{
+		$cols = 60;
+		$lines = $cols * imagesy($i) * $font_width / imagesx($i) / $font_height;
+	}
+	else if($cols && !$lines)
+	{
+		$lines = $cols * imagesy($i) * $font_width / imagesx($i) / $font_height;
+	}
+	else if(!$cols && $lines)
+	{
+		$cols = $lines * imagesx($i) * $font_height / imagesy($i) / $font_width;
+	}
+
+
+	caca_set_canvas_size($cv, $cols, $lines);
+	caca_set_color_ansi($cv, CACA_DEFAULT, CACA_TRANSPARENT);
+	caca_clear_canvas($cv);
+	$i_dither = caca_create_dither($i);
+	if(! caca_set_dither_algorithm($i_dither, $dither?$dither:"fstein"))
+	{
+		fprintf(STDERR, "%s: Can't dither image with algorithm '%s'\n", $argv[0], $dither?$dither:"fstein");
+		return -1;
+	}
+
+	if($brightness!=-1) caca_set_dither_brightness ($i_dither, $brightness);
+	if($contrast!=-1) caca_set_dither_contrast ($i_dither, $contrast);
+	if($gamma!=-1) caca_set_dither_gamma ($i_dither, $gamma);
+
+	caca_dither_bitmap($cv, 0, 0, $cols, $lines, $i_dither, $i);
+
+	$export = caca_export_string($cv, $format?$format:"ansi");
+	if(!$export)
+	{
+		fprintf(STDERR, "%s: Can't export to format '%s'\n", $argv[0], $format);
+	}
+	else
+	{
+		echo $export;
+	}
+
+	return 0;
+}
+exit(main());
+?>
