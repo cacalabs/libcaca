@@ -56,8 +56,8 @@ class Canvas {
 		return caca_import_file($this->cv, $path, $codec);
 	}
 
-	function importString($codec) {
-		return caca_import_string($this->cv, $codec);
+	function importString($str, $codec) {
+		return caca_import_string($this->cv, $str, $codec);
 	}
 
 	function exportString($codec) {
@@ -180,8 +180,10 @@ class Canvas {
 		return caca_clear_canvas($this->cv);
 	}
 
-	function Blit($x, $y, $canvas, $mask = false) {
-		return caca_blit($this->cv, $x, $y, $canvas->get_resource(), ($mask != false) ? $mask->get_resource() : false );
+	function Blit($x, $y, $canvas, $mask = NULL) {
+		if($mask)
+			return caca_blit($this->cv, $x, $y, $canvas->get_resource(), $mask->get_resource());
+		return caca_blit($this->cv, $x, $y, $canvas->get_resource());
 	}
 
 	function Invert() {
@@ -450,8 +452,8 @@ class Display {
 		return new Event($ev);
 	}
 
-	function __construct($canvas, $driver = false) {
-		if ($driver)
+	function __construct($canvas, $driver = NULL) {
+		if($driver)
 			$this->dp = caca_create_display_with_driver($canvas->get_resource(), $driver);
 		else
 			$this->dp = caca_create_display($canvas->get_resource());
