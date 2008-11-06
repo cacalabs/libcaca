@@ -384,7 +384,7 @@ void *gd_get_pixels(gdImage *img) {
 				for (j = 0; j < img->sx; j++) {
 					uint8_t *dst = ((uint8_t *) result) + i * pitch + j * 4;
 
-					dst[0] = (127 - (img->tpixels[i][j] & 0x7f000000) >> 24);
+					dst[0] = 255 - ((img->tpixels[i][j] & 0x7f000000) >> 23);
 					dst[1] = (img->tpixels[i][j] & 0x00ff0000) >> 16;
 					dst[2] = (img->tpixels[i][j] & 0x0000ff00) >> 8;
 					dst[3] = img->tpixels[i][j] & 0x000000ff;
@@ -1060,7 +1060,7 @@ PHP_FUNCTION(caca_create_dither) {
 
 	caca_dither_t *dither;
 	if (img->trueColor)
-		dither = caca_create_dither(sizeof(int) * 8, img->sx, img->sy, img->sx * sizeof(int), 0x00ff0000, 0x0000ff00, 0x000000ff, 0x7f000000);
+		dither = caca_create_dither(sizeof(int) * 8, img->sx, img->sy, img->sx * sizeof(int), 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
 	else
 		dither = caca_create_dither(sizeof(char) * 8, img->sx, img->sy, img->sx * sizeof(char), 0, 0, 0, 0);
 
@@ -1450,7 +1450,7 @@ PHP_FUNCTION(caca_render_canvas) {
 	for (i = 0; i < img->sy; i++) {
 		for (j = 0; j < img->sx; j++) {
 			uint8_t *src = buffer + i * pitch + j * 4;
-			img->tpixels[i][j] = *(src + 3)	| (*(src + 2) << 8) | (*(src + 1) << 16) | (((127 - *(src + 0)) & 0xfe) << 23);
+			img->tpixels[i][j] = src[3] | (src[2] << 8) | (src[1] << 16) | (((255 - src[0]) & 0xfe) << 23);
 		}
 	}
 
