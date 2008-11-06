@@ -444,7 +444,7 @@ class Display {
 		return caca_set_mouse($this->dp, $state);
 	}
 
-	function getEvent($t, $timeout) {
+	function getEvent($t, $timeout = 0) {
 		$ev = caca_get_event($this->dp, $t, $timeout);
 		if(! $ev) {
 			return NULL;
