@@ -272,8 +272,8 @@ function main()
 		$opt = $opt_and_arg[0];
 		$arg = $opt_and_arg[1];
 		if((substr($opt, 0, 2) == '--')
-	   	&&
-	   	array_key_exists(substr($opt, strlen('--')) . (($arg !== NULL) ? ':' : ''), $long_options))
+			&&
+			array_key_exists(substr($opt, strlen('--')) . (($arg !== NULL) ? ':' : ''), $long_options))
 		{
 			$opt = '-' . $long_options[substr($opt, strlen('--')) . (($arg !== NULL) ? ':' : '')];
 		}
@@ -374,7 +374,7 @@ function main()
 	$export = caca_export_string($cv, $format?$format:"ansi");
 	if(!$export)
 	{
-		fprintf(STDERR, "%s: Can't export to format '%s'\n", $argv[0], $format);
+		fprintf(STDERR, "%s: Can't export to format '%s'\n", $argv[0], $format?$format:"ansi");
 		return -1;
 	}
 	else
