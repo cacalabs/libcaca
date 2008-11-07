@@ -1,7 +1,10 @@
-#!/usr/bin/php5
 <?php
 /*
  *  img2txt       image to text converter
+ *  Copyright (c) 2008 Benjamin C. Wiley Sittler <bsittler@gmail.com>
+ *
+ *  This file is a Php port of "src/img2txt.c"
+ *  which is: 
  *  Copyright (c) 2006 Sam Hocevar <sam@zoy.org>
  *                2007 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                All Rights Reserved
@@ -15,9 +18,29 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
-if (php_sapi_name() != "cli") {
-	die("You have to run this program with php-cli!\n");
+$img2txt_php = isset($_SERVER['SCRIPT_NAME'])
+		?
+		$_SERVER['SCRIPT_NAME']
+		:
+		'img2txt.php';
+
+$argv = array(basename($img2txt_php));
+$args = '';
+if(isset($_REQUEST['args']))
+{
+	$args = $_REQUEST['args'];
 }
+$args=trim($args);
+if(strlen($args))
+{
+	foreach(explode(' ', $args) as $arg)
+	{
+		$argv[] = $arg;
+	}
+}
+$argc = count($argv);
+$stderr = '';
+$stdout = '';
 
 class MygetoptException extends Exception
 {
@@ -197,37 +220,39 @@ function mygetopt($shortopts, $longopts)
 
 function usage($argc, $argv)
 {
-	fprintf(STDERR, "Usage: %s [OPTIONS]... <IMAGE>\n", $argv[0]);
-	fprintf(STDERR, "Convert IMAGE to any text based available format.\n");
-	fprintf(STDERR, "Example : %s -w 80 -f ansi ./caca.png\n\n", $argv[0]);
-	fprintf(STDERR, "Options:\n");
-	fprintf(STDERR, "  -h, --help\t\t\tThis help\n");
-	fprintf(STDERR, "  -v, --version\t\t\tVersion of the program\n");
-	fprintf(STDERR, "  -W, --width=WIDTH\t\tWidth of resulting image\n");
-	fprintf(STDERR, "  -H, --height=HEIGHT\t\tHeight of resulting image\n");
-	fprintf(STDERR, "  -x, --font-width=WIDTH\t\tWidth of output font\n");
-	fprintf(STDERR, "  -y, --font-height=HEIGHT\t\tHeight of output font\n");
-	fprintf(STDERR, "  -b, --brightness=BRIGHTNESS\tBrightness of resulting image\n");
-	fprintf(STDERR, "  -c, --contrast=CONTRAST\tContrast of resulting image\n");
-	fprintf(STDERR, "  -g, --gamma=GAMMA\t\tGamma of resulting image\n");
-	fprintf(STDERR, "  -d, --dither=DITHER\t\tDithering algorithm to use :\n");
+	global $stderr;
+	$stderr .= sprintf("Usage: %s [OPTIONS]... <IMAGE>\n", $argv[0]);
+	$stderr .= sprintf("Convert IMAGE to any text based available format.\n");
+	$stderr .= sprintf("Example : %s -w 80 -f ansi ./caca.png\n\n", $argv[0]);
+	$stderr .= sprintf("Options:\n");
+	$stderr .= sprintf("  -h, --help\t\t\tThis help\n");
+	$stderr .= sprintf("  -v, --version\t\t\tVersion of the program\n");
+	$stderr .= sprintf("  -W, --width=WIDTH\t\tWidth of resulting image\n");
+	$stderr .= sprintf("  -H, --height=HEIGHT\t\tHeight of resulting image\n");
+	$stderr .= sprintf("  -x, --font-width=WIDTH\t\tWidth of output font\n");
+	$stderr .= sprintf("  -y, --font-height=HEIGHT\t\tHeight of output font\n");
+	$stderr .= sprintf("  -b, --brightness=BRIGHTNESS\tBrightness of resulting image\n");
+	$stderr .= sprintf("  -c, --contrast=CONTRAST\tContrast of resulting image\n");
+	$stderr .= sprintf("  -g, --gamma=GAMMA\t\tGamma of resulting image\n");
+	$stderr .= sprintf("  -d, --dither=DITHER\t\tDithering algorithm to use :\n");
 	$list = caca_get_dither_algorithm_list(caca_create_dither(imagecreate(1, 1)));
 	foreach($list as $type => $name)
 	{
-		fprintf(STDERR, "\t\t\t%s: %s\n", $type, $name);
+		$stderr .= sprintf("\t\t\t%s: %s\n", $type, $name);
 	}
 
-	fprintf(STDERR, "  -f, --format=FORMAT\t\tFormat of the resulting image :\n");
+	$stderr .= sprintf("  -f, --format=FORMAT\t\tFormat of the resulting image :\n");
 	$list = caca_get_export_list();
 	foreach($list as $type => $name)
 	{
-		fprintf(STDERR, "\t\t\t%s: %s\n", $type, $name);
+		$stderr .= sprintf("\t\t\t%s: %s\n", $type, $name);
 	}
 }
 
 function version()
 {
-	printf(
+	global $stdout;
+	$stdout .= sprintf(
 	"img2txt Copyright 2006-2007 Sam Hocevar and Jean-Yves Lamoureux\n" .
 	"Internet: <sam@zoy.org> <jylam@lnxscene.org> Version: %s\n" .
 	"\n" .
@@ -241,6 +266,7 @@ function version()
 function main()
 {
 	global $argc, $argv;
+	global $stderr;
 	$cols = 0;
 	$lines = 0;
 	$font_width = 6;
@@ -263,59 +289,77 @@ function main()
 		"version"	=> 'v'
 		);
 
-	while($opt_and_arg = mygetopt("W:H:f:d:g:b:c:hvx:y:", array_keys($long_options)))
-	{
-		$opt = $opt_and_arg[0];
-		$arg = $opt_and_arg[1];
-		if((substr($opt, 0, 2) == '--')
-	   	&&
-	   	array_key_exists(substr($opt, strlen('--')) . (($arg !== NULL) ? ':' : ''), $long_options))
+	try {
+		while($opt_and_arg = mygetopt("W:H:f:d:g:b:c:hvx:y:", array_keys($long_options)))
 		{
-			$opt = '-' . $long_options[substr($opt, strlen('--')) . (($arg !== NULL) ? ':' : '')];
-		}
-		switch($opt)
-		{
-		case '-W': /* --width */
-			$cols = intval($arg);
-			break;
-		case '-H': /* --height */
-			$lines = intval($arg);
-			break;
-		case '-x': /* --width */
-			$font_width = intval($arg);
-			break;
-		case '-y': /* --height */
-			$font_height = intval($arg);
-			break;
-		case '-f': /* --format */
-			$format = $arg;
-			break;
-		case '-d': /* --dither */
-			$dither = $arg;
-			break;
-		case '-g': /* --gamma */
-			$gamma = floatval($arg);
-			break;
-		case '-b': /* --brightness */
-			$brightness = floatval($arg);
-			break;
-		case '-c': /* --contrast */
-			$contrast = floatval($arg);
-			break;
-		case '-h': /* --help */
-			usage($argc, $argv);
-			return 0;
-		case '-v': /* --version */
-			version();
-			return 0;
-		default:
-			return 1;
+			$opt = $opt_and_arg[0];
+			$arg = $opt_and_arg[1];
+			if((substr($opt, 0, 2) == '--')
+				&&
+				array_key_exists(substr($opt, strlen('--')) . (($arg !== NULL) ? ':' : ''), $long_options))
+			{
+				$opt = '-' . $long_options[substr($opt, strlen('--')) . (($arg !== NULL) ? ':' : '')];
+			}
+			switch($opt)
+			{
+			case '-W': /* --width */
+				$cols = intval($arg);
+				break;
+			case '-H': /* --height */
+				$lines = intval($arg);
+				break;
+			case '-x': /* --width */
+				$font_width = intval($arg);
+				break;
+			case '-y': /* --height */
+				$font_height = intval($arg);
+				break;
+			case '-f': /* --format */
+				$format = $arg;
+				break;
+			case '-d': /* --dither */
+				$dither = $arg;
+				break;
+			case '-g': /* --gamma */
+				$gamma = floatval($arg);
+				break;
+			case '-b': /* --brightness */
+				$brightness = floatval($arg);
+				break;
+			case '-c': /* --contrast */
+				$contrast = floatval($arg);
+				break;
+			case '-h': /* --help */
+				usage($argc, $argv);
+				return 0;
+			case '-v': /* --version */
+				version();
+				return 0;
+			default:
+				return 1;
+			}
 		}
 	}
-
-	if($argc != 2)
+	catch (MygetoptException $e)
 	{
-		fprintf(STDERR, "%s: wrong argument count\n", $argv[0]);
+		$stderr .= $argv[0] . ": " . $e->getMessage() . "\n";
+		usage($argc, $argv);
+		return 2;
+	}
+
+	if($argc > 1)
+	{
+		$stderr .= sprintf("%s: too many arguments\n", $argv[0]);
+		usage($argc, $argv);
+		return 1;
+	}
+
+	$file = isset($_FILES['file']) ? $_FILES['file']['tmp_name'] : NULL;
+	$filename = isset($_FILES['file']) ? $_FILES['file']['name'] : NULL;
+
+	if(! $file)
+	{
+		$stderr .= sprintf("%s: no image was provided\n", $argv[0]);
 		usage($argc, $argv);
 		return 1;
 	}
@@ -323,15 +367,15 @@ function main()
 	$cv = caca_create_canvas(0, 0);
 	if(!$cv)
 	{
-		fprintf(STDERR, "%s: unable to initialise libcaca\n", $argv[0]);
+		$stderr .= sprintf("%s: unable to initialise libcaca\n", $argv[0]);
 		return 1;
 	}
 
-	$i_str = file_get_contents($argv[$argc-1]);
+	$i_str = $file ? file_get_contents($file) : NULL;
 	$i = $i_str ? imagecreatefromstring($i_str) : NULL;
 	if(!$i)
 	{
-		fprintf(STDERR, "%s: unable to load %s\n", $argv[0], $argv[$argc-1]);
+		$stderr .= sprintf("%s: unable to load %s\n", $argv[0], $filename);
 		return 1;
 	}
 
@@ -357,7 +401,7 @@ function main()
 	$i_dither = caca_create_dither($i);
 	if(! caca_set_dither_algorithm($i_dither, $dither?$dither:"fstein"))
 	{
-		fprintf(STDERR, "%s: Can't dither image with algorithm '%s'\n", $argv[0], $dither?$dither:"fstein");
+		$stderr .= sprintf("%s: Can't dither image with algorithm '%s'\n", $argv[0], $dither?$dither:"fstein");
 		return -1;
 	}
 
@@ -367,17 +411,98 @@ function main()
 
 	caca_dither_bitmap($cv, 0, 0, $cols, $lines, $i_dither, $i);
 
-	$export = caca_export_string($cv, $format?$format:"ansi");
+	$format = $format ? $format : 'html';
+
+	$export = caca_export_string($cv, $format);
 	if(!$export)
 	{
-		fprintf(STDERR, "%s: Can't export to format '%s'\n", $argv[0], $format);
+		$stderr .= sprintf("%s: Can't export to format '%s'\n", $argv[0], $format);
+		return -1;
 	}
 	else
 	{
+		$content_type_map = array(
+			'ansi' => 'text/plain; charset=CP437',
+			'utf8' => 'text/plain; charset=UTF-8',
+			'utf8cr' => 'text/plain; charset=UTF-8',
+			'html' => 'text/html; charset=UTF-8',
+			'html3' => 'text/html; charset=UTF-8',
+			'bbfr' => 'text/plain; charset=UTF-8',
+			'irc' => 'text/plain; charset=UTF-8',
+			'ps' => 'application/postscript',
+			'svg' => 'image/svg+xml',
+			'tga' => 'image/x-targa'
+			);
+
+		$download_extension_map = array(
+			'caca' => 'caca',
+			'ansi' => 'txt',
+			'utf8' => 'txt',
+			'utf8cr' => 'txt',
+			'irc' => 'txt',
+			'tga' => 'tga'
+			);
+
+		$inline_extension_map = array(
+			'bbfr' => 'txt',
+			'ps' => 'ps',
+			'svg' => 'svg'
+			);
+
+		if (! array_key_exists($format, $content_type_map))
+			$content_type = 'application/octet-stream';
+		else
+			$content_type = $content_type_map[$format];
+
+		header('Content-Type: ' . $content_type);
+		if (array_key_exists($format, $download_extension_map))
+			header('Content-Disposition: attachment; filename=export.' . $download_extension_map[$format]);
+		else if (array_key_exists($format, $inline_extension_map))
+			header('Content-Disposition: inline; filename=export.' . $inline_extension_map[$format]);
+
 		echo $export;
 	}
 
 	return 0;
 }
-exit(main());
+if(main() || strlen($stdout) || strlen($stderr))
+{
+	header('Content-Type: text/html; charset=UTF-8');
+	?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>image to text converter</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<form id="img2txtform" name="img2txtform" action="#" enctype="multipart/form-data" method="post">
+<label for="file">Image:</label>
+<input id="file" name="file" type="file" />
+<br />
+<label for="args">Options:</label>
+<input id="args" name="args" type="text" value="<?= htmlspecialchars($args) ?>" size="80" />
+<br />
+<input type="submit" />
+</form>
+<?php
+		;
+	if(strlen($stderr))
+	{
+		?><pre xml:space="preserve"><em><?= htmlspecialchars($stderr) ?></em></pre><?php
+			;
+	}
+	if(strlen($stdout))
+	{
+		?><pre xml:space="preserve"><?= htmlspecialchars($stdout) ?></pre><?php
+			;
+	}
+	?>
+</body>
+</html>
+<?php
+		;
+}
 ?>
