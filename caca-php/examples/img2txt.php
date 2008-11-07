@@ -2,6 +2,10 @@
 <?php
 /*
  *  img2txt       image to text converter
+ *  Copyright (c) 2008 Benjamin C. Wiley Sittler <bsittler@gmail.com>
+ *
+ *  This file is a Php port of "src/img2txt.c"
+ *  which is: 
  *  Copyright (c) 2006 Sam Hocevar <sam@zoy.org>
  *                2007 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                All Rights Reserved
@@ -371,6 +375,7 @@ function main()
 	if(!$export)
 	{
 		fprintf(STDERR, "%s: Can't export to format '%s'\n", $argv[0], $format);
+		return -1;
 	}
 	else
 	{
