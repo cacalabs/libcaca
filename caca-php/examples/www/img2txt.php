@@ -30,7 +30,7 @@ $filename = isset($_FILES['file']) ? $_FILES['file']['name'] : NULL;
 $args = NULL;
 if(isset($_REQUEST['args']))
 {
-	$args = $_REQUEST['args'];
+	$args = trim($_REQUEST['args']);
 	if(strlen($args))
 	{
 		foreach(explode(' ', $args) as $arg)
@@ -267,6 +267,7 @@ function version()
 }
 function main()
 {
+	global $file, $filename;
 	global $argc, $argv;
 	global $stderr;
 	$cols = 0;
@@ -349,15 +350,25 @@ function main()
 		return 2;
 	}
 
-	global $file, $filename;
-
 	if((! $file) && ($argc == 2) && ($argv[1] == 'logo-caca.png'))
 	{
 		$file = 'logo-caca.png';
 		$argc = 1;
 	}
+	else if($filename && $file && ($argc == 2)
+			&&
+			(strtolower(basename($argv[1])) == strtolower(basename($filename))))
+	{
+		$argc = 1;
+	}
 
-	if($argc > 1)
+	if($argc == 2)
+	{
+		$stderr .= sprintf("%s: image not found\n", $argv[1]);
+		return 1;
+	}
+
+	if($argc > 2)
 	{
 		$stderr .= sprintf("%s: too many arguments\n", $argv[0]);
 		usage($argc, $argv);
