@@ -21,8 +21,6 @@ define('WIDTH', 80);
 define('HEIGHT', 32);
 
 $pixels = imagecreatetruecolor(256, 256);
-imagealphablending($pixels, false);
-imagesavealpha($pixels, true);
 
 $exports = caca_get_export_list();
 
@@ -127,7 +125,7 @@ else
 			$r = $x;
 			$g = (255 - $y + $x) / 2;
 			$b = $y * (255 - $x) / 256;
-			imagesetpixel($pixels, $x, $y, imagecolorallocatealpha($pixels, $r, $g, $b, 127));
+			imagesetpixel($pixels, $x, $y, imagecolorallocate($pixels, $r, $g, $b));
 		}
 	}
 
