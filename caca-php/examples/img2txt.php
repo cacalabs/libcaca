@@ -203,7 +203,7 @@ function usage($argc, $argv)
 {
 	fprintf(STDERR, "Usage: %s [OPTIONS]... <IMAGE>\n", $argv[0]);
 	fprintf(STDERR, "Convert IMAGE to any text based available format.\n");
-	fprintf(STDERR, "Example : %s -w 80 -f ansi ./caca.png\n\n", $argv[0]);
+	fprintf(STDERR, "Example : %s -W 80 -f ansi ./caca.png\n\n", $argv[0]);
 	fprintf(STDERR, "Options:\n");
 	fprintf(STDERR, "  -h, --help\t\t\tThis help\n");
 	fprintf(STDERR, "  -v, --version\t\t\tVersion of the program\n");
