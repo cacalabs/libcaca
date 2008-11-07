@@ -507,7 +507,7 @@ if($ret || strlen($stdout) || strlen($stderr))
 	}
 	if(strlen($stdout))
 	{
-		?><pre xml:space="preserve"><?= preg_replace('!([&]lt;)([.a-zA-Z0-9]+[@][-.a-zA-Z0-9]+)([&]gt;)!', '$1<a href="mailto:$2">$2</a>$3', preg_replace('!(\s|^)(http://[-.:_/0-9a-zA-Z%?=&;#]+)(\s|$)!', '$1<a href="$2">$2</a>$3', htmlspecialchars($stdout))) ?></pre><?php
+		?><pre xml:space="preserve"><?= preg_replace('!([&]lt;)([.a-zA-Z0-9]+[@])([-.a-zA-Z0-9]+)([&]gt;)!', '$1<a href="mailto:$2$3">$2...</a>$4', preg_replace('!(\s|^)(http://[-.:_/0-9a-zA-Z%?=&;#]+)(\s|$)!', '$1<a href="$2">$2</a>$3', htmlspecialchars($stdout))) ?></pre><?php
 			;
 	}
 	?>
