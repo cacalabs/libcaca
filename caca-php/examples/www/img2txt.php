@@ -221,32 +221,32 @@ function mygetopt($shortopts, $longopts)
 
 function usage($argc, $argv)
 {
-	global $stderr;
-	$stderr .= sprintf("Usage: %s [OPTIONS]... <IMAGE>\n", $argv[0]);
-	$stderr .= sprintf("Convert IMAGE to any text based available format.\n");
-	$stderr .= sprintf("Example : -W 80 -f html logo-caca.png\n\n", $argv[0]);
-	$stderr .= sprintf("Options:\n");
-	$stderr .= sprintf("  -h, --help\t\t\tThis help\n");
-	$stderr .= sprintf("  -v, --version\t\t\tVersion of the program\n");
-	$stderr .= sprintf("  -W, --width=WIDTH\t\tWidth of resulting image\n");
-	$stderr .= sprintf("  -H, --height=HEIGHT\t\tHeight of resulting image\n");
-	$stderr .= sprintf("  -x, --font-width=WIDTH\t\tWidth of output font\n");
-	$stderr .= sprintf("  -y, --font-height=HEIGHT\t\tHeight of output font\n");
-	$stderr .= sprintf("  -b, --brightness=BRIGHTNESS\tBrightness of resulting image\n");
-	$stderr .= sprintf("  -c, --contrast=CONTRAST\tContrast of resulting image\n");
-	$stderr .= sprintf("  -g, --gamma=GAMMA\t\tGamma of resulting image\n");
-	$stderr .= sprintf("  -d, --dither=DITHER\t\tDithering algorithm to use :\n");
+	global $stdout;
+	$stdout .= sprintf("Usage: %s [OPTIONS]... <IMAGE>\n", $argv[0]);
+	$stdout .= sprintf("Convert IMAGE to any text based available format.\n");
+	$stdout .= sprintf("Example : -W 80 -f html logo-caca.png\n\n", $argv[0]);
+	$stdout .= sprintf("Options:\n");
+	$stdout .= sprintf("  -h, --help\t\t\tThis help\n");
+	$stdout .= sprintf("  -v, --version\t\t\tVersion of the program\n");
+	$stdout .= sprintf("  -W, --width=WIDTH\t\tWidth of resulting image\n");
+	$stdout .= sprintf("  -H, --height=HEIGHT\t\tHeight of resulting image\n");
+	$stdout .= sprintf("  -x, --font-width=WIDTH\t\tWidth of output font\n");
+	$stdout .= sprintf("  -y, --font-height=HEIGHT\t\tHeight of output font\n");
+	$stdout .= sprintf("  -b, --brightness=BRIGHTNESS\tBrightness of resulting image\n");
+	$stdout .= sprintf("  -c, --contrast=CONTRAST\tContrast of resulting image\n");
+	$stdout .= sprintf("  -g, --gamma=GAMMA\t\tGamma of resulting image\n");
+	$stdout .= sprintf("  -d, --dither=DITHER\t\tDithering algorithm to use :\n");
 	$list = caca_get_dither_algorithm_list(caca_create_dither(imagecreate(1, 1)));
 	foreach($list as $type => $name)
 	{
-		$stderr .= sprintf("\t\t\t%s: %s\n", $type, $name);
+		$stdout .= sprintf("\t\t\t%s: %s\n", $type, $name);
 	}
 
-	$stderr .= sprintf("  -f, --format=FORMAT\t\tFormat of the resulting image :\n");
+	$stdout .= sprintf("  -f, --format=FORMAT\t\tFormat of the resulting image :\n");
 	$list = caca_get_export_list();
 	foreach($list as $type => $name)
 	{
-		$stderr .= sprintf("\t\t\t%s: %s\n", $type, $name);
+		$stdout .= sprintf("\t\t\t%s: %s\n", $type, $name);
 	}
 }
 
@@ -508,13 +508,13 @@ if($ret || strlen($stdout) || strlen($stderr))
 <label for="args">Options:</label>
 <input id="args" name="args" type="text" value="<?= isset($_REQUEST['args']) ? htmlspecialchars($_REQUEST['args']) : '' ?>" size="80" />
 <br />
-<input type="submit" />
+<input type="submit" /> <input type="reset" />
 </form>
 <?php
 		;
 	if(strlen($stderr))
 	{
-		?><pre xml:space="preserve"><em><?= preg_replace('!(logo-caca[.]png)!', '<a href="$1">$1</a>', htmlspecialchars($stderr)) ?></em></pre><?php
+		?><pre xml:space="preserve"><strong><?= htmlspecialchars($stderr) ?></strong></pre><?php
 			;
 	}
 	if(strlen($stdout))
