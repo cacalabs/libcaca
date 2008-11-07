@@ -25,17 +25,18 @@ $img2txt_php = isset($_SERVER['SCRIPT_NAME'])
 		'img2txt.php';
 
 $argv = array(basename($img2txt_php));
-$args = '';
+$file = isset($_FILES['file']) ? $_FILES['file']['tmp_name'] : NULL;
+$filename = isset($_FILES['file']) ? $_FILES['file']['name'] : NULL;
+$args = NULL;
 if(isset($_REQUEST['args']))
 {
 	$args = $_REQUEST['args'];
-}
-$args=trim($args);
-if(strlen($args))
-{
-	foreach(explode(' ', $args) as $arg)
+	if(strlen($args))
 	{
-		$argv[] = $arg;
+		foreach(explode(' ', $args) as $arg)
+		{
+			$argv[] = $arg;
+		}
 	}
 }
 $argc = count($argv);
@@ -223,7 +224,7 @@ function usage($argc, $argv)
 	global $stderr;
 	$stderr .= sprintf("Usage: %s [OPTIONS]... <IMAGE>\n", $argv[0]);
 	$stderr .= sprintf("Convert IMAGE to any text based available format.\n");
-	$stderr .= sprintf("Example : %s -w 80 -f ansi ./caca.png\n\n", $argv[0]);
+	$stderr .= sprintf("Example : -W 80 -f html logo-caca.png\n\n", $argv[0]);
 	$stderr .= sprintf("Options:\n");
 	$stderr .= sprintf("  -h, --help\t\t\tThis help\n");
 	$stderr .= sprintf("  -v, --version\t\t\tVersion of the program\n");
@@ -347,15 +348,20 @@ function main()
 		return 2;
 	}
 
+	global $file, $filename;
+
+	if((! $file) && ($argc == 2) && ($argv[1] == 'logo-caca.png'))
+	{
+		$file = 'logo-caca.png';
+		$argc = 1;
+	}
+
 	if($argc > 1)
 	{
 		$stderr .= sprintf("%s: too many arguments\n", $argv[0]);
 		usage($argc, $argv);
 		return 1;
 	}
-
-	$file = isset($_FILES['file']) ? $_FILES['file']['tmp_name'] : NULL;
-	$filename = isset($_FILES['file']) ? $_FILES['file']['name'] : NULL;
 
 	if(! $file)
 	{
@@ -465,7 +471,12 @@ function main()
 
 	return 0;
 }
-if(main() || strlen($stdout) || strlen($stderr))
+$ret = 1;
+if(isset($_REQUEST['args']) || $file)
+{
+	$ret = main();
+}
+if($ret || strlen($stdout) || strlen($stderr))
 {
 	header('Content-Type: text/html; charset=UTF-8');
 	?>
@@ -483,7 +494,7 @@ if(main() || strlen($stdout) || strlen($stderr))
 <input id="file" name="file" type="file" />
 <br />
 <label for="args">Options:</label>
-<input id="args" name="args" type="text" value="<?= htmlspecialchars($args) ?>" size="80" />
+<input id="args" name="args" type="text" value="<?= isset($_REQUEST['args']) ? htmlspecialchars($_REQUEST['args']) : '' ?>" size="80" />
 <br />
 <input type="submit" />
 </form>
@@ -491,12 +502,12 @@ if(main() || strlen($stdout) || strlen($stderr))
 		;
 	if(strlen($stderr))
 	{
-		?><pre xml:space="preserve"><em><?= htmlspecialchars($stderr) ?></em></pre><?php
+		?><pre xml:space="preserve"><em><?= preg_replace('!(logo-caca[.]png)!', '<a href="$1">$1</a>', htmlspecialchars($stderr)) ?></em></pre><?php
 			;
 	}
 	if(strlen($stdout))
 	{
-		?><pre xml:space="preserve"><?= htmlspecialchars($stdout) ?></pre><?php
+		?><pre xml:space="preserve"><?= preg_replace('!([&]lt;)([.a-zA-Z0-9]+[@][-.a-zA-Z0-9]+)([&]gt;)!', '$1<a href="mailto:$2">$2</a>$3', preg_replace('!(\s|^)(http://[-.:_/0-9a-zA-Z%?=&;#]+)(\s|$)!', '$1<a href="$2">$2</a>$3', htmlspecialchars($stdout))) ?></pre><?php
 			;
 	}
 	?>
