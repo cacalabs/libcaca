@@ -19,6 +19,182 @@ if (php_sapi_name() != "cli") {
 	die("You have to run this program with php-cli!\n");
 }
 
+class MygetoptException extends Exception
+{
+}
+
+$myoptind = 0;
+
+function mygetopt($shortopts, $longopts)
+{
+	global $argc, $argv, $myoptind;
+	if($myoptind < 0)
+	{
+		$myoptind = 0;
+	}
+	if(($myoptind + 1) >= $argc)
+	{
+		return NULL;
+	}
+	$myoptind ++;
+	$nextarg = $argv[$myoptind];
+	$ret = NULL;
+	if((substr($nextarg, 0, 1) != '-')
+   	||
+   	($nextarg == '-'))
+	{
+		$myoptind = $argc - 1;
+	}
+	else
+	{
+		$skipopt = $myoptind;
+		$skipopts = 1;
+		if($nextarg == '--')
+		{
+			$myoptind = $argc - 1;
+		}
+		else
+		{
+			$opt = NULL;
+			$arg = NULL;
+			foreach($longopts as $longopt)
+			{
+				$optional = false;
+				$hasarg = false;
+				if(($longopt != '::') && substr($longopt, -2) == '::')
+				{
+					$optional = true;
+					$hasarg = true;
+					$longopt = substr($longopt, 0, -2);
+				}
+				else if(($longopt != ':') && substr($longopt, -1) == ':')
+				{
+					$optional = false;
+					$hasarg = true;
+					$longopt = substr($longopt, 0, -1);
+				}
+				if($nextarg == ('--' . $longopt))
+				{
+					$opt = '--' . $longopt;
+					if($hasarg && ! $optional)
+					{
+						if(($myoptind + 1) < $argc)
+						{
+							$myoptind ++;
+							$skipopts ++;
+							$arg = $argv[$myoptind];
+						}
+						else
+						{
+							throw new MygetoptException("option \"$opt\" requires an argument");
+						}
+					}
+					break;
+				}
+				else if(substr($nextarg, 0, strlen('--' . $longopt . '='))
+						==
+						('--' . $longopt . '='))
+				{
+					$opt = '--' . $longopt;
+					$arg = substr($nextarg, strlen($opt . '='));
+					if(! $hasarg)
+					{
+						throw new MygetoptException("option \"$opt\" does not allow an argument");
+					}
+					break;
+				}
+			}
+			if($opt === NULL)
+			{
+				for($i = 0; $i < strlen($shortopts); $i ++)
+				{
+					$optional = false;
+					$hasarg = false;
+					$shortopt = substr($shortopts, $i, 1);
+					if(substr($shortopts, $i + 1, 2) == '::')
+					{
+						$optional = true;
+						$hasarg = true;
+						$i += 2;
+					}
+					else if(substr($shortopts, $i + 1, 1) == ':')
+					{
+						$hasarg = true;
+					}
+					if($nextarg
+   					==
+   					('-' . $shortopt))
+					{
+						$opt = '-' . $shortopt;
+						if($hasarg && ! $optional)
+						{
+							if(($myoptind + 1) < $argc)
+							{
+								$myoptind ++;
+								$skipopts ++;
+								$arg = $argv[$myoptind];
+							}
+							else
+							{
+								throw new MygetoptException("option \"$opt\" requires an argument");
+							}
+						}
+						break;
+					}
+					else if(substr($nextarg, 0, strlen('-' . $shortopt))
+							==
+							('-' . $shortopt))
+					{
+						$opt = '-' . $shortopt;
+						if($hasarg)
+						{
+							$arg = substr($nextarg, strlen($opt));
+						}
+						else
+						{
+							$argv[$myoptind] = '-' . substr($nextarg, strlen($opt));
+							$myoptind --;
+							$skipopts = 0;
+						}
+					}
+				}
+			}
+			if($opt === NULL)
+			{
+				if(substr($nextarg, 0, strlen('--')) == '--')
+				{
+					$longopt = substr($nextarg, strlen('--'));
+					if(strpos($longopt, '=') !== false)
+					{
+						$longopt = substr($longopt, 0, strpos($longopt, '='));
+					}
+					throw new MygetoptException("option \"--$longopt\" is not recognized");
+				}
+				$shortopt = substr($nextarg, strlen('-'), 1);
+				throw new MygetoptException("option \"-$shortopt\" is not recognized");
+			}
+			$ret = array($opt, $arg);
+		}
+		if ($skipopts > 0)
+		{
+			for($i = 0; $i < $argc; $i ++)
+			{
+				if(($i < $skipopt) || ($i >= ($skipopt + $skipopts)))
+				{
+					$new_argv[] = $argv[$i];
+				}
+			}
+			if($myoptind >= $skipopt)
+			{
+				$myoptind -= $skipopts;
+			}
+			$argv = $new_argv;
+			$argc = count($argv);
+		}
+	}
+	return $ret;
+}
+
 function usage($argc, $argv)
 {
 	fprintf(STDERR, "Usage: %s [OPTIONS]... <IMAGE>\n", $argv[0]);
@@ -73,73 +249,63 @@ function main()
 	$dither = NULL;
 	$gamma = $brightness = $contrast = -1.0;
 
-	if($argc < 2)
-	{
-		fprintf(STDERR, "%s: wrong argument count\n", $argv[0]);
-		usage($argc, $argv);
-		return 1;
-	}
-
 	$long_options = array(
-		"width:"       => 'W',
-		"height:"      => 'H',
-		"font-width:"  => 'x',
-		"font-height:" => 'y',
-		"format:"      => 'f',
-		"dither:"      => 'd',
-		"gamma:"       => 'g',
-		"brightness:"  => 'b',
-		"contrast:"    => 'c',
-		"help"	       => 'h',
-		"version"      => 'v'
+		"width:"	=> 'W',
+		"height:"	=> 'H',
+		"font-width:"	=> 'x',
+		"font-height:"	=> 'y',
+		"format:"	=> 'f',
+		"dither:"	=> 'd',
+		"gamma:"	=> 'g',
+		"brightness:"	=> 'b',
+		"contrast:"	=> 'c',
+		"help"		=> 'h',
+		"version"	=> 'v'
 		);
-	$options = getopt("W:H:f:d:g:b:c:hvx:y:", array_keys($long_options));
-	if (! $options)
-	{
-		/* PHP before 5.3 or so does not have long option support in
-		 * most cases */
-		$options = getopt("W:H:f:d:g:b:c:hvx:y:");
-	}
 
-	foreach($options as $opt => $arg)
+	while($opt_and_arg = mygetopt("W:H:f:d:g:b:c:hvx:y:", array_keys($long_options)))
 	{
-		if (array_key_exists($opt + (isset($arg) ? ':' : ''), $long_options))
+		$opt = $opt_and_arg[0];
+		$arg = $opt_and_arg[1];
+		if((substr($opt, 0, 2) == '--')
+	   	&&
+	   	array_key_exists(substr($opt, strlen('--')) . (($arg !== NULL) ? ':' : ''), $long_options))
 		{
-			$opt = $long_options[$opt + (isset($arg) ? ':' : '')];
+			$opt = '-' . $long_options[substr($opt, strlen('--')) . (($arg !== NULL) ? ':' : '')];
 		}
 		switch($opt)
 		{
-		case 'W': /* --width */
+		case '-W': /* --width */
 			$cols = intval($arg);
 			break;
-		case 'H': /* --height */
+		case '-H': /* --height */
 			$lines = intval($arg);
 			break;
-		case 'x': /* --width */
+		case '-x': /* --width */
 			$font_width = intval($arg);
 			break;
-		case 'y': /* --height */
+		case '-y': /* --height */
 			$font_height = intval($arg);
 			break;
-		case 'f': /* --format */
+		case '-f': /* --format */
 			$format = $arg;
 			break;
-		case 'd': /* --dither */
+		case '-d': /* --dither */
 			$dither = $arg;
 			break;
-		case 'g': /* --gamma */
+		case '-g': /* --gamma */
 			$gamma = floatval($arg);
 			break;
-		case 'b': /* --brightness */
+		case '-b': /* --brightness */
 			$brightness = floatval($arg);
 			break;
-		case 'c': /* --contrast */
+		case '-c': /* --contrast */
 			$contrast = floatval($arg);
 			break;
-		case 'h': /* --help */
+		case '-h': /* --help */
 			usage($argc, $argv);
 			return 0;
-		case 'v': /* --version */
+		case '-v': /* --version */
 			version();
 			return 0;
 		default:
@@ -147,6 +313,12 @@ function main()
 		}
 	}
 
+	if($argc != 2)
+	{
+		fprintf(STDERR, "%s: wrong argument count\n", $argv[0]);
+		usage($argc, $argv);
+		return 1;
+	}
 
 	$cv = caca_create_canvas(0, 0);
 	if(!$cv)
