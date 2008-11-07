@@ -255,7 +255,8 @@ function version()
 	global $stdout;
 	$stdout .= sprintf(
 	"img2txt Copyright 2006-2007 Sam Hocevar and Jean-Yves Lamoureux\n" .
-	"Internet: <sam@zoy.org> <jylam@lnxscene.org> Version: %s\n" .
+	"        Copyright 2008 Benjamin C. Wiley Sittler\n" .
+	"Internet: <sam@zoy.org> <jylam@lnxscene.org> <bsittler@gmail.com> Version: %s\n" .
 	"\n" .
 	"img2txt, along with its documentation, may be freely copied and distributed.\n" .
 	"\n" .
