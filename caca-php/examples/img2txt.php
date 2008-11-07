@@ -267,54 +267,62 @@ function main()
 		"version"	=> 'v'
 		);
 
-	while($opt_and_arg = mygetopt("W:H:f:d:g:b:c:hvx:y:", array_keys($long_options)))
+	try {
+		while($opt_and_arg = mygetopt("W:H:f:d:g:b:c:hvx:y:", array_keys($long_options)))
+		{
+			$opt = $opt_and_arg[0];
+			$arg = $opt_and_arg[1];
+			if((substr($opt, 0, 2) == '--')
+				&&
+				array_key_exists(substr($opt, strlen('--')) . (($arg !== NULL) ? ':' : ''), $long_options))
+			{
+				$opt = '-' . $long_options[substr($opt, strlen('--')) . (($arg !== NULL) ? ':' : '')];
+			}
+			switch($opt)
+			{
+			case '-W': /* --width */
+				$cols = intval($arg);
+				break;
+			case '-H': /* --height */
+				$lines = intval($arg);
+				break;
+			case '-x': /* --width */
+				$font_width = intval($arg);
+				break;
+			case '-y': /* --height */
+				$font_height = intval($arg);
+				break;
+			case '-f': /* --format */
+				$format = $arg;
+				break;
+			case '-d': /* --dither */
+				$dither = $arg;
+				break;
+			case '-g': /* --gamma */
+				$gamma = floatval($arg);
+				break;
+			case '-b': /* --brightness */
+				$brightness = floatval($arg);
+				break;
+			case '-c': /* --contrast */
+				$contrast = floatval($arg);
+				break;
+			case '-h': /* --help */
+				usage($argc, $argv);
+				return 0;
+			case '-v': /* --version */
+				version();
+				return 0;
+			default:
+				return 1;
+			}
+		}
+	}
+	catch (MygetoptException $e)
 	{
-		$opt = $opt_and_arg[0];
-		$arg = $opt_and_arg[1];
-		if((substr($opt, 0, 2) == '--')
-			&&
-			array_key_exists(substr($opt, strlen('--')) . (($arg !== NULL) ? ':' : ''), $long_options))
-		{
-			$opt = '-' . $long_options[substr($opt, strlen('--')) . (($arg !== NULL) ? ':' : '')];
-		}
-		switch($opt)
-		{
-		case '-W': /* --width */
-			$cols = intval($arg);
-			break;
-		case '-H': /* --height */
-			$lines = intval($arg);
-			break;
-		case '-x': /* --width */
-			$font_width = intval($arg);
-			break;
-		case '-y': /* --height */
-			$font_height = intval($arg);
-			break;
-		case '-f': /* --format */
-			$format = $arg;
-			break;
-		case '-d': /* --dither */
-			$dither = $arg;
-			break;
-		case '-g': /* --gamma */
-			$gamma = floatval($arg);
-			break;
-		case '-b': /* --brightness */
-			$brightness = floatval($arg);
-			break;
-		case '-c': /* --contrast */
-			$contrast = floatval($arg);
-			break;
-		case '-h': /* --help */
-			usage($argc, $argv);
-			return 0;
-		case '-v': /* --version */
-			version();
-			return 0;
-		default:
-			return 1;
-		}
+		fprintf(STDERR, "%s", $argv[0] . ": " . $e->getMessage() . "\n");
+		usage($argc, $argv);
+		return 2;
 	}
 
 	if($argc != 2)
