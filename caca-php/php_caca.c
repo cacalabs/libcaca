@@ -382,12 +382,11 @@ void *gd_get_pixels(gdImage *img) {
 		{
 			for (i = 0; i < img->sy; i++) {
 				for (j = 0; j < img->sx; j++) {
-					uint8_t *dst = ((uint8_t *) result) + i * pitch + j * sizeof(int);
+					int *dst = (int *) (((char *) result) + i * pitch + j * sizeof(int));
 
-					dst[3] = 255 - (uint8_t) ((((uint32_t) img->tpixels[i][j]) & 0x7f000000) >> 23);
-					dst[2] = (((uint32_t) img->tpixels[i][j]) & 0x00ff0000) >> 16;
-					dst[1] = (((uint32_t) img->tpixels[i][j]) & 0x0000ff00) >> 8;
-					dst[0] = ((uint32_t) img->tpixels[i][j]) & 0x000000ff;
+					*dst = (((255 - (uint8_t) ((((uint32_t) img->tpixels[i][j]) & 0x7f000000) >> 23)) << 24)
+						|
+						(img->tpixels[i][j] & 0x00ffffff));
 				}
 			}
 		}
