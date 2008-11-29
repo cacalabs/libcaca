@@ -849,6 +849,7 @@ static uint32_t rotatechar(uint32_t ch)
          'C', 0x03fd, /* C Ͻ */
          'E', 0x018e, /* E Ǝ */
          'F', 0x2132, /* F Ⅎ */
+         'G', 0x2141, /* G ⅁ */
          'L', 0x2142, /* L ⅂ */
          'U', 0x0548, /* U Ո */
          'V', 0x039b, /* V Λ */
