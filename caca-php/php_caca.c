@@ -1550,7 +1550,7 @@ PHP_FUNCTION(caca_file_read) {
 	}
 	caca_file_read(file, buffer, len);
 
-	RETURN_STRINGL(buffer, len, 1);
+	RETURN_STRINGL(buffer, len, 1cac);
 }
 
 PHP_FUNCTION(caca_file_write) {
@@ -1645,17 +1645,15 @@ PHP_FUNCTION(caca_export_string) {
 	caca_canvas_t *canvas;
 	ZEND_FETCH_RESOURCE(canvas, caca_canvas_t*, &_zval, -1, PHP_CACA_CANVAS_RES_NAME, le_caca_canvas);
 
-	void *buffer, *copy;
+	void *buffer;
 	size_t len = 0;
 	buffer = caca_export_memory(canvas, type, &len);
-	copy = emalloc(len);
-	if (!buffer || !copy) {
+	if (!buffer) {
 		RETURN_FALSE;
 	}
-	memcpy(copy, buffer, len);
-	free(buffer);
 
-	RETURN_STRINGL((char*) copy, len, 0);
+	RETVAL_STRINGL((char*) buffer, len, 1);
+	free(buffer);
 }
 
 PHP_FUNCTION(caca_get_export_list) {
