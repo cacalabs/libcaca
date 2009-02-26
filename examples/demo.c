@@ -67,9 +67,7 @@ int main(int argc, char **argv)
 
     /* Initialize data */
 #if 0
-    sprite = caca_load_sprite(DATADIR "/caca.txt");
-    if(!sprite)
-        sprite = caca_load_sprite("caca.txt");
+    sprite = caca_load_sprite("caca.txt");
     if(!sprite)
         sprite = caca_load_sprite("examples/caca.txt");
 #endif

@@ -1,7 +1,7 @@
 # $Id$
 
 AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/caca -I../caca \
-              -I$(top_srcdir)/caca -DDATADIR=\"$(pkgdatadir)\"
+              -I$(top_srcdir)/caca
 
 noinst_PROGRAMS = optipal sortchars $(pango_programs)
 
