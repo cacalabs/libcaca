@@ -49,10 +49,11 @@ static unsigned int const blocklist[] =
     0x0370, 0x0400, /* Greek and Coptic: Λ α β */
     0x0400, 0x0500, /* Cyrillic: И Я */
     0x0530, 0x0590, /* Armenian: Ո */
+    0x1401, 0x1677, /* Unified Canadian Aboriginal Syllabics: ᒐ ᗡ */
     0x1d00, 0x1d80, /* Phonetic Extensions: ᴉ ᵷ */
     0x2000, 0x2070, /* General Punctuation: ‘’ “” */
     0x2100, 0x2150, /* Letterlike Symbols: Ⅎ */
-    0x2200, 0x2300, /* Mathematical Operators: √ ∞ ∙ */
+    0x2200, 0x2300, /* Mathematical Operators: ∀ √ ∞ ∙ */
     0x2300, 0x2400, /* Miscellaneous Technical: ⌐ ⌂ ⌠ ⌡ */
     0x2500, 0x2580, /* Box Drawing: ═ ║ ╗ ╔ ╩ */
     0x2580, 0x25a0, /* Block Elements: ▛ ▞ ░ ▒ ▓ */
@@ -62,6 +63,7 @@ static unsigned int const blocklist[] =
     0x3040, 0x30a0, /* Hiragana: で す */
     0x30a0, 0x3100, /* Katakana: ロ ル */
     0xff00, 0xfff0, /* Halfwidth and Fullwidth Forms: Ａ, Ｂ, Ｃ, ａ, ｂ, ｃ */
+    0x10400, 0x10450, /* Deseret: 𐐒 𐐋 */
     0, 0
 };
 
