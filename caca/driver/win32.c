@@ -284,7 +284,7 @@ static int win32_get_event(caca_display_t *dp, caca_privevent_t *ev)
                 {
                 case VK_TAB:        ev->data.key.ch = '\t';              break;
                 case VK_RETURN:     ev->data.key.ch = '\r';              break;
-                case VK_ESCAPE:     ev->data.key.ch = '\x1b';            break;
+                case VK_ESCAPE:     ev->data.key.ch = '\033';            break;
                 case VK_SPACE:      ev->data.key.ch = ' ';               break;
                 case VK_DELETE:     ev->data.key.ch = '\x7f';            break;
 

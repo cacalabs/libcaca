@@ -55,18 +55,18 @@
     "\xff\xfd\x31"     /* DO NAWS */ \
     "\xff\x1f\xfa____" /* SB NAWS */ \
     "\xff\xf0"         /* SE */  \
-    "\x1b]2;caca for the network\x07" /* Change window title */ \
-    "\x1b[H\x1b[J" /* Clear screen */
-    /*"\x1b[?25l"*/ /* Hide cursor */
+    "\033]2;caca for the network\x07" /* Change window title */ \
+    "\033[H\033[J" /* Clear screen */
+    /*"\033[?25l"*/ /* Hide cursor */
 
 #define ANSI_PREFIX \
-    "\x1b[1;1H" /* move(0,0) */ \
-    "\x1b[1;1H" /* move(0,0) again */
+    "\033[1;1H" /* move(0,0) */ \
+    "\033[1;1H" /* move(0,0) again */
 
 #define ANSI_RESET \
     "    " /* Garbage */ \
-    "\x1b[?1049h" /* Clear screen */ \
-    "\x1b[?1049h" /* Clear screen again */
+    "\033[?1049h" /* Clear screen */ \
+    "\033[?1049h" /* Clear screen again */
 
 static char const telnet_commands[16][5] =
 {

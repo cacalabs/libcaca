@@ -261,7 +261,7 @@ void _caca_set_term_title(char const *str)
         return;
 #endif
 
-    fprintf(stdout, "\x1b]0;%s\x07", str);
+    fprintf(stdout, "\033]0;%s\007", str);
     fflush(stdout);
 }
 

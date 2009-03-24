@@ -110,7 +110,7 @@ ssize_t caca_import_memory(caca_canvas_t *cv, void const *data,
 
         /* If we find ESC[ argv, we guess it's an ANSI file */
         for(i = 0; i + 1 < len; i++)
-            if((str[i] == 0x1b) && (str[i + 1] == '['))
+            if((str[i] == '\033') && (str[i + 1] == '['))
                 return import_ansi(cv, data, len, 0);
 
         /* Otherwise, import it as text */
@@ -455,11 +455,11 @@ static ssize_t import_ansi(caca_canvas_t *cv, void const *data,
 
         /* If there are not enough characters to parse the escape sequence,
          * wait until the next try. We require 3. */
-        else if(buffer[i] == '\x1b' && i + 2 >= size)
+        else if(buffer[i] == '\033' && i + 2 >= size)
             break;
 
         /* XXX: What the fuck is this shit? */
-        else if(buffer[i] == '\x1b' && buffer[i + 1] == '('
+        else if(buffer[i] == '\033' && buffer[i + 1] == '('
                  && buffer[i + 2] == 'B')
         {
             skip += 2;
@@ -467,7 +467,7 @@ static ssize_t import_ansi(caca_canvas_t *cv, void const *data,
 
         /* Interpret escape commands, as per Standard ECMA-48 "Control
          * Functions for Coded Character Sets", 5.4. Control sequences. */
-        else if(buffer[i] == '\x1b' && buffer[i + 1] == '[')
+        else if(buffer[i] == '\033' && buffer[i + 1] == '[')
         {
             unsigned int argc = 0, argv[101];
             unsigned int param, inter, final;
@@ -641,7 +641,7 @@ static ssize_t import_ansi(caca_canvas_t *cv, void const *data,
         }
 
         /* Parse OSC stuff. */
-        else if(buffer[i] == '\x1b' && buffer[i + 1] == ']')
+        else if(buffer[i] == '\033' && buffer[i + 1] == ']')
         {
             char *string;
             unsigned int command = 0;
