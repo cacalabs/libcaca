@@ -21,6 +21,7 @@
 #if !defined __KERNEL__
 #   include <stdlib.h>
 #   include <string.h>
+#   include <stdio.h>
 #endif
 
 #include "caca.h"
@@ -675,6 +676,16 @@ static ssize_t import_ansi(caca_canvas_t *cv, void const *data,
             debug("ansi import: got OSC command %i string '%s'", command,
                   string);
             free(string);
+        }
+
+        /* Form feed means a new frame */
+        else if(buffer[i] == '\f' && buffer[i + 1] == '\n')
+        {
+            int f = caca_get_frame_count(cv);
+            caca_create_frame(cv, f);
+            caca_set_frame(cv, f);
+            x = y = 0;
+            skip++;
         }
 
         /* Get the character we’re going to paste */
