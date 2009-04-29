@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="libcaca"
 	ProjectGUID="{8951ECB0-7CFE-41AB-A426-98D7C441BEA4}"
+	RootNamespace="libcaca"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -38,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\win32"
+				AdditionalIncludeDirectories="..\win32;&quot;$(projectDir)&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;__LIBCACA__"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -62,6 +64,8 @@
 				Name="VCLinkerTool"
 				ModuleDefinitionFile=".\libcaca.def"
 				GenerateDebugInformation="true"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -81,9 +85,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -114,7 +115,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\win32"
+				AdditionalIncludeDirectories="..\win32;&quot;$(projectDir)&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;__LIBCACA__"
 				RuntimeLibrary="2"
 				WarningLevel="3"
@@ -138,6 +139,8 @@
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -159,9 +162,6 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
@@ -170,27 +170,46 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl;inc;xsd"
+			Name="driver"
 			>
 			<File
-				RelativePath="caca.h"
+				RelativePath=".\driver\gl.c"
 				>
 			</File>
 			<File
-				RelativePath="caca_internals.h"
+				RelativePath=".\driver\ncurses.c"
 				>
 			</File>
 			<File
-				RelativePath="caca_stubs.h"
+				RelativePath=".\driver\raw.c"
 				>
 			</File>
 			<File
-				RelativePath="..\win32\caca_types.h"
+				RelativePath=".\driver\slang.c"
 				>
 			</File>
 			<File
-				RelativePath="..\win32\config.h"
+				RelativePath=".\driver\vga.c"
+				>
+			</File>
+			<File
+				RelativePath=".\driver\win32.c"
+				>
+			</File>
+			<File
+				RelativePath=".\driver\x11.c"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="codec"
+			>
+			<File
+				RelativePath=".\codec\export.c"
+				>
+			</File>
+			<File
+				RelativePath=".\codec\import.c"
 				>
 			</File>
 		</Filter>
@@ -207,6 +226,22 @@
 			>
 		</File>
 		<File
+			RelativePath="caca.h"
+			>
+		</File>
+		<File
+			RelativePath="caca_internals.h"
+			>
+		</File>
+		<File
+			RelativePath="caca_stubs.h"
+			>
+		</File>
+		<File
+			RelativePath="..\win32\caca_types.h"
+			>
+		</File>
+		<File
 			RelativePath=".\canvas.c"
 			>
 		</File>
@@ -215,11 +250,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\conic.c"
+			RelativePath="..\win32\config.h"
 			>
 		</File>
 		<File
-			RelativePath=".\dither.c"
+			RelativePath=".\conic.c"
 			>
 		</File>
 		<File
@@ -227,39 +262,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\driver\gl.c"
-			>
-		</File>
-		<File
-			RelativePath=".\driver\ncurses.c"
-			>
-		</File>
-		<File
-			RelativePath=".\driver\raw.c"
-			>
-		</File>
-		<File
-			RelativePath=".\driver\slang.c"
-			>
-		</File>
-		<File
-			RelativePath=".\driver\vga.c"
-			>
-		</File>
-		<File
-			RelativePath=".\driver\win32.c"
-			>
-		</File>
-		<File
-			RelativePath=".\driver\x11.c"
+			RelativePath=".\dither.c"
 			>
 		</File>
 		<File
 			RelativePath=".\event.c"
-			>
-		</File>
-		<File
-			RelativePath=".\codec\export.c"
 			>
 		</File>
 		<File
@@ -280,10 +287,6 @@
 		</File>
 		<File
 			RelativePath=".\graphics.c"
-			>
-		</File>
-		<File
-			RelativePath=".\codec\import.c"
 			>
 		</File>
 		<File

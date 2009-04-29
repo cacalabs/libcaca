@@ -1,5 +1,5 @@
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cacafire", "src\cacafire.vcproj", "{F25D1237-9ED8-4343-B958-308C95FE392F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{8951ECB0-7CFE-41AB-A426-98D7C441BEA4} = {8951ECB0-7CFE-41AB-A426-98D7C441BEA4}
