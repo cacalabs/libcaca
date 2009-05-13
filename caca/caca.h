@@ -220,6 +220,10 @@ __extern char const * caca_get_version(void);
  *
  *  @{ */
 #define CACA_MAGIC_FULLWIDTH 0x000ffffe /**< Used to indicate that the previous character was a fullwidth glyph. */
+__extern int caca_get_dirty_rectangle(caca_canvas_t *, int *, int *,
+                                      int *, int *);
+__extern int caca_add_dirty_rectangle(caca_canvas_t *, int, int, int, int);
+__extern int caca_set_dirty_rectangle(caca_canvas_t *, int, int, int, int);
 __extern int caca_gotoxy(caca_canvas_t *, int, int);
 __extern int caca_get_cursor_x(caca_canvas_t const *);
 __extern int caca_get_cursor_y(caca_canvas_t const *);
@@ -232,7 +236,7 @@ __extern int caca_set_canvas_handle(caca_canvas_t *, int, int);
 __extern int caca_get_canvas_handle_x(caca_canvas_t const *);
 __extern int caca_get_canvas_handle_y(caca_canvas_t const *);
 __extern int caca_blit(caca_canvas_t *, int, int, caca_canvas_t const *,
-                        caca_canvas_t const *);
+                       caca_canvas_t const *);
 __extern int caca_set_canvas_boundaries(caca_canvas_t *, int, int, int, int);
 /*  @} */
 

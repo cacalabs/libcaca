@@ -89,6 +89,10 @@ caca_canvas_t * caca_create_canvas(int width, int height)
     cv->frames[0].handlex = cv->frames[0].handley = 0;
     cv->frames[0].curattr = 0;
     cv->frames[0].name = strdup("frame#00000000");
+    cv->frames[0].dirty_xmin = 0;
+    cv->frames[0].dirty_xmax = -1;
+    cv->frames[0].dirty_ymin = 0;
+    cv->frames[0].dirty_ymax = -1;
 
     _caca_load_frame_info(cv);
     caca_set_color_ansi(cv, CACA_DEFAULT, CACA_TRANSPARENT);
@@ -145,23 +149,23 @@ int caca_manage_canvas(caca_canvas_t *cv, int (*callback)(void *), void *p)
     return 0;
 }
 
-/** \brief Unmanage a canvas.
+/** \brief unmanage a canvas.
  *
- *  Unlock a canvas previously locked by caca_manage_canvas(). For safety
+ *  unlock a canvas previously locked by caca_manage_canvas(). for safety
  *  reasons, the callback and callback data arguments must be the same as for
  *  the caca_manage_canvas() call.
  *
- *  This function is only useful for display drivers such as the \e libcaca
+ *  this function is only useful for display drivers such as the \e libcaca
  *  library.
  *
- *  If an error occurs, -1 is returned and \b errno is set accordingly:
- *  - \c EINVAL The canvas is not managed, or the callback arguments do
+ *  if an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c einval the canvas is not managed, or the callback arguments do
  *              not match.
  *
- *  \param cv A libcaca canvas.
- *  \param callback The \e callback argument previously passed to
-                    caca_manage_canvas().
- *  \param p The \e p argument previously passed to caca_manage_canvas().
+ *  \param cv a libcaca canvas.
+ *  \param callback the \e callback argument previously passed to
+ *                  caca_manage_canvas().
+ *  \param p the \e p argument previously passed to caca_manage_canvas().
  *  \return 0 in case of success, -1 if an error occurred.
  */
 int caca_unmanage_canvas(caca_canvas_t *cv, int (*callback)(void *), void *p)
@@ -293,11 +297,138 @@ uint8_t const * caca_get_canvas_attrs(caca_canvas_t const *cv)
     return (uint8_t const *)cv->attrs;
 }
 
-/** \brief Uninitialise \e libcaca.
+/** \brief Get a canvas's dirty rectangle.
  *
- *  Free all resources allocated by caca_create_canvas(). After
- *  this function has been called, no other \e libcaca functions may be
- *  used unless a new call to caca_create_canvas() is done.
+ *  Get the canvas's dirty rectangle coordinates. The dirty rectangle is
+ *  the smallest area containing all the cells that have changed since it
+ *  was last reset.
+ *
+ *  The dirty rectangle is used internally by display drivers to optimise
+ *  rendering by avoiding to redraw the whole screen. Once the display driver
+ *  has rendered the canvas, it resets the dirty rectangle.
+ *
+ *  Values such that \b xmin > \b xmax or \b ymin > \b ymax indicate that
+ *  the dirty rectangle is empty. It means that the canvas's contents have
+ *  not changed since the dirty rectangle was last reset.
+ *
+ *  FIXME: having only one dirty rectangle instead of a list of rectangles
+ *  is a severe limitation, but the potential gain does not yet look to be
+ *  worth the implementation complexity of a multiple-rectangle scheme.
+ *
+ *  This function never fails.
+ *
+ *  \param cv A libcaca canvas.
+ *  \param xmin A pointer to an integer where the leftmost edge of the
+ *              dirty rectangle will be stored.
+ *  \param xmax A pointer to an integer where the rightmost edge of the
+ *              dirty rectangle will be stored.
+ *  \param ymin A pointer to an integer where the topmost edge of the
+ *              dirty rectangle will be stored.
+ *  \param ymax A pointer to an integer where the bottommost edge of the
+ *              dirty rectangle will be stored.
+ *  \return This function always returns 0.
+ */
+int caca_get_dirty_rectangle(caca_canvas_t *cv, int *xmin, int *xmax,
+                             int *ymin, int *ymax)
+{
+    *xmin = cv->frames[cv->frame].dirty_xmin;
+    *xmax = cv->frames[cv->frame].dirty_xmax;
+    *ymin = cv->frames[cv->frame].dirty_ymin;
+    *ymax = cv->frames[cv->frame].dirty_ymax;
+
+    return 0;
+}
+
+/** \brief Add a dirty rectangle to the canvas's dirty rectangle.
+ *
+ *  Add an invalidating zone to the canvas's dirty rectangle. For more
+ *  information about the dirty rectangle, see caca_get_dirty_rectangle().
+ *
+ *  This function may be useful to force refresh of a given zone of the
+ *  canvas even if the dirty rectangle tracking indicates that it is
+ *  unchanged.
+ *
+ *  Values such that \b xmin > \b xmax or \b ymin > \b ymax indicate that
+ *  the dirty rectangle is empty. They will be silently ignored.
+ *
+ *  This function never fails.
+ *
+ *  \param cv A libcaca canvas.
+ *  \param xmin The leftmost edge of the additional dirty rectangle.
+ *  \param xmax The rightmost edge of the additional dirty rectangle.
+ *  \param ymin The topmost edge of the additional dirty rectangle.
+ *  \param ymax The bottommost edge of the additional dirty rectangle.
+ *  \return This function always returns 0.
+ */
+int caca_add_dirty_rectangle(caca_canvas_t *cv, int xmin, int xmax,
+                             int ymin, int ymax)
+{
+    /* Ignore empty rectangles. */
+    if(xmin > xmax || ymin > ymax)
+        return 0;
+
+    /* Ignore out-of-bounds rectangles. */
+    if(xmax < 0 || xmin >= cv->width || ymax < 0 || ymin >= cv->height)
+        return 0;
+
+    if(xmin < cv->frames[cv->frame].dirty_xmin)
+        cv->frames[cv->frame].dirty_xmin = xmin;
+
+    if(xmax > cv->frames[cv->frame].dirty_xmax)
+        cv->frames[cv->frame].dirty_xmax = xmax;
+
+    if(ymin < cv->frames[cv->frame].dirty_ymin)
+        cv->frames[cv->frame].dirty_ymin = ymin;
+
+    if(ymax > cv->frames[cv->frame].dirty_ymax)
+        cv->frames[cv->frame].dirty_ymax = ymax;
+
+    return 0;
+}
+
+/** \brief Set a canvas's dirty rectangle.
+ *
+ *  Set the canvas's dirty rectangle coordinates. For more information
+ *  about the dirty rectangle, see caca_get_dirty_rectangle().
+ *
+ *  Values such that \b xmin > \b xmax or \b ymin > \b ymax indicate that
+ *  the dirty rectangle is empty.
+ *
+ *  This function never fails.
+ *
+ *  \param cv A libcaca canvas.
+ *  \param xmin The leftmost edge of the desired dirty rectangle.
+ *  \param xmax The rightmost edge of the desired dirty rectangle.
+ *  \param ymin The topmost edge of the desired dirty rectangle.
+ *  \param ymax The bottommost edge of the desired dirty rectangle.
+ *  \return This function always returns 0.
+ */
+int caca_set_dirty_rectangle(caca_canvas_t *cv, int xmin, int xmax,
+                             int ymin, int ymax)
+{
+    /* Normalise values indicating an empty or out-of-bounds rectangle. */
+    if(xmin > xmax || ymin > ymax ||
+        xmax < 0 || xmin >= cv->width || ymax < 0 || ymin >= cv->height)
+    {
+        xmin = cv->width;
+        xmax = -1;
+        ymin = cv->height;
+        ymax = -1;
+    }
+
+    cv->frames[cv->frame].dirty_xmin = xmin;
+    cv->frames[cv->frame].dirty_xmax = xmax;
+    cv->frames[cv->frame].dirty_ymin = ymin;
+    cv->frames[cv->frame].dirty_ymax = ymax;
+
+    return 0;
+}
+
+/** \brief Free a \e libcaca canvas.
+ *
+ *  Free all resources allocated by caca_create_canvas(). The canvas
+ *  pointer becomes invalid and must no longer be used unless a new call
+ *  to caca_create_canvas() is made.
  *
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
  *  - \c EBUSY The canvas is in use by a display driver and cannot be freed.
