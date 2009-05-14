@@ -321,16 +321,16 @@ uint8_t const * caca_get_canvas_attrs(caca_canvas_t const *cv)
  *  \param cv A libcaca canvas.
  *  \param xmin A pointer to an integer where the leftmost edge of the
  *              dirty rectangle will be stored.
- *  \param xmax A pointer to an integer where the rightmost edge of the
- *              dirty rectangle will be stored.
  *  \param ymin A pointer to an integer where the topmost edge of the
+ *              dirty rectangle will be stored.
+ *  \param xmax A pointer to an integer where the rightmost edge of the
  *              dirty rectangle will be stored.
  *  \param ymax A pointer to an integer where the bottommost edge of the
  *              dirty rectangle will be stored.
  *  \return This function always returns 0.
  */
-int caca_get_dirty_rectangle(caca_canvas_t *cv, int *xmin, int *xmax,
-                             int *ymin, int *ymax)
+int caca_get_dirty_rectangle(caca_canvas_t *cv, int *xmin, int *ymin,
+                             int *xmax, int *ymax)
 {
     *xmin = cv->dirty_xmin;
     *xmax = cv->dirty_xmax;
@@ -356,13 +356,13 @@ int caca_get_dirty_rectangle(caca_canvas_t *cv, int *xmin, int *xmax,
  *
  *  \param cv A libcaca canvas.
  *  \param xmin The leftmost edge of the additional dirty rectangle.
- *  \param xmax The rightmost edge of the additional dirty rectangle.
  *  \param ymin The topmost edge of the additional dirty rectangle.
+ *  \param xmax The rightmost edge of the additional dirty rectangle.
  *  \param ymax The bottommost edge of the additional dirty rectangle.
  *  \return This function always returns 0.
  */
-int caca_add_dirty_rectangle(caca_canvas_t *cv, int xmin, int xmax,
-                             int ymin, int ymax)
+int caca_add_dirty_rectangle(caca_canvas_t *cv, int xmin, int ymin,
+                             int xmax, int ymax)
 {
     /* Ignore empty rectangles. */
     if(xmin > xmax || ymin > ymax)
@@ -399,13 +399,13 @@ int caca_add_dirty_rectangle(caca_canvas_t *cv, int xmin, int xmax,
  *
  *  \param cv A libcaca canvas.
  *  \param xmin The leftmost edge of the desired dirty rectangle.
- *  \param xmax The rightmost edge of the desired dirty rectangle.
  *  \param ymin The topmost edge of the desired dirty rectangle.
+ *  \param xmax The rightmost edge of the desired dirty rectangle.
  *  \param ymax The bottommost edge of the desired dirty rectangle.
  *  \return This function always returns 0.
  */
-int caca_set_dirty_rectangle(caca_canvas_t *cv, int xmin, int xmax,
-                             int ymin, int ymax)
+int caca_set_dirty_rectangle(caca_canvas_t *cv, int xmin, int ymin,
+                             int xmax, int ymax)
 {
     /* Normalise values indicating an empty or out-of-bounds rectangle. */
     if(xmin > xmax || ymin > ymax ||

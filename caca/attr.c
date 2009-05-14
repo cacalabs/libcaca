@@ -156,7 +156,7 @@ int caca_put_attr(caca_canvas_t *cv, int x, int y, uint32_t attr)
         xmax++;
     }
 
-    caca_add_dirty_rectangle(cv, xmin, xmax, y, y);
+    caca_add_dirty_rectangle(cv, xmin, y, xmax, y);
 
     return 0;
 }

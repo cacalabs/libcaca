@@ -170,10 +170,13 @@ int caca_put_char(caca_canvas_t *cv, int x, int y, uint32_t ch)
         /* When overwriting the left part of a fullwidth character,
          * replace its right part with a space. */
         if(x + 1 != (int)cv->width && curchar[1] == CACA_MAGIC_FULLWIDTH)
+        {
             curchar[1] = ' ';
+            xmax++;
+        }
     }
 
-    caca_add_dirty_rectangle(cv, xmin, xmax, y, y);
+    caca_add_dirty_rectangle(cv, xmin, y, xmax, y);
 
     curchar[0] = ch;
     curattr[0] = attr;
