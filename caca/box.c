@@ -25,6 +25,9 @@
 #include "caca.h"
 #include "caca_internals.h"
 
+static int draw_box(caca_canvas_t *cv, int x, int y, int w, int h,
+                    uint32_t const *chars);
+
 /** \brief Draw a box on the canvas using the given character.
  *
  *  This function never fails.
@@ -63,53 +66,12 @@ int caca_draw_box(caca_canvas_t *cv, int x, int y, int w, int h, uint32_t ch)
  */
 int caca_draw_thin_box(caca_canvas_t *cv, int x, int y, int w, int h)
 {
-    int i, j, xmax, ymax;
-
-    int x2 = x + w - 1;
-    int y2 = y + h - 1;
-
-    if(x > x2)
+    static uint32_t const ascii_chars[] =
     {
-        int tmp = x;
-        x = x2; x2 = tmp;
-    }
+        '-', '|', ',', '`', '.', '\''
+    };
 
-    if(y > y2)
-    {
-        int tmp = y;
-        y = y2; y2 = tmp;
-    }
-
-    xmax = cv->width - 1;
-    ymax = cv->height - 1;
-
-    if(x2 < 0 || y2 < 0 || x > xmax || y > ymax)
-        return 0;
-
-    /* Draw edges */
-    if(y >= 0)
-        for(i = x < 0 ? 1 : x + 1; i < x2 && i < xmax; i++)
-            caca_put_char(cv, i, y, '-');
-
-    if(y2 <= ymax)
-        for(i = x < 0 ? 1 : x + 1; i < x2 && i < xmax; i++)
-            caca_put_char(cv, i, y2, '-');
-
-    if(x >= 0)
-        for(j = y < 0 ? 1 : y + 1; j < y2 && j < ymax; j++)
-            caca_put_char(cv, x, j, '|');
-
-    if(x2 <= xmax)
-        for(j = y < 0 ? 1 : y + 1; j < y2 && j < ymax; j++)
-            caca_put_char(cv, x2, j, '|');
-
-    /* Draw corners */
-    caca_put_char(cv, x, y, ',');
-    caca_put_char(cv, x, y2, '`');
-    caca_put_char(cv, x2, y, '.');
-    caca_put_char(cv, x2, y2, '\'');
-
-    return 0;
+    return draw_box(cv, x, y, w, h, ascii_chars);
 }
 
 /** \brief Draw a box on the canvas using CP437 characters.
@@ -125,53 +87,13 @@ int caca_draw_thin_box(caca_canvas_t *cv, int x, int y, int w, int h)
  */
 int caca_draw_cp437_box(caca_canvas_t *cv, int x, int y, int w, int h)
 {
-    int i, j, xmax, ymax;
-
-    int x2 = x + w - 1;
-    int y2 = y + h - 1;
-
-    if(x > x2)
+    static uint32_t const cp437_chars[] =
     {
-        int tmp = x;
-        x = x2; x2 = tmp;
-    }
+        /* ─ │ ┌ └ ┐ ┘ */
+        0x2500, 0x2502, 0x250c, 0x2514, 0x2510, 0x2518
+    };
 
-    if(y > y2)
-    {
-        int tmp = y;
-        y = y2; y2 = tmp;
-    }
-
-    xmax = cv->width - 1;
-    ymax = cv->height - 1;
-
-    if(x2 < 0 || y2 < 0 || x > xmax || y > ymax)
-        return 0;
-
-    /* Draw edges */
-    if(y >= 0)
-        for(i = x < 0 ? 1 : x + 1; i < x2 && i < xmax; i++)
-            caca_put_char(cv, i, y, 0x2500); /* ─ */
-
-    if(y2 <= ymax)
-        for(i = x < 0 ? 1 : x + 1; i < x2 && i < xmax; i++)
-            caca_put_char(cv, i, y2, 0x2500); /* ─ */
-
-    if(x >= 0)
-        for(j = y < 0 ? 1 : y + 1; j < y2 && j < ymax; j++)
-            caca_put_char(cv, x, j, 0x2502); /* │ */
-
-    if(x2 <= xmax)
-        for(j = y < 0 ? 1 : y + 1; j < y2 && j < ymax; j++)
-            caca_put_char(cv, x2, j, 0x2502); /* │ */
-
-    /* Draw corners */
-    caca_put_char(cv, x, y, 0x250c); /* ┌ */
-    caca_put_char(cv, x, y2, 0x2514); /* └ */
-    caca_put_char(cv, x2, y, 0x2510); /* ┐ */
-    caca_put_char(cv, x2, y2, 0x2518); /* ┘ */
-
-    return 0;
+    return draw_box(cv, x, y, w, h, cp437_chars);
 }
 
 /** \brief Fill a box on the canvas using the given character.
@@ -220,6 +142,62 @@ int caca_fill_box(caca_canvas_t *cv, int x, int y, int w, int h,
     for(j = y; j <= y2; j++)
         for(i = x; i <= x2; i++)
             caca_put_char(cv, i, j, ch);
+
+    return 0;
+}
+
+/*
+ * XXX: The following functions are local.
+ */
+
+static int draw_box(caca_canvas_t *cv, int x, int y, int w, int h,
+                    uint32_t const *chars)
+{
+    int i, j, xmax, ymax;
+
+    int x2 = x + w - 1;
+    int y2 = y + h - 1;
+
+    if(x > x2)
+    {
+        int tmp = x;
+        x = x2; x2 = tmp;
+    }
+
+    if(y > y2)
+    {
+        int tmp = y;
+        y = y2; y2 = tmp;
+    }
+
+    xmax = cv->width - 1;
+    ymax = cv->height - 1;
+
+    if(x2 < 0 || y2 < 0 || x > xmax || y > ymax)
+        return 0;
+
+    /* Draw edges */
+    if(y >= 0)
+        for(i = x < 0 ? 1 : x + 1; i < x2 && i < xmax; i++)
+            caca_put_char(cv, i, y, chars[0]);
+
+    if(y2 <= ymax)
+        for(i = x < 0 ? 1 : x + 1; i < x2 && i < xmax; i++)
+            caca_put_char(cv, i, y2, chars[0]);
+
+    if(x >= 0)
+        for(j = y < 0 ? 1 : y + 1; j < y2 && j < ymax; j++)
+            caca_put_char(cv, x, j, chars[1]);
+
+    if(x2 <= xmax)
+        for(j = y < 0 ? 1 : y + 1; j < y2 && j < ymax; j++)
+            caca_put_char(cv, x2, j, chars[1]);
+
+    /* Draw corners */
+    caca_put_char(cv, x, y, chars[2]);
+    caca_put_char(cv, x, y2, chars[3]);
+    caca_put_char(cv, x2, y, chars[4]);
+    caca_put_char(cv, x2, y2, chars[5]);
 
     return 0;
 }
