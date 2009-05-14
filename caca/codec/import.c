@@ -160,8 +160,7 @@ ssize_t caca_import_file(caca_canvas_t *cv, char const *filename,
 #else
     caca_file_t *f;
     char *data = NULL;
-    ssize_t size = 0;
-    int ret;
+    ssize_t ret, size = 0;
 
     f = caca_file_open(filename, "rb");
     if(!f)
@@ -177,7 +176,7 @@ ssize_t caca_import_file(caca_canvas_t *cv, char const *filename,
             return -1;
         }
 
-        ret = caca_file_read(f, data + size, 1024);
+        ret = (ssize_t)caca_file_read(f, data + size, 1024);
         if(ret >= 0)
             size += ret;
     }
@@ -330,7 +329,7 @@ static ssize_t import_caca(caca_canvas_t *cv, void const *data, size_t size)
 
     caca_set_frame(cv, 0);
 
-    return 4 + control_size + data_size;
+    return (ssize_t)(4 + control_size + data_size);
 
 invalid_caca:
     seterrno(EINVAL);
@@ -376,7 +375,7 @@ static ssize_t import_text(caca_canvas_t *cv, void const *data, size_t size)
     if(y > height)
         caca_set_canvas_size(cv, width, height = y);
 
-    return size;
+    return (ssize_t)size;
 }
 
 static ssize_t import_ansi(caca_canvas_t *cv, void const *data,
@@ -711,7 +710,7 @@ static ssize_t import_ansi(caca_canvas_t *cv, void const *data,
                 bytes = 1;
             }
             wch = caca_utf32_is_fullwidth(ch) ? 2 : 1;
-            skip += bytes - 1;
+            skip += (int)(bytes - 1);
         }
         else
         {

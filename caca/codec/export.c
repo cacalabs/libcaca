@@ -1125,7 +1125,7 @@ static void *export_svg(caca_canvas_t const *cv, size_t *bytes)
                 case '>': cur += sprintf(cur, "&gt;"); break;
                 case '<': cur += sprintf(cur, "&lt;"); break;
                 case '&': cur += sprintf(cur, "&amp;"); break;
-                default: *cur++ = ch; break;
+                default: *cur++ = (uint8_t)ch; break;
             }
             cur += sprintf(cur, "</text>\n");
         }
