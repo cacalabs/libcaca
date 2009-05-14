@@ -64,9 +64,15 @@ int caca_set_frame(caca_canvas_t *cv, int id)
         return -1;
     }
 
+    /* Bail out if no operation is required */
+    if(id == cv->frame)
+        return 0;
+
     _caca_save_frame_info(cv);
     cv->frame = id;
     _caca_load_frame_info(cv);
+
+    caca_set_dirty_rectangle(cv, 0, 0, cv->width - 1, cv->height - 1);
 
     return 0;
 }
@@ -230,6 +236,7 @@ int caca_free_frame(caca_canvas_t *cv, int id)
     {
         cv->frame = 0;
         _caca_load_frame_info(cv);
+        caca_set_dirty_rectangle(cv, 0, 0, cv->width - 1, cv->height - 1);
     }
 
     return 0;

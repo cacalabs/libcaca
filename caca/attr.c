@@ -130,9 +130,12 @@ int caca_set_attr(caca_canvas_t *cv, uint32_t attr)
 int caca_put_attr(caca_canvas_t *cv, int x, int y, uint32_t attr)
 {
     uint32_t *curattr, *curchar;
+    int xmin, xmax;
 
     if(x < 0 || x >= (int)cv->width || y < 0 || y >= (int)cv->height)
         return 0;
+
+    xmin = xmax = x;
 
     curchar = cv->chars + x + y * cv->width;
     curattr = cv->attrs + x + y * cv->width;
@@ -143,9 +146,17 @@ int caca_put_attr(caca_canvas_t *cv, int x, int y, uint32_t attr)
         curattr[0] = attr;
 
     if(x && curchar[0] == CACA_MAGIC_FULLWIDTH)
+    {
         curattr[-1] = curattr[0];
+        xmin--;
+    }
     else if(x + 1 < (int)cv->width && curchar[1] == CACA_MAGIC_FULLWIDTH)
+    {
         curattr[1] = curattr[0];
+        xmax++;
+    }
+
+    caca_add_dirty_rectangle(cv, xmin, xmax, y, y);
 
     return 0;
 }

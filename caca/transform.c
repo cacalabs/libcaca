@@ -54,6 +54,8 @@ int caca_invert(caca_canvas_t *cv)
         attrs++;
     }
 
+    caca_set_dirty_rectangle(cv, 0, 0, cv->width - 1, cv->height - 1);
+
     return 0;
 }
 
@@ -113,6 +115,8 @@ int caca_flip(caca_canvas_t *cv)
         }
     }
 
+    caca_set_dirty_rectangle(cv, 0, 0, cv->width - 1, cv->height - 1);
+
     return 0;
 }
 
@@ -157,6 +161,8 @@ int caca_flop(caca_canvas_t *cv)
         if(ctop == cbottom)
             *ctop = flopchar(*ctop);
     }
+
+    caca_set_dirty_rectangle(cv, 0, 0, cv->width - 1, cv->height - 1);
 
     return 0;
 }
@@ -214,6 +220,8 @@ int caca_rotate_180(caca_canvas_t *cv)
             }
         }
     }
+
+    caca_set_dirty_rectangle(cv, 0, 0, cv->width - 1, cv->height - 1);
 
     return 0;
 }
@@ -332,6 +340,8 @@ int caca_rotate_left(caca_canvas_t *cv)
     /* Reset the current frame shortcuts */
     _caca_load_frame_info(cv);
 
+    caca_set_dirty_rectangle(cv, 0, 0, cv->width - 1, cv->height - 1);
+
     return 0;
 }
 
@@ -449,6 +459,8 @@ int caca_rotate_right(caca_canvas_t *cv)
     /* Reset the current frame shortcuts */
     _caca_load_frame_info(cv);
 
+    caca_set_dirty_rectangle(cv, 0, 0, cv->width - 1, cv->height - 1);
+
     return 0;
 }
 
@@ -540,6 +552,8 @@ int caca_stretch_left(caca_canvas_t *cv)
     /* Reset the current frame shortcuts */
     _caca_load_frame_info(cv);
 
+    caca_set_dirty_rectangle(cv, 0, 0, cv->width - 1, cv->height - 1);
+
     return 0;
 }
 
@@ -630,6 +644,8 @@ int caca_stretch_right(caca_canvas_t *cv)
 
     /* Reset the current frame shortcuts */
     _caca_load_frame_info(cv);
+
+    caca_set_dirty_rectangle(cv, 0, 0, cv->width - 1, cv->height - 1);
 
     return 0;
 }

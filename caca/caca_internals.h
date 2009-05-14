@@ -39,9 +39,6 @@ struct caca_frame
     int handlex, handley;
     uint32_t curattr;
 
-    /* Dirty rectangle */
-    int dirty_xmin, dirty_xmax, dirty_ymin, dirty_ymax;
-
     /* Frame name */
     char *name;
 };
@@ -60,6 +57,9 @@ struct caca_canvas
     int autoinc;
     int (*resize_callback)(void *);
     void *resize_data;
+
+    /* Dirty rectangle */
+    int dirty_xmin, dirty_xmax, dirty_ymin, dirty_ymax;
 
     /* Shortcut to the active frame information */
     int width, height;

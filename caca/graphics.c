@@ -154,6 +154,9 @@ int caca_refresh_display(caca_display_t *dp)
 
     dp->drv.display(dp);
 
+    /* Invalidate the dirty rectangle */
+    caca_set_dirty_rectangle(dp->cv, -1, -1, -1, -1);
+
     /* Once the display is finished, we can ack resizes */
     if(dp->resize.resized)
     {

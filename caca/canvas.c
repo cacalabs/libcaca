@@ -89,13 +89,14 @@ caca_canvas_t * caca_create_canvas(int width, int height)
     cv->frames[0].handlex = cv->frames[0].handley = 0;
     cv->frames[0].curattr = 0;
     cv->frames[0].name = strdup("frame#00000000");
-    cv->frames[0].dirty_xmin = 0;
-    cv->frames[0].dirty_xmax = -1;
-    cv->frames[0].dirty_ymin = 0;
-    cv->frames[0].dirty_ymax = -1;
 
     _caca_load_frame_info(cv);
     caca_set_color_ansi(cv, CACA_DEFAULT, CACA_TRANSPARENT);
+
+    cv->dirty_xmin = 0;
+    cv->dirty_xmax = -1;
+    cv->dirty_ymin = 0;
+    cv->dirty_ymax = -1;
 
     cv->ff = NULL;
 
@@ -331,10 +332,10 @@ uint8_t const * caca_get_canvas_attrs(caca_canvas_t const *cv)
 int caca_get_dirty_rectangle(caca_canvas_t *cv, int *xmin, int *xmax,
                              int *ymin, int *ymax)
 {
-    *xmin = cv->frames[cv->frame].dirty_xmin;
-    *xmax = cv->frames[cv->frame].dirty_xmax;
-    *ymin = cv->frames[cv->frame].dirty_ymin;
-    *ymax = cv->frames[cv->frame].dirty_ymax;
+    *xmin = cv->dirty_xmin;
+    *xmax = cv->dirty_xmax;
+    *ymin = cv->dirty_ymin;
+    *ymax = cv->dirty_ymax;
 
     return 0;
 }
@@ -371,17 +372,17 @@ int caca_add_dirty_rectangle(caca_canvas_t *cv, int xmin, int xmax,
     if(xmax < 0 || xmin >= cv->width || ymax < 0 || ymin >= cv->height)
         return 0;
 
-    if(xmin < cv->frames[cv->frame].dirty_xmin)
-        cv->frames[cv->frame].dirty_xmin = xmin;
+    if(xmin < cv->dirty_xmin)
+        cv->dirty_xmin = xmin;
 
-    if(xmax > cv->frames[cv->frame].dirty_xmax)
-        cv->frames[cv->frame].dirty_xmax = xmax;
+    if(xmax > cv->dirty_xmax)
+        cv->dirty_xmax = xmax;
 
-    if(ymin < cv->frames[cv->frame].dirty_ymin)
-        cv->frames[cv->frame].dirty_ymin = ymin;
+    if(ymin < cv->dirty_ymin)
+        cv->dirty_ymin = ymin;
 
-    if(ymax > cv->frames[cv->frame].dirty_ymax)
-        cv->frames[cv->frame].dirty_ymax = ymax;
+    if(ymax > cv->dirty_ymax)
+        cv->dirty_ymax = ymax;
 
     return 0;
 }
@@ -416,10 +417,10 @@ int caca_set_dirty_rectangle(caca_canvas_t *cv, int xmin, int xmax,
         ymax = -1;
     }
 
-    cv->frames[cv->frame].dirty_xmin = xmin;
-    cv->frames[cv->frame].dirty_xmax = xmax;
-    cv->frames[cv->frame].dirty_ymin = ymin;
-    cv->frames[cv->frame].dirty_ymax = ymax;
+    cv->dirty_xmin = xmin;
+    cv->dirty_xmax = xmax;
+    cv->dirty_ymin = ymin;
+    cv->dirty_ymax = ymax;
 
     return 0;
 }
@@ -555,6 +556,8 @@ int caca_resize(caca_canvas_t *cv, int width, int height)
                 }
             }
         }
+
+        caca_add_dirty_rectangle(cv, old_width, 0, width - 1, old_height - 1);
     }
     else
     {
@@ -594,7 +597,16 @@ int caca_resize(caca_canvas_t *cv, int width, int height)
                 attrs[old_height * width + x] = attr;
             }
         }
+
+        caca_add_dirty_rectangle(cv, 0, old_height, old_width - 1, height - 1);
     }
+
+    /* XXX: technically we should not worry about the dirty rectangle in
+     * the bottom-right corner, because we only handle one dirty rectangle,
+     * but in case the API changes later, we make sure this is handled. */
+    if(width > old_width && height > old_height)
+        caca_add_dirty_rectangle(cv, old_width, old_height,
+                                 width - 1, height - 1);
 
     /* Step 4: if new area is smaller, resize memory area now. */
     if(new_size < old_size)

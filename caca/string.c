@@ -112,7 +112,7 @@ int caca_get_cursor_y(caca_canvas_t const *cv)
 int caca_put_char(caca_canvas_t *cv, int x, int y, uint32_t ch)
 {
     uint32_t *curchar, *curattr, attr;
-    int fullwidth;
+    int fullwidth, xmin, xmax;
 
     if(x >= (int)cv->width || y < 0 || y >= (int)cv->height)
         return 0;
@@ -135,10 +135,15 @@ int caca_put_char(caca_canvas_t *cv, int x, int y, uint32_t ch)
     curattr = cv->attrs + x + y * cv->width;
     attr = cv->curattr;
 
+    xmin = xmax = x;
+
     /* When overwriting the right part of a fullwidth character,
      * replace its left part with a space. */
     if(x && curchar[0] == CACA_MAGIC_FULLWIDTH)
+    {
         curchar[-1] = ' ';
+        xmin--;
+    }
 
     if(fullwidth)
     {
@@ -146,10 +151,15 @@ int caca_put_char(caca_canvas_t *cv, int x, int y, uint32_t ch)
             ch = ' ';
         else
         {
+            xmax++;
+
             /* When overwriting the left part of a fullwidth character,
              * replace its right part with a space. */
             if(x + 2 < (int)cv->width && curchar[2] == CACA_MAGIC_FULLWIDTH)
+            {
                 curchar[2] = ' ';
+                xmax++;
+            }
 
             curchar[1] = CACA_MAGIC_FULLWIDTH;
             curattr[1] = attr;
@@ -162,6 +172,8 @@ int caca_put_char(caca_canvas_t *cv, int x, int y, uint32_t ch)
         if(x + 1 != (int)cv->width && curchar[1] == CACA_MAGIC_FULLWIDTH)
             curchar[1] = ' ';
     }
+
+    caca_add_dirty_rectangle(cv, xmin, xmax, y, y);
 
     curchar[0] = ch;
     curattr[0] = attr;
@@ -307,6 +319,8 @@ int caca_clear_canvas(caca_canvas_t *cv)
         cv->attrs[n] = attr;
     }
 
+    caca_set_dirty_rectangle(cv, 0, 0, cv->width - 1, cv->height - 1);
+
     return 0;
 }
 
@@ -375,9 +389,9 @@ int caca_get_canvas_handle_y(caca_canvas_t const *cv)
  *  \return 0 in case of success, -1 if an error occurred.
  */
 int caca_blit(caca_canvas_t *dst, int x, int y,
-               caca_canvas_t const *src, caca_canvas_t const *mask)
+              caca_canvas_t const *src, caca_canvas_t const *mask)
 {
-    int i, j, starti, startj, endi, endj;
+    int i, j, starti, startj, endi, endj, stride, bleed_left, bleed_right;
 
     if(mask && (src->width != mask->width || src->height != mask->height))
     {
@@ -392,24 +406,32 @@ int caca_blit(caca_canvas_t *dst, int x, int y,
     startj = y < 0 ? -y : 0;
     endi = (x + src->width >= dst->width) ? dst->width - x : src->width;
     endj = (y + src->height >= dst->height) ? dst->height - y : src->height;
+    stride = endi - starti;
 
     if(starti > src->width || startj > src->height
         || starti >= endi || startj >= endj)
         return 0;
 
+    bleed_left = bleed_right = 0;
+
     for(j = startj; j < endj; j++)
     {
         int dstix = (j + y) * dst->width + starti + x;
         int srcix = j * src->width + starti;
-        int stride = endi - starti;
 
         /* FIXME: we are ignoring the mask here */
         if((starti + x) && dst->chars[dstix] == CACA_MAGIC_FULLWIDTH)
+        {
             dst->chars[dstix - 1] = ' ';
+            bleed_left = 1;
+        }
 
         if(endi + x < dst->width
                 && dst->chars[dstix + stride] == CACA_MAGIC_FULLWIDTH)
+        {
             dst->chars[dstix + stride] = ' ';
+            bleed_right = 1;
+        }
 
         if(mask)
         {
@@ -435,6 +457,9 @@ int caca_blit(caca_canvas_t *dst, int x, int y,
         if(endi < src->width && src->chars[endi] == CACA_MAGIC_FULLWIDTH)
             dst->chars[dstix + stride - 1] = ' ';
     }
+
+    caca_add_dirty_rectangle(dst, starti + x - bleed_left, startj + y,
+                             endi + x - 1 + bleed_right, endj + y - 1);
 
     return 0;
 }
@@ -498,6 +523,9 @@ int caca_set_canvas_boundaries(caca_canvas_t *cv, int x, int y, int w, int h)
 
     caca_set_frame(cv, saved_f);
     _caca_load_frame_info(cv);
+
+    /* FIXME: this may be optimised somewhat */
+    caca_set_dirty_rectangle(cv, 0, 0, cv->width - 1, cv->height - 1);
 
     return 0;
 }
