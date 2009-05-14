@@ -33,8 +33,7 @@
 #   include <inttypes.h>
 #   include <unistd.h>
 
-/* mode 3: <windows.h> indicates Win32, only (u)intptr_t is present
- * FIXME: Win64 probably doesn't work that way */
+/* mode 3: Win32, only (u)intptr_t is present */
 #elif CACA_TYPES == 3
 #include <windows.h>
 
@@ -50,6 +49,22 @@ typedef unsigned long long int uint64_t;
 
 typedef int ssize_t;
 typedef unsigned int size_t;
+
+/* mode 4: Win64, only (u)intptr_t and size_t are present */
+#elif CACA_TYPES == 4
+#include <windows.h>
+
+typedef signed char int8_t;
+typedef signed short int16_t;
+typedef signed long int int32_t;
+typedef signed long long int int64_t;
+
+typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
+typedef unsigned long int uint32_t;
+typedef unsigned long long int uint64_t;
+
+typedef int ssize_t;
 
 /* fallback: nothing is known, we assume the platform is 32-bit and
  * sizeof(long) == sizeof(void *). We don't typedef directly because we
@@ -98,4 +113,3 @@ typedef unsigned int _caca_size_t;
 #endif
 
 #endif /* __CACA_TYPES_H__ */
-
