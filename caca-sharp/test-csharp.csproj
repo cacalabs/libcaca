@@ -80,7 +80,7 @@
   <ItemGroup>
     <ProjectReference Include="caca-sharp.csproj">
       <Project>{046BD004-7B02-4521-BF01-9D9042F19AD5}</Project>
-      <Name>caca-sharp</Name>
+      <Name>caca-sharp %28caca-sharp\caca-sharp%29</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
