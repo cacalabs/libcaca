@@ -294,12 +294,17 @@ static void x11_display(caca_display_t *dp)
     int width = caca_get_canvas_width(dp->cv);
     int height = caca_get_canvas_height(dp->cv);
     int x, y, len;
+    int xmin, ymin, xmax, ymax;
+
+    caca_get_dirty_rectangle(dp->cv, &xmin, &ymin, &xmax, &ymax);
+    if(xmin < 0 || ymin < 0 || xmax < 0 || ymax < 0 || xmin >= width || ymin >= height)
+        return;
 
     /* First draw the background colours. Splitting the process in two
      * loops like this is actually slightly faster. */
-    for(y = 0; y < height; y++)
+    for(y = ymin; y <= ymax; y++)
     {
-        for(x = 0; x < width; x += len)
+        for(x = xmin; x <= xmax; x += len)
         {
             uint32_t const *attrs = cvattrs + x + y * width;
             uint16_t bg = caca_attr_to_rgb12_bg(*attrs);
@@ -320,14 +325,14 @@ static void x11_display(caca_display_t *dp)
     }
 
     /* Then print the foreground characters */
-    for(y = 0; y < height; y++)
+    for(y = ymin; y <= ymax; y++)
     {
         int yoff = (y + 1) * dp->drv.p->font_height
                                     - dp->drv.p->font_offset;
         uint32_t const *chars = cvchars + y * width;
         uint32_t const *attrs = cvattrs + y * width;
 
-        for(x = 0; x < width; x++, chars++, attrs++)
+        for(x = xmin; x <= xmax; x++, chars++, attrs++)
         {
             XSetForeground(dp->drv.p->dpy, dp->drv.p->gc,
                            dp->drv.p->colors[caca_attr_to_rgb12_fg(*attrs)]);
