@@ -222,14 +222,17 @@ static void slang_display(caca_display_t *dp)
 {
     uint32_t const *cvchars = (uint32_t const *)caca_get_canvas_chars(dp->cv);
     uint32_t const *cvattrs = (uint32_t const *)caca_get_canvas_attrs(dp->cv);
-    int width = caca_get_canvas_width(dp->cv);
-    int height = caca_get_canvas_height(dp->cv);
     int x, y;
+    int xmin, ymin, xmax, ymax;
 
-    for(y = 0; y < (int)height; y++)
+    caca_get_dirty_rectangle(dp->cv, &xmin, &ymin, &xmax, &ymax);
+    if(xmin > xmax || ymin > ymax)
+        return;
+
+    for(y = ymin; y <= ymax; y++)
     {
         SLsmg_gotorc(y, 0);
-        for(x = width; x--; )
+        for(x = xmax; x >= xmin; x--)
         {
             uint32_t ch = *cvchars++;
 
