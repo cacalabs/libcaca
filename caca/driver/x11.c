@@ -297,7 +297,7 @@ static void x11_display(caca_display_t *dp)
     int xmin, ymin, xmax, ymax;
 
     caca_get_dirty_rectangle(dp->cv, &xmin, &ymin, &xmax, &ymax);
-    if(xmin < 0 || ymin < 0 || xmax < 0 || ymax < 0 || xmin >= width || ymin >= height)
+    if(xmin > xmax || ymin > ymax)
         return;
 
     /* First draw the background colours. Splitting the process in two
