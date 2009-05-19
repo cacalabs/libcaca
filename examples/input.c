@@ -27,7 +27,7 @@
 typedef struct textentry
 {
     uint32_t buffer[BUFFER_SIZE + 1];
-    unsigned int size, cursor;
+    unsigned int size, cursor, changed;
 } textentry;
 
 int main(int argc, char *argv[])
@@ -59,6 +59,7 @@ int main(int argc, char *argv[])
         entries[i].buffer[0] = 0;
         entries[i].size = 0;
         entries[i].cursor = 0;
+        entries[i].changed = 1;
         caca_printf(cv, 3, 3 * i + 4, "[entry %i]", i + 1);
     }
 
@@ -69,6 +70,9 @@ int main(int argc, char *argv[])
         for(i = 0; i < TEXT_ENTRIES; i++)
         {
             unsigned int j, start, size;
+
+            if(!entries[i].changed)
+                continue;
 
             caca_set_color_ansi(cv, CACA_BLACK, CACA_LIGHTGRAY);
             caca_fill_box(cv, 2, 3 * i + 5, BUFFER_SIZE + 1, 1, ' ');
@@ -81,6 +85,8 @@ int main(int argc, char *argv[])
                 caca_put_char(cv, 2 + j, 3 * i + 5,
                               entries[i].buffer[start + j]);
             }
+
+            entries[i].changed = 0;
         }
 
         /* Put the cursor on the active textentry */
@@ -121,6 +127,7 @@ int main(int argc, char *argv[])
                             entries[e].buffer + entries[e].cursor + 1,
                             (entries[e].size - entries[e].cursor + 1) * 4);
                     entries[e].size--;
+                    entries[e].changed = 1;
                 }
                 break;
             case CACA_KEY_BACKSPACE:
@@ -131,6 +138,7 @@ int main(int argc, char *argv[])
                             (entries[e].size - entries[e].cursor) * 4);
                     entries[e].size--;
                     entries[e].cursor--;
+                    entries[e].changed = 1;
                 }
                 break;
             default:
@@ -143,6 +151,7 @@ int main(int argc, char *argv[])
                                               caca_get_event_key_utf32(&ev);
                     entries[e].size++;
                     entries[e].cursor++;
+                    entries[e].changed = 1;
                 }
                 break;
         }
