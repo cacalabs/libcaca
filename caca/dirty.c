@@ -57,7 +57,7 @@ int caca_get_dirty_rectangle_count(caca_canvas_t *cv)
  *  - \c EINVAL Specified rectangle index is out of bounds.
  *
  *  \param cv A libcaca canvas.
- *  \param index The requested rectangle index.
+ *  \param r The requested rectangle index.
  *  \param xmin A pointer to an integer where the leftmost edge of the
  *              dirty rectangle will be stored.
  *  \param ymin A pointer to an integer where the topmost edge of the
@@ -68,10 +68,10 @@ int caca_get_dirty_rectangle_count(caca_canvas_t *cv)
  *              dirty rectangle will be stored.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int caca_get_dirty_rectangle(caca_canvas_t *cv, int index,
+int caca_get_dirty_rectangle(caca_canvas_t *cv, int r,
                              int *xmin, int *ymin, int *xmax, int *ymax)
 {
-    if(index < 0 || index >= cv->ndirty)
+    if(r < 0 || r >= cv->ndirty)
     {
         seterrno(EINVAL);
         return -1;

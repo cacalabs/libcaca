@@ -390,6 +390,8 @@ static caca_figfont_t * open_figfont(char const *path)
         }
         else
         {
+            unsigned int tmp;
+
             if(caca_file_gets(f, buf, 2048) == NULL)
                 break;
 
@@ -415,10 +417,8 @@ static caca_figfont_t * open_figfont(char const *path)
                 return NULL;
             }
 
-            if(buf[1] == 'x')
-                sscanf(buf, "%x", &ff->lookup[ff->glyphs * 2]);
-            else
-                sscanf(buf, "%u", &ff->lookup[ff->glyphs * 2]);
+            sscanf(buf, buf[1] == 'x' ? "%x" : "%u", &tmp);
+            ff->lookup[ff->glyphs * 2] = tmp;
         }
 
         ff->lookup[ff->glyphs * 2 + 1] = 0;
