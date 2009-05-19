@@ -43,16 +43,7 @@
  */
 int caca_get_dirty_rectangle_count(caca_canvas_t *cv)
 {
-    /* Ignore empty rectangles. */
-    if(cv->dirty_xmin > cv->dirty_xmax || cv->dirty_ymin > cv->dirty_ymax)
-        return 0;
-
-    /* Ignore out-of-bounds rectangles. */
-    if(cv->dirty_xmax < 0 || cv->dirty_xmin >= cv->width
-        || cv->dirty_ymax < 0 || cv->dirty_ymin >= cv->height)
-        return 0;
-
-    return 1;
+    return cv->ndirty;
 }
 
 /** \brief Get a canvas's dirty rectangle.
@@ -80,12 +71,7 @@ int caca_get_dirty_rectangle_count(caca_canvas_t *cv)
 int caca_get_dirty_rectangle(caca_canvas_t *cv, int index,
                              int *xmin, int *ymin, int *xmax, int *ymax)
 {
-    /* For now, index can only be zero, and if the dirty rectangle is
-     * empty, we don't return anything. */
-    if(index < 0 || index > 0
-        || cv->dirty_xmin > cv->dirty_xmax || cv->dirty_ymin > cv->dirty_ymax
-        || cv->dirty_xmax < 0 || cv->dirty_xmin >= cv->width
-        || cv->dirty_ymax < 0 || cv->dirty_ymin >= cv->height)
+    if(index < 0 || index >= cv->ndirty)
     {
         seterrno(EINVAL);
         return -1;
@@ -143,17 +129,25 @@ int caca_add_dirty_rectangle(caca_canvas_t *cv, int xmin, int ymin,
         return -1;
     }
 
-    if(xmin < cv->dirty_xmin)
+    if(cv->ndirty == 0)
+    {
+        cv->ndirty = 1;
         cv->dirty_xmin = xmin;
-
-    if(xmax > cv->dirty_xmax)
         cv->dirty_xmax = xmax;
-
-    if(ymin < cv->dirty_ymin)
         cv->dirty_ymin = ymin;
-
-    if(ymax > cv->dirty_ymax)
         cv->dirty_ymax = ymax;
+    }
+    else
+    {
+        if(xmin < cv->dirty_xmin)
+            cv->dirty_xmin = xmin;
+        if(xmax > cv->dirty_xmax)
+            cv->dirty_xmax = xmax;
+        if(ymin < cv->dirty_ymin)
+            cv->dirty_ymin = ymin;
+        if(ymax > cv->dirty_ymax)
+            cv->dirty_ymax = ymax;
+    }
 
     return 0;
 }
@@ -205,10 +199,7 @@ int caca_remove_dirty_rectangle(caca_canvas_t *cv, int xmin, int ymin,
  */
 int caca_clear_dirty_rectangle_list(caca_canvas_t *cv)
 {
-    cv->dirty_xmin = cv->width;
-    cv->dirty_xmax = -1;
-    cv->dirty_ymin = cv->height;
-    cv->dirty_ymax = -1;
+    cv->ndirty = 0;
 
     return 0;
 }

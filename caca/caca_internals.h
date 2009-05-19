@@ -58,7 +58,8 @@ struct caca_canvas
     int (*resize_callback)(void *);
     void *resize_data;
 
-    /* Dirty rectangle */
+    /* Dirty rectangles */
+    int ndirty;
     int dirty_xmin, dirty_xmax, dirty_ymin, dirty_ymax;
 
     /* Shortcut to the active frame information */
