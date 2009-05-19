@@ -165,9 +165,13 @@ int main(void)
  - \b caca_draw_thin_ellipse(): unchanged.
  - \b caca_fill_ellipse(): unchanged.
 
- - \b caca_draw_box(): unchanged.
- - \b caca_draw_thin_box(): use caca_draw_thin_box() or caca_draw_cp437_box().
- - \b caca_fill_box(): unchanged.
+ - \b caca_draw_box(): unchanged, but the argument meaning changed (width
+                       and height instead of corner coordinates).
+ - \b caca_draw_thin_box(): use caca_draw_thin_box() or caca_draw_cp437_box(),
+                            also the argument meaning changed (width
+                            and height instead of corner coordinates).
+ - \b caca_fill_box(): unchanged, but the argument meaning changed (width
+                       and height instead of corner coordinates).
 
  - \b caca_draw_triangle(): unchanged.
  - \b caca_draw_thin_triangle(): unchanged.
