@@ -59,6 +59,7 @@ int main(int argc, char *argv[])
         entries[i].buffer[0] = 0;
         entries[i].size = 0;
         entries[i].cursor = 0;
+        caca_printf(cv, 3, 3 * i + 4, "[entry %i]", i + 1);
     }
 
     while(running)
@@ -70,20 +71,20 @@ int main(int argc, char *argv[])
             unsigned int j, start, size;
 
             caca_set_color_ansi(cv, CACA_BLACK, CACA_LIGHTGRAY);
-            caca_fill_box(cv, 2, 3 * i + 4, 2 + BUFFER_SIZE, 3 * i + 4, ' ');
+            caca_fill_box(cv, 2, 3 * i + 5, BUFFER_SIZE + 1, 1, ' ');
 
             start = 0;
             size = entries[i].size;
 
             for(j = 0; j < size; j++)
             {
-                caca_put_char(cv, 2 + j, 3 * i + 4,
+                caca_put_char(cv, 2 + j, 3 * i + 5,
                               entries[i].buffer[start + j]);
             }
         }
 
         /* Put the cursor on the active textentry */
-        caca_gotoxy(cv, 2 + entries[e].cursor, 3 * e + 4);
+        caca_gotoxy(cv, 2 + entries[e].cursor, 3 * e + 5);
 
         caca_refresh_display(dp);
 
