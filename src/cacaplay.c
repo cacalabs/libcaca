@@ -67,7 +67,7 @@ int main(int argc, char **argv)
     {
         caca_event_t ev;
         int ret = caca_get_event(dp, CACA_EVENT_ANY, &ev, 0);
-        int eof = 0;
+        int has_eof = 0;
 
         if(ret && caca_get_event_type(&ev) & CACA_EVENT_KEY_PRESS)
             break;
@@ -84,7 +84,7 @@ int main(int argc, char **argv)
             }
             else if(n == 0)
             {
-                eof = 1;
+                has_eof = 1;
             }
             total += n;
         }
@@ -105,7 +105,7 @@ int main(int argc, char **argv)
             break;
         }
 
-        if(eof)
+        if(has_eof)
             break;
     }
 
