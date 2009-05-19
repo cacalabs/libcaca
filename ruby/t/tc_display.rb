@@ -2,7 +2,7 @@ require 'caca'
 
 class TC_Canvas < Test::Unit::TestCase
     def test_create
-        d = Caca::Display.new
+        d = Caca::Display.new()
         assert_not_nil(d, 'Display creation failed')
     end
     def test_create_with_driver
@@ -10,10 +10,10 @@ class TC_Canvas < Test::Unit::TestCase
         assert_not_nil(d, 'Display creation failed')
     end
     def test_create_wrong_args
-        assert_raise(RuntimeError){Caca::Display.new("plop")}
-        driver = Caca::Display.driver_list[0]
-        assert_raise(ArgumentError){Caca::Display.new(driver, driver)}
         c = Caca::Canvas.new(3, 3)
+        assert_raise(RuntimeError){Caca::Display.new("plop")}
+        assert_raise(RuntimeError){Caca::Display.new(c, "plop")}
+        assert_raise(ArgumentError){Caca::Display.new("plop", "plop")}
         assert_raise(ArgumentError){Caca::Display.new(c, c)}
     end
     def test_create_from_canvas
