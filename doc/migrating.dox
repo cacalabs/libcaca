@@ -47,7 +47,7 @@ int main(void)
     /* Initialise libcaca */
     caca_canvas_t *cv;
     caca_display_t *dp;
-    dp = caca_create_display(cv);
+    dp = caca_create_display(NULL);
     cv = caca_get_canvas(dp);
     /* Set window title */
     caca_set_display_title(dp, "Window");
@@ -71,9 +71,7 @@ int main(void)
 
  Note the following important things:
 
- - Functions now take an object handle as their first argument.
- - All input/output functions start with \b caca_ and all
-   drawing and text handling functions start with \b caca_ .
+ - Most functions now take an object handle as their first argument.
 
  \section foo2 Migration strategy
 
@@ -104,6 +102,9 @@ int main(void)
 ...
 \endcode
 </td></tr></table>
+
+ The modified code is guaranteed to build both with \e libcaca 0.x and
+ \e libcaca 1.0.
 
  \section foo3 Function equivalence list
 
@@ -146,7 +147,7 @@ int main(void)
    uselessness.
  - \b caca_putchar(): use caca_put_char().
  - \b caca_putstr(): use caca_put_str().
- - \b caca_printf(): use caca_printf().
+ - \b caca_printf(): unchanged.
  - \b caca_clear(): use caca_clear_canvas().
 
  \subsection bar4 Primitives drawing
@@ -154,27 +155,27 @@ int main(void)
  These functions are almost unchanged, except for Unicode support and the
  fact that they now act on a given canvas.
 
- - \b caca_draw_line(): use caca_draw_line().
- - \b caca_draw_polyline(): use caca_draw_polyline().
- - \b caca_draw_thin_line(): use caca_draw_thin_line().
- - \b caca_draw_thin_polyline(): use caca_draw_thin_polyline().
+ - \b caca_draw_line(): unchanged.
+ - \b caca_draw_polyline(): unchanged.
+ - \b caca_draw_thin_line(): unchanged.
+ - \b caca_draw_thin_polyline(): unchanged.
 
- - \b caca_draw_circle(): use caca_draw_circle().
- - \b caca_draw_ellipse(): use caca_draw_ellipse().
- - \b caca_draw_thin_ellipse(): use caca_draw_thin_ellipse().
- - \b caca_fill_ellipse(): use caca_fill_ellipse().
+ - \b caca_draw_circle(): unchanged.
+ - \b caca_draw_ellipse(): unchanged.
+ - \b caca_draw_thin_ellipse(): unchanged.
+ - \b caca_fill_ellipse(): unchanged.
 
- - \b caca_draw_box(): use caca_draw_box().
+ - \b caca_draw_box(): unchanged.
  - \b caca_draw_thin_box(): use caca_draw_thin_box() or caca_draw_cp437_box().
- - \b caca_fill_box(): use caca_fill_box().
+ - \b caca_fill_box(): unchanged.
 
- - \b caca_draw_triangle(): use caca_draw_triangle().
- - \b caca_draw_thin_triangle(): use caca_draw_thin_triangle().
- - \b caca_fill_triangle(): use caca_fill_triangle().
+ - \b caca_draw_triangle(): unchanged.
+ - \b caca_draw_thin_triangle(): unchanged.
+ - \b caca_fill_triangle(): unchanged.
 
  \subsection bar5 Mathematical functions
 
- - \b caca_rand(): use caca_rand(). The second argument is different, make
+ - \b caca_rand(): unchanged, but the second argument is different, make
    sure you take that into account.
  - \b caca_sqrt(): this function is now deprecated, use your system's
    \b sqrt() call instead.

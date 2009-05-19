@@ -567,6 +567,8 @@ WARN_LOGFILE           =
 INPUT                  = @top_srcdir@ \
                          @top_srcdir@/doc \
                          @top_srcdir@/caca \
+                         @top_srcdir@/caca/codec \
+                         @top_srcdir@/caca/driver \
                          @top_srcdir@/ruby
 
 # This tag can be used to specify the character encoding of the source files 

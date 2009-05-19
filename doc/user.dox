@@ -3,7 +3,7 @@
 /** \page libcaca-env Libcaca environment variables
 
  Some environment variables can be used to change the behaviour of
- \e libcaca without having to modify the program which uses them. These
+ \e libcaca without having to modify the program which uses it. These
  variables are:
 
  \li \b CACA_DRIVER: set the backend video driver. In order of preference:

@@ -38,15 +38,15 @@ What does it do?
  - Set the display's window name (only available in windowed displays, does
    nothing otherwise).
  - Set the current canvas colours to black background and white foreground.
- - Write the string "This is a message" using the current colors onto the
-   canvas.
- - Refresh the display.
- - Wait for an event of type "CACA_EVENT_KEY_PRESS".
+ - Write the string \c "This is a message" onto the canvas, using the current
+   colour pair.
+ - Refresh the display, causing the text to be effectively displayed.
+ - Wait for an event of type \c CACA_EVENT_KEY_PRESS.
  - Free the display (release memory). Since it was created together with the
    display, the canvas will be automatically freed as well.
 
 You can then compile this code on an UNIX-like system using the following
-comman (requiring pkg-config and gcc):
+commans (requiring \c pkg-config and \c gcc):
 \code
 gcc `pkg-config --libs --cflags caca` example.c -o example
 \endcode

@@ -47,9 +47,16 @@ x = min(x1, x2, x3);
 
  \code
 int function(int);
+ \endcode
 
+ A space can be inserted after keywords such as \c for, \c while or \c if,
+ but consistency with the rest of the page is encouraged:
+
+ \code
 if(a == b)
     return;
+
+if (p == NULL)
  \endcode
 
  Do not put parentheses around return values:

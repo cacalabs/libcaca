@@ -229,6 +229,9 @@ uint32_t caca_get_event_key_utf32(caca_event_t const *ev)
  *  will be undefined. See caca_get_event_type() for more information.
  *
  *  \param ev The libcaca event.
+ *  \param utf8 A string buffer with enough bytes to hold the pressed
+ *              key value in UTF-8. Though fewer bytes may be written to
+ *              it, 7 bytes is the minimum safe size.
  *  \return This function always returns 0.
  */
 int caca_get_event_key_utf8(caca_event_t const *ev, char *utf8)

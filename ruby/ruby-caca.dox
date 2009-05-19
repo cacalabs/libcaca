@@ -1,6 +1,6 @@
 /*$Id$ */ /** \page libcaca-ruby-api Libcaca Ruby API
 
-Theclasses available for libcaca are :
+The classes available for libcaca are :
 
 \li\b Caca::Canvas : functions that have a caca_canvas_t* as first argument
 \li\b Caca::Dither : functions that have a caca_dither_t* as first argument
@@ -18,7 +18,7 @@ Theclasses available for libcaca are :
 \li\b Caca::Event::Resize
 \li\b Caca::Event::Quit
 
-Thecharacter set conversion functions are not available yet in the binding.
+The character set conversion functions are not available yet in the binding.
 
 \code
 $irb -rcaca
@@ -117,7 +117,7 @@ irb(main):015:0>Caca::Event::Resize.my_instance_methods
 =>["w", "h"]
 \endcode
 
-\sectionSamples
+\section Samples
 
 \code
 $ruby -rcaca -e 'c=Caca::Canvas.new(6, 3).fill_box(0,0,2,2,"#"[0]);
@@ -132,7 +132,7 @@ c.export_memory("irc")'
 $ruby -e 'puts Caca::Canvas.new(6,3).draw_thin_polyline([[0,0], [0,2],
 [5,2],[0,0]]).export_memory("irc")'
 -.
-|`.  
+| `.
 ----`-
 \endcode
 
