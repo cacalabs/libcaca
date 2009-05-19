@@ -36,7 +36,7 @@ static int _lowlevel_event(caca_display_t *, caca_privevent_t *);
 /* Start repeating key after AUTOREPEAT_TRIGGER usec and send keypress
  * events every AUTOREPEAT_RATE usec. */
 #define AUTOREPEAT_TRIGGER 300000
-#define AUTOREPEAT_RATE 100000
+#define AUTOREPEAT_RATE 20000
 #endif
 
 /** \brief Get the next mouse or keyboard input event.
@@ -90,7 +90,7 @@ int caca_get_event(caca_display_t *dp, int event_mask,
         /* If there is no timeout, sleep and try again. */
         if(timeout < 0)
         {
-            _caca_sleep(10000);
+            _caca_sleep(1000);
             continue;
         }
 
