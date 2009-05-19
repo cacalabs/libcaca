@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2002-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -114,26 +114,44 @@ static int vga_get_display_height(caca_display_t const *dp)
 
 static void vga_display(caca_display_t *dp)
 {
-    char *screen = (char *)(intptr_t)0x000b8000;
-    uint32_t const *cvchars = (uint32_t const *)caca_get_canvas_chars(dp->cv);
-    uint32_t const *cvattrs = (uint32_t const *)caca_get_canvas_attrs(dp->cv);
-    int width = caca_get_canvas_width(dp->cv);
-    int height = caca_get_canvas_height(dp->cv);
-    int n;
+    int x, y, i;
 
-    for(n = height * width; n--; )
+    for(i = 0; i < caca_get_dirty_rectangle_count(dp->cv); i++)
     {
-        char ch = caca_utf32_to_cp437(*cvchars++);
-        if(n && *cvchars == CACA_MAGIC_FULLWIDTH)
+        char *screen = (char *)(intptr_t)0x000b8000;
+        uint32_t const *cvchars, *cvattrs;
+        int xmin, ymin, xmax, ymax;
+
+        caca_get_dirty_rectangle(dp->cv, i, &xmin, &ymin, &xmax, &ymax);
+
+        cvchars = (uint32_t const *)caca_get_canvas_chars(dp->cv)
+                    + xmin + ymin * dp->cv->width;
+        cvattrs = (uint32_t const *)caca_get_canvas_attrs(dp->cv)
+                    + xmin + ymin * dp->cv->width;
+
+        screen += ymin * dp->cv->width + xmin;
+
+        for(y = ymin; y <= ymax; y++)
         {
-            *screen++ = '[';
-            *screen++ = caca_attr_to_ansi(*cvattrs++);
-            ch = ']';
-            cvchars++;
-            n--;
+            for(x = xmin; x <= xmax; x++)
+            {
+                char ch = caca_utf32_to_cp437(*cvchars++);
+                if(x < xmax && *cvchars == CACA_MAGIC_FULLWIDTH)
+                {
+                    *screen++ = '[';
+                    *screen++ = caca_attr_to_ansi(*cvattrs++);
+                    ch = ']';
+                    cvchars++;
+                    x++;
+                }
+                *screen++ = ch;
+                *screen++ = caca_attr_to_ansi(*cvattrs++);
+            }
+
+            cvchars += dp->cv->width - (xmax - xmin) - 1;
+            cvattrs += dp->cv->width - (xmax - xmin) - 1;
+            screen += 2 * (dp->cv->width - (xmax - xmin) - 1);
         }
-        *screen++ = ch;
-        *screen++ = caca_attr_to_ansi(*cvattrs++);
     }
 }
 

@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2002-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -239,6 +239,7 @@ static void win32_display(caca_display_t *dp)
 #if 0
     WriteConsoleOutput(dp->drv.p->screen, dp->drv.p->buffer, size, pos, &rect);
 #else
+    /* FIXME: would this benefit from dirty rectangles? */
     WriteConsoleOutputW(dp->drv.p->screen, dp->drv.p->buffer, size, pos, &rect);
 #endif
 }

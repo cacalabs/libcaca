@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2002-2009 Sam Hocevar <sam@hocevar.net>
  *                2007 Ben Wiley Sittler <bsittler@gmail.com>
  *                All Rights Reserved
  *
@@ -345,22 +345,34 @@ static int ncurses_get_display_height(caca_display_t const *dp)
 
 static void ncurses_display(caca_display_t *dp)
 {
-    uint32_t const *cvchars = (uint32_t const *)caca_get_canvas_chars(dp->cv);
-    uint32_t const *cvattrs = (uint32_t const *)caca_get_canvas_attrs(dp->cv);
-    int width = caca_get_canvas_width(dp->cv);
-    int height = caca_get_canvas_height(dp->cv);
-    int x, y;
+    int x, y, i;
 
-    for(y = 0; y < (int)height; y++)
+    for(i = 0; i < caca_get_dirty_rectangle_count(dp->cv); i++)
     {
-        move(y, 0);
-        for(x = width; x--; )
+        uint32_t const *cvchars, *cvattrs;
+        int xmin, ymin, xmax, ymax;
+
+        caca_get_dirty_rectangle(dp->cv, i, &xmin, &ymin, &xmax, &ymax);
+
+        cvchars = (uint32_t const *)caca_get_canvas_chars(dp->cv)
+                    + xmin + ymin * dp->cv->width;
+        cvattrs = (uint32_t const *)caca_get_canvas_attrs(dp->cv)
+                    + xmin + ymin * dp->cv->width;
+
+        for(y = ymin; y <= ymax; y++)
         {
-            attrset(dp->drv.p->attr[caca_attr_to_ansi(*cvattrs++)]);
-            ncurses_write_utf32(*cvchars++);
+            move(y, xmin);
+            for(x = xmin; x <= xmax; x++)
+            {
+                attrset(dp->drv.p->attr[caca_attr_to_ansi(*cvattrs++)]);
+                ncurses_write_utf32(*cvchars++);
+            }
+
+            cvchars += dp->cv->width - (xmax - xmin) - 1;
+            cvattrs += dp->cv->width - (xmax - xmin) - 1;
         }
     }
-    
+
     x = caca_get_cursor_x(dp->cv);
     y = caca_get_cursor_y(dp->cv);
     move(y, x);
