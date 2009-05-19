@@ -220,20 +220,24 @@ static int slang_get_display_height(caca_display_t const *dp)
 
 static void slang_display(caca_display_t *dp)
 {
-    uint32_t const *cvchars = (uint32_t const *)caca_get_canvas_chars(dp->cv);
-    uint32_t const *cvattrs = (uint32_t const *)caca_get_canvas_attrs(dp->cv);
     int x, y, i;
 
     for(i = 0; i < caca_get_dirty_rectangle_count(dp->cv); i++)
     {
+        uint32_t const *cvchars, *cvattrs;
         int xmin, ymin, xmax, ymax;
 
         caca_get_dirty_rectangle(dp->cv, i, &xmin, &ymin, &xmax, &ymax);
 
+        cvchars = (uint32_t const *)caca_get_canvas_chars(dp->cv)
+                    + xmin + ymin * dp->cv->width;
+        cvattrs = (uint32_t const *)caca_get_canvas_attrs(dp->cv)
+                    + xmin + ymin * dp->cv->width;
+
         for(y = ymin; y <= ymax; y++)
         {
-            SLsmg_gotorc(y, 0);
-            for(x = xmax; x >= xmin; x--)
+            SLsmg_gotorc(y, xmin);
+            for(x = xmin; x <= xmax; x++)
             {
                 uint32_t ch = *cvchars++;
 
@@ -277,6 +281,9 @@ static void slang_display(caca_display_t *dp)
                 slang_write_utf32(ch);
 #endif
             }
+
+            cvchars += dp->cv->width - (xmax - xmin) - 1;
+            cvattrs += dp->cv->width - (xmax - xmin) - 1;
         }
     }
     SLsmg_gotorc(caca_get_cursor_y(dp->cv), caca_get_cursor_x(dp->cv));

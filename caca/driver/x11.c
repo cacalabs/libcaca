@@ -142,7 +142,7 @@ static int x11_init_graphics(caca_display_t *dp)
         else
             dp->drv.p->max_char = 0x7f;
 
-        font_max_char = 
+        font_max_char =
             (dp->drv.p->font_struct->max_byte1 << 8)
              | dp->drv.p->font_struct->max_char_or_byte2;
         if(font_max_char && (font_max_char < dp->drv.p->max_char))
@@ -153,7 +153,7 @@ static int x11_init_graphics(caca_display_t *dp)
 
     /* Reset the default X11 error handler */
     XSetErrorHandler(old_error_handler);
-    
+
     dp->drv.p->font_width = 0;
     if(dp->drv.p->font_struct->per_char
         && !dp->drv.p->font_struct->min_byte1
@@ -331,8 +331,8 @@ static void x11_display(caca_display_t *dp)
         {
             int yoff = (y + 1) * dp->drv.p->font_height
                                         - dp->drv.p->font_offset;
-            uint32_t const *chars = cvchars + y * width;
-            uint32_t const *attrs = cvattrs + y * width;
+            uint32_t const *chars = cvchars + xmin + y * width;
+            uint32_t const *attrs = cvattrs + xmin + y * width;
 
             for(x = xmin; x <= xmax; x++, chars++, attrs++)
             {
