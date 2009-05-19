@@ -162,25 +162,36 @@ char const * const * caca_get_export_list(void)
 static void *export_caca(caca_canvas_t const *cv, size_t *bytes)
 {
     char *data, *cur;
-    int f, n;
+    int f, i, n;
 
-    /* 52 bytes for the header:
+    /* at least 72 bytes for the header:
      *  - 4 bytes for "\xCA\xCA" + "CV"
-     *  - 16 bytes for the canvas header
-     *  - 32 bytes for the frame info
+     *  - 20 bytes for the canvas header
+     *  - 16 bytes for each dirty rectangle info
+     *  - 32 bytes for each frame info
      * 8 bytes for each character cell */
-    *bytes = 20 + (32 + 8 * cv->width * cv->height) * cv->framecount;
+    *bytes = 24 + 16 * cv->ndirty + (32 + 8 * cv->width * cv->height) * cv->framecount;
     cur = data = malloc(*bytes);
 
     /* magic */
     cur += sprintf(cur, "%s", "\xCA\xCA" "CV");
 
     /* canvas_header */
-    cur += sprintu32(cur, 16 + 32 * cv->framecount);
+    cur += sprintu32(cur, 20 + 16 * cv->ndirty + 32 * cv->framecount);
     cur += sprintu32(cur, cv->width * cv->height * 8 * cv->framecount);
-    cur += sprintu16(cur, 0x0001);
+    cur += sprintu16(cur, 0x0002);
+    cur += sprintu32(cur, cv->ndirty);
     cur += sprintu32(cur, cv->framecount);
     cur += sprintu16(cur, 0x0000);
+
+    /* dirty rectangles info */
+    for(i = 0; i < cv->ndirty; i++)
+    {
+        cur += sprintu32(cur, cv->dirty_xmin);
+        cur += sprintu32(cur, cv->dirty_ymin);
+        cur += sprintu32(cur, cv->dirty_xmax);
+        cur += sprintu32(cur, cv->dirty_ymax);
+    }
 
     /* frame_info */
     for(f = 0; f < cv->framecount; f++)

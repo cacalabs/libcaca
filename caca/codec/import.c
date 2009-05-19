@@ -223,11 +223,12 @@ static ssize_t import_caca(caca_canvas_t *cv, void const *data, size_t size)
 {
     uint8_t const *buf = (uint8_t const *)data;
     size_t control_size, data_size, expected_size;
-    unsigned int frames, f, n, offset;
+    unsigned int frames, f, i, n, offset, ndirty;
     uint16_t version, flags;
     int32_t xmin = 0, ymin = 0, xmax = 0, ymax = 0;
+    int dirty_xmin, dirty_ymin, dirty_xmax, dirty_ymax;
 
-    if(size < 20)
+    if(size < 36)
         return 0;
 
     if(buf[0] != 0xca || buf[1] != 0xca || buf[2] != 'C' || buf[3] != 'V')
@@ -239,17 +240,34 @@ static ssize_t import_caca(caca_canvas_t *cv, void const *data, size_t size)
     control_size = sscanu32(buf + 4);
     data_size = sscanu32(buf + 8);
     version = sscanu16(buf + 12);
-    frames = sscanu32(buf + 14);
-    flags = sscanu16(buf + 18);
+    ndirty = sscanu32(buf + 14);
+    frames = sscanu32(buf + 18);
+    flags = sscanu16(buf + 22);
+
+    if(version != 2)
+    {
+        debug("caca import error: only version 2 import is supported");
+        goto invalid_caca;
+    }
 
     if(size < 4 + control_size + data_size)
         return 0;
 
-    if(control_size < 16 + frames * 32)
+    if(control_size < 20 + ndirty * 16 + frames * 32)
     {
         debug("caca import error: control size %u < expected %u",
-              (unsigned int)control_size, 16 + frames * 32);
+              (unsigned int)control_size, 32 + frames * 32);
         goto invalid_caca;
+    }
+
+    /* dirty rectangles info */
+    cv->ndirty = ndirty;
+    for(i = 0; i < ndirty; i++)
+    {
+        dirty_xmin = sscanu32(buf + 4 + 20 + 16 * i);
+        dirty_ymin = sscanu32(buf + 4 + 20 + 16 * i + 4);
+        dirty_xmax = sscanu32(buf + 4 + 20 + 16 * i + 8);
+        dirty_ymax = sscanu32(buf + 4 + 20 + 16 * i + 12);
     }
 
     for(expected_size = 0, f = 0; f < frames; f++)
@@ -258,14 +276,14 @@ static ssize_t import_caca(caca_canvas_t *cv, void const *data, size_t size)
         uint32_t attr;
         int x, y, handlex, handley;
 
-        width = sscanu32(buf + 4 + 16 + f * 32);
-        height = sscanu32(buf + 4 + 16 + f * 32 + 4);
-        duration = sscanu32(buf + 4 + 16 + f * 32 + 8);
-        attr = sscanu32(buf + 4 + 16 + f * 32 + 12);
-        x = (int32_t)sscanu32(buf + 4 + 16 + f * 32 + 16);
-        y = (int32_t)sscanu32(buf + 4 + 16 + f * 32 + 20);
-        handlex = (int32_t)sscanu32(buf + 4 + 16 + f * 32 + 24);
-        handley = (int32_t)sscanu32(buf + 4 + 16 + f * 32 + 28);
+        width = sscanu32(buf + 4 + 20 + 16 * ndirty + f * 32);
+        height = sscanu32(buf + 4 + 20 + 16 * ndirty + f * 32 + 4);
+        duration = sscanu32(buf + 4 +  + f * 32 + 8);
+        attr = sscanu32(buf + 4 + 20 + 16 * ndirty + f * 32 + 12);
+        x = (int32_t)sscanu32(buf + 4 + 20 + 16 * ndirty + f * 32 + 16);
+        y = (int32_t)sscanu32(buf + 4 + 20 + 16 * ndirty + f * 32 + 20);
+        handlex = (int32_t)sscanu32(buf + 4 + 20 + 16 * ndirty + f * 32 + 24);
+        handley = (int32_t)sscanu32(buf + 4 + 20 + 16 * ndirty + f * 32 + 28);
         expected_size += width * height * 8;
         if(-handlex < xmin)
             xmin = -handlex;
@@ -296,16 +314,16 @@ static ssize_t import_caca(caca_canvas_t *cv, void const *data, size_t size)
     {
         unsigned int width, height;
 
-        width = sscanu32(buf + 4 + 16 + f * 32);
-        height = sscanu32(buf + 4 + 16 + f * 32 + 4);
+        width = sscanu32(buf + 4 + 20 + ndirty * 16 + f * 32);
+        height = sscanu32(buf + 4 + 20 + ndirty * 16 + f * 32 + 4);
         caca_create_frame(cv, f);
         caca_set_frame(cv, f);
 
-        cv->curattr = sscanu32(buf + 4 + 16 + f * 32 + 12);
-        cv->frames[f].x = (int32_t)sscanu32(buf + 4 + 16 + f * 32 + 16);
-        cv->frames[f].y = (int32_t)sscanu32(buf + 4 + 16 + f * 32 + 20);
-        cv->frames[f].handlex = (int32_t)sscanu32(buf + 4 + 16 + f * 32 + 24);
-        cv->frames[f].handley = (int32_t)sscanu32(buf + 4 + 16 + f * 32 + 28);
+        cv->curattr = sscanu32(buf + 4 + 20 + ndirty * 16 + f * 32 + 12);
+        cv->frames[f].x = (int32_t)sscanu32(buf + 4 + 20 + ndirty * 16 + f * 32 + 16);
+        cv->frames[f].y = (int32_t)sscanu32(buf + 4 + 20 + ndirty * 16 + f * 32 + 20);
+        cv->frames[f].handlex = (int32_t)sscanu32(buf + 4 + 20 + ndirty * 16 + f * 32 + 24);
+        cv->frames[f].handley = (int32_t)sscanu32(buf + 4 + 20 + ndirty * 16 + f * 32 + 28);
 
         /* FIXME: check for return value */
 
