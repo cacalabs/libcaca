@@ -222,59 +222,61 @@ static void slang_display(caca_display_t *dp)
 {
     uint32_t const *cvchars = (uint32_t const *)caca_get_canvas_chars(dp->cv);
     uint32_t const *cvattrs = (uint32_t const *)caca_get_canvas_attrs(dp->cv);
-    int x, y;
-    int xmin, ymin, xmax, ymax;
+    int x, y, i;
 
-    caca_get_dirty_rectangle(dp->cv, &xmin, &ymin, &xmax, &ymax);
-    if(xmin > xmax || ymin > ymax)
-        return;
-
-    for(y = ymin; y <= ymax; y++)
+    for(i = 0; i < caca_get_dirty_rectangle_count(dp->cv); i++)
     {
-        SLsmg_gotorc(y, 0);
-        for(x = xmax; x >= xmin; x--)
+        int xmin, ymin, xmax, ymax;
+
+        caca_get_dirty_rectangle(dp->cv, i, &xmin, &ymin, &xmax, &ymax);
+
+        for(y = ymin; y <= ymax; y++)
         {
-            uint32_t ch = *cvchars++;
+            SLsmg_gotorc(y, 0);
+            for(x = xmax; x >= xmin; x--)
+            {
+                uint32_t ch = *cvchars++;
 
 #if defined(OPTIMISE_SLANG_PALETTE)
-            /* If foreground == background, just don't use this colour
-             * pair, and print a space instead of the real character.
-             * XXX: disabled, because I can't remember what it was
-             * here for, and in cases where SLang does not render
-             * bright backgrounds, it's just fucked up. */
+                /* If foreground == background, just don't use this colour
+                 * pair, and print a space instead of the real character. */
+                /* XXX: disabled, because I can't remember what it was
+                 * here for, and in cases where SLang does not render
+                 * bright backgrounds, it's just fucked up. */
 #if 0
-            uint8_t fgcolor = caca_attr_to_ansi_fg(*cvattrs);
-            uint8_t bgcolor = caca_attr_to_ansi_bg(*cvattrs);
+                uint8_t fgcolor = caca_attr_to_ansi_fg(*cvattrs);
+                uint8_t bgcolor = caca_attr_to_ansi_bg(*cvattrs);
 
-            if(fgcolor >= 0x10)
-                fgcolor = CACA_LIGHTGRAY;
+                if(fgcolor >= 0x10)
+                    fgcolor = CACA_LIGHTGRAY;
 
-            if(bgcolor >= 0x10)
-                bgcolor = CACA_BLACK; /* FIXME: handle transparency */
+                if(bgcolor >= 0x10)
+                    bgcolor = CACA_BLACK; /* FIXME: handle transparency */
 
-            if(fgcolor == bgcolor)
-            {
-                if(fgcolor == CACA_BLACK)
-                    fgcolor = CACA_WHITE;
-                else if(fgcolor == CACA_WHITE
-                         || fgcolor <= CACA_LIGHTGRAY)
-                    fgcolor = CACA_BLACK;
+                if(fgcolor == bgcolor)
+                {
+                    if(fgcolor == CACA_BLACK)
+                        fgcolor = CACA_WHITE;
+                    else if(fgcolor == CACA_WHITE
+                             || fgcolor <= CACA_LIGHTGRAY)
+                        fgcolor = CACA_BLACK;
+                    else
+                        fgcolor = CACA_WHITE;
+                    SLsmg_set_color(slang_assoc[fgcolor + 16 * bgcolor]);
+                    SLsmg_write_char(' ');
+                    cvattrs++;
+                }
                 else
-                    fgcolor = CACA_WHITE;
-                SLsmg_set_color(slang_assoc[fgcolor + 16 * bgcolor]);
-                SLsmg_write_char(' ');
-                cvattrs++;
-            }
-            else
 #endif
-            {
-                SLsmg_set_color(slang_assoc[caca_attr_to_ansi(*cvattrs++)]);
-                slang_write_utf32(ch);
-            }
+                {
+                    SLsmg_set_color(slang_assoc[caca_attr_to_ansi(*cvattrs++)]);
+                    slang_write_utf32(ch);
+                }
 #else
-            SLsmg_set_color(caca_attr_to_ansi(*cvattrs++));
-            slang_write_utf32(ch);
+                SLsmg_set_color(caca_attr_to_ansi(*cvattrs++));
+                slang_write_utf32(ch);
 #endif
+            }
         }
     }
     SLsmg_gotorc(caca_get_cursor_y(dp->cv), caca_get_cursor_x(dp->cv));

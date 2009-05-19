@@ -38,21 +38,24 @@ public:
     void test_create()
     {
         caca_canvas_t *cv;
-        int xmin, xmax, ymin, ymax;
+        int i, xmin, xmax, ymin, ymax;
 
         /* Check that the dirty rectangle contains the whole canvas
          * upon creation. */
         cv = caca_create_canvas(WIDTH, HEIGHT);
-        caca_get_dirty_rectangle(cv, &xmin, &ymin, &xmax, &ymax);
-        CPPUNIT_ASSERT(xmin <= 0);
-        CPPUNIT_ASSERT(ymin <= 0);
-        CPPUNIT_ASSERT(xmax >= caca_get_canvas_width(cv) - 1);
-        CPPUNIT_ASSERT(ymax >= caca_get_canvas_height(cv) - 1);
+        i = caca_get_dirty_rectangle_count(cv);
+        CPPUNIT_ASSERT_EQUAL(i, 1);
+
+        caca_get_dirty_rectangle(cv, 0, &xmin, &ymin, &xmax, &ymax);
+        CPPUNIT_ASSERT_EQUAL(xmin, 0);
+        CPPUNIT_ASSERT_EQUAL(ymin, 0);
+        CPPUNIT_ASSERT_EQUAL(xmax, caca_get_canvas_width(cv) - 1);
+        CPPUNIT_ASSERT_EQUAL(ymax, caca_get_canvas_height(cv) - 1);
 
         /* Invalidate the dirty rectangle and check that it stays so. */
-        caca_set_dirty_rectangle(cv, -1, -1, -1, -1);
-        caca_get_dirty_rectangle(cv, &xmin, &ymin, &xmax, &ymax);
-        CPPUNIT_ASSERT(xmin > xmax || ymin > ymax);
+        caca_clear_dirty_rectangle_list(cv);
+        i = caca_get_dirty_rectangle_count(cv);
+        CPPUNIT_ASSERT_EQUAL(i, 0);
 
         caca_free_canvas(cv);
     }
@@ -60,66 +63,78 @@ public:
     void test_put_char()
     {
         caca_canvas_t *cv;
-        int xmin, xmax, ymin, ymax;
+        int i, xmin, xmax, ymin, ymax;
 
         cv = caca_create_canvas(WIDTH, HEIGHT);
 
-        caca_set_dirty_rectangle(cv, -1, -1, -1, -1);
+        caca_clear_dirty_rectangle_list(cv);
         caca_put_char(cv, 7, 3, 'x');
-        caca_get_dirty_rectangle(cv, &xmin, &ymin, &xmax, &ymax);
-        CPPUNIT_ASSERT(xmin <= 7);
-        CPPUNIT_ASSERT(ymin <= 3);
-        CPPUNIT_ASSERT(xmax >= 7);
-        CPPUNIT_ASSERT(ymax >= 3);
+        i = caca_get_dirty_rectangle_count(cv);
+        CPPUNIT_ASSERT_EQUAL(i, 1);
+        caca_get_dirty_rectangle(cv, 0, &xmin, &ymin, &xmax, &ymax);
+        CPPUNIT_ASSERT_EQUAL(xmin, 7);
+        CPPUNIT_ASSERT_EQUAL(ymin, 3);
+        CPPUNIT_ASSERT_EQUAL(xmax, 7);
+        CPPUNIT_ASSERT_EQUAL(ymax, 3);
 
         caca_clear_canvas(cv);
-        caca_set_dirty_rectangle(cv, -1, -1, -1, -1);
+        caca_clear_dirty_rectangle_list(cv);
         caca_put_char(cv, 7, 3, 0x2f06 /* ⼆ */);
-        caca_get_dirty_rectangle(cv, &xmin, &ymin, &xmax, &ymax);
-        CPPUNIT_ASSERT(xmin <= 7);
-        CPPUNIT_ASSERT(ymin <= 3);
-        CPPUNIT_ASSERT(xmax >= 8);
-        CPPUNIT_ASSERT(ymax >= 3);
+        i = caca_get_dirty_rectangle_count(cv);
+        CPPUNIT_ASSERT_EQUAL(i, 1);
+        caca_get_dirty_rectangle(cv, 0, &xmin, &ymin, &xmax, &ymax);
+        CPPUNIT_ASSERT_EQUAL(xmin, 7);
+        CPPUNIT_ASSERT_EQUAL(ymin, 3);
+        CPPUNIT_ASSERT_EQUAL(xmax, 8);
+        CPPUNIT_ASSERT_EQUAL(ymax, 3);
 
         caca_clear_canvas(cv);
         caca_put_char(cv, 7, 3, 0x2f06 /* ⼆ */);
-        caca_set_dirty_rectangle(cv, -1, -1, -1, -1);
+        caca_clear_dirty_rectangle_list(cv);
         caca_put_char(cv, 7, 3, 'x');
-        caca_get_dirty_rectangle(cv, &xmin, &ymin, &xmax, &ymax);
-        CPPUNIT_ASSERT(xmin <= 7);
-        CPPUNIT_ASSERT(ymin <= 3);
-        CPPUNIT_ASSERT(xmax >= 8);
-        CPPUNIT_ASSERT(ymax >= 3);
+        i = caca_get_dirty_rectangle_count(cv);
+        CPPUNIT_ASSERT_EQUAL(i, 1);
+        caca_get_dirty_rectangle(cv, 0, &xmin, &ymin, &xmax, &ymax);
+        CPPUNIT_ASSERT_EQUAL(xmin, 7);
+        CPPUNIT_ASSERT_EQUAL(ymin, 3);
+        CPPUNIT_ASSERT_EQUAL(xmax, 8);
+        CPPUNIT_ASSERT_EQUAL(ymax, 3);
 
         caca_clear_canvas(cv);
         caca_put_char(cv, 7, 3, 0x2f06 /* ⼆ */);
-        caca_set_dirty_rectangle(cv, -1, -1, -1, -1);
+        caca_clear_dirty_rectangle_list(cv);
         caca_put_char(cv, 8, 3, 'x');
-        caca_get_dirty_rectangle(cv, &xmin, &ymin, &xmax, &ymax);
-        CPPUNIT_ASSERT(xmin <= 7);
-        CPPUNIT_ASSERT(ymin <= 3);
-        CPPUNIT_ASSERT(xmax >= 8);
-        CPPUNIT_ASSERT(ymax >= 3);
+        i = caca_get_dirty_rectangle_count(cv);
+        CPPUNIT_ASSERT_EQUAL(i, 1);
+        caca_get_dirty_rectangle(cv, 0, &xmin, &ymin, &xmax, &ymax);
+        CPPUNIT_ASSERT_EQUAL(xmin, 7);
+        CPPUNIT_ASSERT_EQUAL(ymin, 3);
+        CPPUNIT_ASSERT_EQUAL(xmax, 8);
+        CPPUNIT_ASSERT_EQUAL(ymax, 3);
 
         caca_clear_canvas(cv);
         caca_put_char(cv, 7, 3, 0x2f06 /* ⼆ */);
-        caca_set_dirty_rectangle(cv, -1, -1, -1, -1);
+        caca_clear_dirty_rectangle_list(cv);
         caca_put_char(cv, 6, 3, 0x2f06 /* ⼆ */);
-        caca_get_dirty_rectangle(cv, &xmin, &ymin, &xmax, &ymax);
-        CPPUNIT_ASSERT(xmin <= 6);
-        CPPUNIT_ASSERT(ymin <= 3);
-        CPPUNIT_ASSERT(xmax >= 8);
-        CPPUNIT_ASSERT(ymax >= 3);
+        i = caca_get_dirty_rectangle_count(cv);
+        CPPUNIT_ASSERT_EQUAL(i, 1);
+        caca_get_dirty_rectangle(cv, 0, &xmin, &ymin, &xmax, &ymax);
+        CPPUNIT_ASSERT_EQUAL(xmin, 6);
+        CPPUNIT_ASSERT_EQUAL(ymin, 3);
+        CPPUNIT_ASSERT_EQUAL(xmax, 8);
+        CPPUNIT_ASSERT_EQUAL(ymax, 3);
 
         caca_clear_canvas(cv);
         caca_put_char(cv, 7, 3, 0x2f06 /* ⼆ */);
-        caca_set_dirty_rectangle(cv, -1, -1, -1, -1);
+        caca_clear_dirty_rectangle_list(cv);
         caca_put_char(cv, 8, 3, 0x2f06 /* ⼆ */);
-        caca_get_dirty_rectangle(cv, &xmin, &ymin, &xmax, &ymax);
-        CPPUNIT_ASSERT(xmin <= 7);
-        CPPUNIT_ASSERT(ymin <= 3);
-        CPPUNIT_ASSERT(xmax >= 9);
-        CPPUNIT_ASSERT(ymax >= 3);
+        i = caca_get_dirty_rectangle_count(cv);
+        CPPUNIT_ASSERT_EQUAL(i, 1);
+        caca_get_dirty_rectangle(cv, 0, &xmin, &ymin, &xmax, &ymax);
+        CPPUNIT_ASSERT_EQUAL(xmin, 7);
+        CPPUNIT_ASSERT_EQUAL(ymin, 3);
+        CPPUNIT_ASSERT_EQUAL(xmax, 9);
+        CPPUNIT_ASSERT_EQUAL(ymax, 3);
     }
 
 private:

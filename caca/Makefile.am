@@ -23,6 +23,7 @@ libcaca_la_SOURCES = \
 	caca0.c \
 	caca0.h \
 	canvas.c \
+	dirty.c \
 	string.c \
         legacy.c \
         transform.c \

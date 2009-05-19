@@ -417,6 +417,10 @@
 			>
 		</File>
 		<File
+			RelativePath=".\dirty.c"
+			>
+		</File>
+		<File
 			RelativePath=".\dither.c"
 			>
 		</File>

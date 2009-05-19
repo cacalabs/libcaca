@@ -293,58 +293,61 @@ static void x11_display(caca_display_t *dp)
     uint32_t const *cvattrs = (uint32_t const *)caca_get_canvas_attrs(dp->cv);
     int width = caca_get_canvas_width(dp->cv);
     int height = caca_get_canvas_height(dp->cv);
-    int x, y, len;
-    int xmin, ymin, xmax, ymax;
+    int x, y, i, len;
 
-    caca_get_dirty_rectangle(dp->cv, &xmin, &ymin, &xmax, &ymax);
-    if(xmin > xmax || ymin > ymax)
-        return;
-
-    /* First draw the background colours. Splitting the process in two
-     * loops like this is actually slightly faster. */
-    for(y = ymin; y <= ymax; y++)
+    for(i = 0; i < caca_get_dirty_rectangle_count(dp->cv); i++)
     {
-        for(x = xmin; x <= xmax; x += len)
+        int xmin, ymin, xmax, ymax;
+
+        caca_get_dirty_rectangle(dp->cv, i, &xmin, &ymin, &xmax, &ymax);
+
+        /* First draw the background colours. Splitting the process in two
+         * loops like this is actually slightly faster. */
+        for(y = ymin; y <= ymax; y++)
         {
-            uint32_t const *attrs = cvattrs + x + y * width;
-            uint16_t bg = caca_attr_to_rgb12_bg(*attrs);
+            for(x = xmin; x <= xmax; x += len)
+            {
+                uint32_t const *attrs = cvattrs + x + y * width;
+                uint16_t bg = caca_attr_to_rgb12_bg(*attrs);
 
-            len = 1;
-            while(x + len < width
-                   && caca_attr_to_rgb12_bg(attrs[len]) == bg)
-                len++;
+                len = 1;
+                while(x + len < width
+                       && caca_attr_to_rgb12_bg(attrs[len]) == bg)
+                    len++;
 
-            XSetForeground(dp->drv.p->dpy, dp->drv.p->gc,
-                           dp->drv.p->colors[bg]);
-            XFillRectangle(dp->drv.p->dpy, dp->drv.p->pixmap, dp->drv.p->gc,
-                           x * dp->drv.p->font_width,
-                           y * dp->drv.p->font_height,
-                           len * dp->drv.p->font_width,
-                           dp->drv.p->font_height);
+                XSetForeground(dp->drv.p->dpy, dp->drv.p->gc,
+                               dp->drv.p->colors[bg]);
+                XFillRectangle(dp->drv.p->dpy, dp->drv.p->pixmap,
+                               dp->drv.p->gc,
+                               x * dp->drv.p->font_width,
+                               y * dp->drv.p->font_height,
+                               len * dp->drv.p->font_width,
+                               dp->drv.p->font_height);
+            }
         }
-    }
 
-    /* Then print the foreground characters */
-    for(y = ymin; y <= ymax; y++)
-    {
-        int yoff = (y + 1) * dp->drv.p->font_height
-                                    - dp->drv.p->font_offset;
-        uint32_t const *chars = cvchars + y * width;
-        uint32_t const *attrs = cvattrs + y * width;
-
-        for(x = xmin; x <= xmax; x++, chars++, attrs++)
+        /* Then print the foreground characters */
+        for(y = ymin; y <= ymax; y++)
         {
-            XSetForeground(dp->drv.p->dpy, dp->drv.p->gc,
+            int yoff = (y + 1) * dp->drv.p->font_height
+                                        - dp->drv.p->font_offset;
+            uint32_t const *chars = cvchars + y * width;
+            uint32_t const *attrs = cvattrs + y * width;
+
+            for(x = xmin; x <= xmax; x++, chars++, attrs++)
+            {
+                XSetForeground(dp->drv.p->dpy, dp->drv.p->gc,
                            dp->drv.p->colors[caca_attr_to_rgb12_fg(*attrs)]);
 
-            x11_put_glyph(dp, x * dp->drv.p->font_width,
-                          y * dp->drv.p->font_height, yoff,
-                          dp->drv.p->font_width, dp->drv.p->font_height,
-                          *attrs, *chars);
+                x11_put_glyph(dp, x * dp->drv.p->font_width,
+                              y * dp->drv.p->font_height, yoff,
+                              dp->drv.p->font_width, dp->drv.p->font_height,
+                              *attrs, *chars);
+            }
         }
     }
 
-    /* Print the cursor if necessary */
+    /* Print the cursor if necessary. FIXME: handle dirty rectangles! */
     if(dp->drv.p->cursor_flags)
     {
         XSetForeground(dp->drv.p->dpy, dp->drv.p->gc,

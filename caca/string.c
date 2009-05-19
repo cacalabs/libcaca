@@ -322,7 +322,7 @@ int caca_clear_canvas(caca_canvas_t *cv)
         cv->attrs[n] = attr;
     }
 
-    caca_set_dirty_rectangle(cv, 0, 0, cv->width - 1, cv->height - 1);
+    caca_add_dirty_rectangle(cv, 0, 0, cv->width - 1, cv->height - 1);
 
     return 0;
 }
@@ -528,7 +528,7 @@ int caca_set_canvas_boundaries(caca_canvas_t *cv, int x, int y, int w, int h)
     _caca_load_frame_info(cv);
 
     /* FIXME: this may be optimised somewhat */
-    caca_set_dirty_rectangle(cv, 0, 0, cv->width - 1, cv->height - 1);
+    caca_add_dirty_rectangle(cv, 0, 0, cv->width - 1, cv->height - 1);
 
     return 0;
 }
