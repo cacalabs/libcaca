@@ -20,8 +20,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)\win32\$(ConfigurationName)\$(PlatformName)"
+			IntermediateDirectory="$(SolutionDir)\win32\$(ConfigurationName)\$(PlatformName)\obj-$(ProjectName)"
 			ConfigurationType="2"
 			CharacterSet="2"
 			>
@@ -49,7 +49,6 @@
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
 				CompileAs="1"
 				DisableSpecificWarnings="4996;4142"
@@ -95,8 +94,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)\win32\$(ConfigurationName)\$(PlatformName)"
+			IntermediateDirectory="$(SolutionDir)\win32\$(ConfigurationName)\$(PlatformName)\obj-$(ProjectName)"
 			ConfigurationType="2"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
@@ -122,7 +121,6 @@
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;__LIBCACA__"
 				RuntimeLibrary="2"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
 				CompileAs="1"
 				DisableSpecificWarnings="4996;4142"
@@ -170,8 +168,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|x64"
-			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)\win32\$(ConfigurationName)\$(PlatformName)"
+			IntermediateDirectory="$(SolutionDir)\win32\$(ConfigurationName)\$(PlatformName)\obj-$(ProjectName)"
 			ConfigurationType="2"
 			CharacterSet="2"
 			>
@@ -200,7 +198,6 @@
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
 				CompileAs="1"
 				DisableSpecificWarnings="4996;4142"
@@ -246,8 +243,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|x64"
-			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)\win32\$(ConfigurationName)\$(PlatformName)"
+			IntermediateDirectory="$(SolutionDir)\win32\$(ConfigurationName)\$(PlatformName)\obj-$(ProjectName)"
 			ConfigurationType="2"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
@@ -274,7 +271,6 @@
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;__LIBCACA__"
 				RuntimeLibrary="2"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
 				CompileAs="1"
 				DisableSpecificWarnings="4996;4142"
