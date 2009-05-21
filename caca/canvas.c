@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2002-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -426,7 +426,7 @@ int caca_resize(caca_canvas_t *cv, int width, int height)
             }
         }
 
-        caca_add_dirty_rectangle(cv, old_width, 0, width - 1, old_height - 1);
+        caca_add_dirty_rect(cv, old_width, 0, width - old_width, old_height);
     }
     else
     {
@@ -467,15 +467,15 @@ int caca_resize(caca_canvas_t *cv, int width, int height)
             }
         }
 
-        caca_add_dirty_rectangle(cv, 0, old_height, old_width - 1, height - 1);
+        caca_add_dirty_rect(cv, 0, old_height, old_width, height - old_height);
     }
 
     /* XXX: technically we should not worry about the dirty rectangle in
      * the bottom-right corner, because we only handle one dirty rectangle,
      * but in case the API changes later, we make sure this is handled. */
     if(width > old_width && height > old_height)
-        caca_add_dirty_rectangle(cv, old_width, old_height,
-                                 width - 1, height - 1);
+        caca_add_dirty_rect(cv, old_width, old_height,
+                            width - old_width, height - old_height);
 
     /* Step 4: if new area is smaller, resize memory area now. */
     if(new_size < old_size)

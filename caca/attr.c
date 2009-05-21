@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2002-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -156,7 +156,7 @@ int caca_put_attr(caca_canvas_t *cv, int x, int y, uint32_t attr)
         xmax++;
     }
 
-    caca_add_dirty_rectangle(cv, xmin, y, xmax, y);
+    caca_add_dirty_rect(cv, xmin, y, xmax - xmin + 1, 1);
 
     return 0;
 }

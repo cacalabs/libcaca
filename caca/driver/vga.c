@@ -120,23 +120,23 @@ static void vga_display(caca_display_t *dp)
     {
         char *screen = (char *)(intptr_t)0x000b8000;
         uint32_t const *cvchars, *cvattrs;
-        int xmin, ymin, xmax, ymax;
+        int dx, dy, dw, dh;
 
-        caca_get_dirty_rectangle(dp->cv, i, &xmin, &ymin, &xmax, &ymax);
+        caca_get_dirty_rect(dp->cv, i, &dx, &dy, &dw, &dh);
 
         cvchars = (uint32_t const *)caca_get_canvas_chars(dp->cv)
-                    + xmin + ymin * dp->cv->width;
+                    + dx + dy * dp->cv->width;
         cvattrs = (uint32_t const *)caca_get_canvas_attrs(dp->cv)
-                    + xmin + ymin * dp->cv->width;
+                    + dx + dy * dp->cv->width;
 
-        screen += ymin * dp->cv->width + xmin;
+        screen += dy * dp->cv->width + dx;
 
-        for(y = ymin; y <= ymax; y++)
+        for(y = dy; y < dy + dh; y++)
         {
-            for(x = xmin; x <= xmax; x++)
+            for(x = dx; x < dx + dw; x++)
             {
                 char ch = caca_utf32_to_cp437(*cvchars++);
-                if(x < xmax && *cvchars == CACA_MAGIC_FULLWIDTH)
+                if(x < dx + dw - 1 && *cvchars == CACA_MAGIC_FULLWIDTH)
                 {
                     *screen++ = '[';
                     *screen++ = caca_attr_to_ansi(*cvattrs++);
@@ -148,9 +148,9 @@ static void vga_display(caca_display_t *dp)
                 *screen++ = caca_attr_to_ansi(*cvattrs++);
             }
 
-            cvchars += dp->cv->width - (xmax - xmin) - 1;
-            cvattrs += dp->cv->width - (xmax - xmin) - 1;
-            screen += 2 * (dp->cv->width - (xmax - xmin) - 1);
+            cvchars += dp->cv->width - dw;
+            cvattrs += dp->cv->width - dw;
+            screen += 2 * (dp->cv->width - dw);
         }
     }
 }

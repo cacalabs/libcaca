@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2002-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -222,22 +222,22 @@ static void slang_display(caca_display_t *dp)
 {
     int x, y, i;
 
-    for(i = 0; i < caca_get_dirty_rectangle_count(dp->cv); i++)
+    for(i = 0; i < caca_get_dirty_rect_count(dp->cv); i++)
     {
         uint32_t const *cvchars, *cvattrs;
-        int xmin, ymin, xmax, ymax;
+        int dx, dy, dw, dh;
 
-        caca_get_dirty_rectangle(dp->cv, i, &xmin, &ymin, &xmax, &ymax);
+        caca_get_dirty_rect(dp->cv, i, &dx, &dy, &dw, &dh);
 
         cvchars = (uint32_t const *)caca_get_canvas_chars(dp->cv)
-                    + xmin + ymin * dp->cv->width;
+                    + dx + dy * dp->cv->width;
         cvattrs = (uint32_t const *)caca_get_canvas_attrs(dp->cv)
-                    + xmin + ymin * dp->cv->width;
+                    + dx + dy * dp->cv->width;
 
-        for(y = ymin; y <= ymax; y++)
+        for(y = dy; y < dy + dh; y++)
         {
-            SLsmg_gotorc(y, xmin);
-            for(x = xmin; x <= xmax; x++)
+            SLsmg_gotorc(y, dx);
+            for(x = dx; x < dx + dw; x++)
             {
                 uint32_t ch = *cvchars++;
 
@@ -282,8 +282,8 @@ static void slang_display(caca_display_t *dp)
 #endif
             }
 
-            cvchars += dp->cv->width - (xmax - xmin) - 1;
-            cvattrs += dp->cv->width - (xmax - xmin) - 1;
+            cvchars += dp->cv->width - dw;
+            cvattrs += dp->cv->width - dw;
         }
     }
     SLsmg_gotorc(caca_get_cursor_y(dp->cv), caca_get_cursor_x(dp->cv));

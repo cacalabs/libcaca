@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2002-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -155,7 +155,7 @@ int caca_refresh_display(caca_display_t *dp)
     dp->drv.display(dp);
 
     /* Invalidate the dirty rectangle */
-    caca_clear_dirty_rectangle_list(dp->cv);
+    caca_clear_dirty_rect_list(dp->cv);
 
     /* Once the display is finished, we can ack resizes */
     if(dp->resize.resized)

@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2007 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2002-2009 Sam Hocevar <sam@hocevar.net>
  *                2007 Ben Wiley Sittler <bsittler@gmail.com>
  *                All Rights Reserved
  *
@@ -295,17 +295,17 @@ static void x11_display(caca_display_t *dp)
     int height = caca_get_canvas_height(dp->cv);
     int x, y, i, len;
 
-    for(i = 0; i < caca_get_dirty_rectangle_count(dp->cv); i++)
+    for(i = 0; i < caca_get_dirty_rect_count(dp->cv); i++)
     {
-        int xmin, ymin, xmax, ymax;
+        int dx, dy, dw, dh;
 
-        caca_get_dirty_rectangle(dp->cv, i, &xmin, &ymin, &xmax, &ymax);
+        caca_get_dirty_rect(dp->cv, i, &dx, &dy, &dw, &dh);
 
         /* First draw the background colours. Splitting the process in two
          * loops like this is actually slightly faster. */
-        for(y = ymin; y <= ymax; y++)
+        for(y = dy; y < dy + dh; y++)
         {
-            for(x = xmin; x <= xmax; x += len)
+            for(x = dx; x < dx + dw; x += len)
             {
                 uint32_t const *attrs = cvattrs + x + y * width;
                 uint16_t bg = caca_attr_to_rgb12_bg(*attrs);
@@ -327,14 +327,14 @@ static void x11_display(caca_display_t *dp)
         }
 
         /* Then print the foreground characters */
-        for(y = ymin; y <= ymax; y++)
+        for(y = dy; y < dy + dh; y++)
         {
             int yoff = (y + 1) * dp->drv.p->font_height
                                         - dp->drv.p->font_offset;
-            uint32_t const *chars = cvchars + xmin + y * width;
-            uint32_t const *attrs = cvattrs + xmin + y * width;
+            uint32_t const *chars = cvchars + dx + y * width;
+            uint32_t const *attrs = cvattrs + dx + y * width;
 
-            for(x = xmin; x <= xmax; x++, chars++, attrs++)
+            for(x = dx; x < dx + dw; x++, chars++, attrs++)
             {
                 XSetForeground(dp->drv.p->dpy, dp->drv.p->gc,
                            dp->drv.p->colors[caca_attr_to_rgb12_fg(*attrs)]);

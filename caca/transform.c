@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2002-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -54,7 +54,7 @@ int caca_invert(caca_canvas_t *cv)
         attrs++;
     }
 
-    caca_add_dirty_rectangle(cv, 0, 0, cv->width - 1, cv->height - 1);
+    caca_add_dirty_rect(cv, 0, 0, cv->width, cv->height);
 
     return 0;
 }
@@ -115,7 +115,7 @@ int caca_flip(caca_canvas_t *cv)
         }
     }
 
-    caca_add_dirty_rectangle(cv, 0, 0, cv->width - 1, cv->height - 1);
+    caca_add_dirty_rect(cv, 0, 0, cv->width, cv->height);
 
     return 0;
 }
@@ -162,7 +162,7 @@ int caca_flop(caca_canvas_t *cv)
             *ctop = flopchar(*ctop);
     }
 
-    caca_add_dirty_rectangle(cv, 0, 0, cv->width - 1, cv->height - 1);
+    caca_add_dirty_rect(cv, 0, 0, cv->width, cv->height);
 
     return 0;
 }
@@ -221,7 +221,7 @@ int caca_rotate_180(caca_canvas_t *cv)
         }
     }
 
-    caca_add_dirty_rectangle(cv, 0, 0, cv->width - 1, cv->height - 1);
+    caca_add_dirty_rect(cv, 0, 0, cv->width, cv->height);
 
     return 0;
 }
@@ -340,7 +340,7 @@ int caca_rotate_left(caca_canvas_t *cv)
     /* Reset the current frame shortcuts */
     _caca_load_frame_info(cv);
 
-    caca_add_dirty_rectangle(cv, 0, 0, cv->width - 1, cv->height - 1);
+    caca_add_dirty_rect(cv, 0, 0, cv->width, cv->height);
 
     return 0;
 }
@@ -459,7 +459,7 @@ int caca_rotate_right(caca_canvas_t *cv)
     /* Reset the current frame shortcuts */
     _caca_load_frame_info(cv);
 
-    caca_add_dirty_rectangle(cv, 0, 0, cv->width - 1, cv->height - 1);
+    caca_add_dirty_rect(cv, 0, 0, cv->width, cv->height);
 
     return 0;
 }
@@ -552,7 +552,7 @@ int caca_stretch_left(caca_canvas_t *cv)
     /* Reset the current frame shortcuts */
     _caca_load_frame_info(cv);
 
-    caca_add_dirty_rectangle(cv, 0, 0, cv->width - 1, cv->height - 1);
+    caca_add_dirty_rect(cv, 0, 0, cv->width, cv->height);
 
     return 0;
 }
@@ -645,7 +645,7 @@ int caca_stretch_right(caca_canvas_t *cv)
     /* Reset the current frame shortcuts */
     _caca_load_frame_info(cv);
 
-    caca_add_dirty_rectangle(cv, 0, 0, cv->width - 1, cv->height - 1);
+    caca_add_dirty_rect(cv, 0, 0, cv->width, cv->height);
 
     return 0;
 }

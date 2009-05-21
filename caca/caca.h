@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2002-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -14,7 +14,7 @@
 
 /** \file caca.h
  *  \version \$Id$
- *  \author Sam Hocevar <sam@zoy.org>
+ *  \author Sam Hocevar <sam@hocevar.net>
  *  \brief The \e libcaca public header.
  *
  *  This header contains the public types and functions that applications
@@ -240,12 +240,12 @@ __extern int caca_set_canvas_boundaries(caca_canvas_t *, int, int, int, int);
  *
  *  These functions manipulate dirty rectangles for optimised blitting.
  *  @{ */
-__extern int caca_get_dirty_rectangle_count(caca_canvas_t *);
-__extern int caca_get_dirty_rectangle(caca_canvas_t *, int, int *, int *,
-                                      int *, int *);
-__extern int caca_add_dirty_rectangle(caca_canvas_t *, int, int, int, int);
-__extern int caca_remove_dirty_rectangle(caca_canvas_t *, int, int, int, int);
-__extern int caca_clear_dirty_rectangle_list(caca_canvas_t *);
+__extern int caca_get_dirty_rect_count(caca_canvas_t *);
+__extern int caca_get_dirty_rect(caca_canvas_t *, int, int *, int *,
+                                 int *, int *);
+__extern int caca_add_dirty_rect(caca_canvas_t *, int, int, int, int);
+__extern int caca_remove_dirty_rect(caca_canvas_t *, int, int, int, int);
+__extern int caca_clear_dirty_rect_list(caca_canvas_t *);
 /*  @} */
 
 /** \defgroup caca_transform libcaca canvas transformation

@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2002-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -176,7 +176,7 @@ int caca_put_char(caca_canvas_t *cv, int x, int y, uint32_t ch)
         }
     }
 
-    caca_add_dirty_rectangle(cv, xmin, y, xmax, y);
+    caca_add_dirty_rect(cv, xmin, y, xmax - xmin + 1, 1);
 
     curchar[0] = ch;
     curattr[0] = attr;
@@ -322,7 +322,7 @@ int caca_clear_canvas(caca_canvas_t *cv)
         cv->attrs[n] = attr;
     }
 
-    caca_add_dirty_rectangle(cv, 0, 0, cv->width - 1, cv->height - 1);
+    caca_add_dirty_rect(cv, 0, 0, cv->width, cv->height);
 
     return 0;
 }
@@ -461,8 +461,9 @@ int caca_blit(caca_canvas_t *dst, int x, int y,
             dst->chars[dstix + stride - 1] = ' ';
     }
 
-    caca_add_dirty_rectangle(dst, starti + x - bleed_left, startj + y,
-                             endi + x - 1 + bleed_right, endj + y - 1);
+    caca_add_dirty_rect(dst, starti + x - bleed_left, startj + y,
+                        endi - starti + bleed_left + bleed_right,
+                        endj - startj);
 
     return 0;
 }
@@ -528,7 +529,7 @@ int caca_set_canvas_boundaries(caca_canvas_t *cv, int x, int y, int w, int h)
     _caca_load_frame_info(cv);
 
     /* FIXME: this may be optimised somewhat */
-    caca_add_dirty_rectangle(cv, 0, 0, cv->width - 1, cv->height - 1);
+    caca_add_dirty_rect(cv, 0, 0, cv->width, cv->height);
 
     return 0;
 }

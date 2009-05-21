@@ -347,29 +347,29 @@ static void ncurses_display(caca_display_t *dp)
 {
     int x, y, i;
 
-    for(i = 0; i < caca_get_dirty_rectangle_count(dp->cv); i++)
+    for(i = 0; i < caca_get_dirty_rect_count(dp->cv); i++)
     {
         uint32_t const *cvchars, *cvattrs;
-        int xmin, ymin, xmax, ymax;
+        int dx, dy, dw, dh;
 
-        caca_get_dirty_rectangle(dp->cv, i, &xmin, &ymin, &xmax, &ymax);
+        caca_get_dirty_rect(dp->cv, i, &dx, &dy, &dw, &dh);
 
         cvchars = (uint32_t const *)caca_get_canvas_chars(dp->cv)
-                    + xmin + ymin * dp->cv->width;
+                    + dx + dy * dp->cv->width;
         cvattrs = (uint32_t const *)caca_get_canvas_attrs(dp->cv)
-                    + xmin + ymin * dp->cv->width;
+                    + dx + dy * dp->cv->width;
 
-        for(y = ymin; y <= ymax; y++)
+        for(y = dy; y < dy + dh; y++)
         {
-            move(y, xmin);
-            for(x = xmin; x <= xmax; x++)
+            move(y, dx);
+            for(x = dx; x < dx + dw; x++)
             {
                 attrset(dp->drv.p->attr[caca_attr_to_ansi(*cvattrs++)]);
                 ncurses_write_utf32(*cvchars++);
             }
 
-            cvchars += dp->cv->width - (xmax - xmin) - 1;
-            cvattrs += dp->cv->width - (xmax - xmin) - 1;
+            cvchars += dp->cv->width - dw;
+            cvattrs += dp->cv->width - dw;
         }
     }
 
