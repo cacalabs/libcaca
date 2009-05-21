@@ -80,8 +80,8 @@ static void *export_tga(caca_canvas_t const *, size_t *);
  *         will be written.
  *  \return A pointer to the exported memory area, or NULL in case of error.
  */
-void *caca_export_memory(caca_canvas_t const *cv, char const *format,
-                          size_t *bytes)
+void *caca_export_canvas_to_memory(caca_canvas_t const *cv, char const *format,
+                                   size_t *bytes)
 {
     if(!strcasecmp("caca", format))
         return export_caca(cv, bytes);
@@ -118,6 +118,49 @@ void *caca_export_memory(caca_canvas_t const *cv, char const *format,
 
     seterrno(EINVAL);
     return NULL;
+}
+
+/** \brief Export a canvas portion into a foreign format.
+ *
+ *  This function exports a portion of a \e libcaca canvas into various
+ *  formats. For more information, see caca_export_canvas_to_memory().
+ *
+ *  If an error occurs, NULL is returned and \b errno is set accordingly:
+ *  - \c EINVAL Unsupported format requested or invalid coordinates.
+ *  - \c ENOMEM Not enough memory to allocate output buffer.
+ *
+ *  \param cv A libcaca canvas
+ *  \param x The leftmost coordinate of the area to export.
+ *  \param y The topmost coordinate of the area to export.
+ *  \param w The width of the area to export.
+ *  \param h The height of the area to export.
+ *  \param format A string describing the requested output format.
+ *  \param bytes A pointer to a size_t where the number of allocated bytes
+ *         will be written.
+ *  \return A pointer to the exported memory area, or NULL in case of error.
+ */
+void *caca_export_area_to_memory(caca_canvas_t const *cv, int x, int y, int w,
+                                 int h, char const *format, size_t *bytes)
+{
+    caca_canvas_t *tmp;
+    void *ret;
+
+    if(w < 0 || h < 0 || x < 0 || y < 0
+        || x + w >= cv->width || y + h >= cv->height)
+    {
+        seterrno(EINVAL);
+        return NULL;
+    }
+
+    /* TODO: we need to spare the blit here by exporting the area we want. */
+    tmp = caca_create_canvas(w, h);
+    caca_blit(tmp, -x, -y, cv, NULL);
+
+    ret = caca_export_canvas_to_memory(tmp, format, bytes);
+
+    caca_free_canvas(tmp);
+
+    return ret;
 }
 
 /** \brief Get available export formats
@@ -937,7 +980,9 @@ static void *export_tga(caca_canvas_t const *cv, size_t *bytes)
  */
 
 void *cucul_export_memory(cucul_canvas_t const *, char const *,
-                          size_t *) CACA_ALIAS(caca_export_memory);
+                          size_t *) CACA_ALIAS(caca_export_canvas_to_memory);
+void *caca_export_memory(caca_canvas_t const *, char const *,
+                         size_t *) CACA_ALIAS(caca_export_canvas_to_memory);
 char const * const * cucul_get_export_list(void)
          CACA_ALIAS(caca_get_export_list);
 

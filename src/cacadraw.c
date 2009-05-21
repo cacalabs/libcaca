@@ -1,6 +1,6 @@
 /*
  *  event         event lister for libcaca
- *  Copyright (c) 2004 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2004-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -55,7 +55,7 @@ int main(int argc, char **argv)
         if(!image)
         {
             image = caca_create_canvas(0, 0);
-            if(caca_import_file(image, argv[file], "ansi") < 0)
+            if(caca_import_canvas_from_file(image, argv[file], "ansi") < 0)
             {
                 fprintf(stderr, "%s: invalid file `%s'.\n", argv[0], argv[1]);
                 return 1;

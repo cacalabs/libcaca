@@ -1,6 +1,6 @@
 /*
  *  blit          libcaca blit test program
- *  Copyright (c) 2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2006-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 
     sprite = caca_create_canvas(0, 0);
     caca_set_color_ansi(sprite, CACA_LIGHTRED, CACA_BLACK);
-    caca_import_memory(sprite, pig, strlen(pig), "text");
+    caca_import_canvas_from_memory(sprite, pig, strlen(pig), "text");
     caca_set_canvas_handle(sprite, caca_get_canvas_width(sprite) / 2,
                                     caca_get_canvas_height(sprite) / 2);
 

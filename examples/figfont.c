@@ -1,6 +1,6 @@
 /*
  *  figfont       libcaca FIGfont test program
- *  Copyright (c) 2007 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2007-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
         caca_put_figchar(cv, argv[2]++[0]);
     }
 
-    buffer = caca_export_memory(cv, "utf8", &len);
+    buffer = caca_export_canvas_to_memory(cv, "utf8", &len);
     fwrite(buffer, len, 1, stdout);
     free(buffer);
 

@@ -1,6 +1,6 @@
 /*
  *  swallow       swallow another libcaca application
- *  Copyright (c) 2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2006-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -87,7 +87,8 @@ int main(int argc, char **argv)
 
         for(i = 0; i < 4; i++)
         {
-            bytes[i] = caca_import_memory(app, buf[i], total[i], "caca");
+            bytes[i] = caca_import_canvas_from_memory(app, buf[i],
+                                                      total[i], "caca");
 
             if(bytes[i] > 0)
             {

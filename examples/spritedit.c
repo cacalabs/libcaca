@@ -1,6 +1,6 @@
 /*
  *  spritedit     sprite editor for libcaca
- *  Copyright (c) 2003 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2003-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -61,18 +61,18 @@ int main(int argc, char **argv)
     for(i = 0; i < 4; i++)
     {
         caca_set_frame(sprite, i);
-        caca_import_memory(sprite, guy[i], strlen(guy[i]), "utf8");
+        caca_import_canvas_from_memory(sprite, guy[i], strlen(guy[i]), "utf8");
     }
 
     /* Export our sprite in a memory buffer. We could save this to
      * disk afterwards. */
-    buffer = caca_export_memory(sprite, "caca", &len);
+    buffer = caca_export_canvas_to_memory(sprite, "caca", &len);
 
     /* Free our sprite and reload it from the memory buffer. We could
      * load this from disk, too. */
     caca_free_canvas(sprite);
     sprite = caca_create_canvas(0, 0);
-    caca_import_memory(sprite, buffer, len, "caca");
+    caca_import_canvas_from_memory(sprite, buffer, len, "caca");
     free(buffer);
 
     /* Print each sprite frame to stdout */
@@ -80,7 +80,7 @@ int main(int argc, char **argv)
     {
         caca_set_frame(sprite, i);
         printf("Frame #%i\n", i);
-        buffer = caca_export_memory(sprite, "utf8", &len);
+        buffer = caca_export_canvas_to_memory(sprite, "utf8", &len);
         fwrite(buffer, len, 1, stdout);
         free(buffer);
     }

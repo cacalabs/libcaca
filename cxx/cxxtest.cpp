@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
         // Import buffer into a canvas
         pig = new Canvas();
         pig->setColorANSI(CACA_LIGHTMAGENTA, CACA_TRANSPARENT);
-        pig->importMemory(pigstring, strlen(pigstring), "text");
+        pig->importFromMemory(pigstring, strlen(pigstring), "text");
     }
     catch(int e) {
         cerr << "Error while importing image (" << e << ")" << endl;

@@ -1,6 +1,6 @@
 /*
  *  unicode       libcaca Unicode rendering test program
- *  Copyright (c) 2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2006-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -59,11 +59,11 @@ int main(int argc, char *argv[])
     sprite = caca_create_canvas(0, 0);
 
     caca_set_color_ansi(sprite, CACA_LIGHTMAGENTA, CACA_BLACK);
-    caca_import_memory(sprite, pig, strlen(pig), "text");
+    caca_import_canvas_from_memory(sprite, pig, strlen(pig), "text");
     caca_blit(image, 55, 0, sprite, NULL);
 
     caca_set_color_ansi(sprite, CACA_LIGHTGREEN, CACA_BLACK);
-    caca_import_memory(sprite, duck, strlen(duck), "text");
+    caca_import_canvas_from_memory(sprite, duck, strlen(duck), "text");
     caca_blit(image, 30, 1, sprite, NULL);
 
     caca_set_color_ansi(image, CACA_LIGHTCYAN, CACA_BLACK);

@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2002-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -70,7 +70,7 @@ static void raw_display(caca_display_t *dp)
     void *buffer;
     size_t len;
 
-    buffer = caca_export_memory(dp->cv, "caca", &len);
+    buffer = caca_export_canvas_to_memory(dp->cv, "caca", &len);
     if(!buffer)
         return;
     fwrite(buffer, len, 1, stdout);

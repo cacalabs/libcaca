@@ -1,7 +1,7 @@
 /*
  *  cacaserver    Colour ASCII-Art library
  *  Copyright (c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
- *                2006 Sam Hocevar <sam@zoy.org>
+ *                2006-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -213,8 +213,8 @@ restart:
             server->read = 12;
         }
 
-        while(caca_import_memory(server->canvas, server->input,
-                                  server->read, "caca") < 0)
+        while(caca_import_canvas_from_memory(server->canvas, server->input,
+                                             server->read, "caca") < 0)
         {
             memmove(server->input, server->input + 1, server->read - 1);
             read(0, server->input + server->read - 1, 1);
@@ -224,8 +224,9 @@ restart:
         {
             ssize_t needed, wanted;
 
-            needed = caca_import_memory(server->canvas, server->input,
-                                         server->read, "caca");
+            needed = caca_import_canvas_from_memory(server->canvas,
+                                                    server->input,
+                                                    server->read, "caca");
             if(needed < 0)
                 goto restart;
 
@@ -252,8 +253,8 @@ restart:
 
         /* Get ANSI representation of the image and skip the end-of buffer
          * linefeed ("\r\n", 2 byte) */
-        server->buffer = caca_export_memory(server->canvas, "utf8cr",
-                                             &server->buflen);
+        server->buffer = caca_export_canvas_to_memory(server->canvas, "utf8cr",
+                                                      &server->buflen);
         server->buflen -= 2;
 
         for(i = 0; i < server->client_count; i++)

@@ -1,6 +1,6 @@
 /*
  *  font2tga      libcaca font test program
- *  Copyright (c) 2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2006-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 
     caca_free_font(f);
 
-    buffer = caca_export_memory(cv, "tga", &len);
+    buffer = caca_export_canvas_to_memory(cv, "tga", &len);
     fwrite(buffer, len, 1, stdout);
     free(buffer);
 

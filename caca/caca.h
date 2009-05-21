@@ -425,13 +425,20 @@ __extern int caca_file_eof(caca_file_t *);
  *  the current canvas to various text formats.
  *
  *  @{ */
-__extern ssize_t caca_import_memory(caca_canvas_t *, void const *,
-                                     size_t, char const *);
-__extern ssize_t caca_import_file(caca_canvas_t *, char const *,
-                                   char const *);
+__extern ssize_t caca_import_canvas_from_memory(caca_canvas_t *, void const *,
+                                                size_t, char const *);
+__extern ssize_t caca_import_canvas_from_file(caca_canvas_t *, char const *,
+                                              char const *);
+__extern ssize_t caca_import_area_from_memory(caca_canvas_t *, int, int,
+                                              void const *, size_t,
+                                              char const *);
+__extern ssize_t caca_import_area_from_file(caca_canvas_t *, int, int,
+                                            char const *, char const *);
 __extern char const * const * caca_get_import_list(void);
-__extern void *caca_export_memory(caca_canvas_t const *, char const *,
-                                   size_t *);
+__extern void *caca_export_canvas_to_memory(caca_canvas_t const *,
+                                            char const *, size_t *);
+__extern void *caca_export_area_to_memory(caca_canvas_t const *, int, int,
+                                          int, int, char const *, size_t *);
 __extern char const * const * caca_get_export_list(void);
 /*  @} */
 
@@ -522,6 +529,12 @@ __extern cucul_buffer_t * cucul_export_canvas(caca_canvas_t *,
                                               char const *) CACA_DEPRECATED;
 __extern caca_canvas_t * cucul_import_canvas(cucul_buffer_t *,
                                               char const *) CACA_DEPRECATED;
+__extern ssize_t caca_import_memory(caca_canvas_t *, void const *, size_t,
+                                    char const *) CACA_DEPRECATED;
+__extern ssize_t caca_import_file(caca_canvas_t *, char const *,
+                                  char const *) CACA_DEPRECATED;
+__extern void *caca_export_memory(caca_canvas_t const *, char const *,
+                                  size_t *) CACA_DEPRECATED;
 __extern int cucul_rotate(caca_canvas_t *) CACA_DEPRECATED;
 __extern int cucul_set_dither_invert(caca_dither_t *, int) CACA_DEPRECATED;
 __extern int cucul_set_dither_mode(caca_dither_t *,

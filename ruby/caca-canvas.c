@@ -21,7 +21,7 @@ VALUE cCanvas;
 #define simple_func(x)                                  \
 static VALUE x (VALUE self)                             \
 {                                                       \
-    if( caca_##x (_SELF) <0)                           \
+    if( caca_##x (_SELF) <0)                            \
         rb_raise(rb_eRuntimeError, strerror(errno));    \
                                                         \
     return self;                                        \
@@ -30,7 +30,7 @@ static VALUE x (VALUE self)                             \
 #define get_int(x)                                      \
 static VALUE get_##x (VALUE self)                       \
 {                                                       \
-    return INT2NUM(caca_get_##x (_SELF));              \
+    return INT2NUM(caca_get_##x (_SELF));               \
 }
 
 static void canvas_free(void * p)
@@ -40,7 +40,7 @@ static void canvas_free(void * p)
 
 static VALUE canvas_alloc(VALUE klass)
 {
-    VALUE obj;    
+    VALUE obj;
     obj = Data_Wrap_Struct(klass, NULL, canvas_free, NULL);
     return obj;
 }
@@ -534,32 +534,32 @@ static VALUE render_canvas(VALUE self, VALUE font, VALUE width, VALUE height, VA
     return b;
 }
 
-static VALUE import_memory(VALUE self, VALUE data, VALUE format)
+static VALUE import_from_memory(VALUE self, VALUE data, VALUE format)
 {
     long int bytes;
-    bytes = caca_import_memory (_SELF, StringValuePtr(data), RSTRING(StringValue(data))->len, StringValuePtr(format));
+    bytes = caca_import_canvas_from_memory (_SELF, StringValuePtr(data), RSTRING(StringValue(data))->len, StringValuePtr(format));
     if(bytes <= 0)
         rb_raise(rb_eRuntimeError, strerror(errno));
 
     return self;
 }
 
-static VALUE import_file(VALUE self, VALUE filename, VALUE format)
+static VALUE import_from_file(VALUE self, VALUE filename, VALUE format)
 {
     long int bytes;
-    bytes = caca_import_file (_SELF, StringValuePtr(filename), StringValuePtr(format));
+    bytes = caca_import_canvas_from_file (_SELF, StringValuePtr(filename), StringValuePtr(format));
     if(bytes <= 0)
         rb_raise(rb_eRuntimeError, strerror(errno));
 
     return self;
 }
 
-static VALUE export_memory(VALUE self, VALUE format)
+static VALUE export_to_memory(VALUE self, VALUE format)
 {
     size_t bytes;
     void *result;
     VALUE ret;
-    result = caca_export_memory (_SELF, StringValuePtr(format), &bytes);
+    result = caca_export_canvas_to_memory (_SELF, StringValuePtr(format), &bytes);
     ret = rb_str_new(result, bytes);
     free(result);
     return ret;
@@ -643,11 +643,10 @@ void Init_caca_canvas(VALUE mCaca)
     rb_define_method(cCanvas, "free_frame", free_frame, 1);
 
     rb_define_method(cCanvas, "render", render_canvas, 4);
-    rb_define_method(cCanvas, "import_memory", import_memory, 2);
-    rb_define_method(cCanvas, "import_file", import_file, 2);
-    rb_define_method(cCanvas, "export_memory", export_memory, 1);
+    rb_define_method(cCanvas, "import_from_memory", import_from_memory, 2);
+    rb_define_method(cCanvas, "import_from_file", import_from_file, 2);
+    rb_define_method(cCanvas, "export_to_memory", export_to_memory, 1);
     rb_define_singleton_method(cCanvas, "export_list", export_list, 0);
     rb_define_singleton_method(cCanvas, "import_list", import_list, 0);
-   
 }
 

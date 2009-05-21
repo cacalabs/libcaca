@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2006-2007 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2002-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -448,7 +448,7 @@ static caca_figfont_t * open_figfont(char const *path)
 
     /* Import buffer into canvas */
     ff->fontcv = caca_create_canvas(0, 0);
-    caca_import_memory(ff->fontcv, data, i, "utf8");
+    caca_import_canvas_from_memory(ff->fontcv, data, i, "utf8");
     free(data);
 
     /* Remove EOL characters. For now we ignore hardblanks, don’t do any

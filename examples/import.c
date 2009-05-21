@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    if(caca_import_file(cv, argv[1], argc >= 3 ? argv[2] : "") < 0)
+    if(caca_import_canvas_from_file(cv, argv[1], argc >= 3 ? argv[2] : "") < 0)
     {
 	fprintf(stderr, "%s: could not open `%s'.\n", argv[0], argv[1]);
         caca_free_canvas(cv);

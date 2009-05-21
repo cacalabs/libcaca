@@ -1,6 +1,6 @@
 /*
  *  export        libcaca export test program
- *  Copyright (c) 2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2006-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
     if(file)
     {
         cv = caca_create_canvas(0, 0);
-        if(caca_import_file(cv, file, "") < 0)
+        if(caca_import_canvas_from_file(cv, file, "") < 0)
         {
             fprintf(stderr, "%s: `%s' has unknown format\n", argv[0], file);
             exit(-1);
@@ -148,7 +148,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    buffer = caca_export_memory(cv, format, &len);
+    buffer = caca_export_canvas_to_memory(cv, format, &len);
     fwrite(buffer, len, 1, stdout);
     free(buffer);
 

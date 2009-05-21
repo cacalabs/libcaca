@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2002-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -215,7 +215,7 @@ caca_canvas_t *__caca0_load_sprite(char const *file)
     caca_canvas_t *cv;
 
     cv = caca_create_canvas(0, 0);;
-    if(caca_import_file(cv, file, "") < 0)
+    if(caca_import_canvas_from_file(cv, file, "") < 0)
     {
         caca_free_canvas(cv);
         return NULL;

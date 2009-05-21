@@ -291,14 +291,14 @@ char const *const * Canvas::getImportList(void)
     return caca_get_import_list();
 }
 
-long int Canvas::importMemory(void const *buf, size_t len, char const *fmt)
+long int Canvas::importFromMemory(void const *buf, size_t len, char const *fmt)
 {
-    return caca_import_memory(cv, buf, len, fmt);
+    return caca_import_canvas_from_memory(cv, buf, len, fmt);
 }
 
-long int Canvas::importFile(char const *file, char const *fmt)
+long int Canvas::importFromFile(char const *file, char const *fmt)
 {
-    return caca_import_file(cv, file, fmt);
+    return caca_import_canvas_from_file(cv, file, fmt);
 }
 
 char const *const * Canvas::getExportList(void)
@@ -306,9 +306,9 @@ char const *const * Canvas::getExportList(void)
     return caca_get_export_list();
 }
 
-void *Canvas::exportMemory(char const *fmt, size_t *len)
+void *Canvas::exportToMemory(char const *fmt, size_t *len)
 {
-    return caca_export_memory(cv, fmt, len);
+    return caca_export_canvas_to_memory(cv, fmt, len);
 }
 
 Dither::Dither(unsigned int v1, unsigned int v2, unsigned int v3, unsigned int v4, unsigned int v5, unsigned int v6, unsigned int v7, unsigned int v8)

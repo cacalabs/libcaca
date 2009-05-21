@@ -1,6 +1,6 @@
 /*
  *  text          canvas text import/export
- *  Copyright (c) 2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2006-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     int i, j;
 
     pig = caca_create_canvas(0, 0);
-    caca_import_memory(pig, STRING, strlen(STRING), "text");
+    caca_import_canvas_from_memory(pig, STRING, strlen(STRING), "text");
 
     cv = caca_create_canvas(caca_get_canvas_width(pig) * 2,
                              caca_get_canvas_height(pig) * 2);
@@ -76,12 +76,12 @@ int main(int argc, char *argv[])
         }
     }
 
-    buffer = caca_export_memory(cv, "utf8", &len);
+    buffer = caca_export_canvas_to_memory(cv, "utf8", &len);
     fwrite(buffer, len, 1, stdout);
     free(buffer);
 
     caca_rotate_left(cv);
-    buffer = caca_export_memory(cv, "utf8", &len);
+    buffer = caca_export_canvas_to_memory(cv, "utf8", &len);
     fwrite(buffer, len, 1, stdout);
     free(buffer);
 

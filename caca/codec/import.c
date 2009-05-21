@@ -71,8 +71,8 @@ static ssize_t import_caca(caca_canvas_t *, void const *, size_t);
  *  \return The number of bytes read, or 0 if there was not enough data,
  *  or -1 if an error occurred.
  */
-ssize_t caca_import_memory(caca_canvas_t *cv, void const *data,
-                            size_t len, char const *format)
+ssize_t caca_import_canvas_from_memory(caca_canvas_t *cv, void const *data,
+                                       size_t len, char const *format)
 {
     if(!strcasecmp("caca", format))
         return import_caca(cv, data, len);
@@ -136,8 +136,8 @@ ssize_t caca_import_memory(caca_canvas_t *cv, void const *data,
  *  \return The number of bytes read, or 0 if there was not enough data,
  *  or -1 if an error occurred.
  */
-ssize_t caca_import_file(caca_canvas_t *cv, char const *filename,
-                          char const *format)
+ssize_t caca_import_canvas_from_file(caca_canvas_t *cv, char const *filename,
+                                     char const *format)
 {
 #if defined __KERNEL__
     seterrno(ENOSYS);
@@ -167,11 +167,86 @@ ssize_t caca_import_file(caca_canvas_t *cv, char const *filename,
     }
     caca_file_close(f);
 
-    ret = caca_import_memory(cv, data, size, format);
+    ret = caca_import_canvas_from_memory(cv, data, size, format);
     free(data);
 
     return ret;
 #endif
+}
+
+/** \brief Import a memory buffer into a canvas area
+ *
+ *  Import a memory buffer into the given libcaca canvas's current
+ *  frame, at the specified position. For more information, see
+ *  caca_import_canvas_from_memory().
+ *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c EINVAL Unsupported format requested or invalid coordinates.
+ *  - \c ENOMEM Not enough memory to allocate canvas.
+ *
+ *  \param cv A libcaca canvas in which to import the file.
+ *  \param x The leftmost coordinate of the area to import to.
+ *  \param y The topmost coordinate of the area to import to.
+ *  \param data A memory area containing the data to be loaded into the canvas.
+ *  \param len The size in bytes of the memory area.
+ *  \param format A string describing the input format.
+ *  \return The number of bytes read, or 0 if there was not enough data,
+ *  or -1 if an error occurred.
+ */
+ssize_t caca_import_area_from_memory(caca_canvas_t *cv, int x, int y,
+                                     void const *data, size_t len,
+                                     char const *format)
+{
+    caca_canvas_t *tmp;
+    ssize_t ret;
+
+    tmp = caca_create_canvas(0, 0);
+    ret = caca_import_canvas_from_memory(tmp, data, len, format);
+
+    if(ret > 0)
+        caca_blit(cv, x, y, tmp, NULL);
+
+    caca_free_canvas(tmp);
+
+    return ret;
+}
+
+/** \brief Import a file into a canvas area
+ *
+ *  Import a file into the given libcaca canvas's current frame, at the
+ *  specified position. For more information, see
+ *  caca_import_canvas_from_file().
+ *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c ENOSYS File access is not implemented on this system.
+ *  - \c ENOMEM Not enough memory to allocate canvas.
+ *  - \c EINVAL Unsupported format requested or invalid coordinates.
+ *  caca_import_file() may also fail and set \b errno for any of the
+ *  errors specified for the routine fopen().
+ *
+ *  \param cv A libcaca canvas in which to import the file.
+ *  \param x The leftmost coordinate of the area to import to.
+ *  \param y The topmost coordinate of the area to import to.
+ *  \param filename The name of the file to load.
+ *  \param format A string describing the input format.
+ *  \return The number of bytes read, or 0 if there was not enough data,
+ *  or -1 if an error occurred.
+ */
+ssize_t caca_import_area_from_file(caca_canvas_t *cv, int x, int y,
+                                   char const *filename, char const *format)
+{
+    caca_canvas_t *tmp;
+    ssize_t ret;
+
+    tmp = caca_create_canvas(0, 0);
+    ret = caca_import_canvas_from_file(tmp, filename, format);
+
+    if(ret > 0)
+        caca_blit(cv, x, y, tmp, NULL);
+
+    caca_free_canvas(tmp);
+
+    return ret;
 }
 
 /** \brief Get available import formats
@@ -329,6 +404,10 @@ ssize_t cucul_import_memory(cucul_canvas_t *, void const *, size_t,
                             char const *) CACA_ALIAS(caca_import_memory);
 ssize_t cucul_import_file(cucul_canvas_t *, char const *,
                           char const *) CACA_ALIAS(caca_import_file);
+ssize_t caca_import_memory(caca_canvas_t *, void const *, size_t, char const *)
+                                  CACA_ALIAS(caca_import_canvas_from_memory);
+ssize_t caca_import_file(caca_canvas_t *, char const *, char const *)
+                                  CACA_ALIAS(caca_import_canvas_from_file);
 char const * const * cucul_get_import_list(void)
          CACA_ALIAS(caca_get_import_list);
 

@@ -137,10 +137,10 @@ __class Canvas
     int freeFrame(unsigned int);
 
     char const * const * getImportList(void);
-    long int importMemory(void const *, size_t, char const *);
-    long int importFile(char const *, char const *);
+    long int importFromMemory(void const *, size_t, char const *);
+    long int importFromFile(char const *, char const *);
     char const * const * getExportList(void);
-    void *exportMemory(char const *, size_t *);
+    void *exportToMemory(char const *, size_t *);
 
     static int Rand(int, int);
     static char const * getVersion();

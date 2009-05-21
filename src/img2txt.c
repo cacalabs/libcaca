@@ -1,6 +1,6 @@
 /*
  *  img2txt       image to text converter
- *  Copyright (c) 2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2006-2009 Sam Hocevar <sam@hocevar.net>
  *                2007 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                All Rights Reserved
  *
@@ -81,7 +81,7 @@ static void version(void)
 {
     printf(
     "img2txt Copyright 2006-2007 Sam Hocevar and Jean-Yves Lamoureux\n"
-    "Internet: <sam@zoy.org> <jylam@lnxscene.org> Version: %s, date: %s\n"
+    "Internet: <sam@hocevar.net> <jylam@lnxscene.org> Version: %s, date: %s\n"
     "\n"
     "img2txt, along with its documentation, may be freely copied and distributed.\n"
     "\n"
@@ -224,7 +224,7 @@ int main(int argc, char **argv)
 
     unload_image(i);
 
-    export = caca_export_memory(cv, format?format:"ansi", &len);
+    export = caca_export_canvas_to_memory(cv, format?format:"ansi", &len);
     if(!export)
     {
         fprintf(stderr, "%s: Can't export to format '%s'\n", argv[0], format);

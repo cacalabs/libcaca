@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2002-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -98,8 +98,9 @@ char const * const * cucul_get_dither_mode_list(cucul_dither_t const *d)
 cucul_canvas_t * cucul_import_canvas(cucul_buffer_t *buf, char const *format)
 {
     caca_canvas_t *cv = caca_create_canvas(0, 0);
-    int ret = caca_import_memory(cv, (unsigned char const *)buf->data,
-                                  buf->size, format);
+    int ret = caca_import_canvas_from_memory(cv,
+                                             (unsigned char const *)buf->data,
+                                             buf->size, format);
     if(ret < 0)
     {
         caca_free_canvas(cv);
@@ -124,7 +125,7 @@ cucul_buffer_t * cucul_export_canvas(cucul_canvas_t *cv, char const *format)
         return NULL;
     }
 
-    ex->data = caca_export_memory(cv, format, &ex->size);
+    ex->data = caca_export_canvas_to_memory(cv, format, &ex->size);
     if(!ex->data)
     {
         free(ex);

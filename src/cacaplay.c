@@ -1,6 +1,6 @@
 /*
  *  cacaplay      caca file player
- *  Copyright (c) 2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2006-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -89,7 +89,7 @@ int main(int argc, char **argv)
             total += n;
         }
 
-        bytes = caca_import_memory(app, buf, total, "caca");
+        bytes = caca_import_canvas_from_memory(app, buf, total, "caca");
 
         if(bytes > 0)
         {
