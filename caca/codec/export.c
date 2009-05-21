@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2002-2009 Sam Hocevar <sam@hocevar.net>
  *                2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                All Rights Reserved
  *
@@ -27,6 +27,7 @@
 
 #include "caca.h"
 #include "caca_internals.h"
+#include "codec.h"
 
 static inline int sprintu32(char *s, uint32_t x)
 {
@@ -45,12 +46,9 @@ static inline int sprintu16(char *s, uint16_t x)
 }
 
 static void *export_caca(caca_canvas_t const *, size_t *);
-static void *export_ansi(caca_canvas_t const *, size_t *);
-static void *export_utf8(caca_canvas_t const *, size_t *, int);
 static void *export_html(caca_canvas_t const *, size_t *);
 static void *export_html3(caca_canvas_t const *, size_t *);
 static void *export_bbfr(caca_canvas_t const *, size_t *);
-static void *export_irc(caca_canvas_t const *, size_t *);
 static void *export_ps(caca_canvas_t const *, size_t *);
 static void *export_svg(caca_canvas_t const *, size_t *);
 static void *export_tga(caca_canvas_t const *, size_t *);
@@ -89,13 +87,13 @@ void *caca_export_memory(caca_canvas_t const *cv, char const *format,
         return export_caca(cv, bytes);
 
     if(!strcasecmp("ansi", format))
-        return export_ansi(cv, bytes);
+        return _export_ansi(cv, bytes);
 
     if(!strcasecmp("utf8", format))
-        return export_utf8(cv, bytes, 0);
+        return _export_utf8(cv, bytes, 0);
 
     if(!strcasecmp("utf8cr", format))
-        return export_utf8(cv, bytes, 1);
+        return _export_utf8(cv, bytes, 1);
 
     if(!strcasecmp("html", format))
         return export_html(cv, bytes);
@@ -107,7 +105,7 @@ void *caca_export_memory(caca_canvas_t const *cv, char const *format,
         return export_bbfr(cv, bytes);
 
     if(!strcasecmp("irc", format))
-        return export_irc(cv, bytes);
+        return _export_irc(cv, bytes);
 
     if(!strcasecmp("ps", format))
         return export_ps(cv, bytes);
@@ -207,167 +205,6 @@ static void *export_caca(caca_canvas_t const *cv, size_t *bytes)
             cur += sprintu32(cur, *attrs++);
         }
     }
-
-    return data;
-}
-
-/* Generate UTF-8 representation of current canvas. */
-static void *export_utf8(caca_canvas_t const *cv, size_t *bytes,
-                         int cr)
-{
-    static uint8_t const palette[] =
-    {
-        0,  4,  2,  6, 1,  5,  3,  7,
-        8, 12, 10, 14, 9, 13, 11, 15
-    };
-
-    char *data, *cur;
-    int x, y;
-
-    /* 23 bytes assumed for max length per pixel ('\e[5;1;3x;4y;9x;10ym' plus
-     * 4 max bytes for a UTF-8 character).
-     * Add height*9 to that (zeroes color at the end and jump to next line) */
-    *bytes = (cv->height * 9) + (cv->width * cv->height * 23);
-    cur = data = malloc(*bytes);
-
-    for(y = 0; y < cv->height; y++)
-    {
-        uint32_t *lineattr = cv->attrs + y * cv->width;
-        uint32_t *linechar = cv->chars + y * cv->width;
-
-        uint8_t prevfg = 0x10;
-        uint8_t prevbg = 0x10;
-
-        for(x = 0; x < cv->width; x++)
-        {
-            uint32_t attr = lineattr[x];
-            uint32_t ch = linechar[x];
-            uint8_t ansifg, ansibg, fg, bg;
-
-            if(ch == CACA_MAGIC_FULLWIDTH)
-                continue;
-
-            ansifg = caca_attr_to_ansi_fg(attr);
-            ansibg = caca_attr_to_ansi_bg(attr);
-
-            fg = ansifg < 0x10 ? palette[ansifg] : 0x10;
-            bg = ansibg < 0x10 ? palette[ansibg] : 0x10;
-
-            /* TODO: the [0 could be omitted in some cases */
-            if(fg != prevfg || bg != prevbg)
-            {
-                cur += sprintf(cur, "\033[0");
-
-                if(fg < 8)
-                    cur += sprintf(cur, ";3%d", fg);
-                else if(fg < 16)
-                    cur += sprintf(cur, ";1;3%d;9%d", fg - 8, fg - 8);
-
-                if(bg < 8)
-                    cur += sprintf(cur, ";4%d", bg);
-                else if(bg < 16)
-                    cur += sprintf(cur, ";5;4%d;10%d", bg - 8, bg - 8);
-
-                cur += sprintf(cur, "m");
-            }
-
-            cur += caca_utf32_to_utf8(cur, ch);
-
-            prevfg = fg;
-            prevbg = bg;
-        }
-
-        if(prevfg != 0x10 || prevbg != 0x10)
-            cur += sprintf(cur, "\033[0m");
-
-        cur += sprintf(cur, cr ? "\r\n" : "\n");
-    }
-
-    /* Crop to really used size */
-    debug("utf8 export: alloc %lu bytes, realloc %lu",
-          (unsigned long int)*bytes, (unsigned long int)(cur - data));
-    *bytes = (uintptr_t)(cur - data);
-    data = realloc(data, *bytes);
-
-    return data;
-}
-
-/* Generate ANSI representation of current canvas. */
-static void *export_ansi(caca_canvas_t const *cv, size_t *bytes)
-{
-    static uint8_t const palette[] =
-    {
-        0,  4,  2,  6, 1,  5,  3,  7,
-        8, 12, 10, 14, 9, 13, 11, 15
-    };
-
-    char *data, *cur;
-    int x, y;
-
-    uint8_t prevfg = -1;
-    uint8_t prevbg = -1;
-
-    /* 16 bytes assumed for max length per pixel ('\e[5;1;3x;4ym' plus
-     * 1 byte for a CP437 character).
-     * Add height*9 to that (zeroes color at the end and jump to next line) */
-    *bytes = (cv->height * 9) + (cv->width * cv->height * 16);
-    cur = data = malloc(*bytes);
-
-    for(y = 0; y < cv->height; y++)
-    {
-        uint32_t *lineattr = cv->attrs + y * cv->width;
-        uint32_t *linechar = cv->chars + y * cv->width;
-
-        for(x = 0; x < cv->width; x++)
-        {
-            uint8_t ansifg = caca_attr_to_ansi_fg(lineattr[x]);
-            uint8_t ansibg = caca_attr_to_ansi_bg(lineattr[x]);
-            uint8_t fg = ansifg < 0x10 ? palette[ansifg] : CACA_LIGHTGRAY;
-            uint8_t bg = ansibg < 0x10 ? palette[ansibg] : CACA_BLACK;
-            uint32_t ch = linechar[x];
-
-            if(ch == CACA_MAGIC_FULLWIDTH)
-                ch = '?';
-
-            if(fg != prevfg || bg != prevbg)
-            {
-                cur += sprintf(cur, "\033[0;");
-
-                if(fg < 8)
-                    if(bg < 8)
-                        cur += sprintf(cur, "3%d;4%dm", fg, bg);
-                    else
-                        cur += sprintf(cur, "5;3%d;4%dm", fg, bg - 8);
-                else
-                    if(bg < 8)
-                        cur += sprintf(cur, "1;3%d;4%dm", fg - 8, bg);
-                    else
-                        cur += sprintf(cur, "5;1;3%d;4%dm", fg - 8, bg - 8);
-            }
-
-            *cur++ = caca_utf32_to_cp437(ch);
-
-            prevfg = fg;
-            prevbg = bg;
-        }
-
-        if(cv->width == 80)
-        {
-            cur += sprintf(cur, "\033[s\n\033[u");
-        }
-        else
-        {
-            cur += sprintf(cur, "\033[0m\r\n");
-            prevfg = -1;
-            prevbg = -1;
-        }
-    }
-
-    /* Crop to really used size */
-    debug("ansi export: alloc %lu bytes, realloc %lu",
-          (unsigned long int)*bytes, (unsigned long int)(cur - data));
-    *bytes = (uintptr_t)(cur - data);
-    data = realloc(data, *bytes);
 
     return data;
 }
@@ -834,113 +671,6 @@ static void *export_bbfr(caca_canvas_t const *cv, size_t *bytes)
 
     /* Crop to really used size */
     debug("bbfr export: alloc %lu bytes, realloc %lu",
-          (unsigned long int)*bytes, (unsigned long int)(cur - data));
-    *bytes = (uintptr_t)(cur - data);
-    data = realloc(data, *bytes);
-
-    return data;
-}
-
-/* Export a text file with IRC colours */
-static void *export_irc(caca_canvas_t const *cv, size_t *bytes)
-{
-    static uint8_t const palette[] =
-    {
-        1, 2, 3, 10, 5, 6, 7, 15, /* Dark */
-        14, 12, 9, 11, 4, 13, 8, 0, /* Light */
-    };
-
-    char *data, *cur;
-    int x, y;
-
-    /* 14 bytes assumed for max length per pixel. Worst case scenario:
-     * ^Cxx,yy   6 bytes
-     * ^B^B      2 bytes
-     * ch        6 bytes
-     * 3 bytes for max length per line. Worst case scenario:
-     * <spc>     1 byte (for empty lines)
-     * \r\n      2 bytes
-     * In real life, the average bytes per pixel value will be around 5.
-     */
-
-    *bytes = 2 + cv->height * (3 + cv->width * 14);
-    cur = data = malloc(*bytes);
-
-    for(y = 0; y < cv->height; y++)
-    {
-        uint32_t *lineattr = cv->attrs + y * cv->width;
-        uint32_t *linechar = cv->chars + y * cv->width;
-
-        uint8_t prevfg = 0x10;
-        uint8_t prevbg = 0x10;
-
-        for(x = 0; x < cv->width; x++)
-        {
-            uint32_t attr = lineattr[x];
-            uint32_t ch = linechar[x];
-            uint8_t ansifg, ansibg, fg, bg;
-
-            if(ch == CACA_MAGIC_FULLWIDTH)
-                continue;
-
-            ansifg = caca_attr_to_ansi_fg(attr);
-            ansibg = caca_attr_to_ansi_bg(attr);
-
-            fg = ansifg < 0x10 ? palette[ansifg] : 0x10;
-            bg = ansibg < 0x10 ? palette[ansibg] : 0x10;
-
-            /* TODO: optimise series of same fg / same bg
-             *       don't change fg value if ch == ' '
-             *       make sure the \x03,%d trick works everywhere */
-            if(bg != prevbg || fg != prevfg)
-            {
-                int need_escape = 0;
-
-                if(bg == 0x10)
-                {
-                    if(fg == 0x10)
-                        cur += sprintf(cur, "\x0f");
-                    else
-                    {
-                        if(prevbg == 0x10)
-                            cur += sprintf(cur, "\x03%d", fg);
-                        else
-                            cur += sprintf(cur, "\x0f\x03%d", fg);
-
-                        if(ch == (uint32_t)',')
-                            need_escape = 1;
-                    }
-                }
-                else
-                {
-                    if(fg == 0x10)
-                        cur += sprintf(cur, "\x0f\x03,%d", bg);
-                    else
-                        cur += sprintf(cur, "\x03%d,%d", fg, bg);
-                }
-
-                if(ch >= (uint32_t)'0' && ch <= (uint32_t)'9')
-                    need_escape = 1;
-
-                if(need_escape)
-                    cur += sprintf(cur, "\x02\x02");
-            }
-
-            cur += caca_utf32_to_utf8(cur, ch);
-            prevfg = fg;
-            prevbg = bg;
-        }
-
-        /* TODO: do the same the day we optimise whole lines above */
-        if(!cv->width)
-            *cur++ = ' ';
-
-        *cur++ = '\r';
-        *cur++ = '\n';
-    }
-
-    /* Crop to really used size */
-    debug("IRC export: alloc %lu bytes, realloc %lu",
           (unsigned long int)*bytes, (unsigned long int)(cur - data));
     *bytes = (uintptr_t)(cur - data);
     data = realloc(data, *bytes);

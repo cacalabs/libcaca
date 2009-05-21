@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\win32;&quot;$(projectDir)&quot;"
+				AdditionalIncludeDirectories="codec;..\win32;&quot;$(projectDir)&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;__LIBCACA__"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -117,7 +117,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\win32;&quot;$(projectDir)&quot;"
+				AdditionalIncludeDirectories="codec;..\win32;&quot;$(projectDir)&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;__LIBCACA__"
 				RuntimeLibrary="2"
 				WarningLevel="3"
@@ -192,7 +192,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\win32;&quot;$(projectDir)&quot;"
+				AdditionalIncludeDirectories="codec;..\win32;&quot;$(projectDir)&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;__LIBCACA__"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -267,7 +267,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\win32;&quot;$(projectDir)&quot;"
+				AdditionalIncludeDirectories="codec;..\win32;&quot;$(projectDir)&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;__LIBCACA__"
 				RuntimeLibrary="2"
 				WarningLevel="3"
@@ -361,6 +361,14 @@
 			</File>
 			<File
 				RelativePath=".\codec\import.c"
+				>
+			</File>
+			<File
+				RelativePath=".\codec\codec.h"
+				>
+			</File>
+			<File
+				RelativePath=".\codec\text.c"
 				>
 			</File>
 		</Filter>

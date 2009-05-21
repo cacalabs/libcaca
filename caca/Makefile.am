@@ -55,6 +55,8 @@ libcaca_la_LIBADD = @CACA_LIBS@ $(ZLIB_LIBS)
 codec_source = \
 	codec/import.c \
 	codec/export.c \
+	codec/codec.h \
+	codec/text.c \
 	$(NULL)
 
 driver_source = \
