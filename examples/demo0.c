@@ -1,6 +1,6 @@
 /*
  *  demo          demo for libcaca version 0.9
- *  Copyright (c) 2003 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2003-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -70,6 +70,7 @@ int main(int argc, char **argv)
 
     /* Main menu */
     display_menu();
+    caca_refresh();
 
     /* Go ! */
     while(!quit)
@@ -98,17 +99,20 @@ int main(int argc, char **argv)
                 case 'O':
                     outline = (outline + 1) % 3;
                     display_menu();
+                    caca_refresh();
                     break;
                 case 'b':
                 case 'B':
                     bounds = (bounds + 1) % 2;
                     display_menu();
+                    caca_refresh();
                     break;
                 case 'd':
                 case 'D':
                     dithering = (dithering + 1) % 5;
                     caca_set_dithering(CACA_DITHERING_NONE + dithering);
                     display_menu();
+                    caca_refresh();
                     break;
                 case 'c':
                     demo = demo_color;
@@ -167,8 +171,7 @@ int main(int argc, char **argv)
             caca_refresh();
             mouse = menu = 0;
         }
-
-        if(demo)
+        else if(demo)
         {
             demo();
 
@@ -223,7 +226,6 @@ static void display_menu(void)
                 caca_get_dithering_name(CACA_DITHERING_NONE + dithering));
 
     caca_putstr(4, yo - 2, "'q': quit");
-    caca_refresh();
 }
 
 static void demo_all(void)
