@@ -311,7 +311,7 @@ static void x11_display(caca_display_t *dp)
                 uint16_t bg = caca_attr_to_rgb12_bg(*attrs);
 
                 len = 1;
-                while(x + len < width
+                while(x + len < dx + dw
                        && caca_attr_to_rgb12_bg(attrs[len]) == bg)
                     len++;
 
