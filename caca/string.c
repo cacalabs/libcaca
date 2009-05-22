@@ -176,7 +176,12 @@ int caca_put_char(caca_canvas_t *cv, int x, int y, uint32_t ch)
         }
     }
 
-    caca_add_dirty_rect(cv, xmin, y, xmax - xmin + 1, 1);
+    /* Only add a dirty rectangle if we are pasting a different character
+     * or attribute at that place. This does not account for inconsistencies
+     * in the canvas, ie. if CACA_MAGIC_FULLWIDTH lies at illegal places,
+     * but it's the caller's responsibility not to corrupt the contents. */
+    if(curchar[0] != ch || curattr[0] != attr)
+        caca_add_dirty_rect(cv, xmin, y, xmax - xmin + 1, 1);
 
     curchar[0] = ch;
     curattr[0] = attr;
