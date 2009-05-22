@@ -146,7 +146,7 @@ void *caca_export_area_to_memory(caca_canvas_t const *cv, int x, int y, int w,
     void *ret;
 
     if(w < 0 || h < 0 || x < 0 || y < 0
-        || x + w >= cv->width || y + h >= cv->height)
+        || x + w > cv->width || y + h > cv->height)
     {
         seterrno(EINVAL);
         return NULL;
