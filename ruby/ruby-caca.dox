@@ -56,11 +56,11 @@ irb(main):012:0>Caca::Canvas.my_instance_methods
 "dither_bitmap","draw_box", "draw_circle", "draw_cp437_box", "draw_ellipse",
 "draw_line","draw_polyline", "draw_thin_box", "draw_thin_ellipse",
 "draw_thin_line","draw_thin_polyline", "draw_thin_triangle",
-"draw_triangle","export_memory", "fill_box", "fill_ellipse",
+"draw_triangle","export_to_memory", "fill_box", "fill_ellipse",
 "fill_triangle","flip", "flop", "frame=", "frame_count", "frame_name",
 "frame_name=","free_frame", "get_attr", "get_char", "gotoxy",
 "handle_x","handle_y", "height", "height=", "import_file",
-"import_memory","invert", "printf", "put_attr", "put_char", "put_str",
+"import_from_memory","invert", "printf", "put_attr", "put_char", "put_str",
 "rotate_180","rotate_left", "rotate_right", "set_attr",
 "set_boundaries","set_color_ansi", "set_color_argb", "set_frame",
 "set_frame_name","set_handle", "set_height", "set_size", "set_width",
@@ -122,7 +122,7 @@ irb(main):015:0>Caca::Event::Resize.my_instance_methods
 \code
 $ruby -rcaca -e 'c=Caca::Canvas.new(6, 3).fill_box(0,0,2,2,"#"[0]);
 c2=Caca::Canvas.new(1,1).put_str(0,0,"x"); c.blit(1,1,c2); puts
-c.export_memory("irc")'
+c.export_to_memory("irc")'
 ###
 #x#
 ###
@@ -130,7 +130,7 @@ c.export_memory("irc")'
 
 \code
 $ruby -e 'puts Caca::Canvas.new(6,3).draw_thin_polyline([[0,0], [0,2],
-[5,2],[0,0]]).export_memory("irc")'
+[5,2],[0,0]]).export_to_memory("irc")'
 -.
 | `.
 ----`-

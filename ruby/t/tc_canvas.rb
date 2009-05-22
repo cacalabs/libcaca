@@ -26,8 +26,8 @@ class TC_Canvas < Test::Unit::TestCase
         assert(@c.width == 100 && @c.height == 100, 'Failed to set size')
     end
     def test_import
-        @c.import_memory("foo", "")
-        assert_equal("foo\r\n", @c.export_memory("irc"), "Import/Export failed")
+        @c.import_from_memory("foo", "")
+        assert_equal("foo\r\n", @c.export_to_memory("irc"), "Import/Export failed")
     end
     def test_cursor
         @c.gotoxy(1,1)
@@ -37,7 +37,7 @@ class TC_Canvas < Test::Unit::TestCase
     def test_clear
         @c.put_char(1, 1, 64)
         @c.clear
-        assert_equal("", @c.export_memory("irc").strip, "Failed to clear canvas")
+        assert_equal("", @c.export_to_memory("irc").strip, "Failed to clear canvas")
     end
     def test_char
         @c.put_char(1, 1, 42)
