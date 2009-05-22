@@ -25,7 +25,9 @@ class DirtyTest : public CppUnit::TestCase
 {
     CPPUNIT_TEST_SUITE(DirtyTest);
     CPPUNIT_TEST(test_create);
-    CPPUNIT_TEST(test_put_char);
+    CPPUNIT_TEST(test_put_char_dirty);
+    CPPUNIT_TEST(test_put_char_not_dirty);
+    CPPUNIT_TEST(test_box);
     CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -60,7 +62,7 @@ public:
         caca_free_canvas(cv);
     }
 
-    void test_put_char()
+    void test_put_char_dirty()
     {
         caca_canvas_t *cv;
         int i, dx, dy, dw, dh;
@@ -135,6 +137,52 @@ public:
         CPPUNIT_ASSERT_EQUAL(dy, 3);
         CPPUNIT_ASSERT_EQUAL(dw, 3);
         CPPUNIT_ASSERT_EQUAL(dh, 1);
+    }
+
+    void test_put_char_not_dirty()
+    {
+        caca_canvas_t *cv;
+        int i;
+
+        cv = caca_create_canvas(WIDTH, HEIGHT);
+
+        /* Check that pasting the same character does not cause
+         * a dirty rectangle to be created. */
+        caca_put_char(cv, 7, 3, 'x');
+        caca_clear_dirty_rect_list(cv);
+        caca_put_char(cv, 7, 3, 'x');
+        i = caca_get_dirty_rect_count(cv);
+        CPPUNIT_ASSERT_EQUAL(i, 0);
+
+        caca_clear_canvas(cv);
+        caca_put_char(cv, 7, 3, 0x2f06 /* ⼆ */);
+        caca_clear_dirty_rect_list(cv);
+        caca_put_char(cv, 7, 3, 0x2f06 /* ⼆ */);
+        i = caca_get_dirty_rect_count(cv);
+        CPPUNIT_ASSERT_EQUAL(i, 0);
+    }
+
+    void test_box()
+    {
+        caca_canvas_t *cv;
+        int i, dx, dy, dw, dh;
+
+        cv = caca_create_canvas(WIDTH, HEIGHT);
+        caca_clear_dirty_rect_list(cv);
+
+        caca_fill_box(cv, 7, 3, 14, 9, 'x');
+        i = caca_get_dirty_rect_count(cv);
+        CPPUNIT_ASSERT_EQUAL(i, 1);
+        caca_get_dirty_rect(cv, 0, &dx, &dy, &dw, &dh);
+        CPPUNIT_ASSERT_EQUAL(dx, 7);
+        CPPUNIT_ASSERT_EQUAL(dy, 3);
+        CPPUNIT_ASSERT_EQUAL(dw, 14);
+        CPPUNIT_ASSERT_EQUAL(dh, 9);
+
+        caca_clear_dirty_rect_list(cv);
+        caca_fill_box(cv, 7, 3, 14, 9, 'x');
+        i = caca_get_dirty_rect_count(cv);
+        CPPUNIT_ASSERT_EQUAL(i, 0);
     }
 
 private:
