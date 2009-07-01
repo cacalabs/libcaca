@@ -908,6 +908,8 @@ static uint32_t rotatechar(uint32_t ch)
          /* Misc Unicode */
          0x00e6, 0x1d02, /* æ ᴂ */
          0x0153, 0x1d14, /* œ ᴔ */
+         0x03b5, 0x025c, /* ε ɜ */
+         0x025b, 0x025c, /* ɛ ɜ */
          /* CP437 */
          0x258c, 0x2590, /* ▌ ▐ */
          0x2584, 0x2580, /* ▄ ▀ */
