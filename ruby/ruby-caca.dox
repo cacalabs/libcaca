@@ -1,5 +1,7 @@
 /*$Id$ */ /** \page libcaca-ruby-api Libcaca Ruby API
 
+\section classes Classes
+
 The classes available for libcaca are :
 
 \li\b Caca::Canvas : functions that have a caca_canvas_t* as first argument
