@@ -209,7 +209,7 @@ int caca_put_char(caca_canvas_t *cv, int x, int y, uint32_t ch)
  *  \param cv A handle to the libcaca canvas.
  *  \param x X coordinate.
  *  \param y Y coordinate.
- *  \return This function always returns 0.
+ *  \return The Unicode character at the given coordinates.
  */
 uint32_t caca_get_char(caca_canvas_t const *cv, int x, int y)
 {
