@@ -196,16 +196,33 @@ public:
         cv2 = caca_create_canvas(2, 2);
         caca_fill_box(cv2, 0, 0, 2, 1, 'x');
 
+        /* Check that blitting a canvas make a dirty rectangle
+         * only for modified lines */
+
         caca_blit(cv, 1, 1, cv2, NULL);
         i = caca_get_dirty_rect_count(cv);
         CPPUNIT_ASSERT_EQUAL(i, 1);
         caca_get_dirty_rect(cv, 0, &dx, &dy, &dw, &dh);
 
-        /* Check that blitting a canvas make a dirty rectangle
-         * only for modified lines */
         CPPUNIT_ASSERT(dx == 1);
         CPPUNIT_ASSERT(dy == 1);
         CPPUNIT_ASSERT(dw >= 2);
+        CPPUNIT_ASSERT(dh == 1);
+
+        caca_clear_canvas(cv);
+        caca_clear_dirty_rect_list(cv);
+
+        /* Check that blitting a canvas make a dirty rectangle
+         * only for modified chars when we have a mask */
+
+        caca_blit(cv, 1, 1, cv2, cv2);
+        i = caca_get_dirty_rect_count(cv);
+        CPPUNIT_ASSERT_EQUAL(i, 1);
+        caca_get_dirty_rect(cv, 0, &dx, &dy, &dw, &dh);
+
+        CPPUNIT_ASSERT(dx == 1);
+        CPPUNIT_ASSERT(dy == 1);
+        CPPUNIT_ASSERT(dw == 2);
         CPPUNIT_ASSERT(dh == 1);
     }
 
