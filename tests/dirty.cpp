@@ -28,6 +28,7 @@ class DirtyTest : public CppUnit::TestCase
     CPPUNIT_TEST(test_put_char_dirty);
     CPPUNIT_TEST(test_put_char_not_dirty);
     CPPUNIT_TEST(test_box);
+    CPPUNIT_TEST(test_blit);
     CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -183,6 +184,29 @@ public:
         caca_fill_box(cv, 7, 3, 14, 9, 'x');
         i = caca_get_dirty_rect_count(cv);
         CPPUNIT_ASSERT_EQUAL(i, 0);
+    }
+
+    void test_blit()
+    {
+        caca_canvas_t *cv, *cv2;
+        int i, dx, dy, dw, dh;
+
+        cv = caca_create_canvas(WIDTH, HEIGHT);
+        caca_clear_dirty_rect_list(cv);
+        cv2 = caca_create_canvas(2, 2);
+        caca_fill_box(cv2, 0, 0, 2, 1, 'x');
+
+        caca_blit(cv, 1, 1, cv2, NULL);
+        i = caca_get_dirty_rect_count(cv);
+        CPPUNIT_ASSERT_EQUAL(i, 1);
+        caca_get_dirty_rect(cv, 0, &dx, &dy, &dw, &dh);
+
+        /* Check that blitting a canvas make a dirty rectangle
+         * only for modified lines */
+        CPPUNIT_ASSERT(dx == 1);
+        CPPUNIT_ASSERT(dy == 1);
+        CPPUNIT_ASSERT(dw >= 2);
+        CPPUNIT_ASSERT(dh == 1);
     }
 
 private:

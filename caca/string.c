@@ -448,14 +448,25 @@ int caca_blit(caca_canvas_t *dst, int x, int y,
                 if(mask->chars[srcix + i] == (uint32_t)' ')
                     continue;
 
-                dst->chars[dstix + i] = src->chars[srcix + i];
-                dst->attrs[dstix + i] = src->attrs[srcix + i];
+                if(dst->chars[dstix + i] != src->chars[srcix + i] ||
+                   dst->attrs[dstix + i] != src->attrs[srcix + i])
+                {
+                    dst->chars[dstix + i] = src->chars[srcix + i];
+                    dst->attrs[dstix + i] = src->attrs[srcix + i];
+                    caca_add_dirty_rect(dst, x + starti + i, y + j, 1, 1);
+                }
             }
         }
         else
         {
-            memcpy(dst->chars + dstix, src->chars + srcix, stride * 4);
-            memcpy(dst->attrs + dstix, src->attrs + srcix, stride * 4);
+            if(memcmp(dst->chars + dstix, src->chars + srcix, stride * 4) ||
+               memcmp(dst->attrs + dstix, src->attrs + srcix, stride * 4))
+            {
+                /* FIXME be more precise ? */
+                memcpy(dst->chars + dstix, src->chars + srcix, stride * 4);
+                memcpy(dst->attrs + dstix, src->attrs + srcix, stride * 4);
+                caca_add_dirty_rect(dst, x + starti, y + j, stride, 1);
+            }
         }
 
         /* Fix split fullwidth chars */
@@ -466,9 +477,6 @@ int caca_blit(caca_canvas_t *dst, int x, int y,
             dst->chars[dstix + stride - 1] = ' ';
     }
 
-    caca_add_dirty_rect(dst, starti + x - bleed_left, startj + y,
-                        endi - starti + bleed_left + bleed_right,
-                        endj - startj);
 
     return 0;
 }
