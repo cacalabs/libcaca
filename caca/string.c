@@ -53,6 +53,10 @@
  */
 int caca_gotoxy(caca_canvas_t *cv, int x, int y)
 {
+    /* FIXME Not needed if cursor is invisible */
+    caca_add_dirty_rect(cv, cv->frames[cv->frame].x, cv->frames[cv->frame].y, 1, 1);
+    caca_add_dirty_rect(cv, x, y, 1, 1);
+
     cv->frames[cv->frame].x = x;
     cv->frames[cv->frame].y = y;
 
