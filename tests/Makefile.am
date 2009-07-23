@@ -6,12 +6,15 @@ if USE_CPPUNIT
 cppunit_tests = caca-test
 endif
 
-noinst_PROGRAMS = simple $(cppunit_tests)
+noinst_PROGRAMS = simple bench $(cppunit_tests)
 
-TESTS = $(noinst_PROGRAMS)
+TESTS = simple $(cppunit_tests)
 
 simple_SOURCES = simple.c
 simple_LDADD = ../caca/libcaca.la
+
+bench_SOURCES = bench.c
+bench_LDADD = ../caca/libcaca.la
 
 caca_test_SOURCES = caca-test.cpp canvas.cpp dirty.cpp driver.cpp export.cpp
 caca_test_CXXFLAGS = $(CPPUNIT_CFLAGS)
