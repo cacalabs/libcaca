@@ -150,6 +150,7 @@ int caca_add_dirty_rect(caca_canvas_t *cv, int x, int y, int width, int height)
     }
     else
     {
+        /* FIXME We may get overlapping rectangles like this */
         if(x < cv->dirty[0].xmin)
             cv->dirty[0].xmin = x;
         if(x + width - 1 > cv->dirty[0].xmax)
