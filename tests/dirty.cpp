@@ -41,24 +41,22 @@ public:
     void test_create()
     {
         caca_canvas_t *cv;
-        int i, dx, dy, dw, dh;
+        int dx, dy, dw, dh;
 
-        /* Check that the dirty rectangle contains the whole canvas
-         * upon creation. */
+        /* Check that we only have one dirty rectangle upon creation. */
         cv = caca_create_canvas(WIDTH, HEIGHT);
-        i = caca_get_dirty_rect_count(cv);
-        CPPUNIT_ASSERT_EQUAL(i, 1);
+        CPPUNIT_ASSERT_EQUAL(1, caca_get_dirty_rect_count(cv));
 
+        /* Check that our only rectangle contains the whole canvas. */
         caca_get_dirty_rect(cv, 0, &dx, &dy, &dw, &dh);
-        CPPUNIT_ASSERT_EQUAL(dx, 0);
-        CPPUNIT_ASSERT_EQUAL(dy, 0);
-        CPPUNIT_ASSERT_EQUAL(dw, caca_get_canvas_width(cv));
-        CPPUNIT_ASSERT_EQUAL(dh, caca_get_canvas_height(cv));
+        CPPUNIT_ASSERT_EQUAL(0, dx);
+        CPPUNIT_ASSERT_EQUAL(0, dy);
+        CPPUNIT_ASSERT_EQUAL(WIDTH, dw);
+        CPPUNIT_ASSERT_EQUAL(HEIGHT, dh);
 
         /* Invalidate the dirty rectangle and check that it stays so. */
         caca_clear_dirty_rect_list(cv);
-        i = caca_get_dirty_rect_count(cv);
-        CPPUNIT_ASSERT_EQUAL(i, 0);
+        CPPUNIT_ASSERT_EQUAL(0, caca_get_dirty_rect_count(cv));
 
         caca_free_canvas(cv);
     }
@@ -66,124 +64,139 @@ public:
     void test_put_char_dirty()
     {
         caca_canvas_t *cv;
-        int i, dx, dy, dw, dh;
+        int dx, dy, dw, dh;
 
         cv = caca_create_canvas(WIDTH, HEIGHT);
 
+        /* Check that one character creates a 1x1 dirty rect. */
         caca_clear_dirty_rect_list(cv);
         caca_put_char(cv, 7, 3, 'x');
-        i = caca_get_dirty_rect_count(cv);
-        CPPUNIT_ASSERT_EQUAL(i, 1);
-        caca_get_dirty_rect(cv, 0, &dx, &dy, &dw, &dh);
-        CPPUNIT_ASSERT_EQUAL(dx, 7);
-        CPPUNIT_ASSERT_EQUAL(dy, 3);
-        CPPUNIT_ASSERT_EQUAL(dw, 1);
-        CPPUNIT_ASSERT_EQUAL(dh, 1);
 
+        CPPUNIT_ASSERT_EQUAL(1, caca_get_dirty_rect_count(cv));
+        caca_get_dirty_rect(cv, 0, &dx, &dy, &dw, &dh);
+        CPPUNIT_ASSERT_EQUAL(7, dx);
+        CPPUNIT_ASSERT_EQUAL(3, dy);
+        CPPUNIT_ASSERT_EQUAL(1, dw);
+        CPPUNIT_ASSERT_EQUAL(1, dh);
+
+        /* Check that a fullwidth character creates a 2x1 dirty rect. */
         caca_clear_canvas(cv);
         caca_clear_dirty_rect_list(cv);
         caca_put_char(cv, 7, 3, 0x2f06 /* ⼆ */);
-        i = caca_get_dirty_rect_count(cv);
-        CPPUNIT_ASSERT_EQUAL(i, 1);
-        caca_get_dirty_rect(cv, 0, &dx, &dy, &dw, &dh);
-        CPPUNIT_ASSERT_EQUAL(dx, 7);
-        CPPUNIT_ASSERT_EQUAL(dy, 3);
-        CPPUNIT_ASSERT_EQUAL(dw, 2);
-        CPPUNIT_ASSERT_EQUAL(dh, 1);
 
+        CPPUNIT_ASSERT_EQUAL(1, caca_get_dirty_rect_count(cv));
+        caca_get_dirty_rect(cv, 0, &dx, &dy, &dw, &dh);
+        CPPUNIT_ASSERT_EQUAL(7, dx);
+        CPPUNIT_ASSERT_EQUAL(3, dy);
+        CPPUNIT_ASSERT_EQUAL(2, dw);
+        CPPUNIT_ASSERT_EQUAL(1, dh);
+
+        /* Check that a character over a fullwidth character creates a
+         * 2x1 dirty rect because of clobbering on the left side. */
         caca_clear_canvas(cv);
         caca_put_char(cv, 7, 3, 0x2f06 /* ⼆ */);
         caca_clear_dirty_rect_list(cv);
         caca_put_char(cv, 7, 3, 'x');
-        i = caca_get_dirty_rect_count(cv);
-        CPPUNIT_ASSERT_EQUAL(i, 1);
-        caca_get_dirty_rect(cv, 0, &dx, &dy, &dw, &dh);
-        CPPUNIT_ASSERT_EQUAL(dx, 7);
-        CPPUNIT_ASSERT_EQUAL(dy, 3);
-        CPPUNIT_ASSERT_EQUAL(dw, 2);
-        CPPUNIT_ASSERT_EQUAL(dh, 1);
 
+        CPPUNIT_ASSERT_EQUAL(1, caca_get_dirty_rect_count(cv));
+        caca_get_dirty_rect(cv, 0, &dx, &dy, &dw, &dh);
+        CPPUNIT_ASSERT_EQUAL(7, dx);
+        CPPUNIT_ASSERT_EQUAL(3, dy);
+        CPPUNIT_ASSERT_EQUAL(2, dw);
+        CPPUNIT_ASSERT_EQUAL(1, dh);
+
+        /* Check that a character over a fullwidth character creates a
+         * 2x1 dirty rect because of clobbering on the right side. */
         caca_clear_canvas(cv);
         caca_put_char(cv, 7, 3, 0x2f06 /* ⼆ */);
         caca_clear_dirty_rect_list(cv);
         caca_put_char(cv, 8, 3, 'x');
-        i = caca_get_dirty_rect_count(cv);
-        CPPUNIT_ASSERT_EQUAL(i, 1);
-        caca_get_dirty_rect(cv, 0, &dx, &dy, &dw, &dh);
-        CPPUNIT_ASSERT_EQUAL(dx, 7);
-        CPPUNIT_ASSERT_EQUAL(dy, 3);
-        CPPUNIT_ASSERT_EQUAL(dw, 2);
-        CPPUNIT_ASSERT_EQUAL(dh, 1);
 
+        CPPUNIT_ASSERT_EQUAL(1, caca_get_dirty_rect_count(cv));
+        caca_get_dirty_rect(cv, 0, &dx, &dy, &dw, &dh);
+        CPPUNIT_ASSERT_EQUAL(7, dx);
+        CPPUNIT_ASSERT_EQUAL(3, dy);
+        CPPUNIT_ASSERT_EQUAL(2, dw);
+        CPPUNIT_ASSERT_EQUAL(1, dh);
+
+        /* Check that a fullwidth character over a fullwidth character creates
+         * a 3x1 dirty rect because of clobbering on the left side. */
         caca_clear_canvas(cv);
         caca_put_char(cv, 7, 3, 0x2f06 /* ⼆ */);
         caca_clear_dirty_rect_list(cv);
         caca_put_char(cv, 6, 3, 0x2f06 /* ⼆ */);
-        i = caca_get_dirty_rect_count(cv);
-        CPPUNIT_ASSERT_EQUAL(i, 1);
-        caca_get_dirty_rect(cv, 0, &dx, &dy, &dw, &dh);
-        CPPUNIT_ASSERT_EQUAL(dx, 6);
-        CPPUNIT_ASSERT_EQUAL(dy, 3);
-        CPPUNIT_ASSERT_EQUAL(dw, 3);
-        CPPUNIT_ASSERT_EQUAL(dh, 1);
 
+        CPPUNIT_ASSERT_EQUAL(1, caca_get_dirty_rect_count(cv));
+        caca_get_dirty_rect(cv, 0, &dx, &dy, &dw, &dh);
+        CPPUNIT_ASSERT_EQUAL(6, dx);
+        CPPUNIT_ASSERT_EQUAL(3, dy);
+        CPPUNIT_ASSERT_EQUAL(3, dw);
+        CPPUNIT_ASSERT_EQUAL(1, dh);
+
+        /* Check that a fullwidth character over a fullwidth character creates
+         * a 3x1 dirty rect because of clobbering on the right side. */
         caca_clear_canvas(cv);
         caca_put_char(cv, 7, 3, 0x2f06 /* ⼆ */);
         caca_clear_dirty_rect_list(cv);
         caca_put_char(cv, 8, 3, 0x2f06 /* ⼆ */);
-        i = caca_get_dirty_rect_count(cv);
-        CPPUNIT_ASSERT_EQUAL(i, 1);
+
+        CPPUNIT_ASSERT_EQUAL(1, caca_get_dirty_rect_count(cv));
         caca_get_dirty_rect(cv, 0, &dx, &dy, &dw, &dh);
-        CPPUNIT_ASSERT_EQUAL(dx, 7);
-        CPPUNIT_ASSERT_EQUAL(dy, 3);
-        CPPUNIT_ASSERT_EQUAL(dw, 3);
-        CPPUNIT_ASSERT_EQUAL(dh, 1);
+        CPPUNIT_ASSERT_EQUAL(7, dx);
+        CPPUNIT_ASSERT_EQUAL(3, dy);
+        CPPUNIT_ASSERT_EQUAL(3, dw);
+        CPPUNIT_ASSERT_EQUAL(1, dh);
     }
 
     void test_put_char_not_dirty()
     {
         caca_canvas_t *cv;
-        int i;
 
         cv = caca_create_canvas(WIDTH, HEIGHT);
 
-        /* Check that pasting the same character does not cause
-         * a dirty rectangle to be created. */
+        /* Check that pasting the same character does not cause a dirty
+         * rectangle to be created. */
         caca_put_char(cv, 7, 3, 'x');
         caca_clear_dirty_rect_list(cv);
         caca_put_char(cv, 7, 3, 'x');
-        i = caca_get_dirty_rect_count(cv);
-        CPPUNIT_ASSERT_EQUAL(i, 0);
 
+        CPPUNIT_ASSERT_EQUAL(0, caca_get_dirty_rect_count(cv));
+
+        /* Check that pasting the same fullwidth character does not cause
+         * a dirty rectangle to be created. */
         caca_clear_canvas(cv);
         caca_put_char(cv, 7, 3, 0x2f06 /* ⼆ */);
         caca_clear_dirty_rect_list(cv);
         caca_put_char(cv, 7, 3, 0x2f06 /* ⼆ */);
-        i = caca_get_dirty_rect_count(cv);
-        CPPUNIT_ASSERT_EQUAL(i, 0);
+
+        CPPUNIT_ASSERT_EQUAL(0, caca_get_dirty_rect_count(cv));
     }
 
     void test_box()
     {
         caca_canvas_t *cv;
-        int i, dx, dy, dw, dh;
+        int dx, dy, dw, dh;
 
         cv = caca_create_canvas(WIDTH, HEIGHT);
         caca_clear_dirty_rect_list(cv);
 
+        /* Check that a filled box creates one dirty rectangle of the same
+         * size. */
         caca_fill_box(cv, 7, 3, 14, 9, 'x');
-        i = caca_get_dirty_rect_count(cv);
-        CPPUNIT_ASSERT_EQUAL(i, 1);
-        caca_get_dirty_rect(cv, 0, &dx, &dy, &dw, &dh);
-        CPPUNIT_ASSERT_EQUAL(dx, 7);
-        CPPUNIT_ASSERT_EQUAL(dy, 3);
-        CPPUNIT_ASSERT_EQUAL(dw, 14);
-        CPPUNIT_ASSERT_EQUAL(dh, 9);
 
+        CPPUNIT_ASSERT_EQUAL(1, caca_get_dirty_rect_count(cv));
+        caca_get_dirty_rect(cv, 0, &dx, &dy, &dw, &dh);
+        CPPUNIT_ASSERT_EQUAL(7, dx);
+        CPPUNIT_ASSERT_EQUAL(3, dy);
+        CPPUNIT_ASSERT_EQUAL(14, dw);
+        CPPUNIT_ASSERT_EQUAL(9, dh);
+
+        /* Check that the same filled box does not create a new dirty
+         * rectangle. */
         caca_clear_dirty_rect_list(cv);
         caca_fill_box(cv, 7, 3, 14, 9, 'x');
-        i = caca_get_dirty_rect_count(cv);
-        CPPUNIT_ASSERT_EQUAL(i, 0);
+
+        CPPUNIT_ASSERT_EQUAL(0, caca_get_dirty_rect_count(cv));
     }
 
     void test_blit()
@@ -198,37 +211,45 @@ public:
 
         /* Check that blitting a canvas make a dirty rectangle
          * only for modified lines */
+        /* FIXME: check this test's validity */
 
         caca_blit(cv, 1, 1, cv2, NULL);
         i = caca_get_dirty_rect_count(cv);
-        CPPUNIT_ASSERT_EQUAL(i, 1);
+        CPPUNIT_ASSERT_EQUAL(1, i);
         caca_get_dirty_rect(cv, 0, &dx, &dy, &dw, &dh);
 
-        CPPUNIT_ASSERT(dx == 1);
-        CPPUNIT_ASSERT(dy == 1);
-        CPPUNIT_ASSERT(dw >= 2);
-        CPPUNIT_ASSERT(dh == 1);
+        CPPUNIT_ASSERT(1 == dx);
+        CPPUNIT_ASSERT(1 == dy);
+        CPPUNIT_ASSERT(2 <= dw);
+        CPPUNIT_ASSERT(1 == dh);
 
         caca_clear_canvas(cv);
         caca_clear_dirty_rect_list(cv);
 
         /* Check that blitting a canvas make a dirty rectangle
          * only for modified chars when we have a mask */
+        /* FIXME: check this test's validity */
 
         caca_blit(cv, 1, 1, cv2, cv2);
         i = caca_get_dirty_rect_count(cv);
-        CPPUNIT_ASSERT_EQUAL(i, 1);
+        CPPUNIT_ASSERT_EQUAL(1, i);
         caca_get_dirty_rect(cv, 0, &dx, &dy, &dw, &dh);
 
-        CPPUNIT_ASSERT(dx == 1);
-        CPPUNIT_ASSERT(dy == 1);
-        CPPUNIT_ASSERT(dw == 2);
-        CPPUNIT_ASSERT(dh == 1);
+        CPPUNIT_ASSERT(1 == dx);
+        CPPUNIT_ASSERT(1 == dy);
+        CPPUNIT_ASSERT(2 == dw);
+        CPPUNIT_ASSERT(1 == dh);
+
+        CPPUNIT_ASSERT(' ' == caca_get_char(cv, 0, 0));
+
     }
 
 private:
-    static int const WIDTH = 80, HEIGHT = 50;
+    static int const WIDTH, HEIGHT;
 };
+
+int const DirtyTest::WIDTH = 80;
+int const DirtyTest::HEIGHT = 50;
 
 CPPUNIT_TEST_SUITE_REGISTRATION(DirtyTest);
 
