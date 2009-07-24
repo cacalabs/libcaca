@@ -11,7 +11,7 @@
     caca_refresh_display(dummy); \
     code; \
     caca_refresh_display(dummy); \
-    printf("%dms\n", caca_get_display_time(dummy) / 1000); \
+    printf("%5dms\n", caca_get_display_time(dummy) / 1000); \
     caca_free_display(dummy); \
 }
 
