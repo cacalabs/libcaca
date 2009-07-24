@@ -87,6 +87,7 @@ static int x11_init_graphics(caca_display_t *dp)
         sscanf(geometry, "%ux%u", &width, &height);
 #endif
 
+    caca_add_dirty_rect(dp->cv, 0, 0, dp->cv->width, dp->cv->height);
     dp->resize.allow = 1;
     caca_set_canvas_size(dp->cv, width ? width : 80, height ? height : 32);
     width = caca_get_canvas_width(dp->cv);

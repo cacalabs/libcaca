@@ -300,6 +300,7 @@ static int ncurses_init_graphics(caca_display_t *dp)
             }
         }
 
+    caca_add_dirty_rect(dp->cv, 0, 0, dp->cv->width, dp->cv->height);
     dp->resize.allow = 1;
     caca_set_canvas_size(dp->cv, COLS, LINES);
     dp->resize.allow = 0;

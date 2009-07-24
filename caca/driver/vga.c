@@ -72,9 +72,9 @@ static int vga_init_graphics(caca_display_t *dp)
     outb(0x0a, 0x3d4);
     outb(tmp, 0x3d5);
 
-    /* We don't have much choice */
+    caca_add_dirty_rect(dp->cv, 0, 0, dp->cv->width, dp->cv->height);
     dp->resize.allow = 1;
-    caca_set_canvas_size(dp->cv, 80, 25);
+    caca_set_canvas_size(dp->cv, 80, 25); /* We don't have much choice */
     dp->resize.allow = 0;
 
     return 0;
