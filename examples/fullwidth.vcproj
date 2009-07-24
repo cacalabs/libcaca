@@ -349,14 +349,10 @@
 	<References>
 	</References>
 	<Files>
-		<Filter
-			Name="Header Files"
+		<File
+			RelativePath="..\win32\config.h"
 			>
-			<File
-				RelativePath="..\win32\config.h"
-				>
-			</File>
-		</Filter>
+		</File>
 		<File
 			RelativePath="fullwidth.c"
 			>

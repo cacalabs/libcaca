@@ -349,16 +349,12 @@
 	<References>
 	</References>
 	<Files>
-		<Filter
-			Name="Header Files"
-			>
-			<File
-				RelativePath="..\win32\config.h"
-				>
-			</File>
-		</Filter>
 		<File
 			RelativePath="blit.c"
+			>
+		</File>
+		<File
+			RelativePath="..\win32\config.h"
 			>
 		</File>
 	</Files>

@@ -2,8 +2,10 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="libcaca++"
-	ProjectGUID="{5AAFB727-094F-4104-A765-A94B32497C7D}"
+	Name="bench"
+	ProjectGUID="{3F5133B7-D65C-4BD4-B8CA-247C08A14081}"
+	RootNamespace="bench"
+	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
@@ -21,7 +23,8 @@
 			Name="Debug|Win32"
 			OutputDirectory="$(SolutionDir)\win32\$(ConfigurationName)\$(PlatformName)"
 			IntermediateDirectory="$(SolutionDir)\win32\$(ConfigurationName)\$(PlatformName)\obj-$(ProjectName)"
-			ConfigurationType="2"
+			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
 			CharacterSet="2"
 			>
 			<Tool
@@ -43,13 +46,14 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\win32;..\caca"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;__LIBCACA_PP__"
+				PreprocessorDefinitions="LIBCACA=1"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="4"
-				CompileAs="2"
+				CompileAs="1"
 				DisableSpecificWarnings="4996;4142"
 			/>
 			<Tool
@@ -63,8 +67,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				ModuleDefinitionFile=".\libcaca++.def"
+				OutputFile="$(OutDir)/bench.exe"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories="&quot;C:\Program Files\Microsoft Platform SDK\Lib&quot;"
 				GenerateDebugInformation="true"
+				ProgramDatabaseFile="$(OutDir)/bench.pdb"
+				SubSystem="1"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 				TargetMachine="1"
@@ -95,7 +103,8 @@
 			Name="Debug|x64"
 			OutputDirectory="$(SolutionDir)\win32\$(ConfigurationName)\$(PlatformName)"
 			IntermediateDirectory="$(SolutionDir)\win32\$(ConfigurationName)\$(PlatformName)\obj-$(ProjectName)"
-			ConfigurationType="2"
+			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
 			CharacterSet="2"
 			>
 			<Tool
@@ -118,13 +127,14 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\win32;..\caca"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;__LIBCACA_PP__"
+				PreprocessorDefinitions="LIBCACA=1"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
-				CompileAs="2"
+				CompileAs="1"
 				DisableSpecificWarnings="4996;4142"
 			/>
 			<Tool
@@ -138,8 +148,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				ModuleDefinitionFile=".\libcaca++.def"
+				OutputFile="$(OutDir)/bench.exe"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories="&quot;C:\Program Files\Microsoft Platform SDK\Lib&quot;"
 				GenerateDebugInformation="true"
+				ProgramDatabaseFile="$(OutDir)/bench.pdb"
+				SubSystem="1"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 				TargetMachine="17"
@@ -170,7 +184,8 @@
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)\win32\$(ConfigurationName)\$(PlatformName)"
 			IntermediateDirectory="$(SolutionDir)\win32\$(ConfigurationName)\$(PlatformName)\obj-$(ProjectName)"
-			ConfigurationType="2"
+			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
 			>
@@ -191,12 +206,18 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				Optimization="2"
+				InlineFunctionExpansion="1"
+				OmitFramePointers="true"
 				AdditionalIncludeDirectories="..\win32;..\caca"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;__LIBCACA_PP__"
-				RuntimeLibrary="2"
+				PreprocessorDefinitions="LIBCACA=1"
+				StringPooling="true"
+				RuntimeLibrary="0"
+				EnableFunctionLevelLinking="true"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
-				CompileAs="2"
+				CompileAs="1"
 				DisableSpecificWarnings="4996;4142"
 			/>
 			<Tool
@@ -210,8 +231,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				ModuleDefinitionFile=".\libcaca++.def"
+				OutputFile="$(OutDir)/bench.exe"
+				LinkIncremental="1"
 				GenerateDebugInformation="true"
+				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				RandomizedBaseAddress="1"
@@ -244,9 +267,9 @@
 			Name="Release|x64"
 			OutputDirectory="$(SolutionDir)\win32\$(ConfigurationName)\$(PlatformName)"
 			IntermediateDirectory="$(SolutionDir)\win32\$(ConfigurationName)\$(PlatformName)\obj-$(ProjectName)"
-			ConfigurationType="2"
+			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
 			CharacterSet="2"
-			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -266,12 +289,18 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				Optimization="2"
+				InlineFunctionExpansion="1"
+				OmitFramePointers="true"
 				AdditionalIncludeDirectories="..\win32;..\caca"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;__LIBCACA_PP__"
-				RuntimeLibrary="2"
+				PreprocessorDefinitions="LIBCACA=1"
+				StringPooling="true"
+				RuntimeLibrary="0"
+				EnableFunctionLevelLinking="true"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
-				CompileAs="2"
+				CompileAs="1"
 				DisableSpecificWarnings="4996;4142"
 			/>
 			<Tool
@@ -285,8 +314,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				ModuleDefinitionFile=".\libcaca++.def"
+				OutputFile="$(OutDir)/bench.exe"
+				LinkIncremental="1"
 				GenerateDebugInformation="true"
+				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				RandomizedBaseAddress="1"
@@ -320,19 +351,11 @@
 	</References>
 	<Files>
 		<File
-			RelativePath="caca++.cpp"
-			>
-		</File>
-		<File
-			RelativePath="caca++.h"
+			RelativePath="bench.c"
 			>
 		</File>
 		<File
 			RelativePath="..\win32\config.h"
-			>
-		</File>
-		<File
-			RelativePath=".\libcaca++.def"
 			>
 		</File>
 	</Files>
