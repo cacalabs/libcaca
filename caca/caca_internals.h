@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2002-2006 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -80,7 +80,7 @@ struct caca_canvas
 /* Graphics driver */
 enum caca_driver
 {
-    CACA_DRIVER_NONE = 0,
+    CACA_DRIVER_NULL = 0,
     CACA_DRIVER_RAW = 1,
 #if defined(USE_COCOA)
     CACA_DRIVER_COCOA = 2,
@@ -121,6 +121,7 @@ int gl_install(caca_display_t *);
 #if defined(USE_NCURSES)
 int ncurses_install(caca_display_t *);
 #endif
+int null_install(caca_display_t *);
 int raw_install(caca_display_t *);
 #if defined(USE_SLANG)
 int slang_install(caca_display_t *);

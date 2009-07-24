@@ -178,6 +178,7 @@ char const * const * caca_get_display_driver_list(void)
 #endif
 #if !defined(__KERNEL__)
         "raw", "raw libcaca output",
+        "null", "null driver",
 #endif
         NULL, NULL
     };
@@ -389,6 +390,9 @@ static int caca_select_driver(caca_display_t *dp, char const *driver)
 #if defined(USE_VGA)
         if(!strcasecmp(var, "vga")) return vga_install(dp);
 #endif
+#if !defined(__KERNEL__)
+        if(!strcasecmp(var, "null")) return null_install(dp);
+#endif
         return -1;
     }
 #endif
@@ -419,6 +423,8 @@ static int caca_select_driver(caca_display_t *dp, char const *driver)
 #if defined(USE_SLANG)
     if(slang_install(dp) == 0) return 0;
 #endif
+    /* Of course we don't try "raw" or "null" if the user did not
+     * specifically ask for them. */
 
     return -1;
 }

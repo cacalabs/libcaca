@@ -62,6 +62,7 @@ codec_source = \
 driver_source = \
 	driver/conio.c \
 	driver/ncurses.c \
+	driver/null.c \
 	driver/raw.c \
 	driver/slang.c \
 	driver/vga.c \
