@@ -14,6 +14,14 @@
 
 /*
  *  This file contains the dirty rectangle handling functions.
+ *
+ *
+ *  About dirty rectangles:
+ *
+ *  * Dirty rectangles MUST NOT be larger than the canvas. If the user
+ *  provides a large rectangle through caca_add_dirty_rect(), or if the
+ *  canvas changes size to become smaller, all dirty rectangles MUST
+ *  immediately be clipped to the canvas size.
  */
 
 #include "config.h"
@@ -77,23 +85,12 @@ int caca_get_dirty_rect(caca_canvas_t *cv, int r,
         return -1;
     }
 
-    /* Normalise dirty rectangle so that the values can be directly used. */
-    if(cv->dirty_xmin < 0)
-        cv->dirty_xmin = 0;
+    *x = cv->dirty[r].xmin;
+    *y = cv->dirty[r].ymin;
+    *width = cv->dirty[r].xmax - cv->dirty[r].xmin + 1;
+    *height = cv->dirty[r].ymax - cv->dirty[r].ymin + 1;
 
-    if(cv->dirty_xmax > cv->width - 1)
-        cv->dirty_xmax = cv->width - 1;
-
-    if(cv->dirty_ymin < 0)
-        cv->dirty_ymin = 0;
-
-    if(cv->dirty_ymax > cv->height - 1)
-        cv->dirty_ymax = cv->height - 1;
-
-    *x = cv->dirty_xmin;
-    *y = cv->dirty_ymin;
-    *width = cv->dirty_xmax - cv->dirty_xmin + 1;
-    *height = cv->dirty_ymax - cv->dirty_ymin + 1;
+    debug("dirty #%i: %ix%i at (%i,%i)\n", r, *width, *height, *x, *y);
 
     return 0;
 }
@@ -118,35 +115,49 @@ int caca_get_dirty_rect(caca_canvas_t *cv, int r,
  *  \param height The height of the additional dirty rectangle.
  *  \return 0 in case of success, -1 if an error occurred.
  */
-int caca_add_dirty_rect(caca_canvas_t *cv, int x, int y,
-                             int width, int height)
+int caca_add_dirty_rect(caca_canvas_t *cv, int x, int y, int width, int height)
 {
-    /* Ignore empty and out-of-bounds rectangles */
-    if(width <= 0 || height <= 0 || x + width <= 0 || x >= cv->width
-        || y + height <= 0 || y >= cv->height)
+    debug("new dirty: %ix%i at (%i,%i)\n", width, height, x, y);
+
+    /* Clip arguments to canvas */
+    if(x < 0) { width += x; x = 0; }
+
+    if(x + width > cv->width)
+        width = cv->width - x;
+
+    if(y < 0) { height += y; y = 0; }
+
+    if(y + height > cv->height)
+        height = cv->height - y;
+
+    /* Ignore empty and out-of-canvas rectangles */
+    if(width <= 0 || height <= 0)
     {
         seterrno(EINVAL);
         return -1;
     }
 
-    if(cv->ndirty == 0)
+    /* Add dirty rectangle to list. Current strategy: if there is room
+     * for rectangles, just append it to the list. Otherwise, merge the
+     * new rectangle with the first in the list. */
+    if(cv->ndirty < MAX_DIRTY_COUNT)
     {
-        cv->ndirty = 1;
-        cv->dirty_xmin = x;
-        cv->dirty_xmax = x + width - 1;
-        cv->dirty_ymin = y;
-        cv->dirty_ymax = y + height - 1;
+        cv->dirty[cv->ndirty].xmin = x;
+        cv->dirty[cv->ndirty].xmax = x + width - 1;
+        cv->dirty[cv->ndirty].ymin = y;
+        cv->dirty[cv->ndirty].ymax = y + height - 1;
+        cv->ndirty++;
     }
     else
     {
-        if(x < cv->dirty_xmin)
-            cv->dirty_xmin = x;
-        if(x + width - 1 > cv->dirty_xmax)
-            cv->dirty_xmax = x + width - 1;
-        if(y < cv->dirty_ymin)
-            cv->dirty_ymin = y;
-        if(y + height - 1 > cv->dirty_ymax)
-            cv->dirty_ymax = y + height - 1;
+        if(x < cv->dirty[0].xmin)
+            cv->dirty[0].xmin = x;
+        if(x + width - 1 > cv->dirty[0].xmax)
+            cv->dirty[0].xmax = x + width - 1;
+        if(y < cv->dirty[0].ymin)
+            cv->dirty[0].ymin = y;
+        if(y + height - 1 > cv->dirty[0].ymax)
+            cv->dirty[0].ymax = y + height - 1;
     }
 
     return 0;
@@ -173,9 +184,19 @@ int caca_add_dirty_rect(caca_canvas_t *cv, int x, int y,
 int caca_remove_dirty_rect(caca_canvas_t *cv, int x, int y,
                            int width, int height)
 {
-    /* Ignore empty and out-of-bounds rectangles */
-    if(width <= 0 || height <= 0 || x + width <= 0 || x >= cv->width
-        || y + height <= 0 || y >= cv->height)
+    /* Clip arguments to canvas size */
+    if(x < 0) { width += x; x = 0; }
+
+    if(x + width > cv->width)
+        width = cv->width - x;
+
+    if(y < 0) { height += y; y = 0; }
+
+    if(y + height > cv->height)
+        height = cv->height - y;
+
+    /* Ignore empty and out-of-canvas rectangles */
+    if(width <= 0 || height <= 0)
     {
         seterrno(EINVAL);
         return -1;
@@ -202,5 +223,30 @@ int caca_clear_dirty_rect_list(caca_canvas_t *cv)
     cv->ndirty = 0;
 
     return 0;
+}
+
+/*
+ * XXX: the following functions are local.
+ */
+
+/* Clip all dirty rectangles in case they're larger than the canvas */
+void _caca_clip_dirty_rect_list(caca_canvas_t *cv)
+{
+    int i;
+
+    for(i = 0; i < cv->ndirty; i++)
+    {
+        if(cv->dirty[i].xmin < 0)
+            cv->dirty[i].xmin = 0;
+
+        if(cv->dirty[i].ymin < 0)
+            cv->dirty[i].ymin = 0;
+
+        if(cv->dirty[i].xmax >= cv->width)
+            cv->dirty[i].xmax = cv->width - 1;
+
+        if(cv->dirty[i].ymax >= cv->height)
+            cv->dirty[i].ymax = cv->height - 1;
+    }
 }
 

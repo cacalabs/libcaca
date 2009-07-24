@@ -23,6 +23,7 @@ typedef struct caca_figfont caca_figfont_t;
 
 #if !defined(_DOXYGEN_SKIP_ME)
 #   define EVENTBUF_LEN 10
+#   define MAX_DIRTY_COUNT 1
 #endif
 
 struct caca_frame
@@ -60,7 +61,11 @@ struct caca_canvas
 
     /* Dirty rectangles */
     int ndirty;
-    int dirty_xmin, dirty_xmax, dirty_ymin, dirty_ymax;
+    struct
+    {
+        int xmin, xmax, ymin, ymax;
+    }
+    dirty[MAX_DIRTY_COUNT];
 
     /* Shortcut to the active frame information */
     int width, height;
@@ -215,6 +220,9 @@ struct caca_display
 #endif
     } events;
 };
+
+/* Dirty rectangle functions */
+extern void _caca_clip_dirty_rect_list(caca_canvas_t *);
 
 /* Colour functions */
 extern uint32_t _caca_attr_to_rgb24fg(uint32_t);

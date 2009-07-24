@@ -370,9 +370,16 @@ int caca_resize(caca_canvas_t *cv, int width, int height)
 
     _caca_save_frame_info(cv);
 
+    /* Preload new width and height values into the canvas to optimise
+     * dirty rectangle handling */
     cv->width = width;
     cv->height = height;
     new_size = width * height;
+
+    /* If width or height is smaller (or both), we have the opportunity to
+     * reduce or even remove dirty rectangles */
+    if(width < old_width || height < old_height)
+        _caca_clip_dirty_rect_list(cv);
 
     /* Step 1: if new area is bigger, resize the memory area now. */
     if(new_size > old_size)
@@ -470,9 +477,8 @@ int caca_resize(caca_canvas_t *cv, int width, int height)
         caca_add_dirty_rect(cv, 0, old_height, old_width, height - old_height);
     }
 
-    /* XXX: technically we should not worry about the dirty rectangle in
-     * the bottom-right corner, because we only handle one dirty rectangle,
-     * but in case the API changes later, we make sure this is handled. */
+    /* If both width and height are larger, there is a new dirty rectangle
+     * that needs to be created in the lower right corner. */
     if(width > old_width && height > old_height)
         caca_add_dirty_rect(cv, old_width, old_height,
                             width - old_width, height - old_height);
