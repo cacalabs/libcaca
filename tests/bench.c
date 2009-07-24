@@ -1,19 +1,18 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
 
 #include "caca.h"
 
-
-#define TIME(desc,code) \
-{\
-    time_t start, end;\
-    start = time(NULL);\
-    code ;\
-    end = time(NULL);\
-    printf("%-25s:%4ld\n", desc, end-start);\
+#define TIME(desc, code) \
+{ \
+    caca_display_t *dummy = caca_create_display_with_driver(NULL, "null"); \
+    printf("%-25s: ", desc);\
+    caca_refresh_display(dummy); \
+    code; \
+    caca_refresh_display(dummy); \
+    printf("%dms\n", caca_get_display_time(dummy) / 1000); \
+    caca_free_display(dummy); \
 }
 
 static void blit(int mask, int clear)
