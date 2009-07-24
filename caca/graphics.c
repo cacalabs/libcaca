@@ -173,8 +173,8 @@ int caca_refresh_display(caca_display_t *dp)
         _caca_sleep(IDLE_USEC);
     }
 
-    /* Update the sliding mean of the render time */
-    dp->rendertime = (7 * dp->rendertime + ticks) / 8;
+    /* Update the render time */
+    dp->rendertime = ticks;
 
     dp->lastticks = ticks - dp->delay;
 
