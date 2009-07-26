@@ -120,12 +120,12 @@ class Canvas {
 		return caca_get_canvas_handle_y($this->cv);
 	}
 
-	function getCursorX() {
-		return caca_get_cursor_x($this->cv);
+	function whereX() {
+		return caca_wherex($this->cv);
 	}
 
-	function getCursorY() {
-		return caca_get_cursor_y($this->cv);
+	function whereY() {
+		return caca_wherey($this->cv);
 	}
 
 	function getChars() {

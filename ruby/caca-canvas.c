@@ -109,8 +109,15 @@ static VALUE gotoxy(VALUE self, VALUE x, VALUE y)
     return self;
 }
 
-get_int(cursor_x)
-get_int(cursor_y)
+static VALUE wherex(VALUE self)
+{
+    return INT2NUM(caca_wherex(_SELF));
+}
+
+static VALUE wherey(VALUE self)
+{
+    return INT2NUM(caca_wherey(_SELF));
+}
 
 simple_func(clear_canvas)
 
@@ -585,8 +592,8 @@ void Init_caca_canvas(VALUE mCaca)
     rb_define_method(cCanvas, "set_size", set_canvas_size, 2);
 
     rb_define_method(cCanvas, "gotoxy", gotoxy, 2);
-    rb_define_method(cCanvas, "cursor_x", get_cursor_x, 0);
-    rb_define_method(cCanvas, "cursor_y", get_cursor_y, 0);
+    rb_define_method(cCanvas, "wherex", wherex, 0);
+    rb_define_method(cCanvas, "wherey", wherey, 0);
     rb_define_method(cCanvas, "handle_x", get_canvas_handle_x, 0);
     rb_define_method(cCanvas, "handle_y", get_canvas_handle_y, 0);
     rb_define_method(cCanvas, "set_handle", set_canvas_handle, 2);

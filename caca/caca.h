@@ -225,8 +225,8 @@ __extern char const * caca_get_version(void);
  *  @{ */
 #define CACA_MAGIC_FULLWIDTH 0x000ffffe /**< Used to indicate that the previous character was a fullwidth glyph. */
 __extern int caca_gotoxy(caca_canvas_t *, int, int);
-__extern int caca_get_cursor_x(caca_canvas_t const *);
-__extern int caca_get_cursor_y(caca_canvas_t const *);
+__extern int caca_wherex(caca_canvas_t const *);
+__extern int caca_wherey(caca_canvas_t const *);
 __extern int caca_put_char(caca_canvas_t *, int, int, uint32_t);
 __extern uint32_t caca_get_char(caca_canvas_t const *, int, int);
 __extern int caca_put_str(caca_canvas_t *, int, int, char const *);
@@ -506,7 +506,7 @@ typedef struct cucul_buffer cucul_buffer_t;
 #   endif
 
 
-/* Aliases from old libcucul functions */
+/* Aliases from old libcaca and libcucul functions */
 __extern int cucul_putchar(caca_canvas_t *, int, int,
                            unsigned long int) CACA_DEPRECATED;
 __extern unsigned long int cucul_getchar(caca_canvas_t *,
@@ -600,6 +600,8 @@ __extern char const * const * cucul_get_dither_mode_list(caca_dither_t const *)
 #   define CUCUL_BLINK CACA_BLINK
 
 #   if !defined __LIBCACA__
+#       define caca_get_cursor_x caca_wherex
+#       define caca_get_cursor_y caca_wherey
 #       define cucul_draw_triangle caca_draw_triangle
 #       define cucul_draw_thin_triangle caca_draw_thin_triangle
 #       define cucul_fill_triangle caca_fill_triangle
@@ -611,8 +613,8 @@ __extern char const * const * cucul_get_dither_mode_list(caca_dither_t const *)
 #       define cucul_render_canvas caca_render_canvas
 #       define cucul_free_font caca_free_font
 #       define cucul_gotoxy caca_gotoxy
-#       define cucul_get_cursor_x caca_get_cursor_x
-#       define cucul_get_cursor_y caca_get_cursor_y
+#       define cucul_get_cursor_x caca_wherex
+#       define cucul_get_cursor_y caca_wherey
 #       define cucul_put_char caca_put_char
 #       define cucul_get_char caca_get_char
 #       define cucul_put_str caca_put_str

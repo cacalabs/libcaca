@@ -287,7 +287,7 @@ static void slang_display(caca_display_t *dp)
             cvattrs += dp->cv->width - dw;
         }
     }
-    SLsmg_gotorc(caca_get_cursor_y(dp->cv), caca_get_cursor_x(dp->cv));
+    SLsmg_gotorc(caca_wherey(dp->cv), caca_wherex(dp->cv));
     SLsmg_refresh();
 }
 

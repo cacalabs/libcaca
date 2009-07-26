@@ -31,8 +31,8 @@ class TC_Canvas < Test::Unit::TestCase
     end
     def test_cursor
         @c.gotoxy(1,1)
-        assert_equal(1, @c.cursor_x)
-        assert_equal(1, @c.cursor_y)
+        assert_equal(1, @c.wherex)
+        assert_equal(1, @c.wherey)
     end
     def test_clear
         @c.put_char(1, 1, 64)

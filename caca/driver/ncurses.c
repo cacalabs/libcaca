@@ -375,8 +375,8 @@ static void ncurses_display(caca_display_t *dp)
         }
     }
 
-    x = caca_get_cursor_x(dp->cv);
-    y = caca_get_cursor_y(dp->cv);
+    x = caca_wherex(dp->cv);
+    y = caca_wherey(dp->cv);
     move(y, x);
 
     refresh();

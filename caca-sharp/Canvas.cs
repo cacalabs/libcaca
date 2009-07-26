@@ -1,7 +1,7 @@
 /*
  *  libcaca       .NET bindings for libcaca
  *  Copyright (c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
- *                2007 Sam Hocevar <sam@zoy.org>
+ *                2007-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -115,14 +115,13 @@ namespace Caca
         private static extern int caca_gotoxy(IntPtr cv, int x, int y);
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
-        private static extern int caca_get_cursor_x(IntPtr cv);
+        private static extern int caca_wherex(IntPtr cv);
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
-        private static extern int caca_get_cursor_y(IntPtr cv);
+        private static extern int caca_wherey(IntPtr cv);
         public Point Cursor
         {
-            get { return new Point(caca_get_cursor_x(_c_cv),
-                                   caca_get_cursor_y(_c_cv)); }
+            get { return new Point(caca_wherex(_c_cv), caca_wherey(_c_cv)); }
             set { caca_gotoxy(_c_cv, value.X, value.Y); }
         }
 

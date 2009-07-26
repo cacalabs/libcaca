@@ -376,8 +376,8 @@ static void x11_display(caca_display_t *dp)
     {
         XSetForeground(dp->drv.p->dpy, dp->drv.p->gc,
                        dp->drv.p->colors[0xfff]);
-        x = caca_get_cursor_x(dp->cv);
-        y = caca_get_cursor_y(dp->cv);
+        x = caca_wherex(dp->cv);
+        y = caca_wherey(dp->cv);
         XFillRectangle(dp->drv.p->dpy, dp->drv.p->pixmap, dp->drv.p->gc,
                        x * dp->drv.p->font_width, y * dp->drv.p->font_height,
                        dp->drv.p->font_width, dp->drv.p->font_height);

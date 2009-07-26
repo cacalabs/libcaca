@@ -31,8 +31,8 @@ static function_entry caca_functions[] = {
     PHP_FE(caca_rand, NULL)
     PHP_FE(caca_get_version, NULL)
     PHP_FE(caca_gotoxy, NULL)
-    PHP_FE(caca_get_cursor_x, NULL)
-    PHP_FE(caca_get_cursor_y, NULL)
+    PHP_FE(caca_wherex, NULL)
+    PHP_FE(caca_wherey, NULL)
     PHP_FE(caca_put_char, NULL)
     PHP_FE(caca_get_char, NULL)
     PHP_FE(caca_put_str, NULL)
@@ -492,16 +492,16 @@ PHP_FUNCTION(caca_gotoxy) {
     RETURN_SUCCESS(caca_gotoxy(canvas, x, y));
 }
 
-PHP_FUNCTION(caca_get_cursor_x) {
+PHP_FUNCTION(caca_wherex) {
     caca_canvas_t *canvas;
     FETCH_CANVAS(canvas);
-    RETURN_LONG(caca_get_cursor_x(canvas));
+    RETURN_LONG(caca_wherex(canvas));
 }
 
-PHP_FUNCTION(caca_get_cursor_y) {
+PHP_FUNCTION(caca_wherey) {
     caca_canvas_t *canvas;
     FETCH_CANVAS(canvas);
-    RETURN_LONG(caca_get_cursor_y(canvas));
+    RETURN_LONG(caca_wherey(canvas));
 }
 
 PHP_FUNCTION(caca_put_char) {

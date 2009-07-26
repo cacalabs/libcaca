@@ -68,7 +68,7 @@ int caca_gotoxy(caca_canvas_t *cv, int x, int y)
  *  \param cv A handle to the libcaca canvas.
  *  \return The cursor's X coordinate.
  */
-int caca_get_cursor_x(caca_canvas_t const *cv)
+int caca_wherex(caca_canvas_t const *cv)
 {
     return cv->frames[cv->frame].x;
 }
@@ -82,7 +82,7 @@ int caca_get_cursor_x(caca_canvas_t const *cv)
  *  \param cv A handle to the libcaca canvas.
  *  \return The cursor's Y coordinate.
  */
-int caca_get_cursor_y(caca_canvas_t const *cv)
+int caca_wherey(caca_canvas_t const *cv)
 {
     return cv->frames[cv->frame].y;
 }
@@ -582,8 +582,10 @@ int caca_set_canvas_boundaries(caca_canvas_t *cv, int x, int y, int w, int h)
  */
 
 int cucul_gotoxy(cucul_canvas_t *, int, int) CACA_ALIAS(caca_gotoxy);
-int cucul_get_cursor_x(cucul_canvas_t const *) CACA_ALIAS(caca_get_cursor_x);
-int cucul_get_cursor_y(cucul_canvas_t const *) CACA_ALIAS(caca_get_cursor_y);
+int cucul_get_cursor_x(cucul_canvas_t const *) CACA_ALIAS(caca_wherex);
+int cucul_get_cursor_y(cucul_canvas_t const *) CACA_ALIAS(caca_wherey);
+int caca_get_cursor_x(caca_canvas_t const *) CACA_ALIAS(caca_wherex);
+int caca_get_cursor_y(caca_canvas_t const *) CACA_ALIAS(caca_wherey);
 int cucul_put_char(cucul_canvas_t *, int, int, uint32_t)
          CACA_ALIAS(caca_put_char);
 uint32_t cucul_get_char(cucul_canvas_t const *, int, int)
