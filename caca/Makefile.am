@@ -10,7 +10,7 @@ AM_CPPFLAGS = -I$(top_srcdir) -DPLUGINDIR=\"$(plugindir)\"
 pkgconfig_DATA = caca.pc
 pkgconfigdir = $(libdir)/pkgconfig
 
-include_HEADERS = caca.h caca_types.h caca0.h
+include_HEADERS = caca.h caca_types.h caca_conio.h caca0.h
 
 lib_LTLIBRARIES = libcaca.la
 
@@ -20,24 +20,26 @@ libcaca_la_SOURCES = \
 	caca_types.h \
 	caca_internals.h \
 	caca_stubs.h \
+	caca_conio.c \
+	caca_conio.h \
 	caca0.c \
 	caca0.h \
 	canvas.c \
 	dirty.c \
 	string.c \
-        legacy.c \
-        transform.c \
-        charset.c \
-        attr.c \
-        line.c \
-        box.c \
-        conic.c \
-        triangle.c \
-        frame.c \
-        dither.c \
-        font.c \
-        file.c \
-        figfont.c \
+	legacy.c \
+	transform.c \
+	charset.c \
+	attr.c \
+	line.c \
+	box.c \
+	conic.c \
+	triangle.c \
+	frame.c \
+	dither.c \
+	font.c \
+	file.c \
+	figfont.c \
 	graphics.c \
 	event.c \
 	time.c \
