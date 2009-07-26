@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2002-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -139,9 +139,23 @@ int caca_fill_box(caca_canvas_t *cv, int x, int y, int w, int h,
     if(x2 > xmax) x2 = xmax;
     if(y2 > ymax) y2 = ymax;
 
+#if 0
+    /* FIXME: this fails with fullwidth character blits. Also, the dirty
+     * rectangle handling may miss fullwidth cells. */
+    /* Optimise dirty rectangle handling, part 1 */
+    cv->dirty_disabled++;
+#endif
+
     for(j = y; j <= y2; j++)
         for(i = x; i <= x2; i++)
             caca_put_char(cv, i, j, ch);
+
+#if 0
+    /* Optimise dirty rectangle handling, part 2 */
+    cv->dirty_disabled--;
+    if(!cv->dirty_disabled)
+        caca_add_dirty_rect(cv, x, y, x2 - x + 1, y2 - y + 1);
+#endif
 
     return 0;
 }
