@@ -281,9 +281,36 @@ int caca_put_str(caca_canvas_t *cv, int x, int y, char const *s)
  */
 int caca_printf(caca_canvas_t *cv, int x, int y, char const *format, ...)
 {
+    va_list args;
+    int ret;
+    va_start(args, format);
+    ret = caca_vprintf(cv, x, y, format, args);
+    va_end(args);
+    return ret;
+}
+
+/** \brief Print a formated string (va_list version).
+ *
+ *  Format a string at the given coordinates, using the default foreground
+ *  and background values. The coordinates may be outside the canvas
+ *  boundaries (eg. a negative Y coordinate) and the string will be cropped
+ *  accordingly if it is too long. The syntax of the format string is the
+ *  same as for the C vprintf() function.
+ *
+ *  This function never fails.
+ *
+ *  \param cv A handle to the libcaca canvas.
+ *  \param x X coordinate.
+ *  \param y Y coordinate.
+ *  \param format The format string to print.
+ *  \param ap A va_list containting the arguments to the format string.
+ *  \return This function always returns 0.
+ */
+int caca_vprintf(caca_canvas_t *cv, int x, int y, char const *format,
+                 va_list args)
+{
     char tmp[BUFSIZ];
     char *buf = tmp;
-    va_list args;
 
     if(y < 0 || y >= (int)cv->height || x >= (int)cv->width)
         return 0;
@@ -291,14 +318,12 @@ int caca_printf(caca_canvas_t *cv, int x, int y, char const *format, ...)
     if(cv->width - x + 1 > BUFSIZ)
         buf = malloc(cv->width - x + 1);
 
-    va_start(args, format);
 #if defined(HAVE_VSNPRINTF)
     vsnprintf(buf, cv->width - x + 1, format, args);
 #else
     vsprintf(buf, format, args);
 #endif
     buf[cv->width - x] = '\0';
-    va_end(args);
 
     caca_put_str(cv, x, y, buf);
 

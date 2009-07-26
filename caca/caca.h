@@ -26,6 +26,10 @@
 
 #include <caca_types.h>
 
+#if !defined(__KERNEL__)
+#   include <stdarg.h>
+#endif
+
 #undef __extern
 #if defined(_DOXYGEN_SKIP_ME)
 #elif defined(_WIN32) && defined(__LIBCACA__)
@@ -227,6 +231,7 @@ __extern int caca_put_char(caca_canvas_t *, int, int, uint32_t);
 __extern uint32_t caca_get_char(caca_canvas_t const *, int, int);
 __extern int caca_put_str(caca_canvas_t *, int, int, char const *);
 __extern int caca_printf(caca_canvas_t *, int, int, char const *, ...);
+__extern int caca_vprintf(caca_canvas_t *, int, int, char const *, va_list);
 __extern int caca_clear_canvas(caca_canvas_t *);
 __extern int caca_set_canvas_handle(caca_canvas_t *, int, int);
 __extern int caca_get_canvas_handle_x(caca_canvas_t const *);
