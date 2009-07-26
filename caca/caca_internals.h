@@ -23,7 +23,7 @@ typedef struct caca_figfont caca_figfont_t;
 
 #if !defined(_DOXYGEN_SKIP_ME)
 #   define EVENTBUF_LEN 10
-#   define MAX_DIRTY_COUNT 1
+#   define MAX_DIRTY_COUNT 8
 #endif
 
 struct caca_frame
@@ -63,9 +63,9 @@ struct caca_canvas
     int ndirty;
     struct
     {
-        int xmin, xmax, ymin, ymax;
+        int xmin, ymin, xmax, ymax;
     }
-    dirty[MAX_DIRTY_COUNT];
+    dirty[MAX_DIRTY_COUNT + 1];
 
     /* Shortcut to the active frame information */
     int width, height;

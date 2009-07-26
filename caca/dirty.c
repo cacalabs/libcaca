@@ -28,10 +28,13 @@
 
 #if !defined(__KERNEL__)
 #   include <stdio.h>
+#   include <string.h>
 #endif
 
 #include "caca.h"
 #include "caca_internals.h"
+
+static void merge_new_rect(caca_canvas_t *cv, int n);
 
 /** \brief Get the number of dirty rectangles in the canvas.
  *
@@ -90,7 +93,7 @@ int caca_get_dirty_rect(caca_canvas_t *cv, int r,
     *width = cv->dirty[r].xmax - cv->dirty[r].xmin + 1;
     *height = cv->dirty[r].ymax - cv->dirty[r].ymin + 1;
 
-    debug("dirty #%i: %ix%i at (%i,%i)\n", r, *width, *height, *x, *y);
+    debug("dirty #%i: %ix%i at (%i,%i)", r, *width, *height, *x, *y);
 
     return 0;
 }
@@ -117,7 +120,7 @@ int caca_get_dirty_rect(caca_canvas_t *cv, int r,
  */
 int caca_add_dirty_rect(caca_canvas_t *cv, int x, int y, int width, int height)
 {
-    debug("new dirty: %ix%i at (%i,%i)\n", width, height, x, y);
+    debug("new dirty: %ix%i at (%i,%i)", width, height, x, y);
 
     /* Clip arguments to canvas */
     if(x < 0) { width += x; x = 0; }
@@ -137,29 +140,17 @@ int caca_add_dirty_rect(caca_canvas_t *cv, int x, int y, int width, int height)
         return -1;
     }
 
-    /* Add dirty rectangle to list. Current strategy: if there is room
-     * for rectangles, just append it to the list. Otherwise, merge the
-     * new rectangle with the first in the list. */
-    if(cv->ndirty < MAX_DIRTY_COUNT)
-    {
-        cv->dirty[cv->ndirty].xmin = x;
-        cv->dirty[cv->ndirty].xmax = x + width - 1;
-        cv->dirty[cv->ndirty].ymin = y;
-        cv->dirty[cv->ndirty].ymax = y + height - 1;
-        cv->ndirty++;
-    }
-    else
-    {
-        /* FIXME We may get overlapping rectangles like this */
-        if(x < cv->dirty[0].xmin)
-            cv->dirty[0].xmin = x;
-        if(x + width - 1 > cv->dirty[0].xmax)
-            cv->dirty[0].xmax = x + width - 1;
-        if(y < cv->dirty[0].ymin)
-            cv->dirty[0].ymin = y;
-        if(y + height - 1 > cv->dirty[0].ymax)
-            cv->dirty[0].ymax = y + height - 1;
-    }
+    /* Add the new rectangle to the list; it works even if cv->ndirty
+     * is MAX_DIRTY_COUNT because there's an extra cell in the array. */
+    cv->dirty[cv->ndirty].xmin = x;
+    cv->dirty[cv->ndirty].ymin = y;
+    cv->dirty[cv->ndirty].xmax = x + width - 1;
+    cv->dirty[cv->ndirty].ymax = y + height - 1;
+    cv->ndirty++;
+
+    /* Try to merge the new rectangle with existing ones. This also ensures
+     * that cv->ndirty is brought back below MAX_DIRTY_COUNT. */
+    merge_new_rect(cv, cv->ndirty - 1);
 
     return 0;
 }
@@ -229,6 +220,100 @@ int caca_clear_dirty_rect_list(caca_canvas_t *cv)
 /*
  * XXX: the following functions are local.
  */
+
+static inline int int_min(int a, int b) { return a < b ? a : b; }
+static inline int int_max(int a, int b) { return a > b ? a : b; }
+
+/* Merge a newly added rectangle, if necessary. */
+static void merge_new_rect(caca_canvas_t *cv, int n)
+{
+    int wasted[MAX_DIRTY_COUNT + 1];
+    int i, sn, best, best_score;
+
+    best = -1;
+    best_score = cv->width * cv->height;
+
+    sn = (cv->dirty[n].xmax - cv->dirty[n].xmin + 1)
+           * (cv->dirty[n].ymax - cv->dirty[n].ymin + 1);
+
+    /* Check whether the new rectangle can be merged with an existing one. */
+    for(i = 0; i < cv->ndirty; i++)
+    {
+        int si, sf, xmin, ymin, xmax, ymax;
+
+        if(i == n)
+            continue;
+
+        xmin = int_min(cv->dirty[i].xmin, cv->dirty[n].xmin);
+        ymin = int_min(cv->dirty[i].ymin, cv->dirty[n].ymin);
+        xmax = int_max(cv->dirty[i].xmax, cv->dirty[n].xmax);
+        ymax = int_max(cv->dirty[i].ymax, cv->dirty[n].ymax);
+
+        sf = (xmax - xmin + 1) * (ymax - ymin + 1);
+
+        /* Shortcut: if the current rectangle is inside the new rectangle,
+         * we remove the current rectangle and continue trying merges. */
+        if(sf == sn)
+        {
+            memmove(&cv->dirty[i], &cv->dirty[i + 1],
+                    (cv->ndirty - i) * sizeof(cv->dirty[0]));
+            cv->ndirty--;
+
+            if(i < n)
+                n--;
+            else
+                i--;
+
+            continue;
+        }
+
+        si = (cv->dirty[i].xmax - cv->dirty[i].xmin + 1)
+               * (cv->dirty[i].ymax - cv->dirty[i].ymin + 1);
+
+        /* Shortcut: if the new rectangle is inside the current rectangle,
+         * we get rid of the new rectangle and bail out. */
+        if(sf == si)
+        {
+            cv->ndirty--;
+            memmove(&cv->dirty[n], &cv->dirty[n + 1],
+                    (cv->ndirty - n) * sizeof(cv->dirty[0]));
+            return;
+        }
+
+        /* We store approximately how many bytes were wasted. FIXME: this is
+         * not an exact computation, we need to be more precise. */
+        wasted[i] = sf - si - sn;
+
+        if(wasted[i] < best_score)
+        {
+             best = i;
+             best_score = wasted[i];
+        }
+    }
+
+    /* FIXME: we only try to merge the current rectangle, ignoring
+     * potentially better merges. */
+
+    /* If no acceptable score was found and the dirty rectangle list is
+     * not full, we bail out. */
+    if(best_score > 0 && cv->ndirty < MAX_DIRTY_COUNT)
+        return;
+
+    /* Otherwise, merge the rectangle with the best candidate */
+    cv->dirty[best].xmin = int_min(cv->dirty[best].xmin, cv->dirty[n].xmin);
+    cv->dirty[best].ymin = int_min(cv->dirty[best].ymin, cv->dirty[n].ymin);
+    cv->dirty[best].xmax = int_max(cv->dirty[best].xmax, cv->dirty[n].xmax);
+    cv->dirty[best].ymax = int_max(cv->dirty[best].ymax, cv->dirty[n].ymax);
+
+    memmove(&cv->dirty[n], &cv->dirty[n + 1],
+            (cv->ndirty - n) * sizeof(cv->dirty[0]));
+    cv->ndirty--;
+
+    if(best < n)
+        merge_new_rect(cv, best);
+    else
+        merge_new_rect(cv, best - 1);
+}
 
 /* Clip all dirty rectangles in case they're larger than the canvas */
 void _caca_clip_dirty_rect_list(caca_canvas_t *cv)
