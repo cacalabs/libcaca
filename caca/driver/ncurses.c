@@ -365,6 +365,7 @@ static void ncurses_display(caca_display_t *dp)
             move(y, dx);
             for(x = dx; x < dx + dw; x++)
             {
+                /* FIXME: this emits a "value computed is unused" warning */
                 attrset(dp->drv.p->attr[caca_attr_to_ansi(*cvattrs++)]);
                 ncurses_write_utf32(*cvchars++);
             }
