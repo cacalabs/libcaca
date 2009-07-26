@@ -1,6 +1,6 @@
 /*
  *  cacafire      fire demo for libcaca
- *  Copyright (c) 2003 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2003 Sam Hocevar <sam@hocevar.net>
  *                1998, 1999, 2001 Jan Hubicka <hubicka@freesoft.cz>
  *                All Rights Reserved
  *
@@ -136,7 +136,7 @@ initialize (void)
   }
 #else
     aa_setpalette (palette, i, pal[i * 3] * 4,
-		   pal[i * 3 + 1] * 4, pal[i * 3 + 2] * 4);
+                   pal[i * 3 + 1] * 4, pal[i * 3 + 2] * 4);
 #endif
 
 #ifdef LIBCACA
@@ -171,12 +171,12 @@ gentable (void)
   for (i = 0; i < MAXTABLE; i++)
     {
       if (i > minus)
-	{
-	  p2 = (i - minus) / 5;
-	  table[i] = p2;
-	}
+        {
+          p2 = (i - minus) / 5;
+          table[i] = p2;
+        }
       else
-	table[i] = 0;
+        table[i] = 0;
     }
 }
 
@@ -191,12 +191,12 @@ firemain (void)
 #endif
   i = 0;
 #define END (bitmap + XSIZ * YSIZ)
-  for (p = (unsigned char*)bitmap; 
-       (char*)p <= (( char *) (END)); 
+  for (p = (unsigned char*)bitmap;
+       (char*)p <= (( char *) (END));
        p += 1)
     {
       *p = table[(*(p + XSIZ - 1) + *(p + XSIZ + 1) + *(p + XSIZ)) +
-		 (*(p + 2 * XSIZ - 1) + *(p + 2 * XSIZ + 1))];
+                 (*(p + 2 * XSIZ - 1) + *(p + 2 * XSIZ + 1))];
     }
 }
 
@@ -228,9 +228,9 @@ drawfire (void)
       last1 = rand () % min (i1, min (i2, height));
       i = rand () % 6;
       for (; p < (unsigned char *) bitmap + XSIZ * (YSIZ + 1) && i != 0;
-	   p++, i--, i1 += 4, i2 -= 4)
-	*p = last1, last1 += rand () % 6 - 2, *(p + XSIZ) = last1, last1 +=
-	  rand () % 6 - 2;
+           p++, i--, i1 += 4, i2 -= 4)
+        *p = last1, last1 += rand () % 6 - 2, *(p + XSIZ) = last1, last1 +=
+          rand () % 6 - 2;
       *(p + 2 * XSIZ) = last1, last1 += rand () % 6 - 2;
     }
   i = 0;
@@ -244,13 +244,13 @@ _paused:
     caca_put_str(cv, caca_get_canvas_width(cv) - 30,
                   caca_get_canvas_height(cv) - 2,
                   " -=[ Powered by libcaca ]=- ");
-  
+
   caca_refresh_display(dp);
   /*XSIZ = caca_get_width() * 2;
   YSIZ = caca_get_height() * 2 - 4;*/
 #else
   aa_renderpalette (context, palette, params, 0, 0, aa_scrwidth (context),
-		    aa_scrheight (context));
+                    aa_scrheight (context));
   aa_flush (context);
 #endif
 }

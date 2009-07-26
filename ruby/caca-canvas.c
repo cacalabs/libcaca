@@ -225,7 +225,7 @@ static VALUE blit(int argc, VALUE* argv, VALUE self) {
     }
     else
         cmask = NULL;
-    
+
     if(caca_blit(_SELF, NUM2INT(x), NUM2INT(y), csrc, cmask)<0)
         rb_raise(rb_eRuntimeError, strerror(errno));
 
@@ -295,7 +295,7 @@ static VALUE draw_polyline(VALUE self, VALUE points, VALUE ch)
             } else
                 error = 1;
         }
-	else
+        else
             error = 1;
     }
 
@@ -357,7 +357,7 @@ static VALUE draw_thin_polyline(VALUE self, VALUE points)
             } else
                 error = 1;
         }
-	else
+        else
             error = 1;
     }
 
@@ -583,7 +583,7 @@ void Init_caca_canvas(VALUE mCaca)
     rb_define_method(cCanvas, "height=", set_canvas_height, 1);
     rb_define_method(cCanvas, "set_height", set_canvas_height2, 1);
     rb_define_method(cCanvas, "set_size", set_canvas_size, 2);
-        
+
     rb_define_method(cCanvas, "gotoxy", gotoxy, 2);
     rb_define_method(cCanvas, "cursor_x", get_cursor_x, 0);
     rb_define_method(cCanvas, "cursor_y", get_cursor_y, 0);
@@ -594,7 +594,7 @@ void Init_caca_canvas(VALUE mCaca)
     rb_define_method(cCanvas, "set_boundaries", set_canvas_boundaries, 4);
 
     rb_define_method(cCanvas, "clear", clear_canvas, 0);
-    
+
     rb_define_method(cCanvas, "put_char", put_char, 3);
     rb_define_method(cCanvas, "get_char", get_char, 2);
     rb_define_method(cCanvas, "put_str", put_str, 3);

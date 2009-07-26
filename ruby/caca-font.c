@@ -24,7 +24,7 @@ void font_free(void *font)
 static VALUE font_alloc(VALUE klass)
 {
     VALUE obj;
-    obj = Data_Wrap_Struct(klass, 0, font_free, NULL);    
+    obj = Data_Wrap_Struct(klass, 0, font_free, NULL);
     return obj;
 }
 
@@ -45,10 +45,10 @@ static VALUE font_list(void)
 {
     VALUE ary;
     char const* const* list;
-    
+
     list = caca_get_font_list();
-    
-    ary = rb_ary_new();    
+
+    ary = rb_ary_new();
     while (*list != NULL)
     {
         rb_ary_push(ary, rb_str_new2(*list));
@@ -72,10 +72,10 @@ static VALUE get_font_blocks(VALUE self)
 {
     VALUE ary;
     uint32_t const *list;
-    
+
     list = caca_get_font_blocks(_SELF);
-    
-    ary = rb_ary_new();    
+
+    ary = rb_ary_new();
     while (*list != 0L)
     {
         rb_ary_push(ary, ULONG2NUM(*list));

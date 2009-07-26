@@ -24,7 +24,7 @@ void dither_free(void *dither)
 static VALUE dither_alloc(VALUE klass)
 {
     VALUE obj;
-    obj = Data_Wrap_Struct(klass, 0, dither_free, NULL);    
+    obj = Data_Wrap_Struct(klass, 0, dither_free, NULL);
     return obj;
 }
 
@@ -102,7 +102,7 @@ static VALUE set_dither_palette(VALUE self, VALUE palette)
             } else
                 error = 1;
         }
-	else
+        else
             error = 1;
     }
 
@@ -111,7 +111,7 @@ static VALUE set_dither_palette(VALUE self, VALUE palette)
         free(red);
         free(green);
         free(blue);
-        free(alpha);        
+        free(alpha);
         rb_raise(rb_eArgError, "Invalid palette");
     }
 
@@ -120,7 +120,7 @@ static VALUE set_dither_palette(VALUE self, VALUE palette)
         free(red);
         free(green);
         free(blue);
-        free(alpha);        
+        free(alpha);
         rb_raise(rb_eRuntimeError, strerror(errno));
     }
 
@@ -128,7 +128,7 @@ static VALUE set_dither_palette(VALUE self, VALUE palette)
     free(green);
     free(blue);
     free(alpha);
-    
+
     return palette;
 }
 
@@ -139,15 +139,15 @@ static VALUE set_dither_palette2(VALUE self, VALUE palette)
 }
 
 #define set_float(x)                                    \
-static VALUE set_##x(VALUE self, VALUE x)              \
+static VALUE set_##x(VALUE self, VALUE x)               \
 {                                                       \
-    if(caca_set_dither_##x(_SELF, (float)NUM2DBL(x))<0)\
+    if(caca_set_dither_##x(_SELF, (float)NUM2DBL(x))<0) \
         rb_raise(rb_eRuntimeError, strerror(errno));    \
                                                         \
     return x;                                           \
 }                                                       \
                                                         \
-static VALUE set_##x##2(VALUE self, VALUE x)           \
+static VALUE set_##x##2(VALUE self, VALUE x)            \
 {                                                       \
     set_##x(self, x);                                   \
     return self;                                        \
@@ -161,7 +161,7 @@ set_float(contrast)
 get_double_list(dither_##x)                              \
 static VALUE set_dither_##x(VALUE self, VALUE x)         \
 {                                                        \
-    if(caca_set_dither_##x(_SELF, StringValuePtr(x))<0) \
+    if(caca_set_dither_##x(_SELF, StringValuePtr(x))<0)  \
     {                                                    \
         rb_raise(rb_eRuntimeError, strerror(errno));     \
     }                                                    \

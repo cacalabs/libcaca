@@ -72,10 +72,10 @@ static VALUE display_initialize(int argc, VALUE* argv, VALUE self)
     if(driver == NULL)
     {
         display = caca_create_display(canvas);
-	if(display && NIL_P(cv))
-	{
+        if(display && NIL_P(cv))
+        {
             cv = canvas_create(caca_get_canvas(display));
-	}
+        }
     }
     else
     {

@@ -31,7 +31,7 @@ void Init_caca_event(VALUE mCaca)
     rb_define_const(cEvent, "TYPE", INT2FIX(CACA_EVENT_ANY));
 
     cEventKey = rb_define_class_under(cEvent, "Key", cEvent);
-    rb_define_const(cEventKey, "TYPE", 
+    rb_define_const(cEventKey, "TYPE",
                     INT2FIX(CACA_EVENT_KEY_PRESS|
                             CACA_EVENT_KEY_RELEASE));
 
@@ -42,7 +42,7 @@ void Init_caca_event(VALUE mCaca)
     cEventKeyRelease = rb_define_class_under(cEventKey, "Release", cEventKey);
     rb_define_const(cEventKeyRelease, "TYPE",
                     INT2FIX(CACA_EVENT_KEY_RELEASE));
-    
+
     cEventMouse = rb_define_class_under(cEvent, "Mouse", cEvent);
     rb_define_const(cEventMouse, "TYPE",
                     INT2FIX(CACA_EVENT_MOUSE_PRESS|

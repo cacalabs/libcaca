@@ -164,9 +164,9 @@ static BOOL s_quitting = NO;
     float fh = _font_rect.size.height;
     _w = ceilf([self bounds].size.width / fw);
     _h = ceilf([self bounds].size.height / fh);
-    debug_log(@"fw=%f selfw=%f %u %f", fw, [self bounds].size.width, 
+    debug_log(@"fw=%f selfw=%f %u %f", fw, [self bounds].size.width,
               _w, [self bounds].size.width-(_w*fw));
-    debug_log(@"fh=%f selfh=%f %u %f", fh, [self bounds].size.height, 
+    debug_log(@"fh=%f selfh=%f %u %f", fh, [self bounds].size.height,
               _h, [self bounds].size.height-(_h*fh));
 }
 
@@ -199,18 +199,18 @@ static BOOL s_quitting = NO;
         || !_attrs || !_bkg_rects || !_bkg_colors)
     {
         debug_log(@"%s resize to %ux%u", _cmd, _w, _h);
-        
+
         _w = caca_get_canvas_width(dp->cv);
         _h = caca_get_canvas_height(dp->cv);
 
         if(_attrs)
             free(_attrs);
         _attrs = malloc(_w * _h * sizeof(uint32_t) * 2);
-        
+
         if(_bkg_rects)
             free(_bkg_rects);
         _bkg_rects = malloc(_w * _h * sizeof(NSRect));
-        
+
         if(_bkg_colors)
             free(_bkg_colors);
         _bkg_colors = malloc(_w * _h * sizeof(NSColor*));
@@ -346,7 +346,7 @@ static BOOL s_quitting = NO;
 #else // USE_RGB12_FGBG
                     uint8_t argb[8];
                     caca_attr_to_argb64(*attrs, argb);
-                    debug_log(@"x,y=[%d,%d] r,g,b back=[%u %u %u] front=[%u %u %u]", 
+                    debug_log(@"x,y=[%d,%d] r,g,b back=[%u %u %u] front=[%u %u %u]",
                               x, y, argb[1], argb[2], argb[3], argb[5], argb[6], argb[7]);
                     color =  [NSColor colorWithCalibratedRed:((float)argb[5]) / 15.0
                                       green:((float)argb[6]) / 15.0
@@ -356,7 +356,7 @@ static BOOL s_quitting = NO;
 
                     if(color)
                     {
-                        NSMutableDictionary* attrDict = (*attrs & CACA_UNDERLINE) ? 
+                        NSMutableDictionary* attrDict = (*attrs & CACA_UNDERLINE) ?
                                                         _attrDictUnderline : _attrDict;
                         [attrDict setObject:color forKey:NSForegroundColorAttributeName];
 
@@ -460,7 +460,7 @@ struct driver_private
 
 static NSString* get_application_name()
 {
-    NSString* appName = [[NSBundle mainBundle] objectForInfoDictionaryKey: 
+    NSString* appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:
                                                    @"CFBundleName"];
     if(![appName length])
         appName = [[NSProcessInfo processInfo] processName];
@@ -476,32 +476,32 @@ static void create_application_menus()
     /* Create the application menu */
     NSString* appName = get_application_name();
     NSMenu* appleMenu = [[NSMenu alloc] initWithTitle:@""];
-    
+
     /* Add menu items */
     NSString* title = [@"About " stringByAppendingString:appName];
-    [appleMenu addItemWithTitle:title 
-               action:@selector(orderFrontStandardAboutPanel:) 
+    [appleMenu addItemWithTitle:title
+               action:@selector(orderFrontStandardAboutPanel:)
                keyEquivalent:@""];
     [appleMenu addItem:[NSMenuItem separatorItem]];
 
     title = [@"Hide " stringByAppendingString:appName];
-    [appleMenu addItemWithTitle:title action:@selector(hide:) 
+    [appleMenu addItemWithTitle:title action:@selector(hide:)
                keyEquivalent:@"h"];
 
-    id<NSMenuItem> menuItem = [appleMenu addItemWithTitle:@"Hide Others" 
+    id<NSMenuItem> menuItem = [appleMenu addItemWithTitle:@"Hide Others"
                                          action:@selector(hideOtherApplications:)
                                          keyEquivalent:@"h"];
     [menuItem setKeyEquivalentModifierMask:(NSAlternateKeyMask|NSCommandKeyMask)];
 
-    [appleMenu addItemWithTitle:@"Show All" 
+    [appleMenu addItemWithTitle:@"Show All"
                action:@selector(unhideAllApplications:)
                keyEquivalent:@""];
     [appleMenu addItem:[NSMenuItem separatorItem]];
 
     title = [@"Quit " stringByAppendingString:appName];
-    [appleMenu addItemWithTitle:title action:@selector(terminate:) 
+    [appleMenu addItemWithTitle:title action:@selector(terminate:)
                keyEquivalent:@"q"];
-    
+
     /* Put menu into the menubar */
     menuItem = [[NSMenuItem alloc] initWithTitle:@"" action:nil keyEquivalent:@""];
     [menuItem setSubmenu:appleMenu];
@@ -514,20 +514,20 @@ static void create_application_menus()
 
     /* Create the window menu */
     NSMenu* windowMenu = [[NSMenu alloc] initWithTitle:@"Window"];
-    
+
     /* "Minimize" item */
-    menuItem = [[NSMenuItem alloc] initWithTitle:@"Minimize" 
-                                   action:@selector(performMiniaturize:) 
+    menuItem = [[NSMenuItem alloc] initWithTitle:@"Minimize"
+                                   action:@selector(performMiniaturize:)
                                    keyEquivalent:@"m"];
     [windowMenu addItem:menuItem];
     [menuItem release];
-    
+
     /* Put menu into the menubar */
     menuItem = [[NSMenuItem alloc] initWithTitle:@"Window" action:nil keyEquivalent:@""];
     [menuItem setSubmenu:windowMenu];
     [[NSApp mainMenu] addItem:menuItem];
     [menuItem release];
-    
+
     /* Tell the application object that this is now the window menu */
     [NSApp setWindowsMenu:windowMenu];
     [windowMenu release];
@@ -561,11 +561,11 @@ static void register_cocoa_app(caca_display_t *dp)
 static __inline__ void convert_NSRect(NSRect *r)
 {
     float mb_height = 38.0; // [[NSApp mainMenu] menuBarHeight] is 0 - wtf ?
-    /*debug_log(@"%@ %f %f %d %d %d", [NSApp mainMenu], 
-             [[NSApp mainMenu] menuBarHeight], mb_height, 
-             (int)CGDisplayPixelsHigh(kCGDirectMainDisplay), 
+    /*debug_log(@"%@ %f %f %d %d %d", [NSApp mainMenu],
+             [[NSApp mainMenu] menuBarHeight], mb_height,
+             (int)CGDisplayPixelsHigh(kCGDirectMainDisplay),
              (int)r->origin.y, (int)r->size.height);*/
-    r->origin.y = CGDisplayPixelsHigh(kCGDirectMainDisplay) - mb_height 
+    r->origin.y = CGDisplayPixelsHigh(kCGDirectMainDisplay) - mb_height
                   - r->origin.y - r->size.height;
 }
 
@@ -617,7 +617,7 @@ static int get_caca_keycode(NSEvent* event)
         if(ch >= 'a' && ch <= 'z')
             caca_keycode = CACA_KEY_CTRL_A + ch - 'a';
     }
-    
+
     if(!caca_keycode)
     {
         NSString *chars = [event characters];
@@ -728,9 +728,9 @@ static BOOL handle_key_event(caca_privevent_t *ev, NSEvent* event)
 {
     if(!ev || !event)
         return NO;
-    
+
     BOOL eventHandled = NO;
-    
+
     if([event modifierFlags] & NSCommandKeyMask)
     {
         // let the system handle the Apple-commands for now
@@ -767,7 +767,7 @@ static BOOL handle_key_event(caca_privevent_t *ev, NSEvent* event)
             ev->data.key.utf32 = (uint32_t)mac_keycode;
             ev->data.key.utf8[0] = mac_keycode & 0x00ff; // FIXME: endianness
             ev->data.key.utf8[1] = mac_keycode & 0xff00;
-        
+
             eventHandled = YES;
         }
     }
@@ -859,7 +859,7 @@ static int cocoa_init_graphics(caca_display_t *dp)
 
 static int cocoa_end_graphics(caca_display_t *dp)
 {
-    debug_log(@"%s dp->cv: %ux%u", __PRETTY_FUNCTION__, 
+    debug_log(@"%s dp->cv: %ux%u", __PRETTY_FUNCTION__,
               caca_get_canvas_width(dp->cv), caca_get_canvas_height(dp->cv));
 
     NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
@@ -908,9 +908,9 @@ static int cocoa_get_event(caca_display_t *dp, caca_privevent_t *ev)
 
     if([NSApp isRunning])
     {
-        NSEvent *event = [NSApp nextEventMatchingMask:NSAnyEventMask 
-                                untilDate:[NSDate distantPast] 
-                                inMode:NSDefaultRunLoopMode 
+        NSEvent *event = [NSApp nextEventMatchingMask:NSAnyEventMask
+                                untilDate:[NSDate distantPast]
+                                inMode:NSDefaultRunLoopMode
                                 dequeue:YES];
         if(event)
         {
@@ -923,7 +923,7 @@ static int cocoa_get_event(caca_display_t *dp, caca_privevent_t *ev)
 
                 case NSFlagsChanged:
                     break;
-            
+
                 case NSLeftMouseDown:
                 case NSLeftMouseUp:
                 case NSRightMouseDown:

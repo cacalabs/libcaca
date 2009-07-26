@@ -132,7 +132,7 @@ int caca_put_figchar(caca_canvas_t *cv, uint32_t ch)
     caca_figfont_t *ff = cv->ff;
     int c, w, h, x, y, overlap, extra, xleft, xright;
 
-    if (!ff) 
+    if (!ff)
         return -1;
 
     switch(ch)

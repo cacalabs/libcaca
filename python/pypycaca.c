@@ -59,7 +59,7 @@ static PyMethodDef CacaMethods[] = {
     {"putstr", pycaca_putstr, METH_VARARGS, ""},
     {"printf", pycaca_printf, METH_VARARGS, ""},
     {"clear", pycaca_clear, METH_VARARGS, ""},
-    
+
     {"load_sprite", pycaca_load_sprite, METH_VARARGS, ""},
     {"draw_sprite", pycaca_draw_sprite,  METH_VARARGS, ""},
     {"get_sprite_frames", pycaca_get_sprite_frames, METH_VARARGS, ""},
@@ -79,7 +79,7 @@ static PyMethodDef CacaMethods[] = {
     {"set_bitmap_gamma", pycaca_set_bitmap_gamma, METH_VARARGS, ""},
     {"draw_bitmap", pycaca_draw_bitmap, METH_VARARGS, ""},
     {"free_bitmap", pycaca_free_bitmap, METH_VARARGS, ""},
-    
+
 
 
 
@@ -98,7 +98,7 @@ initcaca(void)
 
   obj = Py_InitModule("caca", CacaMethods);
   dict = PyModule_GetDict(obj);
-   
+
   SET_INTCONSTANT(dict,CACA_EVENT_NONE );
   SET_INTCONSTANT(dict,CACA_EVENT_KEY_PRESS );
   SET_INTCONSTANT(dict,CACA_EVENT_KEY_RELEASE );
@@ -107,7 +107,7 @@ initcaca(void)
   SET_INTCONSTANT(dict,CACA_EVENT_MOUSE_MOTION );
   SET_INTCONSTANT(dict,CACA_EVENT_RESIZE );
   SET_INTCONSTANT(dict,CACA_EVENT_ANY );
-  
+
   SET_INTCONSTANT(dict, CACA_COLOR_BLACK );
   SET_INTCONSTANT(dict, CACA_COLOR_BLUE );
   SET_INTCONSTANT(dict, CACA_COLOR_GREEN );
@@ -191,7 +191,7 @@ static PyObject *
 pycaca_init(PyObject *self, PyObject *args)
 {
   int ret;
-  
+
   ret = caca_init();
   return Py_BuildValue("i", ret);
 }
@@ -300,7 +300,7 @@ pycaca_get_feature(PyObject *self, PyObject *args)
   int value, ret;
   if (!PyArg_ParseTuple(args, "i", &value));
   ret = caca_get_feature(value);
-  
+
   return Py_BuildValue("i", ret);
 
 }
@@ -311,7 +311,7 @@ pycaca_set_feature(PyObject *self, PyObject *args)
   int value;
   if (!PyArg_ParseTuple(args, "i", &value));
   caca_set_feature(value);
-  
+
   return Py_BuildValue("i", 1); /* FIXME */
 
 }
@@ -323,7 +323,7 @@ pycaca_get_feature_name(PyObject *self, PyObject *args)
   if (!PyArg_ParseTuple(args, "i", &value));
 
   ret = (char* const)caca_get_feature_name(value);
-  
+
   return Py_BuildValue("s", ret);
 }
 
@@ -337,7 +337,7 @@ pycaca_get_event(PyObject *self, PyObject *args)
   if (!PyArg_ParseTuple(args, "i", &value));
 
   ret = caca_get_event(value);
-  
+
   return Py_BuildValue("i", ret);
 }
 static PyObject *
@@ -347,7 +347,7 @@ pycaca_wait_event(PyObject *self, PyObject *args)
   if (!PyArg_ParseTuple(args, "i", &value));
 
   ret = caca_get_event(value);
-  
+
   return Py_BuildValue("i", ret);
 }
 
@@ -373,7 +373,7 @@ pycaca_draw_line(PyObject *self, PyObject *args)
 {
   int x1, y1, x2, y2;
   char c;
-  
+
   if (!PyArg_ParseTuple(args, "iiiic", &x1,&y1,&x2,&y2,&c));
   caca_draw_line(x1,y1,x2,y2,c);
   return Py_BuildValue("i", 1); /* FIXME */
@@ -384,12 +384,12 @@ pycaca_draw_polyline(PyObject *self, PyObject *args)
   PyObject *list_x, *list_y, *item;
   int *x, *y, n, lenx, leny, i;
   char c;
-  
+
   if (!PyArg_ParseTuple(args, "OOic", &list_x, &list_y, &n, &c));
 
   lenx = PySequence_Length(list_x);
   leny = PySequence_Length(list_y);
-  
+
   x = (int*) malloc(lenx*sizeof(int));
   y = (int*) malloc(leny*sizeof(int));
 
@@ -418,7 +418,7 @@ static PyObject *
 pycaca_draw_thin_line(PyObject *self, PyObject *args)
 {
   int x1, y1, x2, y2;
-  
+
   if (!PyArg_ParseTuple(args, "iiii", &x1,&y1,&x2,&y2));
   caca_draw_thin_line(x1,y1,x2,y2);
   return Py_BuildValue("i", 1); /* FIXME */
@@ -429,12 +429,12 @@ pycaca_draw_thin_polyline(PyObject *self, PyObject *args)
 {
   PyObject *list_x, *list_y, *item;
   int *x, *y, n, lenx, leny, i;
-  
+
   if (!PyArg_ParseTuple(args, "OOi", &list_x, &list_y, &n));
 
   lenx = PySequence_Length(list_x);
   leny = PySequence_Length(list_y);
-  
+
   x = (int*) malloc(lenx*sizeof(int));
   y = (int*) malloc(leny*sizeof(int));
 
@@ -564,14 +564,14 @@ static PyObject *
 pycaca_get_fg_color(PyObject *self, PyObject *args)
 {
   int ret = caca_get_fg_color();
-  return Py_BuildValue("i", ret); 
+  return Py_BuildValue("i", ret);
 }
 
 static PyObject *
 pycaca_get_bg_color(PyObject *self, PyObject *args)
 {
   int ret = caca_get_bg_color();
-  return Py_BuildValue("i", ret); 
+  return Py_BuildValue("i", ret);
 }
 
 static PyObject *
@@ -581,7 +581,7 @@ pycaca_get_color_name(PyObject *self, PyObject *args)
   char *ret;
   if (!PyArg_ParseTuple(args, "i", &c));
   ret = (char *)caca_get_color_name(c);
-  
+
   return Py_BuildValue("s", ret); /* FIXME */
 }
 
@@ -648,7 +648,7 @@ pycaca_draw_sprite(PyObject *self, PyObject *args)
 
   if (!PyArg_ParseTuple(args, "iiii", &x, &y, &sprite,&frame));
   caca_draw_sprite(x,y, (struct caca_sprite const *)PyCObject_AsVoidPtr((void*)sprite), frame);
-  
+
   return Py_BuildValue("i", 1); /* FIXME */
 }
 
@@ -659,8 +659,8 @@ pycaca_get_sprite_frames(PyObject *self, PyObject *args)
   if (!PyArg_ParseTuple(args, "i", &sprite));
   ret = caca_get_sprite_frames((struct caca_sprite const *)PyCObject_AsVoidPtr((void*)sprite));
 
-  return Py_BuildValue("i", ret); 
- 
+  return Py_BuildValue("i", ret);
+
 }
 
 static PyObject *
@@ -670,7 +670,7 @@ pycaca_get_sprite_width(PyObject *self, PyObject *args)
   if (!PyArg_ParseTuple(args, "ii", &sprite, &i));
   ret = caca_get_sprite_width((struct caca_sprite const *)PyCObject_AsVoidPtr((void*)sprite),i);
 
-  return Py_BuildValue("i", ret); 
+  return Py_BuildValue("i", ret);
 
 }
 
@@ -680,8 +680,8 @@ pycaca_get_sprite_height(PyObject *self, PyObject *args)
   int sprite, ret, i;
   if (!PyArg_ParseTuple(args, "ii", &sprite, i));
   ret = caca_get_sprite_height((struct caca_sprite const *)PyCObject_AsVoidPtr((void*)sprite),i);
-  
-  return Py_BuildValue("i", ret); 
+
+  return Py_BuildValue("i", ret);
 }
 
 static PyObject *
@@ -690,8 +690,8 @@ pycaca_get_sprite_dx(PyObject *self, PyObject *args)
   int sprite, ret, i;
   if (!PyArg_ParseTuple(args, "ii", &sprite), &i);
   ret = caca_get_sprite_dx((struct caca_sprite const *)PyCObject_AsVoidPtr((void*)sprite),i);
-  
-  return Py_BuildValue("i", ret); 
+
+  return Py_BuildValue("i", ret);
 }
 
 static PyObject *
@@ -700,8 +700,8 @@ pycaca_get_sprite_dy(PyObject *self, PyObject *args)
   int sprite, ret, i;
   if (!PyArg_ParseTuple(args, "ii", &sprite), &i);
   ret = caca_get_sprite_dy((struct caca_sprite const *)PyCObject_AsVoidPtr((void*)sprite),i);
-  
-  return Py_BuildValue("i", ret); 
+
+  return Py_BuildValue("i", ret);
 }
 
 static PyObject *
@@ -710,7 +710,7 @@ pycaca_free_sprite(PyObject *self, PyObject *args)
   int sprite;
   if (!PyArg_ParseTuple(args, "i", &sprite));
   caca_free_sprite((struct caca_sprite *)PyCObject_AsVoidPtr((void*)sprite));
-  
+
   return Py_BuildValue("i", 1);  /* FIXME */
 }
 
@@ -722,7 +722,7 @@ pycaca_get_html(PyObject *self, PyObject *args)
 {
   if (!PyArg_ParseTuple(args, ""));
 
-  return Py_BuildValue("s",caca_get_html()); 
+  return Py_BuildValue("s",caca_get_html());
 }
 
 static PyObject *
@@ -730,7 +730,7 @@ pycaca_get_html3(PyObject *self, PyObject *args)
 {
   if (!PyArg_ParseTuple(args, ""));
 
-  return Py_BuildValue("s",caca_get_html3()); 
+  return Py_BuildValue("s",caca_get_html3());
 }
 
 static PyObject *
@@ -738,7 +738,7 @@ pycaca_get_irc(PyObject *self, PyObject *args)
 {
   if (!PyArg_ParseTuple(args, ""));
 
-  return Py_BuildValue("s",caca_get_irc()); 
+  return Py_BuildValue("s",caca_get_irc());
 }
 
 static PyObject *
@@ -746,8 +746,8 @@ pycaca_get_ansi(PyObject *self, PyObject *args)
 {
   int trailing;
   if (!PyArg_ParseTuple(args, "i", &trailing));
-  
-  return Py_BuildValue("s",caca_get_ansi(trailing)); 
+
+  return Py_BuildValue("s",caca_get_ansi(trailing));
 }
 
 /**********/
@@ -773,7 +773,7 @@ pycaca_set_bitmap_palette(PyObject *self, PyObject *args)
   unsigned int *r,*g,*b,*a,i;
 
   if (!PyArg_ParseTuple(args, "iOOOO", &bitmap, &list_r, &list_g, &list_b, &list_a));
-  
+
   if((PySequence_Length(list_r)!=256) ||
      (PySequence_Length(list_g)!=256) ||
      (PySequence_Length(list_b)!=256) ||
@@ -781,7 +781,7 @@ pycaca_set_bitmap_palette(PyObject *self, PyObject *args)
     {
       PyErr_SetString(PyExc_TypeError, "Lengths of colors lists must be 256");
     }
-     
+
   r = malloc(256*sizeof(unsigned int));
   g = malloc(256*sizeof(unsigned int));
   b = malloc(256*sizeof(unsigned int));
@@ -826,17 +826,17 @@ pycaca_draw_bitmap(PyObject *self, PyObject *args)
   int i;
 
   if (!PyArg_ParseTuple(args, "iiiiiO", &x1,&y1,&x2,&y2,&bitmap,&pixels));
-  
+
 
   buffer = malloc(PySequence_Length(pixels)*sizeof(unsigned char));
 
-  
+
   for(i=0;i<PySequence_Length(pixels);i++)
     {
       item = PySequence_GetItem(pixels, i);
       buffer[i] = (unsigned char)PyInt_AsLong(item);
     }
-  
+
 
 
   caca_draw_bitmap(x1,y1,x2,y2, (struct caca_bitmap *)PyCObject_AsVoidPtr((void*)bitmap), (void*)buffer);

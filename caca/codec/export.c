@@ -413,7 +413,7 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
                     cell_boundary_bitmap[x / 8] |= 1 << (x % 8);
             }
     }
-    
+
     /* The HTML table markup: less than 1000 bytes
      * A line: 10 chars for "<tr></tr>\n"
      * A glyph: up to 48 chars for "<td bgcolor=\"#xxxxxx\"><tt><font color=\"#xxxxxx\">"

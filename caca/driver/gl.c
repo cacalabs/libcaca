@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2002-2006 Sam Hocevar <sam@hocevar.net>
  *                2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                2007 Ben Wiley Sittler <bsittler@gmail.com>
  *                All Rights Reserved
@@ -562,7 +562,7 @@ static void gl_compute_font(caca_display_t *dp)
                     caca_utf32_is_fullwidth(dp->drv.p->blocks[i] + j);
 
             memset(tmp, 0, 16 * 8 * 16);
-            
+
             for(y = 0; y < h; y++)
             {
                 for(x = 0; x < w * (fullwidth ? 2 : 1); x++)
@@ -576,7 +576,7 @@ static void gl_compute_font(caca_display_t *dp)
                     tmp[offset * 4 + 3] = c;
                 }
             }
-            
+
             glGenTextures(1, (GLuint*)&dp->drv.p->txid[b + j]);
             glBindTexture(GL_TEXTURE_2D, dp->drv.p->txid[b + j]);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
