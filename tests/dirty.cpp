@@ -27,6 +27,7 @@ class DirtyTest : public CppUnit::TestCase
     CPPUNIT_TEST(test_create);
     CPPUNIT_TEST(test_put_char_dirty);
     CPPUNIT_TEST(test_put_char_not_dirty);
+    CPPUNIT_TEST(test_simplify);
     CPPUNIT_TEST(test_box);
     CPPUNIT_TEST(test_blit);
     CPPUNIT_TEST_SUITE_END();
@@ -170,6 +171,42 @@ public:
         caca_put_char(cv, 7, 3, 0x2f06 /* ⼆ */);
 
         CPPUNIT_ASSERT_EQUAL(0, caca_get_dirty_rect_count(cv));
+    }
+
+    void test_simplify()
+    {
+        caca_canvas_t *cv;
+        int dx, dy, dw, dh;
+
+        cv = caca_create_canvas(WIDTH, HEIGHT);
+
+        /* Check that N adjacent blits only create one dirty rectangle */
+        caca_clear_dirty_rect_list(cv);
+        for(int i = 0; i < 10; i++)
+        {
+            caca_put_char(cv, 7 + i, 3, '-');
+
+            CPPUNIT_ASSERT_EQUAL(1, caca_get_dirty_rect_count(cv));
+            caca_get_dirty_rect(cv, 0, &dx, &dy, &dw, &dh);
+            CPPUNIT_ASSERT_EQUAL(7, dx);
+            CPPUNIT_ASSERT_EQUAL(3, dy);
+            CPPUNIT_ASSERT_EQUAL(1 + i, dw);
+            CPPUNIT_ASSERT_EQUAL(1, dh);
+        }
+
+        /* Check that N adjacent blits only create one dirty rectangle */
+        caca_clear_dirty_rect_list(cv);
+        for(int j = 0; j < 10; j++)
+        {
+            caca_put_char(cv, 7, 3 + j, '|');
+
+            CPPUNIT_ASSERT_EQUAL(1, caca_get_dirty_rect_count(cv));
+            caca_get_dirty_rect(cv, 0, &dx, &dy, &dw, &dh);
+            CPPUNIT_ASSERT_EQUAL(7, dx);
+            CPPUNIT_ASSERT_EQUAL(3, dy);
+            CPPUNIT_ASSERT_EQUAL(1, dw);
+            CPPUNIT_ASSERT_EQUAL(1 + j, dh);
+        }
     }
 
     void test_box()
