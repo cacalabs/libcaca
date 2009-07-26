@@ -94,6 +94,7 @@ caca_canvas_t * caca_create_canvas(int width, int height)
     caca_set_color_ansi(cv, CACA_DEFAULT, CACA_TRANSPARENT);
 
     cv->ndirty = 0;
+    cv->dirty_disabled = 0;
     cv->ff = NULL;
 
     if(caca_resize(cv, width, height) < 0)
