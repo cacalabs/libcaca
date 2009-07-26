@@ -63,6 +63,7 @@ struct driver_private
 #endif
     uint32_t max_char;
     int cursor_flags;
+    int dirty_cursor_x, dirty_cursor_y;
 };
 
 #define UNICODE_XLFD_SUFFIX "-iso10646-1"
@@ -249,6 +250,8 @@ static int x11_init_graphics(caca_display_t *dp)
     dp->drv.p->pointer = None;
 
     dp->drv.p->cursor_flags = 0;
+    dp->drv.p->dirty_cursor_x = -1;
+    dp->drv.p->dirty_cursor_y = -1;
 
     return 0;
 }
@@ -296,11 +299,31 @@ static void x11_display(caca_display_t *dp)
     int height = caca_get_canvas_height(dp->cv);
     int x, y, i, len;
 
-    for(i = 0; i < caca_get_dirty_rect_count(dp->cv); i++)
+    /* XXX: the magic value -1 is used to handle the cursor area */
+    for(i = -1; i < caca_get_dirty_rect_count(dp->cv); i++)
     {
         int dx, dy, dw, dh;
 
-        caca_get_dirty_rect(dp->cv, i, &dx, &dy, &dw, &dh);
+        /* Get the dirty rectangle coordinates, either from the previous
+         * cursor position, or from the canvas's list. */
+        if(i == -1)
+        {
+            if(dp->drv.p->dirty_cursor_x < 0 || dp->drv.p->dirty_cursor_y < 0
+                || dp->drv.p->dirty_cursor_x >= width
+                || dp->drv.p->dirty_cursor_y >= height)
+                continue;
+
+            dx = dp->drv.p->dirty_cursor_x;
+            dy = dp->drv.p->dirty_cursor_y;
+            dw = dh = 1;
+
+            dp->drv.p->dirty_cursor_x = -1;
+            dp->drv.p->dirty_cursor_y = -1;
+        }
+        else
+        {
+            caca_get_dirty_rect(dp->cv, i, &dx, &dy, &dw, &dh);
+        }
 
         /* First draw the background colours. Splitting the process in two
          * loops like this is actually slightly faster. */
@@ -348,7 +371,7 @@ static void x11_display(caca_display_t *dp)
         }
     }
 
-    /* Print the cursor if necessary. FIXME: handle dirty rectangles! */
+    /* Print the cursor if necessary. */
     if(dp->drv.p->cursor_flags)
     {
         XSetForeground(dp->drv.p->dpy, dp->drv.p->gc,
@@ -358,6 +381,10 @@ static void x11_display(caca_display_t *dp)
         XFillRectangle(dp->drv.p->dpy, dp->drv.p->pixmap, dp->drv.p->gc,
                        x * dp->drv.p->font_width, y * dp->drv.p->font_height,
                        dp->drv.p->font_width, dp->drv.p->font_height);
+
+        /* Mark the area as dirty */
+        dp->drv.p->dirty_cursor_x = x;
+        dp->drv.p->dirty_cursor_y = y;
     }
 
     XCopyArea(dp->drv.p->dpy, dp->drv.p->pixmap, dp->drv.p->window,
