@@ -54,7 +54,8 @@ int caca_invert(caca_canvas_t *cv)
         attrs++;
     }
 
-    caca_add_dirty_rect(cv, 0, 0, cv->width, cv->height);
+    if(!cv->dirty_disabled)
+        caca_add_dirty_rect(cv, 0, 0, cv->width, cv->height);
 
     return 0;
 }
@@ -115,7 +116,8 @@ int caca_flip(caca_canvas_t *cv)
         }
     }
 
-    caca_add_dirty_rect(cv, 0, 0, cv->width, cv->height);
+    if(!cv->dirty_disabled)
+        caca_add_dirty_rect(cv, 0, 0, cv->width, cv->height);
 
     return 0;
 }
@@ -162,7 +164,8 @@ int caca_flop(caca_canvas_t *cv)
             *ctop = flopchar(*ctop);
     }
 
-    caca_add_dirty_rect(cv, 0, 0, cv->width, cv->height);
+    if(!cv->dirty_disabled)
+        caca_add_dirty_rect(cv, 0, 0, cv->width, cv->height);
 
     return 0;
 }
@@ -221,7 +224,8 @@ int caca_rotate_180(caca_canvas_t *cv)
         }
     }
 
-    caca_add_dirty_rect(cv, 0, 0, cv->width, cv->height);
+    if(!cv->dirty_disabled)
+        caca_add_dirty_rect(cv, 0, 0, cv->width, cv->height);
 
     return 0;
 }
@@ -340,7 +344,8 @@ int caca_rotate_left(caca_canvas_t *cv)
     /* Reset the current frame shortcuts */
     _caca_load_frame_info(cv);
 
-    caca_add_dirty_rect(cv, 0, 0, cv->width, cv->height);
+    if(!cv->dirty_disabled)
+        caca_add_dirty_rect(cv, 0, 0, cv->width, cv->height);
 
     return 0;
 }
@@ -459,7 +464,8 @@ int caca_rotate_right(caca_canvas_t *cv)
     /* Reset the current frame shortcuts */
     _caca_load_frame_info(cv);
 
-    caca_add_dirty_rect(cv, 0, 0, cv->width, cv->height);
+    if(!cv->dirty_disabled)
+        caca_add_dirty_rect(cv, 0, 0, cv->width, cv->height);
 
     return 0;
 }

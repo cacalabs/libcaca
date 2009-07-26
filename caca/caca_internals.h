@@ -60,7 +60,7 @@ struct caca_canvas
     void *resize_data;
 
     /* Dirty rectangles */
-    int ndirty;
+    int ndirty, dirty_disabled;
     struct
     {
         int xmin, ymin, xmax, ymax;

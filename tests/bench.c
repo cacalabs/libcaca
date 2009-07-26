@@ -47,15 +47,22 @@ static void blit(int mask, int clear)
     caca_free_canvas(cv2);
 }
 
-static void putchars(void)
+static void putchars(int optim)
 {
     caca_canvas_t *cv;
     int i;
     cv = caca_create_canvas(40, 40);
+    if(optim)
+        caca_disable_dirty_rect(cv);
     for (i = 0; i < PUTCHAR_LOOPS; i++)
     {
         caca_put_char(cv, 1, 1, 'x');
         caca_put_char(cv, 1, 1, 'o');
+    }
+    if(optim)
+    {
+        caca_enable_dirty_rect(cv);
+        caca_add_dirty_rect(cv, 1, 1, 1, 1);
     }
     caca_free_canvas(cv);
 }
@@ -66,7 +73,8 @@ int main(int argc, char *argv[])
     TIME("blit no mask, clear", blit(0, 1));
     TIME("blit mask, no clear", blit(1, 0));
     TIME("blit mask, clear", blit(1, 1));
-    TIME("putchars", putchars());
+    TIME("putchars, no optim", putchars(0));
+    TIME("putchars, optim", putchars(1));
     return 0;
 }
 

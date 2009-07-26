@@ -433,7 +433,9 @@ int caca_resize(caca_canvas_t *cv, int width, int height)
             }
         }
 
-        caca_add_dirty_rect(cv, old_width, 0, width - old_width, old_height);
+        if(!cv->dirty_disabled)
+            caca_add_dirty_rect(cv, old_width, 0,
+                                width - old_width, old_height);
     }
     else
     {
@@ -474,12 +476,15 @@ int caca_resize(caca_canvas_t *cv, int width, int height)
             }
         }
 
-        caca_add_dirty_rect(cv, 0, old_height, old_width, height - old_height);
+        if(!cv->dirty_disabled)
+            caca_add_dirty_rect(cv, 0, old_height,
+                                old_width, height - old_height);
     }
 
     /* If both width and height are larger, there is a new dirty rectangle
      * that needs to be created in the lower right corner. */
-    if(width > old_width && height > old_height)
+    if(!cv->dirty_disabled &&
+        width > old_width && height > old_height)
         caca_add_dirty_rect(cv, old_width, old_height,
                             width - old_width, height - old_height);
 

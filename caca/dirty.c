@@ -36,6 +36,51 @@
 
 static void merge_new_rect(caca_canvas_t *cv, int n);
 
+/** \brief Disable dirty rectangles.
+ *
+ *  Disable dirty rectangle handling for all \e libcaca graphic calls. This
+ *  is handy when the calling application needs to do slow operations within
+ *  a known area. Just call caca_add_dirty_rect() afterwards.
+ *
+ *  This function is recursive. Dirty rectangles are only reenabled when
+ *  caca_enable_dirty_rect() is called as many times.
+ *
+ *  This function never fails.
+ *
+ *  \param cv A libcaca canvas.
+ *  \return This function always returns 0.
+ */
+int caca_disable_dirty_rect(caca_canvas_t *cv)
+{
+    cv->dirty_disabled++;
+
+    return 0;
+}
+
+/** \brief Enable dirty rectangles.
+ *
+ *  This function can only be called after caca_disable_dirty_rect() was
+ *  called.
+ *
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
+ *  - \c EINVAL Dirty rectangles were not disabled.
+ *
+ *  \param cv A libcaca canvas.
+ *  \return 0 in case of success, -1 if an error occurred.
+ */
+int caca_enable_dirty_rect(caca_canvas_t *cv)
+{
+    if(cv->dirty_disabled <= 0)
+    {
+        seterrno(EINVAL);
+        return -1;
+    }
+
+    cv->dirty_disabled--;
+
+    return 0;
+}
+
 /** \brief Get the number of dirty rectangles in the canvas.
  *
  *  Get the number of dirty rectangles in a canvas. Dirty rectangles are

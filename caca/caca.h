@@ -240,6 +240,8 @@ __extern int caca_set_canvas_boundaries(caca_canvas_t *, int, int, int, int);
  *
  *  These functions manipulate dirty rectangles for optimised blitting.
  *  @{ */
+__extern int caca_disable_dirty_rect(caca_canvas_t *);
+__extern int caca_enable_dirty_rect(caca_canvas_t *);
 __extern int caca_get_dirty_rect_count(caca_canvas_t *);
 __extern int caca_get_dirty_rect(caca_canvas_t *, int, int *, int *,
                                  int *, int *);

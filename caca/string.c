@@ -180,7 +180,8 @@ int caca_put_char(caca_canvas_t *cv, int x, int y, uint32_t ch)
      * or attribute at that place. This does not account for inconsistencies
      * in the canvas, ie. if CACA_MAGIC_FULLWIDTH lies at illegal places,
      * but it's the caller's responsibility not to corrupt the contents. */
-    if(curchar[0] != ch || curattr[0] != attr)
+    if(!cv->dirty_disabled
+        && (curchar[0] != ch || curattr[0] != attr))
         caca_add_dirty_rect(cv, xmin, y, xmax - xmin + 1, 1);
 
     curchar[0] = ch;
@@ -327,7 +328,8 @@ int caca_clear_canvas(caca_canvas_t *cv)
         cv->attrs[n] = attr;
     }
 
-    caca_add_dirty_rect(cv, 0, 0, cv->width, cv->height);
+    if(!cv->dirty_disabled)
+        caca_add_dirty_rect(cv, 0, 0, cv->width, cv->height);
 
     return 0;
 }
@@ -453,7 +455,8 @@ int caca_blit(caca_canvas_t *dst, int x, int y,
                 {
                     dst->chars[dstix + i] = src->chars[srcix + i];
                     dst->attrs[dstix + i] = src->attrs[srcix + i];
-                    caca_add_dirty_rect(dst, x + starti + i, y + j, 1, 1);
+                    if(!dst->dirty_disabled)
+                        caca_add_dirty_rect(dst, x + starti + i, y + j, 1, 1);
                 }
             }
         }
@@ -465,7 +468,8 @@ int caca_blit(caca_canvas_t *dst, int x, int y,
                 /* FIXME be more precise ? */
                 memcpy(dst->chars + dstix, src->chars + srcix, stride * 4);
                 memcpy(dst->attrs + dstix, src->attrs + srcix, stride * 4);
-                caca_add_dirty_rect(dst, x + starti, y + j, stride, 1);
+                if(!dst->dirty_disabled)
+                    caca_add_dirty_rect(dst, x + starti, y + j, stride, 1);
             }
         }
 
@@ -542,7 +546,8 @@ int caca_set_canvas_boundaries(caca_canvas_t *cv, int x, int y, int w, int h)
     _caca_load_frame_info(cv);
 
     /* FIXME: this may be optimised somewhat */
-    caca_add_dirty_rect(cv, 0, 0, cv->width, cv->height);
+    if(!cv->dirty_disabled)
+        caca_add_dirty_rect(cv, 0, 0, cv->width, cv->height);
 
     return 0;
 }

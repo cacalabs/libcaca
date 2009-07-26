@@ -156,7 +156,8 @@ int caca_put_attr(caca_canvas_t *cv, int x, int y, uint32_t attr)
         xmax++;
     }
 
-    caca_add_dirty_rect(cv, xmin, y, xmax - xmin + 1, 1);
+    if(!cv->dirty_disabled)
+        caca_add_dirty_rect(cv, xmin, y, xmax - xmin + 1, 1);
 
     return 0;
 }
