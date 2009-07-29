@@ -41,6 +41,8 @@ int main(int argc, char *argv[])
     caca_put_char(cv, 0, 0, 'x');
     TEST(caca_get_char(cv, 0, 0) != 'x');
 
+    caca_rotate_180(cv);
+
     caca_set_canvas_size(cv, 1, 1);
     TEST(caca_get_char(cv, 0, 0) != 'x');
     TEST(caca_get_char(cv, 0, 0) == ' ');

@@ -191,6 +191,9 @@ int caca_rotate_180(caca_canvas_t *cv)
     uint32_t *aend = abegin + cv->width * cv->height - 1;
     int y;
 
+    if(!cbegin)
+	return 0;
+
     while(cbegin < cend)
     {
         uint32_t ch;
