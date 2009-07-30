@@ -25,11 +25,11 @@ EXTRA_DIST = $(caca_sources) $(test_sources) \
 	caca-sharp.csproj test-csharp.csproj
 
 caca-sharp.dll: $(caca_sources)
-	$(GMCS) -debug -unsafe $(caca_sources) -out:$@ -target:library \
+	$(CSC) -debug -unsafe $(caca_sources) -out:$@ -target:library \
 	  -keyfile:$(srcdir)/caca-sharp.snk -r:System.Drawing.dll
 
 test.exe: $(test_sources) caca-sharp.dll
-	$(GMCS) -debug $(test_sources) -out:$@ -lib:./ \
+	$(CSC) -debug $(test_sources) -out:$@ -lib:./ \
 	  -r:System.Drawing.dll -r:./caca-sharp.dll
 
 if USE_CSHARP
