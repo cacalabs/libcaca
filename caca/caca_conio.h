@@ -154,6 +154,7 @@ __extern void   caca_conio_clrscr(void);
 __extern int    caca_conio_cprintf(const char *format, ...);
 __extern int    caca_conio_cputs(const char *str);
 __extern int    caca_conio_cscanf(char *format, ...);
+__extern void   caca_conio_delay(int);
 __extern void   caca_conio_delline(void);
 __extern int    caca_conio_getch(void);
 __extern int    caca_conio_getche(void);
@@ -169,11 +170,13 @@ __extern void   caca_conio_lowvideo(void);
 __extern int    caca_conio_movetext(int left, int top, int right, int bottom,
                                     int destleft, int desttop);
 __extern void   caca_conio_normvideo(void);
+__extern void   caca_conio_nosound(void);
 __extern int    caca_conio_printf(const char *format, ...);
 __extern int    caca_conio_putch(int ch);
 __extern int    caca_conio_puttext(int left, int top, int right, int bottom,
                                    void *destin);
 __extern void   caca_conio__setcursortype(int cur_t);
+__extern void   caca_conio_sound(int);
 __extern void   caca_conio_textattr(int newattr);
 __extern void   caca_conio_textbackground(int newcolor);
 __extern void   caca_conio_textcolor(int newcolor);
@@ -196,6 +199,8 @@ __extern void   caca_conio_window(int left, int top, int right, int bottom);
 #   define cputs caca_conio_cputs
 #   undef cscanf
 #   define cscanf caca_conio_cscanf
+#   undef delay
+#   define delay caca_conio_delay
 #   undef delline
 #   define delline caca_conio_delline
 #   undef getch
@@ -222,6 +227,8 @@ __extern void   caca_conio_window(int left, int top, int right, int bottom);
 #   define movetext caca_conio_movetext
 #   undef normvideo
 #   define normvideo caca_conio_normvideo
+#   undef nosound
+#   define nosound caca_conio_nosound
 #   undef printf
 #   define printf caca_conio_printf
 #   undef putch
@@ -230,6 +237,8 @@ __extern void   caca_conio_window(int left, int top, int right, int bottom);
 #   define puttext caca_conio_puttext
 #   undef _setcursortype
 #   define _setcursortype caca_conio__setcursortype
+#   undef sound
+#   define sound caca_conio_sound
 #   undef textattr
 #   define textattr caca_conio_textattr
 #   undef textbackground

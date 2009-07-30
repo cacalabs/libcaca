@@ -106,6 +106,14 @@ int caca_conio_cscanf(char *format, ...)
     return 0;
 }
 
+/** \brief DOS conio.h delay() equivalent */
+void caca_conio_delay(int i)
+{
+    conio_init();
+
+    /* TODO: implement this function */
+}
+
 /** \brief DOS conio.h delline() equivalent */
 void caca_conio_delline(void)
 {
@@ -244,6 +252,14 @@ void caca_conio_normvideo(void)
     /* TODO: implement this function */
 }
 
+/** \brief DOS conio.h nosound() equivalent */
+void caca_conio_nosound(void)
+{
+    conio_init();
+
+    /* TODO: implement this function */
+}
+
 /** \brief DOS stdio.h printf() equivalent */
 int caca_conio_printf(const char *format, ...)
 {
@@ -284,6 +300,14 @@ int caca_conio_puttext(int left, int top, int right, int bottom, void *destin)
 
 /** \brief DOS conio.h _setcursortype() equivalent */
 void caca_conio__setcursortype(int cur_t)
+{
+    conio_init();
+
+    /* TODO: implement this function */
+}
+
+/** \brief DOS conio.h sound() equivalent */
+void caca_conio_sound(int i)
 {
     conio_init();
 
