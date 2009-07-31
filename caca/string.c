@@ -101,26 +101,31 @@ int caca_wherey(caca_canvas_t const *cv)
  *  characters is undefined. To print a sequence of bytes forming an UTF-8
  *  character instead of an UTF-32 character, use the caca_put_str() function.
  *
+ *  This function returns the width of the printed character. If it is a
+ *  fullwidth character, 2 is returned. Otherwise, 1 is returned.
+ *
  *  This function never fails.
  *
  *  \param cv A handle to the libcaca canvas.
  *  \param x X coordinate.
  *  \param y Y coordinate.
  *  \param ch The character to print.
- *  \return This function always returns 0.
+ *  \return The width of the printed character: 2 for a fullwidth character,
+ *          1 otherwise.
  */
 int caca_put_char(caca_canvas_t *cv, int x, int y, uint32_t ch)
 {
     uint32_t *curchar, *curattr, attr;
-    int fullwidth, xmin, xmax;
-
-    if(x >= (int)cv->width || y < 0 || y >= (int)cv->height)
-        return 0;
+    int fullwidth, xmin, xmax, ret;
 
     if(ch == CACA_MAGIC_FULLWIDTH)
-        return 0;
+        return 1;
 
     fullwidth = caca_utf32_is_fullwidth(ch);
+    ret = fullwidth ? 2 : 1;
+
+    if(x >= (int)cv->width || y < 0 || y >= (int)cv->height)
+        return ret;
 
     if(x == -1 && fullwidth)
     {
@@ -129,7 +134,7 @@ int caca_put_char(caca_canvas_t *cv, int x, int y, uint32_t ch)
         fullwidth = 0;
     }
     else if(x < 0)
-        return 0;
+        return ret;
 
     curchar = cv->chars + x + y * cv->width;
     curattr = cv->attrs + x + y * cv->width;
@@ -187,7 +192,7 @@ int caca_put_char(caca_canvas_t *cv, int x, int y, uint32_t ch)
     curchar[0] = ch;
     curattr[0] = attr;
 
-    return 0;
+    return ret;
 }
 
 /** \brief Get the Unicode character at the given coordinates.
@@ -230,36 +235,45 @@ uint32_t caca_get_char(caca_canvas_t const *cv, int x, int y)
  *  See caca_put_char() for more information on how fullwidth characters
  *  are handled when overwriting each other or at the canvas' boundaries.
  *
+ *  This function returns the number of cells printed by the string. It is
+ *  not the number of characters printed, because fullwidth characters
+ *  account for two cells.
+ *
  *  This function never fails.
  *
  *  \param cv A handle to the libcaca canvas.
  *  \param x X coordinate.
  *  \param y Y coordinate.
  *  \param s The string to print.
- *  \return This function always returns 0.
+ *  \return The number of cells printed.
  */
 int caca_put_str(caca_canvas_t *cv, int x, int y, char const *s)
 {
     size_t rd;
+    int len = 0;
 
     if(y < 0 || y >= (int)cv->height || x >= (int)cv->width)
-        return 0;
-
-    while(*s && x < -1)
     {
-        x += caca_utf32_is_fullwidth(caca_utf8_to_utf32(s, &rd)) ? 2 : 1;
-        s += rd;
+        while(*s)
+        {
+            len += caca_utf32_is_fullwidth(caca_utf8_to_utf32(s, &rd)) ? 2 : 1;
+            s += rd;
+        }
+        return len;
     }
 
-    while(*s && x < (int)cv->width)
+    while(*s)
     {
         uint32_t ch = caca_utf8_to_utf32(s, &rd);
-        caca_put_char(cv, x, y, ch);
-        x += caca_utf32_is_fullwidth(ch) ? 2 : 1;
+
+        if(x + len >= -1 && x + len < (int)cv->width)
+            caca_put_char(cv, x + len, y, ch);
+
+        len += caca_utf32_is_fullwidth(ch) ? 2 : 1;
         s += rd;
     }
 
-    return 0;
+    return len;
 }
 
 /** \brief Print a formated string.
@@ -270,6 +284,10 @@ int caca_put_str(caca_canvas_t *cv, int x, int y, char const *s)
  *  accordingly if it is too long. The syntax of the format string is the
  *  same as for the C printf() function.
  *
+ *  This function returns the number of cells printed by the string. It is
+ *  not the number of characters printed, because fullwidth characters
+ *  account for two cells.
+ *
  *  This function never fails.
  *
  *  \param cv A handle to the libcaca canvas.
@@ -277,7 +295,7 @@ int caca_put_str(caca_canvas_t *cv, int x, int y, char const *s)
  *  \param y Y coordinate.
  *  \param format The format string to print.
  *  \param ... Arguments to the format string.
- *  \return This function always returns 0.
+ *  \return The number of cells printed.
  */
 int caca_printf(caca_canvas_t *cv, int x, int y, char const *format, ...)
 {
@@ -297,6 +315,10 @@ int caca_printf(caca_canvas_t *cv, int x, int y, char const *format, ...)
  *  accordingly if it is too long. The syntax of the format string is the
  *  same as for the C vprintf() function.
  *
+ *  This function returns the number of cells printed by the string. It is
+ *  not the number of characters printed, because fullwidth characters
+ *  account for two cells.
+ *
  *  This function never fails.
  *
  *  \param cv A handle to the libcaca canvas.
@@ -304,16 +326,14 @@ int caca_printf(caca_canvas_t *cv, int x, int y, char const *format, ...)
  *  \param y Y coordinate.
  *  \param format The format string to print.
  *  \param ap A va_list containting the arguments to the format string.
- *  \return This function always returns 0.
+ *  \return The number of cells printed.
  */
 int caca_vprintf(caca_canvas_t *cv, int x, int y, char const *format,
                  va_list args)
 {
     char tmp[BUFSIZ];
     char *buf = tmp;
-
-    if(y < 0 || y >= (int)cv->height || x >= (int)cv->width)
-        return 0;
+    int ret;
 
     if(cv->width - x + 1 > BUFSIZ)
         buf = malloc(cv->width - x + 1);
@@ -325,12 +345,12 @@ int caca_vprintf(caca_canvas_t *cv, int x, int y, char const *format,
 #endif
     buf[cv->width - x] = '\0';
 
-    caca_put_str(cv, x, y, buf);
+    ret = caca_put_str(cv, x, y, buf);
 
     if(buf != tmp)
         free(buf);
 
-    return 0;
+    return ret;
 }
 
 /** \brief Clear the canvas.

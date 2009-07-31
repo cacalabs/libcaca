@@ -73,18 +73,19 @@ void caca_conio_clrscr(void)
 int caca_conio_cprintf(const char *format, ...)
 {
     va_list args;
+    int ret;
 
     conio_init();
 
     va_start(args, format);
-    caca_vprintf(cv, caca_wherex(cv), caca_wherey(cv), format, args);
+    ret = caca_vprintf(cv, caca_wherex(cv), caca_wherey(cv), format, args);
     va_end(args);
+
+    caca_gotoxy(cv, caca_wherex(cv) + ret, caca_wherey(cv));
 
     conio_refresh();
 
-    /* FIXME: we should fix caca_vprintf so that it returns the number of
-     * characters that were printed. */
-    return 0;
+    return ret;
 }
 
 /** \brief DOS conio.h cputs() equivalent */
@@ -112,7 +113,7 @@ void caca_conio_delay(int i)
 {
     conio_init();
 
-    /* TODO: implement this function */
+    _caca_sleep(i * 1000);
 }
 
 /** \brief DOS conio.h delline() equivalent */
@@ -271,17 +272,18 @@ void caca_conio_nosound(void)
 int caca_conio_printf(const char *format, ...)
 {
     va_list args;
+    int ret;
 
     conio_init();
 
     va_start(args, format);
-    caca_vprintf(cv, caca_wherex(cv), caca_wherey(cv), format, args);
+    ret = caca_vprintf(cv, caca_wherex(cv), caca_wherey(cv), format, args);
     va_end(args);
+
+    caca_gotoxy(cv, caca_wherex(cv) + ret, caca_wherey(cv));
 
     conio_refresh();
 
-    /* FIXME: we should fix caca_vprintf so that it returns the number of
-     * characters that were printed. */
     return 0;
 }
 
