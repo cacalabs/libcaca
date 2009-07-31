@@ -65,6 +65,7 @@ void caca_conio_clrscr(void)
     conio_init();
 
     caca_clear_canvas(cv);
+    caca_gotoxy(cv, 0, 0);
 
     conio_refresh();
 }
@@ -152,11 +153,12 @@ int caca_conio_getch(void)
 /** \brief DOS conio.h getche() equivalent */
 int caca_conio_getche(void)
 {
-    conio_init();
+    /* conio_init() is called here. */
+    int tmp = caca_conio_getch();
+    /* conio_refresh() is called here. */
+    caca_conio_printf("%c", tmp);
 
-    /* TODO: implement this function */
-
-    return 0;
+    return tmp;
 }
 
 /** \brief DOS conio.h getpass() equivalent */
