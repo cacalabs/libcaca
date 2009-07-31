@@ -32,6 +32,7 @@ static caca_canvas_t *cv;
 static caca_display_t *dp;
 
 static int unget_ch = -1;
+static int kbhit_ch = -1;
 static char pass_buffer[BUFSIZ];
 static char cgets_buffer[BUFSIZ];
 
@@ -126,7 +127,6 @@ void caca_conio_delline(void)
 int caca_conio_getch(void)
 {
     caca_event_t ev;
-    int ch;
 
     conio_init();
 
@@ -137,17 +137,15 @@ int caca_conio_getch(void)
         return tmp;
     }
 
-    caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
-    ch = caca_get_event_key_ch(&ev);
-
-    switch(ch)
+    if(kbhit_ch >= 0)
     {
-        case CACA_KEY_LEFT: ch = 75; break;
-        case CACA_KEY_RIGHT: ch = 77; break;
-        default: break;
+        int tmp = kbhit_ch;
+        kbhit_ch = -1;
+        return tmp;
     }
 
-    return ch;
+    caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
+    return caca_get_event_key_ch(&ev);
 }
 
 /** \brief DOS conio.h getche() equivalent */
@@ -218,9 +216,18 @@ void caca_conio_insline(void)
 /** \brief DOS conio.h kbhit() equivalent */
 int caca_conio_kbhit(void)
 {
+    caca_event_t ev;
+
     conio_init();
 
-    /* TODO: implement this function */
+    if(kbhit_ch >= 0)
+        return 1;
+
+    if(caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, 0))
+    {
+        kbhit_ch = caca_get_event_key_ch(&ev);
+        return 1;
+    }
 
     return 0;
 }
