@@ -2,7 +2,7 @@
 
 AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/caca -I$(top_builddir)/caca
 
-noinst_PROGRAMS = blit canvas colors conio demo demo0 dithering driver event export figfont font font2tga frames fullwidth gamma hsv input spritedit swallow text transform truecolor unicode import
+noinst_PROGRAMS = blit canvas colors conio conio-snake demo demo0 dithering driver event export figfont font font2tga frames fullwidth gamma hsv input spritedit swallow text transform truecolor unicode import
 
 blit_SOURCES = blit.c
 blit_LDADD = ../caca/libcaca.la
@@ -15,6 +15,9 @@ colors_LDADD = ../caca/libcaca.la
 
 conio_SOURCES = conio.c
 conio_LDADD = ../caca/libcaca.la
+
+conio_snake_SOURCES = conio-snake.cpp
+conio_snake_LDADD = ../caca/libcaca.la
 
 demo_SOURCES = demo.c
 demo_LDADD = ../caca/libcaca.la

@@ -10,6 +10,7 @@
 - Jan Hubicka <hubicka@freesoft.cz> - aafire
 - Michele Bini <mibin@tin.it> - original SDL plasma
 - Free Software Foundation, Inc. - multiboot.S
+- Simon Huggins <webmaster#simonhuggins.com> - conio-snake
 
 \section thanks3 Porters and packagers
 
