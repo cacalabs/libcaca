@@ -1,5 +1,17 @@
 /* $Id$ */ /** \page libcaca-news Libcaca news
 
+\section news0_99_beta17 Changes between 0.9.beta17 and 0.99.beta16
+
+ - new dirty rectangle framework for accelerated rendering
+ - new <conio.h> compatible header for old DOS software porting
+ - XCode and Visual Studio build improvements
+ - improved HTML output
+ - improved Ruby and .NET bindings
+ - new comprehensive PHP bindings
+ - Cocoa driver enhancements
+ - documentation updates
+ - minor improvements and bugfixes
+
 \section news0_99_beta16 Changes between 0.9.beta16 and 0.99.beta15
 
  - many build fixes, especially for nonstandard platforms
