@@ -31,6 +31,9 @@
 static caca_canvas_t *cv;
 static caca_display_t *dp;
 
+static caca_timer_t refresh_timer = {0, 0};
+static uint64_t refresh_ticks;
+
 static int unget_ch = -1;
 static int kbhit_ch = -1;
 static char pass_buffer[BUFSIZ];
@@ -39,6 +42,9 @@ static char cgets_buffer[BUFSIZ];
 static void conio_init(void);
 static void conio_refresh(void);
 static void conio_fini(void);
+
+int caca_conio_directvideo;
+int caca_conio__wscroll;
 
 /** \brief DOS conio.h cgets() equivalent */
 char * caca_conio_cgets(char *str)
@@ -56,7 +62,11 @@ void caca_conio_clreol(void)
 {
     conio_init();
 
-    /* TODO: implement this function */
+    /* FIXME: must work within the currently active text window */
+    caca_fill_box(cv, caca_wherex(cv), caca_wherey(cv),
+                  caca_get_width(cv), caca_wherey(cv), ' ');
+
+    conio_refresh();
 }
 
 /** \brief DOS conio.h clrscr() equivalent */
@@ -109,12 +119,28 @@ int caca_conio_cscanf(char *format, ...)
     return 0;
 }
 
-/** \brief DOS conio.h delay() equivalent */
-void caca_conio_delay(int i)
+/** \brief DOS dos.h delay() equivalent */
+void caca_conio_delay(unsigned int milliseconds)
 {
+    int64_t usec = (int64_t)milliseconds * 1000;
+    caca_timer_t timer = {0, 0};
+
     conio_init();
 
-    _caca_sleep(i * 1000);
+    _caca_getticks(&timer);
+
+    /* Refresh screen as long as we have enough time */
+    while(usec > 5000)
+    {
+        conio_refresh();
+        _caca_sleep(5000);
+        usec -= _caca_getticks(&timer);
+    }
+
+    if(usec > 0)
+        _caca_sleep(usec);
+
+    conio_refresh();
 }
 
 /** \brief DOS conio.h delline() equivalent */
@@ -129,6 +155,7 @@ void caca_conio_delline(void)
 int caca_conio_getch(void)
 {
     caca_event_t ev;
+    int ret;
 
     conio_init();
 
@@ -146,8 +173,14 @@ int caca_conio_getch(void)
         return tmp;
     }
 
-    caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
-    return caca_get_event_key_ch(&ev);
+    while(caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, 1000) == 0)
+        conio_refresh();
+
+    ret = caca_get_event_key_ch(&ev);
+
+    conio_refresh();
+
+    return ret;
 }
 
 /** \brief DOS conio.h getche() equivalent */
@@ -219,9 +252,22 @@ void caca_conio_insline(void)
 /** \brief DOS conio.h kbhit() equivalent */
 int caca_conio_kbhit(void)
 {
+    static caca_timer_t timer = {0, 0};
+    static int last_failed = 0;
     caca_event_t ev;
 
     conio_init();
+
+    /* If last call failed and this call is made less than 100µs
+     * afterwards, we assume the caller is in a busy loop and we
+     * delay it slightly to avoid resource leakage. */
+    if(last_failed && _caca_getticks(&timer) < 100)
+    {
+        _caca_sleep(1000);
+        conio_refresh();
+    }
+
+    last_failed = 0;
 
     if(kbhit_ch >= 0)
         return 1;
@@ -231,6 +277,8 @@ int caca_conio_kbhit(void)
         kbhit_ch = caca_get_event_key_ch(&ev);
         return 1;
     }
+
+    last_failed = 1;
 
     return 0;
 }
@@ -262,7 +310,7 @@ void caca_conio_normvideo(void)
     /* TODO: implement this function */
 }
 
-/** \brief DOS conio.h nosound() equivalent */
+/** \brief DOS dos.h nosound() equivalent */
 void caca_conio_nosound(void)
 {
     conio_init();
@@ -317,8 +365,32 @@ void caca_conio__setcursortype(int cur_t)
     /* TODO: implement this function */
 }
 
-/** \brief DOS conio.h sound() equivalent */
-void caca_conio_sound(int i)
+/** \brief DOS dos.h sleep() equivalent */
+void caca_conio_sleep(unsigned int seconds)
+{
+    int64_t usec = (int64_t)seconds * 1000000;
+    caca_timer_t timer = {0, 0};
+
+    conio_init();
+
+    _caca_getticks(&timer);
+
+    /* Refresh screen as long as we have enough time */
+    while(usec > 5000)
+    {
+        conio_refresh();
+        _caca_sleep(5000);
+        usec -= _caca_getticks(&timer);
+    }
+
+    if(usec > 0)
+        _caca_sleep(usec);
+
+    conio_refresh();
+}
+
+/** \brief DOS dos.h sound() equivalent */
+void caca_conio_sound(unsigned int frequency)
 {
     conio_init();
 
@@ -405,7 +477,10 @@ static void conio_init(void)
     if(!dp)
     {
         dp = caca_create_display(cv);
+        caca_refresh_display(dp);
         caca_set_cursor(dp, 1);
+        _caca_getticks(&refresh_timer);
+        refresh_ticks = 0;
 #if defined HAVE_ATEXIT
         atexit(conio_fini);
 #endif
@@ -414,7 +489,12 @@ static void conio_init(void)
 
 static void conio_refresh(void)
 {
-    caca_refresh_display(dp);
+    refresh_ticks += _caca_getticks(&refresh_timer);
+    if(refresh_ticks > 10000)
+    {
+        refresh_ticks -= 10000;
+        caca_refresh_display(dp);
+    }
 }
 
 static void conio_fini(void)
