@@ -112,6 +112,8 @@ int main(void)
 
  - \b caca_init(): use caca_create_canvas() to create a \e libcaca canvas,
    followed by caca_create_display() to attach a \e libcaca display to it.
+   Alternatively, caca_create_display() with a NULL argument will create a
+   canvas automatically.
  - \b caca_set_delay(): use caca_set_display_time().
  - \b caca_get_feature(): deprecated.
  - \b caca_set_feature(): deprecated, see caca_set_dither_antialias(),
@@ -128,6 +130,8 @@ int main(void)
  - \b caca_refresh(): use caca_refresh_display().
  - \b caca_end(): use caca_free_display() to detach the \e libcaca display,
    followed by caca_free_canvas() to free the underlying \e libcaca canvas.
+   Alternatively, if the canvas was created by caca_create_display(), it
+   will be automatically destroyed by caca_free_display().
 
  \subsection bar2 Event handling
 
