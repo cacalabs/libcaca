@@ -64,7 +64,7 @@ void caca_conio_clreol(void)
 
     /* FIXME: must work within the currently active text window */
     caca_fill_box(cv, caca_wherex(cv), caca_wherey(cv),
-                  caca_get_width(cv), caca_wherey(cv), ' ');
+                  caca_get_canvas_width(cv), caca_wherey(cv), ' ');
 
     conio_refresh();
 }
@@ -492,8 +492,9 @@ static void conio_refresh(void)
     refresh_ticks += _caca_getticks(&refresh_timer);
     if(refresh_ticks > 10000)
     {
-        refresh_ticks -= 10000;
         caca_refresh_display(dp);
+        _caca_getticks(&refresh_timer);
+        refresh_ticks = 0;
     }
 }
 
