@@ -67,29 +67,35 @@ typedef struct caca_event caca_event_t;
  *  Colours and styles that can be used with caca_set_attr().
  *
  *  @{ */
-#define CACA_BLACK 0x00 /**< The colour index for black. */
-#define CACA_BLUE 0x01 /**< The colour index for blue. */
-#define CACA_GREEN 0x02 /**< The colour index for green. */
-#define CACA_CYAN 0x03 /**< The colour index for cyan. */
-#define CACA_RED 0x04 /**< The colour index for red. */
-#define CACA_MAGENTA 0x05 /**< The colour index for magenta. */
-#define CACA_BROWN 0x06 /**< The colour index for brown. */
-#define CACA_LIGHTGRAY 0x07 /**< The colour index for light gray. */
-#define CACA_DARKGRAY 0x08 /**< The colour index for dark gray. */
-#define CACA_LIGHTBLUE 0x09 /**< The colour index for blue. */
-#define CACA_LIGHTGREEN 0x0a /**< The colour index for light green. */
-#define CACA_LIGHTCYAN 0x0b /**< The colour index for light cyan. */
-#define CACA_LIGHTRED 0x0c /**< The colour index for light red. */
-#define CACA_LIGHTMAGENTA 0x0d /**< The colour index for light magenta. */
-#define CACA_YELLOW 0x0e /**< The colour index for yellow. */
-#define CACA_WHITE 0x0f /**< The colour index for white. */
-#define CACA_DEFAULT 0x10 /**< The output driver's default colour. */
-#define CACA_TRANSPARENT 0x20 /**< The transparent colour. */
+enum caca_color
+{
+    CACA_BLACK =        0x00, /**< The colour index for black. */
+    CACA_BLUE =         0x01, /**< The colour index for blue. */
+    CACA_GREEN =        0x02, /**< The colour index for green. */
+    CACA_CYAN =         0x03, /**< The colour index for cyan. */
+    CACA_RED =          0x04, /**< The colour index for red. */
+    CACA_MAGENTA =      0x05, /**< The colour index for magenta. */
+    CACA_BROWN =        0x06, /**< The colour index for brown. */
+    CACA_LIGHTGRAY =    0x07, /**< The colour index for light gray. */
+    CACA_DARKGRAY =     0x08, /**< The colour index for dark gray. */
+    CACA_LIGHTBLUE =    0x09, /**< The colour index for blue. */
+    CACA_LIGHTGREEN =   0x0a, /**< The colour index for light green. */
+    CACA_LIGHTCYAN =    0x0b, /**< The colour index for light cyan. */
+    CACA_LIGHTRED =     0x0c, /**< The colour index for light red. */
+    CACA_LIGHTMAGENTA = 0x0d, /**< The colour index for light magenta. */
+    CACA_YELLOW =       0x0e, /**< The colour index for yellow. */
+    CACA_WHITE =        0x0f, /**< The colour index for white. */
+    CACA_DEFAULT =      0x10, /**< The output driver's default colour. */
+    CACA_TRANSPARENT =  0x20, /**< The transparent colour. */
+};
 
-#define CACA_BOLD 0x01 /**< The style mask for bold. */
-#define CACA_ITALICS 0x02 /**< The style mask for italics. */
-#define CACA_UNDERLINE 0x04 /**< The style mask for underline. */
-#define CACA_BLINK 0x08 /**< The style mask for blink. */
+enum caca_style
+{
+    CACA_BOLD =      0x01, /**< The style mask for bold. */
+    CACA_ITALICS =   0x02, /**< The style mask for italics. */
+    CACA_UNDERLINE = 0x04, /**< The style mask for underline. */
+    CACA_BLINK =     0x08, /**< The style mask for blink. */
+};
 /*  @} */
 
 /** \brief User event type enumeration.
