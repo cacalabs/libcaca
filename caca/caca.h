@@ -28,7 +28,6 @@
 
 #if !defined(__KERNEL__)
 #   include <stdarg.h>
-#   include <stdio.h>
 #endif
 
 #undef __extern

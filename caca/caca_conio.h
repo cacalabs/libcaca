@@ -19,6 +19,12 @@
 #ifndef __CACA_CONIO_H__
 #define __CACA_CONIO_H__
 
+/* Since we're going to redefine standard functions, include these
+ * headers first to avoid errors upon later inclusion. */
+#if !defined(__KERNEL__)
+#   include <stdio.h>
+#endif
+
 #include <caca.h>
 
 #if !defined _DOXYGEN_SKIP_ME && !defined __LIBCACA__
