@@ -35,6 +35,8 @@
 #if defined(_DOXYGEN_SKIP_ME)
 #elif defined(_WIN32) && defined(__LIBCACA__)
 #   define __extern extern __declspec(dllexport)
+#elif defined(_WIN32)
+#   define __extern extern __declspec(dllimport)
 #else
 #   define __extern extern
 #endif
