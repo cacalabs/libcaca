@@ -28,6 +28,7 @@
 
 #if !defined(__KERNEL__)
 #   include <stdarg.h>
+#   include <stdio.h>
 #endif
 
 #undef __extern
@@ -491,6 +492,133 @@ __extern int caca_get_event_mouse_x(caca_event_t const *);
 __extern int caca_get_event_mouse_y(caca_event_t const *);
 __extern int caca_get_event_resize_width(caca_event_t const *);
 __extern int caca_get_event_resize_height(caca_event_t const *);
+/*  @} */
+
+/** \brief DOS colours
+ *
+ *  This enum lists the colour values for the DOS conio.h compatibility
+ *  layer.
+ */
+enum CACA_CONIO_COLORS
+{
+    CACA_CONIO_BLINK = 128,
+    CACA_CONIO_BLACK = 0,
+    CACA_CONIO_BLUE = 1,
+    CACA_CONIO_GREEN = 2,
+    CACA_CONIO_CYAN = 3,
+    CACA_CONIO_RED = 4,
+    CACA_CONIO_MAGENTA = 5,
+    CACA_CONIO_BROWN = 6,
+    CACA_CONIO_LIGHTGRAY = 7,
+    CACA_CONIO_DARKGRAY = 8,
+    CACA_CONIO_LIGHTBLUE = 9,
+    CACA_CONIO_LIGHTGREEN = 10,
+    CACA_CONIO_LIGHTCYAN = 11,
+    CACA_CONIO_LIGHTRED = 12,
+    CACA_CONIO_LIGHTMAGENTA = 13,
+    CACA_CONIO_YELLOW = 14,
+    CACA_CONIO_WHITE = 15,
+};
+
+/** \brief DOS cursor modes
+ *
+ *  This enum lists the cursor mode values for the DOS conio.h compatibility
+ *  layer.
+ */
+enum CACA_CONIO_CURSOR
+{
+    CACA_CONIO__NOCURSOR = 0,
+    CACA_CONIO__SOLIDCURSOR = 1,
+    CACA_CONIO__NORMALCURSOR = 2,
+};
+
+/** \brief DOS video modes
+ *
+ *  This enum lists the video mode values for the DOS conio.h compatibility
+ *  layer.
+ */
+enum CACA_CONIO_MODE
+{
+    CACA_CONIO_LASTMODE = -1,
+    CACA_CONIO_BW40 = 0,
+    CACA_CONIO_C40 = 1,
+    CACA_CONIO_BW80 = 2,
+    CACA_CONIO_C80 = 3,
+    CACA_CONIO_MONO = 7,
+    CACA_CONIO_C4350 = 64,
+};
+
+/** \brief DOS text area information
+ *
+ *  This structure stores text area information for the DOS conio.h
+ *  compatibility layer.
+ */
+struct caca_conio_text_info
+{
+    unsigned char winleft;        /* left window coordinate */
+    unsigned char wintop;         /* top window coordinate */
+    unsigned char winright;       /* right window coordinate */
+    unsigned char winbottom;      /* bottom window coordinate */
+    unsigned char attribute;      /* text attribute */
+    unsigned char normattr;       /* normal attribute */
+    unsigned char currmode;       /* current video mode:
+                                     BW40, BW80, C40, C80, or C4350 */
+    unsigned char screenheight;   /* text screen's height */
+    unsigned char screenwidth;    /* text screen's width */
+    unsigned char curx;           /* x-coordinate in current window */
+    unsigned char cury;           /* y-coordinate in current window */
+};
+
+/** \brief DOS direct video control */
+__extern int caca_conio_directvideo;
+
+/** \brief DOS scrolling control */
+__extern int caca_conio__wscroll;
+
+/** \defgroup conio libcaca DOS conio.h compatibility layer
+ *
+ *  These functions implement DOS-like functions for high-level text
+ *  operations.
+ *
+ *  @{ */
+__extern char * caca_conio_cgets(char *str);
+__extern void   caca_conio_clreol(void);
+__extern void   caca_conio_clrscr(void);
+__extern int    caca_conio_cprintf(const char *format, ...);
+__extern int    caca_conio_cputs(const char *str);
+__extern int    caca_conio_cscanf(char *format, ...);
+__extern void   caca_conio_delay(unsigned int);
+__extern void   caca_conio_delline(void);
+__extern int    caca_conio_getch(void);
+__extern int    caca_conio_getche(void);
+__extern char * caca_conio_getpass(const char *prompt);
+__extern int    caca_conio_gettext(int left, int top, int right, int bottom,
+                                   void *destin);
+__extern void   caca_conio_gettextinfo(struct caca_conio_text_info *r);
+__extern void   caca_conio_gotoxy(int x, int y);
+__extern void   caca_conio_highvideo(void);
+__extern void   caca_conio_insline(void);
+__extern int    caca_conio_kbhit(void);
+__extern void   caca_conio_lowvideo(void);
+__extern int    caca_conio_movetext(int left, int top, int right, int bottom,
+                                    int destleft, int desttop);
+__extern void   caca_conio_normvideo(void);
+__extern void   caca_conio_nosound(void);
+__extern int    caca_conio_printf(const char *format, ...);
+__extern int    caca_conio_putch(int ch);
+__extern int    caca_conio_puttext(int left, int top, int right, int bottom,
+                                   void *destin);
+__extern void   caca_conio__setcursortype(int cur_t);
+__extern void   caca_conio_sleep(unsigned int);
+__extern void   caca_conio_sound(unsigned int);
+__extern void   caca_conio_textattr(int newattr);
+__extern void   caca_conio_textbackground(int newcolor);
+__extern void   caca_conio_textcolor(int newcolor);
+__extern void   caca_conio_textmode(int newmode);
+__extern int    caca_conio_ungetch(int ch);
+__extern int    caca_conio_wherex(void);
+__extern int    caca_conio_wherey(void);
+__extern void   caca_conio_window(int left, int top, int right, int bottom);
 /*  @} */
 
 #if !defined(_DOXYGEN_SKIP_ME)

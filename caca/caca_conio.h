@@ -21,78 +21,6 @@
 
 #include <caca.h>
 
-#if !defined(__KERNEL__)
-#   include <stdio.h>
-#endif
-
-#undef __extern
-#if defined(_DOXYGEN_SKIP_ME)
-#elif defined(_WIN32) && defined(__LIBCACA__)
-#   define __extern extern __declspec(dllexport)
-#else
-#   define __extern extern
-#endif
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-/* conio.h enums and global variables */
-enum CACA_CONIO_COLORS
-{
-    CACA_CONIO_BLINK = 128,
-    CACA_CONIO_BLACK = 0,
-    CACA_CONIO_BLUE = 1,
-    CACA_CONIO_GREEN = 2,
-    CACA_CONIO_CYAN = 3,
-    CACA_CONIO_RED = 4,
-    CACA_CONIO_MAGENTA = 5,
-    CACA_CONIO_BROWN = 6,
-    CACA_CONIO_LIGHTGRAY = 7,
-    CACA_CONIO_DARKGRAY = 8,
-    CACA_CONIO_LIGHTBLUE = 9,
-    CACA_CONIO_LIGHTGREEN = 10,
-    CACA_CONIO_LIGHTCYAN = 11,
-    CACA_CONIO_LIGHTRED = 12,
-    CACA_CONIO_LIGHTMAGENTA = 13,
-    CACA_CONIO_YELLOW = 14,
-    CACA_CONIO_WHITE = 15,
-};
-__extern int caca_conio_directvideo;
-enum CACA_CONIO_CURSOR
-{
-    CACA_CONIO__NOCURSOR = 0,
-    CACA_CONIO__SOLIDCURSOR = 1,
-    CACA_CONIO__NORMALCURSOR = 2,
-};
-struct caca_conio_text_info
-{
-    unsigned char winleft;        /* left window coordinate */
-    unsigned char wintop;         /* top window coordinate */
-    unsigned char winright;       /* right window coordinate */
-    unsigned char winbottom;      /* bottom window coordinate */
-    unsigned char attribute;      /* text attribute */
-    unsigned char normattr;       /* normal attribute */
-    unsigned char currmode;       /* current video mode:
-                                     BW40, BW80, C40, C80, or C4350 */
-    unsigned char screenheight;   /* text screen's height */
-    unsigned char screenwidth;    /* text screen's width */
-    unsigned char curx;           /* x-coordinate in current window */
-    unsigned char cury;           /* y-coordinate in current window */
-};
-enum CACA_CONIO_MODE
-{
-    CACA_CONIO_LASTMODE = -1,
-    CACA_CONIO_BW40 = 0,
-    CACA_CONIO_C40 = 1,
-    CACA_CONIO_BW80 = 2,
-    CACA_CONIO_C80 = 3,
-    CACA_CONIO_MONO = 7,
-    CACA_CONIO_C4350 = 64,
-};
-__extern int caca_conio__wscroll;
-
 #if !defined _DOXYGEN_SKIP_ME && !defined __LIBCACA__
 #   undef BLINK
 #   define BLINK CACA_CONIO_BLINK
@@ -128,16 +56,18 @@ __extern int caca_conio__wscroll;
 #   define YELLOW CACA_CONIO_YELLOW
 #   undef WHITE
 #   define WHITE CACA_CONIO_WHITE
-#   undef directvideo
-#   define directvideo caca_conio_directvideo
+#endif
+
+#if !defined _DOXYGEN_SKIP_ME && !defined __LIBCACA__
 #   undef _NOCURSOR
 #   define _NOCURSOR CACA_CONIO__NOCURSOR
 #   undef _SOLIDCURSOR
 #   define _SOLIDCURSOR CACA_CONIO__SOLIDCURSOR
 #   undef _NORMALCURSOR
 #   define _NORMALCURSOR CACA_CONIO__NORMALCURSOR
-#   undef text_info
-#   define text_info caca_conio_text_info
+#endif
+
+#if !defined _DOXYGEN_SKIP_ME && !defined __LIBCACA__
 #   undef LASTMODE
 #   define LASTMODE CACA_CONIO_LASTMODE
 #   undef BW40
@@ -152,49 +82,16 @@ __extern int caca_conio__wscroll;
 #   define MONO CACA_CONIO_MONO
 #   undef C4350
 #   define C4350 CACA_CONIO_C4350
+#endif
+
+#if !defined _DOXYGEN_SKIP_ME && !defined __LIBCACA__
+#   undef directvideo
+#   define directvideo caca_conio_directvideo
+#   undef text_info
+#   define text_info caca_conio_text_info
 #   undef _wscroll
 #   define _wscroll caca_conio__wscroll
 #endif
-
-/* conio.h functions */
-__extern char * caca_conio_cgets(char *str);
-__extern void   caca_conio_clreol(void);
-__extern void   caca_conio_clrscr(void);
-__extern int    caca_conio_cprintf(const char *format, ...);
-__extern int    caca_conio_cputs(const char *str);
-__extern int    caca_conio_cscanf(char *format, ...);
-__extern void   caca_conio_delay(unsigned int);
-__extern void   caca_conio_delline(void);
-__extern int    caca_conio_getch(void);
-__extern int    caca_conio_getche(void);
-__extern char * caca_conio_getpass(const char *prompt);
-__extern int    caca_conio_gettext(int left, int top, int right, int bottom,
-                                   void *destin);
-__extern void   caca_conio_gettextinfo(struct caca_conio_text_info *r);
-__extern void   caca_conio_gotoxy(int x, int y);
-__extern void   caca_conio_highvideo(void);
-__extern void   caca_conio_insline(void);
-__extern int    caca_conio_kbhit(void);
-__extern void   caca_conio_lowvideo(void);
-__extern int    caca_conio_movetext(int left, int top, int right, int bottom,
-                                    int destleft, int desttop);
-__extern void   caca_conio_normvideo(void);
-__extern void   caca_conio_nosound(void);
-__extern int    caca_conio_printf(const char *format, ...);
-__extern int    caca_conio_putch(int ch);
-__extern int    caca_conio_puttext(int left, int top, int right, int bottom,
-                                   void *destin);
-__extern void   caca_conio__setcursortype(int cur_t);
-__extern void   caca_conio_sleep(unsigned int);
-__extern void   caca_conio_sound(unsigned int);
-__extern void   caca_conio_textattr(int newattr);
-__extern void   caca_conio_textbackground(int newcolor);
-__extern void   caca_conio_textcolor(int newcolor);
-__extern void   caca_conio_textmode(int newmode);
-__extern int    caca_conio_ungetch(int ch);
-__extern int    caca_conio_wherex(void);
-__extern int    caca_conio_wherey(void);
-__extern void   caca_conio_window(int left, int top, int right, int bottom);
 
 #if !defined _DOXYGEN_SKIP_ME && !defined __LIBCACA__
 #   undef cgets
@@ -267,10 +164,6 @@ __extern void   caca_conio_window(int left, int top, int right, int bottom);
 #   define wherey caca_conio_wherey
 #   undef window
 #   define window caca_conio_window
-#endif
-
-#ifdef __cplusplus
-}
 #endif
 
 #endif /* __CACA_CONIO_H__ */
