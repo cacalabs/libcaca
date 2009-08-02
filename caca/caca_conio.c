@@ -36,25 +36,41 @@ static uint64_t refresh_ticks;
 
 static int unget_ch = -1;
 static int kbhit_ch = -1;
-static char pass_buffer[BUFSIZ];
-static char cgets_buffer[BUFSIZ];
+static char pass_buffer[8 + 1];
 
 static void conio_init(void);
 static void conio_refresh(void);
 static void conio_fini(void);
 
-int caca_conio_directvideo;
-int caca_conio__wscroll;
+int caca_conio_directvideo = 0;
+int caca_conio__wscroll = 1;
 
 /** \brief DOS conio.h cgets() equivalent */
 char * caca_conio_cgets(char *str)
 {
+    int len = ((uint8_t *)str)[0];
+    int pos = 0;
+
     conio_init();
 
-    /* TODO: implement this function */
-    cgets_buffer[0] = '\0';
+    while (pos < len)
+    {
+        int ch = caca_conio_getch();
+        if (ch == '\n' || ch == '\r')
+            break;
+        str[2 + pos] = (char)(uint8_t)ch;
+        /* FIXME: handle scrolling */
+        caca_put_char(cv, caca_wherex(cv), caca_wherey(cv), ch);
+        caca_gotoxy(cv, caca_wherex(cv) + 1, caca_wherey(cv));
+        pos++;
+    }
 
-    return cgets_buffer;
+    str[2 + pos] = '\0';
+    str[1] = (char)(uint8_t)pos;
+
+    conio_refresh();
+
+    return str + 2;
 }
 
 /** \brief DOS conio.h clreol() equivalent */
@@ -74,6 +90,7 @@ void caca_conio_clrscr(void)
 {
     conio_init();
 
+    /* FIXME: must work within the currently active text window */
     caca_clear_canvas(cv);
     caca_gotoxy(cv, 0, 0);
 
@@ -88,6 +105,7 @@ int caca_conio_cprintf(const char *format, ...)
 
     conio_init();
 
+    /* FIXME: handle scrolling */
     va_start(args, format);
     ret = caca_vprintf(cv, caca_wherex(cv), caca_wherey(cv), format, args);
     va_end(args);
@@ -102,14 +120,23 @@ int caca_conio_cprintf(const char *format, ...)
 /** \brief DOS conio.h cputs() equivalent */
 int caca_conio_cputs(const char *str)
 {
+    int ch;
+
     conio_init();
 
-    /* TODO: implement this function */
+    while ((ch = (uint8_t)*str++))
+    {
+        /* FIXME: handle windows, scrolling, '\n' and '\r' */
+        caca_put_char(cv, caca_wherex(cv), caca_wherey(cv), ch);
+        caca_gotoxy(cv, caca_wherex(cv) + 1, caca_wherey(cv));
+    }
 
-    return 0;
+    conio_refresh();
+
+    return ch;
 }
 
-/** \brief DOS conio.h cscanf() equivalent */
+/** \brief DOS stdio.h cscanf() equivalent */
 int caca_conio_cscanf(char *format, ...)
 {
     conio_init();
@@ -197,10 +224,22 @@ int caca_conio_getche(void)
 /** \brief DOS conio.h getpass() equivalent */
 char * caca_conio_getpass(const char *prompt)
 {
+    int pos = 0;
+
     conio_init();
 
-    /* TODO: implement this function */
-    pass_buffer[0] = '\0';
+    while (pos < 8)
+    {
+        int ch = caca_conio_getch();
+        if (ch == '\n' || ch == '\r')
+            break;
+        pass_buffer[pos] = (char)(uint8_t)ch;
+        pos++;
+    }
+
+    pass_buffer[pos] = '\0';
+
+    conio_refresh();
 
     return pass_buffer;
 }
@@ -295,11 +334,23 @@ void caca_conio_lowvideo(void)
 int caca_conio_movetext(int left, int top, int right, int bottom,
                         int destleft, int desttop)
 {
+    caca_canvas_t *tmp;
+
     conio_init();
 
-    /* TODO: implement this function */
+    if (left < 1 || top < 1 || left > right || top > bottom
+         || destleft < 1 || desttop < 1 || destleft > right
+         || desttop > bottom || right > caca_get_canvas_width(cv)
+         || bottom > caca_get_canvas_width(cv))
+        return 0;
 
-    return 0;
+    tmp = caca_create_canvas(right - left + 1, bottom - top + 1);
+    caca_blit(tmp, 1 - left, 1 - top, cv, NULL);
+    caca_blit(cv, destleft - 1, desttop - 1, tmp, NULL);
+
+    conio_refresh();
+
+    return 1;
 }
 
 /** \brief DOS conio.h normvideo() equivalent */
@@ -342,9 +393,11 @@ int caca_conio_putch(int ch)
 {
     conio_init();
 
-    /* TODO: implement this function */
+    /* FIXME: handle scrolling, windows */
+    caca_put_char(cv, caca_wherex(cv), caca_wherey(cv), ch);
+    caca_gotoxy(cv, caca_wherex(cv) + 1, caca_wherey(cv));
 
-    return 0;
+    return ch;
 }
 
 /** \brief DOS conio.h puttext() equivalent */
@@ -362,7 +415,18 @@ void caca_conio__setcursortype(int cur_t)
 {
     conio_init();
 
-    /* TODO: implement this function */
+    switch(cur_t)
+    {
+        case CACA_CONIO__NOCURSOR:
+            caca_set_cursor(dp, 0);
+            break;
+        case CACA_CONIO__SOLIDCURSOR:
+        case CACA_CONIO__NORMALCURSOR:
+            caca_set_cursor(dp, 1);
+            break;
+    }
+
+    conio_refresh();
 }
 
 /** \brief DOS dos.h sleep() equivalent */
