@@ -393,10 +393,6 @@ ac_cv_my_have_csharp="no"
 if test "${enable_csharp}" != "no"; then
   AC_PATH_PROG(CSC, csc, no)
   if test "$CSC" = "no"; then
-    AC_PATH_PROG(GMCS2, gmcs2, no)
-    CSC="$GMCS2"
-  fi
-  if test "$CSC" = "no"; then
     AC_PATH_PROG(GMCS, gmcs, no)
     CSC="$GMCS"
   fi
