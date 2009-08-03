@@ -20,6 +20,7 @@
 
 /* Various defines */
 #define NULL ((void *)0)
+#define EOF (-1)
 #define BUFSIZ 4096
 #define RAND_MAX ((unsigned int)0x8000000)
 #define INT_MAX ((int)0x7fffffff)
@@ -77,6 +78,7 @@ int rand(void);
 int abs(int j);
 void exit(int status);
 void srand(unsigned int s);
+int atexit(void (*function)(void));
 FILE *stdin, *stdout, *stderr;
 
 /* string.h functions */

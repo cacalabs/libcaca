@@ -134,6 +134,12 @@ void exit(int status)
     while(1);
 }
 
+int atexit(void (*function)(void))
+{
+    /* FIXME: register function */
+    return 0;
+}
+
 /* string.h functions */
 void *memset(void *s, int c, size_t n)
 {
