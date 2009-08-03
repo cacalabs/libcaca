@@ -2,9 +2,10 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="libcaca"
-	ProjectGUID="{8951ECB0-7CFE-41AB-A426-98D7C441BEA4}"
-	RootNamespace="libcaca"
+	Name="conio-snake"
+	ProjectGUID="{687FE90A-6B2F-4136-BEBE-798A98B98FE8}"
+	RootNamespace="conio-snake"
+	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
@@ -22,7 +23,8 @@
 			Name="Debug|Win32"
 			OutputDirectory="$(SolutionDir)\win32\$(ConfigurationName)\$(PlatformName)"
 			IntermediateDirectory="$(SolutionDir)\win32\$(ConfigurationName)\$(PlatformName)\obj-$(ProjectName)"
-			ConfigurationType="2"
+			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
 			CharacterSet="2"
 			>
 			<Tool
@@ -43,14 +45,15 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="codec;..\win32;&quot;$(projectDir)&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;__LIBCACA__"
+				AdditionalIncludeDirectories="..\win32;..\caca"
+				PreprocessorDefinitions="LIBCACA=1"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="4"
-				CompileAs="1"
+				CompileAs="2"
 				DisableSpecificWarnings="4996;4142"
 			/>
 			<Tool
@@ -64,8 +67,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				ModuleDefinitionFile=".\libcaca.def"
+				OutputFile="$(OutDir)/conio-snake.exe"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories="&quot;C:\Program Files\Microsoft Platform SDK\Lib&quot;"
 				GenerateDebugInformation="true"
+				ProgramDatabaseFile="$(OutDir)/conio-snake.pdb"
+				SubSystem="1"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 				TargetMachine="1"
@@ -96,7 +103,8 @@
 			Name="Debug|x64"
 			OutputDirectory="$(SolutionDir)\win32\$(ConfigurationName)\$(PlatformName)"
 			IntermediateDirectory="$(SolutionDir)\win32\$(ConfigurationName)\$(PlatformName)\obj-$(ProjectName)"
-			ConfigurationType="2"
+			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
 			CharacterSet="2"
 			>
 			<Tool
@@ -118,11 +126,12 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="codec;..\win32;&quot;$(projectDir)&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;__LIBCACA__"
+				AdditionalIncludeDirectories="..\win32;..\caca"
+				PreprocessorDefinitions="LIBCACA=1"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 				CompileAs="1"
@@ -139,8 +148,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				ModuleDefinitionFile=".\libcaca.def"
+				OutputFile="$(OutDir)/conio-snake.exe"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories="&quot;C:\Program Files\Microsoft Platform SDK\Lib&quot;"
 				GenerateDebugInformation="true"
+				ProgramDatabaseFile="$(OutDir)/conio-snake.pdb"
+				SubSystem="1"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 				TargetMachine="17"
@@ -171,9 +184,9 @@
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)\win32\$(ConfigurationName)\$(PlatformName)"
 			IntermediateDirectory="$(SolutionDir)\win32\$(ConfigurationName)\$(PlatformName)\obj-$(ProjectName)"
-			ConfigurationType="2"
+			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
 			CharacterSet="2"
-			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -192,12 +205,18 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="codec;..\win32;&quot;$(projectDir)&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;__LIBCACA__"
-				RuntimeLibrary="2"
+				Optimization="2"
+				InlineFunctionExpansion="1"
+				OmitFramePointers="true"
+				AdditionalIncludeDirectories="..\win32;..\caca"
+				PreprocessorDefinitions="LIBCACA=1"
+				StringPooling="true"
+				RuntimeLibrary="0"
+				EnableFunctionLevelLinking="true"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
-				CompileAs="1"
+				CompileAs="2"
 				DisableSpecificWarnings="4996;4142"
 			/>
 			<Tool
@@ -211,8 +230,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				ModuleDefinitionFile=".\libcaca.def"
+				OutputFile="$(OutDir)/conio-snake.exe"
+				LinkIncremental="1"
 				GenerateDebugInformation="true"
+				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				RandomizedBaseAddress="1"
@@ -245,9 +266,9 @@
 			Name="Release|x64"
 			OutputDirectory="$(SolutionDir)\win32\$(ConfigurationName)\$(PlatformName)"
 			IntermediateDirectory="$(SolutionDir)\win32\$(ConfigurationName)\$(PlatformName)\obj-$(ProjectName)"
-			ConfigurationType="2"
+			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
 			CharacterSet="2"
-			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -267,9 +288,15 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="codec;..\win32;&quot;$(projectDir)&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;__LIBCACA__"
-				RuntimeLibrary="2"
+				Optimization="2"
+				InlineFunctionExpansion="1"
+				OmitFramePointers="true"
+				AdditionalIncludeDirectories="..\win32;..\caca"
+				PreprocessorDefinitions="LIBCACA=1"
+				StringPooling="true"
+				RuntimeLibrary="0"
+				EnableFunctionLevelLinking="true"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 				CompileAs="1"
@@ -286,8 +313,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				ModuleDefinitionFile=".\libcaca.def"
+				OutputFile="$(OutDir)/conio-snake.exe"
+				LinkIncremental="1"
 				GenerateDebugInformation="true"
+				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				RandomizedBaseAddress="1"
@@ -320,176 +349,12 @@
 	<References>
 	</References>
 	<Files>
-		<Filter
-			Name="driver"
-			>
-			<File
-				RelativePath=".\driver\conio.c"
-				>
-			</File>
-			<File
-				RelativePath=".\driver\gl.c"
-				>
-			</File>
-			<File
-				RelativePath=".\driver\ncurses.c"
-				>
-			</File>
-			<File
-				RelativePath=".\driver\null.c"
-				>
-			</File>
-			<File
-				RelativePath=".\driver\raw.c"
-				>
-			</File>
-			<File
-				RelativePath=".\driver\slang.c"
-				>
-			</File>
-			<File
-				RelativePath=".\driver\vga.c"
-				>
-			</File>
-			<File
-				RelativePath=".\driver\win32.c"
-				>
-			</File>
-			<File
-				RelativePath=".\driver\x11.c"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="codec"
-			>
-			<File
-				RelativePath=".\codec\codec.h"
-				>
-			</File>
-			<File
-				RelativePath=".\codec\export.c"
-				>
-			</File>
-			<File
-				RelativePath=".\codec\import.c"
-				>
-			</File>
-			<File
-				RelativePath=".\codec\text.c"
-				>
-			</File>
-		</Filter>
-		<File
-			RelativePath=".\attr.c"
-			>
-		</File>
-		<File
-			RelativePath=".\box.c"
-			>
-		</File>
-		<File
-			RelativePath=".\caca.c"
-			>
-		</File>
-		<File
-			RelativePath="caca.h"
-			>
-		</File>
-		<File
-			RelativePath=".\caca_conio.c"
-			>
-		</File>
-		<File
-			RelativePath=".\caca_conio.h"
-			>
-		</File>
-		<File
-			RelativePath="caca_internals.h"
-			>
-		</File>
-		<File
-			RelativePath="caca_stubs.h"
-			>
-		</File>
-		<File
-			RelativePath="..\win32\caca_types.h"
-			>
-		</File>
-		<File
-			RelativePath=".\canvas.c"
-			>
-		</File>
-		<File
-			RelativePath=".\charset.c"
-			>
-		</File>
 		<File
 			RelativePath="..\win32\config.h"
 			>
 		</File>
 		<File
-			RelativePath=".\conic.c"
-			>
-		</File>
-		<File
-			RelativePath=".\dirty.c"
-			>
-		</File>
-		<File
-			RelativePath=".\dither.c"
-			>
-		</File>
-		<File
-			RelativePath=".\event.c"
-			>
-		</File>
-		<File
-			RelativePath=".\figfont.c"
-			>
-		</File>
-		<File
-			RelativePath=".\file.c"
-			>
-		</File>
-		<File
-			RelativePath=".\font.c"
-			>
-		</File>
-		<File
-			RelativePath=".\frame.c"
-			>
-		</File>
-		<File
-			RelativePath=".\graphics.c"
-			>
-		</File>
-		<File
-			RelativePath=".\legacy.c"
-			>
-		</File>
-		<File
-			RelativePath=".\libcaca.def"
-			>
-		</File>
-		<File
-			RelativePath=".\line.c"
-			>
-		</File>
-		<File
-			RelativePath=".\string.c"
-			>
-		</File>
-		<File
-			RelativePath=".\time.c"
-			>
-		</File>
-		<File
-			RelativePath=".\transform.c"
-			>
-		</File>
-		<File
-			RelativePath=".\triangle.c"
+			RelativePath="conio-snake.cpp"
 			>
 		</File>
 	</Files>
