@@ -20,6 +20,8 @@
 
 #if !defined(__KERNEL__)
 
+#include <stdio.h>
+
 #include "caca.h"
 #include "caca_internals.h"
 
