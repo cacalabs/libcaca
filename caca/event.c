@@ -248,6 +248,9 @@ int caca_get_event_key_utf8(caca_event_t const *ev, char *utf8)
  *  type \c CACA_EVENT_MOUSE_PRESS or \c CACA_EVENT_MOUSE_RELEASE, or the
  *  results will be undefined. See caca_get_event_type() for more information.
  *
+ *  This function returns 1 for the left mouse button, 2 for the right mouse
+ *  button, and 3 for the middle mouse button.
+ *
  *  \param ev The libcaca event.
  *  \return The event's mouse button.
  */
