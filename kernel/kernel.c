@@ -162,6 +162,13 @@ void *memcpy(void *dest, const void *src, size_t n)
     return dest;
 }
 
+void *memmove(void *dest, const void *src, size_t n)
+{
+    memcpy(freemem, src, n);
+    memcpy(dest, freemem, n);
+    return dest;
+}
+
 size_t strlen(const char *s)
 {
     int len = 0;
