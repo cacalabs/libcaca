@@ -116,7 +116,7 @@ static void vga_display(caca_display_t *dp)
 {
     int x, y, i;
 
-    for(i = 0; i < caca_get_dirty_rectangle_count(dp->cv); i++)
+    for(i = 0; i < caca_get_dirty_rect_count(dp->cv); i++)
     {
         char *screen = (char *)(intptr_t)0x000b8000;
         uint32_t const *cvchars, *cvattrs;
