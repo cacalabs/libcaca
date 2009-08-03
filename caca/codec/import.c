@@ -401,9 +401,9 @@ invalid_caca:
  */
 
 ssize_t cucul_import_memory(cucul_canvas_t *, void const *, size_t,
-                            char const *) CACA_ALIAS(caca_import_memory);
+                     char const *) CACA_ALIAS(caca_import_canvas_from_memory);
 ssize_t cucul_import_file(cucul_canvas_t *, char const *,
-                          char const *) CACA_ALIAS(caca_import_file);
+                     char const *) CACA_ALIAS(caca_import_canvas_from_file);
 ssize_t caca_import_memory(caca_canvas_t *, void const *, size_t, char const *)
                                   CACA_ALIAS(caca_import_canvas_from_memory);
 ssize_t caca_import_file(caca_canvas_t *, char const *, char const *)
