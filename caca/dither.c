@@ -1033,6 +1033,13 @@ int caca_dither_bitmap(caca_canvas_t *cv, int x, int y, int w, int h,
             get_rgba_default(d, pixels, myx, myy, rgba);
         }
 
+        /* FIXME: hack to force greyscale */
+        if(d->color == COLOR_MODE_FULLGRAY)
+        {
+            unsigned int gray = (3 * rgba[0] + 4 * rgba[1] + rgba[2] + 4) / 8;
+            rgba[0] = rgba[1] = rgba[2] = gray;
+        }
+
         if(d->has_alpha && rgba[3] < 0x800)
         {
             remain_r = remain_g = remain_b = 0;
@@ -1059,6 +1066,10 @@ int caca_dither_bitmap(caca_canvas_t *cv, int x, int y, int w, int h,
         distmin = INT_MAX;
         for(i = 0; i < 16; i++)
         {
+            if(d->color == COLOR_MODE_FULLGRAY
+                && (rgb_palette[i * 3] != rgb_palette[i * 3 + 1]
+                     || rgb_palette[i * 3] != rgb_palette[i * 3 + 2]))
+                continue;
             dist = sq(rgba[0] - rgb_palette[i * 3])
                  + sq(rgba[1] - rgb_palette[i * 3 + 1])
                  + sq(rgba[2] - rgb_palette[i * 3 + 2]);
@@ -1074,12 +1085,16 @@ int caca_dither_bitmap(caca_canvas_t *cv, int x, int y, int w, int h,
         bg_b = rgb_palette[outbg * 3 + 2];
 
         /* FIXME: we currently only honour "full16" */
-        if(d->color == COLOR_MODE_FULL16)
+        if(d->color == COLOR_MODE_FULL16 || d->color == COLOR_MODE_FULLGRAY)
         {
             distmin = INT_MAX;
             for(i = 0; i < 16; i++)
             {
                 if(i == outbg)
+                    continue;
+                if(d->color == COLOR_MODE_FULLGRAY
+                    && (rgb_palette[i * 3] != rgb_palette[i * 3 + 1]
+                         || rgb_palette[i * 3] != rgb_palette[i * 3 + 2]))
                     continue;
                 dist = sq(rgba[0] - rgb_palette[i * 3])
                      + sq(rgba[1] - rgb_palette[i * 3 + 1])
