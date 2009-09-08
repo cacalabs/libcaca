@@ -172,7 +172,7 @@ struct caca_dither
 static void mask2shift(uint32_t, int *, int *);
 static float gammapow(float x, float y);
 
-static void get_rgba_default(caca_dither_t const *, uint8_t *, int, int,
+static void get_rgba_default(caca_dither_t const *, uint8_t const *, int, int,
                              unsigned int *);
 static int init_lookup(void);
 
@@ -940,7 +940,7 @@ char const * caca_get_dither_algorithm(caca_dither_t const *d)
  *  \return This function always returns 0.
  */
 int caca_dither_bitmap(caca_canvas_t *cv, int x, int y, int w, int h,
-                        caca_dither_t const *d, void *pixels)
+                        caca_dither_t const *d, void const *pixels)
 {
     int *floyd_steinberg, *fs_r, *fs_g, *fs_b;
     uint32_t savedattr;
@@ -1311,7 +1311,7 @@ static float gammapow(float x, float y)
 #endif
 }
 
-static void get_rgba_default(caca_dither_t const *d, uint8_t *pixels,
+static void get_rgba_default(caca_dither_t const *d, uint8_t const *pixels,
                              int x, int y, unsigned int *rgba)
 {
     uint32_t bits;
@@ -1321,7 +1321,7 @@ static void get_rgba_default(caca_dither_t const *d, uint8_t *pixels,
     switch(d->bpp / 8)
     {
         case 4:
-            bits = *(uint32_t *)pixels;
+            bits = *(uint32_t const *)pixels;
             break;
         case 3:
         {
@@ -1342,7 +1342,7 @@ static void get_rgba_default(caca_dither_t const *d, uint8_t *pixels,
             break;
         }
         case 2:
-            bits = *(uint16_t *)pixels;
+            bits = *(uint16_t const *)pixels;
             break;
         case 1:
         default:

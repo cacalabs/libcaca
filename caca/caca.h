@@ -389,7 +389,7 @@ __extern char const * const * caca_get_dither_algorithm_list(caca_dither_t
                                                               const *);
 __extern char const * caca_get_dither_algorithm(caca_dither_t const *);
 __extern int caca_dither_bitmap(caca_canvas_t *, int, int, int, int,
-                         caca_dither_t const *, void *);
+                         caca_dither_t const *, void const *);
 __extern int caca_free_dither(caca_dither_t *);
 /*  @} */
 
