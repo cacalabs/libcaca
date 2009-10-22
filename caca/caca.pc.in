@@ -9,4 +9,5 @@ Version: @VERSION@
 Requires: 
 Conflicts: 
 Libs: -L${libdir} -lcaca
+Libs.private: @ZLIB_LIBS@
 Cflags: -I${includedir}
