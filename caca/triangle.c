@@ -155,6 +155,202 @@ int caca_fill_triangle(caca_canvas_t *cv, int x1, int y1, int x2, int y2,
     return 0;
 }
 
+/** \brief Fill a triangle on the canvas using an arbitrary-sized texture.
+ *
+ *  This function fails if one or both the canvas are missing
+ *
+ *  \param cv  The handle to the libcaca canvas.
+ *  \param x1  X coordinate of the first point.
+ *  \param y1  Y coordinate of the first point.
+ *  \param x2  X coordinate of the second point.
+ *  \param y2  Y coordinate of the second point.
+ *  \param x3  X coordinate of the third point.
+ *  \param y3  Y coordinate of the third point.
+ *  \param u1  U texture coordinate of the first point.
+ *  \param v1  V texture coordinate of the first point.
+ *  \param u2  U texture coordinate of the second point.
+ *  \param v2  V texture coordinate of the second point.
+ *  \param u3  U texture coordinate of the third point.
+ *  \param v3  V texture coordinate of the third point. 
+ *  \param tex The handle of the canvas texture.
+ *  \return This function return 0 if ok, -1 if canvas or texture are missing.
+ */
+int caca_fill_triangle_textured(caca_canvas_t *cv, 
+                                int x1, int y1, 
+                                int x2, int y2,
+                       			int x3, int y3, 
+                                float u1, float v1, 
+                                float u2, float v2,
+                       			float u3, float v3, 
+                                caca_canvas_t *tex)
+{
+    
+    #define SWAP_F(a, b) {float c = a; a = b; b = c; }
+    
+    /* (very) Naive and 
+     * (very) float-based affine and
+     * (very) non-clipped and
+     * (very) non-corrected triangle mapper 
+     *
+     * Accepts arbitrary texture sizes
+     * Coordinates clamped to [0.0 - 1.0] (no repeat)
+     */
+    if(!cv || !tex) return -1;
+
+    /* Bubble-sort y1 <= y2 <= y3 */
+    if(y1 > y2)
+        return caca_fill_triangle_textured(cv, 
+                                           x2, y2, x1, y1, x3, y3, 
+                                           u2, v2, u1, v1, u3, v3, 
+                                           tex);
+    if(y2 > y3) 
+        return caca_fill_triangle_textured(cv, 
+                                           x1, y1, x3, y3, x2, y2, 
+                                           u1, v1, u3, v3, u2, v2, 
+                                           tex);
+    
+    
+    /* Clip texture coordinates */
+	if(u1<0.0f) u1 = 0.0f; if(v1<0.0f) v1 = 0.0f;
+    if(u2<0.0f) u2 = 0.0f; if(v2<0.0f) v2 = 0.0f;
+    if(u3<0.0f) u3 = 0.0f; if(v3<0.0f) v3 = 0.0f;
+	if(u1>1.0f) u1 = 1.0f; if(v1>1.0f) v1 = 1.0f;
+	if(u2>1.0f) u2 = 1.0f; if(v2>1.0f) v2 = 1.0f;
+	if(u3>1.0f) u3 = 1.0f; if(v3>1.0f) v3 = 1.0f;
+    
+    /* Convert relative tex coordinates to absolute */
+  	int tw = caca_get_canvas_width(tex);
+    int th = caca_get_canvas_height(tex);
+    
+    u1*=(float)tw; u2*=(float)tw; u3*=(float)tw; 
+    v1*=(float)th; v2*=(float)th; v3*=(float)th; 
+    
+    float x = (float) x1, y = (float) y1;
+    float y2y1 = y2-y1;
+    float y3y1 = y3-y1;
+    float y3y2 = y3-y2;
+    
+    /* Compute slopes, making sure we don't divide by zero */
+    /* (in this case, we don't need the value anyway) */
+    /* FIXME : only compute needed slopes */
+    float sl12 = ((float)x2 - x1) / (y2y1==0?1:y2y1);
+    float sl13 = ((float)x3 - x1) / (y3y1==0?1:y3y1);
+    float sl23 = ((float)x3 - x2) / (y3y2==0?1:y3y2);
+    
+    float usl12 = (u2 - u1) / (y2y1==0?1:y2y1);
+    float usl13 = (u3 - u1) / (y3y1==0?1:y3y1);
+    float usl23 = (u3 - u2) / (y3y2==0?1:y3y2);
+    float vsl12 = (v2 - v1) / (y2y1==0?1:y2y1);
+    float vsl13 = (v3 - v1) / (y3y1==0?1:y3y1);
+    float vsl23 = (v3 - v2) / (y3y2==0?1:y3y2);
+    
+    float xa = (float) x1, xb = (float) x1;
+    float ua = u1, ub = u1;
+    float va = v1, vb = v1;
+    float u, v;
+    
+   	int s = 0;
+    
+    /* Top */
+    for(y = y1 ; y < y2; y++) 
+    {
+        
+        if(xb < xa) {
+            SWAP_F(xb, xa);   
+            SWAP_F(sl13, sl12);
+            SWAP_F(ua, ub);
+            SWAP_F(va, vb);            
+            SWAP_F(usl13, usl12);
+            SWAP_F(vsl13, vsl12);
+            s=1;
+        }
+        
+        float tus = (ub - ua) / (xb - xa);
+        float tvs = (vb - va) / (xb - xa);
+        v = va; u = ua;
+        
+        /* scanline */
+    	for(x = xa ; x < xb; x++) 
+        {
+            u+=tus;
+            v+=tvs;
+            /* FIXME: use caca_get_canvas_attrs / caca_get_canvas_chars  */
+        	uint32_t attr = caca_get_attr(tex, u, v);
+            uint32_t c    = caca_get_char(tex, u, v);
+            caca_set_attr(cv, attr);
+            caca_put_char(cv, x, y, c);
+        }
+        
+        xa+=sl13;
+        xb+=sl12;
+        
+        ua+=usl13; va+=vsl13;
+        ub+=usl12; vb+=vsl12;
+    }
+    
+    if(s) 
+    {
+        SWAP_F(xb, xa);
+        SWAP_F(sl13, sl12);
+        SWAP_F(ua, ub);
+        SWAP_F(va, vb);            
+        SWAP_F(usl13, usl12);
+        SWAP_F(vsl13, vsl12);
+    }
+    
+    
+    /* Bottom */
+    xb = (float) x2;
+
+    /* These variables are set by 'top' routine 
+     * and are in an incorrect state if we only draw the bottom part
+     */
+   	if(y1 == y2) {
+        ua = u1;
+        ub = u2;
+        va = v1;
+        vb = v2;
+    }
+    
+    for(y = y2 ; y < y3; y++) 
+    {
+        if(xb <= xa) 
+        {
+            SWAP_F(xb, xa);   
+            SWAP_F(sl13, sl23);
+            SWAP_F(ua, ub);
+            SWAP_F(va, vb);  
+            SWAP_F(usl13, usl23);
+            SWAP_F(vsl13, vsl23);
+        } 
+        
+        float tus = (ub - ua) / ((float)xb - xa);
+        float tvs = (vb - va) / ((float)xb - xa);
+        u = ua; v = va;
+        
+        /* scanline */
+    	for(x = xa ; x < xb; x++) 
+        {    
+            u+=tus;
+            v+=tvs;
+            /* FIXME, can be heavily optimised  */
+            uint32_t attr = caca_get_attr(tex, u, v);
+            uint32_t c    = caca_get_char(tex, u, v);
+            caca_set_attr(cv, attr);    
+            caca_put_char(cv, x, y, c);    
+        }
+        
+        xa+=sl13;
+        xb+=sl23;
+        
+        ua+=usl13; va+=vsl13;
+        ub+=usl23; vb+=vsl23; 
+    }
+    
+	return 0;
+}
+
+
 /*
  * XXX: The following functions are aliases.
  */

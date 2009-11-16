@@ -338,6 +338,14 @@ __extern int caca_draw_thin_triangle(caca_canvas_t *, int, int, int, int,
                                       int, int);
 __extern int caca_fill_triangle(caca_canvas_t *, int, int, int, int, int,
                                  int, uint32_t);
+__extern int caca_fill_triangle_textured(caca_canvas_t *, 
+                                    int , int , 
+                                    int , int ,
+                                    int , int , 
+                                    float , float , 
+                                    float , float ,
+                                    float , float , 
+                                         caca_canvas_t *);
 /*  @} */
 
 /** \defgroup caca_frame libcaca canvas frame handling
