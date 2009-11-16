@@ -413,6 +413,10 @@
 			>
 		</File>
 		<File
+			RelativePath="caca_prof.h"
+			>
+		</File>
+		<File
 			RelativePath="caca_stubs.h"
 			>
 		</File>

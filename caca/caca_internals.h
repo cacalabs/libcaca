@@ -17,6 +17,7 @@
 
 #include "caca_stubs.h"
 #include "caca_debug.h"
+#include "caca_prof.h"
 
 typedef struct caca_timer caca_timer_t;
 typedef struct caca_privevent caca_privevent_t;
