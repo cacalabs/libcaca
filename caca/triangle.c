@@ -225,7 +225,7 @@ int caca_fill_triangle_textured(caca_canvas_t *cv,
     u1*=(float)tw; u2*=(float)tw; u3*=(float)tw; 
     v1*=(float)th; v2*=(float)th; v3*=(float)th; 
     
-    float x = (float) x1, y = (float) y1;
+    int x, y;
     float y2y1 = y2-y1;
     float y3y1 = y3-y1;
     float y3y2 = y3-y2;
