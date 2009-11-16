@@ -6,9 +6,11 @@ if USE_CPPUNIT
 cppunit_tests = caca-test
 endif
 
+EXTRA_DIST = check-build
+
 noinst_PROGRAMS = simple bench $(cppunit_tests)
 
-TESTS = simple $(cppunit_tests)
+TESTS = simple check-build $(cppunit_tests)
 
 simple_SOURCES = simple.c
 simple_LDADD = ../caca/libcaca.la
