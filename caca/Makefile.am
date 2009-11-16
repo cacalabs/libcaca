@@ -19,6 +19,7 @@ libcaca_la_SOURCES = \
 	caca.h \
 	caca_types.h \
 	caca_internals.h \
+	caca_debug.h \
 	caca_stubs.h \
 	caca_conio.c \
 	caca_conio.h \

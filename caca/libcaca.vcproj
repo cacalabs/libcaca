@@ -64,7 +64,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				ModuleDefinitionFile=".\libcaca.def"
+				ModuleDefinitionFile="libcaca.def"
 				GenerateDebugInformation="true"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -139,7 +139,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				ModuleDefinitionFile=".\libcaca.def"
+				ModuleDefinitionFile="libcaca.def"
 				GenerateDebugInformation="true"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -211,7 +211,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				ModuleDefinitionFile=".\libcaca.def"
+				ModuleDefinitionFile="libcaca.def"
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
@@ -286,7 +286,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				ModuleDefinitionFile=".\libcaca.def"
+				ModuleDefinitionFile="libcaca.def"
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
@@ -324,39 +324,39 @@
 			Name="driver"
 			>
 			<File
-				RelativePath=".\driver\conio.c"
+				RelativePath="driver\conio.c"
 				>
 			</File>
 			<File
-				RelativePath=".\driver\gl.c"
+				RelativePath="driver\gl.c"
 				>
 			</File>
 			<File
-				RelativePath=".\driver\ncurses.c"
+				RelativePath="driver\ncurses.c"
 				>
 			</File>
 			<File
-				RelativePath=".\driver\null.c"
+				RelativePath="driver\null.c"
 				>
 			</File>
 			<File
-				RelativePath=".\driver\raw.c"
+				RelativePath="driver\raw.c"
 				>
 			</File>
 			<File
-				RelativePath=".\driver\slang.c"
+				RelativePath="driver\slang.c"
 				>
 			</File>
 			<File
-				RelativePath=".\driver\vga.c"
+				RelativePath="driver\vga.c"
 				>
 			</File>
 			<File
-				RelativePath=".\driver\win32.c"
+				RelativePath="driver\win32.c"
 				>
 			</File>
 			<File
-				RelativePath=".\driver\x11.c"
+				RelativePath="driver\x11.c"
 				>
 			</File>
 		</Filter>
@@ -364,32 +364,32 @@
 			Name="codec"
 			>
 			<File
-				RelativePath=".\codec\codec.h"
+				RelativePath="codec\codec.h"
 				>
 			</File>
 			<File
-				RelativePath=".\codec\export.c"
+				RelativePath="codec\export.c"
 				>
 			</File>
 			<File
-				RelativePath=".\codec\import.c"
+				RelativePath="codec\import.c"
 				>
 			</File>
 			<File
-				RelativePath=".\codec\text.c"
+				RelativePath="codec\text.c"
 				>
 			</File>
 		</Filter>
 		<File
-			RelativePath=".\attr.c"
+			RelativePath="attr.c"
 			>
 		</File>
 		<File
-			RelativePath=".\box.c"
+			RelativePath="box.c"
 			>
 		</File>
 		<File
-			RelativePath=".\caca.c"
+			RelativePath="caca.c"
 			>
 		</File>
 		<File
@@ -397,11 +397,15 @@
 			>
 		</File>
 		<File
-			RelativePath=".\caca_conio.c"
+			RelativePath="caca_conio.c"
 			>
 		</File>
 		<File
-			RelativePath=".\caca_conio.h"
+			RelativePath="caca_conio.h"
+			>
+		</File>
+		<File
+			RelativePath="caca_debug.h"
 			>
 		</File>
 		<File
@@ -417,11 +421,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\canvas.c"
+			RelativePath="canvas.c"
 			>
 		</File>
 		<File
-			RelativePath=".\charset.c"
+			RelativePath="charset.c"
 			>
 		</File>
 		<File
@@ -429,67 +433,67 @@
 			>
 		</File>
 		<File
-			RelativePath=".\conic.c"
+			RelativePath="conic.c"
 			>
 		</File>
 		<File
-			RelativePath=".\dirty.c"
+			RelativePath="dirty.c"
 			>
 		</File>
 		<File
-			RelativePath=".\dither.c"
+			RelativePath="dither.c"
 			>
 		</File>
 		<File
-			RelativePath=".\event.c"
+			RelativePath="event.c"
 			>
 		</File>
 		<File
-			RelativePath=".\figfont.c"
+			RelativePath="figfont.c"
 			>
 		</File>
 		<File
-			RelativePath=".\file.c"
+			RelativePath="file.c"
 			>
 		</File>
 		<File
-			RelativePath=".\font.c"
+			RelativePath="font.c"
 			>
 		</File>
 		<File
-			RelativePath=".\frame.c"
+			RelativePath="frame.c"
 			>
 		</File>
 		<File
-			RelativePath=".\graphics.c"
+			RelativePath="graphics.c"
 			>
 		</File>
 		<File
-			RelativePath=".\legacy.c"
+			RelativePath="legacy.c"
 			>
 		</File>
 		<File
-			RelativePath=".\libcaca.def"
+			RelativePath="libcaca.def"
 			>
 		</File>
 		<File
-			RelativePath=".\line.c"
+			RelativePath="line.c"
 			>
 		</File>
 		<File
-			RelativePath=".\string.c"
+			RelativePath="string.c"
 			>
 		</File>
 		<File
-			RelativePath=".\time.c"
+			RelativePath="time.c"
 			>
 		</File>
 		<File
-			RelativePath=".\transform.c"
+			RelativePath="transform.c"
 			>
 		</File>
 		<File
-			RelativePath=".\triangle.c"
+			RelativePath="triangle.c"
 			>
 		</File>
 	</Files>

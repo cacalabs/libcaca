@@ -16,8 +16,8 @@
  *  function prototypes that are sometimes missing.
  */
 
-#ifndef __STUBS_H__
-#define __STUBS_H__
+#ifndef __CACA_STUBS_H__
+#define __CACA_STUBS_H__
 
 /* errno handling */
 #if defined HAVE_ERRNO_H && !defined __KERNEL__
@@ -27,25 +27,6 @@ static inline int geterrno(void) { return errno; }
 #else
 #   define seterrno(x) do { (void)(x); } while(0)
 #   define geterrno(x) 0
-#endif
-
-/* debug messages */
-#if defined DEBUG && !defined __KERNEL__
-#   include <stdio.h>
-#   include <stdarg.h>
-static inline void debug(const char *format, ...)
-{
-    int saved_errno = geterrno();
-    va_list args;
-    va_start(args, format);
-    fprintf(stderr, "** libcaca debug ** ");
-    vfprintf(stderr, format, args);
-    fprintf(stderr, "\n");
-    va_end(args);
-    seterrno(saved_errno);
-}
-#else
-#   define debug(format, ...) do {} while(0)
 #endif
 
 /* hton16() and hton32() */
@@ -93,5 +74,5 @@ static inline uint32_t hton32(uint32_t x)
 }
 #endif
 
-#endif /* __STUBS_H__ */
+#endif /* __CACA_STUBS_H__ */
 
