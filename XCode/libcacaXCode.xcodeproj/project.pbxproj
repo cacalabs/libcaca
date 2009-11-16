@@ -1,0 +1,384 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXFileReference section */
+		E6DB65F610AECC7800B6F924 /* attr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = attr.c; path = ../caca/attr.c; sourceTree = SOURCE_ROOT; };
+		E6DB65F710AECC7800B6F924 /* box.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = box.c; path = ../caca/box.c; sourceTree = SOURCE_ROOT; };
+		E6DB65F810AECC7800B6F924 /* caca_conio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = caca_conio.c; path = ../caca/caca_conio.c; sourceTree = SOURCE_ROOT; };
+		E6DB65F910AECC7800B6F924 /* caca_conio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = caca_conio.h; path = ../caca/caca_conio.h; sourceTree = SOURCE_ROOT; };
+		E6DB65FA10AECC7800B6F924 /* caca_internals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = caca_internals.h; path = ../caca/caca_internals.h; sourceTree = SOURCE_ROOT; };
+		E6DB65FB10AECC7800B6F924 /* caca_stubs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = caca_stubs.h; path = ../caca/caca_stubs.h; sourceTree = SOURCE_ROOT; };
+		E6DB65FC10AECC7800B6F924 /* caca_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = caca_types.h; path = ../caca/caca_types.h; sourceTree = SOURCE_ROOT; };
+		E6DB65FE10AECC7800B6F924 /* caca.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = caca.c; path = ../caca/caca.c; sourceTree = SOURCE_ROOT; };
+		E6DB65FF10AECC7800B6F924 /* caca.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = caca.h; path = ../caca/caca.h; sourceTree = SOURCE_ROOT; };
+		E6DB660210AECC7800B6F924 /* caca0.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = caca0.c; path = ../caca/caca0.c; sourceTree = SOURCE_ROOT; };
+		E6DB660310AECC7800B6F924 /* caca0.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = caca0.h; path = ../caca/caca0.h; sourceTree = SOURCE_ROOT; };
+		E6DB660410AECC7800B6F924 /* canvas.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = canvas.c; path = ../caca/canvas.c; sourceTree = SOURCE_ROOT; };
+		E6DB660510AECC7800B6F924 /* charset.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = charset.c; path = ../caca/charset.c; sourceTree = SOURCE_ROOT; };
+		E6DB660710AECC7800B6F924 /* codec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = codec.h; sourceTree = "<group>"; };
+		E6DB660810AECC7800B6F924 /* export.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = export.c; sourceTree = "<group>"; };
+		E6DB660910AECC7800B6F924 /* import.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = import.c; sourceTree = "<group>"; };
+		E6DB660A10AECC7800B6F924 /* text.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = text.c; sourceTree = "<group>"; };
+		E6DB660B10AECC7800B6F924 /* conic.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = conic.c; path = ../caca/conic.c; sourceTree = SOURCE_ROOT; };
+		E6DB660C10AECC7800B6F924 /* dirty.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = dirty.c; path = ../caca/dirty.c; sourceTree = SOURCE_ROOT; };
+		E6DB660D10AECC7800B6F924 /* dither.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = dither.c; path = ../caca/dither.c; sourceTree = SOURCE_ROOT; };
+		E6DB660F10AECC7800B6F924 /* cocoa.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = cocoa.m; sourceTree = "<group>"; };
+		E6DB661010AECC7800B6F924 /* conio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = conio.c; sourceTree = "<group>"; };
+		E6DB661110AECC7800B6F924 /* gl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gl.c; sourceTree = "<group>"; };
+		E6DB661210AECC7800B6F924 /* ncurses.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ncurses.c; sourceTree = "<group>"; };
+		E6DB661310AECC7800B6F924 /* null.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = null.c; sourceTree = "<group>"; };
+		E6DB661410AECC7800B6F924 /* raw.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = raw.c; sourceTree = "<group>"; };
+		E6DB661510AECC7800B6F924 /* slang.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = slang.c; sourceTree = "<group>"; };
+		E6DB661610AECC7800B6F924 /* vga.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vga.c; sourceTree = "<group>"; };
+		E6DB661710AECC7800B6F924 /* win32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = win32.c; sourceTree = "<group>"; };
+		E6DB661810AECC7800B6F924 /* x11.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = x11.c; sourceTree = "<group>"; };
+		E6DB661910AECC7800B6F924 /* event.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = event.c; path = ../caca/event.c; sourceTree = SOURCE_ROOT; };
+		E6DB661A10AECC7800B6F924 /* figfont.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = figfont.c; path = ../caca/figfont.c; sourceTree = SOURCE_ROOT; };
+		E6DB661B10AECC7800B6F924 /* file.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = file.c; path = ../caca/file.c; sourceTree = SOURCE_ROOT; };
+		E6DB661C10AECC7800B6F924 /* font.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = font.c; path = ../caca/font.c; sourceTree = SOURCE_ROOT; };
+		E6DB661D10AECC7800B6F924 /* frame.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = frame.c; path = ../caca/frame.c; sourceTree = SOURCE_ROOT; };
+		E6DB661E10AECC7800B6F924 /* graphics.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = graphics.c; path = ../caca/graphics.c; sourceTree = SOURCE_ROOT; };
+		E6DB661F10AECC7800B6F924 /* legacy.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = legacy.c; path = ../caca/legacy.c; sourceTree = SOURCE_ROOT; };
+		E6DB662010AECC7800B6F924 /* line.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = line.c; path = ../caca/line.c; sourceTree = SOURCE_ROOT; };
+		E6DB662110AECC7800B6F924 /* string.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = string.c; path = ../caca/string.c; sourceTree = SOURCE_ROOT; };
+		E6DB662210AECC7800B6F924 /* time.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = time.c; path = ../caca/time.c; sourceTree = SOURCE_ROOT; };
+		E6DB662310AECC7800B6F924 /* transform.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = transform.c; path = ../caca/transform.c; sourceTree = SOURCE_ROOT; };
+		E6DB662410AECC7800B6F924 /* triangle.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = triangle.c; path = ../caca/triangle.c; sourceTree = SOURCE_ROOT; };
+		E6DB662C10AECCD700B6F924 /* aafire.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = aafire.c; path = ../src/aafire.c; sourceTree = SOURCE_ROOT; };
+		E6DB662D10AECCD700B6F924 /* cacademo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cacademo.c; path = ../src/cacademo.c; sourceTree = SOURCE_ROOT; };
+		E6DB662E10AECCD700B6F924 /* cacadraw.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cacadraw.c; path = ../src/cacadraw.c; sourceTree = SOURCE_ROOT; };
+		E6DB662F10AECCD700B6F924 /* cacaplay.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cacaplay.c; path = ../src/cacaplay.c; sourceTree = SOURCE_ROOT; };
+		E6DB663010AECCD700B6F924 /* cacaserver.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cacaserver.c; path = ../src/cacaserver.c; sourceTree = SOURCE_ROOT; };
+		E6DB663110AECCD700B6F924 /* cacaview.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cacaview.c; path = ../src/cacaview.c; sourceTree = SOURCE_ROOT; };
+		E6DB663210AECCD700B6F924 /* common-image.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "common-image.c"; path = "../src/common-image.c"; sourceTree = SOURCE_ROOT; };
+		E6DB663310AECCD700B6F924 /* common-image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "common-image.h"; path = "../src/common-image.h"; sourceTree = SOURCE_ROOT; };
+		E6DB663410AECCD700B6F924 /* img2txt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = img2txt.c; path = ../src/img2txt.c; sourceTree = SOURCE_ROOT; };
+		E6DB663510AECCD700B6F924 /* mygetopt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mygetopt.c; path = ../src/mygetopt.c; sourceTree = SOURCE_ROOT; };
+		E6DB663610AECCD700B6F924 /* mygetopt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mygetopt.h; path = ../src/mygetopt.h; sourceTree = SOURCE_ROOT; };
+		E6DB663710AECCD700B6F924 /* texture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = texture.h; path = ../src/texture.h; sourceTree = SOURCE_ROOT; };
+		E6DB663910AECD1F00B6F924 /* trifiller.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = trifiller.c; path = ../examples/trifiller.c; sourceTree = SOURCE_ROOT; };
+		E6DB663B10AECDF500B6F924 /* blit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = blit.c; path = ../examples/blit.c; sourceTree = SOURCE_ROOT; };
+		E6DB663C10AECDF500B6F924 /* canvas.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = canvas.c; path = ../examples/canvas.c; sourceTree = SOURCE_ROOT; };
+		E6DB663D10AECDF500B6F924 /* colors.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = colors.c; path = ../examples/colors.c; sourceTree = SOURCE_ROOT; };
+		E6DB663E10AECDF500B6F924 /* conio-snake.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "conio-snake.cpp"; path = "../examples/conio-snake.cpp"; sourceTree = SOURCE_ROOT; };
+		E6DB663F10AECDF500B6F924 /* conio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = conio.c; path = ../examples/conio.c; sourceTree = SOURCE_ROOT; };
+		E6DB664010AECDF500B6F924 /* demo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = demo.c; path = ../examples/demo.c; sourceTree = SOURCE_ROOT; };
+		E6DB664110AECDF500B6F924 /* demo0.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = demo0.c; path = ../examples/demo0.c; sourceTree = SOURCE_ROOT; };
+		E6DB664210AECDF500B6F924 /* dithering.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = dithering.c; path = ../examples/dithering.c; sourceTree = SOURCE_ROOT; };
+		E6DB664310AECDF500B6F924 /* driver.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = driver.c; path = ../examples/driver.c; sourceTree = SOURCE_ROOT; };
+		E6DB664410AECDF500B6F924 /* event.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = event.c; path = ../examples/event.c; sourceTree = SOURCE_ROOT; };
+		E6DB664510AECDF500B6F924 /* export.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = export.c; path = ../examples/export.c; sourceTree = SOURCE_ROOT; };
+		E6DB664610AECDF500B6F924 /* figfont.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = figfont.c; path = ../examples/figfont.c; sourceTree = SOURCE_ROOT; };
+		E6DB664710AECDF500B6F924 /* font.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = font.c; path = ../examples/font.c; sourceTree = SOURCE_ROOT; };
+		E6DB664810AECDF500B6F924 /* font2tga.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = font2tga.c; path = ../examples/font2tga.c; sourceTree = SOURCE_ROOT; };
+		E6DB664910AECDF500B6F924 /* frames.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = frames.c; path = ../examples/frames.c; sourceTree = SOURCE_ROOT; };
+		E6DB664A10AECDF500B6F924 /* fullwidth.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fullwidth.c; path = ../examples/fullwidth.c; sourceTree = SOURCE_ROOT; };
+		E6DB664B10AECDF500B6F924 /* gamma.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gamma.c; path = ../examples/gamma.c; sourceTree = SOURCE_ROOT; };
+		E6DB664C10AECDF500B6F924 /* hsv.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = hsv.c; path = ../examples/hsv.c; sourceTree = SOURCE_ROOT; };
+		E6DB664D10AECDF500B6F924 /* import.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = import.c; path = ../examples/import.c; sourceTree = SOURCE_ROOT; };
+		E6DB664E10AECDF500B6F924 /* input.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = input.c; path = ../examples/input.c; sourceTree = SOURCE_ROOT; };
+		E6DB664F10AECDF500B6F924 /* spritedit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = spritedit.c; path = ../examples/spritedit.c; sourceTree = SOURCE_ROOT; };
+		E6DB665010AECDF500B6F924 /* swallow.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = swallow.c; path = ../examples/swallow.c; sourceTree = SOURCE_ROOT; };
+		E6DB665110AECDF500B6F924 /* text.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = text.c; path = ../examples/text.c; sourceTree = SOURCE_ROOT; };
+		E6DB665210AECDF500B6F924 /* transform.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = transform.c; path = ../examples/transform.c; sourceTree = SOURCE_ROOT; };
+		E6DB665310AECDF500B6F924 /* truecolor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = truecolor.c; path = ../examples/truecolor.c; sourceTree = SOURCE_ROOT; };
+		E6DB665410AECDF500B6F924 /* unicode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unicode.c; path = ../examples/unicode.c; sourceTree = SOURCE_ROOT; };
+		E6DB665510AECE3600B6F924 /* Makefile.am */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Makefile.am; path = ../examples/Makefile.am; sourceTree = SOURCE_ROOT; };
+		E6DB66FA10B176D100B6F924 /* configure.ac */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = configure.ac; path = ../configure.ac; sourceTree = SOURCE_ROOT; };
+		E6DB66FF10B17BEA00B6F924 /* Makefile.am */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Makefile.am; path = ../src/Makefile.am; sourceTree = SOURCE_ROOT; };
+		E6DB670010B17BFC00B6F924 /* Makefile.am */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Makefile.am; path = ../caca/Makefile.am; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		08FB7794FE84155DC02AAC07 /* XCode */ = {
+			isa = PBXGroup;
+			children = (
+				E6DB66FA10B176D100B6F924 /* configure.ac */,
+				E6DB663A10AECDC500B6F924 /* examples */,
+				E6DB662B10AECCBF00B6F924 /* src */,
+				E6DB65F510AECC5800B6F924 /* caca */,
+			);
+			name = XCode;
+			sourceTree = "<group>";
+		};
+		E6DB65F510AECC5800B6F924 /* caca */ = {
+			isa = PBXGroup;
+			children = (
+				E6DB670010B17BFC00B6F924 /* Makefile.am */,
+				E6DB65F610AECC7800B6F924 /* attr.c */,
+				E6DB65F710AECC7800B6F924 /* box.c */,
+				E6DB65F810AECC7800B6F924 /* caca_conio.c */,
+				E6DB65F910AECC7800B6F924 /* caca_conio.h */,
+				E6DB65FA10AECC7800B6F924 /* caca_internals.h */,
+				E6DB65FB10AECC7800B6F924 /* caca_stubs.h */,
+				E6DB65FC10AECC7800B6F924 /* caca_types.h */,
+				E6DB65FE10AECC7800B6F924 /* caca.c */,
+				E6DB65FF10AECC7800B6F924 /* caca.h */,
+				E6DB660210AECC7800B6F924 /* caca0.c */,
+				E6DB660310AECC7800B6F924 /* caca0.h */,
+				E6DB660410AECC7800B6F924 /* canvas.c */,
+				E6DB660510AECC7800B6F924 /* charset.c */,
+				E6DB660610AECC7800B6F924 /* codec */,
+				E6DB660B10AECC7800B6F924 /* conic.c */,
+				E6DB660C10AECC7800B6F924 /* dirty.c */,
+				E6DB660D10AECC7800B6F924 /* dither.c */,
+				E6DB660E10AECC7800B6F924 /* driver */,
+				E6DB661910AECC7800B6F924 /* event.c */,
+				E6DB661A10AECC7800B6F924 /* figfont.c */,
+				E6DB661B10AECC7800B6F924 /* file.c */,
+				E6DB661C10AECC7800B6F924 /* font.c */,
+				E6DB661D10AECC7800B6F924 /* frame.c */,
+				E6DB661E10AECC7800B6F924 /* graphics.c */,
+				E6DB661F10AECC7800B6F924 /* legacy.c */,
+				E6DB662010AECC7800B6F924 /* line.c */,
+				E6DB662110AECC7800B6F924 /* string.c */,
+				E6DB662210AECC7800B6F924 /* time.c */,
+				E6DB662310AECC7800B6F924 /* transform.c */,
+				E6DB662410AECC7800B6F924 /* triangle.c */,
+			);
+			name = caca;
+			sourceTree = "<group>";
+		};
+		E6DB660610AECC7800B6F924 /* codec */ = {
+			isa = PBXGroup;
+			children = (
+				E6DB660710AECC7800B6F924 /* codec.h */,
+				E6DB660810AECC7800B6F924 /* export.c */,
+				E6DB660910AECC7800B6F924 /* import.c */,
+				E6DB660A10AECC7800B6F924 /* text.c */,
+			);
+			name = codec;
+			path = ../caca/codec;
+			sourceTree = SOURCE_ROOT;
+		};
+		E6DB660E10AECC7800B6F924 /* driver */ = {
+			isa = PBXGroup;
+			children = (
+				E6DB660F10AECC7800B6F924 /* cocoa.m */,
+				E6DB661010AECC7800B6F924 /* conio.c */,
+				E6DB661110AECC7800B6F924 /* gl.c */,
+				E6DB661210AECC7800B6F924 /* ncurses.c */,
+				E6DB661310AECC7800B6F924 /* null.c */,
+				E6DB661410AECC7800B6F924 /* raw.c */,
+				E6DB661510AECC7800B6F924 /* slang.c */,
+				E6DB661610AECC7800B6F924 /* vga.c */,
+				E6DB661710AECC7800B6F924 /* win32.c */,
+				E6DB661810AECC7800B6F924 /* x11.c */,
+			);
+			name = driver;
+			path = ../caca/driver;
+			sourceTree = SOURCE_ROOT;
+		};
+		E6DB662B10AECCBF00B6F924 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				E6DB66FF10B17BEA00B6F924 /* Makefile.am */,
+				E6DB662C10AECCD700B6F924 /* aafire.c */,
+				E6DB662D10AECCD700B6F924 /* cacademo.c */,
+				E6DB662E10AECCD700B6F924 /* cacadraw.c */,
+				E6DB662F10AECCD700B6F924 /* cacaplay.c */,
+				E6DB663010AECCD700B6F924 /* cacaserver.c */,
+				E6DB663110AECCD700B6F924 /* cacaview.c */,
+				E6DB663210AECCD700B6F924 /* common-image.c */,
+				E6DB663310AECCD700B6F924 /* common-image.h */,
+				E6DB663410AECCD700B6F924 /* img2txt.c */,
+				E6DB663510AECCD700B6F924 /* mygetopt.c */,
+				E6DB663610AECCD700B6F924 /* mygetopt.h */,
+				E6DB663710AECCD700B6F924 /* texture.h */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
+		E6DB663A10AECDC500B6F924 /* examples */ = {
+			isa = PBXGroup;
+			children = (
+				E6DB665510AECE3600B6F924 /* Makefile.am */,
+				E6DB663B10AECDF500B6F924 /* blit.c */,
+				E6DB663C10AECDF500B6F924 /* canvas.c */,
+				E6DB663D10AECDF500B6F924 /* colors.c */,
+				E6DB663E10AECDF500B6F924 /* conio-snake.cpp */,
+				E6DB663F10AECDF500B6F924 /* conio.c */,
+				E6DB664010AECDF500B6F924 /* demo.c */,
+				E6DB664110AECDF500B6F924 /* demo0.c */,
+				E6DB664210AECDF500B6F924 /* dithering.c */,
+				E6DB664310AECDF500B6F924 /* driver.c */,
+				E6DB664410AECDF500B6F924 /* event.c */,
+				E6DB664510AECDF500B6F924 /* export.c */,
+				E6DB664610AECDF500B6F924 /* figfont.c */,
+				E6DB664710AECDF500B6F924 /* font.c */,
+				E6DB664810AECDF500B6F924 /* font2tga.c */,
+				E6DB664910AECDF500B6F924 /* frames.c */,
+				E6DB664A10AECDF500B6F924 /* fullwidth.c */,
+				E6DB664B10AECDF500B6F924 /* gamma.c */,
+				E6DB664C10AECDF500B6F924 /* hsv.c */,
+				E6DB664D10AECDF500B6F924 /* import.c */,
+				E6DB664E10AECDF500B6F924 /* input.c */,
+				E6DB664F10AECDF500B6F924 /* spritedit.c */,
+				E6DB665010AECDF500B6F924 /* swallow.c */,
+				E6DB665110AECDF500B6F924 /* text.c */,
+				E6DB665210AECDF500B6F924 /* transform.c */,
+				E6DB665310AECDF500B6F924 /* truecolor.c */,
+				E6DB665410AECDF500B6F924 /* unicode.c */,
+				E6DB663910AECD1F00B6F924 /* trifiller.c */,
+			);
+			name = examples;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		D28A88AD04BDD90700651E21 /* libcacaXCode */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION)";
+			buildConfigurationList = 1DEB918F08733D9F0010E9CD /* Build configuration list for PBXLegacyTarget "libcacaXCode" */;
+			buildPhases = (
+			);
+			buildToolPath = /usr/bin/make;
+			dependencies = (
+			);
+			name = libcacaXCode;
+			passBuildSettingsInEnvironment = 1;
+			productName = XCode;
+		};
+		E6DB66B110B03F1700B6F924 /* libcaca */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION)";
+			buildConfigurationList = E6DB66B810B03F1800B6F924 /* Build configuration list for PBXLegacyTarget "libcaca" */;
+			buildPhases = (
+			);
+			buildToolPath = /usr/bin/make;
+			buildWorkingDirectory = "/Users/jylam/code/libcaca-trunk";
+			dependencies = (
+			);
+			name = libcaca;
+			passBuildSettingsInEnvironment = 1;
+			productName = libcaca;
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXProject section */
+		08FB7793FE84155DC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB919308733D9F0010E9CD /* Build configuration list for PBXProject "libcacaXCode" */;
+			compatibilityVersion = "Xcode 3.1";
+			hasScannedForEncodings = 1;
+			mainGroup = 08FB7794FE84155DC02AAC07 /* XCode */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D28A88AD04BDD90700651E21 /* libcacaXCode */,
+				E6DB66B110B03F1700B6F924 /* libcaca */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB919008733D9F0010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DEBUGGING_SYMBOLS = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = libcacaXCode;
+			};
+			name = Debug;
+		};
+		1DEB919108733D9F0010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = libcacaXCode;
+			};
+			name = Release;
+		};
+		1DEB919408733D9F0010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PREBINDING = NO;
+				SDKROOT = macosx10.6;
+			};
+			name = Debug;
+		};
+		1DEB919508733D9F0010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				PREBINDING = NO;
+				SDKROOT = macosx10.6;
+			};
+			name = Release;
+		};
+		E6DB66B210B03F1800B6F924 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = libcaca;
+			};
+			name = Debug;
+		};
+		E6DB66B310B03F1800B6F924 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = libcaca;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB918F08733D9F0010E9CD /* Build configuration list for PBXLegacyTarget "libcacaXCode" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB919008733D9F0010E9CD /* Debug */,
+				1DEB919108733D9F0010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1DEB919308733D9F0010E9CD /* Build configuration list for PBXProject "libcacaXCode" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB919408733D9F0010E9CD /* Debug */,
+				1DEB919508733D9F0010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E6DB66B810B03F1800B6F924 /* Build configuration list for PBXLegacyTarget "libcaca" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E6DB66B210B03F1800B6F924 /* Debug */,
+				E6DB66B310B03F1800B6F924 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 08FB7793FE84155DC02AAC07 /* Project object */;
+}
