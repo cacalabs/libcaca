@@ -74,7 +74,7 @@ static int x11_init_graphics(caca_display_t *dp)
     Colormap colormap;
     XSetWindowAttributes x11_winattr;
     int (*old_error_handler)(Display *, XErrorEvent *);
-    char const *fonts[] = { NULL, "8x13bold", "fixed" }, **parser;
+    char const *fonts[] = { NULL, "8x13bold", "fixed", NULL }, **parser;
     char const *geometry;
     int width = caca_get_canvas_width(dp->cv);
     int height = caca_get_canvas_height(dp->cv);
