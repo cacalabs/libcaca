@@ -9,6 +9,8 @@ conio_snake = conio-snake
 endif
 
 trifiller_SOURCES = trifiller.c ../src/common-image.c
+trifiller_CFLAGS = $(IMLIB2_CFLAGS)
+trifiller_LDFLAGS = $(IMLIB2_LIBS)
 trifiller_LDADD = ../caca/libcaca.la -lm
 
 blit_SOURCES = blit.c
