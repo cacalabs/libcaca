@@ -155,34 +155,17 @@ int caca_fill_triangle(caca_canvas_t *cv, int x1, int y1, int x2, int y2,
     return 0;
 }
 
-/** \brief Fill a triangle on the canvas using an arbitrary-sized texture.
- *
- *  This function fails if one or both the canvas are missing
- *
- *  \param cv  The handle to the libcaca canvas.
- *  \param x1  X coordinate of the first point.
- *  \param y1  Y coordinate of the first point.
- *  \param x2  X coordinate of the second point.
- *  \param y2  Y coordinate of the second point.
- *  \param x3  X coordinate of the third point.
- *  \param y3  Y coordinate of the third point.
- *  \param u1  U texture coordinate of the first point.
- *  \param v1  V texture coordinate of the first point.
- *  \param u2  U texture coordinate of the second point.
- *  \param v2  V texture coordinate of the second point.
- *  \param u3  U texture coordinate of the third point.
- *  \param v3  V texture coordinate of the third point. 
- *  \param tex The handle of the canvas texture.
- *  \return This function return 0 if ok, -1 if canvas or texture are missing.
- */
-int caca_fill_triangle_textured(caca_canvas_t *cv, 
-                                int x1, int y1, 
+/* This function actually renders the triangle, 
+ * but is not exported due to sam's pedantic will. */
+static int caca_fill_triangle_textured_l(caca_canvas_t *cv,
+                                int x1, int y1,
                                 int x2, int y2,
-                       			int x3, int y3, 
-                                float u1, float v1, 
+                       			int x3, int y3,
+                                caca_canvas_t *tex,
+                                float u1, float v1,
                                 float u2, float v2,
-                       			float u3, float v3, 
-                                caca_canvas_t *tex)
+                       			float u3, float v3)
+                                
 {
     uint32_t savedattr;
 
@@ -200,32 +183,32 @@ int caca_fill_triangle_textured(caca_canvas_t *cv,
 
     /* Bubble-sort y1 <= y2 <= y3 */
     if(y1 > y2)
-        return caca_fill_triangle_textured(cv, 
-                                           x2, y2, x1, y1, x3, y3, 
-                                           u2, v2, u1, v1, u3, v3, 
-                                           tex);
+        return caca_fill_triangle_textured_l(cv, 
+                                             x2, y2, x1, y1, x3, y3,
+                                             tex,
+                                             u2, v2, u1, v1, u3, v3);
     if(y2 > y3) 
-        return caca_fill_triangle_textured(cv, 
-                                           x1, y1, x3, y3, x2, y2, 
-                                           u1, v1, u3, v3, u2, v2, 
-                                           tex);
-    
+        return caca_fill_triangle_textured_l(cv, 
+                                             x1, y1, x3, y3, x2, y2,
+                                             tex,
+                                             u1, v1, u3, v3, u2, v2);
+
     savedattr = caca_get_attr(cv, -1, -1);
-    
+
     /* Clip texture coordinates */
-	if(u1<0.0f) u1 = 0.0f; if(v1<0.0f) v1 = 0.0f;
+    if(u1<0.0f) u1 = 0.0f; if(v1<0.0f) v1 = 0.0f;
     if(u2<0.0f) u2 = 0.0f; if(v2<0.0f) v2 = 0.0f;
     if(u3<0.0f) u3 = 0.0f; if(v3<0.0f) v3 = 0.0f;
-	if(u1>1.0f) u1 = 1.0f; if(v1>1.0f) v1 = 1.0f;
-	if(u2>1.0f) u2 = 1.0f; if(v2>1.0f) v2 = 1.0f;
-	if(u3>1.0f) u3 = 1.0f; if(v3>1.0f) v3 = 1.0f;
+    if(u1>1.0f) u1 = 1.0f; if(v1>1.0f) v1 = 1.0f;
+    if(u2>1.0f) u2 = 1.0f; if(v2>1.0f) v2 = 1.0f;
+    if(u3>1.0f) u3 = 1.0f; if(v3>1.0f) v3 = 1.0f;
     
     /* Convert relative tex coordinates to absolute */
-  	int tw = caca_get_canvas_width(tex);
+    int tw = caca_get_canvas_width(tex);
     int th = caca_get_canvas_height(tex);
     
-    u1*=(float)tw; u2*=(float)tw; u3*=(float)tw; 
-    v1*=(float)th; v2*=(float)th; v3*=(float)th; 
+    u1*=(float)tw; u2*=(float)tw; u3*=(float)tw;
+    v1*=(float)th; v2*=(float)th; v3*=(float)th;
     
     int x, y;
     float y2y1 = y2-y1;
@@ -251,10 +234,10 @@ int caca_fill_triangle_textured(caca_canvas_t *cv,
     float va = v1, vb = v1;
     float u, v;
     
-   	int s = 0;
+    int s = 0;
     
     /* Top */
-    for(y = y1 ; y < y2; y++) 
+    for(y = y1 ; y < y2; y++)
     {
         
         if(xb < xa) {
@@ -272,12 +255,12 @@ int caca_fill_triangle_textured(caca_canvas_t *cv,
         v = va; u = ua;
         
         /* scanline */
-    	for(x = xa ; x < xb; x++) 
+        for(x = xa ; x < xb; x++)
         {
             u+=tus;
             v+=tvs;
             /* FIXME: use caca_get_canvas_attrs / caca_get_canvas_chars  */
-        	uint32_t attr = caca_get_attr(tex, u, v);
+            uint32_t attr = caca_get_attr(tex, u, v);
             uint32_t c    = caca_get_char(tex, u, v);
             caca_set_attr(cv, attr);
             caca_put_char(cv, x, y, c);
@@ -290,12 +273,12 @@ int caca_fill_triangle_textured(caca_canvas_t *cv,
         ub+=usl12; vb+=vsl12;
     }
     
-    if(s) 
+    if(s)
     {
         SWAP_F(xb, xa);
         SWAP_F(sl13, sl12);
         SWAP_F(ua, ub);
-        SWAP_F(va, vb);            
+        SWAP_F(va, vb);
         SWAP_F(usl13, usl12);
         SWAP_F(vsl13, vsl12);
     }
@@ -314,14 +297,14 @@ int caca_fill_triangle_textured(caca_canvas_t *cv,
         vb = v2;
     }
     
-    for(y = y2 ; y < y3; y++) 
+    for(y = y2 ; y < y3; y++)
     {
-        if(xb <= xa) 
+        if(xb <= xa)
         {
-            SWAP_F(xb, xa);   
+            SWAP_F(xb, xa);
             SWAP_F(sl13, sl23);
             SWAP_F(ua, ub);
-            SWAP_F(va, vb);  
+            SWAP_F(va, vb);
             SWAP_F(usl13, usl23);
             SWAP_F(vsl13, vsl23);
         } 
@@ -331,28 +314,54 @@ int caca_fill_triangle_textured(caca_canvas_t *cv,
         u = ua; v = va;
         
         /* scanline */
-    	for(x = xa ; x < xb; x++) 
+        for(x = xa ; x < xb; x++)
         {    
             u+=tus;
             v+=tvs;
             /* FIXME, can be heavily optimised  */
             uint32_t attr = caca_get_attr(tex, u, v);
             uint32_t c    = caca_get_char(tex, u, v);
-            caca_set_attr(cv, attr);    
-            caca_put_char(cv, x, y, c);    
+            caca_set_attr(cv, attr);
+            caca_put_char(cv, x, y, c);
         }
-        
+
         xa+=sl13;
         xb+=sl23;
         
         ua+=usl13; va+=vsl13;
-        ub+=usl23; vb+=vsl23; 
+        ub+=usl23; vb+=vsl23;
     }
 
     caca_set_attr(cv, savedattr);
 
     return 0;
 }
+
+/** \brief Fill a triangle on the canvas using an arbitrary-sized texture.
+ *
+ *  This function fails if one or both the canvas are missing
+ *
+ *  \param cv     The handle to the libcaca canvas.
+ *  \param coords The coordinates of the triangle (3{x,y})
+ *  \param tex    The handle of the canvas texture.
+ *  \param uv     The coordinates of the texture (3{u,v})
+ *  \return This function return 0 if ok, -1 if canvas or texture are missing.
+ */
+int caca_fill_triangle_textured(caca_canvas_t *cv,
+                                int coords[6],
+                                caca_canvas_t *tex,
+                                float uv[6]) {
+    
+    return caca_fill_triangle_textured_l(cv,
+                                         coords[0], coords[1],
+                                         coords[2], coords[3],
+                                         coords[4], coords[5],
+                                         tex,
+                                         uv[0],     uv[1],
+                                         uv[2],     uv[3],
+                                         uv[4],     uv[5]);
+}
+
 
 
 /*

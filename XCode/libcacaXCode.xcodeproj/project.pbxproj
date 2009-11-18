@@ -61,7 +61,7 @@
 		E6DB663510AECCD700B6F924 /* mygetopt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mygetopt.c; path = ../src/mygetopt.c; sourceTree = SOURCE_ROOT; };
 		E6DB663610AECCD700B6F924 /* mygetopt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mygetopt.h; path = ../src/mygetopt.h; sourceTree = SOURCE_ROOT; };
 		E6DB663710AECCD700B6F924 /* texture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = texture.h; path = ../src/texture.h; sourceTree = SOURCE_ROOT; };
-		E6DB663910AECD1F00B6F924 /* trifiller.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = trifiller.c; path = ../examples/trifiller.c; sourceTree = SOURCE_ROOT; };
+		E6DB663910AECD1F00B6F924 /* trifiller.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = trifiller.c; path = ../examples/trifiller.c; sourceTree = SOURCE_ROOT; wrapsLines = 0; };
 		E6DB663B10AECDF500B6F924 /* blit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = blit.c; path = ../examples/blit.c; sourceTree = SOURCE_ROOT; };
 		E6DB663C10AECDF500B6F924 /* canvas.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = canvas.c; path = ../examples/canvas.c; sourceTree = SOURCE_ROOT; };
 		E6DB663D10AECDF500B6F924 /* colors.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = colors.c; path = ../examples/colors.c; sourceTree = SOURCE_ROOT; };

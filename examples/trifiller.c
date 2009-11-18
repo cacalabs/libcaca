@@ -49,14 +49,26 @@ int main(int argc, char *argv[])
     float angle = 0;
     
     
-    float square[4][2] = {
+    float square[6][2] = {
         {-SQUARE_SIZE, -SQUARE_SIZE},
         { SQUARE_SIZE, -SQUARE_SIZE},
         { SQUARE_SIZE,  SQUARE_SIZE},
         {-SQUARE_SIZE,  SQUARE_SIZE},
     };
+    float uv1[6] = {
+        0, 0, 
+        1, 0,
+        1, 1
+    };
+    float uv2[6] = {
+        0, 0, 
+        1, 1,
+        0, 1
+    };
+    
     
     float rotated[4][2];
+    int coords1[6], coords2[6];
     
     /* Create displayed canvas */
     cv = caca_create_canvas(0, 0);
@@ -74,7 +86,7 @@ int main(int argc, char *argv[])
         return 1;
     }
     
-	/* Open window */
+    /* Open window */
     dp = caca_create_display(cv);
     if(!dp)
     {
@@ -193,8 +205,8 @@ int main(int argc, char *argv[])
         int p;
         for(p=0; p<4; p++) 
         {
-        	rotated[p][0] = square[p][0] * cos(angle*M_PI/180.0f) - square[p][1] * sin(angle*M_PI/180.0f);
-        	rotated[p][1] = square[p][0] * sin(angle*M_PI/180.0f) + square[p][1] * cos(angle*M_PI/180.0f);
+            rotated[p][0] = square[p][0] * cos(angle*M_PI/180.0f) - square[p][1] * sin(angle*M_PI/180.0f);
+            rotated[p][1] = square[p][0] * sin(angle*M_PI/180.0f) + square[p][1] * cos(angle*M_PI/180.0f);
             
             rotated[p][0] += ww/2 + px;
             rotated[p][1] += wh/2 + py;
@@ -202,28 +214,25 @@ int main(int argc, char *argv[])
         
         angle+=1.0f;
         
-        /* Display two triangles */
-        caca_fill_triangle_textured(cv,
-                           			/* triangle screen coordinates */
-                                    rotated[0][0], rotated[0][1],
-                           			rotated[1][0], rotated[1][1],
-                                    rotated[2][0], rotated[2][1],
-                                    /* texture coordinates */
-                           			0, 0, 
-                                    1, 0,
-                                    1, 1,
-                                    tex);
         
+        /* Reaarange coordinates to fit libcaca's format */
+        coords1[0] = rotated[0][0]; coords1[1] = rotated[0][1];
+        coords1[2] = rotated[1][0]; coords1[3] = rotated[1][1];
+        coords1[4] = rotated[2][0]; coords1[5] = rotated[2][1];
+       
+        coords2[0] = rotated[0][0]; coords2[1] = rotated[0][1];
+        coords2[2] = rotated[2][0]; coords2[3] = rotated[2][1];
+        coords2[4] = rotated[3][0]; coords2[5] = rotated[3][1];
+        
+        /* Display two triangles */
+        caca_fill_triangle_textured(cv,      /* canvas */
+                                    coords1, /* triangle coordinates */
+                                    tex,     /* texture canvas */
+                                    uv1);    /* texture coordinates */
         caca_fill_triangle_textured(cv,
-                           			/* triangle screen coordinates */
-                                    rotated[0][0], rotated[0][1],
-                           			rotated[2][0], rotated[2][1],
-                                    rotated[3][0], rotated[3][1],
-                                    /* texture coordinates */
-                           			0, 0, 
-                                    1, 1,
-                                    0, 1,
-                                    tex);
+                                    coords2,
+                                    tex,
+                                    uv2);
         
         /* Refresh display and clear for next frame */
         caca_refresh_display(dp);
