@@ -135,8 +135,8 @@ int main(int argc, char *argv[])
         int i;
         for(i = 0; i < 16; i ++) 
         {
-            caca_set_color_ansi(tex, (i+1)%0xF, i);
-            caca_put_str(tex, 0, i, "123456789ABCDEF");
+            caca_set_color_ansi(tex, (i+1)%0xF, i%0xF);
+            caca_put_str(tex, 0, i, "0123456789ABCDEF");
         }
     }
     
