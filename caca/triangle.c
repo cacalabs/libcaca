@@ -184,7 +184,8 @@ int caca_fill_triangle_textured(caca_canvas_t *cv,
                        			float u3, float v3, 
                                 caca_canvas_t *tex)
 {
-    
+    uint32_t savedattr;
+
     #define SWAP_F(a, b) {float c = a; a = b; b = c; }
     
     /* (very) Naive and 
@@ -209,6 +210,7 @@ int caca_fill_triangle_textured(caca_canvas_t *cv,
                                            u1, v1, u3, v3, u2, v2, 
                                            tex);
     
+    savedattr = caca_get_attr(cv, -1, -1);
     
     /* Clip texture coordinates */
 	if(u1<0.0f) u1 = 0.0f; if(v1<0.0f) v1 = 0.0f;
@@ -346,8 +348,10 @@ int caca_fill_triangle_textured(caca_canvas_t *cv,
         ua+=usl13; va+=vsl13;
         ub+=usl23; vb+=vsl23; 
     }
-    
-	return 0;
+
+    caca_set_attr(cv, savedattr);
+
+    return 0;
 }
 
 
