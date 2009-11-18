@@ -64,6 +64,10 @@ struct driver_private
     uint32_t max_char;
     int cursor_flags;
     int dirty_cursor_x, dirty_cursor_y;
+#if defined(X_HAVE_UTF8_STRING)
+    XIM im;
+    XIC ic;
+#endif
 };
 
 #define UNICODE_XLFD_SUFFIX "-iso10646-1"
@@ -253,6 +257,10 @@ static int x11_init_graphics(caca_display_t *dp)
     dp->drv.p->dirty_cursor_x = -1;
     dp->drv.p->dirty_cursor_y = -1;
 
+    dp->drv.p->im = XOpenIM(dp->drv.p->dpy, NULL, NULL, NULL);
+    dp->drv.p->ic = XCreateIC(dp->drv.p->im, XNInputStyle,
+                              XIMPreeditNothing | XIMStatusNothing, NULL);
+
     return 0;
 }
 
@@ -268,6 +276,8 @@ static int x11_end_graphics(caca_display_t *dp)
     XFreeGC(dp->drv.p->dpy, dp->drv.p->gc);
     XUnmapWindow(dp->drv.p->dpy, dp->drv.p->window);
     XDestroyWindow(dp->drv.p->dpy, dp->drv.p->window);
+    XDestroyIC(dp->drv.p->ic);
+    XCloseIM(dp->drv.p->im);
     XCloseDisplay(dp->drv.p->dpy);
 
     free(dp->drv.p);
@@ -500,6 +510,19 @@ static int x11_get_event(caca_display_t *dp, caca_privevent_t *ev)
         else
             continue;
 
+#if defined(X_HAVE_UTF8_STRING)
+        if(Xutf8LookupString(dp->drv.p->ic, &xevent.xkey, ev->data.key.utf8, 8, NULL, NULL))
+        {
+            ev->data.key.utf32 = caca_utf8_to_utf32(ev->data.key.utf8, NULL);
+            if(ev->data.key.utf32 < 0x7f)
+            {
+                ev->data.key.ch = ev->data.key.utf32;
+            } else {
+                ev->data.key.ch = 0;
+            }
+            return 1;
+        }
+#endif
         if(XLookupString(&xevent.xkey, &key, 1, NULL, NULL))
         {
             ev->data.key.ch = key;
