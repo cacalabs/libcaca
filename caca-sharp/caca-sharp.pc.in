@@ -1,0 +1,6 @@
+Name: caca-sharp
+Description: caca-sharp
+Version: @PACKAGE_VERSION@
+
+Requires: 
+Libs: -r:@expanded_libdir@/@PACKAGE@/caca-sharp.dll
