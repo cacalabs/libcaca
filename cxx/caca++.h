@@ -130,6 +130,7 @@ __class Canvas
     void drawTriangle(int, int, int, int, int, int, uint32_t);
     void drawThinTriangle(int, int, int, int, int, int);
     void fillTriangle(int, int, int, int, int, int, uint32_t);
+    void fillTriangleTextured(int coords[6], Canvas *tex, float uv[6]);
     int setBoundaries(caca_canvas_t *, int, int, unsigned int, unsigned int);
     unsigned int getFrameCount();
     int setFrame(unsigned int);

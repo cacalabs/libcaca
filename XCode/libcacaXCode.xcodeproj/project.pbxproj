@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXFileReference section */
+		E6A7681710B560BB008B6DEC /* caca++.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "caca++.cpp"; path = "../cxx/caca++.cpp"; sourceTree = SOURCE_ROOT; };
+		E6A7681810B560BB008B6DEC /* caca++.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "caca++.h"; path = "../cxx/caca++.h"; sourceTree = SOURCE_ROOT; };
+		E6A7681910B560BB008B6DEC /* cxxtest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = cxxtest.cpp; path = ../cxx/cxxtest.cpp; sourceTree = SOURCE_ROOT; };
 		E6DB65F610AECC7800B6F924 /* attr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = attr.c; path = ../caca/attr.c; sourceTree = SOURCE_ROOT; };
 		E6DB65F710AECC7800B6F924 /* box.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = box.c; path = ../caca/box.c; sourceTree = SOURCE_ROOT; };
 		E6DB65F810AECC7800B6F924 /* caca_conio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = caca_conio.c; path = ../caca/caca_conio.c; sourceTree = SOURCE_ROOT; };
@@ -98,12 +101,23 @@
 		08FB7794FE84155DC02AAC07 /* XCode */ = {
 			isa = PBXGroup;
 			children = (
+				E6A7681510B560AE008B6DEC /* cxx */,
 				E6DB66FA10B176D100B6F924 /* configure.ac */,
 				E6DB663A10AECDC500B6F924 /* examples */,
 				E6DB662B10AECCBF00B6F924 /* src */,
 				E6DB65F510AECC5800B6F924 /* caca */,
 			);
 			name = XCode;
+			sourceTree = "<group>";
+		};
+		E6A7681510B560AE008B6DEC /* cxx */ = {
+			isa = PBXGroup;
+			children = (
+				E6A7681810B560BB008B6DEC /* caca++.h */,
+				E6A7681710B560BB008B6DEC /* caca++.cpp */,
+				E6A7681910B560BB008B6DEC /* cxxtest.cpp */,
+			);
+			name = cxx;
 			sourceTree = "<group>";
 		};
 		E6DB65F510AECC5800B6F924 /* caca */ = {

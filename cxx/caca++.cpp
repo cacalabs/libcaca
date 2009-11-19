@@ -243,6 +243,11 @@ void Canvas::fillTriangle(int x1, int y1, int x2, int y2, int x3, int y3, uint32
     caca_fill_triangle(cv, x1, y1, x2, y2, x3, y3, ch);
 }
 
+void Canvas::fillTriangleTextured(int coords[6], Canvas *tex, float uv[6])
+{
+    caca_fill_triangle_textured(cv, coords, tex->cv, uv);
+}
+
 int Canvas::Rand(int min, int max)
 {
     return caca_rand(min, max);
