@@ -46,15 +46,13 @@ if test "${build}" != "${host}" -a "${PKG_CONFIG_LIBDIR}" = ""; then
   export PKG_CONFIG_LIBDIR=/dev/null
 fi
 
-dnl FIXME: this no longer works because libtool is generated at the end
-AC_MSG_CHECKING(for library suffix)
-LT_SUFFIX="`./libtool -n --mode=link gcc -o libTEST.la -no-undefined -version-number 123:666:999 -rpath / | xargs -n 1 | sed -ne 's/.*libTEST\(@<:@^, ()0-9@:>@*\)123\(@<:@^, ()0-9@:>@*\).*/\1'$LT_MAJOR'\2/p' | sed '/\.$/d;q'`"
-if test "$LT_SUFFIX" = ""; then
-  LT_SUFFIX=".so.$LT_MAJOR"
-  AC_MSG_RESULT([unknown, defaulting to $LT_SUFFIX])
-else
-  AC_MSG_RESULT($LT_SUFFIX)
-fi
+AC_MSG_CHECKING(for suffix of libraries)
+case "$shrext_cmds" in
+  .dll) LT_SUFFIX="-$LT_MAJOR$shrext_cmds" ;;
+  "") LT_SUFFIX=".so.$LT_MAJOR" ;;
+  *) LT_SUFFIX="$shrext_cmds.$LT_MAJOR" ;;
+esac
+AC_MSG_RESULT($LT_SUFFIX)
 AC_SUBST(LT_SUFFIX)
 
 dnl output driver features
