@@ -117,6 +117,12 @@ struct driver_private
     char *term;
 };
 
+static void default_sigint (int sig)
+{
+    /* Do nothing */
+    return;
+}
+
 static int slang_init_graphics(caca_display_t *dp)
 {
     dp->drv.p = malloc(sizeof(struct driver_private));
@@ -158,6 +164,10 @@ static int slang_init_graphics(caca_display_t *dp)
     SLtt_set_mouse_mode(1, 0);
     SLsmg_refresh();
 
+    
+    /* Disable SLang's own SIGINT on ctrl-c */
+    SLang_set_abort_signal (default_sigint);
+    
     /* Disable scrolling so that hashmap scrolling optimization code
      * does not cause ugly refreshes due to slow terminals */
     SLtt_Term_Cannot_Scroll = 1;
