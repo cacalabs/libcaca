@@ -1,4 +1,4 @@
-/* 
+/*
  *  trifiller     texture mapping features
  *  Copyright (c) 2009 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                All Rights Reserved

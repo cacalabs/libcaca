@@ -192,7 +192,7 @@ int caca_rotate_180(caca_canvas_t *cv)
     int y;
 
     if(!cbegin)
-	return 0;
+      return 0;
 
     while(cbegin < cend)
     {

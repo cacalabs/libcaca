@@ -22,6 +22,7 @@
 		E6A7682410B561CE008B6DEC /* caca-font.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "caca-font.h"; path = "../ruby/caca-font.h"; sourceTree = SOURCE_ROOT; };
 		E6A7682510B561CE008B6DEC /* caca.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = caca.c; path = ../ruby/caca.c; sourceTree = SOURCE_ROOT; };
 		E6A7682610B561CE008B6DEC /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = ../ruby/common.h; sourceTree = SOURCE_ROOT; };
+		E6A769B410B85819008B6DEC /* check-build */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "check-build"; path = "../tests/check-build"; sourceTree = SOURCE_ROOT; };
 		E6DB65F610AECC7800B6F924 /* attr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = attr.c; path = ../caca/attr.c; sourceTree = SOURCE_ROOT; };
 		E6DB65F710AECC7800B6F924 /* box.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = box.c; path = ../caca/box.c; sourceTree = SOURCE_ROOT; };
 		E6DB65F810AECC7800B6F924 /* caca_conio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = caca_conio.c; path = ../caca/caca_conio.c; sourceTree = SOURCE_ROOT; };
@@ -113,6 +114,7 @@
 		08FB7794FE84155DC02AAC07 /* XCode */ = {
 			isa = PBXGroup;
 			children = (
+				E6A769B410B85819008B6DEC /* check-build */,
 				E6A7681A10B561B9008B6DEC /* ruby */,
 				E6A7681510B560AE008B6DEC /* cxx */,
 				E6DB66FA10B176D100B6F924 /* configure.ac */,

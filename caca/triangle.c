@@ -1,4 +1,4 @@
-/* 
+/*
  *  libcaca       Colour ASCII-Art library
  *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
@@ -12,7 +12,7 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
-/* 
+/*
  *  This file contains triangle drawing functions, both filled and outline.
  */
 
@@ -306,7 +306,7 @@ static int caca_fill_triangle_textured_l(caca_canvas_t * cv,
     /* Bottom */
     xb = (float)x2;
 
-    /* These variables are set by 'top' routine and are in an incorrect state 
+    /* These variables are set by 'top' routine and are in an incorrect state
        if we only draw the bottom part */
     if (y1 == y2)
     {
@@ -385,7 +385,7 @@ int caca_fill_triangle_textured(caca_canvas_t * cv,
 
 
 
-/* 
+/*
  * XXX: The following functions are aliases.
  */
 
