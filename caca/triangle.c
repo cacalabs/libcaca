@@ -1,4 +1,4 @@
-/*
+/* 
  *  libcaca       Colour ASCII-Art library
  *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
  *                All Rights Reserved
@@ -12,7 +12,7 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
-/*
+/* 
  *  This file contains triangle drawing functions, both filled and outline.
  */
 
@@ -39,8 +39,8 @@
  *  \param ch UTF-32 character to be used to draw the triangle outline.
  *  \return This function always returns 0.
  */
-int caca_draw_triangle(caca_canvas_t *cv, int x1, int y1, int x2, int y2,
-                        int x3, int y3, uint32_t ch)
+int caca_draw_triangle(caca_canvas_t * cv, int x1, int y1, int x2, int y2,
+                       int x3, int y3, uint32_t ch)
 {
     caca_draw_line(cv, x1, y1, x2, y2, ch);
     caca_draw_line(cv, x2, y2, x3, y3, ch);
@@ -62,8 +62,8 @@ int caca_draw_triangle(caca_canvas_t *cv, int x1, int y1, int x2, int y2,
  *  \param y3 Y coordinate of the third point.
  *  \return This function always returns 0.
  */
-int caca_draw_thin_triangle(caca_canvas_t *cv, int x1, int y1,
-                             int x2, int y2, int x3, int y3)
+int caca_draw_thin_triangle(caca_canvas_t * cv, int x1, int y1,
+                            int x2, int y2, int x3, int y3)
 {
     caca_draw_thin_line(cv, x1, y1, x2, y2);
     caca_draw_thin_line(cv, x2, y2, x3, y3);
@@ -86,17 +86,17 @@ int caca_draw_thin_triangle(caca_canvas_t *cv, int x1, int y1,
  *  \param ch UTF-32 character to be used to fill the triangle.
  *  \return This function always returns 0.
  */
-int caca_fill_triangle(caca_canvas_t *cv, int x1, int y1, int x2, int y2,
-                        int x3, int y3, uint32_t ch)
+int caca_fill_triangle(caca_canvas_t * cv, int x1, int y1, int x2, int y2,
+                       int x3, int y3, uint32_t ch)
 {
     int x, y, xmin, xmax, ymin, ymax;
     int xx1, xx2, xa, xb, sl21, sl31, sl32;
 
     /* Bubble-sort y1 <= y2 <= y3 */
-    if(y1 > y2)
+    if (y1 > y2)
         return caca_fill_triangle(cv, x2, y2, x1, y1, x3, y3, ch);
 
-    if(y2 > y3)
+    if (y2 > y3)
         return caca_fill_triangle(cv, x1, y1, x3, y3, x2, y2, ch);
 
     /* Compute slopes and promote precision */
@@ -111,27 +111,27 @@ int caca_fill_triangle(caca_canvas_t *cv, int x1, int y1, int x2, int y2,
     ymin = y1 < 0 ? 0 : y1;
     ymax = y3 + 1 < cv->height ? y3 + 1 : cv->height;
 
-    if(ymin < y2)
+    if (ymin < y2)
     {
         xa = x1 + sl21 * (ymin - y1);
         xb = x1 + sl31 * (ymin - y1);
     }
-    else if(ymin == y2)
+    else if (ymin == y2)
     {
         xa = x2;
         xb = (y1 == y3) ? x3 : x1 + sl31 * (ymin - y1);
     }
-    else /* (ymin > y2) */
+    else                        /* (ymin > y2) */
     {
         xa = x3 + sl32 * (ymin - y3);
         xb = x3 + sl31 * (ymin - y3);
     }
 
     /* Rasterize our triangle */
-    for(y = ymin; y < ymax; y++)
+    for (y = ymin; y < ymax; y++)
     {
         /* Rescale xa and xb, recentering the division */
-        if(xa < xb)
+        if (xa < xb)
         {
             xx1 = (xa + 0x800) / 0x10000;
             xx2 = (xb + 0x801) / 0x10000;
@@ -145,7 +145,7 @@ int caca_fill_triangle(caca_canvas_t *cv, int x1, int y1, int x2, int y2,
         xmin = xx1 < 0 ? 0 : xx1;
         xmax = xx2 + 1 < cv->width ? xx2 + 1 : cv->width;
 
-        for(x = xmin; x < xmax; x++)
+        for (x = xmin; x < xmax; x++)
             caca_put_char(cv, x, y, ch);
 
         xa += y < y2 ? sl21 : sl32;
@@ -155,125 +155,144 @@ int caca_fill_triangle(caca_canvas_t *cv, int x1, int y1, int x2, int y2,
     return 0;
 }
 
-/* This function actually renders the triangle, 
- * but is not exported due to sam's pedantic will. */
-static int caca_fill_triangle_textured_l(caca_canvas_t *cv,
-                                int x1, int y1,
-                                int x2, int y2,
-                       			int x3, int y3,
-                                caca_canvas_t *tex,
-                                float u1, float v1,
-                                float u2, float v2,
-                       			float u3, float v3)
-                                
+/* This function actually renders the triangle, but is not exported due to
+   sam's pedantic will. */
+static int caca_fill_triangle_textured_l(caca_canvas_t * cv,
+                                         int x1, int y1,
+                                         int x2, int y2,
+                                         int x3, int y3,
+                                         caca_canvas_t * tex,
+                                         float u1, float v1,
+                                         float u2, float v2,
+                                         float u3, float v3)
 {
     uint32_t savedattr;
 
-    #define SWAP_F(a, b) {float c = a; a = b; b = c; }
-    
-    /* (very) Naive and 
-     * (very) float-based affine and
-     * (very) non-clipped and
-     * (very) non-corrected triangle mapper 
-     *
-     * Accepts arbitrary texture sizes
-     * Coordinates clamped to [0.0 - 1.0] (no repeat)
-     */
-    if(!cv || !tex) return -1;
+#define SWAP_F(a, b) {float c = a; a = b; b = c; }
+
+    /* (very) Naive and (very) float-based affine and (very) non-clipped and
+       (very) non-corrected triangle mapper Accepts arbitrary texture sizes
+       Coordinates clamped to [0.0 - 1.0] (no repeat) */
+    if (!cv || !tex)
+        return -1;
 
     /* Bubble-sort y1 <= y2 <= y3 */
-    if(y1 > y2)
-        return caca_fill_triangle_textured_l(cv, 
+    if (y1 > y2)
+        return caca_fill_triangle_textured_l(cv,
                                              x2, y2, x1, y1, x3, y3,
-                                             tex,
-                                             u2, v2, u1, v1, u3, v3);
-    if(y2 > y3) 
-        return caca_fill_triangle_textured_l(cv, 
+                                             tex, u2, v2, u1, v1, u3, v3);
+    if (y2 > y3)
+        return caca_fill_triangle_textured_l(cv,
                                              x1, y1, x3, y3, x2, y2,
-                                             tex,
-                                             u1, v1, u3, v3, u2, v2);
+                                             tex, u1, v1, u3, v3, u2, v2);
 
     savedattr = caca_get_attr(cv, -1, -1);
 
     /* Clip texture coordinates */
-    if(u1<0.0f) u1 = 0.0f; if(v1<0.0f) v1 = 0.0f;
-    if(u2<0.0f) u2 = 0.0f; if(v2<0.0f) v2 = 0.0f;
-    if(u3<0.0f) u3 = 0.0f; if(v3<0.0f) v3 = 0.0f;
-    if(u1>1.0f) u1 = 1.0f; if(v1>1.0f) v1 = 1.0f;
-    if(u2>1.0f) u2 = 1.0f; if(v2>1.0f) v2 = 1.0f;
-    if(u3>1.0f) u3 = 1.0f; if(v3>1.0f) v3 = 1.0f;
-    
+    if (u1 < 0.0f)
+        u1 = 0.0f;
+    if (v1 < 0.0f)
+        v1 = 0.0f;
+    if (u2 < 0.0f)
+        u2 = 0.0f;
+    if (v2 < 0.0f)
+        v2 = 0.0f;
+    if (u3 < 0.0f)
+        u3 = 0.0f;
+    if (v3 < 0.0f)
+        v3 = 0.0f;
+    if (u1 > 1.0f)
+        u1 = 1.0f;
+    if (v1 > 1.0f)
+        v1 = 1.0f;
+    if (u2 > 1.0f)
+        u2 = 1.0f;
+    if (v2 > 1.0f)
+        v2 = 1.0f;
+    if (u3 > 1.0f)
+        u3 = 1.0f;
+    if (v3 > 1.0f)
+        v3 = 1.0f;
+
     /* Convert relative tex coordinates to absolute */
     int tw = caca_get_canvas_width(tex);
     int th = caca_get_canvas_height(tex);
-    
-    u1*=(float)tw; u2*=(float)tw; u3*=(float)tw;
-    v1*=(float)th; v2*=(float)th; v3*=(float)th;
-    
+
+    u1 *= (float)tw;
+    u2 *= (float)tw;
+    u3 *= (float)tw;
+    v1 *= (float)th;
+    v2 *= (float)th;
+    v3 *= (float)th;
+
     int x, y;
-    float y2y1 = y2-y1;
-    float y3y1 = y3-y1;
-    float y3y2 = y3-y2;
-    
+    float y2y1 = y2 - y1;
+    float y3y1 = y3 - y1;
+    float y3y2 = y3 - y2;
+
     /* Compute slopes, making sure we don't divide by zero */
     /* (in this case, we don't need the value anyway) */
     /* FIXME : only compute needed slopes */
-    float sl12 = ((float)x2 - x1) / (y2y1==0?1:y2y1);
-    float sl13 = ((float)x3 - x1) / (y3y1==0?1:y3y1);
-    float sl23 = ((float)x3 - x2) / (y3y2==0?1:y3y2);
-    
-    float usl12 = (u2 - u1) / (y2y1==0?1:y2y1);
-    float usl13 = (u3 - u1) / (y3y1==0?1:y3y1);
-    float usl23 = (u3 - u2) / (y3y2==0?1:y3y2);
-    float vsl12 = (v2 - v1) / (y2y1==0?1:y2y1);
-    float vsl13 = (v3 - v1) / (y3y1==0?1:y3y1);
-    float vsl23 = (v3 - v2) / (y3y2==0?1:y3y2);
-    
-    float xa = (float) x1, xb = (float) x1;
+    float sl12 = ((float)x2 - x1) / (y2y1 == 0 ? 1 : y2y1);
+    float sl13 = ((float)x3 - x1) / (y3y1 == 0 ? 1 : y3y1);
+    float sl23 = ((float)x3 - x2) / (y3y2 == 0 ? 1 : y3y2);
+
+    float usl12 = (u2 - u1) / (y2y1 == 0 ? 1 : y2y1);
+    float usl13 = (u3 - u1) / (y3y1 == 0 ? 1 : y3y1);
+    float usl23 = (u3 - u2) / (y3y2 == 0 ? 1 : y3y2);
+    float vsl12 = (v2 - v1) / (y2y1 == 0 ? 1 : y2y1);
+    float vsl13 = (v3 - v1) / (y3y1 == 0 ? 1 : y3y1);
+    float vsl23 = (v3 - v2) / (y3y2 == 0 ? 1 : y3y2);
+
+    float xa = (float)x1, xb = (float)x1;
     float ua = u1, ub = u1;
     float va = v1, vb = v1;
     float u, v;
-    
+
     int s = 0;
-    
+
     /* Top */
-    for(y = y1 ; y < y2; y++)
+    for (y = y1; y < y2; y++)
     {
-        
-        if(xb < xa) {
-            SWAP_F(xb, xa);   
+
+        if (xb < xa)
+        {
+            SWAP_F(xb, xa);
             SWAP_F(sl13, sl12);
             SWAP_F(ua, ub);
-            SWAP_F(va, vb);            
+            SWAP_F(va, vb);
             SWAP_F(usl13, usl12);
             SWAP_F(vsl13, vsl12);
-            s=1;
+            s = 1;
         }
-        
+
         float tus = (ub - ua) / (xb - xa);
         float tvs = (vb - va) / (xb - xa);
-        v = va; u = ua;
-        
+        v = va;
+        u = ua;
+
         /* scanline */
-        for(x = xa ; x < xb; x++)
+        for (x = xa; x < xb; x++)
         {
-            u+=tus;
-            v+=tvs;
-            /* FIXME: use caca_get_canvas_attrs / caca_get_canvas_chars  */
+            u += tus;
+            v += tvs;
+            /* FIXME: use caca_get_canvas_attrs / caca_get_canvas_chars */
             uint32_t attr = caca_get_attr(tex, u, v);
-            uint32_t c    = caca_get_char(tex, u, v);
+            uint32_t c = caca_get_char(tex, u, v);
             caca_set_attr(cv, attr);
             caca_put_char(cv, x, y, c);
         }
-        
-        xa+=sl13;
-        xb+=sl12;
-        
-        ua+=usl13; va+=vsl13;
-        ub+=usl12; vb+=vsl12;
+
+        xa += sl13;
+        xb += sl12;
+
+        ua += usl13;
+        va += vsl13;
+        ub += usl12;
+        vb += vsl12;
     }
-    
-    if(s)
+
+    if (s)
     {
         SWAP_F(xb, xa);
         SWAP_F(sl13, sl12);
@@ -282,24 +301,24 @@ static int caca_fill_triangle_textured_l(caca_canvas_t *cv,
         SWAP_F(usl13, usl12);
         SWAP_F(vsl13, vsl12);
     }
-    
-    
-    /* Bottom */
-    xb = (float) x2;
 
-    /* These variables are set by 'top' routine 
-     * and are in an incorrect state if we only draw the bottom part
-     */
-   	if(y1 == y2) {
+
+    /* Bottom */
+    xb = (float)x2;
+
+    /* These variables are set by 'top' routine and are in an incorrect state 
+       if we only draw the bottom part */
+    if (y1 == y2)
+    {
         ua = u1;
         ub = u2;
         va = v1;
         vb = v2;
     }
-    
-    for(y = y2 ; y < y3; y++)
+
+    for (y = y2; y < y3; y++)
     {
-        if(xb <= xa)
+        if (xb <= xa)
         {
             SWAP_F(xb, xa);
             SWAP_F(sl13, sl23);
@@ -307,29 +326,32 @@ static int caca_fill_triangle_textured_l(caca_canvas_t *cv,
             SWAP_F(va, vb);
             SWAP_F(usl13, usl23);
             SWAP_F(vsl13, vsl23);
-        } 
-        
+        }
+
         float tus = (ub - ua) / ((float)xb - xa);
         float tvs = (vb - va) / ((float)xb - xa);
-        u = ua; v = va;
-        
+        u = ua;
+        v = va;
+
         /* scanline */
-        for(x = xa ; x < xb; x++)
-        {    
-            u+=tus;
-            v+=tvs;
-            /* FIXME, can be heavily optimised  */
+        for (x = xa; x < xb; x++)
+        {
+            u += tus;
+            v += tvs;
+            /* FIXME, can be heavily optimised */
             uint32_t attr = caca_get_attr(tex, u, v);
-            uint32_t c    = caca_get_char(tex, u, v);
+            uint32_t c = caca_get_char(tex, u, v);
             caca_set_attr(cv, attr);
             caca_put_char(cv, x, y, c);
         }
 
-        xa+=sl13;
-        xb+=sl23;
-        
-        ua+=usl13; va+=vsl13;
-        ub+=usl23; vb+=vsl23;
+        xa += sl13;
+        xb += sl23;
+
+        ua += usl13;
+        va += vsl13;
+        ub += usl23;
+        vb += vsl23;
     }
 
     caca_set_attr(cv, savedattr);
@@ -347,31 +369,30 @@ static int caca_fill_triangle_textured_l(caca_canvas_t *cv,
  *  \param uv     The coordinates of the texture (3{u,v})
  *  \return This function return 0 if ok, -1 if canvas or texture are missing.
  */
-int caca_fill_triangle_textured(caca_canvas_t *cv,
+int caca_fill_triangle_textured(caca_canvas_t * cv,
                                 int coords[6],
-                                caca_canvas_t *tex,
-                                float uv[6]) {
-    
+                                caca_canvas_t * tex, float uv[6])
+{
+
     return caca_fill_triangle_textured_l(cv,
                                          coords[0], coords[1],
                                          coords[2], coords[3],
                                          coords[4], coords[5],
                                          tex,
-                                         uv[0],     uv[1],
-                                         uv[2],     uv[3],
-                                         uv[4],     uv[5]);
+                                         uv[0], uv[1],
+                                         uv[2], uv[3], uv[4], uv[5]);
 }
 
 
 
-/*
+/* 
  * XXX: The following functions are aliases.
  */
 
 int cucul_draw_triangle(cucul_canvas_t *, int, int, int, int, int,
-                      int, uint32_t) CACA_ALIAS(caca_draw_triangle);
-int cucul_draw_thin_triangle(cucul_canvas_t *, int, int, int, int,
-                             int, int) CACA_ALIAS(caca_draw_thin_triangle);
-int cucul_fill_triangle(cucul_canvas_t *, int, int, int, int, int,
-                        int, uint32_t) CACA_ALIAS(caca_fill_triangle);
-
+                        int, uint32_t) CACA_ALIAS(caca_draw_triangle);
+     int cucul_draw_thin_triangle(cucul_canvas_t *, int, int, int, int,
+                                  int,
+                                  int) CACA_ALIAS(caca_draw_thin_triangle);
+     int cucul_fill_triangle(cucul_canvas_t *, int, int, int, int, int, int,
+                             uint32_t) CACA_ALIAS(caca_fill_triangle);
