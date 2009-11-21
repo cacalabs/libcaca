@@ -140,6 +140,9 @@ static int slang_init_graphics(caca_display_t *dp)
 
     /* Initialise slang library */
     SLsig_block_signals();
+    /* Disable SLang's own SIGINT on ctrl-c */
+    SLang_set_abort_signal(default_sigint);
+    
     SLtt_get_terminfo();
 
     if(SLkp_init() == -1)
@@ -156,17 +159,11 @@ static int slang_init_graphics(caca_display_t *dp)
         return -1;
     }
 
-    SLsig_unblock_signals();
-
     SLsmg_cls();
     SLtt_set_cursor_visibility(0);
     SLkp_define_keysym("\e[M", 1001);
     SLtt_set_mouse_mode(1, 0);
     SLsmg_refresh();
-
-    
-    /* Disable SLang's own SIGINT on ctrl-c */
-    SLang_set_abort_signal (default_sigint);
     
     /* Disable scrolling so that hashmap scrolling optimization code
      * does not cause ugly refreshes due to slow terminals */
@@ -200,6 +197,7 @@ static int slang_end_graphics(caca_display_t *dp)
     SLtt_set_cursor_visibility(1);
     SLang_reset_tty();
     SLsmg_reset_smg();
+    SLsig_unblock_signals();
 
 #if defined HAVE_GETENV && defined HAVE_PUTENV
     slang_uninstall_terminal(dp);
