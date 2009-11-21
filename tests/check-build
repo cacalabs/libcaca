@@ -1,10 +1,15 @@
 #!/bin/sh
 
-failure=0
+ret=0
+
+#
+# Check that the Win32 config.h is in sync with config.h.in
+#
 
 config_h_in=$(dirname "$0")/../config.h.in
 win32_config_h=$(dirname "$0")/../win32/config.h
 
+failure=0
 for key in $(sed -ne 's/.*#undef *\([A-Za-z0-9_]*\).*/\1/p' "$config_h_in");
 do
   if ! grep '[ef] \<'"$key"'\>' "$win32_config_h" >/dev/null 2>&1; then
@@ -12,11 +17,40 @@ do
     failure=1
   fi
 done
-
 if test "$failure" != "0"; then
-  exit 1
+  ret=1
 else
   echo "0 errors in Win32 config.h"
+fi
+
+#
+# Check that we have no tabs or trailing spaces in the source code
+#
+failure=0
+for dir in caca cxx examples ruby tools; do
+  pushd ../$dir >/dev/null
+  # Dirty hack to print the $(SOURCES) variable
+  for x in $(make -s ID SHELL='echo @@$(SOURCES)@@' | tr -d '\n' | sed 's/.*@@\([^@]*\)@@.*/\1/');
+  do
+    if grep '[[:space:]]$' "$x" >/dev/null 2>&1; then
+      echo "error: $dir/$x contains trailing spaces"
+      failure=1
+    fi
+    if grep '	' "$x" >/dev/null 2>&1; then
+      echo "error: $dir/$x contains tabs"
+      failure=1
+    fi
+  done
+  popd >/dev/null
+done
+if test "$failure" != "0"; then
+  ret=1
+else
+  echo "0 errors in source code"
+fi
+
+if test "$ret" != "0"; then
+  exit 1
 fi
 
 exit 0
