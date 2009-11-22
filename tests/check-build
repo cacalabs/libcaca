@@ -27,7 +27,7 @@ fi
 # Check that we have no tabs or trailing spaces in the source code
 #
 failure=0
-for dir in caca cxx examples ruby tools; do
+for dir in caca src cxx examples ruby tools; do
   pushd ../$dir >/dev/null
   # Dirty hack to print the $(SOURCES) variable
   for x in $(make -s ID SHELL='echo @@$(SOURCES)@@' | tr -d '\n' | sed 's/.*@@\([^@]*\)@@.*/\1/');
