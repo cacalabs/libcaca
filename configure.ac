@@ -504,7 +504,7 @@ AC_CONFIG_FILES([
   caca/Makefile
   src/Makefile
   examples/Makefile
-  tests/Makefile
+  test/Makefile
   tools/Makefile
   caca-sharp/Makefile
   cxx/Makefile
