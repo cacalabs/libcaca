@@ -119,3 +119,5 @@ if USE_COCOA
 driver_source += driver/cocoa.m
 endif
 
+echo-sources: ; echo $(SOURCES)
+

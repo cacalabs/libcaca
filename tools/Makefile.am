@@ -20,3 +20,6 @@ pango_programs = makefont
 else
 pango_programs =
 endif
+
+echo-sources: ; echo $(SOURCES)
+

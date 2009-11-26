@@ -45,3 +45,5 @@ if NEED_GETOPT_LONG
 GETOPT = mygetopt.c mygetopt.h
 endif
 
+echo-sources: ; echo $(SOURCES)
+

@@ -94,3 +94,5 @@ unicode_LDADD = ../caca/libcaca.la
 import_SOURCES = import.c
 import_LDADD = ../caca/libcaca.la
 
+echo-sources: ; echo $(SOURCES)
+

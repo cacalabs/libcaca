@@ -38,3 +38,5 @@ EXTRA_DIST = ruby.dox \
              README \
              $(NULL)
 
+echo-sources: ; echo $(SOURCES)
+

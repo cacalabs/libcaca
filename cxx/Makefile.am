@@ -46,3 +46,5 @@ uninstall-local:
 	rm -f $(DESTDIR)$(pkgconfigdir)/cucul++.pc
 	rmdir $(DESTDIR)$(pkgconfigdir) 2>/dev/null || true
 
+echo-sources: ; echo $(SOURCES)
+

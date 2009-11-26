@@ -29,9 +29,7 @@ fi
 failure=0
 for dir in caca src cxx examples ruby tools; do
   pushd ../$dir >/dev/null
-  # Dirty hack to print the $(SOURCES) variable
-  for x in $(make -s ID SHELL='echo @@$(SOURCES)@@' | tr -d '\n' | sed 's/.*@@\([^@]*\)@@.*/\1/');
-  do
+  for x in $(make echo-sources); do
     if grep '[[:space:]]$' "$x" >/dev/null 2>&1; then
       echo "error: $dir/$x contains trailing spaces"
       failure=1
