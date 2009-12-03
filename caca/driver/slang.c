@@ -115,17 +115,19 @@ static void slang_uninstall_terminal(caca_display_t *);
 struct driver_private
 {
     char *term;
+    unsigned int sigint_event;
 };
 
 static void default_sigint (int sig)
 {
-    /* Do nothing */
-    return;
+    /* Warn the caller that we got SIGINT. */
+    sigwinch_d->drv.p->sigint_event++;
 }
 
 static int slang_init_graphics(caca_display_t *dp)
 {
     dp->drv.p = malloc(sizeof(struct driver_private));
+    dp->drv.p->sigint_event = 0;
 
 #if defined(HAVE_GETENV) && defined(HAVE_PUTENV)
     slang_install_terminal(dp);
@@ -187,6 +189,8 @@ static int slang_init_graphics(caca_display_t *dp)
     caca_set_canvas_size(dp->cv, SLtt_Screen_Cols, SLtt_Screen_Rows);
     dp->resize.allow = 0;
 
+    SLsig_unblock_signals();
+
     return 0;
 }
 
@@ -196,6 +200,7 @@ static int slang_end_graphics(caca_display_t *dp)
     SLtt_set_mouse_mode(0, 0);
     SLtt_set_cursor_visibility(1);
     SLang_reset_tty();
+    SLsig_block_signals();
     SLsmg_reset_smg();
     SLsig_unblock_signals();
 
@@ -231,6 +236,7 @@ static void slang_display(caca_display_t *dp)
 {
     int x, y, i;
 
+    SLsig_block_signals();
     for(i = 0; i < caca_get_dirty_rect_count(dp->cv); i++)
     {
         uint32_t const *cvchars, *cvattrs;
@@ -297,6 +303,7 @@ static void slang_display(caca_display_t *dp)
     }
     SLsmg_gotorc(caca_wherey(dp->cv), caca_wherex(dp->cv));
     SLsmg_refresh();
+    SLsig_unblock_signals();
 }
 
 static void slang_handle_resize(caca_display_t *dp)
@@ -305,14 +312,28 @@ static void slang_handle_resize(caca_display_t *dp)
     dp->resize.w = SLtt_Screen_Cols;
     dp->resize.h = SLtt_Screen_Rows;
 
+    SLsig_block_signals();
     if(dp->resize.w != caca_get_canvas_width(dp->cv)
         || dp->resize.h != caca_get_canvas_height(dp->cv))
         SLsmg_reinit_smg();
+    SLsig_unblock_signals();
 }
 
 static int slang_get_event(caca_display_t *dp, caca_privevent_t *ev)
 {
     int intkey;
+
+    /* If SIGINT was caught, we pass it to the application as Ctrl-C. */
+    if(dp->drv.p->sigint_event > 0)
+    {
+        ev->type = CACA_EVENT_KEY_PRESS;
+        ev->data.key.ch = CACA_KEY_CTRL_C;
+        ev->data.key.utf32 = 0x03;
+        ev->data.key.utf8[0] = 0x03;
+        ev->data.key.utf8[1] = 0;
+        dp->drv.p->sigint_event--;
+        return 1;
+    }
 
     if(!SLang_input_pending(0))
     {
