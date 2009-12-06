@@ -38,11 +38,11 @@
 void _caca_sleep(int usec)
 {
 #if defined(HAVE_USLEEP)
-        usleep(usec);
+    usleep(usec);
 #elif defined(HAVE_SLEEP)
-        Sleep(usec / 1000);
+    Sleep((usec + 500) / 1000);
 #else
-        /* SLEEP */
+    /* SLEEP */
 #endif
 }
 
