@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2006 Sam Hocevar <sam@hocevar.net>
+ *  Copyright (c) 2002-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -24,6 +24,7 @@ typedef struct caca_privevent caca_privevent_t;
 typedef struct caca_figfont caca_figfont_t;
 
 #if !defined(_DOXYGEN_SKIP_ME)
+#   define STAT_VALUES 20
 #   define EVENTBUF_LEN 10
 #   define MAX_DIRTY_COUNT 8
 #endif
@@ -144,6 +145,13 @@ struct caca_timer
     int last_sec, last_usec;
 };
 
+/* Statistic structure for profiling */
+struct caca_stat
+{
+    char *name;
+    int imean, itable[STAT_VALUES];
+};
+
 /* Private event structure */
 struct caca_privevent
 {
@@ -204,6 +212,10 @@ struct caca_display
     /* Framerate handling */
     int delay, rendertime;
     caca_timer_t timer;
+#if defined PROF
+    struct caca_stat display_stat, wait_stat;
+    struct caca_stat ev_sys_stat, ev_wait_stat;
+#endif
     int lastticks;
 
     struct events
@@ -248,5 +260,12 @@ extern int _pop_event(caca_display_t *, caca_privevent_t *);
 
 /* Internal window functions */
 extern void _caca_set_term_title(char const *);
+
+/* Profiling functions */
+#if defined PROF
+extern void _caca_dump_stats(void);
+extern void _caca_init_stat(struct caca_stat *, char const *, ...);
+extern void _caca_fini_stat(struct caca_stat *);
+#endif
 
 #endif /* __CACA_INTERNALS_H__ */

@@ -90,8 +90,8 @@ AC_ARG_ENABLE(imlib2,
 dnl conditional builds
 AC_ARG_ENABLE(debug,
   [  --enable-debug          build debug versions of the library (default no)])
-AC_ARG_ENABLE(prof,
-  [  --enable-prof           activate built-in profiling (default no)])
+AC_ARG_ENABLE(profiling,
+  [  --enable-profiling      activate built-in profiling (default no)])
 AC_ARG_ENABLE(plugins,
   [  --enable-plugins        make X11 and GL drivers plugins (default disabled)])
 AC_ARG_ENABLE(doc,
@@ -321,7 +321,7 @@ if test "${enable_debug}" = "yes"; then
   AC_DEFINE(DEBUG, 1, Define to 1 to activate debug)
 fi
 
-if test "${enable_prof}" = "yes"; then
+if test "${enable_profiling}" = "yes"; then
   AC_DEFINE(PROF, 1, Define to 1 to activate profiling)
 fi
 

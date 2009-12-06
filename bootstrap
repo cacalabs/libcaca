@@ -12,7 +12,7 @@
 #    http://sam.zoy.org/wtfpl/COPYING for more details.
 #
 # The latest version of this script can be found at the following place:
-#   http://sam.zoy.org/autotools/
+#   http://caca.zoy.org/wiki/build
 
 # Die if an error occurs
 set -e

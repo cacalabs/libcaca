@@ -45,6 +45,7 @@ libcaca_la_SOURCES = \
 	graphics.c \
 	event.c \
 	time.c \
+	prof.c \
 	$(codec_source) \
 	$(driver_source) \
 	$(NULL)

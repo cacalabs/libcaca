@@ -147,12 +147,21 @@ int caca_get_display_time(caca_display_t const *dp)
  */
 int caca_refresh_display(caca_display_t *dp)
 {
+#if defined PROF
+    caca_timer_t proftimer = { 0, 0 };
+#endif
 #if !defined(_DOXYGEN_SKIP_ME)
-#define IDLE_USEC 5000
+#   define IDLE_USEC 5000
 #endif
     int ticks = dp->lastticks + _caca_getticks(&dp->timer);
 
+#if defined PROF
+    _caca_getticks(&proftimer);
+#endif
     dp->drv.display(dp);
+#if defined PROF
+    STAT_IADD(&dp->display_stat, _caca_getticks(&proftimer));
+#endif
 
     /* Invalidate the dirty rectangle */
     caca_clear_dirty_rect_list(dp->cv);
@@ -164,6 +173,9 @@ int caca_refresh_display(caca_display_t *dp)
         _caca_handle_resize(dp);
     }
 
+#if defined PROF
+    _caca_getticks(&proftimer);
+#endif
     /* Wait until dp->delay + time of last call */
     ticks += _caca_getticks(&dp->timer);
     for(ticks += _caca_getticks(&dp->timer);
@@ -172,6 +184,9 @@ int caca_refresh_display(caca_display_t *dp)
     {
         _caca_sleep(IDLE_USEC);
     }
+#if defined PROF
+    STAT_IADD(&dp->wait_stat, _caca_getticks(&proftimer));
+#endif
 
     /* Update the render time */
     dp->rendertime = ticks;
@@ -181,6 +196,10 @@ int caca_refresh_display(caca_display_t *dp)
     /* If we drifted too much, it's bad, bad, bad. */
     if(dp->lastticks > (int)dp->delay)
         dp->lastticks = 0;
+
+#if defined PROF
+    _caca_dump_stats();
+#endif
 
     return 0;
 }

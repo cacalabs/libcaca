@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2002-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -67,24 +67,38 @@ int caca_get_event(caca_display_t *dp, int event_mask,
 {
     caca_privevent_t privevent;
     caca_timer_t timer = {0, 0};
-    int usec = 0;
+#if defined PROF
+    caca_timer_t proftimer = {0, 0};
+    int profsys = 0, profwait = 0;
+#endif
+    int ret = 0, usec = 0;
+
+#if defined PROF
+    _caca_getticks(&proftimer);
+#endif
 
     if(!event_mask)
-        return 0;
+        goto end;
 
     if(timeout > 0)
         _caca_getticks(&timer);
 
     for( ; ; )
     {
-        int ret = _get_next_event(dp, &privevent);
+#if defined PROF
+        profwait += _caca_getticks(&proftimer);
+#endif
+        ret = _get_next_event(dp, &privevent);
+#if defined PROF
+        profsys += _caca_getticks(&proftimer);
+#endif
 
         /* If we got the event we wanted, return */
         if(privevent.type & event_mask)
         {
             if(ev)
                 memcpy(ev, &privevent, sizeof(privevent));
-            return ret;
+            goto end;
         }
 
         /* If there is no timeout, sleep and try again. */
@@ -100,18 +114,25 @@ int caca_get_event(caca_display_t *dp, int event_mask,
             privevent.type = CACA_EVENT_NONE;
             if(ev)
                 memcpy(ev, &privevent, sizeof(privevent));
-            return 0;
+            ret = 0;
+            goto end;
         }
 
         /* Otherwise sleep a bit. Our granularity is far too high for values
          * below 10000 microseconds so we cheat a bit. */
-        if(usec > 10000)
-            _caca_sleep(10000);
-        else
-            _caca_sleep(1000);
+        _caca_sleep(usec > 10000 ? 10000 : 1000);
 
         usec += _caca_getticks(&timer);
     }
+
+end:
+#if defined PROF
+    profwait += _caca_getticks(&proftimer);
+    STAT_IADD(&dp->ev_sys_stat, profsys);
+    STAT_IADD(&dp->ev_wait_stat, profwait);
+#endif
+
+    return ret;
 }
 
 /** \brief Return the X mouse coordinate.

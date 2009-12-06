@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2006-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -327,6 +327,12 @@ static int caca_install_driver(caca_display_t *dp, char const *driver)
 
     dp->timer.last_sec = 0;
     dp->timer.last_usec = 0;
+#if defined PROF
+    _caca_init_stat(&dp->display_stat, "dp[%p] disp_sys time", dp);
+    _caca_init_stat(&dp->wait_stat, "dp[%p] disp_wait time", dp);
+    _caca_init_stat(&dp->ev_sys_stat, "dp[%p] ev_sys time", dp);
+    _caca_init_stat(&dp->ev_wait_stat, "dp[%p] ev_wait time", dp);
+#endif
     dp->lastticks = 0;
 
     /* Mouse position */
@@ -346,6 +352,12 @@ static int caca_uninstall_driver(caca_display_t *dp)
 #if defined(USE_PLUGINS)
     if(dp->plugin)
         dlclose(dp->plugin);
+#endif
+#if defined PROF
+    _caca_fini_stat(&dp->display_stat);
+    _caca_fini_stat(&dp->wait_stat);
+    _caca_fini_stat(&dp->ev_wait_stat);
+    _caca_fini_stat(&dp->ev_sys_stat);
 #endif
 
     return 0;

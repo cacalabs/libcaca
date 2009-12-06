@@ -485,6 +485,10 @@
 			>
 		</File>
 		<File
+			RelativePath="prof.c"
+			>
+		</File>
+		<File
 			RelativePath="string.c"
 			>
 		</File>
