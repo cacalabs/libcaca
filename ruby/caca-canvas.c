@@ -633,6 +633,52 @@ get_singleton_double_list(import)
 
 /****/
 
+simple_func(disable_dirty_rect)
+simple_func(enable_dirty_rect)
+get_int(dirty_rect_count)
+
+static VALUE dirty_rect(VALUE self, VALUE n)
+{
+    int x, y, width, height;
+    VALUE ary;
+    ary = rb_ary_new();
+    caca_get_dirty_rect(_SELF, NUM2INT(n), &x, &y, &width, &height);
+    rb_ary_push(ary, INT2NUM(x));
+    rb_ary_push(ary, INT2NUM(y));
+    rb_ary_push(ary, INT2NUM(width));
+    rb_ary_push(ary, INT2NUM(height));
+    return ary;
+}
+
+static VALUE dirty_rects(VALUE self)
+{
+    int n = caca_get_dirty_rect_count(_SELF), i;
+    VALUE ary;
+    ary = rb_ary_new();
+    for(i=0; i<n; i++)
+    {
+        rb_ary_push(ary, dirty_rect(self, INT2NUM(i)));
+    }
+    return ary;
+}
+
+/*FIXME Handle an array for the rect */
+static VALUE add_dirty_rect(VALUE self, VALUE x, VALUE y, VALUE w, VALUE h)
+{
+    caca_add_dirty_rect(_SELF, NUM2INT(x), NUM2INT(y), NUM2INT(w), NUM2INT(h));
+    return self;
+}
+
+static VALUE remove_dirty_rect(VALUE self, VALUE x, VALUE y, VALUE w, VALUE h)
+{
+    caca_remove_dirty_rect(_SELF, NUM2INT(x), NUM2INT(y), NUM2INT(w), NUM2INT(h));
+    return self;
+}
+
+simple_func(clear_dirty_rect_list)
+
+/****/
+
 void Init_caca_canvas(VALUE mCaca)
 {
     cCanvas = rb_define_class_under(mCaca, "Canvas", rb_cObject);
@@ -712,5 +758,15 @@ void Init_caca_canvas(VALUE mCaca)
     rb_define_method(cCanvas, "export_to_memory", export_to_memory, 1);
     rb_define_singleton_method(cCanvas, "export_list", export_list, 0);
     rb_define_singleton_method(cCanvas, "import_list", import_list, 0);
+
+    rb_define_method(cCanvas, "disable_dirty_rect", disable_dirty_rect, 0);
+    rb_define_method(cCanvas, "enable_dirty_rect", enable_dirty_rect, 0);
+    rb_define_method(cCanvas, "dirty_rect_count", get_dirty_rect_count, 0);
+    rb_define_method(cCanvas, "dirty_rect", dirty_rect, 1);
+    rb_define_method(cCanvas, "dirty_rects", dirty_rects, 0);
+    rb_define_method(cCanvas, "add_dirty_rect", add_dirty_rect, 4);
+    rb_define_method(cCanvas, "remove_dirty_rect", remove_dirty_rect, 4);
+    rb_define_method(cCanvas, "clear_dirty_rect_list", clear_dirty_rect_list, 0);
+
 }
 
