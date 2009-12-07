@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
+		E68A871110CD1F040047EB17 /* mouse.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mouse.c; path = ../examples/mouse.c; sourceTree = SOURCE_ROOT; };
 		E6A7681710B560BB008B6DEC /* caca++.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "caca++.cpp"; path = "../cxx/caca++.cpp"; sourceTree = SOURCE_ROOT; };
 		E6A7681810B560BB008B6DEC /* caca++.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "caca++.h"; path = "../cxx/caca++.h"; sourceTree = SOURCE_ROOT; };
 		E6A7681910B560BB008B6DEC /* cxxtest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = cxxtest.cpp; path = ../cxx/cxxtest.cpp; sourceTree = SOURCE_ROOT; };
@@ -273,6 +274,7 @@
 				E6DB665310AECDF500B6F924 /* truecolor.c */,
 				E6DB665410AECDF500B6F924 /* unicode.c */,
 				E6DB663910AECD1F00B6F924 /* trifiller.c */,
+				E68A871110CD1F040047EB17 /* mouse.c */,
 			);
 			name = examples;
 			sourceTree = "<group>";

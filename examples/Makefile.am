@@ -2,7 +2,7 @@
 
 AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/caca -I$(top_builddir)/caca
 
-noinst_PROGRAMS = trifiller blit canvas colors conio $(conio_snake) demo demo0 dithering driver event export figfont font font2tga frames fullwidth gamma hsv input spritedit swallow text transform truecolor unicode import
+noinst_PROGRAMS = trifiller blit canvas colors conio $(conio_snake) demo demo0 dithering driver event export figfont font font2tga frames fullwidth gamma hsv input spritedit swallow text transform truecolor unicode import mouse
 
 if USE_CXX
 conio_snake = conio-snake
@@ -93,6 +93,9 @@ unicode_LDADD = ../caca/libcaca.la
 
 import_SOURCES = import.c
 import_LDADD = ../caca/libcaca.la
+
+mouse_SOURCES = mouse.c
+mouse_LDADD = ../caca/libcaca.la
 
 echo-sources: ; echo $(SOURCES)
 
