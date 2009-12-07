@@ -24,7 +24,7 @@ typedef struct caca_privevent caca_privevent_t;
 typedef struct caca_figfont caca_figfont_t;
 
 #if !defined(_DOXYGEN_SKIP_ME)
-#   define STAT_VALUES 20
+#   define STAT_VALUES 32
 #   define EVENTBUF_LEN 10
 #   define MAX_DIRTY_COUNT 8
 #endif
@@ -148,8 +148,9 @@ struct caca_timer
 /* Statistic structure for profiling */
 struct caca_stat
 {
+    int itable[STAT_VALUES];
+    int64_t imean;
     char *name;
-    int imean, itable[STAT_VALUES];
 };
 
 /* Private event structure */

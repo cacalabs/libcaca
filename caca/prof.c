@@ -45,18 +45,10 @@ void _caca_dump_stats(void)
          for (j = 0; j < STAT_VALUES; j++)
              total += stats[i]->itable[j];
 
-         fprintf(stderr, " %s: last %i mean %i sliding mean %i\n",
+         fprintf(stderr, " %s: last %i sliding mean %i smoothed mean %i\n",
                  stats[i]->name, stats[i]->itable[0],
                  (int)((total + STAT_VALUES / 2) / STAT_VALUES),
-                 stats[i]->imean);
-/*fprintf(stderr, "%i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i\n",
-stats[i]->itable[0], stats[i]->itable[1], stats[i]->itable[2],
-stats[i]->itable[3], stats[i]->itable[4], stats[i]->itable[5],
-stats[i]->itable[6], stats[i]->itable[7], stats[i]->itable[8],
-stats[i]->itable[9], stats[i]->itable[10], stats[i]->itable[11],
-stats[i]->itable[12], stats[i]->itable[13], stats[i]->itable[14],
-stats[i]->itable[15], stats[i]->itable[16], stats[i]->itable[17],
-stats[i]->itable[18], stats[i]->itable[19]);*/
+                 (int)(stats[i]->imean / 64));
     }
 
     fprintf(stderr, "** %i counters dumped **\n", nstats);

@@ -21,15 +21,15 @@
 #if defined PROF && !defined __KERNEL__
 #   define PROFILING_VARS
 
-#   define STAT_IADD(s, n) \
+#   define STAT_IADD(_s, _n) \
       do \
       { \
-        struct caca_stat *ss = s; \
-        int ii, nn = n; \
-        for (ii = STAT_VALUES - 1; ii > 0; ii--) \
-            ss->itable[ii] = ss->itable[ii - 1]; \
-        ss->itable[0] = nn; \
-        ss->imean = ((int64_t)ss->imean * 15 + nn) / 16; \
+        struct caca_stat *s = _s; \
+        int i, n = _n; \
+        for (i = STAT_VALUES - 1; i > 0; i--) \
+            s->itable[i] = s->itable[i - 1]; \
+        s->itable[0] = n; \
+        s->imean = (s->imean * 63 + (int64_t)n * 64 + 32) / 64; \
       } \
       while(0)
 
@@ -38,7 +38,7 @@
 
 #else
 #   define PROFILING_VARS
-#   define STAT_IADD(s) do { } while(0)
+#   define STAT_IADD(_s, _n) do { } while(0)
 #   define START_PROF(obj, fn) do { } while(0)
 #   define STOP_PROF(obj, fn) do { } while(0)
 #endif
