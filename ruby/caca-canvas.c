@@ -451,6 +451,62 @@ static VALUE fill_triangle(VALUE self, VALUE x1, VALUE y1, VALUE x2, VALUE y2, V
     return self;
 }
 
+static VALUE fill_triangle_textured(VALUE self, VALUE coords, VALUE texture, VALUE uv)
+{
+    caca_canvas_t *ctexture;
+    int i, l;
+    int ccoords[6];
+    float cuv[6];
+    VALUE v;
+
+    l = RARRAY(coords)->len;
+    if(l != 6 && l != 3)
+    {
+        rb_raise(rb_eArgError, "invalid coords list");
+    }
+    for(i=0; i<l; i++)
+    {
+        v = rb_ary_entry(coords, i);
+	if(l==6)
+	    ccoords[i] = NUM2INT(v);
+	else
+	{
+            if((TYPE(v) != T_ARRAY) || (RARRAY(v)->len != 2))
+		    rb_raise(rb_eArgError, "invalid coords list");
+	    ccoords[2*i] = NUM2INT(rb_ary_entry(v, 0));
+	    ccoords[2*i+1] = NUM2INT(rb_ary_entry(v, 1));
+	}
+    }
+
+    l = RARRAY(uv)->len;
+    if(l != 6 && l != 3)
+    {
+        rb_raise(rb_eArgError, "invalid uv list");
+    }
+    for(i=0; i<l; i++)
+    {
+        v = rb_ary_entry(uv, i);
+	if(l==6)
+	    cuv[i] = NUM2DBL(v);
+	else
+	{
+            if((TYPE(v) != T_ARRAY) || (RARRAY(v)->len != 2))
+		    rb_raise(rb_eArgError, "invalid uv list");
+	    ccoords[2*i] = NUM2DBL(rb_ary_entry(v, 0));
+	    ccoords[2*i+1] = NUM2DBL(rb_ary_entry(v, 1));
+	}
+    }
+
+    if(CLASS_OF(texture) != cCanvas)
+    {
+        rb_raise(rb_eArgError, "texture is not a Caca::Canvas");
+    }
+    Data_Get_Struct(texture, caca_canvas_t, ctexture);
+
+    caca_fill_triangle_textured(_SELF, ccoords, ctexture, cuv);
+    return self;
+}
+
 static VALUE dither_bitmap(VALUE self, VALUE x, VALUE y, VALUE w, VALUE h, VALUE d, VALUE pixels)
 {
     if(CLASS_OF(d) != cDither)
@@ -638,6 +694,7 @@ void Init_caca_canvas(VALUE mCaca)
     rb_define_method(cCanvas, "draw_triangle", draw_triangle, 7);
     rb_define_method(cCanvas, "draw_thin_triangle", draw_thin_triangle, 6);
     rb_define_method(cCanvas, "fill_triangle", fill_triangle, 7);
+    rb_define_method(cCanvas, "fill_triangle_textured", fill_triangle_textured, 4);
     rb_define_method(cCanvas, "dither_bitmap", dither_bitmap, 6);
 
     rb_define_method(cCanvas, "frame_count", get_frame_count, 0);
