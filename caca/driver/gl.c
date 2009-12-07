@@ -48,6 +48,7 @@ static caca_display_t *gl_d; /* FIXME: we ought to get rid of this */
 /*
  * Local functions
  */
+static int gl_get_event_inner(caca_display_t *, caca_privevent_t *);
 static void gl_handle_keyboard(unsigned char, int, int);
 static void gl_handle_special_key(int, int, int);
 static void gl_handle_reshape(int, int);
@@ -333,12 +334,22 @@ static void gl_handle_resize(caca_display_t *dp)
 
 static int gl_get_event(caca_display_t *dp, caca_privevent_t *ev)
 {
+    int ret = gl_get_event_inner(dp, ev);
+
+    if (ret)
+        return ret;
+
 #ifdef HAVE_GLUTCHECKLOOP
     glutCheckLoop();
 #else
     glutMainLoopEvent();
 #endif
 
+    return gl_get_event_inner(dp, ev);
+}
+
+static int gl_get_event_inner(caca_display_t *dp, caca_privevent_t *ev)
+{
 #ifdef HAVE_GLUTCLOSEFUNC
     if(dp->drv.p->close)
     {
