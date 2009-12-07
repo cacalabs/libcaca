@@ -607,6 +607,16 @@ static VALUE import_from_memory(VALUE self, VALUE data, VALUE format)
     return self;
 }
 
+static VALUE import_area_from_memory(VALUE self, VALUE x, VALUE y, VALUE data, VALUE format)
+{
+    long int bytes;
+    bytes = caca_import_area_from_memory (_SELF, NUM2INT(x), NUM2INT(y), StringValuePtr(data), RSTRING(StringValue(data))->len, StringValuePtr(format));
+    if(bytes <= 0)
+        rb_raise(rb_eRuntimeError, strerror(errno));
+
+    return self;
+}
+
 static VALUE import_from_file(VALUE self, VALUE filename, VALUE format)
 {
     long int bytes;
@@ -615,6 +625,27 @@ static VALUE import_from_file(VALUE self, VALUE filename, VALUE format)
         rb_raise(rb_eRuntimeError, strerror(errno));
 
     return self;
+}
+
+static VALUE import_area_from_file(VALUE self, VALUE x, VALUE y, VALUE filename, VALUE format)
+{
+    long int bytes;
+    bytes = caca_import_area_from_file (_SELF, NUM2INT(x), NUM2INT(y), StringValuePtr(filename), StringValuePtr(format));
+    if(bytes <= 0)
+        rb_raise(rb_eRuntimeError, strerror(errno));
+
+    return self;
+}
+
+static VALUE export_area_to_memory(VALUE self, VALUE x, VALUE y, VALUE w, VALUE h, VALUE format)
+{
+    size_t bytes;
+    void *result;
+    VALUE ret;
+    result = caca_export_canvas_to_memory (_SELF, NUM2INT(x), NUM2INT(y), NUM2INT(w), NUM2INT(h), StringValuePtr(format), &bytes);
+    ret = rb_str_new(result, bytes);
+    free(result);
+    return ret;
 }
 
 static VALUE export_to_memory(VALUE self, VALUE format)
@@ -754,8 +785,11 @@ void Init_caca_canvas(VALUE mCaca)
 
     rb_define_method(cCanvas, "render", render_canvas, 4);
     rb_define_method(cCanvas, "import_from_memory", import_from_memory, 2);
+    rb_define_method(cCanvas, "import_area_from_memory", import_area_from_memory, 4);
     rb_define_method(cCanvas, "import_from_file", import_from_file, 2);
+    rb_define_method(cCanvas, "import_area_from_file", import_area_from_file, 4);
     rb_define_method(cCanvas, "export_to_memory", export_to_memory, 1);
+    rb_define_method(cCanvas, "export_area_to_memory", export_area_to_memory, 5);
     rb_define_singleton_method(cCanvas, "export_list", export_list, 0);
     rb_define_singleton_method(cCanvas, "import_list", import_list, 0);
 
