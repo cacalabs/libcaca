@@ -589,17 +589,17 @@ void makeMove(int who, int x, int xsquare[Y_BOARD][X_BOARD])
 
 void sorting(int n[])
 {
-  int i, index, alpha;
+  int i, j, alpha;
   int store[X_BOARD];
 
-  for(index=0; index<X_BOARD; index++)
+  for(j=0; j<X_BOARD; j++)
   {
     alpha = max(n);
     for(i=0; i<X_BOARD; i++)
     {
       if(n[move[i]] == alpha)
       {
-        store[index] = move[i];
+        store[j] = move[i];
         n[move[i]] = -1;
         break;
       }
