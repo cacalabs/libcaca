@@ -28,6 +28,8 @@ class TC_Canvas < Test::Unit::TestCase
     def test_import
         @c.import_from_memory("foo", "")
         assert_equal("foo\r\n", @c.export_to_memory("irc"), "Import/Export failed")
+        @c.import_area_from_memory(0, 0, "p", "")
+        assert_equal("poo\r\n", @c.export_area_to_memory(0, 0, 3, 1, "irc"), "Import/Export of area failed")
     end
     def test_cursor
         @c.gotoxy(1,1)
