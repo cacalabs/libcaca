@@ -48,7 +48,7 @@
 #define DRAW_MESSAGE "Draw! Press Any Key To Continue...\n"
 
 BOOLEAN computerMove(void);
-BOOLEAN doubleHaed(int, int [Y_BOARD][X_BOARD]);
+BOOLEAN doubleHead(int, int [Y_BOARD][X_BOARD]);
 BOOLEAN humanMove(int);
 BOOLEAN isFull(void);
 BOOLEAN isWon(int, int [Y_BOARD][X_BOARD]);
@@ -494,7 +494,7 @@ void drawPiece()
 
 void genNumWin(int n[X_BOARD])
 {
-  int i, j, k, mov;
+  int i, j, k;
   int xsquare[Y_BOARD][X_BOARD];
   int xxsquare[Y_BOARD][X_BOARD];
 
@@ -590,7 +590,6 @@ void makeMove(int who, int x, int xsquare[Y_BOARD][X_BOARD])
 void sorting(int n[])
 {
   int i, index, alpha;
-  int tmp[X_BOARD];
   int store[X_BOARD];
 
   for(index=0; index<X_BOARD; index++)
@@ -610,7 +609,7 @@ void sorting(int n[])
     n[i] = store[i];
 }
 
-void main()
+int main(void)
 {
   BOOLEAN myturn;
   myturn = TRUE;

@@ -473,9 +473,9 @@ static VALUE fill_triangle_textured(VALUE self, VALUE coords, VALUE texture, VAL
         {
             if((TYPE(v) != T_ARRAY) || (RARRAY(v)->len != 2))
                 rb_raise(rb_eArgError, "invalid coords list");
-	    ccoords[2*i] = NUM2INT(rb_ary_entry(v, 0));
-	    ccoords[2*i+1] = NUM2INT(rb_ary_entry(v, 1));
-	}
+            ccoords[2*i] = NUM2INT(rb_ary_entry(v, 0));
+            ccoords[2*i+1] = NUM2INT(rb_ary_entry(v, 1));
+        }
     }
 
     l = RARRAY(uv)->len;
@@ -486,15 +486,15 @@ static VALUE fill_triangle_textured(VALUE self, VALUE coords, VALUE texture, VAL
     for(i=0; i<l; i++)
     {
         v = rb_ary_entry(uv, i);
-	if(l==6)
-	    cuv[i] = NUM2DBL(v);
-	else
-	{
+        if(l==6)
+            cuv[i] = NUM2DBL(v);
+        else
+        {
             if((TYPE(v) != T_ARRAY) || (RARRAY(v)->len != 2))
                 rb_raise(rb_eArgError, "invalid uv list");
-	    ccoords[2*i] = NUM2DBL(rb_ary_entry(v, 0));
-	    ccoords[2*i+1] = NUM2DBL(rb_ary_entry(v, 1));
-	}
+            ccoords[2*i] = NUM2DBL(rb_ary_entry(v, 0));
+            ccoords[2*i+1] = NUM2DBL(rb_ary_entry(v, 1));
+        }
     }
 
     if(CLASS_OF(texture) != cCanvas)

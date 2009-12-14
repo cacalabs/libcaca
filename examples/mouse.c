@@ -1,4 +1,4 @@
-/* 
+/*
  *  mouse         libcaca mouse events
  *  Copyright (c) 2006-2009 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                All Rights Reserved
