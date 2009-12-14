@@ -642,7 +642,7 @@ static VALUE export_area_to_memory(VALUE self, VALUE x, VALUE y, VALUE w, VALUE 
     size_t bytes;
     void *result;
     VALUE ret;
-    result = caca_export_canvas_to_memory (_SELF, NUM2INT(x), NUM2INT(y), NUM2INT(w), NUM2INT(h), StringValuePtr(format), &bytes);
+    result = caca_export_area_to_memory (_SELF, NUM2INT(x), NUM2INT(y), NUM2INT(w), NUM2INT(h), StringValuePtr(format), &bytes);
     ret = rb_str_new(result, bytes);
     free(result);
     return ret;
