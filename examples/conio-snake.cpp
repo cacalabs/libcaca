@@ -44,7 +44,7 @@ int main()
 {
 
   /* Variable declarations within main() only */
-  char keypress;
+  char keypress=0;
 
   do /* restart game loop */
   {
