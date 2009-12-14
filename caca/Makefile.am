@@ -76,7 +76,7 @@ driver_source = \
 
 install-exec-local:
 	$(mkinstalldirs) $(DESTDIR)$(libdir)
-	. libcaca.la; \
+	. ./libcaca.la || exit 1; \
 	for x in $$library_names; do \
 	  ln -sf $$x $(DESTDIR)$(libdir)/$$(echo $$x | sed 's/caca/cucul/g'); \
 	done
@@ -89,7 +89,7 @@ install-data-local:
 	ln -sf caca.h $(DESTDIR)$(includedir)/cucul.h
 
 uninstall-local:
-	. libcaca.la; \
+	. ./libcaca.la || exit 1; \
 	for x in $$library_names; do \
 	  rm -f $(DESTDIR)$(libdir)/$$(echo $$x | sed 's/caca/cucul/g'); \
 	done
