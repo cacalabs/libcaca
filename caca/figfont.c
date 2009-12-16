@@ -258,6 +258,9 @@ int caca_flush_figlet(caca_canvas_t *cv)
     caca_figfont_t *ff = cv->ff;
     int x, y;
 
+    if (!ff)
+        return -1;
+
     //ff->torender = cv;
     //caca_set_canvas_size(ff->torender, ff->w, ff->h);
     caca_set_canvas_size(cv, ff->w, ff->h);
