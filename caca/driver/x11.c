@@ -64,7 +64,7 @@ struct driver_private
     uint32_t max_char;
     int cursor_flags;
     int dirty_cursor_x, dirty_cursor_y;
-#if defined(X_HAVE_UTF8_STRING)
+#if defined X_HAVE_UTF8_STRING
     XIM im;
     XIC ic;
 #endif
@@ -510,7 +510,7 @@ static int x11_get_event(caca_display_t *dp, caca_privevent_t *ev)
         else
             continue;
 
-#if defined(X_HAVE_UTF8_STRING)
+#if defined X_HAVE_UTF8_STRING
         if(Xutf8LookupString(dp->drv.p->ic, &xevent.xkey, ev->data.key.utf8, 8, NULL, NULL))
         {
             ev->data.key.utf32 = caca_utf8_to_utf32(ev->data.key.utf8, NULL);
@@ -665,8 +665,8 @@ static void x11_put_glyph(caca_display_t *dp, int x, int y, int yoff,
     Display *dpy = dp->drv.p->dpy;
     Pixmap px = dp->drv.p->pixmap;
     GC gc = dp->drv.p->gc;
-    int fw;
     XChar2b ch16;
+    int fw;
 
     /* Underline */
     if(attr & CACA_UNDERLINE)
@@ -821,11 +821,14 @@ static void x11_put_glyph(caca_display_t *dp, int x, int y, int yoff,
         }
     }
 
+#if defined X_HAVE_UTF8_STRING
+    if(ch >= 0x00000020)
+#else
     if(ch >= 0x00000020 && ch <= dp->drv.p->max_char)
+#endif
     {
-        /* ascii, latin-1 or unicode font (might draw a blank square) */
-        ch16.byte1 = (ch) >> 8;
-        ch16.byte2 = (ch) & 0xff;
+        ch16.byte1 = (uint8_t)(ch >> 8);
+        ch16.byte2 = (uint8_t)ch;
     }
     else
     {
@@ -833,7 +836,8 @@ static void x11_put_glyph(caca_display_t *dp, int x, int y, int yoff,
         ch16.byte2 = caca_utf32_to_ascii(ch);
     }
 
-    XDrawString16(dpy, px, gc, x + (ch16.byte1 ? 0 : (fw - w) / 2), yoff, &ch16, 1);
+    XDrawString16(dpy, px, gc,
+                  x + (ch16.byte1 ? 0 : (fw - w) / 2), yoff, &ch16, 1);
 }
 
 /*
