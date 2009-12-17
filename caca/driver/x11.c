@@ -31,6 +31,9 @@
 #include <stdio.h> /* BUFSIZ */
 #include <stdlib.h>
 #include <string.h>
+#if defined HAVE_LOCALE_H
+#   include <locale.h>
+#endif
 
 #include "caca.h"
 #include "caca.h"
@@ -104,6 +107,10 @@ static int x11_init_graphics(caca_display_t *dp)
     width = caca_get_canvas_width(dp->cv);
     height = caca_get_canvas_height(dp->cv);
     dp->resize.allow = 0;
+
+#if defined HAVE_LOCALE_H
+    setlocale(LC_ALL, "");
+#endif
 
     dp->drv.p->dpy = XOpenDisplay(NULL);
     if(dp->drv.p->dpy == NULL)
