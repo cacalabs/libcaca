@@ -24,7 +24,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
-#if defined(HAVE_X11_XKBLIB_H)
+#if defined HAVE_X11_XKBLIB_H
 #   include <X11/XKBlib.h>
 #endif
 
@@ -52,13 +52,16 @@ struct driver_private
     long int event_mask;
     int font_width, font_height;
     int colors[4096];
+#if defined X_HAVE_UTF8_STRING
+    XFontSet font_set;
+#endif
     Font font;
     XFontStruct *font_struct;
     int font_offset;
     Cursor pointer;
     Atom wm_protocols;
     Atom wm_delete_window;
-#if defined(HAVE_X11_XKBLIB_H)
+#if defined HAVE_X11_XKBLIB_H
     Bool autorepeat;
 #endif
     uint32_t max_char;
@@ -77,6 +80,9 @@ static int x11_init_graphics(caca_display_t *dp)
 {
     Colormap colormap;
     XSetWindowAttributes x11_winattr;
+#if defined X_HAVE_UTF8_STRING
+    XVaNestedList list;
+#endif
     int (*old_error_handler)(Display *, XErrorEvent *);
     char const *fonts[] = { NULL, "8x13bold", "fixed", NULL }, **parser;
     char const *geometry;
@@ -86,7 +92,7 @@ static int x11_init_graphics(caca_display_t *dp)
 
     dp->drv.p = malloc(sizeof(struct driver_private));
 
-#if defined(HAVE_GETENV)
+#if defined HAVE_GETENV
     geometry = getenv("CACA_GEOMETRY");
     if(geometry && *geometry)
         sscanf(geometry, "%ux%u", &width, &height);
@@ -103,7 +109,7 @@ static int x11_init_graphics(caca_display_t *dp)
     if(dp->drv.p->dpy == NULL)
         return -1;
 
-#if defined(HAVE_GETENV)
+#if defined HAVE_GETENV
     fonts[0] = getenv("CACA_FONT");
     if(fonts[0] && *fonts[0])
         parser = fonts;
@@ -117,6 +123,11 @@ static int x11_init_graphics(caca_display_t *dp)
     /* Parse our font list */
     for( ; ; parser++)
     {
+#if defined X_HAVE_UTF8_STRING
+        char **missing_charset_list;
+        char *def_string;
+        int missing_charset_count;
+#endif
         uint32_t font_max_char;
 
         if(!*parser)
@@ -125,6 +136,33 @@ static int x11_init_graphics(caca_display_t *dp)
             XCloseDisplay(dp->drv.p->dpy);
             return -1;
         }
+
+#if defined X_HAVE_UTF8_STRING
+        dp->drv.p->font_set = XCreateFontSet(dp->drv.p->dpy, *parser,
+                                             &missing_charset_list,
+                                             &missing_charset_count,
+                                             &def_string);
+        if (missing_charset_list)
+            XFreeStringList(missing_charset_list);
+
+        if (!dp->drv.p->font_set || missing_charset_count)
+        {
+            char buf[BUFSIZ];
+
+            if (dp->drv.p->font_set)
+                XFreeFontSet(dp->drv.p->dpy, dp->drv.p->font_set);
+            snprintf(buf, BUFSIZ - 1, "%s,*", *parser);
+            dp->drv.p->font_set = XCreateFontSet(dp->drv.p->dpy, buf,
+                                                 &missing_charset_list,
+                                                 &missing_charset_count,
+                                                 &def_string);
+            if (missing_charset_list)
+                XFreeStringList(missing_charset_list);
+        }
+
+        if (dp->drv.p->font_set)
+            break;
+#endif
 
         dp->drv.p->font = XLoadFont(dp->drv.p->dpy, *parser);
         if(!dp->drv.p->font)
@@ -160,27 +198,42 @@ static int x11_init_graphics(caca_display_t *dp)
     /* Reset the default X11 error handler */
     XSetErrorHandler(old_error_handler);
 
-    dp->drv.p->font_width = 0;
-    if(dp->drv.p->font_struct->per_char
-        && !dp->drv.p->font_struct->min_byte1
-        && dp->drv.p->font_struct->min_char_or_byte2 <= 0x21
-        && dp->drv.p->font_struct->max_char_or_byte2 >= 0x7e)
+    /* Set font width to the largest character in the set */
+#if defined X_HAVE_UTF8_STRING
+    if (dp->drv.p->font_set)
     {
-        for(i = 0x21; i < 0x7f; i++)
-        {
-            int cw = dp->drv.p->font_struct->per_char[i
-                           - dp->drv.p->font_struct->min_char_or_byte2].width;
-            if(cw > dp->drv.p->font_width)
-                dp->drv.p->font_width = cw;
-        }
+        XFontSetExtents *ex = XExtentsOfFontSet(dp->drv.p->font_set);
+        dp->drv.p->font_width =
+             XmbTextEscapement(dp->drv.p->font_set, "CAca", 4) / 4;
+        dp->drv.p->font_height = ex->max_logical_extent.height;
+        dp->drv.p->font_offset = ex->max_logical_extent.height
+                                  + ex->max_logical_extent.y;
     }
+    else
+#endif
+    {
+        dp->drv.p->font_width = 0;
+        if(dp->drv.p->font_struct->per_char
+            && !dp->drv.p->font_struct->min_byte1
+            && dp->drv.p->font_struct->min_char_or_byte2 <= 0x21
+            && dp->drv.p->font_struct->max_char_or_byte2 >= 0x7e)
+        {
+            for(i = 0x21; i < 0x7f; i++)
+            {
+                int cw = dp->drv.p->font_struct->per_char[i
+                            - dp->drv.p->font_struct->min_char_or_byte2].width;
+                if(cw > dp->drv.p->font_width)
+                    dp->drv.p->font_width = cw;
+            }
+        }
 
-    if(!dp->drv.p->font_width)
-        dp->drv.p->font_width = dp->drv.p->font_struct->max_bounds.width;
+        if(!dp->drv.p->font_width)
+            dp->drv.p->font_width = dp->drv.p->font_struct->max_bounds.width;
 
-    dp->drv.p->font_height = dp->drv.p->font_struct->max_bounds.ascent
-                         + dp->drv.p->font_struct->max_bounds.descent;
-    dp->drv.p->font_offset = dp->drv.p->font_struct->max_bounds.descent;
+        dp->drv.p->font_height = dp->drv.p->font_struct->max_bounds.ascent
+                                  + dp->drv.p->font_struct->max_bounds.descent;
+        dp->drv.p->font_offset = dp->drv.p->font_struct->max_bounds.descent;
+    }
 
     colormap = DefaultColormap(dp->drv.p->dpy, DefaultScreen(dp->drv.p->dpy));
     for(i = 0x000; i < 0x1000; i++)
@@ -221,7 +274,10 @@ static int x11_init_graphics(caca_display_t *dp)
 
     dp->drv.p->gc = XCreateGC(dp->drv.p->dpy, dp->drv.p->window, 0, NULL);
     XSetForeground(dp->drv.p->dpy, dp->drv.p->gc, dp->drv.p->colors[0x888]);
-    XSetFont(dp->drv.p->dpy, dp->drv.p->gc, dp->drv.p->font);
+#if defined X_HAVE_UTF8_STRING
+    if (!dp->drv.p->font_set)
+#endif
+        XSetFont(dp->drv.p->dpy, dp->drv.p->gc, dp->drv.p->font);
 
     for(;;)
     {
@@ -231,7 +287,7 @@ static int x11_init_graphics(caca_display_t *dp)
             break;
     }
 
-#if defined(HAVE_X11_XKBLIB_H)
+#if defined HAVE_X11_XKBLIB_H
     /* Disable autorepeat */
     XkbSetDetectableAutoRepeat(dp->drv.p->dpy, True, &dp->drv.p->autorepeat);
     if(!dp->drv.p->autorepeat)
@@ -257,9 +313,16 @@ static int x11_init_graphics(caca_display_t *dp)
     dp->drv.p->dirty_cursor_x = -1;
     dp->drv.p->dirty_cursor_y = -1;
 
+#if defined X_HAVE_UTF8_STRING
+    list = XVaCreateNestedList(0, XNFontSet, dp->drv.p->font_set, NULL);
     dp->drv.p->im = XOpenIM(dp->drv.p->dpy, NULL, NULL, NULL);
-    dp->drv.p->ic = XCreateIC(dp->drv.p->im, XNInputStyle,
-                              XIMPreeditNothing | XIMStatusNothing, NULL);
+    dp->drv.p->ic = XCreateIC(dp->drv.p->im,
+                          XNInputStyle, XIMPreeditNothing | XIMStatusNothing,
+                          XNClientWindow, dp->drv.p->window,
+                          XNPreeditAttributes, list,
+                          XNStatusAttributes, list,
+                          NULL);
+#endif
 
     return 0;
 }
@@ -267,17 +330,24 @@ static int x11_init_graphics(caca_display_t *dp)
 static int x11_end_graphics(caca_display_t *dp)
 {
     XSync(dp->drv.p->dpy, False);
-#if defined(HAVE_X11_XKBLIB_H)
+#if defined HAVE_X11_XKBLIB_H
     if(!dp->drv.p->autorepeat)
         XAutoRepeatOn(dp->drv.p->dpy);
 #endif
     XFreePixmap(dp->drv.p->dpy, dp->drv.p->pixmap);
-    XFreeFont(dp->drv.p->dpy, dp->drv.p->font_struct);
+#if defined X_HAVE_UTF8_STRING
+    if (dp->drv.p->font_set)
+        XFreeFontSet(dp->drv.p->dpy, dp->drv.p->font_set);
+    else
+#endif
+        XFreeFont(dp->drv.p->dpy, dp->drv.p->font_struct);
     XFreeGC(dp->drv.p->dpy, dp->drv.p->gc);
     XUnmapWindow(dp->drv.p->dpy, dp->drv.p->window);
     XDestroyWindow(dp->drv.p->dpy, dp->drv.p->window);
+#if defined X_HAVE_UTF8_STRING
     XDestroyIC(dp->drv.p->ic);
     XCloseIM(dp->drv.p->im);
+#endif
     XCloseDisplay(dp->drv.p->dpy);
 
     free(dp->drv.p);
@@ -665,7 +735,6 @@ static void x11_put_glyph(caca_display_t *dp, int x, int y, int yoff,
     Display *dpy = dp->drv.p->dpy;
     Pixmap px = dp->drv.p->pixmap;
     GC gc = dp->drv.p->gc;
-    XChar2b ch16;
     int fw;
 
     /* Underline */
@@ -822,22 +891,33 @@ static void x11_put_glyph(caca_display_t *dp, int x, int y, int yoff,
     }
 
 #if defined X_HAVE_UTF8_STRING
-    if(ch >= 0x00000020)
-#else
-    if(ch >= 0x00000020 && ch <= dp->drv.p->max_char)
-#endif
+    if (dp->drv.p->font_set)
     {
-        ch16.byte1 = (uint8_t)(ch >> 8);
-        ch16.byte2 = (uint8_t)ch;
+        wchar_t wch = ch;
+        XwcDrawString(dpy, px, dp->drv.p->font_set, gc,
+                      x + (fw - w) / 2, yoff, &wch, 1);
     }
     else
+#endif
     {
-        ch16.byte1 = 0;
-        ch16.byte2 = caca_utf32_to_ascii(ch);
-    }
+        XChar2b ch16;
 
-    XDrawString16(dpy, px, gc,
-                  x + (ch16.byte1 ? 0 : (fw - w) / 2), yoff, &ch16, 1);
+#if !defined X_HAVE_UTF8_STRING
+        if(ch > dp->drv.p->max_char)
+        {
+            ch16.byte1 = 0;
+            ch16.byte2 = caca_utf32_to_ascii(ch);
+        }
+        else
+#endif
+        {
+            ch16.byte1 = (uint8_t)(ch >> 8);
+            ch16.byte2 = (uint8_t)ch;
+        }
+
+        XDrawString16(dpy, px, gc,
+                      x + (ch16.byte1 ? 0 : (fw - w) / 2), yoff, &ch16, 1);
+    }
 }
 
 /*
@@ -846,7 +926,7 @@ static void x11_put_glyph(caca_display_t *dp, int x, int y, int yoff,
 
 int x11_install(caca_display_t *dp)
 {
-#if defined(HAVE_GETENV)
+#if defined HAVE_GETENV
     if(!getenv("DISPLAY") || !*(getenv("DISPLAY")))
         return -1;
 #endif
