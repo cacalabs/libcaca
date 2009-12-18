@@ -263,17 +263,17 @@ int caca_get_canvas_height(caca_canvas_t const *cv)
  *  consist in native endian 32-bit Unicode values as returned by
  *  caca_get_char().
  *
- *  This function is only useful for display drivers such as the \e libcaca
- *  library.
+ *  This function is probably only useful for \e libcaca 's internal display
+ *  drivers.
  *
  *  This function never fails.
  *
  *  \param cv A libcaca canvas.
  *  \return The canvas character array.
  */
-uint8_t const * caca_get_canvas_chars(caca_canvas_t const *cv)
+uint32_t const * caca_get_canvas_chars(caca_canvas_t const *cv)
 {
-    return (uint8_t const *)cv->chars;
+    return (uint32_t const *)cv->chars;
 }
 
 /** \brief Get the canvas attribute array.
@@ -282,17 +282,17 @@ uint8_t const * caca_get_canvas_chars(caca_canvas_t const *cv)
  *  consist in native endian 32-bit attribute values as returned by
  *  caca_get_attr().
  *
- *  This function is only useful for display drivers such as the \e libcaca
- *  library.
+ *  This function is probably only useful for \e libcaca 's internal display
+ *  drivers.
  *
  *  This function never fails.
  *
  *  \param cv A libcaca canvas.
  *  \return The canvas attribute array.
  */
-uint8_t const * caca_get_canvas_attrs(caca_canvas_t const *cv)
+uint32_t const * caca_get_canvas_attrs(caca_canvas_t const *cv)
 {
-    return (uint8_t const *)cv->attrs;
+    return (uint32_t const *)cv->attrs;
 }
 
 /** \brief Free a \e libcaca canvas.
@@ -539,9 +539,9 @@ int cucul_get_canvas_width(cucul_canvas_t const *)
     CACA_ALIAS(caca_get_canvas_width);
 int cucul_get_canvas_height(cucul_canvas_t const *)
     CACA_ALIAS(caca_get_canvas_height);
-uint8_t const * cucul_get_canvas_chars(cucul_canvas_t const *)
+uint32_t const * cucul_get_canvas_chars(cucul_canvas_t const *)
     CACA_ALIAS(caca_get_canvas_chars);
-uint8_t const * cucul_get_canvas_attrs(cucul_canvas_t const *)
+uint32_t const * cucul_get_canvas_attrs(cucul_canvas_t const *)
     CACA_ALIAS(caca_get_canvas_attrs);
 int cucul_free_canvas(cucul_canvas_t *) CACA_ALIAS(caca_free_canvas);
 int cucul_rand(int, int) CACA_ALIAS(caca_rand);

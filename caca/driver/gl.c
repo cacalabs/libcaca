@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2006 Sam Hocevar <sam@hocevar.net>
+ *  Copyright (c) 2002-2009 Sam Hocevar <sam@hocevar.net>
  *                2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                2007 Ben Wiley Sittler <bsittler@gmail.com>
  *                All Rights Reserved
@@ -216,8 +216,8 @@ static int gl_get_display_height(caca_display_t const *dp)
 
 static void gl_display(caca_display_t *dp)
 {
-    uint32_t const *cvchars = (uint32_t const *)caca_get_canvas_chars(dp->cv);
-    uint32_t const *cvattrs = (uint32_t const *)caca_get_canvas_attrs(dp->cv);
+    uint32_t const *cvchars = caca_get_canvas_chars(dp->cv);
+    uint32_t const *cvattrs = caca_get_canvas_attrs(dp->cv);
     int width = caca_get_canvas_width(dp->cv);
     int x, y, line;
 

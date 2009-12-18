@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2002-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -98,8 +98,8 @@ static int conio_get_display_height(caca_display_t const *dp)
 static void conio_display(caca_display_t *dp)
 {
     char *screen = dp->drv.p->screen;
-    uint32_t const *chars = (uint32_t const *)caca_get_canvas_chars(dp->cv);
-    uint32_t const *attrs = (uint32_t const *)caca_get_canvas_attrs(dp->cv);
+    uint32_t const *chars = caca_get_canvas_chars(dp->cv);
+    uint32_t const *attrs = caca_get_canvas_attrs(dp->cv);
     int width = caca_get_canvas_width(dp->cv);
     int height = caca_get_canvas_height(dp->cv);
     int n;

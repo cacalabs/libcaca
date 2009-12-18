@@ -124,10 +124,8 @@ static void vga_display(caca_display_t *dp)
 
         caca_get_dirty_rect(dp->cv, i, &dx, &dy, &dw, &dh);
 
-        cvchars = (uint32_t const *)caca_get_canvas_chars(dp->cv)
-                    + dx + dy * dp->cv->width;
-        cvattrs = (uint32_t const *)caca_get_canvas_attrs(dp->cv)
-                    + dx + dy * dp->cv->width;
+        cvchars = caca_get_canvas_chars(dp->cv) + dx + dy * dp->cv->width;
+        cvattrs = caca_get_canvas_attrs(dp->cv) + dx + dy * dp->cv->width;
 
         screen += dy * dp->cv->width + dx;
 

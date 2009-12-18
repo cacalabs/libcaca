@@ -195,8 +195,8 @@ static void win32_display(caca_display_t *dp)
     COORD size, pos;
     SMALL_RECT rect;
     CHAR_INFO *buffer = dp->drv.p->buffer;
-    uint32_t const *cvchars = (uint32_t const *)caca_get_canvas_chars(dp->cv);
-    uint32_t const *cvattrs = (uint32_t const *)caca_get_canvas_attrs(dp->cv);
+    uint32_t const *cvchars = caca_get_canvas_chars(dp->cv);
+    uint32_t const *cvattrs = caca_get_canvas_attrs(dp->cv);
     int width = caca_get_canvas_width(dp->cv);
     int height = caca_get_canvas_height(dp->cv);
     int n;
