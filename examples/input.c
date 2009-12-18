@@ -63,6 +63,16 @@ int main(int argc, char *argv[])
         caca_printf(cv, 3, 3 * i + 4, "[entry %i]", i + 1);
     }
 
+    /* Put Unicode crap in the last text entry */
+    entries[TEXT_ENTRIES - 1].buffer[0] = 'A';
+    entries[TEXT_ENTRIES - 1].buffer[1] = 'b';
+    entries[TEXT_ENTRIES - 1].buffer[2] = caca_utf8_to_utf32("Ç", NULL);
+    entries[TEXT_ENTRIES - 1].buffer[3] = caca_utf8_to_utf32("đ", NULL);
+    entries[TEXT_ENTRIES - 1].buffer[4] = caca_utf8_to_utf32("ボ", NULL);
+    entries[TEXT_ENTRIES - 1].buffer[5] = CACA_MAGIC_FULLWIDTH;
+    entries[TEXT_ENTRIES - 1].buffer[6] = caca_utf8_to_utf32("♥", NULL);
+    entries[TEXT_ENTRIES - 1].size = 7;
+
     while(running)
     {
         caca_event_t ev;
