@@ -285,6 +285,8 @@ __extern int caca_stretch_right(caca_canvas_t *);
  *  @{ */
 __extern uint32_t caca_get_attr(caca_canvas_t const *, int, int);
 __extern int caca_set_attr(caca_canvas_t *, uint32_t);
+__extern int caca_unset_attr(caca_canvas_t *, uint32_t);
+__extern int caca_toggle_attr(caca_canvas_t *, uint32_t);
 __extern int caca_put_attr(caca_canvas_t *, int, int, uint32_t);
 __extern int caca_set_color_ansi(caca_canvas_t *, uint8_t, uint8_t);
 __extern int caca_set_color_argb(caca_canvas_t *, uint16_t, uint16_t);

@@ -106,6 +106,60 @@ int caca_set_attr(caca_canvas_t *cv, uint32_t attr)
     return 0;
 }
 
+/** \brief Unset flags in the default character attribute.
+ *
+ *  Unset flags in the default character attribute for drawing. Attributes
+ *  define foreground and background colour, transparency, bold, italics and
+ *  underline styles, as well as blink. String functions such as
+ *  caca_printf() and graphical primitive functions such as caca_draw_line()
+ *  will use this attribute.
+ *
+ *  The value of \e attr is a combination (bitwise OR) of style values
+ *  (\e CACA_UNDERLINE, \e CACA_BLINK, \e CACA_BOLD and \e CACA_ITALICS).
+ *  Unsetting these attributes does not modify the current colour information.
+ *
+ *  To retrieve the current attribute value, use caca_get_attr(-1,-1).
+ *
+ *  This function never fails.
+ *
+ *  \param cv A handle to the libcaca canvas.
+ *  \param attr The requested attribute values to unset.
+ *  \return This function always returns 0.
+ */
+int caca_unset_attr(caca_canvas_t *cv, uint32_t attr)
+{
+    cv->curattr &= ~(attr & 0x0000000f);
+
+    return 0;
+}
+
+/** \brief Toggle flags in the default character attribute.
+ *
+ *  Toggle flags in the default character attribute for drawing. Attributes
+ *  define foreground and background colour, transparency, bold, italics and
+ *  underline styles, as well as blink. String functions such as
+ *  caca_printf() and graphical primitive functions such as caca_draw_line()
+ *  will use this attribute.
+ *
+ *  The value of \e attr is a combination (bitwise OR) of style values
+ *  (\e CACA_UNDERLINE, \e CACA_BLINK, \e CACA_BOLD and \e CACA_ITALICS).
+ *  Toggling these attributes does not modify the current colour information.
+ *
+ *  To retrieve the current attribute value, use caca_get_attr(-1,-1).
+ *
+ *  This function never fails.
+ *
+ *  \param cv A handle to the libcaca canvas.
+ *  \param attr The requested attribute values to toggle.
+ *  \return This function always returns 0.
+ */
+int caca_toggle_attr(caca_canvas_t *cv, uint32_t attr)
+{
+    cv->curattr ^= attr & 0x0000000f;
+
+    return 0;
+}
+
 /** \brief Set the character attribute at the given coordinates.
  *
  *  Set the character attribute, without changing the character's value. If
