@@ -224,7 +224,7 @@ if test "${enable_gl}" != "no"; then
       break])
   if test "${ac_cv_my_have_gl}" = "yes"; then
     AC_DEFINE(USE_GL, 1, Define to 1 to activate the OpenGL backend driver)
-    GL_LIBS="${GL_LIBS} -lGL -lglut"
+    GL_LIBS="${GL_LIBS} -lGL -lGLU -lglut"
     CACA_DRIVERS="${CACA_DRIVERS} gl"
   elif test "${enable_gl}" = "yes"; then
     AC_MSG_ERROR([cannot find OpenGL+FreeGLUT development files])
