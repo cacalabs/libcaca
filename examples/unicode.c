@@ -44,6 +44,7 @@ int main(int argc, char *argv[])
     caca_put_str(cv, 1, 2, "This is ASCII:    | abc DEF 123 !@# |");
     caca_put_str(cv, 1, 3, "This is Unicode:  | äßç δεφ ☺♥♀ ╞╬╗ |");
     caca_put_str(cv, 1, 4, "And this is, too: | ἀβϛ ΔЗҒ ᚴᛒᛯ ♩♔✈ |");
+    caca_put_str(cv, 41, 4, "Size test: 018adxmygWX'_ÍçÕĔŷ ﻙ が本");
 
     caca_put_str(cv, 1, 5, "If the three lines do not have the same length, there is a bug somewhere.");
 

@@ -209,12 +209,25 @@ static int x11_init_graphics(caca_display_t *dp)
 #if defined X_HAVE_UTF8_STRING
     if (dp->drv.p->font_set)
     {
-        XFontSetExtents *ex = XExtentsOfFontSet(dp->drv.p->font_set);
+        /* Do not trust the fontset, because some fonts may have
+         * irrelevantly large glyphs. Pango and rxvt use the same method. */
+        static wchar_t const test[] =
+        {
+            '0', '1', '8', 'a', 'd', 'x', 'm', 'y', 'g', 'W', 'X', '\'', '_',
+            0x00cd, 0x00e7, 0x00d5, 0x0114, 0x0177, /* Í ç Õ Ĕ ŷ */
+            /* 0x0643, */ /* ﻙ */
+            0x304c, 0x672c, /* が本 */
+            0,
+        };
+
+        XRectangle ink, logical;
+
         dp->drv.p->font_width =
-             XmbTextEscapement(dp->drv.p->font_set, "CAca", 4) / 4;
-        dp->drv.p->font_height = ex->max_logical_extent.height;
-        dp->drv.p->font_offset = ex->max_logical_extent.height
-                                  + ex->max_logical_extent.y;
+             (XmbTextEscapement(dp->drv.p->font_set, "CAca", 4) + 2) / 4;
+        XwcTextExtents(dp->drv.p->font_set, test, sizeof(test) / sizeof(*test),
+                       &ink, &logical);
+        dp->drv.p->font_height = ink.height;
+        dp->drv.p->font_offset = ink.height + ink.y;
     }
     else
 #endif
@@ -901,8 +914,7 @@ static void x11_put_glyph(caca_display_t *dp, int x, int y, int yoff,
     if (dp->drv.p->font_set)
     {
         wchar_t wch = ch;
-        XwcDrawString(dpy, px, dp->drv.p->font_set, gc,
-                      x + (fw - w) / 2, yoff, &wch, 1);
+        XwcDrawString(dpy, px, dp->drv.p->font_set, gc, x, yoff, &wch, 1);
     }
     else
 #endif
@@ -922,8 +934,7 @@ static void x11_put_glyph(caca_display_t *dp, int x, int y, int yoff,
             ch16.byte2 = (uint8_t)ch;
         }
 
-        XDrawString16(dpy, px, gc,
-                      x + (ch16.byte1 ? 0 : (fw - w) / 2), yoff, &ch16, 1);
+        XDrawString16(dpy, px, gc, x, yoff, &ch16, 1);
     }
 }
 
