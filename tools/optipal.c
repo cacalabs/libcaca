@@ -1,6 +1,6 @@
 /*
  *  optipal       S-Lang optimised palette generator for libcaca
- *  Copyright (c) 2003 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2003 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$

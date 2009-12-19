@@ -5,7 +5,7 @@
    *  Copyright (c) 2008 Benjamin C. Wiley Sittler <bsittler@gmail.com>
    *
    *  This file is a Php port of "examples/colors.c"
-   *  Copyright (c) 2003-2004 Sam Hocevar <sam@zoy.org>
+   *  Copyright (c) 2003-2004 Sam Hocevar <sam@hocevar.net>
    *                All Rights Reserved
    *
    *  $Id$

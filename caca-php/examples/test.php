@@ -7,7 +7,7 @@
    *  This file is a Php port of "caca-sharp/test.cs"
    *  which is:
    *  Copyright (c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
-   *                2007 Sam Hocevar <sam@zoy.org>
+   *                2007 Sam Hocevar <sam@hocevar.net>
    *                All Rights Reserved
    *
    *  $Id$
@@ -126,7 +126,7 @@ class Test
 	{
 		printf("libcaca %s PHP test\n", Libcaca::getVersion());
 		printf("(c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>\n");
-		printf("(c) 2007 Sam Hocevar <sam@zoy.org>\n");
+		printf("(c) 2007 Sam Hocevar <sam@hocevar.net>\n");
 		printf("(c) 2008 Benjamin C. Wiley Sittler <bsittler@gmail.com>\n");
 
 		/* Instanciate a caca canvas */

@@ -1,6 +1,6 @@
 /*
  *  frames        canvas frame switching features
- *  Copyright (c) 2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2006 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$

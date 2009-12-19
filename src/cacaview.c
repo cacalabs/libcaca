@@ -1,6 +1,6 @@
 /*
  *  cacaview      image viewer for libcaca
- *  Copyright (c) 2003-2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2003-2006 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$

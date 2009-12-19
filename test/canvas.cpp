@@ -1,6 +1,6 @@
 /*
  *  caca-test     testsuite program for libcaca
- *  Copyright (c) 2008 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2008 Sam Hocevar <samhocevar.net>
  *                All Rights Reserved
  *
  *  $Id$

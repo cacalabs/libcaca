@@ -1,6 +1,6 @@
 /*
  *  sortchars     analyse ASCII characters
- *  Copyright (c) 2007 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2007 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$

@@ -1,6 +1,6 @@
 #! /bin/sh
 
-##  DOS cross-compilation for libcaca -- Sam Hocevar <sam@zoy.org>
+##  DOS cross-compilation for libcaca -- Sam Hocevar <sam@hocevar.net>
 ##  $Id$
 
 set -x

@@ -2,7 +2,7 @@
  *  cacademo      various demo effects for libcaca
  *  Copyright (c) 1998 Michele Bini <mibin@tin.it>
  *                2003-2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
- *                2004-2006 Sam Hocevar <sam@zoy.org>
+ *                2004-2006 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$

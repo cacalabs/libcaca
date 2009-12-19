@@ -1,6 +1,6 @@
 #! /bin/sh
 
-##  Kernel-mode libcaca compilation script -- Sam Hocevar <sam@zoy.org>
+##  Kernel-mode libcaca compilation script -- Sam Hocevar <sam@hocevar.net>
 ##  $Id$
 
 set -x

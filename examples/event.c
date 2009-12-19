@@ -1,6 +1,6 @@
 /*
  *  event         event lister for libcaca
- *  Copyright (c) 2004 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2004 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$

@@ -1,6 +1,6 @@
 /*
  *  zzuf - general purpose fuzzer
- *  Copyright (c) 2002, 2007 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2002, 2007 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id: mygetopt.h 268 2007-02-01 22:33:07Z sam $

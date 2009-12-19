@@ -12,7 +12,7 @@ header('Content-Type: text/html; charset=UTF-8');
  *
  *  This file is a Php port of the official libcaca's sample program "demo.c" 
  *  which is: 
- *  Copyright (c) 2003 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2003 Sam Hocevar <sam@hocevar.net>
  *
  *  This program is free software. It comes without any warranty, to
  *  the extent permitted by applicable law. You can redistribute it

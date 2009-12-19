@@ -6,7 +6,7 @@
  *
  *  This file is a Php port of "examples/transform.c"
  *  which is: 
- *  Copyright (c) 2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2006 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$

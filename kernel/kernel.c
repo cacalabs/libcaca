@@ -1,7 +1,7 @@
 /*
  *  libcaca      Canvas for ultrafast compositing of Unicode letters
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2006 Sam Hocevar <sam@hocevar.net>
  *                2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                All Rights Reserved
  *

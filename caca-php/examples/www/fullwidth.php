@@ -12,7 +12,7 @@ header('Content-Type: text/html; charset=UTF-8');
  *
  *  This file is a Php port of "examples/fullwidth.c"
  *  which is: 
- *  Copyright (c) 2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2006 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$

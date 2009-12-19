@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2007 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2002-2007 Sam Hocevar <sam@hocevar.net>
  *                2007 Ben Wiley Sittler <bsittler@gmail.com>
  *                All Rights Reserved
  *

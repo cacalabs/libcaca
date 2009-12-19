@@ -1,6 +1,6 @@
 /*
  *  fullwidth     libcaca fullwidth Unicode characters test program
- *  Copyright (c) 2006 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2006 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$

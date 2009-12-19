@@ -1,6 +1,6 @@
 /*
  *  hsv           libcaca HSV rendering test program
- *  Copyright (c) 2003 Sam Hocevar <sam@zoy.org>
+ *  Copyright (c) 2003 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
