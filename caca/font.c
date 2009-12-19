@@ -118,9 +118,9 @@ caca_font_t *caca_load_font(void const *data, size_t size)
     if(size == 0)
     {
         if(!strcasecmp(data, "Monospace 9"))
-            return caca_load_font((char *)&mono9_data, mono9_size);
+            return caca_load_font(mono9_data, mono9_size);
         if(!strcasecmp(data, "Monospace Bold 12"))
-            return caca_load_font((char *)&monobold12_data, monobold12_size);
+            return caca_load_font(monobold12_data, monobold12_size);
 
         seterrno(ENOENT);
         return NULL;

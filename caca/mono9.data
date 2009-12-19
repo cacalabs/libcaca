@@ -4,8 +4,8 @@
  *   tools/makefont mono9 "Monospace 9" 96 4
  */
 
-static unsigned int const mono9_size = 246854;
-static char mono9_data[246854] =
+static size_t const mono9_size = 246854;
+static uint8_t mono9_data[246854] =
 {
 /* file: */
 0xCA,0xCA, /* caca_header */

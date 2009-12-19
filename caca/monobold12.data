@@ -4,8 +4,8 @@
  *   tools/makefont monobold12 "Monospace Bold 12" 96 4
  */
 
-static unsigned int const monobold12_size = 419205;
-static char monobold12_data[419205] =
+static size_t const monobold12_size = 419205;
+static uint8_t monobold12_data[419205] =
 {
 /* file: */
 0xCA,0xCA, /* caca_header */

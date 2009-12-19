@@ -187,9 +187,10 @@ int main(int argc, char *argv[])
     printf(" */\n");
     printf("\n");
 
-    printf("static unsigned int const %s_size = %i;\n",
+    printf("static size_t const %s_size = %i;\n",
            prefix, 4 + control_size + data_size);
-    printf("static char %s_data[%i] =\n", prefix, 4 + control_size + data_size);
+    printf("static uint8_t %s_data[%i] =\n",
+           prefix, 4 + control_size + data_size);
     printf("{\n");
 
     printf("/* file: */\n");
