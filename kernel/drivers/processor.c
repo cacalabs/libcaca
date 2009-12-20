@@ -85,25 +85,27 @@ void processor_print_info(struct processor_info *processor_info)
 {
     printf("CPU%d\n", processor_info->id);
     printf("Vendor ID : %s\n", processor_info->vendor);
+    printf("Frequency : ");
     if (processor_info->frequency > 1000000000)
     {
-        printf("Frequency : ~%dGhz (or something like that)\n",
+        printf("%dGhz",
                processor_info->frequency / 1000000000);
     }
     else if (processor_info->frequency > 1000000)
     {
-        printf("Frequency : ~%dMhz (or something like that)\n",
+        printf("%dMhz",
                processor_info->frequency / 1000000);
     }
     else if (processor_info->frequency > 1000)
     {
-        printf("Frequency : ~%dKhz (or something like that)\n",
+        printf("%dKhz\n",
                processor_info->frequency / 1000);
     }
     else
     {
-        printf("Frequency : ~%dhz (you must be running Bochs)\n",
+        printf("%dhz\n",
                processor_info->frequency);
     }
+    printf(" (or something like that)\n");
     printf("Features : 0x%x\n", processor_info->features);
 }

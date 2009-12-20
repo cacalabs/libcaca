@@ -57,7 +57,7 @@ gcc $CFLAGS klibc.c -c
 gcc $CFLAGS kernel.c -c
 
 # Link everything but bootsector, kernel.o MUST be at the very end
-ld --oformat binary -Ttext 1000 stage2.o gdt.o pic.o int.o idt.o interruptions.o keyboard.o memory.o timer.o floppy.o processor.o klibc.o kernel.o -Map kernel.map ../caca/.libs/libcaca.a   -o kern.bin 
+ld --oformat binary -Ttext 1000 stage2.o gdt.o pic.o int.o idt.o interruptions.o keyboard.o memory.o timer.o floppy.o processor.o klibc.o kernel.o ../caca/.libs/libcaca.a -Map kernel.map    -o kern.bin 
    
 ls -ail kern.bin
 cd ..

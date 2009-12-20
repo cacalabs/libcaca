@@ -27,6 +27,7 @@
 #include "drivers/timer.h"
 
 extern char const * const * caca_get_display_driver_list(void);
+extern char end[];
 
 /* C entry point, called from stage2 */
 int kmain(void)
@@ -36,7 +37,7 @@ int kmain(void)
     
     printf("_start at 0x%x\n", _start);
     printf("kmain() at 0x%x\n", kmain);
-    printf("Types : char[%d] int[%d] long[%d] unsigned long long[%d]\n", sizeof(char), sizeof(int), sizeof(long), sizeof(unsigned long long));
+    printf("Types : char[%d] short[%d] int[%d] unsigned long long[%d]\n", sizeof(char), sizeof(short), sizeof(int), sizeof(unsigned long long));
     
     enable_interrupt(1);  // Enable Keyboard Interrupt (IRQ1)
     enable_interrupt(0);  // Enable IRQ0 (timer)
@@ -50,14 +51,17 @@ int kmain(void)
     floppy_get_info(&floppy_info);
     floppy_print_info(&floppy_info);
 
-    //caca_get_display_driver_list();
-    printf("Entering kernel infinite loop.\n");
+    /* Caca is delicious */
+    printf("Filling memory with 0xCACA, starting from 0x%x\n", end);
     
+    char *ptr = end;
     while (1)
     {
-        
+        *ptr = 0xCA;
+        *ptr++;
     }
 }
 
+char end[];
 
 #endif /* __KERNEL__ */
