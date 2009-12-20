@@ -1,3 +1,25 @@
+/*
+ *  libcaca       
+ *  libcaca       Colour ASCII-Art library
+ *  Copyright (c) 2006 Sam Hocevar <sam@hocevar.net>
+ *                2009 Jean-Yves Lamoureux <jylam@lnxscene.org>
+ *                All Rights Reserved
+ *
+ *  $Id: kernel.h 4154 2009-12-20 13:33:11Z jylam $
+ *
+ *  This library is free software. It comes without any warranty, to
+ *  the extent permitted by applicable law. You can redistribute it
+ *  and/or modify it under the terms of the Do What The Fuck You Want
+ *  To Public License, Version 2, as published by Sam Hocevar. See
+ *  http://sam.zoy.org/wtfpl/COPYING for more details.
+ */
+
+/*
+ *  This file contains replacement functions for the standard C library
+ *  that must be used when building libcaca and libcaca into a kernel.
+ */
+
+
 /* Various typedefs -- some are x86-specific */
 #define CUSTOM_INTTYPES
 
@@ -16,10 +38,10 @@
 #define __BYTE_ORDER 1
 #define __BIG_ENDIAN 2
 
-typedef unsigned char	    u8;
-typedef unsigned short	    u16;
-typedef unsigned int	    u32;
-typedef unsigned long int	u64;
+typedef unsigned char u8;
+typedef unsigned short u16;
+typedef unsigned int u32;
+typedef unsigned long int u64;
 
 #ifndef size_t
 typedef unsigned int size_t;
@@ -29,12 +51,14 @@ typedef struct file
     void *mem;
 } FILE;
 
-struct timeval {
+struct timeval
+{
     int tv_sec;
     int tv_usec;
 };
 
-struct timezone {
+struct timezone
+{
     int tz_minuteswest;
     int tz_dsttime;
 };
@@ -48,7 +72,7 @@ int rand(void);
 int abs(int j);
 void exit(int status);
 void srand(unsigned int s);
-int atexit(void (*function)(void));
+int atexit(void (*function) (void));
 FILE *stdin, *stdout, *stderr;
 
 /* string.h functions */
@@ -63,11 +87,11 @@ char *strdup(const char *s);
 char *strchr(const char *s, int c);
 
 /* stdarg.h functions */
-typedef void * va_list;
+typedef void *va_list;
 #define va_start(v,a) v = (void *)((uintptr_t)(&a) + sizeof(a))
 #define va_end(v)
 int vsnprintf(char *str, size_t size, const char *format, va_list ap);
-/* va_arg*/
+/* va_arg */
 #define args_list char *
 #define _arg_stack_size(type)    (((sizeof(type)-1)/sizeof(int)+1)*sizeof(int))
 #define args_start(ap, fmt) do {    \
@@ -78,15 +102,15 @@ ap = (char *)((unsigned int)&fmt + _arg_stack_size(&fmt));   \
 
 /* stdio.h functions */
 FILE *fopen(const char *path, const char *mode);
-int feof(FILE *stream);
-char *fgets(char *s, int size, FILE *stream);
-size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);
-int fclose(FILE *fp);
+int feof(FILE * stream);
+char *fgets(char *s, int size, FILE * stream);
+size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE * stream);
+int fclose(FILE * fp);
 
 int printf(const char *format, ...);
 
-int fprintf(FILE *stream, const char *format, ...);
-int fflush(FILE *stream);
+int fprintf(FILE * stream, const char *format, ...);
+int fflush(FILE * stream);
 int sprintf(char *str, const char *format, ...);
 int sscanf(const char *str, const char *format, ...);
 void itoa(int n, char s[]);
@@ -109,13 +133,13 @@ double sin(double x);
 double sqrt(double x);
 
 /* errno.h functions */
-#define ENOENT   2 /* No such file or directory */
-#define ENOMEM  12 /* Out of memory */
-#define EBUSY   16 /* Device or resource busy */
-#define ENODEV  19 /* No such device */
-#define EINVAL  22 /* Invalid argument */
-#define ENOTTY  25 /* Not a typewriter */
-#define ENOSYS  38 /* Function not implemented */
+#define ENOENT   2              /* No such file or directory */
+#define ENOMEM  12              /* Out of memory */
+#define EBUSY   16              /* Device or resource busy */
+#define ENODEV  19              /* No such device */
+#define EINVAL  22              /* Invalid argument */
+#define ENOTTY  25              /* Not a typewriter */
+#define ENOSYS  38              /* Function not implemented */
 extern int errno;
 
 /* arpa/inet.h functions */

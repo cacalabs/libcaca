@@ -1,11 +1,19 @@
 /* 
- *  processor.c
- *  
+ *  libcaca       
+ *  libcaca       Colour ASCII-Art library
+ *  Copyright (c) 2006 Sam Hocevar <sam@hocevar.net>
+ *                2009 Jean-Yves Lamoureux <jylam@lnxscene.org>
+ *                All Rights Reserved
  *
- *  Created by Jean-Yves Lamoureux on 12/19/09.
- *  Copyright 2009 Frob. All rights reserved.
+ *  $Id: kernel.h 4154 2009-12-20 13:33:11Z jylam $
  *
+ *  This library is free software. It comes without any warranty, to
+ *  the extent permitted by applicable law. You can redistribute it
+ *  and/or modify it under the terms of the Do What The Fuck You Want
+ *  To Public License, Version 2, as published by Sam Hocevar. See
+ *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
+
 #include "kernel.h"
 #include "klibc.h"
 #include "processor.h"
@@ -14,7 +22,7 @@
 int processor_get_info(struct processor_info *processor_info)
 {
     processor_info->id = 0;
-    
+
     /* Vendor String */
     int code = CPUID_GETVENDORSTRING;
     unsigned int where[5];
