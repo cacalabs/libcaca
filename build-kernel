@@ -1,37 +1,66 @@
 #! /bin/sh
 
-##  Kernel-mode libcaca compilation script -- Sam Hocevar <sam@hocevar.net>
+##  Kernel-mode libcaca compilation script -- Sam Hocevar <sam@zoy.org>
 ##  $Id$
 
 set -x
 set -e
 
-CFLAGS="-fno-builtin -O2 -I. -I.. -I../caca/ -Wall"
-CPPFLAGS="-D__KERNEL__ -nostdinc -include kernel/kernel.h"
+CFLAGS="-fno-builtin -O0 -I. -I.. -I../caca/ -Wall -D__KERNEL__ -fno-stack-protector -m32"
 LDFLAGS="-nostdlib -Wl,-N -Wl,-Ttext -Wl,100000"
 
 ./configure --disable-slang --disable-ncurses --disable-win32 \
-            --disable-conio --disable-x11 --disable-gl --disable-network \
-            --enable-vga --disable-imlib2 --disable-doc \
-            --host i386
+	            --disable-conio --disable-x11 --disable-gl --disable-network \
+	            --enable-vga --disable-imlib2 --disable-doc \
+	            --host i386
 
-# We need this.
-make clean
-
+# Compile cacademo, leave it as an object
 cd caca && make && cd ..
+cd examples && make dithering.o && cd ..
 
-cd src && make cacademo.o && cd ..
 
-cd kernel &&
-    gcc $CFLAGS -c multiboot.S -o multiboot.o &&
-    gcc $CFLAGS $CPPFLAGS -c kernel.c -o kernel.o &&
+cd kernel
+
+# Bootsector
+nasm -f bin -o bootsect.bin boot/bootsect.asm
+# Interruption handlers
+nasm -f elf -o int.o boot/int.asm 
+
+##### Boot (x86)
+# Stage2, loads GDT, PIC, IDT, interrupts, then calls kmain()
+gcc $CFLAGS boot/stage2.c -c
+# GDT installation, called by stage2
+gcc $CFLAGS boot/gdt.c -c
+# PIC installation, called by stage2
+gcc $CFLAGS boot/pic.c -c
+# IDT installation, called by stage2
+gcc $CFLAGS boot/idt.c -c
+# Interruptions installation, called by stage2
+gcc $CFLAGS boot/interruptions.c -c
+
+##### Drivers 
+# Floppy driver
+gcc $CFLAGS drivers/floppy.c -c
+# Processor driver
+gcc $CFLAGS drivers/processor.c -c
+# Keyboard handler
+gcc $CFLAGS drivers/keyboard.c -c
+# Memory driver
+gcc $CFLAGS drivers/memory.c -c
+# Programmable Interval Timer driver
+gcc $CFLAGS drivers/timer.c -c
+
+# Minimalistic libc
+gcc $CFLAGS klibc.c -c
+
+# Kernel by itself, contains cmain() which calls main()
+gcc $CFLAGS kernel.c -c
+
+# Link everything but bootsector, kernel.o MUST be at the very end
+ld --oformat binary -Ttext 1000 stage2.o gdt.o pic.o int.o idt.o interruptions.o keyboard.o memory.o timer.o floppy.o processor.o klibc.o kernel.o -Map kernel.map ../caca/.libs/libcaca.a   -o kern.bin 
+   
+ls -ail kern.bin
 cd ..
 
-gcc $LDFLAGS -o src/cacademo kernel/multiboot.o kernel/kernel.o src/cacademo.o caca/.libs/libcaca.a
-
-objcopy -O binary src/cacademo cacademo.boot
-
-# For further development: create floppy images using the kernel
-gcc -traditional -c -o bootsect.o kernel/bootsect.S
-ld -Ttext 0x0 -s --oformat binary bootsect.o -o cacademo.img
-
+# Copy bootsector at the very beginning of the floppy (first sector/512 bytes of the image), then kernel right after
+cat kernel/bootsect.bin  kernel/kern.bin /dev/zero | dd of=cacademo.img bs=512 count=2500
