@@ -41,7 +41,7 @@
 typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned int u32;
-typedef unsigned long int u64;
+typedef unsigned long long u64;
 
 #ifndef size_t
 typedef unsigned int size_t;
@@ -123,7 +123,6 @@ void sleep(unsigned long sec);
 int getpid(void);
 
 /* time.h functions */
-u64 rdtsc(void);
 int gettimeofday(struct timeval *tv, struct timezone *tz);
 int time(void *);
 

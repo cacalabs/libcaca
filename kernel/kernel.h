@@ -30,6 +30,8 @@ void enable_interrupt(char i);
 #define cli             __asm__("cli"::)
 #define sti             __asm__("sti"::)
 
+#define rdtsc(low,high) \
+__asm__ __volatile__("rdtsc" : "=a" (low), "=d" (high))
 
 
 /* The application's entry point */

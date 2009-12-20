@@ -16,6 +16,7 @@
 
 #include "kernel.h"
 #include "klibc.h"
+#include "drivers/timer.h"
 #include "processor.h"
 
 
@@ -49,12 +50,60 @@ int processor_get_info(struct processor_info *processor_info)
     asm volatile ("cpuid":"=a" (a), "=d"(d):"0"(code):"ecx", "ebx");
     processor_info->features = a;
 
+    processor_info->frequency = 0;
+    processor_info->frequency = processor_get_frequency(processor_info);
+
     return 0;
+}
+
+u32 processor_get_frequency(struct processor_info * processor_info)
+{
+    if (processor_info->frequency)
+        return processor_info->frequency;
+    u64 srdtsc64, erdtsc64;
+    u32 srdtsc_l, srdtsc_h;
+    u32 erdtsc_l, erdtsc_h;
+
+    rdtsc(srdtsc_l, srdtsc_h);  /* Get RDTSC */
+    sleep(2);                   /* Sleep for 2 seconds */
+    rdtsc(erdtsc_l, erdtsc_h);  /* Get RDTSC again */
+
+    srdtsc64 = srdtsc_h;
+    srdtsc64 <<= 32;
+    srdtsc64 |= srdtsc_l;
+    erdtsc64 = erdtsc_h;
+    erdtsc64 <<= 32;
+    erdtsc64 |= erdtsc_l;
+
+
+    u32 diff = erdtsc64 - srdtsc64;     /* Cycle count for 2 seconds */
+    diff /= 2;                  /* Divide by 2 to get cycles per sec */
+    return diff;
 }
 
 void processor_print_info(struct processor_info *processor_info)
 {
     printf("CPU%d\n", processor_info->id);
     printf("Vendor ID : %s\n", processor_info->vendor);
+    if (processor_info->frequency > 1000000000)
+    {
+        printf("Frequency : ~%dGhz (or something like that)\n",
+               processor_info->frequency / 1000000000);
+    }
+    else if (processor_info->frequency > 1000000)
+    {
+        printf("Frequency : ~%dMhz (or something like that)\n",
+               processor_info->frequency / 1000000);
+    }
+    else if (processor_info->frequency > 1000)
+    {
+        printf("Frequency : ~%dKhz (or something like that)\n",
+               processor_info->frequency / 1000);
+    }
+    else
+    {
+        printf("Frequency : ~%dhz (you must be running Bochs)\n",
+               processor_info->frequency);
+    }
     printf("Features : 0x%x\n", processor_info->features);
 }

@@ -92,8 +92,10 @@ struct processor_info
     int id;
     char vendor[13];
     unsigned int features;
+    u32 frequency;
 };
 
 
 int processor_get_info(struct processor_info *processor_info);
+u32 processor_get_frequency(struct processor_info *processor_info);
 void processor_print_info(struct processor_info *processor_info);
