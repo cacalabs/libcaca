@@ -7,6 +7,31 @@
 	objects = {
 
 /* Begin PBXFileReference section */
+		E60690EB10DCD81300F80E76 /* pic.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = pic.c; sourceTree = "<group>"; };
+		E60690EC10DCD81300F80E76 /* int.asm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm.asm; path = int.asm; sourceTree = "<group>"; };
+		E60690ED10DCD81300F80E76 /* stage2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stage2.h; sourceTree = "<group>"; };
+		E60690EE10DCD81300F80E76 /* interruptions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = interruptions.c; sourceTree = "<group>"; };
+		E60690EF10DCD81300F80E76 /* stage2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stage2.c; sourceTree = "<group>"; };
+		E60690F010DCD81300F80E76 /* bootsect.asm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm.asm; path = bootsect.asm; sourceTree = "<group>"; };
+		E60690F110DCD81300F80E76 /* gdt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gdt.c; sourceTree = "<group>"; };
+		E60690F210DCD81300F80E76 /* idt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = idt.c; sourceTree = "<group>"; };
+		E60690F410DCD81300F80E76 /* floppy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = floppy.h; sourceTree = "<group>"; };
+		E60690F510DCD81300F80E76 /* floppy.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = floppy.c; sourceTree = "<group>"; };
+		E60690FA10DCD85300F80E76 /* keyboard.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = keyboard.c; sourceTree = "<group>"; };
+		E606910010DCDA3100F80E76 /* processor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = processor.h; sourceTree = "<group>"; };
+		E606910110DCDA3100F80E76 /* processor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = processor.c; sourceTree = "<group>"; };
+		E606911F10DCDF2B00F80E76 /* klibc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = klibc.h; sourceTree = "<group>"; };
+		E60691C710DCF2EA00F80E76 /* memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = memory.h; sourceTree = "<group>"; };
+		E60691C810DCF2EA00F80E76 /* memory.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = memory.c; sourceTree = "<group>"; };
+		E60691E910DD0D6D00F80E76 /* timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = timer.h; sourceTree = "<group>"; };
+		E60691EA10DD0D6D00F80E76 /* timer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = timer.c; sourceTree = "<group>"; };
+		E64A326110DA344400325A66 /* build-kernel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "build-kernel"; path = "../build-kernel"; sourceTree = SOURCE_ROOT; };
+		E64A326610DA344400325A66 /* kernel.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = kernel.c; sourceTree = "<group>"; };
+		E64A326710DA344400325A66 /* kernel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kernel.h; sourceTree = "<group>"; };
+		E64A326810DA344400325A66 /* Makefile.am */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.am; sourceTree = "<group>"; };
+		E64A326910DA344400325A66 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		E64A331D10DA447500325A66 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../config.h; sourceTree = SOURCE_ROOT; };
+		E64A33E410DA861600325A66 /* klibc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = klibc.c; sourceTree = "<group>"; };
 		E68A871110CD1F040047EB17 /* mouse.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mouse.c; path = ../examples/mouse.c; sourceTree = SOURCE_ROOT; };
 		E6A7681710B560BB008B6DEC /* caca++.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "caca++.cpp"; path = "../cxx/caca++.cpp"; sourceTree = SOURCE_ROOT; };
 		E6A7681810B560BB008B6DEC /* caca++.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "caca++.h"; path = "../cxx/caca++.h"; sourceTree = SOURCE_ROOT; };
@@ -23,7 +48,6 @@
 		E6A7682410B561CE008B6DEC /* caca-font.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "caca-font.h"; path = "../ruby/caca-font.h"; sourceTree = SOURCE_ROOT; };
 		E6A7682510B561CE008B6DEC /* caca.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = caca.c; path = ../ruby/caca.c; sourceTree = SOURCE_ROOT; };
 		E6A7682610B561CE008B6DEC /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = ../ruby/common.h; sourceTree = SOURCE_ROOT; };
-		E6A769B410B85819008B6DEC /* check-build */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "check-build"; path = "../tests/check-build"; sourceTree = SOURCE_ROOT; };
 		E6DB65F610AECC7800B6F924 /* attr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = attr.c; path = ../caca/attr.c; sourceTree = SOURCE_ROOT; };
 		E6DB65F710AECC7800B6F924 /* box.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = box.c; path = ../caca/box.c; sourceTree = SOURCE_ROOT; };
 		E6DB65F810AECC7800B6F924 /* caca_conio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = caca_conio.c; path = ../caca/caca_conio.c; sourceTree = SOURCE_ROOT; };
@@ -115,7 +139,9 @@
 		08FB7794FE84155DC02AAC07 /* XCode */ = {
 			isa = PBXGroup;
 			children = (
-				E6A769B410B85819008B6DEC /* check-build */,
+				E64A331D10DA447500325A66 /* config.h */,
+				E64A326110DA344400325A66 /* build-kernel */,
+				E64A326210DA344400325A66 /* kernel */,
 				E6A7681A10B561B9008B6DEC /* ruby */,
 				E6A7681510B560AE008B6DEC /* cxx */,
 				E6DB66FA10B176D100B6F924 /* configure.ac */,
@@ -125,6 +151,53 @@
 			);
 			name = XCode;
 			sourceTree = "<group>";
+		};
+		E60690EA10DCD81300F80E76 /* boot */ = {
+			isa = PBXGroup;
+			children = (
+				E60690ED10DCD81300F80E76 /* stage2.h */,
+				E60690F010DCD81300F80E76 /* bootsect.asm */,
+				E60690EC10DCD81300F80E76 /* int.asm */,
+				E60690EB10DCD81300F80E76 /* pic.c */,
+				E60690EE10DCD81300F80E76 /* interruptions.c */,
+				E60690EF10DCD81300F80E76 /* stage2.c */,
+				E60690F110DCD81300F80E76 /* gdt.c */,
+				E60690F210DCD81300F80E76 /* idt.c */,
+			);
+			path = boot;
+			sourceTree = "<group>";
+		};
+		E60690F310DCD81300F80E76 /* drivers */ = {
+			isa = PBXGroup;
+			children = (
+				E606910010DCDA3100F80E76 /* processor.h */,
+				E60690F410DCD81300F80E76 /* floppy.h */,
+				E60691C710DCF2EA00F80E76 /* memory.h */,
+				E60691E910DD0D6D00F80E76 /* timer.h */,
+				E60690FA10DCD85300F80E76 /* keyboard.c */,
+				E60690F510DCD81300F80E76 /* floppy.c */,
+				E606910110DCDA3100F80E76 /* processor.c */,
+				E60691C810DCF2EA00F80E76 /* memory.c */,
+				E60691EA10DD0D6D00F80E76 /* timer.c */,
+			);
+			path = drivers;
+			sourceTree = "<group>";
+		};
+		E64A326210DA344400325A66 /* kernel */ = {
+			isa = PBXGroup;
+			children = (
+				E606911F10DCDF2B00F80E76 /* klibc.h */,
+				E64A326710DA344400325A66 /* kernel.h */,
+				E64A33E410DA861600325A66 /* klibc.c */,
+				E64A326610DA344400325A66 /* kernel.c */,
+				E60690EA10DCD81300F80E76 /* boot */,
+				E60690F310DCD81300F80E76 /* drivers */,
+				E64A326810DA344400325A66 /* Makefile.am */,
+				E64A326910DA344400325A66 /* Makefile */,
+			);
+			name = kernel;
+			path = ../kernel;
+			sourceTree = SOURCE_ROOT;
 		};
 		E6A7681510B560AE008B6DEC /* cxx */ = {
 			isa = PBXGroup;
