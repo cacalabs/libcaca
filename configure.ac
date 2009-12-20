@@ -308,7 +308,7 @@ fi
 
 if test "${enable_vga}" = "yes"; then
   ac_cv_my_have_vga="yes"
-  CPPFLAGS="${CPPFLAGS} -I. -D__KERNEL__ -nostdinc -include kernel/kernel.h -fno-stack-protector"
+  CPPFLAGS="${CPPFLAGS} -I. -D__KERNEL__ -nostdinc -include kernel/klibc.h -fno-stack-protector"
   CFLAGS="${CFLAGS} -fno-builtin -O2 -Wall -fno-stack-protector"
   CCASFLAGS="${CCASFLAGS} -I. -fno-stack-protector"
   LDFLAGS="${LDFLAGS} -nostdlib -Wl,-N -Wl,-Ttext -Wl,100000 -fno-stack-protector"
