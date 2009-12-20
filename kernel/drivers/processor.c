@@ -13,6 +13,8 @@
 
 int processor_get_info(struct processor_info *processor_info)
 {
+    processor_info->id = 0;
+    
     /* Vendor String */
     int code = CPUID_GETVENDORSTRING;
     unsigned int where[5];
