@@ -1,0 +1,20 @@
+$Id$
+
+Building the libcaca Java bindings
+
+   o In the configure step, ensure the --enable-java flag is turned on.
+
+   o `make install` will install:
+      - libjava.so in ${libdir}/jni,
+      - libjava.jar in ${datadir}/java.
+
+
+Using the libcaca Java bindings
+
+   o Look into examples/ for source code examples.
+
+   o Running an application which uses the libcaca Java bindings:
+
+     java -Djava.library.path=${libdir}/jni \
+          -cp ${datadir}/java/libjava.jar:<classpath> <class name>
+

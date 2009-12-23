@@ -78,6 +78,8 @@ AC_ARG_ENABLE(vga,
 dnl language bindings
 AC_ARG_ENABLE(csharp,
   [  --enable-csharp         C# bindings (autodetected)])
+AC_ARG_ENABLE(java,
+  [  --enable-java           Java bindings (autodetected)])
 AC_ARG_ENABLE(cxx,
   [  --enable-cxx            C++ bindings (autodetected)])
 AC_ARG_ENABLE(ruby,
@@ -408,6 +410,48 @@ if test "${enable_csharp}" != "no"; then
 fi
 AM_CONDITIONAL(USE_CSHARP, test "${ac_cv_my_have_csharp}" = "yes")
 
+# Build the Java bindings?
+ac_cv_my_have_java="no"
+if test "${enable_java}" != "no"; then
+  AC_PATH_PROG(JAVAC, javac, no)
+  AC_PATH_PROG(JAVAH, javah, no)
+  AC_PATH_PROG(JAR, jar, no)
+  if test "${JAVAC}" != "no" -a "${JAVAH}" != "no" -a "${JAR}" != "no"; then
+    if test "$JAVA_HOME" = ""; then
+      # Try to resolve JAVA_HOME
+      JAVAC_EXE="$JAVAC"
+      # Follow symlinks
+      while test -h "$JAVAC_EXE"; do
+        ls=`ls -ld "$JAVAC_EXE"`
+        link=`expr "$ls" : '.*-> \(.*\)$'`
+        if expr "$link" : '/.*' > /dev/null; then
+          JAVAC_EXE="$link"
+        else
+          JAVAC_EXE="`dirname "$JAVAC_EXE"`/$link"
+        fi
+      done
+      JAVA_HOME="`dirname $JAVAC_EXE`/.."
+    fi
+    # Include path to jni.h
+    JAVA_CFLAGS="${JAVA_CFLAGS} -I$JAVA_HOME/include"
+    # Add the OS specific include path
+    for dir in $JAVA_HOME/include/*; do
+      if test -f "$dir/jni_md.h"; then
+        JAVA_CFLAGS="${JAVA_CFLAGS} -I$dir"
+      fi
+    done
+    AC_SUBST(JAVA_CFLAGS)
+    AC_SUBST(JAVA_LIBS)
+    AC_LANG_PUSH(C)
+    CPPFLAGS="${CPPFLAGS} ${JAVA_CFLAGS}"
+    AC_CHECK_HEADERS([jni.h],
+     [ac_cv_my_have_java="yes"
+      CACA_BINDINGS="${CACA_BINDINGS} Java"])
+    AC_LANG_POP(C)
+  fi
+fi
+AM_CONDITIONAL(USE_JAVA, test "${ac_cv_my_have_java}" = "yes")
+
 # Build the Ruby bindings?
 ac_cv_my_have_ruby="no"
 if test "${enable_ruby}" != "no"; then
@@ -506,6 +550,7 @@ AC_CONFIG_FILES([
   examples/Makefile
   test/Makefile
   tools/Makefile
+  java/Makefile
   caca-sharp/Makefile
   cxx/Makefile
   python/Makefile
