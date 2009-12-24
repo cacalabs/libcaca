@@ -26,7 +26,7 @@ public class Driver {
     Display.Driver driver;
     int i, cur = 0;
     while(true) {
-      cv.put(1, 0, "Availabl driver");
+      cv.put(1, 0, "Available drivers");
       driver = dp.getDriver();
       Display.Driver[] list = Display.getDriverList();
       for (i = 0; i < list.length; i++) {

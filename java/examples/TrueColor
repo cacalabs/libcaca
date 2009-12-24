@@ -1,0 +1,6 @@
+#!/bin/sh
+
+DIR="`dirname $0`"
+java -Djava.library.path="${DIR}/../.libs" \
+     -cp "${DIR}/../libjava.jar:${DIR}" TrueColor
+

@@ -1,3 +1,4 @@
 libjava.jar
+examples/*.class
 org_zoy_caca_*.h
 org/zoy/caca/*.class

@@ -23,7 +23,7 @@ public class Caca {
 
   synchronized public static void load() {
     if (!alreadyLoaded) {
-      System.loadLibrary("java");
+      System.loadLibrary("caca-java");
       alreadyLoaded = true;
     }
   }
