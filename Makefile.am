@@ -12,6 +12,7 @@ bin_SCRIPTS = caca-config
 
 webhost = poulet.zoy.org
 webdir = /srv/caca.zoy.org/var/www/
+doxdir = /srv/caca.zoy.org/var/cache/doxygen/libcaca
 
 upload: upload-source upload-doc
 
@@ -19,8 +20,8 @@ upload-source: FORCE
 	scp $(distdir).tar.gz $(webhost):$(webdir)/files/
 
 upload-doc: doc/html FORCE
-	ssh $(webhost) rm -f '$(webdir)/manual/*'
-	scp -r doc/html/* $(webhost):$(webdir)/manual/
+	ssh $(webhost) rm -f '$(doxdir)/*' || true
+	scp -r doc/html/* $(webhost):$(doxdir)/
 
 fonts: tools/makefont
 	tools/makefont mono9 "Monospace 9" 96 4 >| $(srcdir)/caca/mono9.data

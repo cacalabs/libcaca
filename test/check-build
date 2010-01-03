@@ -47,6 +47,17 @@ else
   echo "0 errors in source code"
 fi
 
+#
+# Check for Doxygen errors
+#
+warnings="$(grep -c Warning: ../doc/doxygen.log)"
+if test "$warnings" != "0"; then
+  echo "error: $warnings warnings in Doxygen generation"
+  ret=1
+else
+  echo "0 errors in documentation"
+fi
+
 if test "$ret" != "0"; then
   exit 1
 fi

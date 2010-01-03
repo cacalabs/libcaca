@@ -1,3 +1,4 @@
+# Autotools cruft
 *.o
 *.lo
 *.la
@@ -23,3 +24,67 @@ stamp-*
 *-stamp
 INSTALL
 caca-config
+# libcaca binaries
+caca/caca_types.h
+# caca-sharp binaries
+caca-sharp/*.dll
+caca-sharp/*.config
+caca-sharp/*.mdb
+# libcaca++ binaries
+cxx/cxxtest
+# Doxygen cruft
+doc/doxygen.cfg
+doc/doxygen.log
+doc/man
+doc/html
+doc/latex
+# example binaries
+examples/blit
+examples/canvas
+examples/colors
+examples/conio
+examples/conio-snake
+examples/demo
+examples/demo0
+examples/dithering
+examples/driver
+examples/event
+examples/export
+examples/figfont
+examples/font
+examples/font2tga
+examples/frames
+examples/fullwidth
+examples/gamma
+examples/hsv
+examples/import
+examples/input
+examples/mouse
+examples/spritedit
+examples/swallow
+examples/term
+examples/text
+examples/transform
+examples/trifiller
+examples/truecolor
+examples/unicode
+# Ruby binaries
+ruby/*/mkmf.log
+ruby/*/*.so
+# Demo binaries
+src/cacaview
+src/cacadraw
+src/cacademo
+src/cacafire
+src/cacaplay
+src/cacaserver
+src/img2txt
+# Testsuite binaries
+test/bench
+test/caca-test
+test/simple
+# Tools binaries
+tools/optipal
+tools/makefont
+tools/sortchars
+
