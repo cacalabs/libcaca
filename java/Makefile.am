@@ -81,7 +81,6 @@ EXTRA_DIST = README
 
 if USE_JAVA
 BUILT_SOURCES = $(java_jni_headers) $(java_jni_classes)
-endif
 
 libcaca_java_la_CPPFLAGS = $(JAVA_CFLAGS)
 libcaca_java_la_SOURCES = \
@@ -94,6 +93,7 @@ libcaca_java_la_LDFLAGS = -shared $(JAVA_LIBS)
 libcaca_java_la_LIBADD = ../caca/libcaca.la
 libcaca_java_ladir = $(datadir)/java
 libcaca_java_la_DATA = $(java_jar)
+endif
 
 examples/Driver.class: examples/Driver.java
 	$(JAVAC) $^
