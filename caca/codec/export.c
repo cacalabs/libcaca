@@ -52,6 +52,7 @@ static void *export_bbfr(caca_canvas_t const *, size_t *);
 static void *export_ps(caca_canvas_t const *, size_t *);
 static void *export_svg(caca_canvas_t const *, size_t *);
 static void *export_tga(caca_canvas_t const *, size_t *);
+static void *export_troff(caca_canvas_t const *, size_t *);
 
 /** \brief Export a canvas into a foreign format.
  *
@@ -69,6 +70,7 @@ static void *export_tga(caca_canvas_t const *, size_t *);
  *  - \c "ps": export a PostScript document.
  *  - \c "svg": export an SVG vector image.
  *  - \c "tga": export a TGA image.
+ *  - \c "troff": export a troff source.
  *
  *  If an error occurs, NULL is returned and \b errno is set accordingly:
  *  - \c EINVAL Unsupported format requested.
@@ -115,6 +117,9 @@ void *caca_export_canvas_to_memory(caca_canvas_t const *cv, char const *format,
 
     if(!strcasecmp("tga", format))
         return export_tga(cv, bytes);
+
+    if(!strcasecmp("troff", format))
+        return export_troff(cv, bytes);
 
     seterrno(EINVAL);
     return NULL;
@@ -189,6 +194,7 @@ char const * const * caca_get_export_list(void)
         "ps", "PostScript document",
         "svg", "SVG vector image",
         "tga", "TGA image",
+        "troff", "troff source",
         NULL, NULL
     };
 
@@ -971,6 +977,73 @@ static void *export_tga(caca_canvas_t const *cv, size_t *bytes)
     }
 
     caca_free_font(f);
+
+    return data;
+}
+
+/* Generate troff representation of current canvas. */
+static void *export_troff(caca_canvas_t const *cv, size_t *bytes)
+{
+    char *data, *cur;
+    int x, y;
+
+    uint32_t prevfg = 0;
+    uint32_t prevbg = 0;
+    int started = 0;
+
+    /* 93 bytes assumed for max length per pixel ('\m[xxxxxx]y\m[]')
+     * + 97 + height
+     */
+    *bytes = 97 + cv->height + (cv->width * cv->height * 87);
+    cur = data = malloc(*bytes);
+
+    cur += sprintf(cur, ".color 1\n");
+
+    for(y = 0; y < cv->height; y++)
+    {
+        uint32_t *lineattr = cv->attrs + y * cv->width;
+        uint32_t *linechar = cv->chars + y * cv->width;
+
+        for(x = 0; x < cv->width; x++)
+        {
+    
+	    uint32_t fg = _caca_attr_to_rgb24bg(lineattr[x]);
+	    uint32_t bg = _caca_attr_to_rgb24fg(lineattr[x]);
+	    if(started && (fg != prevfg || bg != prevbg))
+                cur += sprintf(cur, "\n");
+	    if(fg != prevfg || !started)
+                cur += sprintf(cur, ".defcolor %.06x rgb #%.06x\n", fg, fg);
+	    if(bg != prevbg || !started)
+                cur += sprintf(cur, ".defcolor %.06x rgb #%.06x\n", bg, bg);
+	    if(fg != prevfg || !started)
+		cur += sprintf(cur, "\\m[%.06x]", fg);
+	    if(bg != prevbg || !started)
+		cur += sprintf(cur, "\\M[%.06x]", bg);
+            if(lineattr[x] & CACA_BOLD)
+                cur += sprintf(cur, "\\fB");
+            if(lineattr[x] & CACA_ITALICS)
+                cur += sprintf(cur, "\\fI");
+
+	    uint32_t ch = linechar[x];
+            cur += caca_utf32_to_utf8(cur, ch);
+
+            if(lineattr[x] & (CACA_BOLD|CACA_ITALICS))
+                cur += sprintf(cur, "\\fR");
+
+            prevfg = fg;
+            prevbg = bg;
+	    
+            started = 1;
+	}
+
+        cur += sprintf(cur, "\n");
+    }
+
+    /* Crop to really used size */
+    debug("troff export: alloc %lu bytes, realloc %lu",
+          (unsigned long int)*bytes, (unsigned long int)(cur - data));
+    *bytes = (uintptr_t)(cur - data);
+    data = realloc(data, *bytes);
 
     return data;
 }
