@@ -1,15 +1,17 @@
 # $Id$
 
 jnidir = $(libdir)/jni
+libcaca_javadir = $(datadir)/java
+
+java_jar = libjava.jar
 
 if USE_JAVA
 jni_LTLIBRARIES = libcaca-java.la
+libcaca_java_DATA = $(java_jar)
 noinst_DATA = examples/Driver.class examples/TrueColor.class
 endif
 
 java_src = $(wildcard $(srcdir)/org/zoy/caca/*.java)
-
-java_jar = libjava.jar
 
 java_jni_headers =         \
   org_zoy_caca_Attribute.h \
@@ -81,6 +83,7 @@ EXTRA_DIST = README
 
 if USE_JAVA
 BUILT_SOURCES = $(java_jni_headers) $(java_jni_classes)
+endif
 
 libcaca_java_la_CPPFLAGS = $(JAVA_CFLAGS)
 libcaca_java_la_SOURCES = \
@@ -91,9 +94,6 @@ libcaca_java_la_SOURCES = \
 #  $(java_jni_headers)
 libcaca_java_la_LDFLAGS = -shared $(JAVA_LIBS)
 libcaca_java_la_LIBADD = ../caca/libcaca.la
-libcaca_java_ladir = $(datadir)/java
-libcaca_java_la_DATA = $(java_jar)
-endif
 
 examples/Driver.class: examples/Driver.java
 	$(JAVAC) $^
