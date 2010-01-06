@@ -981,48 +981,48 @@ static void *export_tga(caca_canvas_t const *cv, size_t *bytes)
     return data;
 }
 
+/* Get troff color index from RGB
+ *
+ * We want for each component to know if it is >= 80
+ * Then we use the 3 bits to index colors list:
+ * 000 -> black
+ * 001 -> blue
+ * ...
+ * 111 -> white
+ */
+static uint8_t _rgb_to_troff_index(uint32_t color)
+{
+	int i;
+	uint8_t r = 0;
+	for(i = 0; i < 3; i++)
+	{
+		r += ((color >> (8*i+7))&1) << i;
+	}
+	return r;
+}
+
 /* Generate troff representation of current canvas. */
 static void *export_troff(caca_canvas_t const *cv, size_t *bytes)
 {
     char *data, *cur;
     int x, y;
 
+    const char * colors[8] = { "black", "blue", "green", "cyan",
+                               "red", "magenta", "yellow", "white" };
+
     uint32_t prevfg = 0;
     uint32_t prevbg = 0;
     int started = 0;
 
     /* Each char is at most 
-     *  2x.defcolor (2x29)
-     *  + 2x\mM (2x10)
+     *  2x\mM (2x10)
      *  + \fB + \fI + \fR (9)
-     *  + 4 bytes = 91
+     *  + 4 bytes = 33
      * Each line has a \n (1)
-     * Header has .color 1\n.nf\n (12)
+     * Header has .nf\n (3)
      */
-    *bytes = 12 + cv->height + (cv->width * cv->height * 91);
+    *bytes = 3 + cv->height + (cv->width * cv->height * 33);
     cur = data = malloc(*bytes);
-
-    cur += sprintf(cur, ".color 1\n");
-
-    for(y = 0; y < cv->height; y++)
-    {
-        uint32_t *lineattr = cv->attrs + y * cv->width;
-
-        for(x = 0; x < cv->width; x++)
-        {
-    
-	    uint32_t fg = _caca_attr_to_rgb24bg(lineattr[x]);
-	    uint32_t bg = _caca_attr_to_rgb24fg(lineattr[x]);
-	    if(fg != prevfg || !started)
-                cur += sprintf(cur, ".defcolor %.06x rgb #%.06x\n", fg, fg);
-	    if(bg != prevbg || !started)
-                cur += sprintf(cur, ".defcolor %.06x rgb #%.06x\n", bg, bg);
-
-            prevfg = fg;
-            prevbg = bg;
-	    started = 1;
-	}
-    }
 
     cur += sprintf(cur, ".nf\n");
 
@@ -1037,14 +1037,13 @@ static void *export_troff(caca_canvas_t const *cv, size_t *bytes)
 
         for(x = 0; x < cv->width; x++)
         {
-    
-	    uint32_t fg = _caca_attr_to_rgb24bg(lineattr[x]);
-	    uint32_t bg = _caca_attr_to_rgb24fg(lineattr[x]);
+	    uint32_t fg = _rgb_to_troff_index(_caca_attr_to_rgb24fg(lineattr[x]));
+	    uint32_t bg = _rgb_to_troff_index(_caca_attr_to_rgb24bg(lineattr[x]));
 	    uint32_t ch = linechar[x];
 	    if(fg != prevfg || !started)
-		cur += sprintf(cur, "\\m[%.06x]", fg);
+		cur += sprintf(cur, "\\m[%s]", colors[fg]);
 	    if(bg != prevbg || !started)
-		cur += sprintf(cur, "\\M[%.06x]", bg);
+		cur += sprintf(cur, "\\M[%s]", colors[bg]);
             if(lineattr[x] & CACA_BOLD)
                 cur += sprintf(cur, "\\fB");
             if(lineattr[x] & CACA_ITALICS)
