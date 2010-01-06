@@ -991,13 +991,44 @@ static void *export_troff(caca_canvas_t const *cv, size_t *bytes)
     uint32_t prevbg = 0;
     int started = 0;
 
-    /* 93 bytes assumed for max length per pixel ('\m[xxxxxx]y\m[]')
-     * + 97 + height
+    /* Each char is at most 
+     *  2x.defcolor (2x29)
+     *  + 2x\mM (2x10)
+     *  + \fB + \fI + \fR (9)
+     *  + 4 bytes = 91
+     * Each line has a \n (1)
+     * Header has .color 1\n.nf\n (12)
      */
-    *bytes = 97 + cv->height + (cv->width * cv->height * 87);
+    *bytes = 12 + cv->height + (cv->width * cv->height * 91);
     cur = data = malloc(*bytes);
 
     cur += sprintf(cur, ".color 1\n");
+
+    for(y = 0; y < cv->height; y++)
+    {
+        uint32_t *lineattr = cv->attrs + y * cv->width;
+
+        for(x = 0; x < cv->width; x++)
+        {
+    
+	    uint32_t fg = _caca_attr_to_rgb24bg(lineattr[x]);
+	    uint32_t bg = _caca_attr_to_rgb24fg(lineattr[x]);
+	    if(fg != prevfg || !started)
+                cur += sprintf(cur, ".defcolor %.06x rgb #%.06x\n", fg, fg);
+	    if(bg != prevbg || !started)
+                cur += sprintf(cur, ".defcolor %.06x rgb #%.06x\n", bg, bg);
+
+            prevfg = fg;
+            prevbg = bg;
+	    started = 1;
+	}
+    }
+
+    cur += sprintf(cur, ".nf\n");
+
+    prevfg = 0;
+    prevbg = 0;
+    started = 0;
 
     for(y = 0; y < cv->height; y++)
     {
@@ -1009,12 +1040,7 @@ static void *export_troff(caca_canvas_t const *cv, size_t *bytes)
     
 	    uint32_t fg = _caca_attr_to_rgb24bg(lineattr[x]);
 	    uint32_t bg = _caca_attr_to_rgb24fg(lineattr[x]);
-	    if(started && (fg != prevfg || bg != prevbg))
-                cur += sprintf(cur, "\n");
-	    if(fg != prevfg || !started)
-                cur += sprintf(cur, ".defcolor %.06x rgb #%.06x\n", fg, fg);
-	    if(bg != prevbg || !started)
-                cur += sprintf(cur, ".defcolor %.06x rgb #%.06x\n", bg, bg);
+	    uint32_t ch = linechar[x];
 	    if(fg != prevfg || !started)
 		cur += sprintf(cur, "\\m[%.06x]", fg);
 	    if(bg != prevbg || !started)
@@ -1024,21 +1050,21 @@ static void *export_troff(caca_canvas_t const *cv, size_t *bytes)
             if(lineattr[x] & CACA_ITALICS)
                 cur += sprintf(cur, "\\fI");
 
-	    uint32_t ch = linechar[x];
-            cur += caca_utf32_to_utf8(cur, ch);
+            if(ch == '\\')
+                cur += sprintf(cur, "\\\\");
+            else
+                cur += caca_utf32_to_utf8(cur, ch);
 
             if(lineattr[x] & (CACA_BOLD|CACA_ITALICS))
                 cur += sprintf(cur, "\\fR");
 
             prevfg = fg;
             prevbg = bg;
-	    
             started = 1;
 	}
 
         cur += sprintf(cur, "\n");
     }
-
     /* Crop to really used size */
     debug("troff export: alloc %lu bytes, realloc %lu",
           (unsigned long int)*bytes, (unsigned long int)(cur - data));
