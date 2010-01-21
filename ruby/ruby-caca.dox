@@ -23,38 +23,38 @@ The classes available for libcaca are :
 The character set conversion functions are not available yet in the binding.
 
 \code
-$irb -rcaca
-irb(main):001:0>class Object
-irb(main):002:1>def Object.my_instance_methods
-irb(main):003:2>instance_methods.sort - ancestors[1].instance_methods
-irb(main):004:2>end
-irb(main):005:1>def Object.my_methods
-irb(main):006:2>methods.sort - ancestors[1].methods
-irb(main):007:2>end
-irb(main):008:1>end
+$ irb -rcaca
+irb(main):001:0> class Object
+irb(main):002:1> def Object.my_instance_methods
+irb(main):003:2> instance_methods.sort - ancestors[1].instance_methods
+irb(main):004:2> end
+irb(main):005:1> def Object.my_methods
+irb(main):006:2> methods.sort - ancestors[1].methods
+irb(main):007:2> end
+irb(main):008:1> end
 \endcode
 
 \code
-irb(main):009:0>Caca.constants
-=>["BROWN", "BOLD", "GREEN", "LIGHTMAGENTA", "LIGHTBLUE", "BLINK",
+irb(main):009:0> Caca.constants
+=> ["BROWN", "BOLD", "GREEN", "LIGHTMAGENTA", "LIGHTBLUE", "BLINK",
 "MAGENTA", "DEFAULT", "TRANSPARENT", "BLUE", "LIGHTRED", "DARKGRAY",
 "UNDERLINE", "RED", "WHITE", "BLACK", "LIGHTCYAN", "LIGHTGRAY",
 "ITALICS", "CYAN", "YELLOW", "LIGHTGREEN", "Canvas", "Dither", "Font"]
 \endcode
 
 \code
-irb(main):010:0>Caca.my_methods
-=>["version"]
+irb(main):010:0> Caca.my_methods
+=> ["version"]
 \endcode
 
 \code
-irb(main):011:0>Caca::Canvas.my_methods
-=>["export_list", "import_list"]
+irb(main):011:0> Caca::Canvas.my_methods
+=> ["export_list", "import_list"]
 \endcode
 
 \code
-irb(main):012:0>Caca::Canvas.my_instance_methods
-=>["attr=", "blit", "clear", "create_frame",
+irb(main):012:0> Caca::Canvas.my_instance_methods
+=> ["attr=", "blit", "clear", "create_frame",
 "dither_bitmap", "draw_box", "draw_circle", "draw_cp437_box", "draw_ellipse",
 "draw_line", "draw_polyline", "draw_thin_box", "draw_thin_ellipse",
 "draw_thin_line", "draw_thin_polyline", "draw_thin_triangle",
@@ -70,18 +70,18 @@ irb(main):012:0>Caca::Canvas.my_instance_methods
 \endcode
 
 \code
-irb(main):013:0>Caca::Font.my_methods
-=>["list"]
+irb(main):013:0> Caca::Font.my_methods
+=> ["list"]
 \endcode
 
 \code
-irb(main):014:0>Caca::Font.my_instance_methods
-=>["blocks", "height", "width"]
+irb(main):014:0> Caca::Font.my_instance_methods
+=> ["blocks", "height", "width"]
 \endcode
 
 \code
-irb(main):015:0>Caca::Dither.my_instance_methods
-=>["algorithm=", "algorithm_list", "antialias=", "antialias_list",
+irb(main):015:0> Caca::Dither.my_instance_methods
+=> ["algorithm=", "algorithm_list", "antialias=", "antialias_list",
 "brightness=", "charset=", "charset_list", "color=", "color_list",
 "contrast=", "gamma=", "palette=", "set_algorithm", "set_antialias",
 "set_brightness", "set_charset", "set_color", "set_contrast",
@@ -89,40 +89,40 @@ irb(main):015:0>Caca::Dither.my_instance_methods
 \endcode
 
 \code
-irb(main):010:0>Caca::Display.my_instance_methods
-=>["canvas", "get_event", "height", "mouse=", "mouse_x", "mouse_y", "refresh",
+irb(main):010:0> Caca::Display.my_instance_methods
+=> ["canvas", "get_event", "height", "mouse=", "mouse_x", "mouse_y", "refresh",
 "set_mouse", "set_time", "set_title", "time", "time=", "title=", "width"]
 \endcode
 
 \code
-irb(main):011:0>Caca::Event.constants
-=>["Key", "Quit", "TYPE", "Mouse", "Resize"]
+irb(main):011:0> Caca::Event.constants
+=> ["Key", "Quit", "TYPE", "Mouse", "Resize"]
 \endcode
 
 \code
-irb(main):012:0>Caca::Event.my_instance_methods
-=>["quit?"]
+irb(main):012:0> Caca::Event.my_instance_methods
+=> ["quit?"]
 \endcode
 
 \code
-irb(main):013:0>Caca::Event::Key.my_instance_methods
-=>["ch", "utf32", "utf8"]
+irb(main):013:0> Caca::Event::Key.my_instance_methods
+=> ["ch", "utf32", "utf8"]
 \endcode
 
 \code
-irb(main):014:0>Caca::Event::Mouse.my_instance_methods
-=>["button", "x", "y"]
+irb(main):014:0> Caca::Event::Mouse.my_instance_methods
+=> ["button", "x", "y"]
 \endcode
 
 \code
-irb(main):015:0>Caca::Event::Resize.my_instance_methods
-=>["w", "h"]
+irb(main):015:0> Caca::Event::Resize.my_instance_methods
+=> ["w", "h"]
 \endcode
 
 \section Samples
 
 \code
-$ruby -rcaca -e 'c=Caca::Canvas.new(6, 3).fill_box(0,0,2,2,"#"[0]);
+$ ruby -rcaca -e 'c=Caca::Canvas.new(6, 3).fill_box(0,0,2,2,"#"[0]);
 c2=Caca::Canvas.new(1,1).put_str(0,0,"x"); c.blit(1,1,c2); puts
 c.export_to_memory("irc")'
 ###
@@ -131,7 +131,7 @@ c.export_to_memory("irc")'
 \endcode
 
 \code
-$ruby -e 'puts Caca::Canvas.new(6,3).draw_thin_polyline([[0,0], [0,2],
+$ ruby -e 'puts Caca::Canvas.new(6,3).draw_thin_polyline([[0,0], [0,2],
 [5,2],[0,0]]).export_to_memory("irc")'
 -.
 | `.
@@ -139,7 +139,7 @@ $ruby -e 'puts Caca::Canvas.new(6,3).draw_thin_polyline([[0,0], [0,2],
 \endcode
 
 \code
-$ruby -rcaca -e 'p Caca::Canvas.export_list'
+$ ruby -rcaca -e 'p Caca::Canvas.export_list'
 [["caca", "native libcaca format"], ["ansi", "ANSI"], ["utf8", "UTF-8
 withANSI escape codes"], ["utf8cr", "UTF-8 with ANSI escape codes and
 MS-DOS\\r"], ["html", "HTML"], ["html3", "backwards-compatible HTML"],
@@ -148,31 +148,31 @@ MS-DOS\\r"], ["html", "HTML"], ["html3", "backwards-compatible HTML"],
 \endcode
 
 \code
-$ruby -rcaca -e 'p Caca::Font.list'
+$ ruby -rcaca -e 'p Caca::Font.list'
 ["Monospace9", "Monospace Bold 12"]
 \endcode
 
 \code
-require'caca'
-c= Caca::Canvas.new(20,10)
+require 'caca'
+c = Caca::Canvas.new(20,10)
 c.put_str(2,3, "plop!")
 c.draw_thin_polyline([[0,0],[0,2], [5,2], [0,0]])
-d= Caca::Display.new(c)
+d = Caca::Display.new(c)
 d.title= "Test !"
 d.refresh
 
 #Redefine Event::Key#quit? so that q, Q, and Esc become exit keys
-moduleCaca
-class Event::Key
-def quit?
-"qQ^[".split('').member?(@ch.chr)
-end
-end
+module Caca
+  class Event::Key
+    def quit?
+      "qQ^[".split('').member?(@ch.chr)
+    end
+  end
 end
 
 while((e= d.get_event(Caca::Event, -1)) && ! e.quit?)
-p e
-d.refresh
+  p e
+  d.refresh
 end
 \endcode
 
