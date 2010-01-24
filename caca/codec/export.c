@@ -1051,6 +1051,14 @@ static void *export_troff(caca_canvas_t const *cv, size_t *bytes)
 
             if(ch == '\\')
                 cur += sprintf(cur, "\\\\");
+            else if(ch == ' ')
+            {
+                /* Use unbreakable space at line ends, else spaces are dropped */
+                if(x == 0 || x == cv->width-1)
+                    cur += sprintf(cur, "%c%c", 0xc2, 0xa0);
+                else
+                    cur += caca_utf32_to_utf8(cur, ch);
+            }
             else
                 cur += caca_utf32_to_utf8(cur, ch);
 
@@ -1061,11 +1069,6 @@ static void *export_troff(caca_canvas_t const *cv, size_t *bytes)
             prevbg = bg;
             started = 1;
         }
-
-        /* Add unbreakable space at the end of lines, else spaces are dropped */
-        if(x > 0 && linechar[x-1] == ' ')
-            cur += sprintf(cur-1, "%c%c", 0xc2, 0xa0)-1;
-
         cur += sprintf(cur, "\n");
     }
     /* Crop to really used size */
