@@ -48,9 +48,9 @@ fi
 
 AC_MSG_CHECKING(for suffix of libraries)
 case "$shrext_cmds" in
-  .dll) LT_SUFFIX="-$LT_MAJOR$shrext_cmds" ;;
+  .dll) eval LT_SUFFIX="-$LT_MAJOR$shrext_cmds" ;;
   "") LT_SUFFIX=".so.$LT_MAJOR" ;;
-  *) LT_SUFFIX="$shrext_cmds.$LT_MAJOR" ;;
+  *) eval LT_SUFFIX="$shrext_cmds.$LT_MAJOR" ;;
 esac
 AC_MSG_RESULT($LT_SUFFIX)
 AC_SUBST(LT_SUFFIX)
