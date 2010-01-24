@@ -1018,10 +1018,10 @@ static void *export_troff(caca_canvas_t const *cv, size_t *bytes)
      *  2x\mM (2x10)
      *  + \fB + \fI + \fR (9)
      *  + 4 bytes = 33
-     * Each line has a \n (1)
+     * Each line has a \n (1) and maybe 0xc2 0xa0 (2)
      * Header has .nf\n (3)
      */
-    *bytes = 3 + cv->height + (cv->width * cv->height * 33);
+    *bytes = 3 + cv->height * 3 + (cv->width * cv->height * 33);
     cur = data = malloc(*bytes);
 
     cur += sprintf(cur, ".nf\n");
@@ -1040,6 +1040,7 @@ static void *export_troff(caca_canvas_t const *cv, size_t *bytes)
 	    uint32_t fg = _rgb_to_troff_index(_caca_attr_to_rgb24fg(lineattr[x]));
 	    uint32_t bg = _rgb_to_troff_index(_caca_attr_to_rgb24bg(lineattr[x]));
 	    uint32_t ch = linechar[x];
+
 	    if(fg != prevfg || !started)
 		cur += sprintf(cur, "\\m[%s]", colors[fg]);
 	    if(bg != prevbg || !started)
@@ -1061,6 +1062,10 @@ static void *export_troff(caca_canvas_t const *cv, size_t *bytes)
             prevbg = bg;
             started = 1;
 	}
+
+        /* Add unbreakable space at the end of lines, else spaces are dropped */
+        if(x > 0 && linechar[x-1] == ' ')
+            cur += sprintf(cur-1, "%c%c", 0xc2, 0xa0)-1;
 
         cur += sprintf(cur, "\n");
     }
