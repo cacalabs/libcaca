@@ -1,5 +1,5 @@
 /*
- *  libcaca       
+ *  libcaca
  *  libcaca       Colour ASCII-Art library
  *  Copyright (c) 2006 Sam Hocevar <sam@hocevar.net>
  *                2009 Jean-Yves Lamoureux <jylam@lnxscene.org>
@@ -34,17 +34,17 @@ int kmain(void)
 {
     struct processor_info processor_info;
     struct floppy_info    floppy_info;
-    
+
     printf("_start at 0x%x\n", _start);
     printf("kmain() at 0x%x\n", kmain);
     printf("Types : char[%d] short[%d] int[%d] unsigned long long[%d]\n", sizeof(char), sizeof(short), sizeof(int), sizeof(unsigned long long));
-    
+
     enable_interrupt(1);  // Enable Keyboard Interrupt (IRQ1)
     enable_interrupt(0);  // Enable IRQ0 (timer)
     enable_interrupt(13);
     timer_phase(100);     // Fire IRQ0 each 1/100s
-    
-    
+
+
     processor_get_info(&processor_info);
     processor_print_info(&processor_info);
 
@@ -53,7 +53,7 @@ int kmain(void)
 
     /* Caca is delicious */
     printf("Filling memory with 0xCACA, starting from 0x%x\n", end);
-    
+
     char *ptr = end;
     while (1)
     {

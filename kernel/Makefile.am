@@ -20,3 +20,5 @@ clean: clean-local
 clean-local:
 	rm -f bootsect.bin kern.bin kernel.map
 
+echo-sources: ; echo $(SOURCES)
+

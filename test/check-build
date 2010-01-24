@@ -27,7 +27,7 @@ fi
 # Check that we have no tabs or trailing spaces in the source code
 #
 failure=0
-for dir in caca src cxx examples ruby tools; do
+for dir in caca kernel src cxx examples ruby tools; do
   pushd ../$dir >/dev/null
   for x in $(make -s echo-sources); do
     case "$x" in
@@ -56,7 +56,8 @@ fi
 #
 warnings="$(grep -c Warning: ../doc/doxygen.log)"
 if test "$warnings" != "0"; then
-  echo "error: $warnings warnings in Doxygen generation"
+  echo "error: $warnings warnings in Doxygen generation:"
+  grep Warning: ../doc/doxygen.log | sed 's/\(.\{75\}\)...*/\1 .../'
   ret=1
 else
   echo "0 errors in documentation"

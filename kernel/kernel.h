@@ -1,5 +1,5 @@
 /*
- *  libcaca       
+ *  libcaca
  *  libcaca       Colour ASCII-Art library
  *  Copyright (c) 2006 Sam Hocevar <sam@hocevar.net>
  *                2009 Jean-Yves Lamoureux <jylam@lnxscene.org>
@@ -26,13 +26,11 @@ void dump_gdt(void);
 void disable_interrupt(char i);
 void enable_interrupt(char i);
 
+#define cli __asm__("cli" : : )
+#define sti __asm__("sti" : : )
 
-#define cli             __asm__("cli"::)
-#define sti             __asm__("sti"::)
-
-#define rdtsc(low,high) \
-__asm__ __volatile__("rdtsc" : "=a" (low), "=d" (high))
-
+#define rdtsc(low, high) \
+    __asm__ __volatile__("rdtsc" : "=a" (low), "=d" (high))
 
 /* The application's entry point */
 int main(int argc, char *argv[]);

@@ -25,6 +25,7 @@
 /* #undef HAVE_IMLIB2_H */
 /* #undef HAVE_INTTYPES_H */
 /* #undef HAVE_IOCTL */
+/* #undef HAVE_JNI_H */
 /* #undef HAVE_LOCALE_H */
 #define HAVE_MEMORY_H 1
 /* #undef HAVE_NCURSESW_NCURSES_H */

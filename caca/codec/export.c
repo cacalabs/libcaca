@@ -992,13 +992,12 @@ static void *export_tga(caca_canvas_t const *cv, size_t *bytes)
  */
 static uint8_t _rgb_to_troff_index(uint32_t color)
 {
-	int i;
-	uint8_t r = 0;
-	for(i = 0; i < 3; i++)
-	{
-		r += ((color >> (8*i+7))&1) << i;
-	}
-	return r;
+    int i;
+    uint8_t r = 0;
+    for(i = 0; i < 3; i++)
+        r += ((color >> (8 * i + 7)) & 1) << i;
+
+    return r;
 }
 
 /* Generate troff representation of current canvas. */
@@ -1014,7 +1013,7 @@ static void *export_troff(caca_canvas_t const *cv, size_t *bytes)
     uint32_t prevbg = 0;
     int started = 0;
 
-    /* Each char is at most 
+    /* Each char is at most
      *  2x\mM (2x10)
      *  + \fB + \fI + \fR (9)
      *  + 4 bytes = 33
@@ -1037,14 +1036,14 @@ static void *export_troff(caca_canvas_t const *cv, size_t *bytes)
 
         for(x = 0; x < cv->width; x++)
         {
-	    uint32_t fg = _rgb_to_troff_index(_caca_attr_to_rgb24fg(lineattr[x]));
-	    uint32_t bg = _rgb_to_troff_index(_caca_attr_to_rgb24bg(lineattr[x]));
-	    uint32_t ch = linechar[x];
+            uint32_t fg = _rgb_to_troff_index(_caca_attr_to_rgb24fg(lineattr[x]));
+            uint32_t bg = _rgb_to_troff_index(_caca_attr_to_rgb24bg(lineattr[x]));
+            uint32_t ch = linechar[x];
 
-	    if(fg != prevfg || !started)
-		cur += sprintf(cur, "\\m[%s]", colors[fg]);
-	    if(bg != prevbg || !started)
-		cur += sprintf(cur, "\\M[%s]", colors[bg]);
+            if(fg != prevfg || !started)
+                cur += sprintf(cur, "\\m[%s]", colors[fg]);
+            if(bg != prevbg || !started)
+                cur += sprintf(cur, "\\M[%s]", colors[bg]);
             if(lineattr[x] & CACA_BOLD)
                 cur += sprintf(cur, "\\fB");
             if(lineattr[x] & CACA_ITALICS)
@@ -1061,7 +1060,7 @@ static void *export_troff(caca_canvas_t const *cv, size_t *bytes)
             prevfg = fg;
             prevbg = bg;
             started = 1;
-	}
+        }
 
         /* Add unbreakable space at the end of lines, else spaces are dropped */
         if(x > 0 && linechar[x-1] == ' ')
