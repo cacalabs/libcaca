@@ -11,7 +11,6 @@ endif
 libkernel_la_SOURCES = \
 	kernel.c \
 	kernel.h \
-	multiboot.S \
 	multiboot.h \
 	$(NULL)
 libkernel_la_LDFLAGS = -no-undefined
