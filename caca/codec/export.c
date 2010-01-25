@@ -981,33 +981,11 @@ static void *export_tga(caca_canvas_t const *cv, size_t *bytes)
     return data;
 }
 
-/* Get troff color index from RGB
- *
- * We want for each component to know if it is >= 80
- * Then we use the 3 bits to index colors list:
- * 000 -> black
- * 001 -> blue
- * ...
- * 111 -> white
- */
-static uint8_t _rgb_to_troff_index(uint32_t color)
-{
-    int i;
-    uint8_t r = 0;
-    for(i = 0; i < 3; i++)
-        r += ((color >> (8 * i + 7)) & 1) << i;
-
-    return r;
-}
-
 /* Generate troff representation of current canvas. */
 static void *export_troff(caca_canvas_t const *cv, size_t *bytes)
 {
     char *data, *cur;
     int x, y;
-
-    const char * colors[8] = { "black", "blue", "green", "cyan",
-                               "red", "magenta", "yellow", "white" };
 
     uint32_t prevfg = 0;
     uint32_t prevbg = 0;
@@ -1036,14 +1014,23 @@ static void *export_troff(caca_canvas_t const *cv, size_t *bytes)
 
         for(x = 0; x < cv->width; x++)
         {
-            uint32_t fg = _rgb_to_troff_index(_caca_attr_to_rgb24fg(lineattr[x]));
-            uint32_t bg = _rgb_to_troff_index(_caca_attr_to_rgb24bg(lineattr[x]));
+            static char const * ansi2troff[16] =
+            {
+                /* Dark */
+                "black", "blue", "green", "cyan",
+                "red", "magenta", "yellow", "white",
+                /* Bright */
+                "black", "blue", "green", "cyan",
+                "red", "magenta", "yellow", "white",
+            };
+            uint8_t fg = caca_attr_to_ansi_fg(lineattr[x]);
+            uint8_t bg = caca_attr_to_ansi_bg(lineattr[x]);
             uint32_t ch = linechar[x];
 
             if(fg != prevfg || !started)
-                cur += sprintf(cur, "\\m[%s]", colors[fg]);
+                cur += sprintf(cur, "\\m[%s]", ansi2troff[fg]);
             if(bg != prevbg || !started)
-                cur += sprintf(cur, "\\M[%s]", colors[bg]);
+                cur += sprintf(cur, "\\M[%s]", ansi2troff[bg]);
             if(lineattr[x] & CACA_BOLD)
                 cur += sprintf(cur, "\\fB");
             if(lineattr[x] & CACA_ITALICS)
