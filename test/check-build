@@ -54,13 +54,13 @@ fi
 #
 # Check for Doxygen errors
 #
-warnings="$(grep -c Warning: ../doc/doxygen.log)"
+warnings="$(grep -c Warning: ../doc/doxygen.log 2>/dev/null || echo 0)"
 if test "$warnings" != "0"; then
   echo "error: $warnings warnings in Doxygen generation:"
   grep Warning: ../doc/doxygen.log | sed 's/\(.\{75\}\)...*/\1 .../'
   ret=1
 else
-  echo "0 errors in documentation"
+  echo "0 visible errors in documentation"
 fi
 
 if test "$ret" != "0"; then
