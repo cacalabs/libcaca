@@ -231,20 +231,17 @@ int caca_put_figchar(caca_canvas_t *cv, uint32_t ch)
         for(x = 0; x < w; x++)
     {
         uint32_t ch1, ch2;
-        //uint32_t tmpat = caca_get_attr(ff->fontcv, x, y + c * ff->height);
+        uint32_t tmpat = caca_get_attr(ff->fontcv, x, y + c * ff->height);
         ch2 = caca_get_char(ff->charcv, x, y);
         if(ch2 == ' ')
             continue;
         ch1 = caca_get_char(cv, ff->x + x - overlap, ff->y + y);
-        /* FIXME: this could be changed to caca_put_attr() when the
-         * function is fixed in libcaca */
-        //caca_set_attr(cv, tmpat);
         if(ch1 == ' ' || ff->hmode != H_SMUSH)
             caca_put_char(cv, ff->x + x - overlap, ff->y + y, ch2);
         else
             caca_put_char(cv, ff->x + x - overlap, ff->y + y,
                            hsmush(ch1, ch2, ff->hsmushrule));
-        //caca_put_attr(cv, ff->x + x, ff->y + y, tmpat);
+        caca_put_attr(cv, ff->x + x, ff->y + y, tmpat);
     }
 
     /* Advance cursor */
