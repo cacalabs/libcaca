@@ -877,7 +877,6 @@ void rotozoom(enum action action, caca_canvas_t *canvas)
     static int y_tab[TEXTURE_SIZE];
 
     static caca_dither_t *dither;
-    static uint32_t *texture;
     uint32_t *p;
     static int alphaF, tF;
     int scaleF;
@@ -897,8 +896,6 @@ void rotozoom(enum action action, caca_canvas_t *canvas)
         }
         for(x = 0; x < TEXTURE_SIZE; x++)
             y_tab[x] = x * TEXTURE_SIZE; /* start of lines offsets */
-        /* FIXME: this may be an invalid cast */
-        texture = (uint32_t *)textureByte;
         break;
 
     case INIT:
@@ -931,7 +928,7 @@ void rotozoom(enum action action, caca_canvas_t *canvas)
                 vu &= 0xFF;       /* ARM doesn't like    */
                 vv &= 0xFF;       /* chars as local vars */
 
-                *p++ = texture[vu + y_tab[vv]];
+                *p++ = texture256x256[vu + y_tab[vv]];
             }
 
             uF = uF_ -= yyF;
