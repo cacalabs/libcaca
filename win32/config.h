@@ -80,6 +80,7 @@
 /* #undef USE_CONIO */
 /* #undef USE_GL */
 /* #undef USE_IMLIB2 */
+/* #undef USE_KERNEL */
 /* #undef USE_NCURSES */
 /* #undef USE_PLUGINS */
 /* #undef USE_SLANG */

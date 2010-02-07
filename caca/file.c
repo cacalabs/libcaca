@@ -50,6 +50,19 @@ struct caca_file
 };
 #endif
 
+/** \brief Open a file for reading or writing
+ *
+ *  Create a caca file handle for a file. If the file is zipped, it is
+ *  decompressed on the fly.
+ *
+ *  If an error occurs, NULL is returned and \b errno is set accordingly:
+ *  - \c ENOSTS Function not implemented.
+ *  - \c EINVAL File not found or permission denied.
+ *
+ *  \param path The file path
+ *  \param mode The file open mode
+ *  \return A file handle to \e path.
+ */
 caca_file_t *caca_file_open(char const *path, const char *mode)
 {
 #if defined __KERNEL__
@@ -68,6 +81,7 @@ caca_file_t *caca_file_open(char const *path, const char *mode)
     if(!fp->gz)
     {
         free(fp);
+        seterrno(EINVAL);
         return NULL;
     }
 
@@ -108,6 +122,7 @@ caca_file_t *caca_file_open(char const *path, const char *mode)
         {
             free(fp);
             gzclose(fp->gz);
+            seterrno(EINVAL);
             return NULL;
         }
     }
@@ -117,6 +132,7 @@ caca_file_t *caca_file_open(char const *path, const char *mode)
     if(!fp->f)
     {
         free(fp);
+        seterrno(EINVAL);
         return NULL;
     }
 #   endif
@@ -125,6 +141,15 @@ caca_file_t *caca_file_open(char const *path, const char *mode)
 #endif
 }
 
+/** \brief Close a file handle
+ *
+ *  Close and destroy the resources associated with a caca file handle.
+ *
+ *  This function is a wrapper for fclose() or, if available, gzclose().
+ *
+ *  \param fp The file handle
+ *  \return The return value of fclose() or gzclose().
+ */
 int caca_file_close(caca_file_t *fp)
 {
 #if defined __KERNEL__
@@ -143,6 +168,13 @@ int caca_file_close(caca_file_t *fp)
 #endif
 }
 
+/** \brief Return the position in a file handle
+ *
+ *  Return the file handle position, in bytes.
+ *
+ *  \param fp The file handle
+ *  \return The current offset in the file handle.
+ */
 uint64_t caca_file_tell(caca_file_t *fp)
 {
 #if defined __KERNEL__
@@ -157,6 +189,15 @@ uint64_t caca_file_tell(caca_file_t *fp)
 #endif
 }
 
+/** \brief Read data from a file handle
+ *
+ *  Read data from a file handle and copy them into the given buffer.
+ *
+ *  \param fp The file handle
+ *  \param ptr The destination buffer
+ *  \param size The number of bytes to read
+ *  \return The number of bytes read
+ */
 size_t caca_file_read(caca_file_t *fp, void *ptr, size_t size)
 {
 #if defined __KERNEL__
@@ -171,6 +212,15 @@ size_t caca_file_read(caca_file_t *fp, void *ptr, size_t size)
 #endif
 }
 
+/** \brief Write data to a file handle
+ *
+ *  Write the contents of the given buffer to the file handle.
+ *
+ *  \param fp The file handle
+ *  \param ptr The source buffer
+ *  \param size The number of bytes to write
+ *  \return The number of bytes written
+ */
 size_t caca_file_write(caca_file_t *fp, const void *ptr, size_t size)
 {
 #if defined __KERNEL__
@@ -194,6 +244,16 @@ size_t caca_file_write(caca_file_t *fp, const void *ptr, size_t size)
 #endif
 }
 
+/** \brief Read a line from a file handle
+ *
+ *  Read one line of data from a file handle, up to one less than the given
+ *  number of bytes. A trailing zero is appended to the data.
+ *
+ *  \param fp The file handle
+ *  \param s The destination buffer
+ *  \param size The maximum number of bytes to read
+ *  \return The number of bytes read, including the trailing zero
+ */
 char *caca_file_gets(caca_file_t *fp, char *s, int size)
 {
 #if defined __KERNEL__
@@ -228,6 +288,15 @@ char *caca_file_gets(caca_file_t *fp, char *s, int size)
 #endif
 }
 
+/** \brief Tell whether a file handle reached end of file
+ *
+ *  Return the end-of-file status of the file handle.
+ *
+ *  This function is a wrapper for feof() or, if available, gzeof().
+ *
+ *  \param fp The file handle
+ *  \return 1 if EOF was reached, 0 otherwise
+ */
 int caca_file_eof(caca_file_t *fp)
 {
 #if defined __KERNEL__

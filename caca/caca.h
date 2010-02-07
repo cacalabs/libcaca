@@ -66,6 +66,7 @@ typedef struct caca_event caca_event_t;
  *  Colours and styles that can be used with caca_set_attr().
  *
  *  @{ */
+/** \e libcaca colour keyword */
 enum caca_color
 {
     CACA_BLACK =        0x00, /**< The colour index for black. */
@@ -88,6 +89,7 @@ enum caca_color
     CACA_TRANSPARENT =  0x20, /**< The transparent colour. */
 };
 
+/** \e libcaca style keyword */
 enum caca_style
 {
     CACA_BOLD =      0x01, /**< The style mask for bold. */
@@ -127,14 +129,16 @@ enum caca_event_type
  */
 struct caca_event
 {
-    enum caca_event_type type;
+    enum caca_event_type type; /**< The event type. */
     union
     {
         struct { int x, y, button; } mouse;
         struct { int w, h; } resize;
         struct { int ch; uint32_t utf32; char utf8[8]; } key;
-    } data;
+    } data; /**< The event information data */
+#if !defined(_DOXYGEN_SKIP_ME)
     uint8_t padding[16];
+#endif
 };
 
 /** \brief Special key values.
@@ -568,18 +572,18 @@ enum CACA_CONIO_MODE
  */
 struct caca_conio_text_info
 {
-    unsigned char winleft;        /* left window coordinate */
-    unsigned char wintop;         /* top window coordinate */
-    unsigned char winright;       /* right window coordinate */
-    unsigned char winbottom;      /* bottom window coordinate */
-    unsigned char attribute;      /* text attribute */
-    unsigned char normattr;       /* normal attribute */
-    unsigned char currmode;       /* current video mode:
-                                     BW40, BW80, C40, C80, or C4350 */
-    unsigned char screenheight;   /* text screen's height */
-    unsigned char screenwidth;    /* text screen's width */
-    unsigned char curx;           /* x-coordinate in current window */
-    unsigned char cury;           /* y-coordinate in current window */
+    unsigned char winleft;        /**< left window coordinate */
+    unsigned char wintop;         /**< top window coordinate */
+    unsigned char winright;       /**< right window coordinate */
+    unsigned char winbottom;      /**< bottom window coordinate */
+    unsigned char attribute;      /**< text attribute */
+    unsigned char normattr;       /**< normal attribute */
+    unsigned char currmode;       /**< current video mode:
+                                       BW40, BW80, C40, C80, or C4350 */
+    unsigned char screenheight;   /**< text screen's height */
+    unsigned char screenwidth;    /**< text screen's width */
+    unsigned char curx;           /**< x-coordinate in current window */
+    unsigned char cury;           /**< y-coordinate in current window */
 };
 
 /** \brief DOS direct video control */

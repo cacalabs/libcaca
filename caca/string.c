@@ -325,7 +325,7 @@ int caca_printf(caca_canvas_t *cv, int x, int y, char const *format, ...)
  *  \param x X coordinate.
  *  \param y Y coordinate.
  *  \param format The format string to print.
- *  \param ap A va_list containting the arguments to the format string.
+ *  \param args A va_list containting the arguments to the format string.
  *  \return The number of cells printed.
  */
 int caca_vprintf(caca_canvas_t *cv, int x, int y, char const *format,
