@@ -31,6 +31,7 @@ caca_la_LIBADD = ../caca/libcaca.la
 EXTRA_DIST = ruby.dox \
              ruby-caca.dox \
              lib/caca.rb \
+             test \
              t/tc_canvas.rb \
              t/tc_dither.rb \
              t/tc_font.rb \
