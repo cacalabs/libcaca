@@ -644,9 +644,13 @@ typedef struct cucul_buffer cucul_buffer_t;
 
 #   if defined __GNUC__ && __GNUC__ >= 3
 #       define CACA_DEPRECATED __attribute__ ((__deprecated__))
-#       define CACA_ALIAS(x) __attribute__ ((weak, alias(#x)))
 #   else
 #       define CACA_DEPRECATED
+#   endif
+
+#   if defined __GNUC__ && __GNUC__ > 3
+#       define CACA_ALIAS(x) __attribute__ ((weak, alias(#x)))
+#   else
 #       define CACA_ALIAS(x)
 #   endif
 
