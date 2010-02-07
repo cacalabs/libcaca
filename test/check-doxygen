@@ -1,0 +1,14 @@
+#!/bin/sh
+
+#
+# Check for Doxygen warnings
+#
+if warnings="$(grep -c Warning: ../doc/doxygen.log 2>/dev/null)"; then
+  echo "error: $warnings warnings in Doxygen generation:"
+  grep Warning: ../doc/doxygen.log | sed 's/\(.\{75\}\)...*/\1 .../'
+  exit 1
+fi
+
+echo "0 visible errors in documentation"
+exit 0
+

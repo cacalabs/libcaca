@@ -5,12 +5,15 @@ AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/caca -I../caca
 if USE_CPPUNIT
 cppunit_tests = caca-test
 endif
+if BUILD_DOCUMENTATION
+doxygen_tests = check-doxygen
+endif
 
-EXTRA_DIST = check-build
+EXTRA_DIST = check-doxygen check-source check-win32
 
 noinst_PROGRAMS = simple bench $(cppunit_tests)
 
-TESTS = simple check-build $(cppunit_tests)
+TESTS = simple check-source check-win32 $(doxygen_tests) $(cppunit_tests)
 
 simple_SOURCES = simple.c
 simple_LDADD = ../caca/libcaca.la

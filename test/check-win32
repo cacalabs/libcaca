@@ -1,0 +1,27 @@
+#!/bin/sh
+
+ret=0
+
+#
+# Check that the Win32 config.h is in sync with config.h.in
+#
+
+config_h_in=$(dirname "$0")/../config.h.in
+win32_config_h=$(dirname "$0")/../win32/config.h
+
+failure=0
+for key in $(sed -ne 's/.*#undef *\([A-Za-z0-9_]*\).*/\1/p' "$config_h_in");
+do
+  if ! grep '[ef] \<'"$key"'\>' "$win32_config_h" >/dev/null 2>&1; then
+    echo "error: $key missing from win32/config.h"
+    failure=1
+  fi
+done
+
+if test "$failure" != "0"; then
+  exit 1
+fi
+
+echo "0 errors in Win32 config.h"
+exit 0
+
