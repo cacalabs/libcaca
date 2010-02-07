@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2006 Sam Hocevar <sam@hocevar.net>
+ *  Copyright (c) 2002-2010 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -204,5 +204,7 @@ enum caca_feature
 #ifdef __cplusplus
 }
 #endif
+
+#undef __extern
 
 #endif /* __CACA0_H__ */
