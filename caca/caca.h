@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2009 Sam Hocevar <sam@hocevar.net>
+ *  Copyright (c) 2002-2010 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  $Id$
@@ -31,10 +31,10 @@
 #endif
 
 #undef __extern
-#if defined(_DOXYGEN_SKIP_ME)
-#elif defined(_WIN32) && defined(__LIBCACA__)
+#if defined _DOXYGEN_SKIP_ME
+#elif defined _WIN32 && defined __LIBCACA__ && defined DLL_EXPORT
 #   define __extern extern __declspec(dllexport)
-#elif defined(_WIN32)
+#elif defined _WIN32 && !defined __LIBCACA__
 #   define __extern extern __declspec(dllimport)
 #else
 #   define __extern extern

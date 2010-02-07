@@ -23,10 +23,10 @@
 #include <caca.h>
 
 #undef __extern
-#if defined(_DOXYGEN_SKIP_ME)
-#elif defined(_WIN32) && defined(__LIBCACA__)
+#if defined _DOXYGEN_SKIP_ME
+#elif defined _WIN32 && defined __LIBCACA__ && defined DLL_EXPORT
 #   define __extern extern __declspec(dllexport)
-#elif defined(_WIN32)
+#elif defined _WIN32 && !defined __LIBCACA__
 #   define __extern extern __declspec(dllimport)
 #else
 #   define __extern extern
