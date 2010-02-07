@@ -55,6 +55,10 @@ esac
 AC_MSG_RESULT($LT_SUFFIX)
 AC_SUBST(LT_SUFFIX)
 
+dnl global configuration features
+AC_ARG_ENABLE(kernel,
+  [  --enable-kernel         kernel mode (default no)])
+
 dnl output driver features
 AC_ARG_ENABLE(slang,
   [  --enable-slang          slang graphics support (autodetected)])
@@ -71,9 +75,9 @@ AC_ARG_ENABLE(gl,
 AC_ARG_ENABLE(cocoa,
   [  --enable-cocoa          Cocoa support (autodetected)])
 AC_ARG_ENABLE(network,
-  [  --enable-network        Network support (autodetected)])
+  [  --enable-network        network support (autodetected)])
 AC_ARG_ENABLE(vga,
-  [  --enable-vga            VGA support (default disabled)])
+  [  --enable-vga            VGA support for kernel mode (autodetected)])
 
 dnl language bindings
 AC_ARG_ENABLE(csharp,
@@ -102,6 +106,17 @@ AC_ARG_ENABLE(cppunit,
   [  --enable-cppunit        use cppunit for unit tests (autodetected)])
 AC_ARG_ENABLE(zzuf,
   [  --enable-zzuf           use zzuf for fuzzing tests (autodetected)])
+
+ac_cv_my_have_kernel="no"
+if test "${enable_kernel}" = "yes"; then
+  ac_cv_my_have_kernel="yes"
+  CPPFLAGS="${CPPFLAGS} -I. -D__KERNEL__ -nostdinc -include kernel/klibc.h -fno-stack-protector"
+  CCASFLAGS="${CCASFLAGS} -I. -fno-stack-protector"
+  CFLAGS="${CFLAGS} -fno-builtin -O0 -I. -I.. -I../caca/ -Wall -D__KERNEL__ -fno-stack-protector -m32"
+  LDFLAGS="${LDFLAGS} -nostdlib -Wl,-N -Wl,-Ttext -Wl,100000 -fno-stack-protector"
+  AC_DEFINE(USE_KERNEL, 1, Define to 1 to activate kernel mode)
+fi
+AM_CONDITIONAL(USE_KERNEL, test "${ac_cv_my_have_kernel}" = "yes")
 
 AC_CHECK_HEADERS(stdio.h stdarg.h signal.h sys/ioctl.h sys/time.h endian.h unistd.h arpa/inet.h netinet/in.h winsock2.h errno.h locale.h getopt.h dlfcn.h termios.h)
 AC_CHECK_FUNCS(signal ioctl snprintf vsnprintf getenv putenv strcasecmp htons)
@@ -308,16 +323,14 @@ if test "${enable_ncurses}" != "no"; then
   fi
 fi
 
-if test "${enable_vga}" = "yes"; then
-  ac_cv_my_have_vga="yes"
-  CPPFLAGS="${CPPFLAGS} -I. -D__KERNEL__ -nostdinc -include kernel/klibc.h -fno-stack-protector"
-  CFLAGS="${CFLAGS} -fno-builtin -O2 -Wall -fno-stack-protector"
-  CCASFLAGS="${CCASFLAGS} -I. -fno-stack-protector"
-  LDFLAGS="${LDFLAGS} -nostdlib -Wl,-N -Wl,-Ttext -Wl,100000 -fno-stack-protector"
-  AC_DEFINE(USE_VGA, 1, Define to 1 to activate the VGA backend driver)
-  CACA_DRIVERS="${CACA_DRIVERS} vga"
+if test "${enable_vga}" != "no"; then
+  if test "${ac_cv_my_have_kernel}" = "yes"; then
+    AC_DEFINE(USE_VGA, 1, Define to 1 to activate the VGA backend driver)
+    CACA_DRIVERS="${CACA_DRIVERS} vga"
+  elif test "${enable_vga}" = "yes"; then
+    AC_MSG_ERROR([--enable-vga requires --enable-kernel])
+  fi
 fi
-AM_CONDITIONAL(USE_KERNEL, test "${ac_cv_my_have_vga}" = "yes")
 
 if test "${enable_debug}" = "yes"; then
   AC_DEFINE(DEBUG, 1, Define to 1 to activate debug)
@@ -358,7 +371,7 @@ AC_SUBST(GL_LIBS)
 
 # How to get the C99 types. See caca/caca_types.h.in for details about
 # the CACA_TYPES variable
-if test "${ac_cv_my_have_vga}" = "yes"; then
+if test "${ac_cv_my_have_kernel}" = "yes"; then
   CACA_TYPES=0
 else
   AC_CHECK_HEADERS(stdint.h,
@@ -412,7 +425,7 @@ AM_CONDITIONAL(USE_CSHARP, test "${ac_cv_my_have_csharp}" = "yes")
 
 # Build the Java bindings?
 ac_cv_my_have_java="no"
-if test "${enable_java}" != "no"; then
+if test "${enable_java}" != "no" -a "${ac_cv_my_have_kernel}" != "yes"; then
   AC_PATH_PROG(JAVAC, javac, no)
   AC_PATH_PROG(JAVAH, javah, no)
   AC_PATH_PROG(JAR, jar, no)

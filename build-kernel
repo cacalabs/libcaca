@@ -6,59 +6,54 @@
 set -x
 set -e
 
-CFLAGS="-fno-builtin -O0 -I. -I.. -I../caca/ -Wall -D__KERNEL__ -fno-stack-protector -m32"
-LDFLAGS="-nostdlib -Wl,-N -Wl,-Ttext -Wl,100000"
+MYCFLAGS="-fno-builtin -O0 -I. -I.. -I../caca/ -Wall -D__KERNEL__ -fno-stack-protector -m32"
 
-./configure --disable-slang --disable-ncurses --disable-win32 \
-            --disable-conio --disable-x11 --disable-gl --disable-network \
-            --enable-vga --disable-imlib2 --disable-doc \
-            --host i386
+./configure --enable-kernel --disable-doc --host i386
 
 # Compile cacademo, leave it as an object
 cd caca && make && cd ..
 cd examples && make dithering.o && cd ..
-
 
 cd kernel
 
 # Bootsector
 nasm -f bin -o bootsect.bin boot/bootsect.asm
 # Interruption handlers
-nasm -f elf -o int.o boot/int.asm 
+nasm -f elf -o int.o boot/int.asm
 
 ##### Boot (x86)
 # Stage2, loads GDT, PIC, IDT, interrupts, then calls kmain()
-gcc $CFLAGS boot/stage2.c -c
+gcc $MYCFLAGS boot/stage2.c -c
 # GDT installation, called by stage2
-gcc $CFLAGS boot/gdt.c -c
+gcc $MYCFLAGS boot/gdt.c -c
 # PIC installation, called by stage2
-gcc $CFLAGS boot/pic.c -c
+gcc $MYCFLAGS boot/pic.c -c
 # IDT installation, called by stage2
-gcc $CFLAGS boot/idt.c -c
+gcc $MYCFLAGS boot/idt.c -c
 # Interruptions installation, called by stage2
-gcc $CFLAGS boot/interruptions.c -c
+gcc $MYCFLAGS boot/interruptions.c -c
 
-##### Drivers 
+##### Drivers
 # Floppy driver
-gcc $CFLAGS drivers/floppy.c -c
+gcc $MYCFLAGS drivers/floppy.c -c
 # Processor driver
-gcc $CFLAGS drivers/processor.c -c
+gcc $MYCFLAGS drivers/processor.c -c
 # Keyboard handler
-gcc $CFLAGS drivers/keyboard.c -c
+gcc $MYCFLAGS drivers/keyboard.c -c
 # Memory driver
-gcc $CFLAGS drivers/memory.c -c
+gcc $MYCFLAGS drivers/memory.c -c
 # Programmable Interval Timer driver
-gcc $CFLAGS drivers/timer.c -c
+gcc $MYCFLAGS drivers/timer.c -c
 
 # Minimalistic libc
-gcc $CFLAGS klibc.c -c
+gcc $MYCFLAGS klibc.c -c
 
 # Kernel by itself, contains cmain() which calls main()
-gcc $CFLAGS kernel.c -c
+gcc $MYCFLAGS kernel.c -c
 
 # Link everything but bootsector, kernel.o MUST be at the very end
-ld --oformat binary -Ttext 1000 stage2.o gdt.o pic.o int.o idt.o interruptions.o keyboard.o memory.o timer.o floppy.o processor.o klibc.o kernel.o ../caca/.libs/libcaca.a -Map kernel.map    -o kern.bin 
-   
+ld --oformat binary -Ttext 1000 stage2.o gdt.o pic.o int.o idt.o interruptions.o keyboard.o memory.o timer.o floppy.o processor.o klibc.o kernel.o ../caca/.libs/libcaca.a -Map kernel.map    -o kern.bin
+
 ls -ail kern.bin
 cd ..
 

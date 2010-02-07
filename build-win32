@@ -20,7 +20,7 @@ make distclean || true
 
 cd "${BUILDDIR}"
 # Build for win32
-"${SRCDIR}/configure" --host=i586-mingw32msvc --prefix=/ --bindir=/bin --libdir=/lib --disable-imlib2 --disable-doc "$@"
+"${SRCDIR}/configure" --host=i586-mingw32msvc --prefix=/ --bindir=/bin --libdir=/lib --disable-imlib2 --disable-java --disable-doc "$@"
 make pkglibdir=/lib pkgdatadir=/data bindir=/bin
 # Install into our private directory
 make install DESTDIR="${INSTALLDIR}" pkglibdir=/lib/ pkgdatadir=/ bindir=/bin/

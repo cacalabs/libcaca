@@ -1,5 +1,4 @@
 /*
- *  libcaca       
  *  libcaca       Colour ASCII-Art library
  *  Copyright (c) 2006 Sam Hocevar <sam@hocevar.net>
  *                2009 Jean-Yves Lamoureux <jylam@lnxscene.org>
@@ -19,6 +18,8 @@
  *  that must be used when building libcaca and libcaca into a kernel.
  */
 
+#if !defined HAVE_KLIBC_H
+#define HAVE_KLIBC_H
 
 /* Various typedefs -- some are x86-specific */
 #define CUSTOM_INTTYPES
@@ -146,3 +147,6 @@ unsigned int htonl(unsigned int hostlong);
 unsigned short htons(unsigned short hostlong);
 
 void print(char *str);
+
+#endif /* HAVE_KLIBC_H */
+
