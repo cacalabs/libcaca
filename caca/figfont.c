@@ -52,6 +52,7 @@ static uint32_t hsmush(uint32_t ch1, uint32_t ch2, int rule);
 static caca_figfont_t * open_figfont(char const *);
 static int free_figfont(caca_figfont_t *);
 
+/** \brief load a figfont and attach it to a canvas */
 int caca_canvas_set_figfont(caca_canvas_t *cv, char const *path)
 {
     caca_figfont_t *ff = NULL;
@@ -127,6 +128,7 @@ int caca_canvas_set_figfont(caca_canvas_t *cv, char const *path)
     return 0;
 }
 
+/** \brief paste a character using the current figfont */
 int caca_put_figchar(caca_canvas_t *cv, uint32_t ch)
 {
     caca_figfont_t *ff = cv->ff;
@@ -250,6 +252,7 @@ int caca_put_figchar(caca_canvas_t *cv, uint32_t ch)
     return 0;
 }
 
+/** \brief flush the figlet context */
 int caca_flush_figlet(caca_canvas_t *cv)
 {
     caca_figfont_t *ff = cv->ff;
