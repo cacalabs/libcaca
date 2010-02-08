@@ -48,11 +48,13 @@ namespace Caca
 
         /* TODO: fix this shit */
 
+#if false
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int caca_set_dither_palette(IntPtr d,
                                uint[] r, uint[] g,
                                uint[] b, uint[] a);
+#endif
         [DllImport("libcaca.dll", CallingConvention=CallingConvention.Cdecl),
          SuppressUnmanagedCodeSecurity]
         private static extern int caca_set_dither_brightness(IntPtr d, float b);
