@@ -5,11 +5,14 @@
  - new dirty rectangle framework for accelerated rendering
  - new <conio.h> compatible header for old DOS software porting
  - XCode and Visual Studio build improvements
+ - Unicode support in the X11 driver
  - improved HTML output
  - new troff output
  - improved Ruby and .NET bindings
  - new comprehensive PHP bindings
+ - new Java bindings
  - Cocoa driver enhancements
+ - support for ANSI colour in FIGlet and TOIlet fonts
  - documentation updates
  - numerous improvements and bugfixes
 
