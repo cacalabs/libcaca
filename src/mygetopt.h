@@ -1,6 +1,6 @@
 /*
- *  zzuf - general purpose fuzzer
- *  Copyright (c) 2002, 2007 Sam Hocevar <sam@hocevar.net>
+ *  libcaca       Colour ASCII-Art library
+ *  Copyright (c) 2002-2010 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  This program is free software. It comes without any warranty, to
