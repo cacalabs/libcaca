@@ -1,6 +1,24 @@
-Commit: UNSUBMITTED
+Commit: 4339
 Author: sam
-Date:   Mon Feb 8 01:39:16 2010 +0000
+Date:   Mon Feb 8 13:57:46 2010 +0000
+
+    Disable set_dither_palette until we really use it.
+
+ caca-sharp/Dither.cs |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+Commit: 4338
+Author: sam
+Date:   Mon Feb 8 13:51:52 2010 +0000
+
+    Fix distribution of Java source.
+
+ java/Makefile.am |   69 ++++++++++++++++++++++++++++++++---------------------
+ 1 files changed, 42 insertions(+), 27 deletions(-)
+
+Commit: 4334
+Author: sam
+Date:   Mon Feb 8 01:50:59 2010 +0000
 
     Fix ChangeLog, NEWS and win32/config.h for release 0.99.beta17.
 
