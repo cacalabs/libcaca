@@ -12,32 +12,46 @@ endif
 
 java_src = $(wildcard $(srcdir)/org/zoy/caca/*.java)
 
-java_jni_headers =         \
-  org_zoy_caca_Attribute.h \
-  org_zoy_caca_Caca.h      \
-  org_zoy_caca_Canvas.h    \
-  org_zoy_caca_Display.h   \
-  org_zoy_caca_Dither.h    \
-  org_zoy_caca_Event.h     \
-  org_zoy_caca_Font.h
+java_jni_headers = \
+    org_zoy_caca_Attribute.h \
+    org_zoy_caca_Caca.h \
+    org_zoy_caca_Canvas.h \
+    org_zoy_caca_Display.h \
+    org_zoy_caca_Dither.h \
+    org_zoy_caca_Event.h \
+    org_zoy_caca_Font.h
 
-java_jni_src =             \
-  org_zoy_caca_Attribute.c \
-  org_zoy_caca_Caca.c      \
-  org_zoy_caca_Canvas.c    \
-  org_zoy_caca_Display.c   \
-  org_zoy_caca_Dither.c    \
-  org_zoy_caca_Event.c     \
-  org_zoy_caca_Font.c
+java_jni_src = \
+    org_zoy_caca_Attribute.c \
+    org_zoy_caca_Caca.c \
+    org_zoy_caca_Canvas.c \
+    org_zoy_caca_Display.c \
+    org_zoy_caca_Dither.c \
+    org_zoy_caca_Event.c \
+    org_zoy_caca_Font.c
 
-java_jni_classes =             \
-  org/zoy/caca/Attribute.class \
-  org/zoy/caca/Caca.class      \
-  org/zoy/caca/Canvas.class    \
-  org/zoy/caca/Display.class   \
-  org/zoy/caca/Dither.class    \
-  org/zoy/caca/Event.class     \
-  org/zoy/caca/Font.class
+java_jni_classes = \
+    org/zoy/caca/Attribute.class \
+    org/zoy/caca/Caca.class \
+    org/zoy/caca/Canvas.class \
+    org/zoy/caca/Display.class \
+    org/zoy/caca/Dither.class \
+    org/zoy/caca/Event.class \
+    org/zoy/caca/Font.class
+
+java_jni_java = \
+    org/zoy/caca/CacaException.java \
+    org/zoy/caca/Caca.java \
+    org/zoy/caca/NativeObject.java \
+    org/zoy/caca/Dither.java \
+    org/zoy/caca/Canvas.java \
+    org/zoy/caca/CacaObject.java \
+    org/zoy/caca/Font.java \
+    org/zoy/caca/Attribute.java \
+    org/zoy/caca/Color.java \
+    org/zoy/caca/Event.java \
+    org/zoy/caca/TimeoutException.java \
+    org/zoy/caca/Display.java
 
 JAVAH_FLAGS = -d . -classpath .
 
@@ -78,7 +92,8 @@ org_zoy_caca_Font.h: org/zoy/caca/Font.class
 
 CLEANFILES = $(noinst_DATA) $(java_jar) \
              org/zoy/caca/*.class org_zoy_caca_[A-Z]*.h
-EXTRA_DIST = README
+EXTRA_DIST = README $(java_jni_java) \
+             examples/Driver.java examples/TrueColor.java
 
 if USE_JAVA
 BUILT_SOURCES = $(java_jni_headers) $(java_jni_classes)
