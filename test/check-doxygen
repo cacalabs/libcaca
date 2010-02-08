@@ -3,12 +3,16 @@
 #
 # Check for Doxygen warnings
 #
-if warnings="$(grep -c Warning: ../doc/doxygen.log 2>/dev/null)"; then
-  echo "error: $warnings warnings in Doxygen generation:"
+nfiles="$(grep -c "Parsing file" < ../doc/doxygen.log)"
+if nfails="$(grep -c Warning: ../doc/doxygen.log 2>/dev/null)"; then
   grep Warning: ../doc/doxygen.log | sed 's/\(.\{75\}\)...*/\1 .../'
+fi
+
+echo "$nfiles files, $nfails visible errors in documentation"
+
+if test "$nfails" != "0"; then
   exit 1
 fi
 
-echo "0 visible errors in documentation"
 exit 0
 

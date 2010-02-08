@@ -3,30 +3,36 @@
 #
 # Check that we have no tabs or trailing spaces in the source code
 #
-failure=0
+nfails=0
+nfiles=0
+nlines=0
 for dir in caca kernel src cxx examples ruby tools; do
   pushd ../$dir >/dev/null
   for x in $(make -s echo-sources); do
     case "$x" in
-     *.c|*.cpp|*.h|*.m) ;;
-     *) continue ;;
+      *.c|*.cpp|*.h|*.m)
+        nfiles=$(($nfiles + 1));
+        nlines=$(($nlines + `wc -l < "$x"`)) ;;
+      *)
+        continue ;;
     esac
     if grep '[[:space:]]$' "$x" >/dev/null 2>&1; then
       echo "error: $dir/$x contains trailing spaces"
-      failure=1
+      nfails=$(($nfails + 1))
     fi
     if grep '	' "$x" >/dev/null 2>&1; then
       echo "error: $dir/$x contains tabs"
-      failure=1
+      nfails=$(($nfails + 1))
     fi
   done
   popd >/dev/null
 done
 
-if test "$failure" != "0"; then
+echo "$nfiles files, $nlines lines, $nfails errors in source code"
+
+if test "$nfails" != "0"; then
   exit 1
 fi
 
-echo "0 errors in source code"
 exit 0
 

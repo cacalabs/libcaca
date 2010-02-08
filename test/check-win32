@@ -9,19 +9,22 @@ ret=0
 config_h_in=$(dirname "$0")/../config.h.in
 win32_config_h=$(dirname "$0")/../win32/config.h
 
-failure=0
+nfails=0
+ntokens=0
 for key in $(sed -ne 's/.*#undef *\([A-Za-z0-9_]*\).*/\1/p' "$config_h_in");
 do
+  ntokens=$(($ntokens + 1))
   if ! grep '[ef] \<'"$key"'\>' "$win32_config_h" >/dev/null 2>&1; then
     echo "error: $key missing from win32/config.h"
-    failure=1
+    nfails=$(($nfails + 1))
   fi
 done
 
-if test "$failure" != "0"; then
+echo "$ntokens tokens, $nfails errors in Win32 config.h"
+
+if test "$nfails" != "0"; then
   exit 1
 fi
 
-echo "0 errors in Win32 config.h"
 exit 0
 
