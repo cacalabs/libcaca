@@ -3,8 +3,6 @@
  *  Copyright (c) 2007-2009 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
- *  $Id$
- *
  *  This program is free software. It comes without any warranty, to
  *  the extent permitted by applicable law. You can redistribute it
  *  and/or modify it under the terms of the Do What The Fuck You Want

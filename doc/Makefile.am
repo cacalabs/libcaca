@@ -1,4 +1,3 @@
-# $Id$
 
 EXTRA_DIST = doxygen.cfg.in doxygen.css footer.html header.html \
              $(man_MANS) $(doxygen_DOX)

@@ -1,4 +1,3 @@
-# $Id$
 
 pkgdata_DATA = caca.txt
 

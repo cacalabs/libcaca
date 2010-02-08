@@ -1,4 +1,4 @@
-/* $Id$ */ /** \page libcaca-ruby Libcaca ruby bindings
+/** \page libcaca-ruby Libcaca ruby bindings
 
 There is no real documentation yet for the Ruby binding but \c methods on any object should help you :)
 

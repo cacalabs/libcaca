@@ -2,8 +2,6 @@
  *  libcaca       Java bindings for libcaca
  *  Copyright (c) 2009 Adrien Grand <jpountz@dinauz.org>
  *
- *  $Id$
- *
  *  This library is free software. It comes without any warranty, to
  *  the extent permitted by applicable law. You can redistribute it
  *  and/or modify it under the terms of the Do What The Fuck You Want
@@ -87,7 +85,7 @@ JNIEXPORT jobjectArray JNICALL
 Java_org_zoy_caca_Dither_getDitherAntiAliasingList(JNIEnv *env, jclass cls, jlong ptr)
 {
   const char *const *antialias_list = caca_get_dither_antialias_list((caca_dither_t *)ptr);
-  return caca_java_to_string_array(env, antialias_list);  
+  return caca_java_to_string_array(env, antialias_list);
 }
 
 JNIEXPORT void JNICALL

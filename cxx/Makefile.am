@@ -1,4 +1,3 @@
-# $Id: Makefile.am 552 2006-04-13 16:10:16Z jylam $
 
 AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/caca -I../caca
 

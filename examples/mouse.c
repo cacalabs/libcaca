@@ -3,8 +3,6 @@
  *  Copyright (c) 2006-2009 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                All Rights Reserved
  *
- *  $Id: mouse.c 3495 2009-05-21 20:55:21Z jylam $
- *
  *  This program is free software. It comes without any warranty, to
  *  the extent permitted by applicable law. You can redistribute it
  *  and/or modify it under the terms of the Do What The Fuck You Want

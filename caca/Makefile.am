@@ -1,4 +1,3 @@
-# $Id$
 
 EXTRA_DIST = caca_types.h.in caca.pc.in \
              mono9.data monobold12.data \

@@ -1,4 +1,3 @@
-# $Id: $
 
 # We need to install the .config file ourselves because of a gacutil
 # bug (https://bugzilla.novell.com/show_bug.cgi?id=363341)

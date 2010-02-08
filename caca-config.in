@@ -1,7 +1,6 @@
 #! /bin/sh
 
 ##  config script for libcaca -- Sam Hocevar <sam@hocevar.net>
-##  $Id$
 
 prefix=@prefix@
 exec_prefix=@exec_prefix@

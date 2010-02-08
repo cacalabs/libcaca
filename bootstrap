@@ -1,5 +1,4 @@
 #! /bin/sh
-# $Id$
 
 # bootstrap: generic bootstrap/autogen.sh script for autotools projects
 #

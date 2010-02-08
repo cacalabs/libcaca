@@ -5,11 +5,9 @@
  *  Copyright (c) 2008 Benjamin C. Wiley Sittler <bsittler@gmail.com>
  *
  *  This file is a Php port of "examples/unicode.c"
- *  which is: 
+ *  which is:
  *  Copyright (c) 2006 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
- *
- *  $Id$
  *
  *  This program is free software. It comes without any warranty, to
  *  the extent permitted by applicable law. You can redistribute it
@@ -19,18 +17,18 @@
  */
 
 if (php_sapi_name() != "cli") {
-	die("You have to run this program with php-cli!\n");
+    die("You have to run this program with php-cli!\n");
 }
 
 $cv = caca_create_canvas(0, 0);
 if(! $cv)
 {
-	die("Can't created canvas\n");
+    die("Can't created canvas\n");
 }
 $dp = caca_create_display($cv);
 if(! $dp)
 {
-	die("Can't create display\n");
+    die("Can't create display\n");
 }
 caca_set_color_ansi($cv, CACA_WHITE, CACA_BLUE);
 caca_put_str($cv, 1, 1, "Basic Unicode support");

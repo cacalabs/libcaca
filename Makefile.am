@@ -1,4 +1,3 @@
-# $Id$
 
 SUBDIRS = kernel caca src examples tools \
           cxx caca-sharp python ruby java \

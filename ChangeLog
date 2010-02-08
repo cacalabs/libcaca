@@ -1,6 +1,26 @@
-Commit: UNSUBMITTED
-Author: Sam
-Date:   Sun Feb 7 22:30:20 2010 +0000
+Commit: 4332
+Author: sam
+Date:   Mon Feb 8 00:40:21 2010 +0000
+
+    Nicer make check output for our custom tests.
+
+ test/check-doxygen |   10 +++++++---
+ test/check-source  |   20 +++++++++++++-------
+ test/check-win32   |   11 +++++++----
+ 3 files changed, 27 insertions(+), 14 deletions(-)
+
+Commit: 4331
+Author: sam
+Date:   Sun Feb 7 23:44:38 2010 +0000
+
+    Add missing ruby/test file to the distributed tarball.
+
+ ruby/Makefile.am |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+Commit: 4330
+Author: sam
+Date:   Sun Feb 7 22:37:18 2010 +0000
 
     Improve changelog generation.
 

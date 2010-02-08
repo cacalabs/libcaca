@@ -68,4 +68,3 @@ be, sound, and smell harsh.
 
 =cut
 
-# $Id$

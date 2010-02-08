@@ -1,4 +1,3 @@
-# $Id: $
 
 EXTRA_DIST = caca.txt pypycaca.c pypycaca.h snake.py test1.py test2.py
 
@@ -15,7 +14,7 @@ NAME = caca.so
 all:
 
 python:
-	$(CC) pypycaca.c -c $(CACAFLAGS) $(PYTHONFLAGS) -Wall 
+	$(CC) pypycaca.c -c $(CACAFLAGS) $(PYTHONFLAGS) -Wall
 	$(LD) pypycaca.o -o $(NAME) $(CACALIBS) $(PYTHONLIBS) -shared
 
 

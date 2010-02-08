@@ -1,4 +1,3 @@
-$Id$
 
    o  Colour does not work with all backends and all terminals. I tested
       many terminal emulators and tried to summarise which combinations

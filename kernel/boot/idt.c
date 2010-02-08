@@ -1,11 +1,8 @@
-/* 
- *  libcaca       
+/*
  *  libcaca       Colour ASCII-Art library
  *  Copyright (c) 2006 Sam Hocevar <sam@hocevar.net>
  *                2009 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                All Rights Reserved
- *
- *  $Id: kernel.h 4154 2009-12-20 13:33:11Z jylam $
  *
  *  This library is free software. It comes without any warranty, to
  *  the extent permitted by applicable law. You can redistribute it
@@ -14,7 +11,7 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
-/* 
+/*
  *'freely' inspired by http://jojo.ouvaton.org/dossiers/boot_sector/tutorial02.html
  * (actually, that's mostly copied, with minor compilation fixes)
  */

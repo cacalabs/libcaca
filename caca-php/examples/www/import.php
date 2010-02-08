@@ -11,11 +11,9 @@ header('Content-Type: text/html; charset=UTF-8');
  *  Copyright (c) 2008 Benjamin C. Wiley Sittler <bsittler@gmail.com>
  *
  *  This file is a Php port of "examples/import.c"
- *  which is: 
+ *  which is:
  *  Copyright (c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                All Rights Reserved
- *
- *  $Id$
  *
  *  This program is free software. It comes without any warranty, to
  *  the extent permitted by applicable law. You can redistribute it
@@ -49,12 +47,12 @@ if ($file == NULL)
 <label for="format">as</label>
 <select name="format" id="format" onchange="update_preview(this);">
 <?php
-	foreach($imports as $import_format => $name)
-	{
-		?><option value="<?= htmlspecialchars($import_format) ?>"<?=
-			($format == $import_format) ? ' selected="selected"' : '' ?>><?=
-			htmlspecialchars($name . " (" . $import_format . ")") ?></option><?php
-	}
+    foreach($imports as $import_format => $name)
+    {
+        ?><option value="<?= htmlspecialchars($import_format) ?>"<?=
+            ($format == $import_format) ? ' selected="selected"' : '' ?>><?=
+            htmlspecialchars($name . " (" . $import_format . ")") ?></option><?php
+    }
 ?>
 </select>
 </form>
@@ -64,22 +62,22 @@ if ($file == NULL)
 
 if($file)
 {
-	$cv = caca_create_canvas(0, 0);
-	if(! $cv)
-	{
-		die("Can't create canvas\n");
-	}
-	
-	if(caca_import_file($cv, $file, ($format == NULL) ? "" : $format) < 0)
-	{
-		die("could not import `" . htmlspecialchars($filename) . "'.\n");
-	}
-	
-	echo caca_export_string($cv, "html3");
+    $cv = caca_create_canvas(0, 0);
+    if(! $cv)
+    {
+        die("Can't create canvas\n");
+    }
+
+    if(caca_import_file($cv, $file, ($format == NULL) ? "" : $format) < 0)
+    {
+        die("could not import `" . htmlspecialchars($filename) . "'.\n");
+    }
+
+    echo caca_export_string($cv, "html3");
 }
 else
 {
-	?>See the <a href="export.php">libcaca export test program</a> for an <a
+    ?>See the <a href="export.php">libcaca export test program</a> for an <a
 href="export.php?format=caca">example file</a>.<?php
 }
 

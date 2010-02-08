@@ -1,5 +1,4 @@
-$Id$
- 
+
 Building libcaca
 
    o  Run configure then make. Useful configure flags are:
@@ -17,7 +16,7 @@ Building libcaca
      --disable-doc: do not build documentation
 
    o  Cross-compilation examples:
- 
+
      ./configure --disable-imlib2 --host=i386-pc-msdosdjgpp
 
      ./configure --disable-imlib2 --host=i586-mingw32msvc
@@ -31,4 +30,4 @@ Using libcaca
 
       gcc -c foobar.c -o foobar.o `pkg-config --cflags caca`
       gcc foobar.o -o foobar `pkg-config --libs caca`
- 
+

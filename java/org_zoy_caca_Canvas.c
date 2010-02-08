@@ -2,8 +2,6 @@
  *  libcaca       Java bindings for libcaca
  *  Copyright (c) 2009 Adrien Grand <jpountz@dinauz.org>
  *
- *  $Id$
- *
  *  This library is free software. It comes without any warranty, to
  *  the extent permitted by applicable law. You can redistribute it
  *  and/or modify it under the terms of the Do What The Fuck You Want
@@ -65,7 +63,7 @@ Java_org_zoy_caca_Canvas_getCanvasWidth(JNIEnv *env, jclass cls, jlong ptr)
 }
 
 JNIEXPORT jint JNICALL
-Java_org_zoy_caca_Canvas_getCanvasHeight(JNIEnv *env, jclass cls, jlong ptr) 
+Java_org_zoy_caca_Canvas_getCanvasHeight(JNIEnv *env, jclass cls, jlong ptr)
 {
   return caca_get_canvas_height((caca_canvas_t *)ptr);
 }
@@ -85,7 +83,7 @@ Java_org_zoy_caca_Canvas_clearCanvas(JNIEnv *env, jclass cls, jlong ptr)
 JNIEXPORT jint JNICALL
 Java_org_zoy_caca_Canvas_getCanvasChar(JNIEnv *env, jclass cls, jlong ptr, jint x, jint y)
 {
-  return caca_get_char((caca_canvas_t *)ptr, x, y);  
+  return caca_get_char((caca_canvas_t *)ptr, x, y);
 }
 
 JNIEXPORT void JNICALL
@@ -234,7 +232,7 @@ Java_org_zoy_caca_Canvas_canvasDrawThinPolyline(JNIEnv *env, jclass cls, jlong p
   jsize size;
   jint *x_elems;
   jint *y_elems;
-  
+
   size = (*env)->GetArrayLength(env, xs);
   x_elems = (*env)->GetIntArrayElements(env, xs, 0);
   y_elems = (*env)->GetIntArrayElements(env, ys, 0);

@@ -2,8 +2,6 @@
  *  libcaca       Java bindings for libcaca
  *  Copyright (c) 2009 Adrien Grand <jpountz@dinauz.org>
  *
- *  $Id$
- *
  *  This library is free software. It comes without any warranty, to
  *  the extent permitted by applicable law. You can redistribute it
  *  and/or modify it under the terms of the Do What The Fuck You Want
@@ -34,7 +32,7 @@ public abstract class Color {
     WHITE((byte)0x0f),
     DEFAULT((byte)0x10),
     TRANSPARENT((byte)0x20);
-    
+
 
     private Ansi(byte code) {
       this.code = code;

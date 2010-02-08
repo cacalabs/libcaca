@@ -1,33 +1,34 @@
-/* $Id$ */ /** \page libcaca-news Libcaca news
+/** \page libcaca-news Libcaca news
 
-\section news0_99_beta17 Changes between 0.9.beta17 and 0.99.beta16
+\section news0_99_beta17 Changes between 0.99.beta17 and 0.99.beta16
 
  - new dirty rectangle framework for accelerated rendering
  - new <conio.h> compatible header for old DOS software porting
  - XCode and Visual Studio build improvements
  - improved HTML output
+ - new troff output
  - improved Ruby and .NET bindings
  - new comprehensive PHP bindings
  - Cocoa driver enhancements
  - documentation updates
- - minor improvements and bugfixes
+ - numerous improvements and bugfixes
 
-\section news0_99_beta16 Changes between 0.9.beta16 and 0.99.beta15
+\section news0_99_beta16 Changes between 0.99.beta16 and 0.99.beta15
 
  - many build fixes, especially for nonstandard platforms
 
-\section news0_99_beta15 Changes between 0.9.beta15 and 0.99.beta14
+\section news0_99_beta15 Changes between 0.99.beta15 and 0.99.beta14
 
  - libcucul was merged back into libcaca for more clarity
 
-\section news0_99_beta14 Changes between 0.9.beta14 and 0.99.beta13
+\section news0_99_beta14 Changes between 0.99.beta14 and 0.99.beta13
 
  - internal FIGlet font support
  - use C99 types in public headers
  - runtime support for output drivers
  - BBcode export support
 
-\section news0_99_beta13 Changes between 0.9.beta13 and 0.99.beta12
+\section news0_99_beta13 Changes between 0.99.beta13 and 0.99.beta12
 
  - device-dependent cursor support
  - event API rewrite
@@ -38,7 +39,7 @@
  - Python sample code
  - Visual Studio build solution
 
-\section news0_99_beta12 Changes between 0.9.beta12 and 0.99.beta11
+\section news0_99_beta12 Changes between 0.99.beta12 and 0.99.beta11
 
  - support for 90-degree canvas rotation
  - better behaviour when trying to output Unicode on an ASCII terminal
@@ -49,14 +50,14 @@
  - preliminary .NET bindings
  - many bugfixes and documentation changes
 
-\section news0_99_beta11 Changes between 0.9.beta11 and 0.99.beta10
+\section news0_99_beta11 Changes between 0.99.beta11 and 0.99.beta10
 
  - fixed compilation of the C++ bindings
  - fixed bugs in cucul_import_memory(), cucul_set_canvas_size()
  - implemented caca_set_display_title() for ncurses and S-Lang
  - minor bugfixes
 
-\section news0_99_beta10 Changes between 0.9.beta10 and 0.99.beta9
+\section news0_99_beta10 Changes between 0.99.beta10 and 0.99.beta9
 
  - new debug mode
  - blitting canvases now makes use of the canvas' handle coordinates
@@ -65,7 +66,7 @@
  - added katakana and hiragana glyphs to the built-in font
  - many bugfixes and documentation changes
 
-\section news0_99_beta9 Changes between 0.9.beta9 and 0.99.beta8
+\section news0_99_beta9 Changes between 0.99.beta9 and 0.99.beta8
 
  - support for blink, bold, italics and underline attributes
  - allow to import and export zero-sized canvases
@@ -73,26 +74,26 @@
  - fixed buffer overlows in the file importer
  - big documentation updates
 
-\section news0_99_beta8 Changes between 0.9.beta8 and 0.99.beta7
+\section news0_99_beta8 Changes between 0.99.beta8 and 0.99.beta7
 
  - allow to build the X11 and GL drivers as separate plugins
  - support for fullwidth Unicode characters
  - improved cucul_flip() and cucul_rotate()
  - minor bugfixes and documentation updates
 
-\section news0_99_beta7 Changes between 0.9.beta7 and 0.99.beta6
+\section news0_99_beta7 Changes between 0.99.beta7 and 0.99.beta6
 
  - transparency support in the UTF-8 importer and exporter
  - optimised triangle fill routine
  - updated C++ bindings
 
-\section news0_99_beta6 Changes between 0.9.beta6 and 0.99.beta5
+\section news0_99_beta6 Changes between 0.99.beta6 and 0.99.beta5
 
  - ANSI importer now handles transparency and UTF-8
  - Unicode support was broken for about 10% of the set
  - various memory leaks were fixed
 
-\section news0_99_beta5 Changes between 0.9.beta5 and 0.99.beta4
+\section news0_99_beta5 Changes between 0.99.beta5 and 0.99.beta4
 
  - implemented cucul_getchar() and cucul_get_color()
  - handle transparency in the IRC export
@@ -101,19 +102,19 @@
  - portability fixes for 64-bit architectures, Win32 and MS-DOS
  - all demos except cacafire were merged into cacademo
 
-\section news0_99_beta4 Changes between 0.9.beta4 and 0.99.beta3
+\section news0_99_beta4 Changes between 0.99.beta4 and 0.99.beta3
 
  - added a compatibility layer for pre-1.x libcaca applications
  - fixed manpage generation
  - minor bugfixes and documentation updates
 
-\section news0_99_beta3 Changes between 0.9.beta3 and 0.99.beta2
+\section news0_99_beta3 Changes between 0.99.beta3 and 0.99.beta2
 
  - libcaca functions use errno for error reporting
  - updated C++ bindings
  - minor improvements, bugfixes and documentation updates
 
-\section news0_99_beta2 Changes between 0.9.beta2 and 0.99.beta1
+\section news0_99_beta2 Changes between 0.99.beta2 and 0.99.beta1
 
  - ANSI importer
  - functions use errno for error reporting

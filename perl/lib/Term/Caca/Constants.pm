@@ -329,4 +329,3 @@ Only import the constants pertaining to events and keys:
 
 =cut
 
-# $Id$

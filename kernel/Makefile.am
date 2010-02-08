@@ -1,4 +1,3 @@
-# $Id: Makefile.am 326 2006-03-06 20:57:14Z sam $
 
 EXTRA_DIST = bootsect.S
 

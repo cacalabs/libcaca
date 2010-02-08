@@ -2,48 +2,48 @@
 
 function pig() {
 $pig_str = <<<EOT
-                                   
-    _._ _..._ .-',     _.._(`))    
-   '-. `     '  /-._.-'    ',/     
-      )         \            '.   
-     / _    _    |             \   
-    |  a    a    /   PHP        |  
-    \   .-.                     ; 
-     '-('' ).-'       ,'       ;   
-        '-;           |      .'    
-           \           \    /    
-           | 7  .__  _.-\   \    
-           | |  |  ``/  /`  /      
-      jgs /,_|  |   /,_/   /       
-             /,_/      '`-'        
+
+    _._ _..._ .-',     _.._(`))
+   '-. `     '  /-._.-'    ',/
+      )         \            '.
+     / _    _    |             \
+    |  a    a    /   PHP        |
+    \   .-.                     ;
+     '-('' ).-'       ,'       ;
+        '-;           |      .'
+           \           \    /
+           | 7  .__  _.-\   \
+           | |  |  ``/  /`  /
+      jgs /,_|  |   /,_/   /
+             /,_/      '`-'
 EOT;
 
-	$canvas = caca_create_canvas(0, 0);
-	caca_set_color_ansi($canvas, CACA_RED, CACA_WHITE);
-	caca_import_string($canvas, $pig_str, "text");
-	caca_set_color_ansi($canvas, CACA_BLUE, CACA_LIGHTGRAY);
-	caca_put_str($canvas, 0, 0, "Я люблю Либкаку");
-	return $canvas;
+    $canvas = caca_create_canvas(0, 0);
+    caca_set_color_ansi($canvas, CACA_RED, CACA_WHITE);
+    caca_import_string($canvas, $pig_str, "text");
+    caca_set_color_ansi($canvas, CACA_BLUE, CACA_LIGHTGRAY);
+    caca_put_str($canvas, 0, 0, "Я люблю Либкаку");
+    return $canvas;
 }
 
 
 if (isset($_GET["png"])) {
-	$canvas = pig();
-	$font = caca_load_builtin_font("Monospace Bold 12");
-	$width = caca_get_canvas_width($canvas) * caca_get_font_width($font);
-	$height = caca_get_canvas_height($canvas) * caca_get_font_height($font);
-	$img = imagecreatetruecolor($width, $height);
-	caca_render_canvas($canvas, $font, $img);
-	header("Content-type: image/png");
-	imagepng($img);
+    $canvas = pig();
+    $font = caca_load_builtin_font("Monospace Bold 12");
+    $width = caca_get_canvas_width($canvas) * caca_get_font_width($font);
+    $height = caca_get_canvas_height($canvas) * caca_get_font_height($font);
+    $img = imagecreatetruecolor($width, $height);
+    caca_render_canvas($canvas, $font, $img);
+    header("Content-type: image/png");
+    imagepng($img);
 }
 else {
 
 $render_php = isset($_SERVER['SCRIPT_NAME'])
-		?
-		$_SERVER['SCRIPT_NAME']
-		:
-		'render.php';
+        ?
+        $_SERVER['SCRIPT_NAME']
+        :
+        'render.php';
 
 header("Content-type: text/html; charset=UTF-8");
 
@@ -62,7 +62,7 @@ header("Content-type: text/html; charset=UTF-8");
 
 <h1>Generated image:</h1>
 <a href="<?= htmlspecialchars($render_php) ?>?png=1"><img alt="[PNG]"
-	src="<?= htmlspecialchars($render_php) ?>?png=1" border="0" /></a>
+    src="<?= htmlspecialchars($render_php) ?>?png=1" border="0" /></a>
 </body>
 </html>
 

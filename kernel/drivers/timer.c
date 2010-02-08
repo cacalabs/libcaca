@@ -1,11 +1,8 @@
 /*
- *  libcaca       
  *  libcaca       Colour ASCII-Art library
  *  Copyright (c) 2006 Sam Hocevar <sam@hocevar.net>
  *                2009 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                All Rights Reserved
- *
- *  $Id: kernel.h 4154 2009-12-20 13:33:11Z jylam $
  *
  *  This library is free software. It comes without any warranty, to
  *  the extent permitted by applicable law. You can redistribute it
@@ -25,8 +22,8 @@ void timer_phase(int hz)
     unsigned int divisor = 1193180 / hz;   /* Calculate our divisor */
     /*
       0x43 is the Mode/Command register
-      
-     From http://wiki.osdev.org/Programmable_Interval_Timer#Read_Back_Status_Byte : 
+
+     From http://wiki.osdev.org/Programmable_Interval_Timer#Read_Back_Status_Byte :
      Bits         Usage
      6 and 7      Select channel :
                   0 0 = Channel 0
@@ -48,7 +45,7 @@ void timer_phase(int hz)
                   1 1 0 = Mode 2 (rate generator, same as 010b)
                   1 1 1 = Mode 3 (square wave generator, same as 011b)
      0            BCD/Binary mode: 0 = 16-bit binary, 1 = four-digit BCD
-     
+
      */
     unsigned short command = 0b00110110;
     outb(0x43, command);

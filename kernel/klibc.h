@@ -4,8 +4,6 @@
  *                2009 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                All Rights Reserved
  *
- *  $Id: kernel.h 4154 2009-12-20 13:33:11Z jylam $
- *
  *  This library is free software. It comes without any warranty, to
  *  the extent permitted by applicable law. You can redistribute it
  *  and/or modify it under the terms of the Do What The Fuck You Want

@@ -12,7 +12,7 @@ for dir in caca kernel src cxx examples ruby tools; do
     case "$x" in
       *.c|*.cpp|*.h|*.m)
         nfiles=$(($nfiles + 1));
-        nlines=$(($nlines + `wc -l < "$x"`)) ;;
+        nlines=$(($nlines + `grep -c . "$x"`)) ;;
       *)
         continue ;;
     esac

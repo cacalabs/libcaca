@@ -1,7 +1,6 @@
 #! /bin/sh
 
 ##  Win32 cross-compilation for libcaca -- Sam Hocevar <sam@hocevar.net>
-##  $Id$
 
 set -x
 set -e

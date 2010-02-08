@@ -3,8 +3,6 @@
  *  Copyright (c) 2009 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                All Rights Reserved
  *
- *  $Id: trifiller.c 2821 2008-09-27 13:12:46Z sam $
- *
  *  This program is free software. It comes without any warranty, to
  *  the extent permitted by applicable law. You can redistribute it
  *  and/or modify it under the terms of the Do What The Fuck You Want

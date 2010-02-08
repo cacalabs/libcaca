@@ -1,4 +1,3 @@
-# $Id$
 
 jnidir = $(libdir)/jni
 libcaca_javadir = $(datadir)/java

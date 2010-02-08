@@ -1,4 +1,3 @@
-# $Id: $
 
 rubylibdir = $(RUBY_SITEARCHDIR)
 rubysitedir = $(RUBY_SITELIBDIR)

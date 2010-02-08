@@ -25,12 +25,12 @@ header('Content-Type: text/html; charset=UTF-8');
 $src = "logo-caca.png";
 $img = imagecreatefrompng(dirname(__FILE__)."/".$src);
 if (!$img)  {
-	die("Can not open image.\n");
+    die("Can not open image.\n");
 }
 
 $dither = caca_create_dither($img);
 if (!$dither)  {
-	die("Can not create dither. Maybe you compiled caca-php without gd support.\n");
+    die("Can not create dither. Maybe you compiled caca-php without gd support.\n");
 }
 
 $canvas = caca_create_canvas(100, 40);

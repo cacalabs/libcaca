@@ -22,46 +22,46 @@ header('Content-Type: text/html; charset=UTF-8');
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
-function unistr_to_ords($str, $encoding = 'UTF-8'){       
-	$str = mb_convert_encoding($str, "UCS-4BE", $encoding);
-	$result = array();
+function unistr_to_ords($str, $encoding = 'UTF-8'){
+    $str = mb_convert_encoding($str, "UCS-4BE", $encoding);
+    $result = array();
 
-	for ($i = 0; $i < mb_strlen($str, "UCS-4BE"); $i++){       
-		$c = mb_substr($str, $i, 1, "UCS-4BE");                   
-		$val = unpack("N", $c);           
-		$result[] = $val[1];               
-	}       
-	return $result;
+    for ($i = 0; $i < mb_strlen($str, "UCS-4BE"); $i++){
+        $c = mb_substr($str, $i, 1, "UCS-4BE");
+        $val = unpack("N", $c);
+        $result[] = $val[1];
+    }
+    return $result;
 }
 
 function show_figlet($str, $font) {
-	$cv = caca_create_canvas(0, 0);
+    $cv = caca_create_canvas(0, 0);
 
-	if (!caca_canvas_set_figfont($cv, $font)) {
-		return false;
-	}
-	
-	$chars = unistr_to_ords($str);
-	$color = 0;
-	foreach ($chars as $c) {
-		caca_set_color_ansi($cv, 1 + (($color += 1) % 13), CACA_WHITE);
-		caca_put_figchar($cv, $c);
-	}
+    if (!caca_canvas_set_figfont($cv, $font)) {
+        return false;
+    }
 
-	echo caca_export_string($cv, "html3");
+    $chars = unistr_to_ords($str);
+    $color = 0;
+    foreach ($chars as $c) {
+        caca_set_color_ansi($cv, 1 + (($color += 1) % 13), CACA_WHITE);
+        caca_put_figchar($cv, $c);
+    }
+
+    echo caca_export_string($cv, "html3");
 }
 
 $path = "/usr/share/figlet/";
 if (!is_dir($path)) {
-	die("can not open directory $path.\n");
+    die("can not open directory $path.\n");
 }
 
 $dir = opendir($path);
 while (($it = readdir($dir)) != false) {
-	if (is_file($path.$it) and ereg("\.[tf]lf$", $it)) {
-		echo "<b>font : $it</b>\n";
-		show_figlet(isset($_GET["str"]) ? $_GET["str"] : "Libcaca", $path.$it);
-	}
+    if (is_file($path.$it) and ereg("\.[tf]lf$", $it)) {
+        echo "<b>font : $it</b>\n";
+        show_figlet(isset($_GET["str"]) ? $_GET["str"] : "Libcaca", $path.$it);
+    }
 }
 ?>
 </body>

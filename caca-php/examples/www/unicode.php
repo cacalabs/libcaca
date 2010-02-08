@@ -11,11 +11,9 @@ header('Content-Type: text/html; charset=UTF-8');
  *  Copyright (c) 2008 Benjamin C. Wiley Sittler <bsittler@gmail.com>
  *
  *  This file is a Php port of "examples/unicode.c"
- *  which is: 
+ *  which is:
  *  Copyright (c) 2006 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
- *
- *  $Id$
  *
  *  This program is free software. It comes without any warranty, to
  *  the extent permitted by applicable law. You can redistribute it
@@ -34,7 +32,7 @@ header('Content-Type: text/html; charset=UTF-8');
 $cv = caca_create_canvas(80, 25);
 if(! $cv)
 {
-	die("Can't created canvas\n");
+    die("Can't created canvas\n");
 }
 caca_set_color_ansi($cv, CACA_WHITE, CACA_BLUE);
 caca_put_str($cv, 1, 1, "Basic Unicode support");

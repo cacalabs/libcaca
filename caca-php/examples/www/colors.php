@@ -14,8 +14,6 @@ header('Content-Type: text/html; charset=UTF-8');
    *  Copyright (c) 2003-2004 Sam Hocevar <sam@hocevar.net>
    *                All Rights Reserved
    *
-   *  $Id$
-   *
    *  This program is free software. It comes without any warranty, to
    *  the extent permitted by applicable law. You can redistribute it
    *  and/or modify it under the terms of the Do What The Fuck You Want
@@ -33,21 +31,21 @@ header('Content-Type: text/html; charset=UTF-8');
 $cv = caca_create_canvas(80, 24);
 if(!$cv)
 {
-	die("Failed to create canvas\n");
+    die("Failed to create canvas\n");
 }
 
 caca_set_color_ansi($cv, CACA_LIGHTGRAY, CACA_BLACK);
 caca_clear_canvas($cv);
 for($i = 0; $i < 16; $i++)
 {
-	caca_set_color_ansi($cv, CACA_LIGHTGRAY, CACA_BLACK);
-	caca_put_str($cv, 3, $i + ($i >= 8 ? 3 : 2), "ANSI " . $i);
-	for($j = 0; $j < 16; $j++)
-	{
-		caca_set_color_ansi($cv, $i, $j);
-		caca_put_str($cv, ($j >= 8 ? 13 : 12) + $j * 4, $i + ($i >= 8 ? 3 : 2),
-					"Aaホ");
-	}
+    caca_set_color_ansi($cv, CACA_LIGHTGRAY, CACA_BLACK);
+    caca_put_str($cv, 3, $i + ($i >= 8 ? 3 : 2), "ANSI " . $i);
+    for($j = 0; $j < 16; $j++)
+    {
+        caca_set_color_ansi($cv, $i, $j);
+        caca_put_str($cv, ($j >= 8 ? 13 : 12) + $j * 4, $i + ($i >= 8 ? 3 : 2),
+                    "Aaホ");
+    }
 }
 
 caca_set_color_ansi($cv, CACA_LIGHTGRAY, CACA_BLACK);

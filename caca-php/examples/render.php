@@ -2,24 +2,24 @@
 <?
 
 if (php_sapi_name() != "cli") {
-	die("You have to run this program with php-cli!\n");
+    die("You have to run this program with php-cli!\n");
 }
 
 $pig_str = <<<EOT
-                                   
-    _._ _..._ .-',     _.._(`))    
-   '-. `     '  /-._.-'    ',/     
-      )         \            '.   
-     / _    _    |             \   
-    |  a    a    /   PHP        |  
-    \   .-.                     ; 
-     '-('' ).-'       ,'       ;   
-        '-;           |      .'    
-           \           \    /    
-           | 7  .__  _.-\   \    
-           | |  |  ``/  /`  /      
-      jgs /,_|  |   /,_/   /       
-             /,_/      '`-'        
+
+    _._ _..._ .-',     _.._(`))
+   '-. `     '  /-._.-'    ',/
+      )         \            '.
+     / _    _    |             \
+    |  a    a    /   PHP        |
+    \   .-.                     ;
+     '-('' ).-'       ,'       ;
+        '-;           |      .'
+           \           \    /
+           | 7  .__  _.-\   \
+           | |  |  ``/  /`  /
+      jgs /,_|  |   /,_/   /
+             /,_/      '`-'
 EOT;
 
 $canvas = caca_create_canvas(0, 0);

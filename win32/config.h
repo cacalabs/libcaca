@@ -1,4 +1,3 @@
-/* $Id$ */
 
 #define ALLOCCONSOLE_IN_WINDOWS_H 1
 /* #undef DEBUG -- XXX: defined in the VS project */
@@ -93,3 +92,4 @@
 #endif
 #define strcasecmp stricmp
 #define snprintf _snprintf
+

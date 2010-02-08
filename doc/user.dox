@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /** \page libcaca-env Libcaca environment variables
 
  Some environment variables can be used to change the behaviour of

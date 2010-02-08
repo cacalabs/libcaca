@@ -1,4 +1,3 @@
-# $Id$
 
 AC_INIT(libcaca, 0.99.beta17)
 AC_PREREQ(2.50)
