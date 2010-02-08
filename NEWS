@@ -6,6 +6,7 @@
  - new <conio.h> compatible header for old DOS software porting
  - XCode and Visual Studio build improvements
  - Unicode support in the X11 driver
+ - triangle texture mapping
  - improved HTML output
  - new troff output
  - improved Ruby and .NET bindings

@@ -1,3 +1,22 @@
+Commit: 4341
+Author: sam
+Date:   Mon Feb 8 15:06:13 2010 +0100
+
+    Add triangle texture mapping to NEWS and update ChangeLog.
+
+ ChangeLog |   19 +++++++++++++++++++
+ NEWS      |    1 +
+ 2 files changed, 20 insertions(+), 0 deletions(-)
+
+Commit: 4340
+Author: sam
+Date:   Mon Feb 8 13:59:04 2010 +0000
+
+    Update changelog.
+
+ ChangeLog |   22 ++++++++++++++++++++--
+ 1 files changed, 20 insertions(+), 2 deletions(-)
+
 Commit: 4339
 Author: sam
 Date:   Mon Feb 8 13:57:46 2010 +0000
