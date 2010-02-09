@@ -7,25 +7,23 @@ nfails=0
 nfiles=0
 nlines=0
 for dir in caca kernel src cxx examples ruby tools; do
-  pushd ../$dir >/dev/null
-  for x in $(make -s echo-sources); do
+  for x in $(make -s echo-sources -C ../$dir); do
     case "$x" in
       *.c|*.cpp|*.h|*.m)
         nfiles=$(($nfiles + 1));
-        nlines=$(($nlines + `grep -c . "$x"`)) ;;
+        nlines=$(($nlines + `grep -c . "../$dir/$x"`)) ;;
       *)
         continue ;;
     esac
-    if grep '[[:space:]]$' "$x" >/dev/null 2>&1; then
+    if grep '[[:space:]]$' "../$dir/$x" >/dev/null 2>&1; then
       echo "error: $dir/$x contains trailing spaces"
       nfails=$(($nfails + 1))
     fi
-    if grep '	' "$x" >/dev/null 2>&1; then
+    if grep '	' "../$dir/$x" >/dev/null 2>&1; then
       echo "error: $dir/$x contains tabs"
       nfails=$(($nfails + 1))
     fi
   done
-  popd >/dev/null
 done
 
 echo "$nfiles files, $nlines lines, $nfails errors in source code"
