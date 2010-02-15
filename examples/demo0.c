@@ -1,6 +1,6 @@
 /*
  *  demo          demo for libcaca version 0.9
- *  Copyright (c) 2003-2009 Sam Hocevar <sam@hocevar.net>
+ *  Copyright (c) 2003-2010 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  This program is free software; you can redistribute it and/or

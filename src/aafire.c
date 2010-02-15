@@ -1,6 +1,6 @@
 /*
  *  cacafire      fire demo for libcaca
- *  Copyright (c) 2003 Sam Hocevar <sam@hocevar.net>
+ *  Copyright (c) 2003-2010 Sam Hocevar <sam@hocevar.net>
  *                1998, 1999, 2001 Jan Hubicka <hubicka@freesoft.cz>
  *                All Rights Reserved
  *

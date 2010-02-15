@@ -1,6 +1,7 @@
 /*
  *  conio-snake   snake game using the <conio.h> API
  *  Copyright (c) 2003-2004 Simon Huggins <webmaster#simonhuggins.com>
+ *                2009-2010 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  Permission to use, copy, modify, and/or distribute this software for any

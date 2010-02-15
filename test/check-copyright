@@ -1,0 +1,39 @@
+#!/bin/sh
+
+#
+# Check that the copyright information is valid
+#
+nfails=0
+nfiles=0
+for dir in $(make -s echo-dirs -C ..); do
+  if [ ! -d "../$dir" ]; then continue; fi
+  for x in $(make -s echo-sources -C ../$dir); do
+    case "$x" in
+      *.c|*.cpp|*.h|*.m|*.php|*.cs|*.java|.py|.pl)
+        nfiles=$(($nfiles + 1)) ;;
+      *)
+        continue ;;
+    esac
+    if ! grep 'Copyright *([cC])' "../$dir/$x" >/dev/null 2>&1; then
+      echo "error: $dir/$x lacks proper copyright information"
+      nfails=$(($nfails + 1))
+    elif [ -d ../.git ]; then
+      Y="$(git log "../$dir/$x" | head -n 3 | sed -ne 's/^Date.* \([0-9][0-9][0-9][0-9]\) .*/\1/p')"
+      if [ "$Y" != "" ]; then
+        if ! grep "$Y.*@" "../$dir/$x" >/dev/null 2>&1; then
+          echo "error: $dir/$x last modified in $Y, which is not in copyright"
+          nfails=$(($nfails + 1))
+        fi
+      fi
+    fi
+  done
+done
+
+echo "$nfiles files, $nfails errors in copyright information"
+
+if test "$nfails" != "0"; then
+  exit 1
+fi
+
+exit 0
+

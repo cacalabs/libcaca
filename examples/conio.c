@@ -15,6 +15,10 @@
  *Sorry for the inconvenience
  */
 
+/*Ported to libcaca
+ *Copyright (c) 2009-2010 Sam Hocevar <sam@hocevar.net>
+*/
+
 #include "config.h"
 
 #include <stdio.h>

@@ -1,6 +1,7 @@
 /*
  *  cpptest       libcaca++ rendering test
- *  Copyright (c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
+ *  Copyright (c) 2006-2007 Jean-Yves Lamoureux <jylam@lnxscene.org>
+ *                2009-2010 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  This program is free software. It comes without any warranty, to

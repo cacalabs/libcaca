@@ -1,6 +1,6 @@
 /*
  *  libcaca Ruby bindings
- *  Copyright (c) 2007 Pascal Terjan <pterjan@linuxfr.org>
+ *  Copyright (c) 2007-2010 Pascal Terjan <pterjan@linuxfr.org>
  *
  *  This library is free software. It comes without any warranty, to
  *  the extent permitted by applicable law. You can redistribute it

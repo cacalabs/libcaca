@@ -1,4 +1,5 @@
 /* multiboot.h - the header for Multiboot */
+/* copied into libcaca in 2010 by sam@hocevar.net */
 /* Copyright (C) 1999  Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify

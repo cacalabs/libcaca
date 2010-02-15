@@ -1,6 +1,6 @@
 /*
  *  colors        display all possible libcaca colour pairs
- *  Copyright (c) 2003-2004 Sam Hocevar <sam@hocevar.net>
+ *  Copyright (c) 2003-2010 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  This program is free software. It comes without any warranty, to

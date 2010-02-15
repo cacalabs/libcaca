@@ -1,6 +1,6 @@
 /*
  *  blit          libcaca blit test program
- *  Copyright (c) 2006-2009 Sam Hocevar <sam@hocevar.net>
+ *  Copyright (c) 2006-2010 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  This program is free software. It comes without any warranty, to

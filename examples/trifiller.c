@@ -1,6 +1,6 @@
 /*
  *  trifiller     texture mapping features
- *  Copyright (c) 2009 Jean-Yves Lamoureux <jylam@lnxscene.org>
+ *  Copyright (c) 2009-2010 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                All Rights Reserved
  *
  *  This program is free software. It comes without any warranty, to

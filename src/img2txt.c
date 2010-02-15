@@ -1,6 +1,6 @@
 /*
  *  img2txt       image to text converter
- *  Copyright (c) 2006-2009 Sam Hocevar <sam@hocevar.net>
+ *  Copyright (c) 2006-2010 Sam Hocevar <sam@hocevar.net>
  *                2007 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                All Rights Reserved
  *

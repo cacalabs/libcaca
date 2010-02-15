@@ -1,6 +1,6 @@
 /*
  *  event         event lister for libcaca
- *  Copyright (c) 2004 Sam Hocevar <sam@hocevar.net>
+ *  Copyright (c) 2004-2010 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  This program is free software. It comes without any warranty, to

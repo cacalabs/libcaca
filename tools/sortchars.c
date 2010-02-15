@@ -1,6 +1,6 @@
 /*
  *  sortchars     analyse ASCII characters
- *  Copyright (c) 2007 Sam Hocevar <sam@hocevar.net>
+ *  Copyright (c) 2007-2010 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *

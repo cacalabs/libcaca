@@ -8,11 +8,12 @@ if BUILD_DOCUMENTATION
 doxygen_tests = check-doxygen
 endif
 
-EXTRA_DIST = check-doxygen check-source check-win32
+EXTRA_DIST = check-copyright check-doxygen check-source check-win32
 
 noinst_PROGRAMS = simple bench $(cppunit_tests)
 
-TESTS = simple check-source check-win32 $(doxygen_tests) $(cppunit_tests)
+TESTS = simple check-copyright check-source check-win32 \
+        $(doxygen_tests) $(cppunit_tests)
 
 simple_SOURCES = simple.c
 simple_LDADD = ../caca/libcaca.la

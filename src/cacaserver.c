@@ -1,7 +1,7 @@
 /*
  *  cacaserver    Colour ASCII-Art library
  *  Copyright (c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
- *                2006-2009 Sam Hocevar <sam@hocevar.net>
+ *                2006-2010 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  This program is free software. It comes without any warranty, to
