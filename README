@@ -1,6 +1,10 @@
 
 Building libcaca
 
+   o  If you are using a Git or SVN checkout, you need to run the
+      bootstrap script in order to generate configure. This is not
+      necessary for official tarballs.
+
    o  Run configure then make. Useful configure flags are:
 
      --enable-ncurses: support for the ncurses library
