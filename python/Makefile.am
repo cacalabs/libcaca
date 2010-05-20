@@ -1,22 +1,17 @@
 
-EXTRA_DIST = caca.txt pypycaca.c pypycaca.h snake.py test1.py test2.py
+if USE_PYTHON
+python_PYTHON = \
+    caca/__init__.py \
+    caca/canvas.py \
+    caca/common.py \
+    caca/display.py \
+    caca/dither.py \
+    caca/font.py
+endif
 
-CC = gcc
-RM = rm -f
-CACAFLAGS = `caca-config --cflags`
-CACALIBS  = `caca-config --libs`
+EXTRA_DIST = \
+    setup.py \
+    examples/cacainfo.py \
+    examples/drawing.py \
+    examples/gol.py
 
-PYTHONFLAGS = -I/usr/include/python2.4
-PYTHONLIBS = -lpython2.4
-
-NAME = caca.so
-
-all:
-
-python:
-	$(CC) pypycaca.c -c $(CACAFLAGS) $(PYTHONFLAGS) -Wall
-	$(LD) pypycaca.o -o $(NAME) $(CACALIBS) $(PYTHONLIBS) -shared
-
-
-clean:
-	$(RM) *.o $(NAME)

@@ -6,7 +6,6 @@ Sam Hocevar <sam@hocevar.net>
 Jean-Yves Lamoureux <jylam@lnxscene.org>
  - cacaball
  - OpenGL driver
- - Pypycaca Python wrapper
  - exporters
  - network driver
  - C# bindings
@@ -28,5 +27,8 @@ Nicolas Vion <nico@picapo.net>
 
 Adrien Grand <jpountz@dinauz.org>
  - Java bindings
+
+Alex Foulon <alxf@lavabit.com>
+ - Python bindings
 
 */

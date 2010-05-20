@@ -85,6 +85,8 @@ AC_ARG_ENABLE(java,
   [  --enable-java           Java bindings (autodetected)])
 AC_ARG_ENABLE(cxx,
   [  --enable-cxx            C++ bindings (autodetected)])
+AC_ARG_ENABLE(python,
+  [  --enable-python         Python bindings (autodetected)])
 AC_ARG_ENABLE(ruby,
   [  --enable-ruby           Ruby bindings (autodetected)])
 
@@ -463,6 +465,13 @@ if test "${enable_java}" != "no" -a "${ac_cv_my_have_kernel}" != "yes"; then
   fi
 fi
 AM_CONDITIONAL(USE_JAVA, test "${ac_cv_my_have_java}" = "yes")
+
+# Build the Python bindings?
+ac_cv_my_have_python="no"
+if test "${enable_python}" != "no"; then
+  AM_PATH_PYTHON(2.2, ac_cv_my_have_python="yes", :)
+fi
+AM_CONDITIONAL(USE_PYTHON, test "${ac_cv_my_have_python}" = "yes")
 
 # Build the Ruby bindings?
 ac_cv_my_have_ruby="no"
