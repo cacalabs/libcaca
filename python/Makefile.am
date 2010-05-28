@@ -1,6 +1,7 @@
 
 if USE_PYTHON
-python_PYTHON = \
+cacadir = $(pythondir)/caca
+caca_PYTHON = \
     caca/__init__.py \
     caca/canvas.py \
     caca/common.py \
