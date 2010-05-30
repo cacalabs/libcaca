@@ -801,6 +801,67 @@ class Canvas(_Canvas):
 
         return _lib.caca_import_canvas_from_memory(self, data, length, fmt)
 
+    def export_to_memory(self, fmt):
+        """ Export a canvas into a foreign format.
+
+            fmt -- a string describing the input format
+
+            Valid values for format are:
+              - caca: export native libcaca files.
+              - ansi: export ANSI art (CP437 charset with ANSI colour codes).
+              - html: export an HTML page with CSS information.
+              - html3: export an HTML table that should be compatible with
+                       most navigators, including textmode ones.
+              - irc: export UTF-8 text with mIRC colour codes.
+              - ps: export a PostScript document.
+              - svg: export an SVG vector image.
+              - tga: export a TGA image.
+        """
+        #initialize pointer
+        p_size_t = ctypes.POINTER(ctypes.c_size_t)
+
+        _lib.caca_export_canvas_to_memory.argtypes = [
+                _Canvas, ctypes.c_char_p, p_size_t
+        ]
+        _lib.caca_export_canvas_to_memory.restype  = ctypes.c_void_p
+
+        ret = _lib.caca_export_canvas_to_memory(self, fmt,
+                                                p_size_t(ctypes.c_size_t()))
+        return ctypes.c_char_p(ret).value
+
+    def export_area_to_memory(self, x, y, width, height, fmt):
+        """ Export a canvas portion into a foreign format.
+
+            x       -- the leftmost coordinate of the area to export
+            y       -- the topmost coordinate of the area to export
+            width   -- the width of the area to export
+            height  -- the height of the area to export
+            fmt     -- a string describing the input format
+
+            Valid values for format are:
+              - caca: export native libcaca files.
+              - ansi: export ANSI art (CP437 charset with ANSI colour codes).
+              - html: export an HTML page with CSS information.
+              - html3: export an HTML table that should be compatible with
+                       most navigators, including textmode ones.
+              - irc: export UTF-8 text with mIRC colour codes.
+              - ps: export a PostScript document.
+              - svg: export an SVG vector image.
+              - tga: export a TGA image.
+        """
+        #initialize pointer
+        p_size_t = ctypes.POINTER(ctypes.c_size_t)
+
+        _lib.caca_export_area_to_memory.argtypes = [
+                _Canvas, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,
+                ctypes.c_char_p, p_size_t
+        ]
+        _lib.caca_export_area_to_memory.restype  = ctypes.c_void_p
+
+        ret = _lib.caca_export_area_to_memory(self, x, y, width, height,
+                                              fmt, p_size_t(ctypes.c_size_t()))
+        return ctypes.c_char_p(ret).value
+
 class NullCanvas(_Canvas):
     """ Represent a NULL canvas_t, eg to use as canvas mask for blit operations.
     """
