@@ -784,22 +784,95 @@ class Canvas(_Canvas):
 
         return _lib.caca_free_frame(self, idx)
 
-    def import_from_memory(self, data, length, fmt):
-        """ Import a memory buffer into the given libcaca canvas's current frame.
-        The current frame is resized accordingly and its contents are replaced
-        with the imported data.
+    def import_from_memory(self, data, fmt):
+        """ Import a memory buffer into a canvas.
 
-            data    -- a memory area containing the data to be loaded into the canvas
-            length  -- the size in bytes of the memory area
-            fmt     -- a string describing the input format
+            data -- a memory area containing the data to be loaded into the canvas
+            fmt  -- a string describing the input format
+
+            Valid values for format are:
+              - "": attempt to autodetect the file format.
+              - caca: import native libcaca files.
+              - text: import ASCII text files.
+              - ansi: import ANSI files.
+              - utf8: import UTF-8 files with ANSI colour codes.
         """
-
+        #set data size
+        length = ctypes.c_size_t(len(data))
         _lib.caca_import_canvas_from_memory.argtypes = [
-            Canvas, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p
+            Canvas, ctypes.c_char_p, ctypes.c_size_t, ctypes.c_char_p
         ]
         _lib.caca_import_canvas_from_memory.restype  = ctypes.c_int
 
         return _lib.caca_import_canvas_from_memory(self, data, length, fmt)
+
+    def import_from_file(self, filename, fmt):
+        """ Import a file into a canvas.
+
+            filename -- the name of the file to load
+            fmt      -- a string describing the input format
+
+            Valid values for format are:
+              - "": attempt to autodetect the file format.
+              - caca: import native libcaca files.
+              - text: import ASCII text files.
+              - ansi: import ANSI files.
+              - utf8: import UTF-8 files with ANSI colour codes.
+        """
+        _lib.caca_import_canvas_from_file.argtypes = [
+            _Canvas, ctypes.c_char_p, ctypes.c_char_p
+        ]
+        _lib.caca_import_canvas_from_file.restype  = ctypes.c_int
+
+        return _lib.caca_import_canvas_from_file(self, filename, fmt)
+
+    def import_area_from_memory(self, x, y, data, fmt):
+        """ Import a memory buffer into a canvas area.
+
+            x    -- the leftmost coordinate of the area to import to
+            y    -- the topmost coordinate of the area to import to
+            data -- a memory area containing the data to be loaded into the canvas
+            fmt  -- a string describing the input format
+
+            Valid values for format are:
+              - "": attempt to autodetect the file format.
+              - caca: import native libcaca files.
+              - text: import ASCII text files.
+              - ansi: import ANSI files.
+              - utf8: import UTF-8 files with ANSI colour codes.
+        """
+        #set data size
+        length = ctypes.c_size_t(len(data))
+        _lib.caca_import_area_from_memory.argtypes = [
+            _Canvas, ctypes.c_int, ctypes.c_int,
+            ctypes.c_char_p, ctypes.c_size_t, ctypes.c_char_p
+        ]
+        _lib.caca_import_area_from_memory.restype  = ctypes.c_int
+
+        return _lib.caca_import_area_from_memory(self, x, y, data, length, fmt)
+
+    def import_area_from_file(self, x, y, filename, fmt):
+        """ Import a file into a canvas area.
+
+            x        -- the leftmost coordinate of the area to import to
+            y        -- the topmost coordinate of the area to import to
+            filename -- the name of the file to be load
+            fmt      -- a string describing the input format
+
+            Valid values for format are:
+              - "": attempt to autodetect the file format.
+              - caca: import native libcaca files.
+              - text: import ASCII text files.
+              - ansi: import ANSI files.
+              - utf8: import UTF-8 files with ANSI colour codes.
+        """
+        _lib.caca_import_area_from_file.argtypes = [
+            _Canvas, ctypes.c_int, ctypes.c_int,
+            ctypes.c_char_p, ctypes.c_char_p
+        ]
+        _lib.caca_import_area_from_file.restype  = ctypes.c_int
+
+        return _lib.caca_import_area_from_file(self, x, y, filename, fmt)
 
     def export_to_memory(self, fmt):
         """ Export a canvas into a foreign format.
