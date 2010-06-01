@@ -68,6 +68,16 @@ class Canvas(_Canvas):
         if self._cv == 0:
             raise CanvasError, "Failed to create canvas"
 
+    def manage(self, *args, **kw):
+        """ Not implemented.
+        """
+        raise CanvasError, "Not implemented"
+
+    def unmanage(self, *args, **kw):
+        """ Not implemented.
+        """
+        raise CanvasError, "Not implemented"
+
     def set_size(self, width, height):
         """ Resize a canvas.
 
@@ -97,25 +107,15 @@ class Canvas(_Canvas):
 
         return _lib.caca_get_canvas_height(self)
 
-    def get_chars(self):
-        """ Get the canvas character array, return python list.
+    def get_chars(self, *args, **kw):
+        """ Not implemented.
         """
-        chlist = []
-        #get canvas size
-        w, h = self.get_width(), self.get_height()
+        raise CanvasError, "Not implemented"
 
-        _lib.caca_get_canvas_chars.argtypes = [_Canvas]
-        _lib.caca_get_canvas_chars.restype  = \
-                    ctypes.POINTER(ctypes.c_uint8 * (w * h))
-
-        plist = _lib.caca_get_canvas_chars(self)
-
-        #build character list
-        for item in plist.contents:
-            if item != 0:
-                chlist.append(chr(item))
-
-        return chlist
+    def get_attrs(self, *args, **kw):
+        """ Not implemented.
+        """
+        raise CanvasError, "Not implemented"
 
     def gotoxy(self, x, y):
         """ Set cursor position.
@@ -199,6 +199,11 @@ class Canvas(_Canvas):
         _lib.caca_printf.restype  = ctypes.c_int
 
         return _lib.caca_printf(self, x, y, fmt, *args)
+
+    def vprintf(self, *args, **kw):
+        """ Not implemented.
+        """
+        raise CanvasError, "Not implemented"
 
     def clear(self):
         """ Clear the canvas.
@@ -293,14 +298,17 @@ class Canvas(_Canvas):
         return _lib.caca_get_dirty_rect_count(self)
 
     def get_dirty_rect(self, idx):
-        """ Get a canvas's dirty rectangle.
+        """ Get a canvas's dirty rectangle. Return python dictionnary with
+            coords as keys: x, y, width, height.
 
             idx -- the requested rectangle index
         """
-        x = ctypes.POINTER(ctypes.c_int)
-        y = ctypes.POINTER(ctypes.c_int)
-        w = ctypes.POINTER(ctypes.c_int)
-        h = ctypes.POINTER(ctypes.c_int)
+        #initialize dictionnary and pointers
+        dct = None
+        x = ctypes.c_int()
+        y = ctypes.c_int()
+        width  = ctypes.c_int()
+        height = ctypes.c_int()
 
         _lib.caca_get_dirty_rect.argtypes = [
             _Canvas, ctypes.c_int,
@@ -309,10 +317,13 @@ class Canvas(_Canvas):
             ]
         _lib.caca_get_dirty_rect.restype  = ctypes.c_int
 
-        _lib.caca_get_dirty_rect(self, idx, x, y, w, h)
+        if _lib.caca_get_dirty_rect(self, idx, x, y, width, height) > -1:
+            dct = {
+                'x': x.value, 'y': y.value,
+                'width': width.value, 'height': height.value,
+            }
 
-        return [x.contents.value, y.contents.value,
-                w.contents.value, h.contents.value]
+        return dct
 
     def add_dirty_rect(self, x, y, width, height):
         """ Add an area to the canvas's dirty rectangle list.
