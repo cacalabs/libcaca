@@ -888,7 +888,7 @@ class Canvas(_Canvas):
     def export_to_memory(self, fmt):
         """ Export a canvas into a foreign format.
 
-            fmt -- a string describing the input format
+            fmt -- a string describing the output format
 
             Valid values for format are:
               - caca: export native libcaca files.
@@ -903,15 +903,15 @@ class Canvas(_Canvas):
         """
         #initialize pointer
         p_size_t = ctypes.POINTER(ctypes.c_size_t)
-
         _lib.caca_export_canvas_to_memory.argtypes = [
                 _Canvas, ctypes.c_char_p, p_size_t
         ]
-        _lib.caca_export_canvas_to_memory.restype  = ctypes.c_void_p
+        _lib.caca_export_canvas_to_memory.restype  = ctypes.POINTER(ctypes.c_char_p)
 
-        ret = _lib.caca_export_canvas_to_memory(self, fmt,
-                                                p_size_t(ctypes.c_size_t()))
-        return ctypes.c_char_p(ret).value
+        p = ctypes.c_size_t()
+        ret = _lib.caca_export_canvas_to_memory(self, fmt, p)
+
+        return ctypes.string_at(ret, p.value)
 
     def export_area_to_memory(self, x, y, width, height, fmt):
         """ Export a canvas portion into a foreign format.
@@ -920,7 +920,7 @@ class Canvas(_Canvas):
             y       -- the topmost coordinate of the area to export
             width   -- the width of the area to export
             height  -- the height of the area to export
-            fmt     -- a string describing the input format
+            fmt     -- a string describing the output format
 
             Valid values for format are:
               - caca: export native libcaca files.
@@ -942,9 +942,10 @@ class Canvas(_Canvas):
         ]
         _lib.caca_export_area_to_memory.restype  = ctypes.c_void_p
 
-        ret = _lib.caca_export_area_to_memory(self, x, y, width, height,
-                                              fmt, p_size_t(ctypes.c_size_t()))
-        return ctypes.c_char_p(ret).value
+        p = ctypes.c_size_t()
+        ret = _lib.caca_export_area_to_memory(self, x, y, width, height, fmt, p)
+
+        return ctypes.string_at(ret, p.value)
 
 class NullCanvas(_Canvas):
     """ Represent a NULL canvas_t, eg to use as canvas mask for blit operations.
