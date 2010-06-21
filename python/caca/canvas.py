@@ -61,16 +61,16 @@ class Canvas(_Canvas):
 
             width   -- the desired canvas width
             height  -- the desired canvas height
-            cv      -- pointer to libcaca canvas
+            pointer -- pointer to libcaca canvas
         """
         _lib.caca_create_canvas.argtypes = [ctypes.c_int, ctypes.c_int]
 
-        if cv is not None:
+        if pointer is not None:
             self._cv = _lib.caca_create_canvas(width, height)
             if self._cv == 0:
                 raise CanvasError, "Failed to create canvas"
         else:
-            self._cv = cv
+            self._cv = pointer
 
     def manage(self, *args, **kw):
         """ Not implemented.
