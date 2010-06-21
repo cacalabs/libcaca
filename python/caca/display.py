@@ -17,7 +17,7 @@
 import ctypes
 
 from caca import _lib
-from caca.canvas import _Canvas
+from caca.canvas import _Canvas, Canvas
 
 class _Display(object):
     """ Model for Display objects.
@@ -63,6 +63,9 @@ class Display(_Display):
             ]
             self._dp = _lib.caca_create_display_with_driver(cv, driver)
 
+        if self._dp == 0:
+            raise DisplayError, "Failed to create display"
+
     def get_driver(self):
         """ Return the caca graphical context's current output driver.
         """
@@ -89,8 +92,9 @@ class Display(_Display):
         """ Get the canvas attached to a caca graphical context.
         """
         _lib.caca_get_canvas.argtypes = [_Display]
+        _lib.caca_get_canvas.restype  = ctypes.POINTER(ctypes.c_char_p)
 
-        return _lib.caca_get_canvas(self)
+        return Canvas(pointer=_lib.caca_get_canvas(self))
 
     def refresh(self):
         """ Flush pending changes and redraw the screen.
@@ -193,6 +197,9 @@ class Display(_Display):
         _lib.caca_get_mouse_y.restype  = ctypes.c_int
 
         return _lib.caca_get_mouse_y(self)
+
+class DisplayError(Exception):
+    pass
 
 class Event(ctypes.Structure):
     """ Object to store libcaca event.

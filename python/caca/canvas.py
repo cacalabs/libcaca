@@ -56,17 +56,21 @@ class Canvas(_Canvas):
     """ Canvas object, methods are libcaca functions with canvas_t as
         first parameter.
     """
-    def __init__(self, width=0, height=0):
+    def __init__(self, width=0, height=0, pointer=None):
         """ Canvas constructor.
 
             width   -- the desired canvas width
             height  -- the desired canvas height
+            cv      -- pointer to libcaca canvas
         """
         _lib.caca_create_canvas.argtypes = [ctypes.c_int, ctypes.c_int]
 
-        self._cv = _lib.caca_create_canvas(width, height)
-        if self._cv == 0:
-            raise CanvasError, "Failed to create canvas"
+        if cv is not None:
+            self._cv = _lib.caca_create_canvas(width, height)
+            if self._cv == 0:
+                raise CanvasError, "Failed to create canvas"
+        else:
+            self._cv = cv
 
     def manage(self, *args, **kw):
         """ Not implemented.
@@ -940,7 +944,7 @@ class Canvas(_Canvas):
                 _Canvas, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,
                 ctypes.c_char_p, p_size_t
         ]
-        _lib.caca_export_area_to_memory.restype  = ctypes.c_void_p
+        _lib.caca_export_area_to_memory.restype  = ctypes.POINTER(ctypes.c_char_p)
 
         p = ctypes.c_size_t()
         ret = _lib.caca_export_area_to_memory(self, x, y, width, height, fmt, p)
