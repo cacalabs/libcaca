@@ -65,7 +65,7 @@ class Canvas(_Canvas):
         """
         _lib.caca_create_canvas.argtypes = [ctypes.c_int, ctypes.c_int]
 
-        if pointer is not None:
+        if pointer is None:
             self._cv = _lib.caca_create_canvas(width, height)
             if self._cv == 0:
                 raise CanvasError, "Failed to create canvas"
