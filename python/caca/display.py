@@ -155,15 +155,7 @@ class Display(_Display):
         return _lib.caca_set_cursor(self, flag)
 
     def get_event(self, event_mask, event, timeout):
-        """ Poll the event queue for mouse or keyboard events matching the event mask
-        and return the first matching event. Non-matching events are discarded.
-        If event_mask is zero, the function returns immediately.
-        The timeout value tells how long this function needs to wait for an event.
-        A value of zero returns immediately and the function returns zero if no more events
-        are pending in the queue. A negative value causes the function to wait indefinitely
-        until a matching event is received.
-        If not null, ev will be filled with information about the event received. If null,
-        the function will return but no information about the event will be sent.
+        """ Get the next mouse or keyboard input event.
 
             event_mask  -- bitmask of requested events
             event       -- a pointer to caca_event structure or NULL
@@ -175,24 +167,16 @@ class Display(_Display):
         return _lib.caca_get_event(self, event_mask, ctypes.byref(event), timeout)
 
     def get_mouse_x(self):
-        """ Return the X coordinate of the mouse position last time it was detected.
-        This function is not reliable if the ncurses or S-Lang drivers are being used,
-        because mouse position is only detected when the mouse is clicked.
-        Other drivers such as X11 work well.
+        """ Return the X mouse coordinate.
         """
-
         _lib.caca_get_mouse_x.argtypes = [Display]
         _lib.caca_get_mouse_x.restype  = ctypes.c_int
 
         return _lib.caca_get_mouse_x(self)
 
     def get_mouse_y(self):
-        """ Return the Y coordinate of the mouse position last time it was detected.
-        This function is not reliable if the ncurses or S-Lang drivers are being used,
-        because mouse position is only detected when the mouse is clicked.
-        Other drivers such as X11 work well.
+        """ Return the Y mouse coordinate.
         """
-
         _lib.caca_get_mouse_y.argtypes = [Display]
         _lib.caca_get_mouse_y.restype  = ctypes.c_int
 
@@ -214,45 +198,76 @@ class Event(ctypes.Structure):
         return ctypes.byref(self)
 
     def get_type(self):
-        """ Return the type of an event. This function may always be called
-            on an event after caca_get_event() was called, and its return value
-            indicates which other functions may be called.
+        """ Return an event's type.
         """
         _lib.caca_get_event_type.argtypes = [Event]
-        _lib.caca_get_event_type.restype = ctypes.c_int
+        _lib.caca_get_event_type.restype  = ctypes.c_int
 
         return _lib.caca_get_event_type(self)
 
     def get_key_ch(self):
-        """ Return either the ASCII value for an event's key, or if the key is not
-            an ASCII character, an appropriate KEY_* value
+        """ Return a key press or key release event's value.
         """
         _lib.caca_get_event_key_ch.argtypes = [Event]
-        _lib.caca_get_event_key_ch.restype = ctypes.c_int
+        _lib.caca_get_event_key_ch.restype  = ctypes.c_int
 
         return _lib.caca_get_event_key_ch(self)
 
     def get_key_utf32(self):
-        """ Return the UTF-32/UCS-4 value for an event's key if it resolves
-            to a printable character.
+        """ Not implemented.
         """
-        _lib.caca_get_event_key_utf32.argtypes = [Event]
-        _lib.caca_get_event_key_utf32.restype = ctypes.c_uint32
-
-        return _lib.caca_get_event_key_utf32(self)
+        raise DisplayError, "Not implemented"
 
     def get_key_utf8(self):
-        """ Write the UTF-8 value for an event's key if it resolves to a
-            printable character. Up to 6 UTF-8 bytes and a null termination
-            are written.
+        """ Return a key press or key release event's UTF-8 value.
         """
         # set buffer for writing utf8 value
-        buf = ctypes.c_buffer(2)
+        buf = ctypes.c_buffer(7)
 
         _lib.caca_get_event_key_utf8.argtypes = [Event, ctypes.c_char_p]
-        _lib.caca_get_event_key_utf8.restype = ctypes.c_int
+        _lib.caca_get_event_key_utf8.restype  = ctypes.c_int
 
         _lib.caca_get_event_key_utf8(self, buf)
 
         return buf
+
+    def get_mouse_button(self):
+        """ Return a mouse press or mouse release event's button.
+        """
+        _lib.caca_get_event_mouse_button.argtypes = [Event]
+        _lib.caca_get_event_mouse_button.restype  = ctypes.c_int
+
+        return _lib.caca_get_event_mouse_button(self)
+
+    def get_mouse_x(self):
+        """ Return a mouse motion event's X coordinate.
+        """
+        _lib.caca_get_event_mouse_x.argtypes = [Event]
+        _lib.caca_get_event_mouse_x.restype  = ctypes.c_int
+
+        return _lib.caca_get_event_mouse_x(self)
+
+    def get_mouse_y(self):
+        """ Return a mouse motion event's Y coordinate.
+        """
+        _lib.caca_get_event_mouse_y.argtypes = [Event]
+        _lib.caca_get_event_mouse_y.restype  = ctypes.c_int
+
+        return _lib.caca_get_event_mouse_y(self)
+
+    def get_resize_width(self):
+        """ Return a resize event's display width value.
+        """
+        _lib.caca_get_event_resize_width.argtypes = [Event]
+        _lib.caca_get_event_resize_width.restype  = ctypes.c_int
+
+        return _lib.caca_get_event_resize_width(self)
+
+    def get_resize_height(self):
+        """ Return a resize event's display height value.
+        """
+        _lib.caca_get_event_resize_height.argtypes = [Event]
+        _lib.caca_get_event_resize_height.restype  = ctypes.c_int
+
+        return _lib.caca_get_event_resize_height(self)
 
