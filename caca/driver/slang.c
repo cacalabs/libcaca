@@ -179,7 +179,7 @@ static int slang_init_graphics(caca_display_t *dp)
 
 #ifdef HAVE_SLSMG_UTF8_ENABLE
     SLsmg_utf8_enable(1); /* 1 == force, 0 == disable, -1 == autodetect */
-    SLtt_utf8_enable(1);
+    SLtt_utf8_enable(-1);
 #endif
 
     caca_add_dirty_rect(dp->cv, 0, 0, dp->cv->width, dp->cv->height);
