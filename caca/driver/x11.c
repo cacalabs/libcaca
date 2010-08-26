@@ -598,11 +598,14 @@ static int x11_get_event(caca_display_t *dp, caca_privevent_t *ev)
         else
             continue;
 
+        if(XFilterEvent(&xevent, None) == True)
+            continue;
+
 #if defined X_HAVE_UTF8_STRING
         if(Xutf8LookupString(dp->drv.p->ic, &xevent.xkey, ev->data.key.utf8, 8, NULL, NULL))
         {
             ev->data.key.utf32 = caca_utf8_to_utf32(ev->data.key.utf8, NULL);
-            if(ev->data.key.utf32 <= 0x7f)
+            if(ev->data.key.utf32 <= 0xff)
             {
                 ev->data.key.ch = ev->data.key.utf32;
             } else {
