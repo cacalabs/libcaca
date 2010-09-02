@@ -262,7 +262,11 @@ static int ncurses_init_graphics(caca_display_t *dp)
     mouseinterval(-1); /* No click emulation */
 
     /* Set the escape delay to a ridiculously low value */
+#if defined set_escdelay
+    set_escdelay(10);
+#else
     ESCDELAY = 10;
+#endif
 
     /* Activate colour */
     start_color();
@@ -472,28 +476,36 @@ static int ncurses_get_event(caca_display_t *dp, caca_privevent_t *ev)
             case BUTTON1_CLICKED: CLICK(1); break;
             case BUTTON1_DOUBLE_CLICKED: CLICK(1); CLICK(1); break;
             case BUTTON1_TRIPLE_CLICKED: CLICK(1); CLICK(1); CLICK(1); break;
+#if defined BUTTON1_RESERVED_EVENT
             case BUTTON1_RESERVED_EVENT: break;
+#endif
 
             case BUTTON2_PRESSED: PRESS(2); break;
             case BUTTON2_RELEASED: RELEASE(2); break;
             case BUTTON2_CLICKED: CLICK(2); break;
             case BUTTON2_DOUBLE_CLICKED: CLICK(2); CLICK(2); break;
             case BUTTON2_TRIPLE_CLICKED: CLICK(2); CLICK(2); CLICK(2); break;
+#if defined BUTTON2_RESERVED_EVENT
             case BUTTON2_RESERVED_EVENT: break;
+#endif
 
             case BUTTON3_PRESSED: PRESS(3); break;
             case BUTTON3_RELEASED: RELEASE(3); break;
             case BUTTON3_CLICKED: CLICK(3); break;
             case BUTTON3_DOUBLE_CLICKED: CLICK(3); CLICK(3); break;
             case BUTTON3_TRIPLE_CLICKED: CLICK(3); CLICK(3); CLICK(3); break;
+#if defined BUTTON3_RESERVED_EVENT
             case BUTTON3_RESERVED_EVENT: break;
+#endif
 
             case BUTTON4_PRESSED: PRESS(4); break;
             case BUTTON4_RELEASED: RELEASE(4); break;
             case BUTTON4_CLICKED: CLICK(4); break;
             case BUTTON4_DOUBLE_CLICKED: CLICK(4); CLICK(4); break;
             case BUTTON4_TRIPLE_CLICKED: CLICK(4); CLICK(4); CLICK(4); break;
+#if defined BUTTON4_RESERVED_EVENT
             case BUTTON4_RESERVED_EVENT: break;
+#endif
 
             default:
                 break;
