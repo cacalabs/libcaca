@@ -188,7 +188,7 @@ int main(int argc, char *argv[])
 
     printf("static size_t const %s_size = %i;\n",
            prefix, 4 + control_size + data_size);
-    printf("static uint8_t %s_data[%i] =\n",
+    printf("static uint8_t const %s_data[%i] =\n",
            prefix, 4 + control_size + data_size);
     printf("{\n");
 
