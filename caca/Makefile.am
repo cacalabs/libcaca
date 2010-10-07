@@ -55,7 +55,7 @@ libcaca_la_DEPENDENCIES = \
 	$(NULL)
 libcaca_la_CPPFLAGS = $(AM_CPPFLAGS) @CACA_CFLAGS@ -D__LIBCACA__
 libcaca_la_LDFLAGS = -no-undefined -version-number @LT_VERSION@
-libcaca_la_LIBADD = @CACA_LIBS@ $(ZLIB_LIBS)
+libcaca_la_LIBADD = @CACA_LIBS@ $(ZLIB_LIBS) $(GETOPT_LIBS)
 
 codec_source = \
 	codec/import.c \

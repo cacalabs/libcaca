@@ -32,7 +32,7 @@ cacaserver_LDADD = ../caca/libcaca.la
 img2txt_SOURCES = img2txt.c $(GETOPT) common-image.c common-image.h
 img2txt_LDADD = ../caca/libcaca.la
 img2txt_CFLAGS = $(IMLIB2_CFLAGS)
-img2txt_LDFLAGS = $(IMLIB2_LIBS) $(GETOPT_LIBS)
+img2txt_LDFLAGS = $(IMLIB2_LIBS)
 
 if USE_NETWORK
 fcntl_programs = cacaserver
