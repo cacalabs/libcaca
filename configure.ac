@@ -1,5 +1,5 @@
 
-AC_INIT(libcaca, 0.99.beta17)
+AC_INIT(libcaca, 0.99.beta18)
 AC_PREREQ(2.50)
 AC_CONFIG_AUX_DIR(.auto)
 AC_CANONICAL_SYSTEM
