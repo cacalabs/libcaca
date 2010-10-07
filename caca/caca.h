@@ -138,6 +138,19 @@ struct caca_event
 #endif
 };
 
+/** \brief Option parsing.
+ *
+ * This structure contains commandline parsing information for systems
+ * where getopt_long() is unavailable.
+ */
+struct caca_option
+{
+    char const *name;
+    int has_arg;
+    int *flag;
+    int val;
+};
+
 /** \brief Special key values.
  *
  *  Special key values returned by caca_get_event() for which there is no
@@ -506,6 +519,18 @@ __extern int caca_get_event_mouse_x(caca_event_t const *);
 __extern int caca_get_event_mouse_y(caca_event_t const *);
 __extern int caca_get_event_resize_width(caca_event_t const *);
 __extern int caca_get_event_resize_height(caca_event_t const *);
+/*  @} */
+
+/** \defgroup caca_process libcaca process management
+ *
+ *  These functions help with various process handling tasks such as
+ *  option parsing, DLL injection.
+ *
+ *  @{ */
+__extern int caca_optind;
+__extern char *caca_optarg;
+__extern int caca_getopt(int, char * const[], char const *,
+                         struct caca_option const *, int *);
 /*  @} */
 
 /** \brief DOS colours

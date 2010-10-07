@@ -11,39 +11,51 @@
  */
 
 /*
- *  mygetopt.c: getopt_long reimplementation
+ *  getopt.c: getopt_long reimplementation
  */
 
 #include "config.h"
 
-#if defined HAVE_STDINT_H
-#   include <stdint.h>
-#elif defined HAVE_INTTYPES_H
-#   include <inttypes.h>
+#if !defined __KERNEL__
+#   include <stdio.h>
+#   include <string.h>
+#   if defined HAVE_GETOPT_H && defined HAVE_GETOPT_LONG
+#       include <getopt.h>
+#   endif
 #endif
 
-#include <stdio.h>
-#include <string.h>
+#include "caca.h"
+#include "caca_internals.h"
 
-#include "mygetopt.h"
+int   caca_optind = 1;
+char *caca_optarg = NULL;
 
-int   myoptind = 1;
-char *myoptarg = NULL;
-
-/* XXX: this getopt_long implementation should not be trusted for other
- * applications without any serious peer reviewing. It “just works” with
- * zzuf but may fail miserably in other programs. */
-int mygetopt(int argc, char * const _argv[], const char *optstring,
-             const struct myoption *longopts, int *longindex)
+int caca_getopt(int argc, char * const _argv[], char const *optstring,
+                struct caca_option const *longopts, int *longindex)
 {
+#if defined HAVE_GETOPT_LONG
+    int ret;
+    optind = caca_optind;
+    optarg = caca_optarg;
+    ret = getopt_long(argc, _argv, optstring,
+                      (struct option const *)longopts, longindex);
+    caca_optind = optind;
+    caca_optarg = optarg;
+    return ret;
+
+#else
+    /* XXX: this getopt_long implementation should not be trusted for other
+     * applications without any serious peer reviewing. It “just works” with
+     * zzuf and a few libcaca programs but may fail miserably in other
+     * programs. */
     char **argv = (char **)(uintptr_t)_argv;
     char *flag;
     int i;
 
-    if(myoptind >= argc)
+    if(caca_optind >= argc)
         return -1;
 
-    flag = argv[myoptind];
+    flag = argv[caca_optind];
 
     if(flag[0] == '-' && flag[1] != '-')
     {
@@ -57,21 +69,21 @@ int mygetopt(int argc, char * const _argv[], const char *optstring,
         if(!tmp || ret == ':')
             return '?';
 
-        myoptind++;
+        caca_optind++;
         if(tmp[1] == ':')
         {
             if(flag[2] != '\0')
-                myoptarg = flag + 2;
+                caca_optarg = flag + 2;
             else
-                myoptarg = argv[myoptind++];
+                caca_optarg = argv[caca_optind++];
             return ret;
         }
 
         if(flag[2] != '\0')
         {
             flag[1] = '-';
-            myoptind--;
-            argv[myoptind]++;
+            caca_optind--;
+            argv[caca_optind]++;
         }
 
         return ret;
@@ -96,15 +108,15 @@ int mygetopt(int argc, char * const _argv[], const char *optstring,
                     goto bad_opt;
                 if(longindex)
                     *longindex = i;
-                myoptind++;
-                myoptarg = flag + 2 + l + 1;
+                caca_optind++;
+                caca_optarg = flag + 2 + l + 1;
                 return longopts[i].val;
             case '\0':
                 if(longindex)
                     *longindex = i;
-                myoptind++;
+                caca_optind++;
                 if(longopts[i].has_arg)
-                    myoptarg = argv[myoptind++];
+                    caca_optarg = argv[caca_optind++];
                 return longopts[i].val;
             default:
                 break;
@@ -116,5 +128,6 @@ int mygetopt(int argc, char * const _argv[], const char *optstring,
     }
 
     return -1;
+#endif
 }
 

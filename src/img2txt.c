@@ -19,18 +19,6 @@
 #   include <stdlib.h>
 #endif
 
-#if !defined HAVE_GETOPT_LONG
-#   include "mygetopt.h"
-#elif defined HAVE_GETOPT_H
-#   include <getopt.h>
-#endif
-#if defined HAVE_GETOPT_LONG
-#   define mygetopt getopt_long
-#   define myoptind optind
-#   define myoptarg optarg
-#   define myoption option
-#endif
-
 #include "caca.h"
 
 #include "common-image.h"
@@ -110,7 +98,7 @@ int main(int argc, char **argv)
     for(;;)
     {
         int option_index = 0;
-        static struct myoption long_options[] =
+        static struct caca_option long_options[] =
         {
             { "width",       1, NULL, 'W' },
             { "height",      1, NULL, 'H' },
@@ -124,38 +112,39 @@ int main(int argc, char **argv)
             { "help",        0, NULL, 'h' },
             { "version",     0, NULL, 'v' },
         };
-        int c = mygetopt(argc, argv, "W:H:f:d:g:b:c:hvx:y:", long_options, &option_index);
+        int c = caca_getopt(argc, argv, "W:H:f:d:g:b:c:hvx:y:",
+                            long_options, &option_index);
         if(c == -1)
             break;
 
         switch(c)
         {
         case 'W': /* --width */
-            cols = atoi(myoptarg);
+            cols = atoi(caca_optarg);
             break;
         case 'H': /* --height */
-            lines = atoi(myoptarg);
+            lines = atoi(caca_optarg);
             break;
         case 'x': /* --width */
-            font_width = atoi(myoptarg);
+            font_width = atoi(caca_optarg);
             break;
         case 'y': /* --height */
-            font_height = atoi(myoptarg);
+            font_height = atoi(caca_optarg);
             break;
         case 'f': /* --format */
-            format = myoptarg;
+            format = caca_optarg;
             break;
         case 'd': /* --dither */
-            dither = myoptarg;
+            dither = caca_optarg;
             break;
         case 'g': /* --gamma */
-            gamma = atof(myoptarg);
+            gamma = atof(caca_optarg);
             break;
         case 'b': /* --brightness */
-            brightness = atof(myoptarg);
+            brightness = atof(caca_optarg);
             break;
         case 'c': /* --contrast */
-            contrast = atof(myoptarg);
+            contrast = atof(caca_optarg);
             break;
         case 'h': /* --help */
             usage(argc, argv);

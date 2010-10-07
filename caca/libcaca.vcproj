@@ -469,6 +469,10 @@
 			>
 		</File>
 		<File
+			RelativePath="getopt.c"
+			>
+		</File>
+		<File
 			RelativePath="graphics.c"
 			>
 		</File>
