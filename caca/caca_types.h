@@ -11,22 +11,27 @@
  */
 
 /*
- *  This file contains definitions for the C99 integer types.
+ *  This file contains definitions for required C99 integer types.
  */
 
 #ifndef __CACA_TYPES_H__
 #define __CACA_TYPES_H__
 
 #if !defined _MSC_VER
-    /* FIXME: we should detect platforms with <inttypes.h> and no <stdint.h> */
+    /* FIXME: detect platforms with <inttypes.h> and no <stdint.h> */
 #   include <stdint.h>
 #   include <unistd.h>
+
+#elif defined _MSC_STDINT_H_ /* msinttypes */ \
+   || defined NM_DEFINED_FIXED_WIDTH_TYPEDEFS /* Morpheme */
+    /* Someone already defined things for us: do nothing */
+
 #else
 #   if _MSC_VER >= 1600
         /* Visual Studio 2010 and later */
 #       include <stdint.h>
 #   else
-#       include <windows.h>
+#       include <intsafe.h>
 #       if _MSC_VER >= 1300
             typedef signed __int8 int8_t;
             typedef signed __int16 int16_t;
@@ -47,7 +52,7 @@
             typedef unsigned long long int uint64_t;
 #       endif
 #       if defined _WIN64
-            /* Win64, only (u)intptr_t and size_t are present */
+            /* Win64, (u)intptr_t and size_t are present */
             typedef int ssize_t;
 #       else
             /* Win32, only (u)intptr_t is present */
@@ -57,10 +62,10 @@
 #   endif
 #endif
 
+#if 0
 /* fallback: nothing is known, we assume the platform is 32-bit and
  * sizeof(long) == sizeof(void *). We don't typedef directly because we
  * have no idea what other typedefs have already been made. */
-#if 0
 typedef signed char _caca_int8_t;
 typedef signed short _caca_int16_t;
 typedef signed long int _caca_int32_t;
