@@ -369,21 +369,6 @@ AC_SUBST(X11_LIBS)
 AC_SUBST(GL_CFLAGS)
 AC_SUBST(GL_LIBS)
 
-# How to get the C99 types. See caca/caca_types.h.in for details about
-# the CACA_TYPES variable
-if test "${ac_cv_my_have_kernel}" = "yes"; then
-  CACA_TYPES=0
-else
-  AC_CHECK_HEADERS(stdint.h,
-    [CACA_TYPES=1],
-    [AC_CHECK_HEADERS(inttypes.h,
-      [CACA_TYPES=2],
-      [AC_CHECK_HEADERS(windows.h,
-        [CACA_TYPES=3],
-        [CACA_TYPES=0])])])
-fi
-AC_SUBST(CACA_TYPES)
-
 # Optimizations
 CFLAGS="${CFLAGS} -g -O2 -fno-strength-reduce -fomit-frame-pointer"
 # Code qui fait des warnings == code de porc == deux baffes dans ta gueule
@@ -579,7 +564,6 @@ AC_CONFIG_FILES([
   win32/Makefile
 ])
 AC_CONFIG_FILES([
-  caca/caca_types.h
   caca/caca.pc
   caca-sharp/caca-sharp.dll.config
   cxx/caca++.pc

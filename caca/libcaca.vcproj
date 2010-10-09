@@ -421,7 +421,7 @@
 			>
 		</File>
 		<File
-			RelativePath="..\win32\caca_types.h"
+			RelativePath="caca_types.h"
 			>
 		</File>
 		<File

@@ -24,8 +24,6 @@ stamp-*
 *-stamp
 INSTALL
 caca-config
-# libcaca binaries
-caca/caca_types.h
 # caca-sharp binaries
 caca-sharp/*.dll
 caca-sharp/*.config

@@ -1,8 +1,8 @@
 
-EXTRA_DIST = caca_types.h.in caca.pc.in \
+EXTRA_DIST = caca.pc.in \
              mono9.data monobold12.data \
              libcaca.vcproj libcaca.def
-DISTCLEANFILES = caca_types.h caca.pc
+DISTCLEANFILES = caca.pc
 
 AM_CPPFLAGS = -I$(top_srcdir) -DPLUGINDIR=\"$(plugindir)\"
 
