@@ -51,14 +51,14 @@
             typedef unsigned int uint32_t;
             typedef unsigned long long int uint64_t;
 #       endif
-#       if defined _WIN64
-            /* Win64, (u)intptr_t and size_t are present */
-            typedef int ssize_t;
-#       else
-            /* Win32, only (u)intptr_t is present */
-            typedef int ssize_t;
-            typedef unsigned int size_t;
-#       endif
+#   endif
+#   if defined _WIN64
+        /* Win64, (u)intptr_t and size_t are present */
+        typedef int ssize_t;
+#   else
+        /* Win32, only (u)intptr_t is present */
+        typedef int ssize_t;
+        typedef unsigned int size_t;
 #   endif
 #endif
 
