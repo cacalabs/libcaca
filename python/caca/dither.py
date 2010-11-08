@@ -68,7 +68,7 @@ class Dither(_Dither):
         ]
 
         self._dither = _lib.caca_create_dither(bpp, width, height, pitch,
-                                               bmask, gmask, rmask, amask)
+                                               rmask, gmask, bmask, amask)
 
         if self._dither == 0:
             raise DitherError, "Failed to create dither object"
