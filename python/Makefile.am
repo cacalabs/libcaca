@@ -14,5 +14,6 @@ EXTRA_DIST = \
     setup.py \
     examples/cacainfo.py \
     examples/drawing.py \
+    examples/img2txt.py \
     examples/gol.py
 
