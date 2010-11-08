@@ -28,7 +28,7 @@ from caca.dither import Dither, DitherError
 RMASK = 0x00ff0000
 GMASK = 0x0000ff00
 BMASK = 0x000000ff
-AMASK = 0x00000000
+AMASK = 0xff000000
 BPP = 32
 DEPTH = 4
 
@@ -189,8 +189,16 @@ def main():
 
     #init dither
     try:
+        #convert rgb to rgba
+        if img.mode == 'RGB':
+            img = img.convert('RGBA')
+        #reorder rgba
+        if img.mode == 'RGBA':
+            r, g, b, a = img.split()
+            img = Image.merge("RGBA", (b, g, r, a))
+
         dit = Dither(BPP, img.size[0], img.size[1], DEPTH * img.size[0],
-                      RMASK, GMASK, BMASK, AMASK)
+                        RMASK, GMASK, BMASK, AMASK)
     except DitherError, err:
         sys.stderr.write("%s\n" % err)
         sys.exit(127)
