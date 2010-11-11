@@ -951,6 +951,34 @@ class Canvas(_Canvas):
 
         return ctypes.string_at(ret, p.value)
 
+    def set_figfont(self, filename):
+        """	Load a figfont and attach it to a canvas.
+
+            filename    -- the figfont file to load.
+        """
+        _lib.caca_canvas_set_figfont.argtypes = [_Canvas, ctypes.c_char_p]
+        _lib.caca_canvas_set_figfont.restype  = ctypes.c_int
+
+        return _lib.caca_canvas_set_figfont(self, filename)
+
+    def put_figchar(self, ch):
+        """ Paste a character using the current figfont.
+
+            ch  -- the character to paste
+        """
+        _lib.caca_put_figchar.argtypes = [_Canvas, ctypes.c_uint32]
+        _lib.caca_put_figchar.restype  = ctypes.c_int
+
+        return _lib.caca_put_figchar(self, ord(ch))
+
+    def flush_figlet(self):
+        """ Flush the figlet context
+        """
+        _lib.caca_flush_figlet.argtypes = [_Canvas]
+        _lib.caca_flush_figlet.restype  = ctypes.c_int
+
+        return _lib.caca_flush_figlet(self)
+
 class NullCanvas(_Canvas):
     """ Represent a NULL canvas_t, eg to use as canvas mask for blit operations.
     """
