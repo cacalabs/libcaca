@@ -12,8 +12,15 @@ endif
 
 EXTRA_DIST = \
     setup.py \
+    examples/blit.py \
     examples/cacainfo.py \
+    examples/colors.py \
     examples/drawing.py \
+    examples/driver.py \
+    examples/event.py \
+    examples/figfont.py \
+    examples/frames.py \
     examples/img2txt.py \
-    examples/gol.py
+    examples/gol.py \
+    examples/text.py
 
