@@ -17,6 +17,7 @@
 import ctypes
 
 from caca import _lib
+from caca.font import _Font
 
 class _Canvas(object):
     """ Model for Canvas objects.
@@ -978,6 +979,23 @@ class Canvas(_Canvas):
         _lib.caca_flush_figlet.restype  = ctypes.c_int
 
         return _lib.caca_flush_figlet(self)
+
+    def render(self, font, buf, width, height, pitch):
+        """ Render the canvas onto an image buffer.
+
+            font    -- a Font() object
+            buf     -- the image buffer
+            width   -- the width (in pixels) of the image
+            heigth  -- the height (in pixels) of the image
+            pitch   -- the pitch (in bytes) of the image
+        """
+        _lib.caca_render_canvas.argtypes = [
+            _Canvas, _Font, ctypes.c_char_p,
+            ctypes.c_int, ctypes.c_int, ctypes.c_int
+        ]
+        _lib.caca_render_canvas.restype  = ctypes.c_int
+
+        return _lib.caca_render_canvas(self, font, buf, width, height, pitch)
 
 class NullCanvas(_Canvas):
     """ Represent a NULL canvas_t, eg to use as canvas mask for blit operations.
