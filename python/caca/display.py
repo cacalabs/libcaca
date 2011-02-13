@@ -219,7 +219,8 @@ class Event(ctypes.Structure):
         raise DisplayError, "Not implemented"
 
     def get_key_utf8(self):
-        """ Return a key press or key release event's UTF-8 value.
+        """ Return a key press or key release event's UTF-8 value
+            as python string.
         """
         # set buffer for writing utf8 value
         buf = ctypes.c_buffer(7)
@@ -229,7 +230,14 @@ class Event(ctypes.Structure):
 
         _lib.caca_get_event_key_utf8(self, buf)
 
-        return buf
+        raw = []
+        for item in list(buf.raw):
+            if item == '\x00':
+                break
+            else:
+                raw.append(item)
+
+        return "".join(raw)
 
     def get_mouse_button(self):
         """ Return a mouse press or mouse release event's button.
