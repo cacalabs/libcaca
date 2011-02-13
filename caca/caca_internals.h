@@ -19,7 +19,6 @@
 
 typedef struct caca_timer caca_timer_t;
 typedef struct caca_privevent caca_privevent_t;
-typedef struct caca_figfont caca_figfont_t;
 
 #if !defined(_DOXYGEN_SKIP_ME)
 #   define STAT_VALUES 32
@@ -75,7 +74,7 @@ struct caca_canvas
     uint32_t curattr;
 
     /* FIGfont management */
-    caca_figfont_t *ff;
+    caca_charfont_t *ff;
 };
 
 /* Graphics driver */

@@ -29,7 +29,7 @@
 #include "caca.h"
 #include "caca_internals.h"
 
-struct caca_figfont
+struct caca_charfont
 {
     int term_width;
     int x, y, w, h, lines;
@@ -47,17 +47,17 @@ struct caca_figfont
 };
 
 static uint32_t hsmush(uint32_t ch1, uint32_t ch2, int rule);
-static caca_figfont_t * open_figfont(char const *);
-static int free_figfont(caca_figfont_t *);
+static caca_charfont_t * open_charfont(char const *);
+static int free_charfont(caca_charfont_t *);
 
 /** \brief load a figfont and attach it to a canvas */
 int caca_canvas_set_figfont(caca_canvas_t *cv, char const *path)
 {
-    caca_figfont_t *ff = NULL;
+    caca_charfont_t *ff = NULL;
 
     if(path)
     {
-        ff = open_figfont(path);
+        ff = open_charfont(path);
         if(!ff)
             return -1;
     }
@@ -67,7 +67,7 @@ int caca_canvas_set_figfont(caca_canvas_t *cv, char const *path)
         caca_free_canvas(cv->ff->charcv);
         free(cv->ff->left);
         free(cv->ff->right);
-        free_figfont(cv->ff);
+        free_charfont(cv->ff);
     }
 
     cv->ff = ff;
@@ -129,7 +129,7 @@ int caca_canvas_set_figfont(caca_canvas_t *cv, char const *path)
 /** \brief paste a character using the current figfont */
 int caca_put_figchar(caca_canvas_t *cv, uint32_t ch)
 {
-    caca_figfont_t *ff = cv->ff;
+    caca_charfont_t *ff = cv->ff;
     int c, w, h, x, y, overlap, extra, xleft, xright;
 
     if (!ff)
@@ -253,7 +253,7 @@ int caca_put_figchar(caca_canvas_t *cv, uint32_t ch)
 /** \brief flush the figlet context */
 int caca_flush_figlet(caca_canvas_t *cv)
 {
-    caca_figfont_t *ff = cv->ff;
+    caca_charfont_t *ff = cv->ff;
     int x, y;
 
     if (!ff)
@@ -287,19 +287,19 @@ int caca_flush_figlet(caca_canvas_t *cv)
 #define STD_GLYPHS (127 - 32)
 #define EXT_GLYPHS (STD_GLYPHS + 7)
 
-static caca_figfont_t * open_figfont(char const *path)
+static caca_charfont_t * open_charfont(char const *path)
 {
 #if !defined __KERNEL__ && defined HAVE_SNPRINTF
     char altpath[2048];
 #endif
     char buf[2048];
     char hardblank[10];
-    caca_figfont_t *ff;
+    caca_charfont_t *ff;
     char *data = NULL;
     caca_file_t *f;
     int i, j, size, comment_lines;
 
-    ff = malloc(sizeof(caca_figfont_t));
+    ff = malloc(sizeof(caca_charfont_t));
     if(!ff)
     {
         seterrno(ENOMEM);
@@ -484,7 +484,7 @@ static caca_figfont_t * open_figfont(char const *path)
     return ff;
 }
 
-int free_figfont(caca_figfont_t *ff)
+int free_charfont(caca_charfont_t *ff)
 {
     caca_free_canvas(ff->fontcv);
     free(ff->lookup);

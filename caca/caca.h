@@ -49,7 +49,9 @@ extern "C"
 typedef struct caca_canvas caca_canvas_t;
 /** dither structure */
 typedef struct caca_dither caca_dither_t;
-/** font structure */
+/** character font structure */
+typedef struct caca_charfont caca_charfont_t;
+/** bitmap font structure */
 typedef struct caca_font caca_font_t;
 /** file handle structure */
 typedef struct caca_file caca_file_t;
@@ -413,9 +415,18 @@ __extern int caca_dither_bitmap(caca_canvas_t *, int, int, int, int,
 __extern int caca_free_dither(caca_dither_t *);
 /*  @} */
 
-/** \defgroup caca_font libcaca font handling
+/** \defgroup caca_charfont libcaca character font handling
  *
- *  These functions provide font handling routines and high quality
+ *  These functions provide character font handling routines.
+ *
+ *  @{ */
+__extern caca_charfont_t *caca_load_charfont(void const *, size_t);
+__extern int caca_free_charfont(caca_charfont_t *);
+/*  @} */
+
+/** \defgroup caca_font libcaca bitmap font handling
+ *
+ *  These functions provide bitmap font handling routines and high quality
  *  canvas to bitmap rendering.
  *
  *  @{ */
