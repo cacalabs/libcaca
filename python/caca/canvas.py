@@ -16,7 +16,7 @@
 
 import ctypes
 
-from caca import _lib
+from caca import _lib, utf8_to_utf32
 from caca.font import _Font
 
 class _Canvas(object):
@@ -161,7 +161,12 @@ class Canvas(_Canvas):
             ]
         _lib.caca_put_char.restype  = ctypes.c_int
 
-        return _lib.caca_put_char(self, x, y, ord(ch))
+        try:
+            ch = ord(ch)
+        except TypeError:
+            ch = utf8_to_utf32(ch)
+
+        return _lib.caca_put_char(self, x, y, ch)
 
     def get_char(self, x, y):
         """ Get the Unicode character at the given coordinates.
