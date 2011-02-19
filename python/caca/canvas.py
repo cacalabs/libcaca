@@ -253,7 +253,7 @@ class Canvas(_Canvas):
 
         return _lib.caca_get_canvas_handle_y(self)
 
-    def blit(self, x, y, cv, mask):
+    def blit(self, x, y, cv, mask=None):
         """ Blit canvas onto another one.
 
             x       -- X coordinate
@@ -265,6 +265,9 @@ class Canvas(_Canvas):
             _Canvas, ctypes.c_int, ctypes.c_int, _Canvas, _Canvas
             ]
         _lib.caca_blit.restype  = ctypes.c_int
+
+        if mask is None:
+            mask = NullCanvas()
 
         return _lib.caca_blit(self, x, y, cv, mask)
 
@@ -512,7 +515,12 @@ class Canvas(_Canvas):
         ]
         _lib.caca_draw_line.restype  = ctypes.c_int
 
-        return _lib.caca_draw_line(self, x1, y1, x2, y2, ord(ch))
+        try:
+            ch = ord(ch)
+        except TypeError:
+            ch = utf8_to_utf32(ch)
+
+        return _lib.caca_draw_line(self, x1, y1, x2, y2, ch)
 
     def draw_polyline(self, array_x, array_y, n, ch):
         """ Draw a polyline.
@@ -527,7 +535,12 @@ class Canvas(_Canvas):
         ]
         _lib.caca_draw_polyline.restype  = ctypes.c_int
 
-        return _lib.caca_draw_polyline(self, array_x, array_y, n, ord(ch))
+        try:
+            ch = ord(ch)
+        except TypeError:
+            ch = utf8_to_utf32(ch)
+
+        return _lib.caca_draw_polyline(self, array_x, array_y, n, ch)
 
     def draw_thin_line(self, x1, y1, x2, y2):
         """ Draw a thin line on the canvas, using ASCII art.
@@ -571,7 +584,12 @@ class Canvas(_Canvas):
         ]
         _lib.caca_draw_circle.restype  = ctypes.c_int
 
-        return _lib.caca_draw_circle(self, x, y, r, ord(ch))
+        try:
+            ch = ord(ch)
+        except TypeError:
+            ch = utf8_to_utf32(ch)
+
+        return _lib.caca_draw_circle(self, x, y, r, ch)
 
     def draw_ellipse(self, xo, yo, a, b, ch):
         """ Draw an ellipse on the canvas using the given character.
@@ -588,7 +606,12 @@ class Canvas(_Canvas):
         ]
         _lib.caca_draw_ellipse.restype  = ctypes.c_int
 
-        return _lib.caca_draw_ellipse(self, xo, yo, a, b, ord(ch))
+        try:
+            ch = ord(ch)
+        except TypeError:
+            ch = utf8_to_utf32(ch)
+
+        return _lib.caca_draw_ellipse(self, xo, yo, a, b, ch)
 
     def draw_thin_ellipse(self, xo, yo, a, b):
         """ Draw a thin ellipse on the canvas.
@@ -620,7 +643,12 @@ class Canvas(_Canvas):
         ]
         _lib.caca_fill_ellipse.restype  = ctypes.c_int
 
-        return _lib.caca_fill_ellipse(self, xo, yo, a, b, ord(ch))
+        try:
+            ch = ord(ch)
+        except TypeError:
+            ch = utf8_to_utf32(ch)
+
+        return _lib.caca_fill_ellipse(self, xo, yo, a, b, ch)
 
     def draw_box(self, x, y, width, height, ch):
         """ Draw a box on the canvas using the given character.
@@ -636,7 +664,12 @@ class Canvas(_Canvas):
         ]
         _lib.caca_draw_box.restype  = ctypes.c_int
 
-        return _lib.caca_draw_box(self, x, y, width, height, ord(ch))
+        try:
+            ch = ord(ch)
+        except TypeError:
+            ch = utf8_to_utf32(ch)
+
+        return _lib.caca_draw_box(self, x, y, width, height, ch)
 
     def draw_thin_box(self, x, y, width, height):
         """ Draw a thin box on the canvas.
@@ -684,7 +717,12 @@ class Canvas(_Canvas):
         ]
         _lib.caca_fill_box.restype  = ctypes.c_int
 
-        return _lib.caca_fill_box(self, x, y, width, height, ord(ch))
+        try:
+            ch = ord(ch)
+        except TypeError:
+            ch = utf8_to_utf32(ch)
+
+        return _lib.caca_fill_box(self, x, y, width, height, ch)
 
     def draw_triangle(self, x1, y1, x2, y2, x3, y3, ch):
         """ Draw a triangle on the canvas using the given character.
@@ -703,7 +741,12 @@ class Canvas(_Canvas):
         ]
         _lib.caca_draw_triangle.restype  = ctypes.c_int
 
-        return _lib.caca_draw_triangle(self, x1, y1, x2, y2, x3, y3, ord(ch))
+        try:
+            ch = ord(ch)
+        except TypeError:
+            ch = utf8_to_utf32(ch)
+
+        return _lib.caca_draw_triangle(self, x1, y1, x2, y2, x3, y3, ch)
 
     def draw_thin_triangle(self, x1, y1, x2, y2, x3, y3):
         """ Draw a thin triangle on the canvas.
@@ -733,7 +776,12 @@ class Canvas(_Canvas):
         ]
         _lib.caca_fill_triangle.restype  = ctypes.c_int
 
-        return _lib.caca_fill_triangle(self, x1, y1, x2, y2, x3, y3, ord(ch))
+        try:
+            ch = ord(ch)
+        except TypeError:
+            ch = utf8_to_utf32(ch)
+
+        return _lib.caca_fill_triangle(self, x1, y1, x2, y2, x3, y3, ch)
 
     def fill_triangle_textured(self, coords, tex, uv):
         """ Fill a triangle on the canvas using an arbitrary-sized texture.
@@ -975,7 +1023,12 @@ class Canvas(_Canvas):
         _lib.caca_put_figchar.argtypes = [_Canvas, ctypes.c_uint32]
         _lib.caca_put_figchar.restype  = ctypes.c_int
 
-        return _lib.caca_put_figchar(self, ord(ch))
+        try:
+            ch = ord(ch)
+        except TypeError:
+            ch = utf8_to_utf32(ch)
+ 
+        return _lib.caca_put_figchar(self, ch)
 
     def flush_figlet(self):
         """ Flush the figlet context

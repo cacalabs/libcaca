@@ -42,7 +42,7 @@ def main():
         sys.stderr.write("Could not open font...\n")
         sys.exit(2)
 
-    for c in sys.argv[2]:
+    for c in sys.argv[2].decode('utf8'):
         color += 4
         cv.set_color_ansi(1+(color % 15), caca.COLOR_TRANSPARENT)
         cv.put_figchar(c)
