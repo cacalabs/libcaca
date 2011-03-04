@@ -39,6 +39,8 @@ int main(int argc, char *argv[]) {
 	caca_canvas_t *cv;
 	caca_canvas_t *figcv;
 	caca_display_t *dp;
+	uint32_t w, h;
+
 
 	char *font = "/usr/share/figlet/mono12.tlf";
 	if(argc==2) font = argv[1];
@@ -64,6 +66,9 @@ int main(int argc, char *argv[]) {
 		printf("Can't open window. CACA_DRIVER problem ?\n");
 		return -1;
 	}
+
+	w = caca_get_canvas_width (cv);
+	h = caca_get_canvas_height(cv);	
 
 	for(;;) {
 		caca_event_t ev;
