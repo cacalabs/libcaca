@@ -275,7 +275,9 @@ def utf8_to_utf32(ch):
 
         ch  -- the character to convert
     """
-    _lib.caca_utf8_to_utf32.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_size_t)]
+    _lib.caca_utf8_to_utf32.argtypes = [ctypes.c_char_p,
+            ctypes.POINTER(ctypes.c_size_t)
+        ]
     _lib.caca_utf8_to_utf32.restype  = ctypes.c_uint32
 
     return _lib.caca_utf8_to_utf32(ch, ctypes.c_ulong(0))
@@ -288,10 +290,10 @@ def utf32_to_utf8(ch):
     _lib.caca_utf32_to_utf8.argtypes = [ctypes.c_char_p, ctypes.c_uint32]
     _lib.caca_utf32_to_utf8.restype  = ctypes.c_int
 
-    buf = ctypes.c_buffer(2)
+    buf = ctypes.c_buffer(7)
     _lib.caca_utf32_to_utf8(buf, ch)
 
-    return buf
+    return buf.raw.rstrip('\x00')
 
 def utf32_to_cp437(ch):
     """ Convert a UTF-32 character to CP437.
