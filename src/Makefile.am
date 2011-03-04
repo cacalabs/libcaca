@@ -5,7 +5,7 @@ EXTRA_DIST = caca.txt cacademo.vcproj cacafire.vcproj cacaview.vcproj
 AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/caca -I../caca \
               -DLIBCACA=1 -DX_DISPLAY_MISSING=1
 
-bin_PROGRAMS = cacademo cacafire cacaplay cacaview img2txt $(fcntl_programs)
+bin_PROGRAMS = cacademo cacafire cacaplay cacaview img2txt cacaclock $(fcntl_programs)
 noinst_PROGRAMS = cacadraw
 
 cacademo_SOURCES = cacademo.c texture.h
@@ -28,6 +28,10 @@ cacaplay_LDADD = ../caca/libcaca.la ../caca/libcaca.la
 
 cacaserver_SOURCES = cacaserver.c
 cacaserver_LDADD = ../caca/libcaca.la
+
+cacaclock_SOURCES = cacaclock.c
+cacaclock_LDADD = ../caca/libcaca.la
+
 
 img2txt_SOURCES = img2txt.c $(GETOPT) common-image.c common-image.h
 img2txt_LDADD = ../caca/libcaca.la
