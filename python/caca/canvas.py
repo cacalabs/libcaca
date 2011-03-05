@@ -15,8 +15,9 @@
 """ Libcaca Python bindings """
 
 import ctypes
+import errno
 
-from caca import _lib, utf8_to_utf32
+from caca import _lib, utf8_to_utf32, utf32_to_utf8
 from caca.font import _Font
 
 class _Canvas(object):
@@ -67,9 +68,23 @@ class Canvas(_Canvas):
         _lib.caca_create_canvas.argtypes = [ctypes.c_int, ctypes.c_int]
 
         if pointer is None:
-            self._cv = _lib.caca_create_canvas(width, height)
-            if self._cv == 0:
-                raise CanvasError, "Failed to create canvas"
+            try:
+                self._cv = _lib.caca_create_canvas(width, height)
+            except ctypes.ArgumentError, e:
+                self._cv = 0
+                raise CanvasError("Specified width or height is invalid")
+            else:
+                if self._cv == 0:
+                    err = ctypes.c_int.in_dll(_lib, "errno")
+                    if err.value == errno.EINVAL:
+                        raise CanvasError("Specified width or height is"
+                                          " invalid")
+                    elif err.value == errno.ENOMEM:
+                        raise CanvasError("Not enough memory for the requested"
+                                          " canvas size")
+                    else:
+                        raise CanvasError("Unknown error: failed to create"
+                                          " canvas")
         else:
             self._cv = pointer
 
@@ -90,11 +105,27 @@ class Canvas(_Canvas):
             height  -- the desired canvas height
         """
         _lib.caca_set_canvas_size.argtypes  = [
-            _Canvas, ctypes.c_int, ctypes.c_int
+                _Canvas, ctypes.c_int, ctypes.c_int
             ]
         _lib.caca_set_canvas_size.restype   = ctypes.c_int
 
-        return _lib.caca_set_canvas_size(self, width, height)
+        try:
+            ret = _lib.caca_set_canvas_size(self, width, height)
+        except ctypes.ArgumentError, e:
+            raise CanvasError("Specified width or height is invalid")
+        else:
+            if ret == -1:
+                err = ctypes.c_int.in_dll(_lib, "errno")
+                if err.value == errno.EINVAL:
+                    raise CanvasError("Specified width or height is invalid")
+                elif err.value == errno.EBUSY:
+                    raise CanvasError("The canvas is in use by a display driver"
+                                      " and cannot be resized")
+                elif err.value == errno.ENOMEM:
+                    raise CanvasError("Not enough memory for the requested"
+                                      " canvas size")
+            else:
+                return ret
 
     def get_width(self):
         """ Get the canvas width.
@@ -123,15 +154,21 @@ class Canvas(_Canvas):
         raise CanvasError, "Not implemented"
 
     def gotoxy(self, x, y):
-        """ Set cursor position.
+        """ Set cursor position. Setting the cursor position outside the canvas
+            is legal but the cursor will not be shown.
 
             x   -- X cursor coordinate
             y   -- Y cursor coordinate
         """
-        _lib.caca_gotoxy.argtypes = [_Canvas, ctypes.c_int]
+        _lib.caca_gotoxy.argtypes = [_Canvas, ctypes.c_int, ctypes.c_int]
         _lib.caca_gotoxy.restyoe  = ctypes.c_int
 
-        return _lib.caca_gotoxy(self, x, y)
+        try:
+            ret = _lib.caca_gotoxy(self, x, y)
+        except ctypes.ArgumentError, e:
+            raise CanvasError("specified coordinate X or Y is invalid")
+        else:
+            return ret
 
     def wherex(self):
         """ Get X cursor position.
@@ -150,23 +187,32 @@ class Canvas(_Canvas):
         return _lib.caca_wherey(self)
 
     def put_char(self, x, y, ch):
-        """ Print an ASCII or Unicode character.
+        """ Print an ASCII or Unicode character. Return the width of the
+            printed character: 2 for a fullwidth character, 1 otherwise.
 
             x   -- X coordinate
             y   -- Y coordinate
             ch  -- the character to print
         """
         _lib.caca_put_char.argtypes = [
-            _Canvas, ctypes.c_int, ctypes.c_int, ctypes.c_uint32
+                _Canvas, ctypes.c_int, ctypes.c_int, ctypes.c_uint32
             ]
         _lib.caca_put_char.restype  = ctypes.c_int
 
-        try:
-            ch = ord(ch)
-        except TypeError:
-            ch = utf8_to_utf32(ch)
+        if not isinstance(ch, str):
+            raise CanvasError("Specified character is invalid")
+        else:
+            try:
+                ch = ord(ch)
+            except TypeError:
+                ch = utf8_to_utf32(ch)
 
-        return _lib.caca_put_char(self, x, y, ch)
+            try:
+                ret =  _lib.caca_put_char(self, x, y, ch)
+            except ctypes.ArgumentError, e:
+                raise CanvasError("specified coordinate X or Y is invalid")
+            else:
+                return ret
 
     def get_char(self, x, y):
         """ Get the Unicode character at the given coordinates.
@@ -175,11 +221,21 @@ class Canvas(_Canvas):
             y   -- Y coordinate
         """
         _lib.caca_get_char.argtypes = [
-            _Canvas, ctypes.c_int, ctypes.c_int
+                _Canvas, ctypes.c_int, ctypes.c_int
             ]
         _lib.caca_get_char.restype  = ctypes.c_uint32
 
-        return _lib.caca_get_char(self, x, y)
+        try:
+            ch = _lib.caca_get_char(self, x, y)
+        except ctypes.ArgumentError:
+            raise CanvasError("specified coordinate X or Y is invalid")
+        else:
+            try:
+                ch = ord(ch)
+            except TypeError:
+                ch = utf32_to_utf8(ch)
+
+            return ch
 
     def put_str(self, x, y, s):
         """ Print a string.
@@ -189,11 +245,19 @@ class Canvas(_Canvas):
             s   -- the string to print
         """
         _lib.caca_put_str.argtypes = [
-            _Canvas, ctypes.c_int, ctypes.c_int, ctypes.c_char_p
+                _Canvas, ctypes.c_int, ctypes.c_int, ctypes.c_char_p
             ]
         _lib.caca_put_str.restype  = ctypes.c_int
 
-        return _lib.caca_put_str(self, x, y, s)
+        if not isinstance(s, str):
+            raise CanvasError("Specified string is invalid")
+        else:
+            try:
+                ret = _lib.caca_put_str(self, x, y, s)
+            except ctypes.ArgumentError:
+                raise CanvasError("Specified coordinate X or Y is invalid")
+            else:
+                return ret
 
     def printf(self, x, y, fmt, *args):
         """ Print a formated string.
@@ -204,11 +268,19 @@ class Canvas(_Canvas):
             args    -- Arguments to the format string
         """
         _lib.caca_printf.argtypes = [
-            _Canvas, ctypes.c_int, ctypes.c_int, ctypes.c_char_p
+                _Canvas, ctypes.c_int, ctypes.c_int, ctypes.c_char_p
             ]
         _lib.caca_printf.restype  = ctypes.c_int
 
-        return _lib.caca_printf(self, x, y, fmt, *args)
+        if not isinstance(fmt, str):
+            raise CanvasError("Specified formated string is invalid")
+        else:
+            try:
+                ret = _lib.caca_printf(self, x, y, fmt, *args)
+            except ctypes.ArgumentError:
+                raise CanvasError("Specified coordinate X or Y is invalid")
+            else:
+                return ret
 
     def vprintf(self, *args, **kw):
         """ Not implemented.
@@ -231,11 +303,16 @@ class Canvas(_Canvas):
             y   -- Y handle coordinate
         """
         _lib.caca_set_canvas_handle.argtypes = [
-            _Canvas, ctypes.c_int, ctypes.c_int
+                _Canvas, ctypes.c_int, ctypes.c_int
             ]
         _lib.caca_set_canvas_handle.restype  = ctypes.c_int
 
-        return _lib.caca_set_canvas_handle(self, x, y)
+        try:
+            ret = _lib.caca_set_canvas_handle(self, x, y)
+        except ctypes.ArgumentError:
+            raise CanvasError("Specified coordinate X or Y is invalid")
+        else:
+            return ret
 
     def get_handle_x(self):
         """ Get X handle position.
@@ -262,14 +339,31 @@ class Canvas(_Canvas):
             mask    -- the mask canvas
         """
         _lib.caca_blit.argtypes = [
-            _Canvas, ctypes.c_int, ctypes.c_int, _Canvas, _Canvas
+                _Canvas, ctypes.c_int, ctypes.c_int, _Canvas, _Canvas
             ]
         _lib.caca_blit.restype  = ctypes.c_int
 
-        if mask is None:
-            mask = NullCanvas()
+        if not isinstance(cv, Canvas):
+            raise CanvasError("Specified mask canvas is invalid")
+        else:
+            if mask is None:
+                mask = NullCanvas()
+            else:
+                if not isinstance(mask, _Canvas):
+                    raise CanvasError("Specified mask canvas is invalid")
 
-        return _lib.caca_blit(self, x, y, cv, mask)
+        try:
+            ret = _lib.caca_blit(self, x, y, cv, mask)
+        except ctypes.ArgumentError:
+            raise CanvasError("Specified coordinate X or Y is invalid")
+        else:
+            if ret == -1:
+                err = ctypes.c_int.in_dll(_lib, "errno")
+                if err.value == errno.EINVAL:
+                    raise CanvasError("A mask was specified but the mask size"
+                                      " and source canvas size do not match")
+            else:
+                return ret
 
     def set_boundaries(self, x, y, width, height):
         """ Set a canvas' new boundaries.
@@ -280,11 +374,27 @@ class Canvas(_Canvas):
             height  -- height of the box
         """
         _lib.caca_set_canvas_boundaries.argtypes = [
-            _Canvas, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int
+              _Canvas, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int
             ]
         _lib.caca_set_canvas_boundaries.restype  = ctypes.c_int
 
-        return _lib.caca_set_canvas_boundaries(self, x, y, width, height)
+        try:
+            ret = _lib.caca_set_canvas_boundaries(self, x, y, width, height)
+        except ctypes.ArgumentError:
+            raise CanvasError("Specified coordinate or size is invalid")
+        else:
+            if ret == -1:
+                err = ctypes.c_int.in_dll(_lib, "errno")
+                if err.value == errno.EINVAL:
+                    raise CanvasError("Specified width or height is invalid")
+                elif err.value == errno.EBUSY:
+                    raise CanvasError("The canvas is in use by a display driver"
+                                      " and cannot be resized")
+                elif err.value == errno.ENOMEM:
+                    raise CanvasError("Not enough memory for the requested"
+                                      " canvas size")
+            else:
+                return ret
 
     def disable_dirty_rect(self):
         """ Disable dirty rectangles.
@@ -300,7 +410,13 @@ class Canvas(_Canvas):
         _lib.caca_enable_dirty_rect.argtypes = [_Canvas]
         _lib.caca_enable_dirty_rect.restype  = ctypes.c_int
 
-        return _lib.caca_enable_dirty_rect(self)
+        ret = _lib.caca_enable_dirty_rect(self)
+        if ret == -1:
+            err = ctypes.c_int.in_dll(_lib, "errno")
+            if err.value == errno.EINVAL:
+                raise CanvasError("Dirty rectangles were not disabled")
+        else:
+            return ret
 
     def get_dirty_rect_count(self):
         """ Get the number of dirty rectangles in the canvas.
@@ -316,7 +432,6 @@ class Canvas(_Canvas):
 
             idx -- the requested rectangle index
         """
-        #initialize dictionnary and pointers
         dct = None
         x = ctypes.c_int()
         y = ctypes.c_int()
@@ -324,19 +439,28 @@ class Canvas(_Canvas):
         height = ctypes.c_int()
 
         _lib.caca_get_dirty_rect.argtypes = [
-            _Canvas, ctypes.c_int,
-            ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int),
-            ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)
+                _Canvas, ctypes.c_int,
+                ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int),
+                ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)
             ]
         _lib.caca_get_dirty_rect.restype  = ctypes.c_int
 
-        if _lib.caca_get_dirty_rect(self, idx, x, y, width, height) > -1:
-            dct = {
-                'x': x.value, 'y': y.value,
-                'width': width.value, 'height': height.value,
-            }
-
-        return dct
+        try:
+            ret = _lib.caca_get_dirty_rect(self, idx, x, y, width, height)
+        except ctypes.ArgumentError:
+            raise CanvasError("Specified rectangle index is invalid")
+        else:
+            if ret == -1:
+                err = ctypes.c_int.in_dll(_lib, "errno")
+                if err.value == errno.EINVAL:
+                    raise CanvasError("Specified rectangle index is out of"
+                                      " bounds")
+            else:
+                dct = {
+                    'x': x.value, 'y': y.value,
+                    'width': width.value, 'height': height.value,
+                }
+                return dct
 
     def add_dirty_rect(self, x, y, width, height):
         """ Add an area to the canvas's dirty rectangle list.
@@ -347,12 +471,23 @@ class Canvas(_Canvas):
             height  -- the height of the additional dirty rectangle
         """
         _lib.caca_add_dirty_rect.argtypes = [
-            _Canvas, ctypes.c_int, ctypes.c_int,
-            ctypes.c_int, ctypes.c_int
-        ]
+                _Canvas, ctypes.c_int, ctypes.c_int,
+                ctypes.c_int, ctypes.c_int
+            ]
         _lib.caca_add_dirty_rect.restype  = ctypes.c_int
 
-        return _lib.caca_add_dirty_rect(self, x, y, width, height)
+        try:
+            ret =_lib.caca_add_dirty_rect(self, x, y, width, height)
+        except ctypes.ArgumentError:
+            raise CanvasError("Specified coordinate or size is invalid")
+        else:
+            if ret == -1:
+                err = ctypes.c_int.in_dll(_lib, "errno")
+                if err.value == errno.EINVAL:
+                    raise CanvasError("Specified rectangle coordinates are out"
+                                      " of bounds")
+            else:
+                return ret
 
     def remove_dirty_rect(self, x, y, width, height):
         """ Remove an area from the dirty rectangle list.
@@ -363,12 +498,23 @@ class Canvas(_Canvas):
             height  -- the height of the additional dirty rectangle
         """
         _lib.caca_remove_dirty_rect.argtypes = [
-            _Canvas, ctypes.c_int, ctypes.c_int,
-            ctypes.c_int, ctypes.c_int
-        ]
+                _Canvas, ctypes.c_int, ctypes.c_int,
+                ctypes.c_int, ctypes.c_int
+            ]
         _lib.caca_remove_dirty_rect.restype  = ctypes.c_int
 
-        return _lib.caca_remove_dirty_rect(self, x, y, height, width)
+        try:
+            ret = _lib.caca_remove_dirty_rect(self, x, y, width, height)
+        except ctypes.ArgumentError:
+            raise CanvasError("Specified coordinate or size is invalid")
+        else:
+            if ret == -1:
+                err = ctypes.c_int.in_dll(_lib, "errno")
+                if err.value == errno.EINVAL:
+                    raise CanvasError("Specified rectangle coordinates are out"
+                                      " of bounds")
+            else:
+                return ret
 
     def clear_dirty_rect_list(self):
         """ Clear a canvas's dirty rectangle list.
@@ -416,7 +562,17 @@ class Canvas(_Canvas):
         _lib.caca_rotate_left.argtypes = [_Canvas]
         _lib.caca_rotate_left.restype  = ctypes.c_int
 
-        return _lib.caca_rotate_left(self)
+        ret = _lib.caca_rotate_left(self)
+        if ret == -1:
+            err = ctypes.c_int.in_dll(_lib, "errno")
+            if err.value == errno.EBUSY:
+                raise CanvasError("The canvas is in use by a display driver"
+                                  " and cannot be rotated")
+            elif err.value == errno.ENOMEM:
+                raise CanvasError("Not enough memory to allocate the new"
+                                  " canvas size")
+        else:
+            return ret
 
     def rotate_right(self):
         """ Rotate a canvas, 90 degrees clockwise.
@@ -424,7 +580,17 @@ class Canvas(_Canvas):
         _lib.caca_rotate_right.argtypes = [_Canvas]
         _lib.caca_rotate_right.restype  = ctypes.c_int
 
-        return _lib.caca_rotate_right(self)
+        ret = _lib.caca_rotate_right(self)
+        if ret == -1:
+            err = ctypes.c_int.in_dll(_lib, "errno")
+            if err.value == errno.EBUSY:
+                raise CanvasError("The canvas is in use by a display driver"
+                                  " and cannot be rotated")
+            elif err.value == errno.ENOMEM:
+                raise CanvasError("Not enough memory to allocate the new"
+                                  " canvas size")
+        else:
+            return ret
 
     def stretch_left(self):
         """ Rotate and stretch a canvas, 90 degrees counterclockwise.
@@ -432,7 +598,17 @@ class Canvas(_Canvas):
         _lib.caca_stretch_left.argtypes = [_Canvas]
         _lib.caca_stretch_left.restype  = ctypes.c_int
 
-        return _lib.caca_stretch_left(self)
+        ret = _lib.caca_stretch_left(self)
+        if ret == -1:
+            err = ctypes.c_int.in_dll(_lib, "errno")
+            if err.value == errno.EBUSY:
+                raise CanvasError("The canvas is in use by a display driver"
+                                  " and cannot be rotated")
+            elif err.value == errno.ENOMEM:
+                raise CanvasError("Not enough memory to allocate the new"
+                                  " canvas size")
+        else:
+            return ret
 
     def stretch_right(self):
         """ Rotate and stretch a canvas, 90 degrees clockwise.
@@ -440,7 +616,17 @@ class Canvas(_Canvas):
         _lib.caca_stretch_right.argtypes = [_Canvas]
         _lib.caca_stretch_right.restype  = ctypes.c_int
 
-        return _lib.caca_stretch_right(self)
+        ret = _lib.caca_stretch_right(self)
+        if ret == -1:
+            err = ctypes.c_int.in_dll(_lib, "errno")
+            if err.value == errno.EBUSY:
+                raise CanvasError("The canvas is in use by a display driver"
+                                  " and cannot be rotated")
+            elif err.value == errno.ENOMEM:
+                raise CanvasError("Not enough memory to allocate the new"
+                                  " canvas size")
+        else:
+            return ret
 
     def get_attr(self, x, y):
         """ Get the text attribute at the given coordinates.
@@ -450,7 +636,13 @@ class Canvas(_Canvas):
         """
         _lib.caca_get_attr.argtypes = [_Canvas, ctypes.c_int, ctypes.c_int]
         _lib.caca_get_attr.restype  = ctypes.c_uint32
-        return _lib.caca_get_attr(self, x, y)
+
+        try:
+            ret = _lib.caca_get_attr(self, x, y)
+        except ctypes.ArgumentError:
+            raise CanvasError("Specified coordinate X or Y is invalid")
+        else:
+            return ret
 
     def set_attr(self, attr):
         """ Set the default character attribute.
@@ -460,7 +652,42 @@ class Canvas(_Canvas):
         _lib.caca_set_attr.argtypes = [_Canvas, ctypes.c_uint32]
         _lib.caca_set_attr.restype  = ctypes.c_int
 
-        return _lib.caca_set_attr(self, attr)
+        try:
+            ret = _lib.caca_set_attr(self, attr)
+        except ctypes.ArgumentError:
+            raise CanvasError("Specified attribute is invalid")
+        else:
+            return ret
+
+    def unset_attr(self, attr):
+        """ Unset the default character attribute.
+
+            attr    -- the requested attribute value
+        """
+        _lib.caca_unset_attr.argtypes = [_Canvas, ctypes.c_uint32]
+        _lib.caca_unset_attr.restype  = ctypes.c_int
+
+        try:
+            ret = _lib.caca_unset_attr(self, attr)
+        except ctypes.ArgumentError:
+            raise CanvasError("Specified attribute is invalid")
+        else:
+            return ret
+
+    def toggle_attr(self, attr):
+        """ Toggle the default character attribute.
+
+            attr -- the requested attribute value
+        """
+        _lib.caca_toggle_attr.argtypes = [_Canvas, ctypes.c_uint32]
+        _lib.caca_toggle_attr.restype  = ctypes.c_int
+
+        try:
+            ret = _lib.caca_toggle_attr(self, attr)
+        except ctypes.ArgumentError:
+            raise CanvasError("Specified attribute is invalid")
+        else:
+            return ret
 
     def put_attr(self, x, y, attr):
         """ Set the character attribute at the given coordinates.
@@ -474,7 +701,12 @@ class Canvas(_Canvas):
         ]
         _lib.caca_put_attr.restype  = ctypes.c_int
 
-        return _lib.caca_put_attr(self, x, y, attr)
+        try:
+            ret = _lib.caca_put_attr(self, x, y, attr)
+        except ctypes.ArgumentError:
+            raise CanvasError("Specified coordinate or attribute is invalid")
+        else:
+            return ret
 
     def set_color_ansi(self, fg, bg):
         """ Set the default colour pair for text (ANSI version).
@@ -482,10 +714,23 @@ class Canvas(_Canvas):
             fg  -- the requested ANSI foreground colour.
             bg  -- the requested ANSI background colour.
         """
-        _lib.caca_set_color_ansi.argtypes = [_Canvas, ctypes.c_uint8, ctypes.c_uint8]
+        _lib.caca_set_color_ansi.argtypes = [
+                _Canvas, ctypes.c_uint8, ctypes.c_uint8
+            ]
         _lib.caca_set_color_ansi.restype  = ctypes.c_int
 
-        return _lib.caca_set_color_ansi(self, fg, bg)
+        try:
+            ret = _lib.caca_set_color_ansi(self, fg, bg)
+        except ctypes.ArgumentError:
+            raise CanvasError("At least one of the colour values is invalid")
+        else:
+            if ret == -1:
+                err = ctypes.c_int.in_dll(_lib, "errno")
+                if err.value == errno.EINVAL:
+                    raise CanvasError("At least one of the colour values"
+                                      " is invalid")
+            else:
+                return ret
 
     def set_color_argb(self, fg, bg):
         """ Set the default colour pair for text (truecolor version).
@@ -498,7 +743,12 @@ class Canvas(_Canvas):
         ]
         _lib.caca_set_color_argb.restype  = ctypes.c_int
 
-        return _lib.caca_set_color_argb(self, fg, bg)
+        try:
+            ret = _lib.caca_set_color_argb(self, fg, bg)
+        except ctypes.ArgumentError:
+            raise CanvasError("At least one of the colour values is invalid")
+        else:
+            return ret
 
     def draw_line(self, x1, y1, x2, y2, ch):
         """ Draw a line on the canvas using the given character.
@@ -510,37 +760,70 @@ class Canvas(_Canvas):
             ch  -- character to be used to draw the line
         """
         _lib.caca_draw_line.argtypes = [
-            _Canvas, ctypes.c_int, ctypes.c_int,
-            ctypes.c_int, ctypes.c_int, ctypes.c_uint32
-        ]
+                _Canvas, ctypes.c_int, ctypes.c_int,
+                ctypes.c_int, ctypes.c_int, ctypes.c_uint32
+            ]
         _lib.caca_draw_line.restype  = ctypes.c_int
 
-        try:
-            ch = ord(ch)
-        except TypeError:
-            ch = utf8_to_utf32(ch)
+        if not isinstance(ch, str):
+            raise CanvasError("Specified character is invalid")
+        else:
+            try:
+                ch = ord(ch)
+            except TypeError:
+                ch = utf8_to_utf32(ch)
 
-        return _lib.caca_draw_line(self, x1, y1, x2, y2, ch)
+            try:
+                ret = _lib.caca_draw_line(self, x1, y1, x2, y2, ch)
+            except ctypes.ArgumentError:
+                raise CanvasError("specified coordinate is invalid")
+            else:
+                return ret
 
-    def draw_polyline(self, array_x, array_y, n, ch):
+    def draw_polyline(self, array_xy, ch):
         """ Draw a polyline.
 
-            array_x -- Array of X coordinates, must have n+1 elements
-            array-y -- Array of Y coordinates, must have n+1 elements
-            n       -- Number of lines to draw
-            ch      -- character to be used to draw the line
+            array_xy -- List of (X, Y) coordinates
+            ch       -- character to be used to draw the line
         """
+        if not isinstance(array_xy, list) or len(array_xy) < 2:
+            raise CanvasError("Specified array of coordinates is invalid")
+        else:
+            for item in array_xy:
+                if not isinstance(item, list) and \
+                   not isinstance(item, tuple):
+                    raise CanvasError("Specified array of coordinates"
+                                      " is invalid")
+
+        ax = ctypes.c_int * len(array_xy)
+        ay = ctypes.c_int * len(array_xy)
+
         _lib.caca_draw_polyline.argtypes = [
-            _Canvas, ctypes.c_int * n, ctypes.c_int * n, ctypes.c_int, ctypes.c_uint32
-        ]
+                _Canvas, ax, ay, ctypes.c_int, ctypes.c_uint32
+            ]
         _lib.caca_draw_polyline.restype  = ctypes.c_int
 
-        try:
-            ch = ord(ch)
-        except TypeError:
-            ch = utf8_to_utf32(ch)
+        if not isinstance(ch, str):
+            raise CanvasError("Specified character is invalid")
+        else:
+            try:
+                ch = ord(ch)
+            except TypeError:
+                ch = utf8_to_utf32(ch)
 
-        return _lib.caca_draw_polyline(self, array_x, array_y, n, ch)
+            try:
+                ax = ax(*[x[0] for x in array_xy])
+                ay = ay(*[y[1] for y in array_xy])
+            except IndexError:
+                raise CanvasError("Specified array coordinates is invalid")
+
+            try:
+                ret = _lib.caca_draw_polyline(self, ax, ay,
+                                              len(array_xy) - 1, ch)
+            except ctypes.ArgumentError:
+                raise CanvasError("specified array of coordinates is invalid")
+            else:
+                return ret
 
     def draw_thin_line(self, x1, y1, x2, y2):
         """ Draw a thin line on the canvas, using ASCII art.
@@ -551,25 +834,52 @@ class Canvas(_Canvas):
             y2  -- Y coordinate of the second point
         """
         _lib.caca_draw_thin_line.argtypes = [
-            _Canvas, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int
-        ]
+                _Canvas, ctypes.c_int, ctypes.c_int,
+                ctypes.c_int, ctypes.c_int
+            ]
         _lib.caca_draw_thin_line.restype  = ctypes.c_int
 
-        return _lib.caca_draw_thin_line(self, x1, y1, x2, y2)
+        try:
+            ret = _lib.caca_draw_thin_line(self, x1, y1, x2, y2)
+        except ctypes.ArgumentError:
+            raise CanvasError("specified coordinate is invalid")
+        else:
+            return ret
 
-    def draw_thin_polyline(self, array_x, array_y, n):
+    def draw_thin_polyline(self, array_xy):
         """ Draw an ASCII art thin polyline.
 
-            array_x -- Array of X coordinates, must have n+1 elements
-            array_y -- Array of Y coordinates, must have n+1 elements
-            n       -- Number of lines to draw
+            array_xy -- Array of (X, Y) coordinates
         """
+        if not isinstance(array_xy, list) or len(array_xy) < 2:
+            raise CanvasError("Specified array of coordinates is invalid")
+        else:
+            for item in array_xy:
+                if not isinstance(item, list) and \
+                   not isinstance(item, tuple):
+                    raise CanvasError("Specified array of coordinates"
+                                      " is invalid")
+
+        ax = ctypes.c_int * len(array_xy)
+        ay = ctypes.c_int * len(array_xy)
+
         _lib.caca_draw_thin_polyline.argtypes = [
-            Canvas, ctypes.c_int * n, ctypes.c_int * n, ctypes.c_int
-        ]
+               Canvas, ax, ay, ctypes.c_int
+            ]
         _lib.caca_draw_thin_polyline.restype  = ctypes.c_int
 
-        return _lib.caca_draw_thin_polyline(self, array_x, array_y, n)
+        try:
+            ax = ax(*[x[0] for x in array_xy])
+            ay = ay(*[y[1] for y in array_xy])
+        except IndexError:
+            raise CanvasError("Specified array coordinates is invalid")
+
+        try:
+            ret = _lib.caca_draw_thin_polyline(self, ax, ay, len(array_xy) - 1)
+        except ctypes.ArgumentError:
+            raise CanvasError("specified array of coordinates is invalid")
+        else:
+            return ret
 
     def draw_circle(self, x, y, r, ch):
         """ Draw a circle on the canvas using the given character.
@@ -584,12 +894,21 @@ class Canvas(_Canvas):
         ]
         _lib.caca_draw_circle.restype  = ctypes.c_int
 
-        try:
-            ch = ord(ch)
-        except TypeError:
-            ch = utf8_to_utf32(ch)
+        if not isinstance(ch, str):
+            raise CanvasError("Specified character is invalid")
+        else:
+            try:
+                ch = ord(ch)
+            except TypeError:
+                ch = utf8_to_utf32(ch)
 
-        return _lib.caca_draw_circle(self, x, y, r, ch)
+        try:
+            ret = _lib.caca_draw_circle(self, x, y, r, ch)
+        except ctypes.ArgumentError:
+            raise CanvasError("Specified circle coordinate or radius is"
+                              " invalid")
+        else:
+            return ret
 
     def draw_ellipse(self, xo, yo, a, b, ch):
         """ Draw an ellipse on the canvas using the given character.
@@ -601,17 +920,26 @@ class Canvas(_Canvas):
             ch  -- UTF-32 character to be used to draw the ellipse outline
         """
         _lib.caca_draw_ellipse.argtypes = [
-            _Canvas, ctypes.c_int, ctypes.c_int,
-            ctypes.c_int, ctypes.c_int, ctypes.c_uint32
-        ]
+                _Canvas, ctypes.c_int, ctypes.c_int,
+                ctypes.c_int, ctypes.c_int, ctypes.c_uint32
+            ]
         _lib.caca_draw_ellipse.restype  = ctypes.c_int
 
-        try:
-            ch = ord(ch)
-        except TypeError:
-            ch = utf8_to_utf32(ch)
+        if not isinstance(ch, str):
+            raise CanvasError("Specified character is invalid")
+        else:
+            try:
+                ch = ord(ch)
+            except TypeError:
+                ch = utf8_to_utf32(ch)
 
-        return _lib.caca_draw_ellipse(self, xo, yo, a, b, ch)
+        try:
+            ret = _lib.caca_draw_ellipse(self, xo, yo, a, b, ch)
+        except ctypes.ArgumentError:
+            raise CanvasError("Specified ellipse coordinate or radius is"
+                              " invalid")
+        else:
+            return ret
 
     def draw_thin_ellipse(self, xo, yo, a, b):
         """ Draw a thin ellipse on the canvas.
@@ -622,11 +950,18 @@ class Canvas(_Canvas):
             b   -- ellipse Y radius
         """
         _lib.caca_draw_thin_ellipse.argtypes = [
-            _Canvas, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int
-        ]
+                _Canvas, ctypes.c_int, ctypes.c_int,
+                ctypes.c_int, ctypes.c_int
+            ]
         _lib.caca_draw_thin_ellipse.restype  = ctypes.c_int
 
-        return _lib.caca_draw_thin_ellipse(self, xo, yo, a, b)
+        try:
+            ret = _lib.caca_draw_thin_ellipse(self, xo, yo, a, b)
+        except ctypes.ArgumentError:
+            raise CanvasError("Specified ellipse coordinate or radius is"
+                              " invalid")
+        else:
+            return ret
 
     def fill_ellipse(self, xo, yo, a, b, ch):
         """ Fill an ellipse on the canvas using the given character.
@@ -638,17 +973,26 @@ class Canvas(_Canvas):
             ch  -- UTF-32 character to be used to fill the ellipse
         """
         _lib.caca_fill_ellipse.argtypes = [
-            _Canvas, ctypes.c_int, ctypes.c_int,
-            ctypes.c_int, ctypes.c_int, ctypes.c_uint32
-        ]
+                _Canvas, ctypes.c_int, ctypes.c_int,
+                ctypes.c_int, ctypes.c_int, ctypes.c_uint32
+            ]
         _lib.caca_fill_ellipse.restype  = ctypes.c_int
 
-        try:
-            ch = ord(ch)
-        except TypeError:
-            ch = utf8_to_utf32(ch)
+        if not isinstance(ch, str):
+            raise CanvasError("Specified character is invalid")
+        else:
+            try:
+                ch = ord(ch)
+            except TypeError:
+                ch = utf8_to_utf32(ch)
 
-        return _lib.caca_fill_ellipse(self, xo, yo, a, b, ch)
+        try:
+            ret = _lib.caca_fill_ellipse(self, xo, yo, a, b, ch)
+        except ctypes.ArgumentError:
+            raise CanvasError("Specified ellipse coordinate or radius is"
+                              " invalid")
+        else:
+            return ret
 
     def draw_box(self, x, y, width, height, ch):
         """ Draw a box on the canvas using the given character.
@@ -660,16 +1004,25 @@ class Canvas(_Canvas):
             ch      -- character to be used to draw the box
         """
         _lib.caca_draw_box.argtypes = [
-            Canvas, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_uint32
-        ]
+                Canvas, ctypes.c_int, ctypes.c_int,
+                ctypes.c_int, ctypes.c_int, ctypes.c_uint32
+            ]
         _lib.caca_draw_box.restype  = ctypes.c_int
 
-        try:
-            ch = ord(ch)
-        except TypeError:
-            ch = utf8_to_utf32(ch)
+        if not isinstance(ch, str):
+            raise CanvasError("Specified character is invalid")
+        else:
+            try:
+                ch = ord(ch)
+            except TypeError:
+                ch = utf8_to_utf32(ch)
 
-        return _lib.caca_draw_box(self, x, y, width, height, ch)
+        try:
+            ret = _lib.caca_draw_box(self, x, y, width, height, ch)
+        except ctypes.ArgumentError:
+            raise CanvasError("specified box coordinate is invalid")
+        else:
+            return ret
 
     def draw_thin_box(self, x, y, width, height):
         """ Draw a thin box on the canvas.
@@ -680,11 +1033,17 @@ class Canvas(_Canvas):
             height  -- height of the box
         """
         _lib.caca_draw_thin_box.argtypes = [
-            _Canvas, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int
-        ]
+                _Canvas, ctypes.c_int, ctypes.c_int,
+                ctypes.c_int, ctypes.c_int
+            ]
         _lib.caca_draw_thin_box.restype  = ctypes.c_int
 
-        return _lib.caca_draw_thin_box(self, x, y, width, height)
+        try:
+            ret = _lib.caca_draw_thin_box(self, x, y, width, height)
+        except ctypes.ArgumentError:
+            raise CanvasError("specified box coordinate is invalid")
+        else:
+            return ret
 
     def draw_cp437_box(self, x, y, width, height):
         """ Draw a box on the canvas using CP437 characters.
@@ -695,12 +1054,17 @@ class Canvas(_Canvas):
             height  -- height of the box
         """
         _lib.caca_draw_cp437_box.argtypes = [
-            _Canvas, ctypes.c_int, ctypes.c_int,
-            ctypes.c_int, ctypes.c_int
-        ]
+                _Canvas, ctypes.c_int, ctypes.c_int,
+                ctypes.c_int, ctypes.c_int
+            ]
         _lib.caca_draw_cp437_box.restype  = ctypes.c_int
 
-        return _lib.caca_draw_cp437_box(self, x, y, width, height)
+        try:
+            ret = _lib.caca_draw_cp437_box(self, x, y, width, height)
+        except ctypes.ArgumentError:
+            raise CanvasError("specified box coordinate is invalid")
+        else:
+            return ret
 
     def fill_box(self, x, y, width, height, ch):
         """ Fill a box on the canvas using the given character.
@@ -717,12 +1081,20 @@ class Canvas(_Canvas):
         ]
         _lib.caca_fill_box.restype  = ctypes.c_int
 
-        try:
-            ch = ord(ch)
-        except TypeError:
-            ch = utf8_to_utf32(ch)
+        if not isinstance(ch, str):
+            raise CanvasError("Specified character is invalid")
+        else:
+            try:
+                ch = ord(ch)
+            except TypeError:
+                ch = utf8_to_utf32(ch)
 
-        return _lib.caca_fill_box(self, x, y, width, height, ch)
+        try:
+            ret = _lib.caca_fill_box(self, x, y, width, height, ch)
+        except ctypes.ArgumentError:
+            raise CanvasError("specified box coordinate is invalid")
+        else:
+            return ret
 
     def draw_triangle(self, x1, y1, x2, y2, x3, y3, ch):
         """ Draw a triangle on the canvas using the given character.
@@ -741,15 +1113,30 @@ class Canvas(_Canvas):
         ]
         _lib.caca_draw_triangle.restype  = ctypes.c_int
 
-        try:
-            ch = ord(ch)
-        except TypeError:
-            ch = utf8_to_utf32(ch)
+        if not isinstance(ch, str):
+            raise CanvasError("Specified character is invalid")
+        else:
+            try:
+                ch = ord(ch)
+            except TypeError:
+                ch = utf8_to_utf32(ch)
 
-        return _lib.caca_draw_triangle(self, x1, y1, x2, y2, x3, y3, ch)
+        try:
+            ret = _lib.caca_draw_triangle(self, x1, y1, x2, y2, x3, y3, ch)
+        except ctypes.ArgumentError:
+            raise CanvasError("specified triangle coordinate is invalid")
+        else:
+            return ret
 
     def draw_thin_triangle(self, x1, y1, x2, y2, x3, y3):
         """ Draw a thin triangle on the canvas.
+
+            x1  -- X coordinate of the first point
+            y1  -- Y coordinate of the first point
+            x2  -- X coordinate of the second point
+            y2  -- Y coordinate of the second point
+            x3  -- X coordinate of the third point
+            y3  -- Y coordinate of the third point
         """
         _lib.caca_draw_thin_triangle.argtypes = [
             _Canvas, ctypes.c_int, ctypes.c_int, ctypes.c_int,
@@ -757,7 +1144,12 @@ class Canvas(_Canvas):
         ]
         _lib.caca_draw_thin_triangle.restype  = ctypes.c_int
 
-        return _lib.caca_draw_thin_triangle(self, x1, y1, x2, y2, x3, y3)
+        try:
+            ret = _lib.caca_draw_thin_triangle(self, x1, y1, x2, y2, x3, y3)
+        except ctypes.ArgumentError:
+            raise CanvasError("specified triangle coordinate is invalid")
+        else:
+            return ret
 
     def fill_triangle(self, x1, y1, x2, y2, x3, y3, ch):
         """ Fill a triangle on the canvas using the given character.
@@ -776,12 +1168,20 @@ class Canvas(_Canvas):
         ]
         _lib.caca_fill_triangle.restype  = ctypes.c_int
 
-        try:
-            ch = ord(ch)
-        except TypeError:
-            ch = utf8_to_utf32(ch)
+        if not isinstance(ch, str):
+            raise CanvasError("Specified character is invalid")
+        else:
+            try:
+                ch = ord(ch)
+            except TypeError:
+                ch = utf8_to_utf32(ch)
 
-        return _lib.caca_fill_triangle(self, x1, y1, x2, y2, x3, y3, ch)
+        try:
+            ret = _lib.caca_fill_triangle(self, x1, y1, x2, y2, x3, y3, ch)
+        except ctypes.ArgumentError:
+            raise CanvasError("specified triangle coordinate is invalid")
+        else:
+            return ret
 
     def fill_triangle_textured(self, coords, tex, uv):
         """ Fill a triangle on the canvas using an arbitrary-sized texture.
@@ -813,7 +1213,16 @@ class Canvas(_Canvas):
         _lib.caca_set_frame.argtypes = [_Canvas, ctypes.c_int]
         _lib.caca_set_frame.restype  = ctypes.c_int
 
-        return _lib.caca_set_frame(self, idx)
+        try:
+            ret = _lib.caca_set_frame(self, idx)
+        except ctypes.ArgumentError:
+            raise CanvasError("specified index is invalid")
+        else:
+            err = ctypes.c_int.in_dll(_lib, "errno")
+            if err.value == errno.EINVAL:
+                raise CanvasError("Requested frame is out of range")
+            else:
+                return ret
 
     def get_frame_name(self):
         """ Get the current frame's name.
@@ -831,7 +1240,16 @@ class Canvas(_Canvas):
         _lib.caca_set_frame_name.argtypes = [_Canvas, ctypes.c_char_p]
         _lib.caca_set_frame_name.restype  = ctypes.c_int
 
-        return _lib.caca_set_frame_name(self, name)
+        try:
+            ret = _lib.caca_set_frame_name(self, name)
+        except ctypes.ArgumentError:
+            raise CanvasError("Specified name is invalid")
+        else:
+            err = ctypes.c_int.in_dll(_lib, "errno")
+            if err.value == errno.ENOMEM:
+                raise CanvasError("Not enough memory to allocate new frame")
+            else:
+                return ret
 
     def create_frame(self, idx):
         """ Add a frame to a canvas.
@@ -841,7 +1259,16 @@ class Canvas(_Canvas):
         _lib.caca_create_frame.argtypes = [_Canvas, ctypes.c_int]
         _lib.caca_create_frame.restype  = ctypes.c_int
 
-        return _lib.caca_create_frame(self, idx)
+        try:
+            ret = _lib.caca_create_frame(self, idx)
+        except ctypes.ArgumentError:
+            raise CanvasError("specified index is invalid")
+        else:
+            err = ctypes.c_int.in_dll(_lib, "errno")
+            if err.value == errno.ENOMEM:
+                raise CanvasError("Not enough memory to allocate new frame")
+            else:
+                return ret
 
     def free_frame(self, idx):
         """ Remove a frame from a canvas.
@@ -851,12 +1278,23 @@ class Canvas(_Canvas):
         _lib.caca_free_frame.argtypes = [_Canvas, ctypes.c_int]
         _lib.caca_free_frame.restype  = ctypes.c_int
 
-        return _lib.caca_free_frame(self, idx)
+        try:
+            ret = _lib.caca_free_frame(self, idx)
+        except ctypes.ArgumentError:
+            raise CanvasError("specified index is invalid")
+        else:
+            err = ctypes.c_int.in_dll(_lib, "errno")
+            if err.value == errno.EINVAL:
+                raise CanvasError("Requested frame is out of range, or attempt"
+                                  " to delete the last frame of the canvas")
+            else:
+                return ret
 
     def import_from_memory(self, data, fmt):
         """ Import a memory buffer into a canvas.
 
-            data -- a memory area containing the data to be loaded into the canvas
+            data -- a memory area containing the data to be loaded into
+                    the canvas
             fmt  -- a string describing the input format
 
             Valid values for format are:
@@ -866,14 +1304,30 @@ class Canvas(_Canvas):
               - ansi: import ANSI files.
               - utf8: import UTF-8 files with ANSI colour codes.
         """
-        #set data size
         length = ctypes.c_size_t(len(data))
+
         _lib.caca_import_canvas_from_memory.argtypes = [
-            Canvas, ctypes.c_char_p, ctypes.c_size_t, ctypes.c_char_p
-        ]
+                Canvas, ctypes.c_char_p,
+                ctypes.c_size_t, ctypes.c_char_p
+            ]
         _lib.caca_import_canvas_from_memory.restype  = ctypes.c_int
 
-        return _lib.caca_import_canvas_from_memory(self, data, length, fmt)
+        if not isinstance(fmt, str):
+            raise CanvasError("Invalid format requested")
+
+        try:
+            ret = _lib.caca_import_canvas_from_memory(self, data, length, fmt)
+        except ctypes.ArgumentError:
+            raise CanvasError("Given data are invalid")
+        else:
+            err = ctypes.c_int.in_dll(_lib, "errno")
+            if ret == -1:
+                if err.value == errno.ENOMEM:
+                    raise CanvasError("Not enough memory to allocate canvas")
+                elif err.value == errno.EINVAL:
+                    raise CanvasError("Invalid format requested")
+            else:
+                return ret
 
     def import_from_file(self, filename, fmt):
         """ Import a file into a canvas.
@@ -893,14 +1347,33 @@ class Canvas(_Canvas):
         ]
         _lib.caca_import_canvas_from_file.restype  = ctypes.c_int
 
-        return _lib.caca_import_canvas_from_file(self, filename, fmt)
+        if not isinstance(fmt, str):
+            raise CanvasError("Invalid format requested")
+
+        try:
+            ret = _lib.caca_import_canvas_from_file(self, filename, fmt)
+        except ctypes.ArgumentError:
+            raise CanvasError("Specified filename is invalid")
+        else:
+            err = ctypes.c_int.in_dll(_lib, "errno")
+            if ret == -1:
+                if err.value == errno.ENOSYS:
+                    raise CanvasError("File access is not implemented on this"
+                                      " system")
+                elif err.value == errno.ENOMEM:
+                    raise CanvasError("Not enough memory to allocate canvas")
+                elif err.value == errno.EINVAL:
+                    raise CanvasError("Invalid format requested")
+            else:
+                return ret
 
     def import_area_from_memory(self, x, y, data, fmt):
         """ Import a memory buffer into a canvas area.
 
             x    -- the leftmost coordinate of the area to import to
             y    -- the topmost coordinate of the area to import to
-            data -- a memory area containing the data to be loaded into the canvas
+            data -- a memory area containing the data to be loaded into
+                    the canvas
             fmt  -- a string describing the input format
 
             Valid values for format are:
@@ -910,15 +1383,34 @@ class Canvas(_Canvas):
               - ansi: import ANSI files.
               - utf8: import UTF-8 files with ANSI colour codes.
         """
-        #set data size
         length = ctypes.c_size_t(len(data))
+
         _lib.caca_import_area_from_memory.argtypes = [
-            _Canvas, ctypes.c_int, ctypes.c_int,
-            ctypes.c_char_p, ctypes.c_size_t, ctypes.c_char_p
-        ]
+                _Canvas, ctypes.c_int, ctypes.c_int,
+                ctypes.c_char_p, ctypes.c_size_t, ctypes.c_char_p
+            ]
         _lib.caca_import_area_from_memory.restype  = ctypes.c_int
 
-        return _lib.caca_import_area_from_memory(self, x, y, data, length, fmt)
+        if not isinstance(fmt, str):
+            raise CanvasError("Invalid format requested")
+        elif not isinstance(data, str):
+            raise CanvasError("Given data are invalid")
+
+        try:
+            ret = _lib.caca_import_area_from_memory(self, x, y,
+                                                    data, length, fmt)
+        except ctypes.ArgumentError:
+            raise CanvasError("Specified coordinate X or Y is invalid")
+        else:
+            if ret == -1:
+                err = ctypes.c_int.in_dll(_lib, "errno")
+                if err.value == errno.EINVAL:
+                    raise CanvasError("Unsupported format requested or"
+                                      " invalid coordinates")
+                elif err.value == errno.ENOMEM:
+                    raise CanvasError("Not enough memory to allocate canvas")
+            else:
+                return ret
 
     def import_area_from_file(self, x, y, filename, fmt):
         """ Import a file into a canvas area.
@@ -936,12 +1428,33 @@ class Canvas(_Canvas):
               - utf8: import UTF-8 files with ANSI colour codes.
         """
         _lib.caca_import_area_from_file.argtypes = [
-            _Canvas, ctypes.c_int, ctypes.c_int,
-            ctypes.c_char_p, ctypes.c_char_p
-        ]
+                _Canvas, ctypes.c_int, ctypes.c_int,
+                ctypes.c_char_p, ctypes.c_char_p
+            ]
         _lib.caca_import_area_from_file.restype  = ctypes.c_int
 
-        return _lib.caca_import_area_from_file(self, x, y, filename, fmt)
+        if not isinstance(fmt, str):
+            raise CanvasError("Invalid format requested")
+        elif not isinstance(filename, str):
+            raise CanvasError("Invalid filename requested")
+
+        try:
+            ret = _lib.caca_import_area_from_file(self, x, y, filename, fmt)
+        except ctypes.ArgumentError:
+            raise CanvasError("Specified coordinate X or Y is invalid")
+        else:
+            if ret == -1:
+                err = ctypes.c_int.in_dll(_lib, "errno")
+                if err.value == errno.ENOSYS:
+                    raise CanvasError("File access is not implemented on this"
+                                      " system")
+                elif err.value == errno.ENOMEM:
+                    raise CanvasError("Not enough memory to allocate canvas")
+                elif err.value == errno.EINVAL:
+                    raise CanvasError("Unsupported format requested or"
+                                      " invalid coordinates")
+            else:
+                return ret
 
     def export_to_memory(self, fmt):
         """ Export a canvas into a foreign format.
@@ -959,17 +1472,28 @@ class Canvas(_Canvas):
               - svg: export an SVG vector image.
               - tga: export a TGA image.
         """
-        #initialize pointer
         p_size_t = ctypes.POINTER(ctypes.c_size_t)
         _lib.caca_export_canvas_to_memory.argtypes = [
                 _Canvas, ctypes.c_char_p, p_size_t
-        ]
+            ]
         _lib.caca_export_canvas_to_memory.restype  = ctypes.POINTER(ctypes.c_char_p)
 
         p = ctypes.c_size_t()
-        ret = _lib.caca_export_canvas_to_memory(self, fmt, p)
 
-        return ctypes.string_at(ret, p.value)
+        try:
+            ret = _lib.caca_export_canvas_to_memory(self, fmt, p)
+        except ctypes.ArgumentError:
+            raise CanvasError("Invalid format requested")
+        else:
+            if not ret:
+                err = ctypes.c_int.in_dll(_lib, "errno")
+                if err.value == errno.EINVAL:
+                    raise CanvasError("Invalid format requested")
+                elif err.value == errno.ENOMEM:
+                    raise CanvasError("Not enough memory to allocate output"
+                                      " buffer")
+            else:
+                return ctypes.string_at(ret, p.value)
 
     def export_area_to_memory(self, x, y, width, height, fmt):
         """ Export a canvas portion into a foreign format.
@@ -991,19 +1515,34 @@ class Canvas(_Canvas):
               - svg: export an SVG vector image.
               - tga: export a TGA image.
         """
-        #initialize pointer
         p_size_t = ctypes.POINTER(ctypes.c_size_t)
 
         _lib.caca_export_area_to_memory.argtypes = [
-                _Canvas, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,
-                ctypes.c_char_p, p_size_t
-        ]
+                _Canvas, ctypes.c_int, ctypes.c_int, ctypes.c_int,
+                ctypes.c_int, ctypes.c_char_p, p_size_t
+            ]
         _lib.caca_export_area_to_memory.restype  = ctypes.POINTER(ctypes.c_char_p)
 
         p = ctypes.c_size_t()
-        ret = _lib.caca_export_area_to_memory(self, x, y, width, height, fmt, p)
 
-        return ctypes.string_at(ret, p.value)
+        if not isinstance(fmt, str):
+            raise CanvasError("Invalid format requested")
+
+        try:
+            ret = _lib.caca_export_area_to_memory(self, x, y, width, height,
+                                                  fmt, p)
+        except ctypes.ArgumentError:
+            raise CanvasError("Requested area coordinate is invalid")
+        else:
+            if not ret:
+                err = ctypes.c_int.in_dll(_lib, "errno")
+                if err.value == errno.EINVAL:
+                    raise CanvasError("Invalid format requested")
+                elif err.value == errno.ENOMEM:
+                    raise CanvasError("Not enough memory to allocate output"
+                                      " buffer")
+            else:
+                return ctypes.string_at(ret, p.value)
 
     def set_figfont(self, filename):
         """	Load a figfont and attach it to a canvas.
@@ -1013,7 +1552,10 @@ class Canvas(_Canvas):
         _lib.caca_canvas_set_figfont.argtypes = [_Canvas, ctypes.c_char_p]
         _lib.caca_canvas_set_figfont.restype  = ctypes.c_int
 
-        return _lib.caca_canvas_set_figfont(self, filename)
+        if not isinstance(filename, str):
+            raise CanvasError("Invalid filename requested")
+        else:
+            return _lib.caca_canvas_set_figfont(self, filename)
 
     def put_figchar(self, ch):
         """ Paste a character using the current figfont.
@@ -1023,11 +1565,14 @@ class Canvas(_Canvas):
         _lib.caca_put_figchar.argtypes = [_Canvas, ctypes.c_uint32]
         _lib.caca_put_figchar.restype  = ctypes.c_int
 
-        try:
-            ch = ord(ch)
-        except TypeError:
-            ch = utf8_to_utf32(ch)
- 
+        if not isinstance(ch, str):
+            raise CanvasError("Specified character is invalid")
+        else:
+            try:
+                ch = ord(ch)
+            except TypeError:
+                ch = utf8_to_utf32(ch)
+
         return _lib.caca_put_figchar(self, ch)
 
     def flush_figlet(self):
