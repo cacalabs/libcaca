@@ -33,6 +33,7 @@
 		E64A331D10DA447500325A66 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../config.h; sourceTree = SOURCE_ROOT; };
 		E64A33E410DA861600325A66 /* klibc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = klibc.c; sourceTree = "<group>"; };
 		E68A871110CD1F040047EB17 /* mouse.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mouse.c; path = ../examples/mouse.c; sourceTree = SOURCE_ROOT; };
+		E68B916D13237280006B282B /* cacaclock.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cacaclock.c; path = ../src/cacaclock.c; sourceTree = SOURCE_ROOT; };
 		E6A7681710B560BB008B6DEC /* caca++.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "caca++.cpp"; path = "../cxx/caca++.cpp"; sourceTree = SOURCE_ROOT; };
 		E6A7681810B560BB008B6DEC /* caca++.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "caca++.h"; path = "../cxx/caca++.h"; sourceTree = SOURCE_ROOT; };
 		E6A7681910B560BB008B6DEC /* cxxtest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = cxxtest.cpp; path = ../cxx/cxxtest.cpp; sourceTree = SOURCE_ROOT; };
@@ -99,8 +100,6 @@
 		E6DB663210AECCD700B6F924 /* common-image.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "common-image.c"; path = "../src/common-image.c"; sourceTree = SOURCE_ROOT; };
 		E6DB663310AECCD700B6F924 /* common-image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "common-image.h"; path = "../src/common-image.h"; sourceTree = SOURCE_ROOT; };
 		E6DB663410AECCD700B6F924 /* img2txt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = img2txt.c; path = ../src/img2txt.c; sourceTree = SOURCE_ROOT; };
-		E6DB663510AECCD700B6F924 /* mygetopt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mygetopt.c; path = ../src/mygetopt.c; sourceTree = SOURCE_ROOT; };
-		E6DB663610AECCD700B6F924 /* mygetopt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mygetopt.h; path = ../src/mygetopt.h; sourceTree = SOURCE_ROOT; };
 		E6DB663710AECCD700B6F924 /* texture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = texture.h; path = ../src/texture.h; sourceTree = SOURCE_ROOT; };
 		E6DB663910AECD1F00B6F924 /* trifiller.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = trifiller.c; path = ../examples/trifiller.c; sourceTree = SOURCE_ROOT; wrapsLines = 0; };
 		E6DB663B10AECDF500B6F924 /* blit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = blit.c; path = ../examples/blit.c; sourceTree = SOURCE_ROOT; };
@@ -299,6 +298,7 @@
 		E6DB662B10AECCBF00B6F924 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				E68B916D13237280006B282B /* cacaclock.c */,
 				E6DB66FF10B17BEA00B6F924 /* Makefile.am */,
 				E6DB662C10AECCD700B6F924 /* aafire.c */,
 				E6DB662D10AECCD700B6F924 /* cacademo.c */,
@@ -309,8 +309,6 @@
 				E6DB663210AECCD700B6F924 /* common-image.c */,
 				E6DB663310AECCD700B6F924 /* common-image.h */,
 				E6DB663410AECCD700B6F924 /* img2txt.c */,
-				E6DB663510AECCD700B6F924 /* mygetopt.c */,
-				E6DB663610AECCD700B6F924 /* mygetopt.h */,
 				E6DB663710AECCD700B6F924 /* texture.h */,
 			);
 			name = src;

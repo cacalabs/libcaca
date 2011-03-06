@@ -23,13 +23,43 @@
 
 #define CACACLOCKVERSION "0.1"
 
+static void usage(int argc, char **argv)
+{
+	char const * const * list;
 
-static char* get_date(void) {
+	fprintf(stderr, "Usage: %s [OPTIONS]... <IMAGE>\n", argv[0]);
+	fprintf(stderr, "Convert IMAGE to any text based available format.\n");
+	fprintf(stderr, "Example : %s -w 80 -f ansi ./caca.png\n\n", argv[0]);
+	fprintf(stderr, "Options:\n");
+	fprintf(stderr, "  -h, --help\t\t\tThis help\n");
+	fprintf(stderr, "  -v, --version\t\t\tVersion of the program\n");
+	fprintf(stderr, "  -f, --font=FONT\t\tUse FONT for time display\n");
+	fprintf(stderr, "  -d, --dateformat=FORMAT\tUse FORMAT as strftime argument (default %%R:%%S)\n");
+}
+
+
+static void version(void)
+{
+	printf(
+			"cacaclock Copyright 2011 Jean-Yves Lamoureux\n"
+			"Internet: <jylam@lnxscene.org> Version: %s (libcaca %s), date: %s\n"
+			"\n"
+			"cacaclock, along with its documentation, may be freely copied and distributed.\n"
+			"\n"
+			"The latest version of cacaclock is available from the web site,\n"
+			"        http://caca.zoy.org/wiki/libcaca in the libcaca package.\n"
+			"\n",
+			CACACLOCKVERSION, caca_get_version(), __DATE__);
+}
+
+
+
+static char* get_date(char *format) {
 	time_t  currtime;                                                    
 	char *charTime = malloc(101);                                      
 
 	time(&currtime);                                                     
-	strftime(charTime, 100,"%R:%S",localtime(&currtime)); 
+	strftime(charTime, 100,format,localtime(&currtime)); 
 
 	return charTime;
 }
@@ -39,11 +69,49 @@ int main(int argc, char *argv[]) {
 	caca_canvas_t *cv;
 	caca_canvas_t *figcv;
 	caca_display_t *dp;
-	uint32_t w, h;
+	uint32_t w, h, fw, fh;
+
+	char *format = "%R:%S"; 
+	char *font   = "/usr/share/figlet/mono12.tlf";
 
 
-	char *font = "/usr/share/figlet/mono12.tlf";
-	if(argc==2) font = argv[1];
+	for(;;)
+	{
+		int option_index = 0;
+		static struct caca_option long_options[] =
+		{
+			{ "font",        1, NULL, 'f' },
+			{ "dateformat",  1, NULL, 'd' },
+			{ "help",        0, NULL, 'h' },
+			{ "version",     0, NULL, 'v' },
+		};
+		int c = caca_getopt(argc, argv, "f:d:hv",
+				long_options, &option_index);
+		if(c == -1)
+			break;
+
+		switch(c)
+		{
+			case 'h': /* --help       */
+				usage(argc, argv);
+				return 0;
+				break;
+			case 'v': /* --version    */
+				version();
+				return 0;
+				break;
+			case 'f': /* --font       */
+				font = caca_optarg;
+				break;
+			case 'd': /* --dateformat */
+				format = caca_optarg;
+				break;
+			default:
+				return 1;
+				break;
+		}
+	}
+
 
 
 	cv = caca_create_canvas(0, 0);
@@ -67,9 +135,8 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 
-	w = caca_get_canvas_width (cv);
-	h = caca_get_canvas_height(cv);	
-
+	caca_set_color_ansi(figcv, CACA_DEFAULT, CACA_DEFAULT);
+	caca_clear_canvas(cv);
 	for(;;) {
 		caca_event_t ev;
 
@@ -79,7 +146,7 @@ int main(int argc, char *argv[]) {
 			if(caca_get_event_type(&ev))
 				goto end;
 		}
-		char *d = get_date();
+		char *d = get_date(format);
 		uint32_t o = 0;
 
 		// figfont API is not complete, and does not alloq us to put a string
@@ -90,13 +157,20 @@ int main(int argc, char *argv[]) {
 		caca_clear_canvas(figcv);
 		while(d[o])
 		{  
-			caca_set_color_ansi(figcv, CACA_WHITE, CACA_TRANSPARENT);
 			caca_put_figchar(figcv, d[o++]);
 		}
 		caca_flush_figlet (figcv);
+		fw = caca_get_canvas_width (figcv);
+		fh = caca_get_canvas_height(figcv);	
+
 		free(d);
-		//TODO center etc.
-		caca_blit(cv, 0, 0, figcv, NULL);
+
+		w = caca_get_canvas_width (cv);
+		h = caca_get_canvas_height(cv);	
+		uint32_t x = (w/2) - (fw/2);
+		uint32_t y = (h/2) - (fh/2);
+
+		caca_blit(cv, x, y, figcv, NULL);
 		caca_refresh_display(dp);
 		usleep(250000);
 	}

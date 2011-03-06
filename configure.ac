@@ -268,14 +268,14 @@ if test "${enable_cocoa}" != "no"; then
     x*86_64*darwin*)
       MACOSX_SDK="${MACOSX_SDK:-/Developer/SDKs/MacOSX10.5.sdk}"
       GCC_VERSION="${GCC_VERSION:-4.0}"
-      ARCH="${ARCH:--arch i386}"
+      ARCH="${ARCH:--arch x86_64}"
       MACOSX_SDK_CFLAGS="${MACOSX_SDK_CFLAGS:--isysroot ${MACOSX_SDK}}"
       MACOSX_SDK_CXXFLAGS="${MACOSX_SDK_CXXFLAGS:-${MACOSX_SDK_CFLAGS}}"
       ;;
     x*86*darwin*)
       MACOSX_SDK="${MACOSX_SDK:-/Developer/SDKs/MacOSX10.6.sdk}"
       GCC_VERSION="${GCC_VERSION:-4.0}"
-      ARCH="${ARCH:--arch i386}"
+      ARCH="${ARCH:--arch x86_64}"
       MACOSX_SDK_CFLAGS="${MACOSX_SDK_CFLAGS:--isysroot ${MACOSX_SDK}}"
       MACOSX_SDK_CXXFLAGS="${MACOSX_SDK_CXXFLAGS:-${MACOSX_SDK_CFLAGS}}"
       ;;
@@ -284,9 +284,9 @@ if test "${enable_cocoa}" != "no"; then
     CXX="${CXX:-g++-${GCC_VERSION}}"
     MACOSX_SDK_FRAMEWORKS="${MACOSX_SDK_FRAMEWORKS:--F${MACOSX_SDK}/System/Library/Frameworks}"
     CPPFLAGS="${CPPFLAGS} ${ARCH} ${MACOSX_SDK_FRAMEWORKS}"
-    CFLAGS="${CFLAGS} ${MACOSX_SDK_CFLAGS}"
-    CXXFLAGS="${CXXFLAGS} ${MACOSX_SDK_CXXFLAGS}"
-    OBJCFLAGS="${OBJCFLAGS} ${MACOSX_SDK_CFLAGS}"
+    CFLAGS="${CFLAGS} ${MACOSX_SDK_CFLAGS} -mmacosx-version-min=10.5"
+    CXXFLAGS="${CXXFLAGS} ${MACOSX_SDK_CXXFLAGS} -mmacosx-version-min=10.5"
+    OBJCFLAGS="${OBJCFLAGS} ${MACOSX_SDK_CFLAGS} -mmacosx-version-min=10.5"
     LDFLAGS="${ARCH} ${MACOSX_SDK_LDFLAGS} ${LDFLAGS}"
     AC_DEFINE(USE_COCOA, 1, Define to 1 to activate the Cocoa backend driver)
     CACA_LIBS="${CACA_LIBS} -Wl,-syslibroot,${MACOSX_SDK},-framework,Cocoa"
