@@ -25,9 +25,9 @@
 
 static void usage(int argc, char **argv)
 {
-	fprintf(stderr, "Usage: %s [OPTIONS]... <IMAGE>\n", argv[0]);
-	fprintf(stderr, "Convert IMAGE to any text based available format.\n");
-	fprintf(stderr, "Example : %s -w 80 -f ansi ./caca.png\n\n", argv[0]);
+	fprintf(stderr, "Usage: %s [OPTIONS]...\n", argv[0]);
+	fprintf(stderr, "Display current time in text mode     (q to quit)\n");
+	fprintf(stderr, "Example : %s -d '%%R'\n\n", argv[0]);
 	fprintf(stderr, "Options:\n");
 	fprintf(stderr, "  -h, --help\t\t\tThis help\n");
 	fprintf(stderr, "  -v, --version\t\t\tVersion of the program\n");
@@ -49,7 +49,6 @@ static void version(void)
 			"\n",
 			CACACLOCKVERSION, caca_get_version(), __DATE__);
 }
-
 
 
 static char* get_date(char *format) {
@@ -147,7 +146,7 @@ int main(int argc, char *argv[]) {
 		char *d = get_date(format);
 		uint32_t o = 0;
 
-		// figfont API is not complete, and does not alloq us to put a string
+		// figfont API is not complete, and does not allow us to put a string
 		// at another position than 0,0
 		// So, we have to create a canvas which will hold the figfont string,
 		// then blit this canvas to the main one at the desired position.
@@ -158,13 +157,13 @@ int main(int argc, char *argv[]) {
 			caca_put_figchar(figcv, d[o++]);
 		}
 		caca_flush_figlet (figcv);
-		fw = caca_get_canvas_width (figcv);
-		fh = caca_get_canvas_height(figcv);	
-
 		free(d);
 
 		w = caca_get_canvas_width (cv);
-		h = caca_get_canvas_height(cv);	
+		h = caca_get_canvas_height(cv);
+        fw = caca_get_canvas_width (figcv);
+		fh = caca_get_canvas_height(figcv);	
+
 		uint32_t x = (w/2) - (fw/2);
 		uint32_t y = (h/2) - (fh/2);
 
