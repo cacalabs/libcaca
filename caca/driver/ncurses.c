@@ -568,7 +568,10 @@ static int ncurses_get_event(caca_display_t *dp, caca_privevent_t *ev)
 
 static void ncurses_set_cursor(caca_display_t *dp, int flags)
 {
-    curs_set(flags ? 2 : 0);
+    if (!flags)
+        curs_set(0);
+    else if (curs_set(2) == ERR)
+        curs_set(1);
 }
 
 /*
