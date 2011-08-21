@@ -13,7 +13,7 @@
 #include "config.h"
 
 #if !defined(__KERNEL__)
-#   include <time.h>   
+#   include <time.h>
 #   include <stdio.h>
 #   include <string.h>
 #   include <stdlib.h>
@@ -52,11 +52,11 @@ static void version(void)
 
 
 static char* get_date(char *format) {
-	time_t  currtime;                                                    
-	char *charTime = malloc(101);                                      
+	time_t  currtime;
+	char *charTime = malloc(101);
 
-	time(&currtime);                                                     
-	strftime(charTime, 100,format,localtime(&currtime)); 
+	time(&currtime);
+	strftime(charTime, 100,format,localtime(&currtime));
 
 	return charTime;
 }
@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
 	caca_display_t *dp;
 	uint32_t w, h, fw, fh;
 
-	char *format = "%R:%S"; 
+	char *format = "%R:%S";
 	char *font   = "/usr/share/figlet/mono12.tlf";
 
 
@@ -114,13 +114,13 @@ int main(int argc, char *argv[]) {
 	cv = caca_create_canvas(0, 0);
 	figcv = caca_create_canvas(0, 0);
 	if(!cv || !figcv)
-	{  
+	{
 		fprintf(stderr, "%s: unable to initialise libcaca\n", argv[0]);
 		return 1;
 	}
 
 	if(caca_canvas_set_figfont(figcv, font))
-	{  
+	{
 		fprintf(stderr, "Could not open font\n");
 		return -1;
 	}
@@ -139,7 +139,7 @@ int main(int argc, char *argv[]) {
 
 		while(caca_get_event(dp, CACA_EVENT_KEY_PRESS
 					| CACA_EVENT_QUIT, &ev, 1))
-		{  
+		{
 			if(caca_get_event_type(&ev))
 				goto end;
 		}
@@ -153,7 +153,7 @@ int main(int argc, char *argv[]) {
 		caca_clear_canvas(cv);
 		caca_clear_canvas(figcv);
 		while(d[o])
-		{  
+		{
 			caca_put_figchar(figcv, d[o++]);
 		}
 		caca_flush_figlet (figcv);
