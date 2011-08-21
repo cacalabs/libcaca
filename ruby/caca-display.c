@@ -263,6 +263,21 @@ static VALUE set_driver2(VALUE self, VALUE driver)
     return self;
 }
 
+static VALUE set_cursor(VALUE self, VALUE flag)
+{
+    if(caca_set_cursor(_SELF, flag)<0)
+    {
+        rb_raise(rb_eRuntimeError, strerror(errno));
+    }
+    return flag;
+}
+
+static VALUE set_cursor2(VALUE self, VALUE flag)
+{
+    set_cursor(self, flag);
+    return self;
+}
+
 void Init_caca_display(VALUE mCaca)
 {
     cDisplay = rb_define_class_under(mCaca, "Display", rb_cObject);
@@ -287,4 +302,6 @@ void Init_caca_display(VALUE mCaca)
     rb_define_method(cDisplay, "driver=", set_driver, 1);
     rb_define_method(cDisplay, "set_mouse", set_mouse2, 1);
     rb_define_method(cDisplay, "get_event", get_event, 2);
+    rb_define_method(cDisplay, "cursor=", set_cursor, 1);
+    rb_define_method(cDisplay, "set_cursor", set_cursor2, 1);
 }

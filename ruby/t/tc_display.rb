@@ -27,4 +27,8 @@ class TC_Canvas < Test::Unit::TestCase
         d = Caca::Display.new(c)
         d.title = "Test !"
     end
+    def test_set_cursor
+        d = Caca::Display.new()
+        d.cursor = 1
+    end
 end
