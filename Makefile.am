@@ -31,6 +31,6 @@ update-fonts: tools/makefont
 	tools/makefont mono9 "Monospace 9" 96 4 >| $(srcdir)/caca/mono9.data
 	tools/makefont monobold12 "Monospace Bold 12" 96 4 >| $(srcdir)/caca/monobold12.data
 
-echo-dirs: ; echo caca kernel src cxx examples ruby tools
+echo-dirs: ; echo caca kernel src cxx examples ruby python tools
 
 FORCE:

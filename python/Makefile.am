@@ -24,3 +24,5 @@ EXTRA_DIST = \
     examples/gol.py \
     examples/text.py
 
+echo-sources: ; echo $(caca_PYTHON)
+
