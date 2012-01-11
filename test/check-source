@@ -10,7 +10,7 @@ for dir in $(make -s echo-dirs -C ..); do
   if [ ! -d "../$dir" ]; then continue; fi
   for x in $(make -s echo-sources -C ../$dir); do
     case "$x" in
-      *.c|*.cpp|*.h|*.m|*.php|*.cs|*.java|.py|.pl)
+      *.c|*.cpp|*.h|*.m|*.php|*.cs|*.java|*.py|*.pl)
         nfiles=$(($nfiles + 1));
         nlines=$(($nlines + `grep -c . "../$dir/$x"`)) ;;
       *)
