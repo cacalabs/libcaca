@@ -1,12 +1,21 @@
 #!/usr/bin/env python
+#
+# Minimal setup.py script
+#
 
 from setuptools import setup
 
+import caca
+
 setup(
     name='caca',
-    version='0.0',
+    author='Alex Foulon',
+    author_email='alxf@lavabit.com',
+    version=caca.get_version(),
     packages=['caca'],
     package_dir={
         'caca': 'caca',
     },
+    test_suite='test.alltests',
 )
+
