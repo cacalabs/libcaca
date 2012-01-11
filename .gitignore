@@ -69,6 +69,9 @@ examples/unicode
 # Ruby binaries
 ruby/*/mkmf.log
 ruby/*/*.so
+# Python binaries
+python/*/*.pyc
+python/*.egg-info
 # Demo binaries
 src/cacaview
 src/cacadraw
@@ -76,6 +79,7 @@ src/cacademo
 src/cacafire
 src/cacaplay
 src/cacaserver
+src/cacaclock
 src/img2txt
 # Testsuite binaries
 test/bench
