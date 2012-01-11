@@ -1545,7 +1545,7 @@ class Canvas(_Canvas):
                 return ctypes.string_at(ret, p.value)
 
     def set_figfont(self, filename):
-        """	Load a figfont and attach it to a canvas.
+        """ Load a figfont and attach it to a canvas.
 
             filename    -- the figfont file to load.
         """
