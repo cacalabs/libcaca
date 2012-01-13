@@ -16,7 +16,7 @@
 
 import ctypes
 
-from caca import _lib
+from caca import _lib, _PYTHON3, _str_to_bytes
 from caca.canvas import _Canvas, Canvas
 
 class _Display(object):
@@ -61,10 +61,13 @@ class Display(_Display):
             _lib.caca_create_display_with_driver.argtypes = [
                 _Canvas, ctypes.c_char_p
             ]
+            if _PYTHON3 and isinstance(driver, str):
+                driver = _str_to_bytes(driver)
+
             self._dp = _lib.caca_create_display_with_driver(cv, driver)
 
         if self._dp == 0:
-            raise DisplayError, "Failed to create display"
+            raise DisplayError("Failed to create display")
 
     def get_driver(self):
         """ Return the caca graphical context's current output driver.
@@ -85,6 +88,9 @@ class Display(_Display):
 
         if not driver:
             driver = ctypes.c_char_p(0)
+        else:
+            if _PYTHON3 and isinstance(driver, str):
+                driver = _str_to_bytes(driver)
 
         return _lib.caca_set_display_driver(self, driver)
 
@@ -130,13 +136,17 @@ class Display(_Display):
         _lib.caca_set_display_title.argtypes = [_Display, ctypes.c_char_p]
         _lib.caca_set_display_title.restype  = ctypes.c_int
 
+        if _PYTHON3 and isinstance(title, str):
+            title = _str_to_bytes(title)
+
         return _lib.caca_set_display_title(self, title)
 
     def set_mouse(self, flag):
-        """ Show or hide the mouse pointer. This function works with the ncurses,
-        S-Lang and X11 drivers.
+        """ Show or hide the mouse pointer. This function works with the
+            ncurses, S-Lang and X11 drivers.
 
-            flag -- 0 hides the pointer, 1 shows the system's default pointer (usually an arrow).
+            flag -- 0 hides the pointer, 1 shows the system's default pointer
+                    (usually an arrow)
         """
         _lib.caca_set_mouse.argtypes = [_Display, ctypes.c_int]
         _lib.caca_set_mouse.restype  = ctypes.c_int
@@ -146,7 +156,8 @@ class Display(_Display):
     def set_cursor(self, flag):
         """ Show or hide the cursor, for devices that support such a feature.
 
-            flag -- 0 hides the cursor, 1 shows the system's default cursor (usually a white rectangle).
+            flag -- 0 hides the cursor, 1 shows the system's default cursor
+                    (usually a white rectangle).
         """
 
         _lib.caca_set_cursor.argtypes = [Display, ctypes.c_int]
@@ -162,9 +173,12 @@ class Display(_Display):
             tiemout     -- a timeout value in microseconds
         """
 
-        _lib.caca_get_event.argtypes = [Display, ctypes.c_int, ctypes.POINTER(Event), ctypes.c_int]
+        _lib.caca_get_event.argtypes = [
+                Display, ctypes.c_int, ctypes.POINTER(Event), ctypes.c_int
+            ]
 
-        return _lib.caca_get_event(self, event_mask, ctypes.byref(event), timeout)
+        return _lib.caca_get_event(self, event_mask, ctypes.byref(event),
+                                         timeout)
 
     def get_mouse_x(self):
         """ Return the X mouse coordinate.
@@ -216,7 +230,7 @@ class Event(ctypes.Structure):
     def get_key_utf32(self):
         """ Not implemented.
         """
-        raise DisplayError, "Not implemented"
+        raise DisplayError("Not implemented")
 
     def get_key_utf8(self):
         """ Return a key press or key release event's UTF-8 value

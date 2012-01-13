@@ -43,18 +43,18 @@ def main():
     try:
         cv = Canvas(0, 0)
         dp = Display(cv)
-    except (CanvasError, DisplayError), err:
+    except (CanvasError, DisplayError) as err:
         sys.stderr.write("%s\n" % err)
         sys.exit(2)
 
     sprite = Canvas(0, 0)
     sprite.set_color_ansi(caca.COLOR_LIGHTRED, caca.COLOR_BLACK)
     sprite.import_from_memory(THE_PIG, "text")
-    sprite.set_handle(sprite.get_width()/2, sprite.get_height()/2)
+    sprite.set_handle(sprite.get_width()//2, sprite.get_height()//2)
 
     cv.set_color_ansi(caca.COLOR_WHITE, caca.COLOR_BLUE)
     cv.put_str(0, 0, "Centered sprite")
-    cv.blit(cv.get_width()/2, cv.get_height()/2, sprite, NullCanvas())
+    cv.blit(cv.get_width()//2, cv.get_height()//2, sprite, NullCanvas())
 
     dp.refresh()
     dp.get_event(caca.EVENT_KEY_PRESS, Event(), -1)

@@ -14,14 +14,33 @@
 
 """ Libcaca Python bindings """
 
+#standard modules
+import locale
+import sys
 import ctypes
 from ctypes.util import find_library
 
 if find_library('caca') is not None:
     _lib = ctypes.cdll.LoadLibrary(find_library('caca'))
 else:
-    raise ImportError, \
-        "Can't find shared library, you need to install libcaca in your path !"
+    raise ImportError(
+        "Can't find shared library, you need to install libcaca in your path !")
 
-from common import *
+#functions to handle string/bytes in python3+
+if sys.version_info[0:2] >= (3, 0):
+    _PYTHON3 = True
+else:
+    _PYTHON3 = False
+
+def _str_to_bytes(the_string):
+    """ Translate string to bytes type for python 3.
+    """
+    return bytes(the_string, locale.getlocale()[1])
+
+def _bytes_to_str(the_bytes):
+    """ Translate bytes to string type for python 3.
+    """
+    return the_bytes.decode(locale.getlocale()[1])
+
+from .common import *
 

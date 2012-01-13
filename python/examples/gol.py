@@ -30,9 +30,9 @@ class CellArray(object):
         self.width = width
         self.height = height
 
-        for i in xrange(0, self.height):
+        for i in range(0, self.height):
             self.array.append([])
-            for j in xrange(0, self.width):
+            for j in range(0, self.width):
                 self.array[i].append([])
 
     def get(self, x, y):
@@ -68,8 +68,8 @@ class CellArray(object):
     def population(self):
         n = 0
 
-        for i in xrange(0, self.height):
-            for j in xrange(0, self.width):
+        for i in range(0, self.height):
+            for j in range(0, self.width):
                 if self.get(i, j):
                     n += 1
 
@@ -87,8 +87,8 @@ class CellApp(object):
 
     def nextCycle(self):
         self.cycle += 1
-        for x in xrange(0, self.ca.height):
-            for y in xrange(0, self.ca.width):
+        for x in range(0, self.ca.height):
+            for y in range(0, self.ca.width):
                 if self.ca.get(x, y):
                     if self.ca.neighbors(x, y) >= 2 and self.ca.neighbors(x, y) <= 3:
                         self.cbuf.set(x, y, 1)
@@ -101,16 +101,16 @@ class CellApp(object):
                         self.cbuf.set(x, y, 0)
                 else:
                     self.cbuf.set(x, y, 0)
-        for x in xrange(0, self.ca.height):
-            for y in xrange(0, self.ca.width):
+        for x in range(0, self.ca.height):
+            for y in range(0, self.ca.width):
                 self.ca.set(x, y, self.cbuf.get(x, y))
 
     def resetCycle(self):
         self.cycle = 0
 
     def randomCells(self):
-        for x in xrange(0, self.ca.height):
-            for y in xrange(0, self.ca.width):
+        for x in range(0, self.ca.height):
+            for y in range(0, self.ca.width):
                 self.ca.set(x, y, random.randint(0, 1))
 
     def renderCells(self, cv):
@@ -121,16 +121,16 @@ class CellApp(object):
         cv.put_str(0, cv.get_height()-1, " "*cv.get_width())
         cv.put_str(0, cv.get_height()-1, "generation: %d, population: %d" % (self.cycle, self.ca.population()))
         cv.set_color_ansi(caca.COLOR_DEFAULT, caca.COLOR_BLACK)
-        posx = (cv.get_height() - self.height) / 2
-        posy = (cv.get_width() - self.width) / 2
-        for x in xrange(0, self.ca.height):
-            for y in xrange(0, self.ca.width):
+        posx = (cv.get_height() - self.height) // 2
+        posy = (cv.get_width() - self.width) // 2
+        for x in range(0, self.ca.height):
+            for y in range(0, self.ca.width):
                 if self.ca.get(x, y):
-                    cv.put_str(posy+y, posx+x, '@')
+                    cv.put_str(posy+y, posx+x, "@")
 
     def zeroCells(self):
-        for x in xrange(0, self.ca.height):
-            for y in xrange(0, self.ca.width):
+        for x in range(0, self.ca.height):
+            for y in range(0, self.ca.width):
                 self.ca.set(x, y, 0)
 
 if __name__ == "__main__":

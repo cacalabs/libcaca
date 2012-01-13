@@ -30,7 +30,7 @@ def main():
 
     try:
         cv = Canvas(8, 2)
-    except CanvasError, err:
+    except CanvasError as err:
         sys.stderr.write("%s\n" % err)
         sys.exit(127)
 
@@ -48,7 +48,7 @@ def main():
 
     try:
         f = Font(fonts[0])
-    except FontError, err:
+    except FontError as err:
         sys.stderr.write("%s\n" % err)
         sys.exit(127)
 
@@ -61,17 +61,22 @@ def main():
     cv.set_size(80, 32)
     try:
         dp = Display(cv)
-    except DisplayError, err:
+    except DisplayError as err:
         sys.stderr.write("%s\n" % err)
         sys.exit(127)
 
-    if sys.byteorder == 'big':
-        dit = Dither(32, w, h, 4 * w, 0xff0000, 0xff00, 0xff, 0xff000000)
-    else:
-        dit = Dither(32, w, h, 4 * w, 0xff00, 0xff0000, 0xff000000, 0xff)
+    try:
+        if sys.byteorder == 'big':
+            dit = Dither(32, w, h, 4 * w, 0xff0000, 0xff00, 0xff, 0xff000000)
+        else:
+            dit = Dither(32, w, h, 4 * w, 0xff00, 0xff0000, 0xff000000, 0xff)
 
-    dit.bitmap(cv, 0, 0, cv.get_width(), cv.get_height(), buf)
-    dp.refresh()
+        dit.bitmap(cv, 0, 0, cv.get_width(), cv.get_height(), buf)
+    except DitherError as err:
+        sys.stderr.write("%s\n" % err)
+        sys.exit(127)
+    else:
+        dp.refresh()
 
     dp.get_event(caca.EVENT_KEY_PRESS, Event(), -1)
 

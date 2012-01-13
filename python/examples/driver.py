@@ -31,7 +31,7 @@ def main():
     try:
         cv = Canvas(0, 0)
         dp = Display(cv)
-    except (CanvasError, DisplayError), err:
+    except (CanvasError, DisplayError) as err:
         sys.stderr.write("%s\n" % err)
         sys.exit(127)
 

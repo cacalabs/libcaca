@@ -27,7 +27,7 @@ def main():
 
     try:
         cv = Canvas(0, 0)
-    except CanvasError, err:
+    except CanvasError as err:
         sys.stderr.write("%s\n" % err)
         sys.exit(2)
 
@@ -46,7 +46,7 @@ def main():
         cv.set_color_ansi(caca.COLOR_WHITE, idx)
         cv.fill_box(0, 0, 40, 15, ':')
         cv.set_color_ansi(caca.COLOR_WHITE, caca.COLOR_BLUE)
-        cv.put_str(idx * 5 / 2, idx, "カカ")
+        cv.put_str((idx * 5) // 2, idx, "カカ")
         cv.set_color_ansi(caca.COLOR_DEFAULT, caca.COLOR_TRANSPARENT)
 
     cv.set_size(41, 16)
@@ -55,7 +55,7 @@ def main():
 
     try:
         dp = Display(cv)
-    except DisplayError, err:
+    except DisplayError as err:
         sys.stderr.write("%s\n" % err)
         sys.exit(2)
 

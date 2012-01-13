@@ -18,7 +18,7 @@
 import unittest
 
 #test modules
-import canvas
+from . import canvas
 
 #create modules test suite
 canvas_t = unittest.TestSuite()

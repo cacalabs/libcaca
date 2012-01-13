@@ -28,14 +28,14 @@ def main():
     try:
         cv = Canvas(80, 24)
         dp = Display(cv)
-    except (CanvasError, DisplayError), err:
+    except (CanvasError, DisplayError) as err:
         sys.stderr.write("%s\n" % err)
         sys.exit(127)
 
     cv.set_color_ansi(caca.COLOR_LIGHTGRAY, caca.COLOR_BLACK)
     cv.clear()
 
-    for i in xrange(0, 16):
+    for i in range(0, 16):
         if i >= 8:
             y = i + 3
         else:
@@ -44,7 +44,7 @@ def main():
         cv.set_color_ansi(caca.COLOR_LIGHTGRAY, caca.COLOR_BLACK)
         cv.printf(3, y, "ANSI %i", i)
 
-        for j in xrange(0, 16):
+        for j in range(0, 16):
             if j >= 8:
                 x = 13 + (j * 4)
             else:

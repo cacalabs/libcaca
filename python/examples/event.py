@@ -70,7 +70,7 @@ def main():
     try:
         cv = Canvas(80, 24)
         dp = Display(cv)
-    except (CanvasError, DisplayError), err:
+    except (CanvasError, DisplayError) as err:
         sys.stderr.write("%s\n" % err)
         sys.exit(127)
 
@@ -115,7 +115,7 @@ def main():
 
         #print previous events
         cv.set_color_ansi(caca.COLOR_WHITE, caca.COLOR_BLACK)
-        counts = range(0, len(events) - 1)
+        counts = list(range(0, len(events)-1))
         counts.reverse()
         if len(events) > 1:
             j = 0

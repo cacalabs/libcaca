@@ -18,6 +18,7 @@ import ctypes
 import errno
 
 from caca import _lib, utf8_to_utf32, utf32_to_utf8
+from caca import _PYTHON3, _str_to_bytes, _bytes_to_str
 from caca.font import _Font
 
 class _Canvas(object):
@@ -48,12 +49,6 @@ class _Canvas(object):
 
         return _lib.caca_free_canvas(self)
 
-    def get_width(self):
-        raise CanvasError, "You can't use model canvas directly"
-
-    def get_height(self):
-        raise CanvasError, "You can't use model canvas directly"
-
 class Canvas(_Canvas):
     """ Canvas object, methods are libcaca functions with canvas_t as
         first parameter.
@@ -70,7 +65,7 @@ class Canvas(_Canvas):
         if pointer is None:
             try:
                 self._cv = _lib.caca_create_canvas(width, height)
-            except ctypes.ArgumentError, e:
+            except ctypes.ArgumentError:
                 self._cv = 0
                 raise CanvasError("Specified width or height is invalid")
             else:
@@ -91,12 +86,12 @@ class Canvas(_Canvas):
     def manage(self, *args, **kw):
         """ Not implemented.
         """
-        raise CanvasError, "Not implemented"
+        raise CanvasError("Not implemented")
 
     def unmanage(self, *args, **kw):
         """ Not implemented.
         """
-        raise CanvasError, "Not implemented"
+        raise CanvasError("Not implemented")
 
     def set_size(self, width, height):
         """ Resize a canvas.
@@ -111,7 +106,7 @@ class Canvas(_Canvas):
 
         try:
             ret = _lib.caca_set_canvas_size(self, width, height)
-        except ctypes.ArgumentError, e:
+        except ctypes.ArgumentError:
             raise CanvasError("Specified width or height is invalid")
         else:
             if ret == -1:
@@ -146,12 +141,12 @@ class Canvas(_Canvas):
     def get_chars(self, *args, **kw):
         """ Not implemented.
         """
-        raise CanvasError, "Not implemented"
+        raise CanvasError("Not implemented")
 
     def get_attrs(self, *args, **kw):
         """ Not implemented.
         """
-        raise CanvasError, "Not implemented"
+        raise CanvasError("Not implemented")
 
     def gotoxy(self, x, y):
         """ Set cursor position. Setting the cursor position outside the canvas
@@ -165,7 +160,7 @@ class Canvas(_Canvas):
 
         try:
             ret = _lib.caca_gotoxy(self, x, y)
-        except ctypes.ArgumentError, e:
+        except ctypes.ArgumentError:
             raise CanvasError("specified coordinate X or Y is invalid")
         else:
             return ret
@@ -209,7 +204,7 @@ class Canvas(_Canvas):
 
             try:
                 ret =  _lib.caca_put_char(self, x, y, ch)
-            except ctypes.ArgumentError, e:
+            except ctypes.ArgumentError:
                 raise CanvasError("specified coordinate X or Y is invalid")
             else:
                 return ret
@@ -249,15 +244,15 @@ class Canvas(_Canvas):
             ]
         _lib.caca_put_str.restype  = ctypes.c_int
 
-        if not isinstance(s, str):
-            raise CanvasError("Specified string is invalid")
+        if _PYTHON3 and isinstance(s, str):
+            s = _str_to_bytes(s)
+
+        try:
+            ret = _lib.caca_put_str(self, x, y, s)
+        except ctypes.ArgumentError:
+            raise CanvasError("Invalid argument")
         else:
-            try:
-                ret = _lib.caca_put_str(self, x, y, s)
-            except ctypes.ArgumentError:
-                raise CanvasError("Specified coordinate X or Y is invalid")
-            else:
-                return ret
+            return ret
 
     def printf(self, x, y, fmt, *args):
         """ Print a formated string.
@@ -272,20 +267,30 @@ class Canvas(_Canvas):
             ]
         _lib.caca_printf.restype  = ctypes.c_int
 
-        if not isinstance(fmt, str):
-            raise CanvasError("Specified formated string is invalid")
+        if _PYTHON3 and isinstance(fmt, str):
+            fmt = _str_to_bytes(fmt)
+
+        if _PYTHON3:
+            nargs = []
+            for arg in args[:]:
+                if isinstance(arg, str):
+                    nargs.append(_str_to_bytes(arg))
+                else:
+                    nargs.append(arg)
         else:
-            try:
-                ret = _lib.caca_printf(self, x, y, fmt, *args)
-            except ctypes.ArgumentError:
-                raise CanvasError("Specified coordinate X or Y is invalid")
-            else:
-                return ret
+            nargs = args
+
+        try:
+            ret = _lib.caca_printf(self, x, y, fmt, *nargs)
+        except ctypes.ArgumentError:
+            raise CanvasError("Specified coordinate X or Y is invalid")
+        else:
+            return ret
 
     def vprintf(self, *args, **kw):
         """ Not implemented.
         """
-        raise CanvasError, "Not implemented"
+        raise CanvasError("Not implemented")
 
     def clear(self):
         """ Clear the canvas.
@@ -1230,7 +1235,10 @@ class Canvas(_Canvas):
         _lib.caca_get_frame_name.argtypes = [_Canvas]
         _lib.caca_get_frame_name.restype  = ctypes.c_char_p
 
-        return _lib.caca_get_frame_name(self)
+        if _PYTHON3:
+            return _bytes_to_str(_lib.caca_get_frame_name(self))
+        else:
+            return _lib.caca_get_frame_name(self)
 
     def set_frame_name(self, name):
         """ Set the current frame's name.
@@ -1239,6 +1247,9 @@ class Canvas(_Canvas):
         """
         _lib.caca_set_frame_name.argtypes = [_Canvas, ctypes.c_char_p]
         _lib.caca_set_frame_name.restype  = ctypes.c_int
+
+        if _PYTHON3 and isinstance(name, str):
+            name = _str_to_bytes(name)
 
         try:
             ret = _lib.caca_set_frame_name(self, name)
@@ -1304,7 +1315,6 @@ class Canvas(_Canvas):
               - ansi: import ANSI files.
               - utf8: import UTF-8 files with ANSI colour codes.
         """
-        length = ctypes.c_size_t(len(data))
 
         _lib.caca_import_canvas_from_memory.argtypes = [
                 Canvas, ctypes.c_char_p,
@@ -1312,8 +1322,12 @@ class Canvas(_Canvas):
             ]
         _lib.caca_import_canvas_from_memory.restype  = ctypes.c_int
 
-        if not isinstance(fmt, str):
-            raise CanvasError("Invalid format requested")
+        if _PYTHON3 and isinstance(data, str):
+            data = _str_to_bytes(data)
+        if _PYTHON3 and isinstance(fmt, str):
+            fmt = _str_to_bytes(fmt)
+
+        length = ctypes.c_size_t(len(data))
 
         try:
             ret = _lib.caca_import_canvas_from_memory(self, data, length, fmt)
@@ -1347,8 +1361,10 @@ class Canvas(_Canvas):
         ]
         _lib.caca_import_canvas_from_file.restype  = ctypes.c_int
 
-        if not isinstance(fmt, str):
-            raise CanvasError("Invalid format requested")
+        if _PYTHON3 and isinstance(filename, str):
+            filename = _str_to_bytes(filename)
+        if _PYTHON3 and isinstance(fmt, str):
+            fmt = _str_to_bytes(fmt)
 
         try:
             ret = _lib.caca_import_canvas_from_file(self, filename, fmt)
@@ -1391,10 +1407,10 @@ class Canvas(_Canvas):
             ]
         _lib.caca_import_area_from_memory.restype  = ctypes.c_int
 
-        if not isinstance(fmt, str):
-            raise CanvasError("Invalid format requested")
-        elif not isinstance(data, str):
-            raise CanvasError("Given data are invalid")
+        if _PYTHON3 and isinstance(data, str):
+            data = _str_to_bytes(data)
+        if _PYTHON3 and isinstance(fmt, str):
+            fmt = _str_to_bytes(fmt)
 
         try:
             ret = _lib.caca_import_area_from_memory(self, x, y,
@@ -1433,10 +1449,10 @@ class Canvas(_Canvas):
             ]
         _lib.caca_import_area_from_file.restype  = ctypes.c_int
 
-        if not isinstance(fmt, str):
-            raise CanvasError("Invalid format requested")
-        elif not isinstance(filename, str):
-            raise CanvasError("Invalid filename requested")
+        if _PYTHON3 and isinstance(filename, str):
+            filename = _str_to_bytes(filename)
+        if _PYTHON3 and isinstance(fmt, str):
+            fmt = _str_to_bytes(fmt)
 
         try:
             ret = _lib.caca_import_area_from_file(self, x, y, filename, fmt)
@@ -1476,9 +1492,13 @@ class Canvas(_Canvas):
         _lib.caca_export_canvas_to_memory.argtypes = [
                 _Canvas, ctypes.c_char_p, p_size_t
             ]
-        _lib.caca_export_canvas_to_memory.restype  = ctypes.POINTER(ctypes.c_char_p)
+        _lib.caca_export_canvas_to_memory.restype  = ctypes.POINTER(
+                                                        ctypes.c_char_p)
 
         p = ctypes.c_size_t()
+
+        if _PYTHON3 and isinstance(fmt, str):
+            fmt = _str_to_bytes(fmt)
 
         try:
             ret = _lib.caca_export_canvas_to_memory(self, fmt, p)
@@ -1493,7 +1513,10 @@ class Canvas(_Canvas):
                     raise CanvasError("Not enough memory to allocate output"
                                       " buffer")
             else:
-                return ctypes.string_at(ret, p.value)
+                if _PYTHON3:
+                    return _bytes_to_str(ctypes.string_at(ret, p.value))
+                else:
+                    return ctypes.string_at(ret, p.value)
 
     def export_area_to_memory(self, x, y, width, height, fmt):
         """ Export a canvas portion into a foreign format.
@@ -1525,8 +1548,8 @@ class Canvas(_Canvas):
 
         p = ctypes.c_size_t()
 
-        if not isinstance(fmt, str):
-            raise CanvasError("Invalid format requested")
+        if _PYTHON3 and isinstance(fmt, str):
+            fmt = _str_to_bytes(fmt)
 
         try:
             ret = _lib.caca_export_area_to_memory(self, x, y, width, height,
@@ -1542,7 +1565,10 @@ class Canvas(_Canvas):
                     raise CanvasError("Not enough memory to allocate output"
                                       " buffer")
             else:
-                return ctypes.string_at(ret, p.value)
+                if _PYTHON3:
+                    return _bytes_to_str(ctypes.string_at(ret, p.value))
+                else:
+                    return ctypes.string_at(ret, p.value)
 
     def set_figfont(self, filename):
         """ Load a figfont and attach it to a canvas.
@@ -1552,10 +1578,10 @@ class Canvas(_Canvas):
         _lib.caca_canvas_set_figfont.argtypes = [_Canvas, ctypes.c_char_p]
         _lib.caca_canvas_set_figfont.restype  = ctypes.c_int
 
-        if not isinstance(filename, str):
-            raise CanvasError("Invalid filename requested")
-        else:
-            return _lib.caca_canvas_set_figfont(self, filename)
+        if _PYTHON3 and isinstance(filename, str):
+            filename = _str_to_bytes(filename)
+
+        return _lib.caca_canvas_set_figfont(self, filename)
 
     def put_figchar(self, ch):
         """ Paste a character using the current figfont.
@@ -1565,13 +1591,13 @@ class Canvas(_Canvas):
         _lib.caca_put_figchar.argtypes = [_Canvas, ctypes.c_uint32]
         _lib.caca_put_figchar.restype  = ctypes.c_int
 
-        if not isinstance(ch, str):
-            raise CanvasError("Specified character is invalid")
-        else:
-            try:
-                ch = ord(ch)
-            except TypeError:
-                ch = utf8_to_utf32(ch)
+        if _PYTHON3 and isinstance(ch, str):
+            ch = _str_to_bytes(ch)
+
+        try:
+            ch = ord(ch)
+        except TypeError:
+            ch = utf8_to_utf32(ch)
 
         return _lib.caca_put_figchar(self, ch)
 

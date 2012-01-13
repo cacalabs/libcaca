@@ -51,22 +51,21 @@ class Drawing(object):
         y = [0, self.cv.get_height(), 0]
         array_x = ctypes.c_int * (len(x) + 1)
         array_y = ctypes.c_int * (len(y) + 1)
-        ax = array_x(*x)
-        ay = array_y(*y)
+        array_xy = [ (x, y) for x, y in zip(array_x(*x), array_y(*y))]
         if thin:
-            self.cv.draw_thin_polyline(ax, ay, len(x) + 1)
+            self.cv.draw_thin_polyline(array_xy)
         else:
-            self.cv.draw_polyline(ax, ay, len(x) + 1, '#')
+            self.cv.draw_polyline(array_xy, '#')
 
     def do_circle(self):
-        x = self.cv.get_width() / 2
-        y = self.cv.get_height() / 2
+        x = self.cv.get_width() // 2
+        y = self.cv.get_height() // 2
         radius = 5
         self.cv.draw_circle(x, y, radius, '@')
 
     def do_ellipse(self, thin=False):
-        x = self.cv.get_width() / 2
-        y = self.cv.get_height() / 2
+        x = self.cv.get_width() // 2
+        y = self.cv.get_height() // 2
         a = 7
         b = 3
         if thin:

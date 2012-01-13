@@ -16,7 +16,7 @@
 
 import ctypes
 
-from caca import _lib
+from caca import _lib, _PYTHON3, _bytes_to_str
 
 #color constants
 COLOR_BLACK = 0x00
@@ -116,7 +116,10 @@ def get_version():
     """
     _lib.caca_get_version.restype = ctypes.c_char_p
 
-    return _lib.caca_get_version()
+    if _PYTHON3:
+        return _bytes_to_str(_lib.caca_get_version())
+    else:
+        return _lib.caca_get_version()
 
 def get_display_driver_list():
     """ Return a list of available drivers as tuple (name, description).
@@ -128,12 +131,15 @@ def get_display_driver_list():
 
     for item in _lib.caca_get_display_driver_list():
         if item is not None and item != "":
-            tmplst.append(item)
+            if _PYTHON3:
+                tmplst.append(_bytes_to_str(item))
+            else:
+                tmplst.append(item)
         else:
             #memory error occured otherwise
             break
 
-    for i in xrange(0, len(tmplst)):
+    for i in range(0, len(tmplst)):
         if i % 2 == 0:
             retlst.append((tmplst[i], tmplst[i+1]))
 
@@ -150,12 +156,15 @@ def get_export_list():
 
     for item in _lib.caca_get_export_list():
         if item is not None and item != "":
-            tmplst.append(item)
+            if _PYTHON3:
+                tmplst.append(_bytes_to_str(item))
+            else:
+                tmplst.append(item)
         else:
             #memory error occured otherwise
             break
 
-    for i in xrange(0, len(tmplst)):
+    for i in range(0, len(tmplst)):
         if i % 2 == 0:
             retlst.append((tmplst[i], tmplst[i+1]))
 
@@ -175,18 +184,24 @@ def get_import_list():
         if item is not None:
             if item == "":
                 if not autodetect:
-                    tmplst.append("\"\"")
+                    if _PYTHON3:
+                        tmplst.append(_bytes_to_str("\"\""))
+                    else:
+                        tmplst.append("\"\"")
                     autodetect = True
                 else:
                     #memory error occured otherwise
                     break
             else:
-                tmplst.append(item)
+                if _PYTHON3:
+                    tmplst.append(_bytes_to_str(item))
+                else:
+                    tmplst.append(item)
         else:
             #memory error occured otherwise
             break
 
-    for i in xrange(0, len(tmplst)):
+    for i in range(0, len(tmplst)):
         if i % 2 == 0:
             retlst.append((tmplst[i], tmplst[i+1]))
 
@@ -202,7 +217,10 @@ def get_font_list():
 
     for item in _lib.caca_get_font_list():
         if item is not None and item != "":
-            fl.append(item)
+            if _PYTHON3:
+                fl.append(_bytes_to_str(item))
+            else:
+                fl.append(item)
         else:
             #memory error occured otherwise
             break
@@ -293,7 +311,10 @@ def utf32_to_utf8(ch):
     buf = ctypes.c_buffer(7)
     _lib.caca_utf32_to_utf8(buf, ch)
 
-    return buf.raw.rstrip('\x00')
+    if _PYTHON3:
+        return _bytes_to_str(buf.raw).replace('\x00', '')
+    else:
+        return buf.raw.replace('\x00', '')
 
 def utf32_to_cp437(ch):
     """ Convert a UTF-32 character to CP437.

@@ -71,7 +71,7 @@ class Dither(_Dither):
                                                rmask, gmask, bmask, amask)
 
         if self._dither == 0:
-            raise DitherError, "Failed to create dither object"
+            raise DitherError("Failed to create dither object")
 
     def set_palette(self, red, green, blue, alpha):
         """ Set the palette of an 8 bits per pixel bitmap. Values should be
@@ -82,7 +82,7 @@ class Dither(_Dither):
             blue    -- array of 256 blue values
             alpha   -- array of 256 alpha values
         """
-        raise DitherError, "Not implemented"
+        raise DitherError("Not implemented")
 
     def set_brightness(self, brightness):
         """ Set the brightness of the dither object.

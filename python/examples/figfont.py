@@ -16,6 +16,7 @@
 # http://sam.zoy.org/wtfpl/COPYING for more details.
 #
 
+import codecs
 import os
 import sys
 
@@ -25,7 +26,6 @@ from caca.canvas import Canvas, CanvasError
 def main():
     """ Main function. """
 
-    color = 0
 
     if len(sys.argv) < 3:
         sys.stderr.write("Usage: %s <figfont file> <word>\n" \
@@ -34,7 +34,7 @@ def main():
 
     try:
         cv = Canvas(0, 0)
-    except CanvasError, err:
+    except CanvasError as err:
         sys.stderr.write("%s\n" % err)
         sys.exit(2)
 
@@ -42,9 +42,11 @@ def main():
         sys.stderr.write("Could not open font...\n")
         sys.exit(2)
 
-    for c in sys.argv[2].decode('utf8'):
-        color += 4
-        cv.set_color_ansi(1+(color % 15), caca.COLOR_TRANSPARENT)
+    if sys.version_info[0:2] >= (3,0):
+        word = sys.argv[2]
+    else:
+        word = codecs.decode(sys.argv[2], "utf8")
+    for c in word:
         cv.put_figchar(c)
 
     sys.stderr.write(cv.export_to_memory("utf8"))

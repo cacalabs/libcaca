@@ -41,7 +41,7 @@ def main():
         pig = Canvas(0, 0)
         pig.import_from_memory(STRING, "text")
         cv = Canvas(pig.get_width() * 2, pig.get_height() * 2)
-    except CanvasError, err:
+    except CanvasError as err:
         sys.stderr.write("%s\n" % err)
         sys.exit(2)
 
@@ -55,8 +55,8 @@ def main():
     pig.rotate_180()
     cv.blit(pig.get_width(), pig.get_height(), pig, NullCanvas())
 
-    for j in xrange(0, cv.get_height()):
-        for i in xrange(0, cv.get_width(), 2):
+    for j in range(0, cv.get_height()):
+        for i in range(0, cv.get_width(), 2):
             cv.set_color_ansi(caca.COLOR_LIGHTBLUE + (i + j) % 6,
                               caca.COLOR_DEFAULT)
 
@@ -64,9 +64,9 @@ def main():
             cv.put_attr(i, j, a)
             cv.put_attr(i+1, j, a)
 
-    sys.stdout.write(cv.export_to_memory("utf8"))
+    print("%s" % cv.export_to_memory('utf8'))
     cv.rotate_left()
-    sys.stdout.write(cv.export_to_memory("utf8"))
+    print("%s" % cv.export_to_memory('utf8'))
 
 if __name__ == "__main__":
     main()

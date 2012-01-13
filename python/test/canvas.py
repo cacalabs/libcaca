@@ -74,7 +74,7 @@ class CanvasTestCase(unittest.TestCase):
         cv = Canvas(10, 1)
         self.assertEqual(10, cv.put_str(0, 0, "teststring"))
         liststring = []
-        for i in xrange(0, 10):
+        for i in range(0, 10):
             liststring.append(cv.get_char(i, 0))
 
         self.assertEqual("teststring", "".join(liststring))
@@ -88,7 +88,7 @@ class CanvasTestCase(unittest.TestCase):
         cv = Canvas(10, 1)
         self.assertEqual(10, cv.printf(0, 0, "%s%s", word1, word2))
         liststring = []
-        for i in xrange(0, 10):
+        for i in range(0, 10):
             liststring.append(cv.get_char(i, 0))
         self.assertEqual("teststring", "".join(liststring))
         self.assertRaises(CanvasError, cv.printf, 0, 0, 111)
