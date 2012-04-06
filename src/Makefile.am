@@ -1,7 +1,7 @@
 
 pkgdata_DATA = caca.txt
 
-EXTRA_DIST = caca.txt cacademo.vcproj cacafire.vcproj cacaview.vcproj
+EXTRA_DIST = caca.txt cacademo.vcxproj cacafire.vcxproj cacaview.vcxproj
 AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/caca -I../caca \
               -DLIBCACA=1 -DX_DISPLAY_MISSING=1
 
