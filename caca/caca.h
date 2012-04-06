@@ -446,6 +446,8 @@ __extern int caca_free_font(caca_font_t *);
  *
  *  @{ */
 __extern int caca_canvas_set_figfont(caca_canvas_t *, char const *);
+__extern int caca_set_figfont_smush(caca_canvas_t *, char const *);
+__extern int caca_set_figfont_width(caca_canvas_t *, int);
 __extern int caca_put_figchar(caca_canvas_t *, uint32_t);
 __extern int caca_flush_figlet(caca_canvas_t *);
 /*  @} */

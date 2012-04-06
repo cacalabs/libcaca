@@ -49,20 +49,21 @@ struct caca_charfont
 static uint32_t hsmush(uint32_t ch1, uint32_t ch2, int rule);
 static caca_charfont_t * open_charfont(char const *);
 static int free_charfont(caca_charfont_t *);
+static void update_figfont_settings(caca_canvas_t *cv);
 
 /** \brief load a figfont and attach it to a canvas */
 int caca_canvas_set_figfont(caca_canvas_t *cv, char const *path)
 {
     caca_charfont_t *ff = NULL;
 
-    if(path)
+    if (path)
     {
         ff = open_charfont(path);
-        if(!ff)
+        if (!ff)
             return -1;
     }
 
-    if(cv->ff)
+    if (cv->ff)
     {
         caca_free_canvas(cv->ff->charcv);
         free(cv->ff->left);
@@ -72,11 +73,11 @@ int caca_canvas_set_figfont(caca_canvas_t *cv, char const *path)
 
     cv->ff = ff;
 
-    if(!path)
+    if (!path)
         return 0;
 
-    /* from TOIlet’s main.c */
-    ff->term_width = cv->width > 0 ? cv->width : 80;
+    /* from TOIlet’s main.c -- can be overriden by user */
+    ff->term_width = 80;
     ff->hmode = H_DEFAULT;
 
     /* from TOIlet’s render.c */
@@ -85,43 +86,50 @@ int caca_canvas_set_figfont(caca_canvas_t *cv, char const *path)
     ff->lines = 0;
     caca_set_canvas_size(cv, 0, 0); /* XXX */
 
-    /* from TOIlet’s figlet.c */
-    if(ff->full_layout & 0x3f)
-        ff->hsmushrule = ff->full_layout & 0x3f;
-    else if(ff->old_layout > 0)
-        ff->hsmushrule = ff->old_layout;
-
-    switch(ff->hmode)
-    {
-    case H_DEFAULT:
-        if(ff->old_layout == -1)
-            ff->hmode = H_NONE;
-        else if(ff->old_layout == 0 && (ff->full_layout & 0xc0) == 0x40)
-            ff->hmode = H_KERN;
-        else if((ff->old_layout & 0x3f) && (ff->full_layout & 0x3f)
-                 && (ff->full_layout & 0x80))
-        {
-            ff->hmode = H_SMUSH;
-            ff->hsmushrule = ff->full_layout & 0x3f;
-        }
-        else if(ff->old_layout == 0 && (ff->full_layout & 0xbf) == 0x80)
-        {
-            ff->hmode = H_SMUSH;
-            ff->hsmushrule = 0x3f;
-        }
-        else
-            ff->hmode = H_OVERLAP;
-        break;
-    default:
-        break;
-    }
-
-    ff->charcv = caca_create_canvas(ff->max_length - 2, ff->height);
-
-    ff->left = malloc(ff->height * sizeof(int));
-    ff->right = malloc(ff->height * sizeof(int));
-
     cv->ff = ff;
+
+    update_figfont_settings(cv);
+
+    return 0;
+}
+
+/** \brief set the width of the figfont rendering */
+int caca_set_figfont_width(caca_canvas_t *cv, int width)
+{
+    if (!cv->ff)
+        return 0;
+
+    caca_charfont_t *ff = cv->ff;
+
+    ff->term_width = width;
+
+    update_figfont_settings(cv);
+
+    return 0;
+}
+
+/** \brief set the smushing mode of the figfont rendering */
+int caca_set_figfont_smush(caca_canvas_t *cv, char const *mode)
+{
+    if (!cv->ff)
+        return 0;
+
+    caca_charfont_t *ff = cv->ff;
+
+    if (!strcasecmp(mode, "default"))
+        ff->hmode = H_DEFAULT;
+    else if (!strcasecmp(mode, "kern"))
+        ff->hmode = H_KERN;
+    else if (!strcasecmp(mode, "smush"))
+        ff->hmode = H_SMUSH;
+    else if (!strcasecmp(mode, "none"))
+        ff->hmode = H_NONE;
+    else if (!strcasecmp(mode, "overlap"))
+        ff->hmode = H_OVERLAP;
+    else
+        ff->hmode = H_DEFAULT;
+
+    update_figfont_settings(cv);
 
     return 0;
 }
@@ -491,6 +499,54 @@ int free_charfont(caca_charfont_t *ff)
     free(ff);
 
     return 0;
+}
+
+static void update_figfont_settings(caca_canvas_t *cv)
+{
+    if (!cv->ff)
+        return;
+
+    caca_charfont_t *ff = cv->ff;
+
+    /* from TOIlet’s figlet.c */
+    if (ff->full_layout & 0x3f)
+        ff->hsmushrule = ff->full_layout & 0x3f;
+    else if (ff->old_layout > 0)
+        ff->hsmushrule = ff->old_layout;
+
+    switch (ff->hmode)
+    {
+    case H_DEFAULT:
+        if (ff->old_layout == -1)
+            ff->hmode = H_NONE;
+        else if (ff->old_layout == 0 && (ff->full_layout & 0xc0) == 0x40)
+            ff->hmode = H_KERN;
+        else if ((ff->old_layout & 0x3f) && (ff->full_layout & 0x3f)
+                 && (ff->full_layout & 0x80))
+        {
+            ff->hmode = H_SMUSH;
+            ff->hsmushrule = ff->full_layout & 0x3f;
+        }
+        else if (ff->old_layout == 0 && (ff->full_layout & 0xbf) == 0x80)
+        {
+            ff->hmode = H_SMUSH;
+            ff->hsmushrule = 0x3f;
+        }
+        else
+            ff->hmode = H_OVERLAP;
+        break;
+    default:
+        break;
+    }
+
+    if (ff->charcv)
+        caca_free_canvas(ff->charcv);
+    ff->charcv = caca_create_canvas(ff->max_length - 2, ff->height);
+
+    free(ff->left);
+    free(ff->right);
+    ff->left = malloc(ff->height * sizeof(int));
+    ff->right = malloc(ff->height * sizeof(int));
 }
 
 static uint32_t hsmush(uint32_t ch1, uint32_t ch2, int rule)
