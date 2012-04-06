@@ -76,7 +76,7 @@ int caca_canvas_set_figfont(caca_canvas_t *cv, char const *path)
         return 0;
 
     /* from TOIlet’s main.c */
-    ff->term_width = 80;
+    ff->term_width = cv->width > 0 ? cv->width : 80;
     ff->hmode = H_DEFAULT;
 
     /* from TOIlet’s render.c */
