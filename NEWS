@@ -2,7 +2,10 @@
 
 \section news0_99_beta18 Changes between 0.99.beta18 and 0.99.beta17
 
- - UNRELEASED
+ - new "cacaclock" utility
+ - improved FIGlet support
+ - improved Python and Ruby bindings
+ - numerous improvements and bugfixes
 
 \section news0_99_beta17 Changes between 0.99.beta17 and 0.99.beta16
 

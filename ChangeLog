@@ -1,6 +1,903 @@
+Commit: 4806
+Author: sam
+Date:   Fri Apr 6 20:30:22 2012 +0000
+
+    build: fix copyright information.
+
+ caca/caca.h           |    2 +-
+ caca/caca_internals.h |    2 +-
+ caca/driver/ncurses.c |    2 +-
+ caca/driver/x11.c     |    2 +-
+ caca/figfont.c        |    2 +-
+ ruby/caca-display.c   |    2 +-
+ src/cacaclock.c       |    4 ++--
+ 7 files changed, 8 insertions(+), 8 deletions(-)
+
+Commit: 4805
+Author: sam
+Date:   Fri Apr 6 20:30:16 2012 +0000
+
+    figfont: support setting the canvas width and smushing mode from the
+    calling application.
+
+ caca/caca.h    |    2 +
+ caca/figfont.c |  134 +++++++++++++++++++++++++++++++++++++++----------------
+ 2 files changed, 97 insertions(+), 39 deletions(-)
+
+Commit: 4804
+Author: sam
+Date:   Fri Apr 6 20:30:09 2012 +0000
+
+    build: fix "make dist", which was broken because of the vcproj -> vcxproj
+    migration.
+
+ caca/Makefile.am |    2 +-
+ cxx/Makefile.am  |    2 +-
+ src/Makefile.am  |    2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+Commit: 4803
+Author: sam
+Date:   Fri Apr 6 18:42:05 2012 +0000
+
+    figfont: stick the source canvas's width, if specified.
+
+ caca/figfont.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+Commit: 4802
+Author: alxf
+Date:   Fri Jan 13 20:17:01 2012 +0000
+
+    Add support for python3 to python bindings.
+
+ python/caca/__init__.py    |   25 +++++++-
+ python/caca/canvas.py      |  148 ++++++++++++++++++++++++++------------------
+ python/caca/common.py      |   43 ++++++++++---
+ python/caca/display.py     |   32 +++++++---
+ python/caca/dither.py      |    4 +-
+ python/caca/font.py        |    5 +-
+ python/examples/blit.py    |    6 +-
+ python/examples/colors.py  |    6 +-
+ python/examples/drawing.py |   15 ++---
+ python/examples/driver.py  |    2 +-
+ python/examples/event.py   |    4 +-
+ python/examples/figfont.py |   12 ++--
+ python/examples/font.py    |   23 ++++---
+ python/examples/frames.py  |    6 +-
+ python/examples/gol.py     |   34 +++++-----
+ python/examples/text.py    |   10 ++--
+ python/setup.py            |   11 +++-
+ python/test/__init__.py    |    2 +-
+ python/test/canvas.py      |    4 +-
+ 19 files changed, 244 insertions(+), 148 deletions(-)
+
+Commit: 4801
+Author: alxf
+Date:   Wed Jan 11 18:00:16 2012 +0000
+
+    Add unittest for canvas module.
+
+ python/setup.py         |   11 ++-
+ python/test/__init__.py |   66 ++++++++++
+ python/test/canvas.py   |  329 +++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 405 insertions(+), 1 deletions(-)
+
+Commit: 4800
+Author: alxf
+Date:   Wed Jan 11 15:44:37 2012 +0000
+
+    Drop tabs and trailing spaces.
+
+ python/caca/canvas.py |    2 +-
+ src/cacaclock.c       |  264 ++++++++++++++++++++++++------------------------
+ 2 files changed, 133 insertions(+), 133 deletions(-)
+
+Commit: 4799
+Author: alxf
+Date:   Wed Jan 11 15:21:35 2012 +0000
+
+    Add check-source rule for python files.
+
+ Makefile.am        |    2 +-
+ python/Makefile.am |    2 ++
+ 2 files changed, 3 insertions(+), 1 deletions(-)
+
+Commit: 4798
+Author: alxf
+Date:   Wed Jan 11 15:21:29 2012 +0000
+
+    Fixed wildcard for python and perl extension.
+
+ test/check-source |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+Commit: 4797
+Author: alxf
+Date:   Wed Jan 11 15:21:23 2012 +0000
+
+    Add cacaclock demo and python binaries to git ignore list.
+
+ .gitignore |    4 ++++
+ 1 files changed, 4 insertions(+), 0 deletions(-)
+
+Commit: 4787
+Author: pterjan
+Date:   Sun Aug 21 15:09:52 2011 +0000
+
+    Drop trailing spaces
+
+ src/cacaclock.c |   20 ++++++++++----------
+ 1 files changed, 10 insertions(+), 10 deletions(-)
+
+Commit: 4786
+Author: pterjan
+Date:   Sun Aug 21 15:06:30 2011 +0000
+
+     Add set_cursor to the ruby binding (patch from Tony Miller <mcfiredrill@gmail.com>)
+
+ ruby/caca-display.c  |   17 +++++++++++++++++
+ ruby/t/tc_display.rb |    4 ++++
+ 2 files changed, 21 insertions(+), 0 deletions(-)
+
+Commit: 4780
+Author: sam
+Date:   Tue Mar 29 20:18:16 2011 +0000
+
+    ncurses: if terminal doesn't support curs_set(2), try curs_set(1).
+
+ caca/driver/ncurses.c |    5 ++++-
+ 1 files changed, 4 insertions(+), 1 deletions(-)
+
+Commit: 4779
+Author: jylam
+Date:   Sun Mar 6 10:03:03 2011 +0000
+
+     * Updated help
+
+ src/cacaclock.c |   17 ++++++++---------
+ 1 files changed, 8 insertions(+), 9 deletions(-)
+
+Commit: 4778
+Author: jylam
+Date:   Sun Mar 6 08:18:46 2011 +0000
+
+     * Removed unused variable
+
+ src/cacaclock.c |    2 --
+ 1 files changed, 0 insertions(+), 2 deletions(-)
+
+Commit: 4777
+Author: jylam
+Date:   Sun Mar 6 08:17:14 2011 +0000
+
+     * Added command line parsing (--dateformat, --font, --help, --version)
+     * Center font
+
+ XCode/libcacaXCode.xcodeproj/project.pbxproj |    6 +-
+ configure.ac                                 |   10 ++--
+ src/cacaclock.c                              |  100 ++++++++++++++++++++++----
+ 3 files changed, 94 insertions(+), 22 deletions(-)
+
+Commit: 4776
+Author: alxf
+Date:   Sat Mar 5 17:26:35 2011 +0000
+
+    * Handles error messages from libcaca and ctypes with CanvasError exception.
+
+ python/caca/canvas.py |  913 +++++++++++++++++++++++++++++++++++++++----------
+ 1 files changed, 729 insertions(+), 184 deletions(-)
+
+Commit: 4775
+Author: jylam
+Date:   Fri Mar 4 17:26:35 2011 +0000
+
+     * Added width/height fetch
+
+ src/cacaclock.c |    5 +++++
+ 1 files changed, 5 insertions(+), 0 deletions(-)
+
+Commit: 4774
+Author: alxf
+Date:   Fri Mar 4 16:45:10 2011 +0000
+
+    * Fixed utf32_to_utf8 function.
+
+ python/caca/common.py |    8 +++++---
+ 1 files changed, 5 insertions(+), 3 deletions(-)
+
+Commit: 4773
+Author: jylam
+Date:   Fri Mar 4 11:03:21 2011 +0000
+
+     * Added preliminary cacaclock, a continuous clock
+
+ src/Makefile.am |    6 +++-
+ src/cacaclock.c |  105 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 110 insertions(+), 1 deletions(-)
+
+Commit: 4772
+Author: alxf
+Date:   Sat Feb 19 13:11:34 2011 +0000
+
+    * Make mask an optional argument for Canvas.blit method.
+    * Drawing and put_figchar methods now can handle utf8 chars.
+
+ python/caca/canvas.py      |   75 +++++++++++++++++++++++++++++++++++++------
+ python/examples/figfont.py |    2 +-
+ 2 files changed, 65 insertions(+), 12 deletions(-)
+
+Commit: 4771
+Author: alxf
+Date:   Fri Feb 18 19:03:44 2011 +0000
+
+    * method Canvas.put_char now handle utf8 char.
+
+ python/caca/canvas.py |    9 +++++++--
+ 1 files changed, 7 insertions(+), 2 deletions(-)
+
+Commit: 4770
+Author: alxf
+Date:   Sun Feb 13 19:07:20 2011 +0000
+
+    * Bind font functions.
+    * Bind caca_render_canvas function.
+    * Add example font.
+
+ python/caca/canvas.py   |   18 ++++++++++
+ python/caca/font.py     |   47 ++++++++++++++++++++++++++--
+ python/examples/font.py |   80 +++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 142 insertions(+), 3 deletions(-)
+
+Commit: 4769
+Author: alxf
+Date:   Sun Feb 13 16:39:13 2011 +0000
+
+    * Fix get_key_utf8 method, return python string with utf8 char now.
+
+ python/caca/display.py |   12 ++++++++++--
+ 1 files changed, 10 insertions(+), 2 deletions(-)
+
+Commit: 4767
+Author: sam
+Date:   Sun Feb 13 13:12:28 2011 +0000
+
+    Fix a bug in our Xutf8LookupString() usage.
+
+ caca/driver/x11.c |   12 ++++++++----
+ 1 files changed, 8 insertions(+), 4 deletions(-)
+
+Commit: 4766
+Author: sam
+Date:   Sun Feb 13 12:48:50 2011 +0000
+
+    Rename figfont into charfont. We will support far more than figfonts in
+    the future.
+
+ caca/caca.h           |   17 ++++++++++++++---
+ caca/caca_internals.h |    3 +--
+ caca/figfont.c        |   24 ++++++++++++------------
+ 3 files changed, 27 insertions(+), 17 deletions(-)
+
+Commit: 4712
+Author: alxf
+Date:   Sat Nov 13 12:23:52 2010 +0000
+
+    * Add examples: colors, driver and event.
+
+ python/Makefile.am        |    9 +++-
+ python/examples/colors.py |   76 ++++++++++++++++++++++++++
+ python/examples/driver.py |   67 +++++++++++++++++++++++
+ python/examples/event.py  |  131 +++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 282 insertions(+), 1 deletions(-)
+
+Commit: 4711
+Author: alxf
+Date:   Thu Nov 11 11:36:52 2010 +0000
+
+    * Add examples: blit, frames and text.
+
+ python/examples/blit.py   |   66 ++++++++++++++++++++++++++++++++++++++++
+ python/examples/frames.py |   74 +++++++++++++++++++++++++++++++++++++++++++++
+ python/examples/text.py   |   73 ++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 213 insertions(+), 0 deletions(-)
+
+Commit: 4710
+Author: alxf
+Date:   Thu Nov 11 08:46:17 2010 +0000
+
+    * Bind figfont functions
+    * Add example figfont
+
+ python/caca/canvas.py      |   28 ++++++++++++++++++++++
+ python/examples/figfont.py |   54 ++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 82 insertions(+), 0 deletions(-)
+
+Commit: 4708
+Author: alxf
+Date:   Mon Nov 8 19:26:33 2010 +0000
+
+    * Convert RGB image to RGBA.
+
+ python/examples/img2txt.py |   12 ++++++++++--
+ 1 files changed, 10 insertions(+), 2 deletions(-)
+
+Commit: 4707
+Author: alxf
+Date:   Mon Nov 8 19:20:12 2010 +0000
+
+    * Fix color mask order in Dither class.
+
+ python/caca/dither.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+Commit: 4706
+Author: alxf
+Date:   Mon Nov 8 13:21:30 2010 +0000
+
+    * Add example: port of img2txt with python bindings.
+
+ python/Makefile.am         |    1 +
+ python/examples/img2txt.py |  233 ++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 234 insertions(+), 0 deletions(-)
+
+Commit: 4705
+Author: alxf
+Date:   Sun Nov 7 17:08:24 2010 +0000
+
+    * Bind dither functions
+
+ python/caca/dither.py |  287 ++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 files changed, 283 insertions(+), 4 deletions(-)
+
+Commit: 4702
+Author: jylam
+Date:   Fri Oct 29 15:52:51 2010 +0000
+
+     * Fixed typo in img2txt doc (patch courtesy of Julien Danjou)
+     * Fixes #85
+
+ doc/img2txt.1 |   22 +++++++++++-----------
+ 1 files changed, 11 insertions(+), 11 deletions(-)
+
+Commit: 4689
+Author: sam
+Date:   Tue Oct 12 23:04:53 2010 +0000
+
+    Fix the Win32 build: ssize_t was no longer defined.
+
+ caca/caca_types.h |   16 ++++++++--------
+ 1 files changed, 8 insertions(+), 8 deletions(-)
+
+Commit: 4688
+Author: sam
+Date:   Tue Oct 12 15:26:02 2010 +0000
+
+    Convert stuff to Visual Studio 2010. It has <stdint.h>!
+
+ caca-sharp/caca-sharp.csproj  |   36 +++-
+ caca-sharp/test-csharp.csproj |   35 ++-
+ caca/libcaca.vcproj           |  514 -----------------------------------------
+ caca/libcaca.vcxproj          |  229 ++++++++++++++++++
+ cxx/libcaca++.vcproj          |  341 ---------------------------
+ cxx/libcaca++.vcxproj         |  193 +++++++++++++++
+ cxx/test-cxx.vcproj           |  335 ---------------------------
+ cxx/test-cxx.vcxproj          |  195 ++++++++++++++++
+ examples/blit.vcproj          |  363 -----------------------------
+ examples/blit.vcxproj         |  223 ++++++++++++++++++
+ examples/colors.vcproj        |  363 -----------------------------
+ examples/colors.vcxproj       |  223 ++++++++++++++++++
+ examples/conio-snake.vcproj   |  363 -----------------------------
+ examples/conio-snake.vcxproj  |  223 ++++++++++++++++++
+ examples/conio.vcproj         |  363 -----------------------------
+ examples/conio.vcxproj        |  223 ++++++++++++++++++
+ examples/demo.vcproj          |  363 -----------------------------
+ examples/demo.vcxproj         |  223 ++++++++++++++++++
+ examples/dithering.vcproj     |  363 -----------------------------
+ examples/dithering.vcxproj    |  223 ++++++++++++++++++
+ examples/driver.vcproj        |  363 -----------------------------
+ examples/driver.vcxproj       |  223 ++++++++++++++++++
+ examples/event.vcproj         |  363 -----------------------------
+ examples/event.vcxproj        |  223 ++++++++++++++++++
+ examples/font.vcproj          |  363 -----------------------------
+ examples/font.vcxproj         |  223 ++++++++++++++++++
+ examples/frames.vcproj        |  363 -----------------------------
+ examples/frames.vcxproj       |  223 ++++++++++++++++++
+ examples/fullwidth.vcproj     |  363 -----------------------------
+ examples/fullwidth.vcxproj    |  223 ++++++++++++++++++
+ examples/gamma.vcproj         |  363 -----------------------------
+ examples/gamma.vcxproj        |  223 ++++++++++++++++++
+ examples/hsv.vcproj           |  363 -----------------------------
+ examples/hsv.vcxproj          |  223 ++++++++++++++++++
+ examples/import.vcproj        |  363 -----------------------------
+ examples/import.vcxproj       |  223 ++++++++++++++++++
+ examples/input.vcproj         |  363 -----------------------------
+ examples/input.vcxproj        |  223 ++++++++++++++++++
+ examples/transform.vcproj     |  359 ----------------------------
+ examples/transform.vcxproj    |  220 ++++++++++++++++++
+ examples/truecolor.vcproj     |  363 -----------------------------
+ examples/truecolor.vcxproj    |  223 ++++++++++++++++++
+ examples/unicode.vcproj       |  363 -----------------------------
+ examples/unicode.vcxproj      |  223 ++++++++++++++++++
+ libcaca.sln                   |  349 +++++++++-------------------
+ src/cacademo.vcproj           |  363 -----------------------------
+ src/cacademo.vcxproj          |  223 ++++++++++++++++++
+ src/cacafire.vcproj           |  363 -----------------------------
+ src/cacafire.vcxproj          |  223 ++++++++++++++++++
+ src/cacaview.vcproj           |  366 -----------------------------
+ src/cacaview.vcxproj          |  217 +++++++++++++++++
+ test/bench.vcproj             |  364 -----------------------------
+ test/bench.vcxproj            |  224 ++++++++++++++++++
+ 53 files changed, 5681 insertions(+), 9430 deletions(-)
+
+Commit: 4687
+Author: sam
+Date:   Sat Oct 9 09:58:00 2010 +0000
+
+    Minor tuning to caca_types.h.
+
+ caca/caca_types.h |   15 ++++++++++-----
+ 1 files changed, 10 insertions(+), 5 deletions(-)
+
+Commit: 4686
+Author: sam
+Date:   Sat Oct 9 09:43:25 2010 +0000
+
+    Get rid of the build time generated caca_types.h. It sucked.
+
+ .gitignore           |    2 -
+ caca/Makefile.am     |    4 +-
+ caca/caca_types.h    |  103 +++++++++++++++++++++++++++++++++++++++++++++
+ caca/caca_types.h.in |  114 --------------------------------------------------
+ caca/libcaca.vcproj  |    2 +-
+ configure.ac         |   16 -------
+ win32/Makefile.am    |    2 +-
+ win32/caca_types.h   |    6 ---
+ 8 files changed, 107 insertions(+), 142 deletions(-)
+
+Commit: 4680
+Author: sam
+Date:   Thu Oct 7 21:33:47 2010 +0000
+
+    Link libcaca with -lgnugetopt if necessary.
+
+ caca/Makefile.am |    2 +-
+ src/Makefile.am  |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+Commit: 4679
+Author: sam
+Date:   Thu Oct 7 21:33:42 2010 +0000
+
+    Set version to 0.99beta18.
+
+ NEWS           |    4 ++++
+ configure.ac   |    2 +-
+ win32/config.h |    2 +-
+ 3 files changed, 6 insertions(+), 2 deletions(-)
+
+Commit: 4678
+Author: sam
+Date:   Thu Oct 7 21:33:36 2010 +0000
+
+    Remove spurious tabs from source.
+
+ caca/transform.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+Commit: 4677
+Author: sam
+Date:   Thu Oct 7 21:03:34 2010 +0000
+
+    Move mygetopt() directly into libcaca, for use by other programs.
+
+ caca/Makefile.am    |    1 +
+ caca/caca.h         |   25 ++++++++++
+ caca/getopt.c       |  133 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ caca/libcaca.vcproj |    4 ++
+ configure.ac        |    1 -
+ src/Makefile.am     |    4 --
+ src/img2txt.c       |   35 +++++---------
+ src/mygetopt.c      |  120 ----------------------------------------------
+ src/mygetopt.h      |   29 -----------
+ 9 files changed, 175 insertions(+), 177 deletions(-)
+
+Commit: 4644
+Author: sam
+Date:   Thu Sep 2 21:02:16 2010 +0000
+
+    Mark the font data as const. We no longer modify it in place.
+
+ caca/mono9.data      |    2 +-
+ caca/monobold12.data |    2 +-
+ tools/makefont.c     |    2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+Commit: 4643
+Author: sam
+Date:   Thu Sep 2 21:02:06 2010 +0000
+
+    Comply with cygwin's curses.h implementation.
+
+ caca/driver/ncurses.c |   12 ++++++++++++
+ 1 files changed, 12 insertions(+), 0 deletions(-)
+
+Commit: 4642
+Author: pterjan
+Date:   Thu Aug 26 21:57:11 2010 +0000
+
+     * Do not force output to be in UTF-8, some people have not switched yet...
+
+ caca/driver/slang.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+Commit: 4641
+Author: pterjan
+Date:   Thu Aug 26 21:14:12 2010 +0000
+
+     * Fix using dead keys on my us_intl keyboard
+      - Ignore key events when XFilterEvent returns true
+      - Do not set key to 0 when it is over 128
+
+ caca/driver/x11.c |    5 ++++-
+ 1 files changed, 4 insertions(+), 1 deletions(-)
+
+Commit: 4411
+Author: alxf
+Date:   Fri Jul 2 20:04:26 2010 +0000
+
+    * Bind event functions.
+
+ python/caca/display.py |   89 ++++++++++++++++++++++++++++--------------------
+ 1 files changed, 52 insertions(+), 37 deletions(-)
+
+Commit: 4410
+Author: alxf
+Date:   Tue Jun 22 23:15:33 2010 +0000
+
+    * Fix bad condition.
+
+ python/caca/canvas.py |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+Commit: 4409
+Author: alxf
+Date:   Mon Jun 21 18:09:23 2010 +0000
+
+    * Rename cv variable to pointer.
+
+ python/caca/canvas.py |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+Commit: 4408
+Author: alxf
+Date:   Mon Jun 21 18:06:26 2010 +0000
+
+    * Add optional pointer argument to Canvas class.
+    * get_canvas method now return Python Canvas object.
+
+ python/caca/canvas.py  |   14 +++++++++-----
+ python/caca/display.py |   11 +++++++++--
+ 2 files changed, 18 insertions(+), 7 deletions(-)
+
+Commit: 4405
+Author: alxf
+Date:   Sun Jun 20 21:32:31 2010 +0000
+
+    * Fix export functions.
+
+ python/caca/canvas.py |   21 +++++++++++----------
+ 1 files changed, 11 insertions(+), 10 deletions(-)
+
+Commit: 4404
+Author: alxf
+Date:   Tue Jun 1 18:21:41 2010 +0000
+
+    * Fix get_dirty_rect function.
+    * Add exceptions for missing methods.
+
+ python/caca/canvas.py |   61 +++++++++++++++++++++++++++++--------------------
+ 1 files changed, 36 insertions(+), 25 deletions(-)
+
+Commit: 4403
+Author: alxf
+Date:   Sun May 30 18:59:39 2010 +0000
+
+    * Bind import functions.
+
+ python/caca/canvas.py |   91 ++++++++++++++++++++++++++++++++++++++++++++-----
+ 1 files changed, 82 insertions(+), 9 deletions(-)
+
+Commit: 4402
+Author: alxf
+Date:   Sun May 30 12:47:28 2010 +0000
+
+    * Bind export functions.
+
+ python/caca/canvas.py |   61 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 61 insertions(+), 0 deletions(-)
+
+Commit: 4401
+Author: alxf
+Date:   Fri May 28 17:28:43 2010 +0000
+
+    * Fix python Makefile.
+
+ python/Makefile.am |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+Commit: 4400
+Author: pterjan
+Date:   Thu May 27 14:43:11 2010 +0000
+
+     * Improve rotated T, add P Q R ; 3 4
+
+ caca/transform.c |    8 +++++++-
+ 1 files changed, 7 insertions(+), 1 deletions(-)
+
+Commit: 4399
+Author: pterjan
+Date:   Thu May 27 11:30:08 2010 +0000
+
+     * Add a rotated T
+
+ caca/transform.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+Commit: 4398
+Author: sam
+Date:   Thu May 20 23:32:35 2010 +0000
+
+    New improved ctypes-based Python bindings, by Alex Foulon <alxf@lavabit.com>.
+
+ AUTHORS                     |    4 +-
+ configure.ac                |    9 +
+ python/Makefile.am          |   35 +-
+ python/README               |   16 -
+ python/caca.txt             |   26 --
+ python/caca/__init__.py     |   27 ++
+ python/caca/canvas.py       |  812 ++++++++++++++++++++++++++++++++++++++++
+ python/caca/common.py       |  335 +++++++++++++++++
+ python/caca/display.py      |  251 +++++++++++++
+ python/caca/dither.py       |   65 ++++
+ python/caca/font.py         |   59 +++
+ python/examples/cacainfo.py |   37 ++
+ python/examples/drawing.py  |  118 ++++++
+ python/examples/gol.py      |  171 +++++++++
+ python/pypycaca.c           |  860 -------------------------------------------
+ python/pypycaca.h           |  159 --------
+ python/setup.py             |   12 +
+ python/snake.py             |  167 ---------
+ python/test1.py             |  114 ------
+ python/test2.py             |   56 ---
+ 20 files changed, 1914 insertions(+), 1419 deletions(-)
+
+Commit: 4396
+Author: sam
+Date:   Thu Apr 22 13:54:44 2010 +0000
+
+    On Win32 and Win64, define 32-bit C99 types as ints instead of longs, because
+    a lot of software (wrongly) assumes that int32_t is the same as int.
+
+ caca/caca_types.h.in |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
+
+Commit: 4395
+Author: sam
+Date:   Tue Apr 20 12:19:55 2010 +0000
+
+    Fix a few things in the VS2k8 solution.
+
+ caca/libcaca.vcproj |    8 ++++----
+ libcaca.sln         |    3 +++
+ 2 files changed, 7 insertions(+), 4 deletions(-)
+
+Commit: 4392
+Author: sam
+Date:   Fri Apr 16 21:06:09 2010 +0000
+
+    Clarify the need to bootstrap in README.
+
+ README |    4 ++++
+ 1 files changed, 4 insertions(+), 0 deletions(-)
+
+Commit: 4390
+Author: sam
+Date:   Fri Apr 16 11:23:02 2010 +0000
+
+    Fix the Visual Studio solution.
+
+ libcaca.sln |   35 +++++++++++++++--------------------
+ 1 files changed, 15 insertions(+), 20 deletions(-)
+
+Commit: 4389
+Author: sam
+Date:   Fri Apr 16 11:22:38 2010 +0000
+
+    A few C89 compilation fixes.
+
+ caca/triangle.c |   95 +++++++++++++++++++++++++------------------------------
+ 1 files changed, 43 insertions(+), 52 deletions(-)
+
+Commit: 4387
+Author: sam
+Date:   Thu Apr 1 19:42:28 2010 +0000
+
+    Add new Unicode characters to other transformation routines.
+
+ caca/transform.c |   52 +++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 files changed, 51 insertions(+), 1 deletions(-)
+
+Commit: 4386
+Author: pterjan
+Date:   Mon Mar 29 10:48:24 2010 +0000
+
+     * Add few unicode charecters to the flip table
+
+ caca/transform.c |   28 ++++++++++++++++++++++++++++
+ 1 files changed, 28 insertions(+), 0 deletions(-)
+
+Commit: 4385
+Author: sam
+Date:   Sun Mar 21 21:53:59 2010 +0000
+
+    Fix a typo in doc/Makefile.am preventing the documentation to build.
+
+ doc/Makefile.am |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+Commit: 4369
+Author: sam
+Date:   Mon Feb 15 23:57:13 2010 +0000
+
+    Add the copyright unit test and update copyright information everywhere.
+
+ caca/attr.c              |    2 +-
+ caca/box.c               |    2 +-
+ caca/caca.c              |    2 +-
+ caca/caca0.c             |    2 +-
+ caca/caca_conio.c        |    2 +-
+ caca/caca_conio.h        |    2 +-
+ caca/caca_debug.h        |    2 +-
+ caca/caca_internals.h    |    2 +-
+ caca/caca_prof.h         |    2 +-
+ caca/caca_stubs.h        |    2 +-
+ caca/caca_types.h.in     |    2 +-
+ caca/canvas.c            |    2 +-
+ caca/charset.c           |    2 +-
+ caca/codec/codec.h       |    2 +-
+ caca/codec/export.c      |    2 +-
+ caca/codec/import.c      |    2 +-
+ caca/codec/text.c        |    2 +-
+ caca/conic.c             |    2 +-
+ caca/dirty.c             |    2 +-
+ caca/dither.c            |    2 +-
+ caca/driver/conio.c      |    2 +-
+ caca/driver/gl.c         |    2 +-
+ caca/driver/ncurses.c    |    2 +-
+ caca/driver/null.c       |    2 +-
+ caca/driver/raw.c        |    2 +-
+ caca/driver/slang.c      |    2 +-
+ caca/driver/vga.c        |    2 +-
+ caca/driver/win32.c      |    2 +-
+ caca/driver/x11.c        |    2 +-
+ caca/event.c             |    2 +-
+ caca/figfont.c           |    2 +-
+ caca/file.c              |    2 +-
+ caca/font.c              |    2 +-
+ caca/frame.c             |    2 +-
+ caca/graphics.c          |    2 +-
+ caca/legacy.c            |    2 +-
+ caca/line.c              |    2 +-
+ caca/prof.c              |    2 +-
+ caca/string.c            |    2 +-
+ caca/time.c              |    2 +-
+ caca/transform.c         |    2 +-
+ caca/triangle.c          |    2 +-
+ cxx/caca++.cpp           |    5 +++--
+ cxx/caca++.h             |    5 +++--
+ cxx/cxxtest.cpp          |    3 ++-
+ examples/blit.c          |    2 +-
+ examples/canvas.c        |    2 +-
+ examples/colors.c        |    2 +-
+ examples/conio-snake.cpp |    1 +
+ examples/conio.c         |    4 ++++
+ examples/demo.c          |    2 +-
+ examples/demo0.c         |    2 +-
+ examples/dithering.c     |    2 +-
+ examples/driver.c        |    2 +-
+ examples/event.c         |    2 +-
+ examples/export.c        |    2 +-
+ examples/figfont.c       |    2 +-
+ examples/font.c          |    2 +-
+ examples/font2tga.c      |    2 +-
+ examples/frames.c        |    2 +-
+ examples/fullwidth.c     |    2 +-
+ examples/gamma.c         |    2 +-
+ examples/hsv.c           |    2 +-
+ examples/import.c        |    2 +-
+ examples/input.c         |    2 +-
+ examples/mouse.c         |    2 +-
+ examples/spritedit.c     |    2 +-
+ examples/swallow.c       |    2 +-
+ examples/text.c          |    2 +-
+ examples/transform.c     |    2 +-
+ examples/trifiller.c     |    2 +-
+ examples/truecolor.c     |    2 +-
+ examples/unicode.c       |    2 +-
+ kernel/kernel.c          |    2 +-
+ kernel/kernel.h          |    2 +-
+ kernel/multiboot.h       |    1 +
+ ruby/caca-canvas.c       |    2 +-
+ ruby/caca-canvas.h       |   11 +++++++++++
+ ruby/caca-display.c      |    2 +-
+ ruby/caca-display.h      |   11 +++++++++++
+ ruby/caca-dither.c       |    2 +-
+ ruby/caca-dither.h       |   11 +++++++++++
+ ruby/caca-event.c        |    2 +-
+ ruby/caca-event.h        |   11 +++++++++++
+ ruby/caca-font.c         |    2 +-
+ ruby/caca-font.h         |   11 +++++++++++
+ ruby/caca.c              |    2 +-
+ ruby/common.h            |   11 +++++++++++
+ src/aafire.c             |    2 +-
+ src/cacademo.c           |    2 +-
+ src/cacadraw.c           |    2 +-
+ src/cacaplay.c           |    2 +-
+ src/cacaserver.c         |    2 +-
+ src/cacaview.c           |    2 +-
+ src/common-image.c       |    2 +-
+ src/common-image.h       |    2 +-
+ src/img2txt.c            |    2 +-
+ src/texture.h            |   12 ++++++++++++
+ test/Makefile.am         |    5 +++--
+ test/check-copyright     |   39 +++++++++++++++++++++++++++++++++++++++
+ tools/makefont.c         |    4 ++--
+ tools/optipal.c          |    2 +-
+ tools/sortchars.c        |    2 +-
+ 103 files changed, 223 insertions(+), 96 deletions(-)
+
+Commit: 4363
+Author: sam
+Date:   Wed Feb 10 23:35:08 2010 +0000
+
+    Use Computer Modern fonts instead of that ugly Times.
+
+ doc/Makefile.am |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+Commit: 4352
+Author: sam
+Date:   Tue Feb 9 00:49:31 2010 +0000
+
+    Make the check-source test more generic.
+
+ Makefile.am       |    2 ++
+ test/check-source |    5 +++--
+ 2 files changed, 5 insertions(+), 2 deletions(-)
+
+Commit: 4351
+Author: sam
+Date:   Tue Feb 9 00:45:18 2010 +0000
+
+    Get rid of pushd/popd in the testsuite.
+
+ test/check-source |   10 ++++------
+ 1 files changed, 4 insertions(+), 6 deletions(-)
+
+Commit: 4346
+Author: sam
+Date:   Mon Feb 8 23:39:34 2010 +0000
+
+    Synchronise mygetopt.c with zzuf.
+
+ src/mygetopt.c |   12 ++++++++----
+ src/mygetopt.h |    4 ++--
+ 2 files changed, 10 insertions(+), 6 deletions(-)
+
 Commit: 4341
 Author: sam
-Date:   Mon Feb 8 15:06:13 2010 +0100
+Date:   Mon Feb 8 14:29:19 2010 +0000
 
     Add triangle texture mapping to NEWS and update ChangeLog.
 
@@ -1583,9 +2480,9 @@ Date:   Sun Aug 2 11:09:35 2009 +0000
 
     Make the libcaca color values an enum again.
 
- caca/caca.h  |   50 ++++++++++++++++++++++++++++----------------------
+ caca/caca.h  |   52 +++++++++++++++++++++++++++++-----------------------
  caca/caca0.h |   38 ++++++++++++++++++--------------------
- 2 files changed, 46 insertions(+), 42 deletions(-)
+ 2 files changed, 47 insertions(+), 43 deletions(-)
 
 Commit: 3605
 Author: sam
@@ -9781,8 +10678,8 @@ Date:   Sun Nov 12 11:06:34 2006 +0000
 
       * Documented caca_event_t members.
 
- caca/caca.h |   70 +++++++++++++++++++++++++++++++++++-----------------------
- 1 files changed, 42 insertions(+), 28 deletions(-)
+ caca/caca.h |   72 +++++++++++++++++++++++++++++++++++-----------------------
+ 1 files changed, 43 insertions(+), 29 deletions(-)
 
 Commit: 1357
 Author: sam
@@ -10172,8 +11069,8 @@ Date:   Thu Nov 9 17:24:29 2006 +0000
       * Don't try to guess the file format in cacaserver, instead feed the data
         to cucul_import_memory() and try again later if it says "not enough data".
 
- src/cacaserver.c |   55 +++++++++++++++++++++++++++++++++--------------------
- 1 files changed, 34 insertions(+), 21 deletions(-)
+ src/cacaserver.c |   49 +++++++++++++++++++++++++++++++------------------
+ 1 files changed, 31 insertions(+), 18 deletions(-)
 
 Commit: 1314
 Author: sam
@@ -11743,7 +12640,7 @@ Date:   Sun Sep 17 12:44:18 2006 +0000
  test/dithering.c   |    6 ++++--
  test/event.c       |    9 +++++----
  test/export.c      |   13 +++++++------
- test/font.c        |   20 +++++++++++---------
+ test/font.c        |   22 ++++++++++++----------
  test/font2tga.c    |   11 ++++++-----
  test/frames.c      |   12 ++++++------
  test/gamma.c       |    9 ++++-----
@@ -11756,7 +12653,7 @@ Date:   Sun Sep 17 12:44:18 2006 +0000
  test/truecolor.c   |   11 ++++++-----
  test/unicode.c     |   11 ++++++-----
  tools/optipal.c    |    6 ++++--
- 31 files changed, 208 insertions(+), 118 deletions(-)
+ 31 files changed, 209 insertions(+), 119 deletions(-)
 
 Commit: 1047
 Author: sam
@@ -12355,12 +13252,12 @@ Date:   Thu May 25 20:01:10 2006 +0000
  caca/driver_slang.c |   60 +++++++++++++++++++++++++++++++++++++++++++-------
  cucul/box.c         |    2 +-
  cucul/canvas.c      |    2 +-
- cucul/charset.c     |   40 +++++++++++++++++++++++-----------
+ cucul/charset.c     |   42 +++++++++++++++++++++++------------
  cucul/conic.c       |    4 +-
  cucul/cucul.h       |    2 +-
  cucul/line.c        |    4 +-
  cucul/triangle.c    |    2 +-
- 8 files changed, 86 insertions(+), 30 deletions(-)
+ 8 files changed, 87 insertions(+), 31 deletions(-)
 
 Commit: 981
 Author: sam
@@ -12733,9 +13630,9 @@ Date:   Tue May 9 18:59:00 2006 +0000
 
       * Optimise built-in fonts. We gain about 100kB in the final binary.
 
- cucul/font_mono9.h      | 2088 +++++++++++++++++++++++-----------------------
- cucul/font_monobold12.h | 2112 +++++++++++++++++++++++-----------------------
- 2 files changed, 2100 insertions(+), 2100 deletions(-)
+ cucul/font_mono9.h      | 2118 +++++++++++++++++++++++-----------------------
+ cucul/font_monobold12.h | 2130 +++++++++++++++++++++++-----------------------
+ 2 files changed, 2124 insertions(+), 2124 deletions(-)
 
 Commit: 948
 Author: sam
@@ -13499,10 +14396,10 @@ Date:   Tue Apr 25 09:59:58 2006 +0000
  cucul/buffer.c   |   11 ++++++++++-
  cucul/canvas.c   |   31 +++++++++++++++++++++++++++----
  cucul/conic.c    |   36 ++++++++++++++++++++++++++----------
- cucul/cucul.h    |   32 ++++++++++++++++----------------
+ cucul/cucul.h    |   38 +++++++++++++++++++-------------------
  cucul/line.c     |   38 +++++++++++++++++++++++++++-----------
  cucul/triangle.c |   40 +++++++++++++++++++++++-----------------
- 8 files changed, 152 insertions(+), 70 deletions(-)
+ 8 files changed, 155 insertions(+), 73 deletions(-)
 
 Commit: 869
 Author: sam
@@ -14871,16 +15768,16 @@ Date:   Fri Apr 14 12:10:18 2006 +0000
  caca/graphics.c  |    8 ++
  cucul/box.c      |   46 +++++-----
  cucul/canvas.c   |   16 ++-
- cucul/conic.c    |   63 ++++++------
+ cucul/conic.c    |   63 +++++++------
  cucul/cucul.c    |   20 +++--
  cucul/cucul.h    |   13 ++-
- cucul/dither.c   |  287 ++++++++++++++++++++++++++----------------------------
+ cucul/dither.c   |  283 +++++++++++++++++++++++++----------------------------
  cucul/font.c     |   13 ++-
- cucul/line.c     |  105 ++++++++------------
+ cucul/line.c     |  105 +++++++++------------
  cucul/math.c     |   18 ++--
  cucul/sprite.c   |   85 ++++++++---------
  cucul/triangle.c |   60 ++++++------
- 15 files changed, 367 insertions(+), 380 deletions(-)
+ 15 files changed, 365 insertions(+), 378 deletions(-)
 
 Commit: 772
 Author: sam
@@ -15645,7 +16542,7 @@ Date:   Sat Apr 1 14:44:09 2006 +0000
         parameter to do what both functions did before, and even more.
 
  caca/caca.h      |    3 +-
- caca/event.c     |   63 ++++++++++++++++++++++++++++++-----------------------
+ caca/event.c     |   67 ++++++++++++++++++++++++++++++-----------------------
  src/aafire.c     |    2 +-
  src/cacaball.c   |    2 +-
  src/cacamoir.c   |    2 +-
@@ -15653,7 +16550,7 @@ Date:   Sat Apr 1 14:44:09 2006 +0000
  src/cacaplay.c   |    2 +-
  src/cacaview.c   |    6 ++--
  test/colors.c    |    2 +-
- test/demo.c      |    9 ++++++-
+ test/demo.c      |    9 +++++-
  test/dithering.c |    2 +-
  test/event.c     |    4 +-
  test/gamma.c     |    2 +-
@@ -15661,7 +16558,7 @@ Date:   Sat Apr 1 14:44:09 2006 +0000
  test/spritedit.c |    2 +-
  test/transform.c |    2 +-
  test/unicode.c   |    2 +-
- 17 files changed, 61 insertions(+), 48 deletions(-)
+ 17 files changed, 63 insertions(+), 50 deletions(-)
 
 Commit: 709
 Author: sam
@@ -16070,12 +16967,12 @@ Date:   Thu Mar 23 18:36:59 2006 +0000
  test/demo.c           |   16 ++--
  test/dithering.c      |    3 +-
  test/event.c          |   48 ++++++------
- test/gamma.c          |   22 +++--
+ test/gamma.c          |   24 ++++---
  test/hsv.c            |    3 +-
  test/spritedit.c      |    6 +-
  test/transform.c      |    3 +-
  test/unicode.c        |    3 +-
- 26 files changed, 511 insertions(+), 343 deletions(-)
+ 26 files changed, 512 insertions(+), 344 deletions(-)
 
 Commit: 680
 Author: sam
@@ -17344,8 +18241,8 @@ Date:   Thu Mar 9 16:57:32 2006 +0000
 
       * Fixed VGA colours. The values only range from 0 to 63.
 
- caca/driver_vga.c |   33 +++++++++++++++++----------------
- 1 files changed, 17 insertions(+), 16 deletions(-)
+ caca/driver_vga.c |   35 ++++++++++++++++++-----------------
+ 1 files changed, 18 insertions(+), 17 deletions(-)
 
 Commit: 573
 Author: sam
@@ -18378,8 +19275,8 @@ Date:   Thu Jun 23 16:58:58 2005 +0000
 
       * src/graphics.c: cleaned caca_get_html()
 
- src/graphics.c |  208 +++++++++++++++++++++++--------------------------------
- 1 files changed, 87 insertions(+), 121 deletions(-)
+ src/graphics.c |  198 +++++++++++++++++++++++---------------------------------
+ 1 files changed, 82 insertions(+), 116 deletions(-)
 
 Commit: 488
 Author: sam
@@ -22437,13 +23334,13 @@ Date:   Sun Dec 22 19:08:35 2002 +0000
 
       * Moved generated autotools files to the autotools/ directory.
 
- .cvsignore            |    8 +-------
- Makefile.am           |    2 +-
- autotools/.cvsignore  |   10 ++++++++++
- bootstrap             |    5 +++--
- configure.ac          |    2 ++
- debian/.cvsignore     |    3 +++
- src/Makefile.am       |    2 +-
+ .cvsignore           |    8 +-------
+ Makefile.am          |    2 +-
+ autotools/.cvsignore |   10 ++++++++++
+ bootstrap            |    5 +++--
+ configure.ac         |    2 ++
+ debian/.cvsignore    |    3 +++
+ src/Makefile.am      |    2 +-
  7 files changed, 21 insertions(+), 11 deletions(-)
 
 Commit: 37
