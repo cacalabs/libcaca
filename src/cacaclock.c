@@ -1,6 +1,6 @@
 /*
  *  cacaclock     Text-mode clock display
- *  Copyright (c) 2011 Jean-Yves Lamoureux <jylam@lnxscene.org>
+ *  Copyright (c) 2011-2012 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                All Rights Reserved
  *
  *  This program is free software. It comes without any warranty, to
@@ -39,7 +39,7 @@ static void usage(int argc, char **argv)
 static void version(void)
 {
     printf(
-            "cacaclock Copyright 2011 Jean-Yves Lamoureux\n"
+            "cacaclock Copyright 2011-2012 Jean-Yves Lamoureux\n"
             "Internet: <jylam@lnxscene.org> Version: %s (libcaca %s), date: %s\n"
             "\n"
             "cacaclock, along with its documentation, may be freely copied and distributed.\n"
