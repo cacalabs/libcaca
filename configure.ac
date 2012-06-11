@@ -547,8 +547,8 @@ if test "${enable_zzuf}" != "no"; then
 fi
 AM_CONDITIONAL(USE_ZZUF, test "${ZZUF}" != "no")
 
-AC_CONFIG_FILES([
-  Makefile
+AC_CONFIG_FILES(
+ [Makefile
   kernel/Makefile
   caca/Makefile
   src/Makefile
@@ -563,8 +563,8 @@ AC_CONFIG_FILES([
   doc/Makefile
   win32/Makefile
 ])
-AC_CONFIG_FILES([
-  caca/caca.pc
+AC_CONFIG_FILES(
+ [caca/caca.pc
   caca-sharp/caca-sharp.dll.config
   cxx/caca++.pc
   doc/doxygen.cfg

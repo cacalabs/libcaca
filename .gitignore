@@ -40,6 +40,7 @@ doc/latex
 *.vcxproj.user
 *.sdf
 *.suo
+ipch
 win32/*Debug
 win32/*Release
 # example binaries

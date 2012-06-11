@@ -96,10 +96,10 @@ int caca_canvas_set_figfont(caca_canvas_t *cv, char const *path)
 /** \brief set the width of the figfont rendering */
 int caca_set_figfont_width(caca_canvas_t *cv, int width)
 {
+    caca_charfont_t *ff = cv->ff;
+
     if (!cv->ff)
         return 0;
-
-    caca_charfont_t *ff = cv->ff;
 
     ff->term_width = width;
 
@@ -111,10 +111,10 @@ int caca_set_figfont_width(caca_canvas_t *cv, int width)
 /** \brief set the smushing mode of the figfont rendering */
 int caca_set_figfont_smush(caca_canvas_t *cv, char const *mode)
 {
+    caca_charfont_t *ff = cv->ff;
+
     if (!cv->ff)
         return 0;
-
-    caca_charfont_t *ff = cv->ff;
 
     if (!strcasecmp(mode, "default"))
         ff->hmode = H_DEFAULT;
@@ -503,10 +503,10 @@ int free_charfont(caca_charfont_t *ff)
 
 static void update_figfont_settings(caca_canvas_t *cv)
 {
+    caca_charfont_t *ff = cv->ff;
+
     if (!cv->ff)
         return;
-
-    caca_charfont_t *ff = cv->ff;
 
     /* from TOIlet’s figlet.c */
     if (ff->full_layout & 0x3f)
