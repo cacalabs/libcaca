@@ -36,6 +36,12 @@ doc/doxygen.log
 doc/man
 doc/html
 doc/latex
+# Visual Studio cruft
+*.vcxproj.user
+*.sdf
+*.suo
+win32/*Debug
+win32/*Release
 # example binaries
 examples/blit
 examples/canvas
