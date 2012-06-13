@@ -720,12 +720,14 @@ __extern cucul_buffer_t * cucul_export_canvas(caca_canvas_t *,
                                               char const *) CACA_DEPRECATED;
 __extern caca_canvas_t * cucul_import_canvas(cucul_buffer_t *,
                                               char const *) CACA_DEPRECATED;
+#if !defined _WIN32 || !defined __GNUC__
 __extern ssize_t caca_import_memory(caca_canvas_t *, void const *, size_t,
                                     char const *) CACA_DEPRECATED;
 __extern ssize_t caca_import_file(caca_canvas_t *, char const *,
                                   char const *) CACA_DEPRECATED;
 __extern void *caca_export_memory(caca_canvas_t const *, char const *,
                                   size_t *) CACA_DEPRECATED;
+#endif
 __extern int cucul_rotate(caca_canvas_t *) CACA_DEPRECATED;
 __extern int cucul_set_dither_invert(caca_dither_t *, int) CACA_DEPRECATED;
 __extern int cucul_set_dither_mode(caca_dither_t *,

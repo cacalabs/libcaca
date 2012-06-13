@@ -4,7 +4,7 @@ SUBDIRS = kernel caca src examples tools \
           doc test
 DIST_SUBDIRS = $(SUBDIRS) win32
 
-EXTRA_DIST = NOTES COPYING.GPL COPYING.ISC COPYING.LGPL bootstrap build-dos build-kernel build-win32 caca-config.in libcaca.spec libcaca.sln
+EXTRA_DIST = NOTES COPYING.GPL COPYING.ISC COPYING.LGPL bootstrap build-dos build-kernel build-win32 build-win64 caca-config.in libcaca.spec libcaca.sln
 AUTOMAKE_OPTIONS = dist-bzip2
 
 bin_SCRIPTS = caca-config

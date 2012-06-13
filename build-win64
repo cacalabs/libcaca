@@ -7,7 +7,7 @@ set -e
 
 # Clean up our working directory
 SRCDIR="`pwd`"
-DIRNAME="libcaca-win32-`sed -ne 's/^AC_INIT(.*, \(.*\)).*/\1/p' configure.ac`"
+DIRNAME="libcaca-win64-`sed -ne 's/^AC_INIT(.*, \(.*\)).*/\1/p' configure.ac`"
 INSTALLDIR="`pwd`/${DIRNAME}"
 BUILDDIR="${INSTALLDIR}/build"
 rm -Rf "${INSTALLDIR}"
@@ -18,8 +18,8 @@ mkdir "${BUILDDIR}"
 make distclean || true
 
 cd "${BUILDDIR}"
-# Build for win32
-"${SRCDIR}/configure" --host=i686-w64-mingw32 --build=none --prefix=/ --bindir=/bin --libdir=/lib --disable-imlib2 --disable-java --disable-doc "$@"
+# Build for win64
+"${SRCDIR}/configure" --host=x86_64-w64-mingw32 --build=none --prefix=/ --bindir=/bin --libdir=/lib --disable-imlib2 --disable-java --disable-doc "$@"
 make -j4 pkglibdir=/lib pkgdatadir=/data bindir=/bin
 # Install into our private directory
 make -j4 install DESTDIR="${INSTALLDIR}" pkglibdir=/lib/ pkgdatadir=/ bindir=/bin/
@@ -33,8 +33,8 @@ for f in libcaca libcaca++; do
    mv "${INSTALLDIR}/${f}.a" "${INSTALLDIR}/lib/${f}.lib"
 done
 rm -f "${INSTALLDIR}/caca-config.exe" # Just in case. *sigh*.
-i686-w64-mingw32-strip "${INSTALLDIR}/"*.exe || true
-i686-w64-mingw32-strip "${INSTALLDIR}/"*.dll || true
+x86_64-w64-mingw32-strip "${INSTALLDIR}/"*.exe || true
+x86_64-w64-mingw32-strip "${INSTALLDIR}/"*.dll || true
 
 mkdir "${INSTALLDIR}/doc"
 for f in COPYING COPYING.LGPL COPYING.GPL README AUTHORS NEWS NOTES THANKS; do
