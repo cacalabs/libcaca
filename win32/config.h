@@ -43,6 +43,7 @@
 #define HAVE_SLEEP 1
 /* #undef HAVE_SLSMG_UTF8_ENABLE */
 #define HAVE_SNPRINTF 1
+#define HAVE_SPRINTF_S 1
 #define HAVE_STDARG_H 1
 #define HAVE_STDIO_H 1
 /* #undef HAVE_STDINT_H */
@@ -59,6 +60,7 @@
 /* #undef HAVE_UNISTD_H */
 /* #undef HAVE_USLEEP */
 /* #undef HAVE_VSNPRINTF */
+#define HAVE_VSNPRINTF_S 1
 #define HAVE_WINDOWS_H 1
 #define HAVE_WINSOCK2_H 1
 /* #undef HAVE_X11_XKBLIB_H */

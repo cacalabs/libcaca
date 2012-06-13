@@ -336,7 +336,9 @@ int caca_vprintf(caca_canvas_t *cv, int x, int y, char const *format,
     if(cv->width - x + 1 > BUFSIZ)
         buf = malloc(cv->width - x + 1);
 
-#if defined(HAVE_VSNPRINTF)
+#if defined(HAVE_VSNPRINTF_S)
+    vsnprintf_s(buf, cv->width - x + 1, _TRUNCATE, format, args);
+#elif defined(HAVE_VSNPRINTF)
     vsnprintf(buf, cv->width - x + 1, format, args);
 #else
     vsprintf(buf, format, args);

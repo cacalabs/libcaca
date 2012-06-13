@@ -297,14 +297,15 @@ int caca_flush_figlet(caca_canvas_t *cv)
 
 static caca_charfont_t * open_charfont(char const *path)
 {
-#if !defined __KERNEL__ && defined HAVE_SNPRINTF
-    char altpath[2048];
-#endif
     char buf[2048];
     char hardblank[10];
     caca_charfont_t *ff;
     char *data = NULL;
     caca_file_t *f;
+#if !defined __KERNEL__ && (defined HAVE_SNPRINTF || defined HAVE_SPRINTF_S)
+    int const pathlen = 2048;
+    char *altpath = NULL;
+#endif
     int i, j, size, comment_lines;
 
     ff = malloc(sizeof(caca_charfont_t));
@@ -316,24 +317,31 @@ static caca_charfont_t * open_charfont(char const *path)
 
     /* Open font: if not found, try .tlf, then .flf */
     f = caca_file_open(path, "r");
-#if !defined __KERNEL__ && defined HAVE_SNPRINTF
-
-#if (! defined(snprintf)) && ( defined(_WIN32) || defined(WIN32) ) && (! defined(__CYGWIN__))
-#define snprintf _snprintf
+#if !defined __KERNEL__ && (defined HAVE_SNPRINTF || defined HAVE_SPRINTF_S)
+    if(!f)
+        altpath = malloc(pathlen);
+    if(!f)
+    {
+#if defined HAVE_SPRINTF_S
+        sprintf_s(altpath, pathlen - 1, "%s.tlf", path);
+#else
+        snprintf(altpath, pathlen - 1, "%s.tlf", path);
 #endif
-
-    if(!f)
-    {
-        snprintf(altpath, 2047, "%s.tlf", path);
-        altpath[2047] = '\0';
+        altpath[pathlen - 1] = '\0';
         f = caca_file_open(altpath, "r");
     }
     if(!f)
     {
-        snprintf(altpath, 2047, "%s.flf", path);
-        altpath[2047] = '\0';
+#if defined HAVE_SPRINTF_S
+        sprintf_s(altpath, pathlen - 1, "%s.flf", path);
+#else
+        snprintf(altpath, pathlen - 1, "%s.flf", path);
+#endif
+        altpath[pathlen - 1] = '\0';
         f = caca_file_open(altpath, "r");
     }
+    if (altpath)
+        free(altpath);
 #endif
     if(!f)
     {
