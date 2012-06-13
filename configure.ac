@@ -1,5 +1,5 @@
 
-AC_INIT(libcaca, 0.99.beta18)
+AC_INIT(libcaca, 0.99.beta19pre)
 AC_PREREQ(2.50)
 AC_CONFIG_AUX_DIR(.auto)
 AC_CANONICAL_SYSTEM
@@ -462,10 +462,10 @@ ac_cv_my_have_ruby="no"
 if test "${enable_ruby}" != "no"; then
   AC_PATH_PROG(RUBY, ruby, no)
   if test "${RUBY}" != "no"; then
-    RUBY_CFLAGS="-I$(ruby -r rbconfig -e 'print Config::CONFIG@<:@"archdir"@:>@')"
-    RUBY_LIBS="-L$(ruby -r rbconfig -e 'print Config::CONFIG@<:@"libdir"@:>@') -l$(ruby -r rbconfig -e 'print Config::CONFIG@<:@"RUBY_SO_NAME"@:>@')"
-    RUBY_SITEARCHDIR=`ruby -r rbconfig -e 'print Config::CONFIG@<:@"sitearchdir"@:>@'`
-    RUBY_SITELIBDIR=`ruby -r rbconfig -e 'print Config::CONFIG@<:@"sitelibdir"@:>@'`
+    RUBY_CFLAGS="-I$(ruby -r rbconfig -e 'print RbConfig::CONFIG@<:@"archdir"@:>@')"
+    RUBY_LIBS="-L$(ruby -r rbconfig -e 'print RbConfig::CONFIG@<:@"libdir"@:>@') -l$(ruby -r rbconfig -e 'print RbConfig::CONFIG@<:@"RUBY_SO_NAME"@:>@')"
+    RUBY_SITEARCHDIR=`ruby -r rbconfig -e 'print RbConfig::CONFIG@<:@"sitearchdir"@:>@'`
+    RUBY_SITELIBDIR=`ruby -r rbconfig -e 'print RbConfig::CONFIG@<:@"sitelibdir"@:>@'`
     AC_SUBST(RUBY_CFLAGS)
     AC_SUBST(RUBY_LIBS)
     AC_SUBST(RUBY_SITEARCHDIR)
