@@ -21,20 +21,6 @@ endif
 cxxtest_SOURCES = cxxtest.cpp
 cxxtest_LDADD = libcaca++.la ../caca/libcaca.la
 
-if USE_CXX
-install-exec-local:
-	$(mkinstalldirs) $(DESTDIR)$(libdir)
-	. ./libcaca++.la || exit 1; \
-	for x in $$library_names; do \
-	  ln -sf $$x $(DESTDIR)$(libdir)/$$(echo $$x | sed 's/caca/cucul/g'); \
-	done
-	ln -sf libcaca++.la $(DESTDIR)$(libdir)/libcucul++.la
-
-install-data-local:
-	$(mkinstalldirs) $(DESTDIR)$(pkgconfigdir)
-	ln -sf caca++.pc $(DESTDIR)$(pkgconfigdir)/cucul++.pc
-endif
-
 uninstall-local:
 	. ./libcaca++.la || exit 1; \
 	for x in $$library_names; do \

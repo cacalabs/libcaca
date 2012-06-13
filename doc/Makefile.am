@@ -43,7 +43,6 @@ clean-local:
 install-data-local:
 if BUILD_DOCUMENTATION
 	mkdir -p $(DESTDIR)$(datadir)/doc
-	ln -sf libcaca-dev $(DESTDIR)$(datadir)/doc/libcucul-dev
 	$(mkinstalldirs) $(DESTDIR)$(datadir)/doc/libcaca-dev/html
 	cp `find html -name '*.html' -o -name '*.gif' -o -name '*.png'` \
 	  $(DESTDIR)$(datadir)/doc/libcaca-dev/html
