@@ -3,7 +3,9 @@ AC_INIT(libcaca, 0.99.beta19pre)
 AC_PREREQ(2.50)
 AC_CONFIG_AUX_DIR(.auto)
 AC_CANONICAL_SYSTEM
-AM_INIT_AUTOMAKE([subdir-objects no-define tar-ustar silent-rules])
+dnl  We cannot use subdir-objects because of a bug that will eg. remove
+dnl  ../src/.deps upon distclean when a file from ../src/ is used.
+AM_INIT_AUTOMAKE([no-define tar-ustar silent-rules])
 dnl AM_MAINTAINER_MODE
 
 AM_CONFIG_HEADER(config.h)
@@ -35,9 +37,9 @@ AC_C_CONST
 AC_C_INLINE
 AC_TYPE_SIGNAL
 
-dnl AC_PROG_EGREP only exists in autoconf 2.54+, so we use AC_EGREP_CPP right
-dnl now otherwise it might be set in an obscure if statement. Same thing for
-dnl PKG_PROG_PKG_CONFIG which needs to be called first.
+dnl  AC_PROG_EGREP only exists in autoconf 2.54+, so we use AC_EGREP_CPP right
+dnl  now otherwise it might be set in an obscure if statement. Same thing for
+dnl  PKG_PROG_PKG_CONFIG which needs to be called first.
 AC_EGREP_CPP(yes, foo)
 PKG_PROG_PKG_CONFIG()
 m4_pattern_allow([^PKG_CONFIG_LIBDIR$])
@@ -54,11 +56,11 @@ esac
 AC_MSG_RESULT($LT_SUFFIX)
 AC_SUBST(LT_SUFFIX)
 
-dnl global configuration features
+dnl  global configuration features
 AC_ARG_ENABLE(kernel,
   [  --enable-kernel         kernel mode (default no)])
 
-dnl output driver features
+dnl  output driver features
 AC_ARG_ENABLE(slang,
   [  --enable-slang          slang graphics support (autodetected)])
 AC_ARG_ENABLE(ncurses,
@@ -78,7 +80,7 @@ AC_ARG_ENABLE(network,
 AC_ARG_ENABLE(vga,
   [  --enable-vga            VGA support for kernel mode (autodetected)])
 
-dnl language bindings
+dnl  language bindings
 AC_ARG_ENABLE(csharp,
   [  --enable-csharp         C# bindings (autodetected)])
 AC_ARG_ENABLE(java,
@@ -90,11 +92,11 @@ AC_ARG_ENABLE(python,
 AC_ARG_ENABLE(ruby,
   [  --enable-ruby           Ruby bindings (autodetected)])
 
-dnl example programs features
+dnl  example programs features
 AC_ARG_ENABLE(imlib2,
   [  --enable-imlib2         Imlib2 graphics support (autodetected)])
 
-dnl conditional builds
+dnl  conditional builds
 AC_ARG_ENABLE(debug,
   [  --enable-debug          build debug versions of the library (default no)])
 AC_ARG_ENABLE(profiling,
