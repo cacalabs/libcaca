@@ -3,7 +3,7 @@ AC_INIT(libcaca, 0.99.beta19pre)
 AC_PREREQ(2.50)
 AC_CONFIG_AUX_DIR(.auto)
 AC_CANONICAL_SYSTEM
-AM_INIT_AUTOMAKE([no-define tar-ustar])
+AM_INIT_AUTOMAKE([subdir-objects no-define tar-ustar silent-rules])
 dnl AM_MAINTAINER_MODE
 
 AM_CONFIG_HEADER(config.h)
