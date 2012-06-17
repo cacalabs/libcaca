@@ -29,8 +29,8 @@ rm -Rf "${BUILDDIR}"
 mv "${INSTALLDIR}/bin/"* "${INSTALLDIR}/"
 rmdir "${INSTALLDIR}/bin"
 mv "${INSTALLDIR}/lib/"* "${INSTALLDIR}/"
-for f in libcaca libcaca++; do
-   mv "${INSTALLDIR}/${f}.a" "${INSTALLDIR}/lib/${f}.lib"
+for f in caca caca++; do
+   mv "${INSTALLDIR}/lib${f}.a" "${INSTALLDIR}/lib/${f}.lib"
 done
 rm -f "${INSTALLDIR}/caca-config.exe" # Just in case. *sigh*.
 x86_64-w64-mingw32-strip "${INSTALLDIR}/"*.exe || true
