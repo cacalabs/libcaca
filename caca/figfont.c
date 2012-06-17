@@ -29,6 +29,10 @@
 #include "caca.h"
 #include "caca_internals.h"
 
+#if defined _WIN32 && defined __GNUC__ && __GNUC__ >= 3
+int sprintf_s(char *s, size_t n, const char *fmt, ...) CACA_WEAK;
+#endif
+
 struct caca_charfont
 {
     int term_width;
@@ -621,6 +625,22 @@ static uint32_t hsmush(uint32_t ch1, uint32_t ch2, int rule)
 
     return 0;
 }
+
+/*
+ * Functions for the mingw32 runtime
+ */
+
+#if defined _WIN32 && defined __GNUC__ && __GNUC__ >= 3
+int sprintf_s(char *s, size_t n, const char *fmt, ...)
+{
+    va_list args;
+    int ret;
+    va_start(args, fmt);
+    ret = vsnprintf(s, n, fmt, args);
+    va_end(args);
+    return ret;
+}
+#endif
 
 /*
  * XXX: The following functions are aliases.

@@ -341,13 +341,15 @@ int caca_free_canvas(caca_canvas_t *cv)
  *  \return A random integer comprised between \p min  and \p max - 1
  *  (inclusive).
  */
+static caca_timer_t timer = {0, 0};
+
 int caca_rand(int min, int max)
 {
     static int need_init = 1;
 
     if(need_init)
     {
-        srand(getpid() + time(NULL));
+        srand(getpid() + _caca_getticks(&timer));
         need_init = 0;
     }
 

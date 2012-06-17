@@ -36,6 +36,11 @@
 #include "caca.h"
 #include "caca_internals.h"
 
+#if defined _WIN32 && defined __GNUC__ && __GNUC__ >= 3
+int vsnprintf_s(char *s, size_t n, size_t c,
+                const char *fmt, va_list args) CACA_WEAK;
+#endif
+
 /** \brief Set cursor position.
  *
  *  Put the cursor at the given coordinates. Functions making use of the
@@ -596,6 +601,17 @@ int caca_set_canvas_boundaries(caca_canvas_t *cv, int x, int y, int w, int h)
 
     return 0;
 }
+
+/*
+ * Functions for the mingw32 runtime
+ */
+
+#if defined _WIN32 && defined __GNUC__ && __GNUC__ >= 3
+int vsnprintf_s(char *s, size_t n, size_t c, const char *fmt, va_list args)
+{
+    return vsnprintf(s, n, fmt, args);
+}
+#endif
 
 /*
  * XXX: The following functions are aliases.

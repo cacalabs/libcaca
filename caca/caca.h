@@ -689,6 +689,12 @@ typedef struct cucul_buffer cucul_buffer_t;
 #       define CACA_ALIAS(x)
 #   endif
 
+#   if defined __GNUC__ && __GNUC__ > 3
+#       define CACA_WEAK __attribute__ ((weak))
+#   else
+#       define CACA_WEAK
+#   endif
+
 
 /* Aliases from old libcaca and libcucul functions */
 __extern int cucul_putchar(caca_canvas_t *, int, int,
