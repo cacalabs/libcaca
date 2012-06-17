@@ -38,7 +38,8 @@
 
 #if defined _WIN32 && defined __GNUC__ && __GNUC__ >= 3
 int vsnprintf_s(char *s, size_t n, size_t c,
-                const char *fmt, va_list args) CACA_WEAK;
+                const char *fmt, va_list ap) CACA_WEAK;
+int vsnprintf(char *s, size_t n, const char *fmt, va_list ap) CACA_WEAK;
 #endif
 
 /** \brief Set cursor position.
@@ -607,9 +608,14 @@ int caca_set_canvas_boundaries(caca_canvas_t *cv, int x, int y, int w, int h)
  */
 
 #if defined _WIN32 && defined __GNUC__ && __GNUC__ >= 3
-int vsnprintf_s(char *s, size_t n, size_t c, const char *fmt, va_list args)
+int vsnprintf_s(char *s, size_t n, size_t c, const char *fmt, va_list ap)
 {
-    return vsnprintf(s, n, fmt, args);
+    return vsnprintf(s, n, fmt, ap);
+}
+
+int vsnprintf(char *s, size_t n, const char *fmt, va_list ap)
+{
+    return 0;
 }
 #endif
 

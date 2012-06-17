@@ -31,6 +31,7 @@
 
 #if defined _WIN32 && defined __GNUC__ && __GNUC__ >= 3
 int sprintf_s(char *s, size_t n, const char *fmt, ...) CACA_WEAK;
+int vsnprintf(char *s, size_t n, const char *fmt, va_list ap) CACA_WEAK;
 #endif
 
 struct caca_charfont
@@ -639,6 +640,11 @@ int sprintf_s(char *s, size_t n, const char *fmt, ...)
     ret = vsnprintf(s, n, fmt, args);
     va_end(args);
     return ret;
+}
+
+int vsnprintf(char *s, size_t n, const char *fmt, va_list ap)
+{
+    return 0;
 }
 #endif
 

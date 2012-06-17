@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2010 Sam Hocevar <sam@hocevar.net>
+ *  Copyright (c) 2002-2012 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  This library is free software. It comes without any warranty, to
@@ -35,10 +35,10 @@
 
 void _caca_sleep(int usec)
 {
-#if defined(HAVE_USLEEP)
-    usleep(usec);
-#elif defined(HAVE_SLEEP)
+#if defined(HAVE_SLEEP)
     Sleep((usec + 500) / 1000);
+#elif defined(HAVE_USLEEP)
+    usleep(usec);
 #else
     /* SLEEP */
 #endif
@@ -46,29 +46,33 @@ void _caca_sleep(int usec)
 
 int _caca_getticks(caca_timer_t *timer)
 {
-#if defined(HAVE_GETTIMEOFDAY)
+#if defined(USE_WIN32)
+    LARGE_INTEGER tmp;
+    static double freq = -1.0; /* FIXME: can this move to caca_context? */
+    double seconds;
+#elif defined(HAVE_GETTIMEOFDAY)
     struct timeval tv;
-#elif defined(USE_WIN32)
-    static __int64 freq = -1; /* FIXME: can this move to caca_context? */
-    __int64 usec;
 #endif
     int ticks = 0;
     int new_sec, new_usec;
 
-#if defined(HAVE_GETTIMEOFDAY)
+#if defined(USE_WIN32)
+    if (freq < 0.0)
+    {
+        if(!QueryPerformanceFrequency(&tmp))
+            freq = 0.0;
+        else
+            freq = 1.0 / (double)tmp.QuadPart;
+    }
+
+    QueryPerformanceCounter(&tmp);
+    seconds = freq * (double)tmp.QuadPart;
+    new_sec = (int)seconds;
+    new_usec = (int)((seconds - new_sec) * 1000000.0);
+#elif defined(HAVE_GETTIMEOFDAY)
     gettimeofday(&tv, NULL);
     new_sec = tv.tv_sec;
     new_usec = tv.tv_usec;
-#elif defined(USE_WIN32)
-    if(freq == -1)
-    {
-        if(!QueryPerformanceFrequency((LARGE_INTEGER *)&freq))
-            freq = 0;
-    }
-
-    QueryPerformanceCounter((LARGE_INTEGER *)&usec);
-    new_sec = (int)(usec * 1000000 / freq / 1000000);
-    new_usec = (int)((usec * 1000000 / freq) % 1000000);
 #endif
 
     if(timer->last_sec != 0)
