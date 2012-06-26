@@ -468,6 +468,11 @@ static caca_charfont_t * open_charfont(char const *path)
         return NULL;
     }
 
+    /* Remaining initialisation */
+    ff->charcv = NULL;
+    ff->left = NULL;
+    ff->right = NULL;
+
     /* Import buffer into canvas */
     ff->fontcv = caca_create_canvas(0, 0);
     caca_import_canvas_from_memory(ff->fontcv, data, i, "utf8");
