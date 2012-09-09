@@ -315,7 +315,7 @@ int caca_printf(caca_canvas_t *cv, int x, int y, char const *format, ...)
  *
  *  Format a string at the given coordinates, using the default foreground
  *  and background values. The coordinates may be outside the canvas
- *  boundaries (eg. a negative Y coordinate) and the string will be cropped
+ *  boundaries (eg. a negative X coordinate) and the string will be cropped
  *  accordingly if it is too long. The syntax of the format string is the
  *  same as for the C vprintf() function.
  *
@@ -337,19 +337,22 @@ int caca_vprintf(caca_canvas_t *cv, int x, int y, char const *format,
 {
     char tmp[BUFSIZ];
     char *buf = tmp;
-    int ret;
+    int bufsize = BUFSIZ, ret;
 
     if(cv->width - x + 1 > BUFSIZ)
-        buf = malloc(cv->width - x + 1);
+    {
+        bufsize = cv->width - x + 1;
+        buf = malloc(bufsize);
+    }
 
 #if defined(HAVE_VSNPRINTF_S)
-    vsnprintf_s(buf, cv->width - x + 1, _TRUNCATE, format, args);
+    vsnprintf_s(buf, bufsize, _TRUNCATE, format, args);
 #elif defined(HAVE_VSNPRINTF)
-    vsnprintf(buf, cv->width - x + 1, format, args);
+    vsnprintf(buf, bufsize, format, args);
 #else
     vsprintf(buf, format, args);
 #endif
-    buf[cv->width - x] = '\0';
+    buf[bufsize - 1] = '\0';
 
     ret = caca_put_str(cv, x, y, buf);
 
