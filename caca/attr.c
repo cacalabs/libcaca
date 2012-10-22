@@ -223,7 +223,7 @@ int caca_put_attr(caca_canvas_t *cv, int x, int y, uint32_t attr)
  *  Color values are those defined in caca.h, such as CACA_RED
  *  or CACA_TRANSPARENT.
  *
- *  If an error occurs, 0 is returned and \b errno is set accordingly:
+ *  If an error occurs, -1 is returned and \b errno is set accordingly:
  *  - \c EINVAL At least one of the colour values is invalid.
  *
  *  \param cv A handle to the libcaca canvas.
