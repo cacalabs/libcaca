@@ -48,7 +48,7 @@ static VALUE set_dither_palette(VALUE self, VALUE palette)
     VALUE v, r, g, b, a;
     int error = 0;
 
-    if(RARRAY(palette)->len != 256)
+    if(RARRAY_LEN(palette) != 256)
     {
         rb_raise(rb_eArgError, "Palette must contain 256 elements");
     }
@@ -84,7 +84,7 @@ static VALUE set_dither_palette(VALUE self, VALUE palette)
     for(i=0; i<256; i++)
     {
         v = rb_ary_entry(palette, i);
-        if((TYPE(v) == T_ARRAY) && (RARRAY(v)->len == 4))
+        if((TYPE(v) == T_ARRAY) && (RARRAY_LEN(v) == 4))
         {
             r = rb_ary_entry(v,0);
             g = rb_ary_entry(v,1);

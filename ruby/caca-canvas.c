@@ -274,7 +274,7 @@ static VALUE draw_polyline(VALUE self, VALUE points, VALUE ch)
     int error = 0;
     VALUE v, x, y;
 
-    n = RARRAY(points)->len;
+    n = RARRAY_LEN(points);
 
     ax = (int*)malloc(n*sizeof(int));
     if(!ax)
@@ -290,7 +290,7 @@ static VALUE draw_polyline(VALUE self, VALUE points, VALUE ch)
     for(i=0; i<n; i++)
     {
         v = rb_ary_entry(points, i);
-        if((TYPE(v) == T_ARRAY) && (RARRAY(v)->len == 2))
+        if((TYPE(v) == T_ARRAY) && (RARRAY_LEN(v) == 2))
         {
             x = rb_ary_entry(v,0);
             y = rb_ary_entry(v,1);
@@ -336,7 +336,7 @@ static VALUE draw_thin_polyline(VALUE self, VALUE points)
     int error = 0;
     VALUE v, x, y;
 
-    n = RARRAY(points)->len;
+    n = RARRAY_LEN(points);
 
     ax = (int*)malloc(n*sizeof(int));
     if(!ax)
@@ -352,7 +352,7 @@ static VALUE draw_thin_polyline(VALUE self, VALUE points)
     for(i=0; i<n; i++)
     {
         v = rb_ary_entry(points, i);
-        if((TYPE(v) == T_ARRAY) && (RARRAY(v)->len == 2))
+        if((TYPE(v) == T_ARRAY) && (RARRAY_LEN(v) == 2))
         {
             x = rb_ary_entry(v,0);
             y = rb_ary_entry(v,1);
@@ -459,7 +459,7 @@ static VALUE fill_triangle_textured(VALUE self, VALUE coords, VALUE texture, VAL
     float cuv[6];
     VALUE v;
 
-    l = RARRAY(coords)->len;
+    l = RARRAY_LEN(coords);
     if(l != 6 && l != 3)
     {
         rb_raise(rb_eArgError, "invalid coords list");
@@ -471,14 +471,14 @@ static VALUE fill_triangle_textured(VALUE self, VALUE coords, VALUE texture, VAL
             ccoords[i] = NUM2INT(v);
         else
         {
-            if((TYPE(v) != T_ARRAY) || (RARRAY(v)->len != 2))
+            if((TYPE(v) != T_ARRAY) || (RARRAY_LEN(v) != 2))
                 rb_raise(rb_eArgError, "invalid coords list");
             ccoords[2*i] = NUM2INT(rb_ary_entry(v, 0));
             ccoords[2*i+1] = NUM2INT(rb_ary_entry(v, 1));
         }
     }
 
-    l = RARRAY(uv)->len;
+    l = RARRAY_LEN(uv);
     if(l != 6 && l != 3)
     {
         rb_raise(rb_eArgError, "invalid uv list");
@@ -490,7 +490,7 @@ static VALUE fill_triangle_textured(VALUE self, VALUE coords, VALUE texture, VAL
             cuv[i] = NUM2DBL(v);
         else
         {
-            if((TYPE(v) != T_ARRAY) || (RARRAY(v)->len != 2))
+            if((TYPE(v) != T_ARRAY) || (RARRAY_LEN(v) != 2))
                 rb_raise(rb_eArgError, "invalid uv list");
             ccoords[2*i] = NUM2DBL(rb_ary_entry(v, 0));
             ccoords[2*i+1] = NUM2DBL(rb_ary_entry(v, 1));
@@ -600,7 +600,7 @@ static VALUE render_canvas(VALUE self, VALUE font, VALUE width, VALUE height, VA
 static VALUE import_from_memory(VALUE self, VALUE data, VALUE format)
 {
     long int bytes;
-    bytes = caca_import_canvas_from_memory (_SELF, StringValuePtr(data), RSTRING(StringValue(data))->len, StringValuePtr(format));
+    bytes = caca_import_canvas_from_memory (_SELF, StringValuePtr(data), RSTRING_LEN(StringValue(data)), StringValuePtr(format));
     if(bytes <= 0)
         rb_raise(rb_eRuntimeError, strerror(errno));
 
@@ -610,7 +610,7 @@ static VALUE import_from_memory(VALUE self, VALUE data, VALUE format)
 static VALUE import_area_from_memory(VALUE self, VALUE x, VALUE y, VALUE data, VALUE format)
 {
     long int bytes;
-    bytes = caca_import_area_from_memory (_SELF, NUM2INT(x), NUM2INT(y), StringValuePtr(data), RSTRING(StringValue(data))->len, StringValuePtr(format));
+    bytes = caca_import_area_from_memory (_SELF, NUM2INT(x), NUM2INT(y), StringValuePtr(data), RSTRING_LEN(StringValue(data)), StringValuePtr(format));
     if(bytes <= 0)
         rb_raise(rb_eRuntimeError, strerror(errno));
 
