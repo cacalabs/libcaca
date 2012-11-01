@@ -464,7 +464,7 @@ ac_cv_my_have_ruby="no"
 if test "${enable_ruby}" != "no"; then
   AC_PATH_PROG(RUBY, ruby, no)
   if test "${RUBY}" != "no"; then
-    RUBY_CFLAGS="-I$(ruby -r rbconfig -e 'print RbConfig::CONFIG@<:@"archdir"@:>@')"
+    RUBY_CFLAGS="$(ruby -r mkmf -e 'conf = RbConfig::CONFIG.merge("hdrdir" => $hdrdir, "arch_hdrdir" => $arch_hdrdir); print RbConfig::expand("#$INCFLAGS", conf)')"
     RUBY_LIBS="-L$(ruby -r rbconfig -e 'print RbConfig::CONFIG@<:@"libdir"@:>@') -l$(ruby -r rbconfig -e 'print RbConfig::CONFIG@<:@"RUBY_SO_NAME"@:>@')"
     RUBY_SITEARCHDIR=`ruby -r rbconfig -e 'print RbConfig::CONFIG@<:@"sitearchdir"@:>@'`
     RUBY_SITELIBDIR=`ruby -r rbconfig -e 'print RbConfig::CONFIG@<:@"sitelibdir"@:>@'`
