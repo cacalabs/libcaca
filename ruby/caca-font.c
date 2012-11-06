@@ -35,7 +35,7 @@ static VALUE font_initialize(VALUE self, VALUE name)
     font = caca_load_font(StringValuePtr(name), 0);
     if(font == NULL)
     {
-        rb_raise(rb_eRuntimeError, strerror(errno));
+        rb_raise(rb_eRuntimeError, "%s", strerror(errno));
     }
     _SELF = font;
     return self;

@@ -35,7 +35,7 @@ static VALUE dither_initialize(VALUE self, VALUE bpp, VALUE w, VALUE h, VALUE pi
     dither = caca_create_dither(NUM2UINT(bpp), NUM2UINT(w), NUM2UINT(h), NUM2UINT(pitch), NUM2ULONG(rmask), NUM2ULONG(gmask), NUM2ULONG(bmask), NUM2ULONG(amask));
     if(dither == NULL)
     {
-        rb_raise(rb_eRuntimeError, strerror(errno));
+        rb_raise(rb_eRuntimeError, "%s", strerror(errno));
     }
     _SELF = dither;
     return self;
@@ -121,7 +121,7 @@ static VALUE set_dither_palette(VALUE self, VALUE palette)
         free(green);
         free(blue);
         free(alpha);
-        rb_raise(rb_eRuntimeError, strerror(errno));
+        rb_raise(rb_eRuntimeError, "%s", strerror(errno));
     }
 
     free(red);
@@ -142,7 +142,7 @@ static VALUE set_dither_palette2(VALUE self, VALUE palette)
 static VALUE set_##x(VALUE self, VALUE x)               \
 {                                                       \
     if(caca_set_dither_##x(_SELF, (float)NUM2DBL(x))<0) \
-        rb_raise(rb_eRuntimeError, strerror(errno));    \
+        rb_raise(rb_eRuntimeError, "%s", strerror(errno));    \
                                                         \
     return x;                                           \
 }                                                       \
@@ -163,7 +163,7 @@ static VALUE set_dither_##x(VALUE self, VALUE x)         \
 {                                                        \
     if(caca_set_dither_##x(_SELF, StringValuePtr(x))<0)  \
     {                                                    \
-        rb_raise(rb_eRuntimeError, strerror(errno));     \
+        rb_raise(rb_eRuntimeError, "%s", strerror(errno));     \
     }                                                    \
     return x;                                            \
 }                                                        \

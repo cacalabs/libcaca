@@ -22,7 +22,7 @@ VALUE cCanvas;
 static VALUE x (VALUE self)                             \
 {                                                       \
     if( caca_##x (_SELF) <0)                            \
-        rb_raise(rb_eRuntimeError, strerror(errno));    \
+        rb_raise(rb_eRuntimeError, "%s", strerror(errno));    \
                                                         \
     return self;                                        \
 }
@@ -58,7 +58,7 @@ static VALUE canvas_initialize(VALUE self, VALUE width, VALUE height)
 
     if(canvas == NULL)
     {
-        rb_raise(rb_eRuntimeError, strerror(errno));
+        rb_raise(rb_eRuntimeError, "%s", strerror(errno));
     }
 
     _SELF = canvas;
@@ -104,7 +104,7 @@ static VALUE set_canvas_size(VALUE self, VALUE height, VALUE width)
 static VALUE gotoxy(VALUE self, VALUE x, VALUE y)
 {
     if( caca_gotoxy(_SELF, NUM2INT(x), NUM2INT(y)) <0) {
-        rb_raise(rb_eRuntimeError, strerror(errno));
+        rb_raise(rb_eRuntimeError, "%s", strerror(errno));
     }
     return self;
 }
@@ -150,7 +150,7 @@ static VALUE get_attr(VALUE self, VALUE x, VALUE y)
 static VALUE set_attr(VALUE self, VALUE attr)
 {
     if(caca_set_attr(_SELF, NUM2ULONG(attr)) <0)
-        rb_raise(rb_eRuntimeError, strerror(errno));
+        rb_raise(rb_eRuntimeError, "%s", strerror(errno));
 
     return self;
 }
@@ -164,7 +164,7 @@ static VALUE set_attr2(VALUE self, VALUE attr)
 static VALUE put_attr(VALUE self, VALUE x, VALUE y, VALUE attr)
 {
     if(caca_put_attr(_SELF, NUM2INT(x), NUM2INT(y), NUM2ULONG(attr)) <0)
-        rb_raise(rb_eRuntimeError, strerror(errno));
+        rb_raise(rb_eRuntimeError, "%s", strerror(errno));
 
     return self;
 }
@@ -172,7 +172,7 @@ static VALUE put_attr(VALUE self, VALUE x, VALUE y, VALUE attr)
 static VALUE set_color_ansi(VALUE self, VALUE fg, VALUE bg)
 {
     if(caca_set_color_ansi(_SELF, NUM2INT(fg), NUM2INT(bg)) <0)
-        rb_raise(rb_eRuntimeError, strerror(errno));
+        rb_raise(rb_eRuntimeError, "%s", strerror(errno));
 
     return self;
 }
@@ -180,7 +180,7 @@ static VALUE set_color_ansi(VALUE self, VALUE fg, VALUE bg)
 static VALUE set_color_argb(VALUE self, VALUE fg, VALUE bg)
 {
     if(caca_set_color_argb(_SELF, NUM2UINT(fg), NUM2UINT(bg)) <0) {
-        rb_raise(rb_eRuntimeError, strerror(errno));
+        rb_raise(rb_eRuntimeError, "%s", strerror(errno));
     }
     return self;
 }
@@ -234,7 +234,7 @@ static VALUE blit(int argc, VALUE* argv, VALUE self) {
         cmask = NULL;
 
     if(caca_blit(_SELF, NUM2INT(x), NUM2INT(y), csrc, cmask)<0)
-        rb_raise(rb_eRuntimeError, strerror(errno));
+        rb_raise(rb_eRuntimeError, "%s", strerror(errno));
 
     return self;
 }
@@ -243,7 +243,7 @@ static VALUE set_canvas_boundaries(VALUE self, VALUE x, VALUE y, VALUE w, VALUE 
 {
     if(caca_set_canvas_boundaries(_SELF, NUM2INT(x), NUM2INT(y), NUM2UINT(w), NUM2UINT(h))<0)
     {
-        rb_raise(rb_eRuntimeError, strerror(errno));
+        rb_raise(rb_eRuntimeError, "%s", strerror(errno));
     }
     return self;
 }
@@ -524,7 +524,7 @@ get_int(frame_count)
 static VALUE set_frame(VALUE self, VALUE id)
 {
     if(caca_set_frame(_SELF, NUM2INT(id))<0)
-        rb_raise(rb_eArgError, strerror(errno));
+        rb_raise(rb_eArgError, "%s", strerror(errno));
 
     return self;
 }
@@ -543,7 +543,7 @@ static VALUE get_frame_name(VALUE self)
 static VALUE set_frame_name(VALUE self, VALUE name)
 {
     if(caca_set_frame_name(_SELF, StringValuePtr(name))<0)
-        rb_raise(rb_eRuntimeError, strerror(errno));
+        rb_raise(rb_eRuntimeError, "%s", strerror(errno));
 
     return self;
 }
@@ -557,7 +557,7 @@ static VALUE set_frame_name2(VALUE self, VALUE name)
 static VALUE create_frame(VALUE self, VALUE id)
 {
     if(caca_create_frame(_SELF, NUM2INT(id))<0) {
-        rb_raise(rb_eRuntimeError, strerror(errno));
+        rb_raise(rb_eRuntimeError, "%s", strerror(errno));
     }
     return self;
 }
@@ -565,7 +565,7 @@ static VALUE create_frame(VALUE self, VALUE id)
 static VALUE free_frame(VALUE self, VALUE id)
 {
     if(caca_free_frame(_SELF, NUM2INT(id))<0) {
-        rb_raise(rb_eArgError, strerror(errno));
+        rb_raise(rb_eArgError, "%s", strerror(errno));
     }
     return self;
 }
@@ -602,7 +602,7 @@ static VALUE import_from_memory(VALUE self, VALUE data, VALUE format)
     long int bytes;
     bytes = caca_import_canvas_from_memory (_SELF, StringValuePtr(data), RSTRING_LEN(StringValue(data)), StringValuePtr(format));
     if(bytes <= 0)
-        rb_raise(rb_eRuntimeError, strerror(errno));
+        rb_raise(rb_eRuntimeError, "%s", strerror(errno));
 
     return self;
 }
@@ -612,7 +612,7 @@ static VALUE import_area_from_memory(VALUE self, VALUE x, VALUE y, VALUE data, V
     long int bytes;
     bytes = caca_import_area_from_memory (_SELF, NUM2INT(x), NUM2INT(y), StringValuePtr(data), RSTRING_LEN(StringValue(data)), StringValuePtr(format));
     if(bytes <= 0)
-        rb_raise(rb_eRuntimeError, strerror(errno));
+        rb_raise(rb_eRuntimeError, "%s", strerror(errno));
 
     return self;
 }
@@ -622,7 +622,7 @@ static VALUE import_from_file(VALUE self, VALUE filename, VALUE format)
     long int bytes;
     bytes = caca_import_canvas_from_file (_SELF, StringValuePtr(filename), StringValuePtr(format));
     if(bytes <= 0)
-        rb_raise(rb_eRuntimeError, strerror(errno));
+        rb_raise(rb_eRuntimeError, "%s", strerror(errno));
 
     return self;
 }
@@ -632,7 +632,7 @@ static VALUE import_area_from_file(VALUE self, VALUE x, VALUE y, VALUE filename,
     long int bytes;
     bytes = caca_import_area_from_file (_SELF, NUM2INT(x), NUM2INT(y), StringValuePtr(filename), StringValuePtr(format));
     if(bytes <= 0)
-        rb_raise(rb_eRuntimeError, strerror(errno));
+        rb_raise(rb_eRuntimeError, "%s", strerror(errno));
 
     return self;
 }

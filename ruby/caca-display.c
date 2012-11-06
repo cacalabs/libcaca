@@ -84,7 +84,7 @@ static VALUE display_initialize(int argc, VALUE* argv, VALUE self)
 
     if(display == NULL)
     {
-        rb_raise(rb_eRuntimeError, strerror(errno));
+        rb_raise(rb_eRuntimeError, "%s", strerror(errno));
     }
 
     _SELF = display;
@@ -131,7 +131,7 @@ static VALUE set_title(VALUE self, VALUE t)
 {
     if(caca_set_display_title(_SELF, StringValuePtr(t))<0)
     {
-        rb_raise(rb_eRuntimeError, strerror(errno));
+        rb_raise(rb_eRuntimeError, "%s", strerror(errno));
     }
     return t;
 }
@@ -252,7 +252,7 @@ static VALUE set_driver(VALUE self, VALUE driver)
 {
     if(caca_set_display_driver(_SELF, StringValuePtr(driver))<0)
     {
-        rb_raise(rb_eRuntimeError, strerror(errno));
+        rb_raise(rb_eRuntimeError, "%s", strerror(errno));
     }
     return driver;
 }
@@ -267,7 +267,7 @@ static VALUE set_cursor(VALUE self, VALUE flag)
 {
     if(caca_set_cursor(_SELF, flag)<0)
     {
-        rb_raise(rb_eRuntimeError, strerror(errno));
+        rb_raise(rb_eRuntimeError, "%s", strerror(errno));
     }
     return flag;
 }
