@@ -1,6 +1,6 @@
 /*
  *  all           full libcaca API test
- *  Copyright (c) 2006-2010 Sam Hocevar <sam@hocevar.net>
+ *  Copyright (c) 2006-2012 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  This program is free software. It comes without any warranty, to
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
         for(j = 0; j < ITER; j++)
         {
             char buf[BUFSIZ];
-            w = caca_rand(1, 1000);
+            w = caca_rand(1, BUFSIZ - 1);
             memset(buf, 'x', w);
             buf[w] = '\0';
             caca_set_frame_name(cv, buf);
