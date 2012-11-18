@@ -4,6 +4,7 @@
 
 - Gildas Bazin <gbazin@netcourrier.com> - win32 driver improvements
 - Jari Komppa <jari.komppa at gmail> - win32 speed improvements
+- Bastian Märkisch <bmaerkisch@web.de> - bugfixes and win32 driver improvements
 
 \section thanks2 Reused code
 

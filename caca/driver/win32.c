@@ -1,6 +1,7 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2010 Sam Hocevar <sam@hocevar.net>
+ *  Copyright (c) 2002-2012 Sam Hocevar <sam@hocevar.net>
+ *                2012 Bastian Märkisch <bmaerkisch@web.de>
  *                All Rights Reserved
  *
  *  This library is free software. It comes without any warranty, to
@@ -18,7 +19,20 @@
 
 #if defined(USE_WIN32)
 
+#define _WIN32_WINNT 0x500 /* Require WinXP or later */
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+
+#ifdef __MINGW32__
+/* This is missing from the MinGW headers. */
+#   if (_WIN32_WINNT >= 0x0500)
+BOOL WINAPI GetCurrentConsoleFont(HANDLE hConsoleOutput, BOOL bMaximumWindow,
+                                  PCONSOLE_FONT_INFO lpConsoleCurrentFont);
+#   endif
+#endif
+#ifndef MOUSE_HWHEELED
+#   define MOUSE_HWHEELED 0x0008
+#endif
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -75,6 +89,9 @@ struct driver_private
     HANDLE hin, hout, screen;
     CHAR_INFO *buffer;
     CONSOLE_CURSOR_INFO cci;
+    DWORD mouse_state;
+    DWORD mode;
+    BOOL new_console;
 };
 
 static int win32_init_graphics(caca_display_t *dp)
@@ -82,13 +99,14 @@ static int win32_init_graphics(caca_display_t *dp)
     int width = caca_get_canvas_width(dp->cv);
     int height = caca_get_canvas_height(dp->cv);
     CONSOLE_SCREEN_BUFFER_INFO csbi;
+    CONSOLE_CURSOR_INFO cci_screen;
     SMALL_RECT rect;
     COORD size;
 
     dp->drv.p = malloc(sizeof(struct driver_private));
 
-    /* This call is allowed to fail in case we already have a console */
-    AllocConsole();
+    /* This call is allowed to fail in case we already have a console. */
+    dp->drv.p->new_console = AllocConsole();
 
     dp->drv.p->hin = GetStdHandle(STD_INPUT_HANDLE);
     dp->drv.p->hout = CreateFile("CONOUT$", GENERIC_READ | GENERIC_WRITE,
@@ -97,21 +115,26 @@ static int win32_init_graphics(caca_display_t *dp)
     if(dp->drv.p->hout == INVALID_HANDLE_VALUE)
         return -1;
 
+    /* Preserve state information */
     GetConsoleCursorInfo(dp->drv.p->hout, &dp->drv.p->cci);
-    dp->drv.p->cci.bVisible = FALSE;
-    SetConsoleCursorInfo(dp->drv.p->hout, &dp->drv.p->cci);
-
-    SetConsoleMode(dp->drv.p->hout, ENABLE_MOUSE_INPUT);
 
     dp->drv.p->screen =
         CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE,
                                   0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
     if(!dp->drv.p->screen || dp->drv.p->screen == INVALID_HANDLE_VALUE)
         return -1;
+    dp->drv.p->mouse_state = 0;
 
-    /* Set the new console size */
+    /* Set the new console size, default to current screen size. */
     size.X = width ? width : 80;
     size.Y = height ? height : 25;
+    if ((width <= 0) && (height <= 0))
+    {
+        CONSOLE_SCREEN_BUFFER_INFO info;
+
+        if (GetConsoleScreenBufferInfo(dp->drv.p->hout, &info) != 0)
+            size = info.dwSize;
+    }
     SetConsoleScreenBufferSize(dp->drv.p->screen, size);
 
     rect.Left = rect.Top = 0;
@@ -133,10 +156,13 @@ static int win32_init_graphics(caca_display_t *dp)
 
     SetConsoleMode(dp->drv.p->screen, 0);
 
-    GetConsoleCursorInfo(dp->drv.p->screen, &dp->drv.p->cci);
-    dp->drv.p->cci.dwSize = 0;
-    dp->drv.p->cci.bVisible = FALSE;
-    SetConsoleCursorInfo(dp->drv.p->screen, &dp->drv.p->cci);
+    /* We want mouse and window resize events. */
+    GetConsoleMode(dp->drv.p->hin, &dp->drv.p->mode);
+    SetConsoleMode(dp->drv.p->hin, ENABLE_MOUSE_INPUT | ENABLE_WINDOW_INPUT);
+
+    cci_screen.dwSize = 1;  /* must be > 0, see MSDN */
+    cci_screen.bVisible = FALSE;
+    SetConsoleCursorInfo(dp->drv.p->screen, &cci_screen);
 
     SetConsoleActiveScreenBuffer(dp->drv.p->screen);
 
@@ -153,13 +179,14 @@ static int win32_end_graphics(caca_display_t *dp)
     SetConsoleActiveScreenBuffer(dp->drv.p->hout);
     CloseHandle(dp->drv.p->screen);
 
-    SetConsoleTextAttribute(dp->drv.p->hout, FOREGROUND_INTENSITY
-                                             | FOREGROUND_RED
-                                             | FOREGROUND_GREEN
-                                             | FOREGROUND_BLUE);
-    dp->drv.p->cci.bVisible = TRUE;
+    /* Reset console parameters */
+    SetConsoleMode(dp->drv.p->hin, dp->drv.p->mode);
     SetConsoleCursorInfo(dp->drv.p->hout, &dp->drv.p->cci);
     CloseHandle(dp->drv.p->hout);
+
+    /* We only free the console if we successfully created a new one before */
+    if (dp->drv.p->new_console)
+        FreeConsole();
 
     free(dp->drv.p);
 
@@ -174,18 +201,28 @@ static int win32_set_display_title(caca_display_t *dp, char const *title)
 
 static int win32_get_display_width(caca_display_t const *dp)
 {
-    /* FIXME */
-
     /* Fallback to a 6x10 font */
-    return caca_get_canvas_width(dp->cv) * 6;
+    int font_width = 6;
+
+#if (_WIN32_WINNT >= 0x500)
+    CONSOLE_FONT_INFO info;
+    if (GetCurrentConsoleFont(dp->drv.p->screen, FALSE, &info) != 0)
+        font_width = info.dwFontSize.X;
+#endif
+    return font_width * caca_get_canvas_width(dp->cv);
 }
 
 static int win32_get_display_height(caca_display_t const *dp)
 {
-    /* FIXME */
-
     /* Fallback to a 6x10 font */
-    return caca_get_canvas_height(dp->cv) * 10;
+    int font_height = 10;
+
+#if (_WIN32_WINNT >= 0x500)
+    CONSOLE_FONT_INFO info;
+    if (GetCurrentConsoleFont(dp->drv.p->screen, FALSE, &info) != 0)
+        font_height = info.dwFontSize.Y;
+#endif
+    return font_height * caca_get_canvas_height(dp->cv);
 }
 
 static void win32_display(caca_display_t *dp)
@@ -244,9 +281,9 @@ static void win32_display(caca_display_t *dp)
 
 static void win32_handle_resize(caca_display_t *dp)
 {
-    /* FIXME: I don't know what to do here. */
-    dp->resize.w = caca_get_canvas_width(dp->cv);
-    dp->resize.h = caca_get_canvas_height(dp->cv);
+    /* We only need to resize the internal buffer. */
+    dp->drv.p->buffer = realloc(dp->drv.p->buffer,
+                        dp->resize.w * dp->resize.h * sizeof(CHAR_INFO));
 }
 
 static int win32_get_event(caca_display_t *dp, caca_privevent_t *ev)
@@ -256,11 +293,17 @@ static int win32_get_event(caca_display_t *dp, caca_privevent_t *ev)
 
     for( ; ; )
     {
-        GetNumberOfConsoleInputEvents(dp->drv.p->hin, &num);
+        HANDLE hin = GetStdHandle(STD_INPUT_HANDLE);
+        if(hin == INVALID_HANDLE_VALUE)
+            break;
+
+        GetNumberOfConsoleInputEvents(hin, &num);
         if(num == 0)
             break;
 
-        ReadConsoleInput(dp->drv.p->hin, &rec, 1, &num);
+        if(!ReadConsoleInput(hin, &rec, 1, &num) || (num == 0))
+            break;
+
         if(rec.EventType == KEY_EVENT)
         {
             if(rec.Event.KeyEvent.bKeyDown)
@@ -334,7 +377,7 @@ static int win32_get_event(caca_display_t *dp, caca_privevent_t *ev)
                 default: ev->type = CACA_EVENT_NONE; return 0;
                 }
 
-                if ((ev->data.key.ch > 0)
+                if((ev->data.key.ch > 0)
                     &&
                     (ev->data.key.ch <= 0x7f))
                 {
@@ -351,23 +394,30 @@ static int win32_get_event(caca_display_t *dp, caca_privevent_t *ev)
                 return 1;
             }
         }
-
-        if(rec.EventType == MOUSE_EVENT)
+        else if(rec.EventType == MOUSE_EVENT)
         {
-            if(rec.Event.MouseEvent.dwEventFlags == 0)
+            if((rec.Event.MouseEvent.dwEventFlags == 0) ||
+               (rec.Event.MouseEvent.dwEventFlags == DOUBLE_CLICK))
             {
-                if(rec.Event.MouseEvent.dwButtonState & 0x01)
-                {
-                    ev->type = CACA_EVENT_MOUSE_PRESS;
-                    ev->data.mouse.button = 1;
-                    return 1;
-                }
+                DWORD mouse_state_changed =
+                    dp->drv.p->mouse_state ^ rec.Event.MouseEvent.dwButtonState;
+                int button;
+                DWORD mask = 0x01;
+                int const mapping[] = {1, 3, 2, 8, 9};
 
-                if(rec.Event.MouseEvent.dwButtonState & 0x02)
+                for (button = 1; button <= 5; button++)
                 {
-                    ev->type = CACA_EVENT_MOUSE_PRESS;
-                    ev->data.mouse.button = 2;
-                    return 1;
+                    if(mouse_state_changed == mask)
+                    {
+                        if(rec.Event.MouseEvent.dwButtonState & mask)
+                            ev->type = CACA_EVENT_MOUSE_PRESS;
+                        else
+                            ev->type = CACA_EVENT_MOUSE_RELEASE;
+                        ev->data.mouse.button = mapping[button - 1];
+                        dp->drv.p->mouse_state = rec.Event.MouseEvent.dwButtonState;
+                        return 1;
+                    }
+                    mask <<= 1;
                 }
             }
             else if(rec.Event.MouseEvent.dwEventFlags == MOUSE_MOVED)
@@ -385,22 +435,40 @@ static int win32_get_event(caca_display_t *dp, caca_privevent_t *ev)
                 ev->data.mouse.y = dp->mouse.y;
                 return 1;
             }
-#if 0
-            else if(rec.Event.MouseEvent.dwEventFlags == DOUBLE_CLICK)
-            {
-                cout << rec.Event.MouseEvent.dwMousePosition.X << "," <<
-                        rec.Event.MouseEvent.dwMousePosition.Y << "  " << flush;
-            }
             else if(rec.Event.MouseEvent.dwEventFlags == MOUSE_WHEELED)
             {
-                SetConsoleCursorPosition(hOut,
-                                         WheelWhere);
-                if(rec.Event.MouseEvent.dwButtonState & 0xFF000000)
-                    cout << "Down" << flush;
+                ev->type = CACA_EVENT_MOUSE_PRESS;
+                if((int16_t)HIWORD(rec.Event.MouseEvent.dwButtonState) > 0)
+                    ev->data.mouse.button = 4; /* up */
                 else
-                    cout << "Up  " << flush;
+                    ev->data.mouse.button = 5; /* down */
+                return 1;
             }
-#endif
+            else if(rec.Event.MouseEvent.dwEventFlags == MOUSE_HWHEELED)
+            {
+                ev->type = CACA_EVENT_MOUSE_PRESS;
+                if((int16_t)HIWORD(rec.Event.MouseEvent.dwButtonState) > 0)
+                    ev->data.mouse.button = 7; /* right */
+                else
+                    ev->data.mouse.button = 6; /* left */
+                return 1;
+            }
+        }
+        else if(rec.EventType == WINDOW_BUFFER_SIZE_EVENT)
+        {
+            int width = caca_get_canvas_width(dp->cv);
+            int height = caca_get_canvas_height(dp->cv);
+            int w = rec.Event.WindowBufferSizeEvent.dwSize.X;
+            int h = rec.Event.WindowBufferSizeEvent.dwSize.Y;
+            if((w == 0) || (h == 0) || ((w == width) && (h == height)))
+                continue;
+
+            /* resize the canvas accordingly */
+            ev->type = CACA_EVENT_RESIZE;
+            dp->resize.w = w;
+            dp->resize.h = h;
+            dp->resize.resized = 1;
+            return 1;
         }
 
         /* Unknown event */
