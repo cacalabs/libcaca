@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2010 Sam Hocevar <sam@hocevar.net>
+ *  Copyright (c) 2002-2012 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  This library is free software. It comes without any warranty, to
