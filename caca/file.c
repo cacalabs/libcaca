@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2006-2010 Sam Hocevar <sam@hocevar.net>
+ *  Copyright (c) 2006-2012 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  This library is free software. It comes without any warranty, to
@@ -118,8 +118,8 @@ caca_file_t *caca_file_open(char const *path, const char *mode)
 
         if(inflateInit2(&fp->stream, -MAX_WBITS))
         {
-            free(fp);
             gzclose(fp->gz);
+            free(fp);
             seterrno(EINVAL);
             return NULL;
         }

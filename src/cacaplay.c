@@ -1,6 +1,6 @@
 /*
  *  cacaplay      caca file player
- *  Copyright (c) 2006-2010 Sam Hocevar <sam@hocevar.net>
+ *  Copyright (c) 2006-2012 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  This program is free software. It comes without any warranty, to
@@ -78,6 +78,7 @@ int main(int argc, char **argv)
             if(n < 0)
             {
                 fprintf(stderr, "%s: read error\n", argv[0]);
+                free(buf);
                 return -1;
             }
             else if(n == 0)
@@ -110,6 +111,7 @@ int main(int argc, char **argv)
     caca_get_event(dp, CACA_EVENT_KEY_PRESS, NULL, -1);
 
     /* Clean up */
+    free(buf);
     close(fd);
 
     caca_free_display(dp);

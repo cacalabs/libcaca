@@ -1,6 +1,6 @@
 /*
  *  makefont      create libcaca font data
- *  Copyright (c) 2006-2010 Sam Hocevar <sam@hocevar.net>
+ *  Copyright (c) 2006-2012 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  This program is free software. It comes without any warranty, to
@@ -337,6 +337,7 @@ int main(int argc, char *argv[])
     free(glyph_data);
     g_object_unref(l);
     g_object_unref(cx);
+    g_object_unref(fm);
 
     return 0;
 }
