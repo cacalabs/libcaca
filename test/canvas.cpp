@@ -25,6 +25,7 @@ class CanvasTest : public CppUnit::TestCase
     CPPUNIT_TEST(test_creation);
     CPPUNIT_TEST(test_resize);
     CPPUNIT_TEST(test_chars);
+    CPPUNIT_TEST(test_utf8);
     CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -93,6 +94,15 @@ public:
         CPPUNIT_ASSERT(caca_get_char(cv, 999, 999) == 'z');
 
         caca_free_canvas(cv);
+    }
+
+    void test_utf8()
+    {
+        caca_canvas_t *cv;
+        cv = caca_create_canvas(10, 10);
+
+        /* Send only one byte of a 4-byte sequence */
+        caca_put_str(cv, 0, 0, "\xf0");
     }
 };
 

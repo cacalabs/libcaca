@@ -256,25 +256,25 @@ int caca_put_str(caca_canvas_t *cv, int x, int y, char const *s)
     size_t rd;
     int len = 0;
 
-    if(y < 0 || y >= (int)cv->height || x >= (int)cv->width)
+    if (y < 0 || y >= (int)cv->height || x >= (int)cv->width)
     {
-        while(*s)
+        while (*s)
         {
             len += caca_utf32_is_fullwidth(caca_utf8_to_utf32(s, &rd)) ? 2 : 1;
-            s += rd;
+            s += rd ? rd : 1;
         }
         return len;
     }
 
-    while(*s)
+    while (*s)
     {
         uint32_t ch = caca_utf8_to_utf32(s, &rd);
 
-        if(x + len >= -1 && x + len < (int)cv->width)
+        if (x + len >= -1 && x + len < (int)cv->width)
             caca_put_char(cv, x + len, y, ch);
 
         len += caca_utf32_is_fullwidth(ch) ? 2 : 1;
-        s += rd;
+        s += rd ? rd : 1;
     }
 
     return len;
