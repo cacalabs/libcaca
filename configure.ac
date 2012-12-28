@@ -356,7 +356,7 @@ AM_CONDITIONAL(USE_PLUGINS, test "${ac_cv_my_have_plugins}" = "yes")
 AC_MSG_CHECKING(valid output drivers)
 if test -z "${CACA_DRIVERS}"; then
   AC_MSG_RESULT(no)
-  AC_MSG_ERROR([no output drivers were selected!])
+  AC_MSG_WARN([no output drivers were selected!])
 else
   CACA_DRIVERS="${CACA_DRIVERS# *}"
   AC_MSG_RESULT([${CACA_DRIVERS}])

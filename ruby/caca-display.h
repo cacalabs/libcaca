@@ -1,12 +1,13 @@
 /*
  *  libcaca Ruby bindings
  *  Copyright (c) 2007-2010 Pascal Terjan <pterjan@linuxfr.org>
+ *                2012 Sam Hocevar <sam@hocevar.net>
  *
  *  This library is free software. It comes without any warranty, to
  *  the extent permitted by applicable law. You can redistribute it
- *  and/or modify it under the terms of the Do What The Fuck You Want
- *  To Public License, Version 2, as published by Sam Hocevar. See
- *  http://sam.zoy.org/wtfpl/COPYING for more details.
+ *  and/or modify it under the terms of the Do What the Fuck You Want
+ *  to Public License, Version 2, as published by Sam Hocevar. See
+ *  http://www.wtfpl.net/ for more details.
  */
 
 #ifndef __CACA_DISPLAY_H__

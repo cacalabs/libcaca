@@ -14,8 +14,8 @@
  without a screen, the raw driver can be used to send the output to another
  machine, using for instance cacaserver.
 
- \e libcaca is free software, released under the Do What The Fuck You
- Want To Public License. This ensures that no one, not even the \e libcaca
+ \e libcaca is free software, released under the Do What the Fuck You
+ Want to Public License. This ensures that no one, not even the \e libcaca
  developers, will ever have anything to say about what you do with the
  software. It used to be licensed under the GNU Lesser General Public
  License, but that was not free enough.
@@ -55,7 +55,7 @@
  \section license License
 
  Permission is granted to copy, distribute and/or modify this document
- under the terms of the Do What The Fuck You Want To Public License, version
- 2 as published by Sam Hocevar. For details see http://sam.zoy.org/wtfpl/ .
+ under the terms of the Do What the Fuck You Want to Public License, version
+ 2 as published by Sam Hocevar. For details see http://www.wtfpl.net/ .
 
 */

@@ -1,15 +1,15 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2010 Sam Hocevar <sam@hocevar.net>
+ *  Copyright (c) 2002-2012 Sam Hocevar <sam@hocevar.net>
  *                2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *                2007 Ben Wiley Sittler <bsittler@gmail.com>
  *                All Rights Reserved
  *
  *  This library is free software. It comes without any warranty, to
  *  the extent permitted by applicable law. You can redistribute it
- *  and/or modify it under the terms of the Do What The Fuck You Want
- *  To Public License, Version 2, as published by Sam Hocevar. See
- *  http://sam.zoy.org/wtfpl/COPYING for more details.
+ *  and/or modify it under the terms of the Do What the Fuck You Want
+ *  to Public License, Version 2, as published by Sam Hocevar. See
+ *  http://www.wtfpl.net/ for more details.
  */
 
 /*
