@@ -34,7 +34,6 @@
 #endif
 
 #include "caca.h"
-#include "caca.h"
 #include "caca_internals.h"
 
 /*
