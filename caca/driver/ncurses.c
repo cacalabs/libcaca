@@ -365,7 +365,16 @@ static void ncurses_display(caca_display_t *dp)
             move(y, dx);
             for(x = dx; x < dx + dw; x++)
             {
-                (void)attrset(dp->drv.p->attr[caca_attr_to_ansi(*cvattrs++)]);
+                uint32_t attr = *cvattrs++;
+
+                (void)attrset(dp->drv.p->attr[caca_attr_to_ansi(attr)]);
+                if(attr & CACA_BOLD)
+                    attron(A_BOLD);
+                if(attr & CACA_BLINK)
+                    attron(A_BLINK);
+                if(attr & CACA_UNDERLINE)
+                    attron(A_UNDERLINE);
+
                 ncurses_write_utf32(*cvchars++);
             }
 
