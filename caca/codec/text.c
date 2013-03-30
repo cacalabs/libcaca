@@ -148,7 +148,7 @@ ssize_t _import_ansi(caca_canvas_t *cv, void const *data, size_t size, int utf8)
 
         else if(buffer[i] == '\t')
         {
-            x = (x + 7) & ~7;
+            x = (x + 8) & ~7;
         }
 
         else if(buffer[i] == '\x08')
