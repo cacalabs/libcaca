@@ -54,6 +54,7 @@ static ssize_t import_caca(caca_canvas_t *, void const *, size_t);
  *  - \c "text": import ASCII text files.
  *  - \c "ansi": import ANSI files.
  *  - \c "utf8": import UTF-8 files with ANSI colour codes.
+ *  - \c "bin": import BIN files.
  *
  *  The number of bytes read is returned. If the file format is valid, but
  *  not enough data was available, 0 is returned.
@@ -80,12 +81,14 @@ ssize_t caca_import_canvas_from_memory(caca_canvas_t *cv, void const *data,
         return _import_text(cv, data, len);
     if(!strcasecmp("ansi", format))
         return _import_ansi(cv, data, len, 0);
+    if(!strcasecmp("bin", format))
+        return _import_bin(cv, data, len);
 
     /* Autodetection */
     if(!strcasecmp("", format))
     {
         unsigned char const *str = data;
-        unsigned int i;
+        unsigned int i, j, k;
 
         /* If 4 first bytes are 0xcaca + 'CV' */
         if(len >= 4 && str[0] == 0xca &&
@@ -96,6 +99,17 @@ ssize_t caca_import_canvas_from_memory(caca_canvas_t *cv, void const *data,
         for(i = 0; i + 1 < len; i++)
             if((str[i] == '\033') && (str[i + 1] == '['))
                 return _import_ansi(cv, data, len, 0);
+
+        /* If we find a lot of spaces at even locations,
+         * we guess it's a BIN file. */
+        for (i = j = k = 0; i < len; i += 2)
+        {
+            j += (str[i] == ' ');
+            k += (str[i + 1] == ' ');
+        }
+
+        if (j > 10 && j > len / 40 && k < 10)
+            return _import_bin(cv, data, len);
 
         /* Otherwise, import it as text */
         return _import_text(cv, data, len);
@@ -117,6 +131,7 @@ ssize_t caca_import_canvas_from_memory(caca_canvas_t *cv, void const *data,
  *  - \c "text": import ASCII text files.
  *  - \c "ansi": import ANSI files.
  *  - \c "utf8": import UTF-8 files with ANSI colour codes.
+ *  - \c "bin": import BIN files.
  *
  *  The number of bytes read is returned. If the file format is valid, but
  *  not enough data was available, 0 is returned.
@@ -267,6 +282,7 @@ char const * const * caca_get_import_list(void)
         "text", "plain text",
         "ansi", "ANSI coloured text",
         "utf8", "UTF-8 files with ANSI colour codes",
+        "bin", "BIN binary ANSI art",
         NULL, NULL
     };
 
@@ -392,6 +408,31 @@ static ssize_t import_caca(caca_canvas_t *cv, void const *data, size_t size)
 invalid_caca:
     seterrno(EINVAL);
     return -1;
+}
+
+ssize_t _import_bin(caca_canvas_t *cv, void const *data, size_t len)
+{
+    uint8_t const *buf = (uint8_t const *)data;
+    size_t i;
+    int x = 0, y = 0;
+
+    caca_set_canvas_size(cv, 0, 0);
+    caca_set_canvas_size(cv, 160, len / 160);
+
+    for (i = 0; i < len; i += 2)
+    {
+        caca_set_color_ansi(cv, buf[i + 1] & 0xf, buf[i + 1] >> 4);
+        caca_put_char(cv, x, y, caca_cp437_to_utf32(buf[i]));
+
+        ++x;
+        if (x >= 160)
+        {
+            ++y;
+            x = 0;
+        }
+    }
+
+    return len & ~(size_t)1;
 }
 
 /*

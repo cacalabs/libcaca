@@ -13,6 +13,7 @@
 
 ssize_t _import_text(caca_canvas_t *, void const *, size_t);
 ssize_t _import_ansi(caca_canvas_t *, void const *, size_t, int);
+ssize_t _import_bin(caca_canvas_t *, void const *, size_t);
 
 void *_export_ansi(caca_canvas_t const *, size_t *);
 void *_export_utf8(caca_canvas_t const *, size_t *, int);
