@@ -326,7 +326,7 @@ uint8_t caca_attr_to_ansi(uint32_t attr)
  */
 uint8_t caca_attr_to_ansi_fg(uint32_t attr)
 {
-    return nearest_ansi(((uint16_t)attr >> 4) & 0x3fff);
+    return nearest_ansi((attr >> 4) & 0x3fff);
 }
 
 /** \brief Get ANSI background information from attribute.
