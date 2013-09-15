@@ -150,40 +150,40 @@ BOOLEAN isWon(int who, int xsquare[Y_BOARD][X_BOARD])
     for(y=0; y<Y_BOARD; y++)
     {
       /*horizontal position*/
-      if( xsquare[y][x]   == who &&
+      if( (x+3)<X_BOARD &&
+          xsquare[y][x]   == who &&
           xsquare[y][x+1] == who &&
           xsquare[y][x+2] == who &&
-          xsquare[y][x+3] == who &&
-          (x+3)<X_BOARD
+          xsquare[y][x+3] == who
         )
         return TRUE;
 
       /*vertical position*/
-      if( xsquare[y][x]   == who &&
+      if( (y+3)<Y_BOARD &&
+          xsquare[y][x]   == who &&
           xsquare[y+1][x] == who &&
           xsquare[y+2][x] == who &&
-          xsquare[y+3][x] == who &&
-          (y+3)<Y_BOARD
+          xsquare[y+3][x] == who
         )
         return TRUE;
 
       /*downstair diagonal position*/
-      if( xsquare[y][x]      == who &&
+      if( (x+3)<X_BOARD             &&
+          (y+3)<Y_BOARD             &&
+          xsquare[y][x]      == who &&
           xsquare[y+1][x+1]  == who &&
           xsquare[y+2][x+2]  == who &&
-          xsquare[y+3][x+3]  == who &&
-          (x+3)<X_BOARD            &&
-          (y+3)<Y_BOARD
+          xsquare[y+3][x+3]  == who
         )
         return TRUE;
 
       /*upstair diagonal position*/
-      if( xsquare[y][x]      == who &&
+      if( (x+3)<X_BOARD             &&
+          (y-3)>=0                  &&
+          xsquare[y][x]      == who &&
           xsquare[y-1][x+1]  == who &&
           xsquare[y-2][x+2]  == who &&
-          xsquare[y-3][x+3]  == who &&
-          (x+3)<X_BOARD            &&
-          (y-3)>=0
+          xsquare[y-3][x+3]  == who
         )
         return TRUE;
     }
