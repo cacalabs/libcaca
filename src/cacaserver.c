@@ -321,7 +321,10 @@ static void manage_connections(struct server *server)
     {
         server->clients = malloc(sizeof(struct client));
         if(server->clients == NULL)
+	{
+            close(fd);
             return;
+	}
     }
     else
     {
