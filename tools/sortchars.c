@@ -259,5 +259,7 @@ static void testcircle(void)
         printf("\n");
     }
     printf("*/\n");
+    free(buf);
+    free(dst);
 }
 
