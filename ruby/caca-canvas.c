@@ -492,8 +492,8 @@ static VALUE fill_triangle_textured(VALUE self, VALUE coords, VALUE texture, VAL
         {
             if((TYPE(v) != T_ARRAY) || (RARRAY_LEN(v) != 2))
                 rb_raise(rb_eArgError, "invalid uv list");
-            ccoords[2*i] = NUM2DBL(rb_ary_entry(v, 0));
-            ccoords[2*i+1] = NUM2DBL(rb_ary_entry(v, 1));
+            cuv[2*i] = NUM2DBL(rb_ary_entry(v, 0));
+            cuv[2*i+1] = NUM2DBL(rb_ary_entry(v, 1));
         }
     }
 
