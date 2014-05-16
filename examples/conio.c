@@ -16,7 +16,7 @@
  */
 
 /*Ported to libcaca
- *Copyright (c) 2009-2010 Sam Hocevar <sam@hocevar.net>
+ *Copyright (c) 2009-2014 Sam Hocevar <sam@hocevar.net>
 */
 
 #include "config.h"

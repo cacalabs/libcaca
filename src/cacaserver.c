@@ -1,7 +1,7 @@
 /*
  *  cacaserver    Colour ASCII-Art library
  *  Copyright (c) 2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
- *                2006-2012 Sam Hocevar <sam@hocevar.net>
+ *                2006-2014 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  This program is free software. It comes without any warranty, to
@@ -321,10 +321,10 @@ static void manage_connections(struct server *server)
     {
         server->clients = malloc(sizeof(struct client));
         if(server->clients == NULL)
-	{
+        {
             close(fd);
             return;
-	}
+        }
     }
     else
     {

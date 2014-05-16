@@ -5,7 +5,7 @@ AC_CONFIG_AUX_DIR(.auto)
 AC_CANONICAL_SYSTEM
 dnl  We cannot use subdir-objects because of a bug that will eg. remove
 dnl  ../src/.deps upon distclean when a file from ../src/ is used.
-AM_INIT_AUTOMAKE([no-define tar-ustar silent-rules])
+AM_INIT_AUTOMAKE([no-define tar-ustar silent-rules subdir-objects])
 dnl AM_MAINTAINER_MODE
 AM_DEFAULT_VERBOSITY=0
 
