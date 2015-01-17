@@ -227,7 +227,7 @@ namespace Caca
          SuppressUnmanagedCodeSecurity]
         private static extern int caca_set_color_argb(IntPtr cv,
                                                        uint fg, uint bg);
-        public int setColorArgb(uint fg, uint bg)
+        public int setColorArgb(ushort fg, ushort bg)
         {
             return caca_set_color_argb(_c_cv, fg, bg);
         }
