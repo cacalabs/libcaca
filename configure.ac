@@ -255,9 +255,13 @@ AM_CONDITIONAL(USE_FTGL, test "${FTGL}" = "yes")
 
 if test "${enable_cocoa}" != "no"; then
   ac_cv_my_have_cocoa="no"
+  save_CFLAGS="$CFLAGS"
+  CFLAGS="$CFLAGS -ObjC++"
   AC_CHECK_HEADERS(Cocoa/Cocoa.h,
    [ac_cv_my_have_cocoa="yes"])
+  CFLAGS="$save_CFLAGS"
   if test "${ac_cv_my_have_cocoa}" = "yes"; then
+    [[[ "$target_os" =~ [0-9]+ ]]] && darwin_ver="${BASH_REMATCH[[0]]}"
     case x${target} in
     xpowerpc*darwin*)
       # 10.3 needed to link with X11
@@ -285,15 +289,19 @@ if test "${enable_cocoa}" != "no"; then
     esac
     CC="${CC:-gcc-${GCC_VERSION}}"
     CXX="${CXX:-g++-${GCC_VERSION}}"
-    MACOSX_SDK_FRAMEWORKS="${MACOSX_SDK_FRAMEWORKS:--F${MACOSX_SDK}/System/Library/Frameworks}"
-    CPPFLAGS="${CPPFLAGS} ${ARCH} ${MACOSX_SDK_FRAMEWORKS}"
-    CFLAGS="${CFLAGS} ${MACOSX_SDK_CFLAGS} -mmacosx-version-min=10.5"
-    CXXFLAGS="${CXXFLAGS} ${MACOSX_SDK_CXXFLAGS} -mmacosx-version-min=10.5"
-    OBJCFLAGS="${OBJCFLAGS} ${MACOSX_SDK_CFLAGS} -mmacosx-version-min=10.5"
-    LDFLAGS="${ARCH} ${MACOSX_SDK_LDFLAGS} ${LDFLAGS}"
-    AC_DEFINE(USE_COCOA, 1, Define to 1 to activate the Cocoa backend driver)
-    CACA_LIBS="${CACA_LIBS} -Wl,-syslibroot,${MACOSX_SDK},-framework,Cocoa"
+    if [[ "$darwin_ver" -lt "13" ]]; then
+      MACOSX_SDK_FRAMEWORKS="${MACOSX_SDK_FRAMEWORKS:--F${MACOSX_SDK}/System/Library/Frameworks}"
+      CPPFLAGS="${CPPFLAGS} ${ARCH} ${MACOSX_SDK_FRAMEWORKS}"
+      CFLAGS="${CFLAGS} ${MACOSX_SDK_CFLAGS} -mmacosx-version-min=10.5"
+      CXXFLAGS="${CXXFLAGS} ${MACOSX_SDK_CXXFLAGS} -mmacosx-version-min=10.5"
+      OBJCFLAGS="${OBJCFLAGS} ${MACOSX_SDK_CFLAGS} -mmacosx-version-min=10.5"
+      LDFLAGS="${ARCH} ${MACOSX_SDK_LDFLAGS} ${LDFLAGS}"
+      CACA_LIBS="${CACA_LIBS} -Wl,-syslibroot,${MACOSX_SDK},-framework,Cocoa"
+    else
+      CACA_LIBS="${CACA_LIBS} -Wl,-framework,Cocoa"
+    fi
     CACA_DRIVERS="${CACA_DRIVERS} cocoa"
+    AC_DEFINE(USE_COCOA, 1, Define to 1 to activate the Cocoa backend driver)
   elif test "${enable_cocoa}" = "yes"; then
     AC_MSG_ERROR([cannot find Cocoa development files])
   fi
