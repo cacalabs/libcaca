@@ -1,10 +1,8 @@
 
-AC_INIT(libcaca, 0.99.beta19pre)
+AC_INIT(libcaca, 0.99.beta20)
 AC_PREREQ(2.50)
 AC_CONFIG_AUX_DIR(.auto)
 AC_CANONICAL_SYSTEM
-dnl  We cannot use subdir-objects because of a bug that will eg. remove
-dnl  ../src/.deps upon distclean when a file from ../src/ is used.
 AM_INIT_AUTOMAKE([no-define tar-ustar silent-rules subdir-objects])
 dnl AM_MAINTAINER_MODE
 AM_DEFAULT_VERBOSITY=0
@@ -13,7 +11,7 @@ AM_CONFIG_HEADER(config.h)
 
 LT_MAJOR="0"
 LT_MINOR="99"
-LT_MICRO="18"
+LT_MICRO="20"
 AC_SUBST(LT_MAJOR)
 AC_SUBST(LT_MINOR)
 AC_SUBST(LT_MICRO)
@@ -125,6 +123,9 @@ AM_CONDITIONAL(USE_KERNEL, test "${ac_cv_my_have_kernel}" = "yes")
 AC_CHECK_HEADERS(stdio.h stdarg.h signal.h sys/ioctl.h sys/time.h endian.h unistd.h arpa/inet.h netinet/in.h winsock2.h errno.h locale.h getopt.h dlfcn.h termios.h)
 AC_CHECK_FUNCS(signal ioctl snprintf sprintf_s vsnprintf vsnprintf_s getenv putenv strcasecmp htons)
 AC_CHECK_FUNCS(usleep gettimeofday atexit)
+
+AC_CHECK_HEADERS(_mingw.h,
+ [CPPFLAGS="${CPPFLAGS} -D__USE_MINGW_ANSI_STDIO=0"])
 
 ac_cv_have_getopt_long="no"
 AC_CHECK_FUNCS(getopt_long,

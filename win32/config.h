@@ -72,7 +72,7 @@
 #define PACKAGE_STRING ""
 #define PACKAGE_TARNAME ""
 #define PACKAGE_URL "http://caca.zoy.org/wiki/libcaca"
-#define PACKAGE_VERSION "0.99.beta18"
+#define PACKAGE_VERSION "0.99.beta20"
 /* #undef PROF */
 /* #undef RETSIGTYPE */
 /* #undef SCREENUPDATE_IN_PC_H */
