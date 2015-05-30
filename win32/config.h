@@ -1,6 +1,7 @@
 
 #define ALLOCCONSOLE_IN_WINDOWS_H 1
 /* #undef DEBUG -- XXX: defined in the VS project */
+/* #undef HAVE__MINGW_H */
 /* #undef HAVE_ARPA_INET_H */
 #define HAVE_ATEXIT 1
 /* #undef HAVE_COCOA_COCOA_H */
