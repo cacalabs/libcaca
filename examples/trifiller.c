@@ -10,22 +10,11 @@
  *  http://www.wtfpl.net/ for more details.
  */
 
+/* This will include config.h and everything else */
+#include "../src/common-image.c"
 
-#include "config.h"
-
-#if !defined(__KERNEL__)
-#   include <stdio.h>
-#   include <string.h>
-#endif
-
-/* libcaca header */
-#include "caca.h"
-
-/* Image loading functions */
-#include "../src/common-image.h"
-
-/* M_PI / cos / sin */
-#include <math.h>
+#include <stdio.h> /* fprintf */
+#include <math.h> /* M_PI / cos / sin */
 
 
 #define SQUARE_SIZE 20
