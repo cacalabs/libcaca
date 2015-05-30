@@ -1,11 +1,10 @@
 #!/usr/bin/ruby
 
-require 'test/unit'
+require 'minitest/autorun'
 
 $LOAD_PATH.unshift(".libs").unshift("lib")
 
-Dir.glob("t/tc*.rb").each{ |t|
+Dir.glob("./t/tc*.rb").each{ |t|
 	require t
 }
 
-exit Test::Unit::AutoRunner.run

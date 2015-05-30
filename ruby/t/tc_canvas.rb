@@ -1,12 +1,12 @@
 require 'caca'
 
-class TC_Canvas < Test::Unit::TestCase
+class TC_Canvas < MiniTest::Test
     def setup
         @c = Caca::Canvas.new(3, 3)
     end
     def test_create
         c = Caca::Canvas.new(3, 3)
-        assert_not_nil(c, 'Canvas creation failed')
+        refute_nil(c, 'Canvas creation failed')
         assert(c.width == 3 && c.height == 3, 'Wrong size for new canvas')
     end
     def test_width
@@ -47,13 +47,13 @@ class TC_Canvas < Test::Unit::TestCase
     end
     def test_render
         c = Caca::Canvas.new(4,4)
-	c.put_str(0,0,"plop")
-	f = Caca::Font.new(Caca::Font.list[0])
-	assert_not_nil(c.render(f, c.width*f.width, c.height*f.height, c.width*f.width*4))
+        c.put_str(0,0,"plop")
+        f = Caca::Font.new(Caca::Font.list[0])
+        refute_nil(c.render(f, c.width*f.width, c.height*f.height, c.width*f.width*4))
     end
     def test_fail_render
         c = Caca::Canvas.new(4,4)
-        assert_raise(ArgumentError) {
+        assert_raises(ArgumentError) {
             c.render(nil, c.width, c.height, c.width*4)
         }
     end
