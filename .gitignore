@@ -24,6 +24,14 @@ stamp-*
 *-stamp
 INSTALL
 caca-config
+# Testsuite binaries
+caca/t/bench
+caca/t/caca-test
+caca/t/simple
+caca/t/*.log
+caca/t/*.trs
+ruby/*.log
+ruby/*.trs
 # caca-sharp binaries
 caca-sharp/*.dll
 caca-sharp/*.config
@@ -88,10 +96,6 @@ src/cacaplay
 src/cacaserver
 src/cacaclock
 src/img2txt
-# Testsuite binaries
-test/bench
-test/caca-test
-test/simple
 # Tools binaries
 tools/optipal
 tools/makefont

@@ -1,5 +1,5 @@
 
-AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/caca -I../caca
+AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/caca -I..
 
 if USE_CPPUNIT
 cppunit_tests = caca-test
@@ -16,12 +16,12 @@ TESTS = simple check-copyright check-source check-win32 \
         $(doxygen_tests) $(cppunit_tests)
 
 simple_SOURCES = simple.c
-simple_LDADD = ../caca/libcaca.la
+simple_LDADD = ../libcaca.la
 
 bench_SOURCES = bench.c
-bench_LDADD = ../caca/libcaca.la
+bench_LDADD = ../libcaca.la
 
 caca_test_SOURCES = caca-test.cpp canvas.cpp dirty.cpp driver.cpp export.cpp
 caca_test_CXXFLAGS = $(CPPUNIT_CFLAGS)
-caca_test_LDADD = ../caca/libcaca.la $(CPPUNIT_LIBS)
+caca_test_LDADD = ../libcaca.la $(CPPUNIT_LIBS)
 

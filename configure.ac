@@ -555,9 +555,9 @@ AC_CONFIG_FILES(
  [Makefile
   kernel/Makefile
   caca/Makefile
+  caca/t/Makefile
   src/Makefile
   examples/Makefile
-  test/Makefile
   tools/Makefile
   java/Makefile
   caca-sharp/Makefile

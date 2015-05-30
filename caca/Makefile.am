@@ -1,4 +1,6 @@
 
+SUBDIRS = . t
+
 EXTRA_DIST = caca.pc.in \
              mono9.data monobold12.data \
              libcaca.vcxproj libcaca.def
