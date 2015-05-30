@@ -626,7 +626,7 @@ static int x11_get_event(caca_display_t *dp, caca_privevent_t *ev)
             return 1;
         }
 
-        keysym = XKeycodeToKeysym(dp->drv.p->dpy, xevent.xkey.keycode, 0);
+        keysym = XLookupKeysym(&xevent.xkey, 0);
         switch(keysym)
         {
             case XK_F1:    ev->data.key.ch = CACA_KEY_F1;    break;
