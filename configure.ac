@@ -371,6 +371,9 @@ if test "${enable_plugins}" = "yes"; then
   ac_cv_my_have_plugins="yes"
   AC_DEFINE(USE_PLUGINS, 1, Define to 1 to activate plugins)
   CACA_LIBS="${CACA_LIBS} -ldl"
+  if test "${enable_sdl}" = "yes"; then
+    CACA_LIBS="${CACA_LIBS} ${SDL_LIBS}"
+  fi
 else
   CACA_CFLAGS="${CACA_CFLAGS} ${X11_CFLAGS} ${GL_CFLAGS} ${FTGL_CFLAGS} ${SDL_CFLAGS}"
   CACA_LIBS="${CACA_LIBS} ${X11_LIBS} ${GL_LIBS} ${FTGL_LIBS} ${SDL_LIBS}"
