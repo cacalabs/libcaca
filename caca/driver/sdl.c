@@ -197,7 +197,6 @@ static void sdl_display(caca_display_t *dp)
         if(len > 0) {
             rw = SDL_RWFromMem(buffer, len);
             img = IMG_LoadTyped_RW(rw, 1, "TGA");
-            SDL_SetColorKey(img, SDL_RLEACCEL, img->format->colorkey);
 			SDL_FillRect(dp->drv.p->screen, NULL, 0x000000);
             SDL_BlitSurface(img, NULL, dp->drv.p->screen, NULL);
             SDL_FreeSurface(img);
