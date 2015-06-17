@@ -72,6 +72,8 @@ AC_ARG_ENABLE(x11,
   [  --enable-x11            X11 support (autodetected)])
 AC_ARG_ENABLE(gl,
   [  --enable-gl             OpenGL support (autodetected)])
+AC_ARG_ENABLE(sdl,
+  [  --enable-sdl,           SDL support (autodetected)])
 AC_ARG_ENABLE(cocoa,
   [  --enable-cocoa          Cocoa support (autodetected)])
 AC_ARG_ENABLE(network,
@@ -344,6 +346,19 @@ if test "${enable_vga}" != "no"; then
   fi
 fi
 
+if test "${enable_sdl}" != "no"; then
+  ac_cv_my_have_sdl="no"
+  AC_CHECK_HEADERS(SDL/SDL.h SDL/SDL_image.h SDL/SDL_ttf.h,
+    [ac_cv_my_have_sdl="yes"])
+  if test "${ac_cv_my_have_sdl}" = "yes"; then
+    AC_DEFINE(USE_SDL, 1, Define to 1 to activate the SDL backend driver)
+    SDL_LIBS="-lSDL -lSDL_ttf -lSDL_image"
+    CACA_DRIVERS="${CACA_DRIVERS} sdl"
+  elif test "${enable_sdl}" = "yes"; then
+    AC_MSG_ERROR([cannot find sdl development files])
+  fi
+fi
+
 if test "${enable_debug}" = "yes"; then
   AC_DEFINE(DEBUG, 1, Define to 1 to activate debug)
 fi
@@ -357,8 +372,8 @@ if test "${enable_plugins}" = "yes"; then
   AC_DEFINE(USE_PLUGINS, 1, Define to 1 to activate plugins)
   CACA_LIBS="${CACA_LIBS} -ldl"
 else
-  CACA_CFLAGS="${CACA_CFLAGS} ${X11_CFLAGS} ${GL_CFLAGS} ${FTGL_CFLAGS}"
-  CACA_LIBS="${CACA_LIBS} ${X11_LIBS} ${GL_LIBS} ${FTGL_LIBS}"
+  CACA_CFLAGS="${CACA_CFLAGS} ${X11_CFLAGS} ${GL_CFLAGS} ${FTGL_CFLAGS} ${SDL_CFLAGS}"
+  CACA_LIBS="${CACA_LIBS} ${X11_LIBS} ${GL_LIBS} ${FTGL_LIBS} ${SDL_LIBS}"
 fi
 AM_CONDITIONAL(USE_PLUGINS, test "${ac_cv_my_have_plugins}" = "yes")
 

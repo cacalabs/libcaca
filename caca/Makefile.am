@@ -90,7 +90,7 @@ uninstall-local:
 	rm -f $(DESTDIR)$(includedir)/cucul.h
 
 if USE_PLUGINS
-plugin_LTLIBRARIES = libx11_plugin.la libgl_plugin.la
+plugin_LTLIBRARIES = libx11_plugin.la libgl_plugin.la libsdl_plugin.la
 plugindir = $(libdir)/caca
 
 libx11_plugin_la_SOURCES = driver/x11.c
@@ -102,8 +102,13 @@ libgl_plugin_la_SOURCES = driver/gl.c
 libgl_plugin_la_CPPFLAGS = $(AM_CPPFLAGS) $(GL_CFLAGS) #$(FTGL_CFLAGS)
 libgl_plugin_la_LDFLAGS = -no-undefined -module -no-version
 libgl_plugin_la_LIBADD = libcaca.la $(GL_LIBS) #$(FTGL_LIBS)
+
+libsdl_plugin_la_SOURCES = driver/sdl.c
+libsdl_plugin_la_CPPFLAGS = $(AM_CPPFLAGS) $(SDL_CFLAGS)
+libsdl_plugin_la_LDFLAGS = -no-undefined -module -no-version
+libsdl_plugin_la_LIBADD = libcaca.la $(SDL_LIBS)
 else
-driver_source += driver/x11.c driver/gl.c
+driver_source += driver/x11.c driver/gl.c driver/sdl.c
 endif
 
 if USE_COCOA

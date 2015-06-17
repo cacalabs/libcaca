@@ -106,6 +106,9 @@ enum caca_driver
 #if defined(USE_X11)
     CACA_DRIVER_X11 = 9,
 #endif
+#if defined(USE_SDL)
+    CACA_DRIVER_SDL = 10,
+#endif
 };
 
 /* Available external drivers */
@@ -134,6 +137,9 @@ int win32_install(caca_display_t *);
 #endif
 #if defined(USE_X11)
 int x11_install(caca_display_t *);
+#endif
+#if defined(USE_SDL)
+int sdl_install(caca_display_t *);
 #endif
 
 /* Timer structure */
@@ -251,7 +257,7 @@ extern int _caca_getticks(caca_timer_t *);
 
 /* Internal event functions */
 extern void _caca_handle_resize(caca_display_t *);
-#if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO) || defined(USE_GL)
+#if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO) || defined(USE_GL) || defined(USE_SDL)
 extern void _push_event(caca_display_t *, caca_privevent_t *);
 extern int _pop_event(caca_display_t *, caca_privevent_t *);
 #endif
