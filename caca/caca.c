@@ -329,7 +329,7 @@ static int caca_install_driver(caca_display_t *dp, char const *driver)
     dp->events.autorepeat_ticks = 0;
     dp->events.last_key_event.type = CACA_EVENT_NONE;
 #endif
-#if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO) || defined(USE_GL)
+#if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO) || defined(USE_GL) || defined(USE_SDL)
     dp->events.queue = 0;
 #endif
 

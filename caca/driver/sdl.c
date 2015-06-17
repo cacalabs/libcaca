@@ -1,7 +1,7 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2012 Sam Hocevar <sam@hocevar.net>
- *                2013 Alex Foulon <alxf@lavabit.com>
+ *  Copyright (c) 2002-2015 Sam Hocevar <sam@hocevar.net>
+ *                2013-2015 Alex Foulon <alxf@vmail.me>
  *                All Rights Reserved
  *
  *  This library is free software. It comes without any warranty, to
@@ -461,7 +461,7 @@ int sdl_install(caca_display_t *dp)
     if(!getenv("DISPLAY") || !*(getenv("DISPLAY")))
         return -1;
 #endif
-    
+
     dp->drv.id = CACA_DRIVER_SDL;
     dp->drv.driver = "sdl";
 
