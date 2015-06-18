@@ -96,22 +96,38 @@ if __name__ == "__main__":
                 sys.exit()
             elif ch == ord('1'):
                 draw.do_line()
+                dp.refresh()
+                time.sleep(2)
             elif ch == ord('2'):
                 draw.do_line(thin=True)
+                dp.refresh()
+                time.sleep(2)
             elif ch == ord('3'):
                 draw.do_polyline()
+                dp.refresh()
+                time.sleep(2)
             elif ch == ord('4'):
                 draw.do_polyline(thin=True)
+                dp.refresh()
+                time.sleep(2)
             elif ch == ord('5'):
                 draw.do_circle()
+                dp.refresh()
+                time.sleep(2)
             elif ch == ord('6'):
                 draw.do_ellipse()
+                dp.refresh()
+                time.sleep(2)
             elif ch == ord('7'):
                 draw.do_ellipse(thin=True)
+                dp.refresh()
+                time.sleep(2)
             elif ch == ord('8'):
                 draw.do_box()
+                dp.refresh()
+                time.sleep(2)
             elif ch == ord('9'):
                 draw.do_box(thin=True)
-            dp.refresh()
-            time.sleep(2)
+                dp.refresh()
+                time.sleep(2)
 
