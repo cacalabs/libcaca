@@ -333,12 +333,23 @@ static int x11_init_graphics(caca_display_t *dp)
 #if defined X_HAVE_UTF8_STRING
     list = XVaCreateNestedList(0, XNFontSet, dp->drv.p->font_set, NULL);
     dp->drv.p->im = XOpenIM(dp->drv.p->dpy, NULL, NULL, NULL);
+
+    if (dp->drv.p->im == NULL) {
+      fprintf(stderr, "x11 driver error: unable to open input method\n");
+      return -1;
+    }
+
     dp->drv.p->ic = XCreateIC(dp->drv.p->im,
                           XNInputStyle, XIMPreeditNothing | XIMStatusNothing,
                           XNClientWindow, dp->drv.p->window,
                           XNPreeditAttributes, list,
                           XNStatusAttributes, list,
                           NULL);
+
+    if (dp->drv.p->ic == NULL) {
+      fprintf(stderr, "x11 driver error: unable to create input context\n");
+      return -1;
+    }
 #endif
 
     return 0;
