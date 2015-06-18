@@ -47,7 +47,10 @@ class _Canvas(object):
         _lib.caca_free_canvas.argtypes = [_Canvas]
         _lib.caca_free_canvas.restype  = ctypes.c_int
 
-        return _lib.caca_free_canvas(self)
+        if self is not None:
+            return _lib.caca_free_canvas(self)
+
+        return None
 
 class Canvas(_Canvas):
     """ Canvas object, methods are libcaca functions with canvas_t as
