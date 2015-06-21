@@ -38,7 +38,7 @@ class _Canvas(object):
         return "<CacaCanvas %dx%d>" % (self.get_width(), self.get_height())
 
     def __del__(self):
-        if self._cv > 0:
+        if self._cv > 0 and _lib is not None:
             self._free()
 
     def _free(self):
@@ -47,10 +47,7 @@ class _Canvas(object):
         _lib.caca_free_canvas.argtypes = [_Canvas]
         _lib.caca_free_canvas.restype  = ctypes.c_int
 
-        if self is not None:
-            return _lib.caca_free_canvas(self)
-
-        return None
+        return _lib.caca_free_canvas(self)
 
 class Canvas(_Canvas):
     """ Canvas object, methods are libcaca functions with canvas_t as

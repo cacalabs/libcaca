@@ -32,7 +32,7 @@ class _Display(object):
         return "<CacaDisplay>"
 
     def __del__(self):
-        if self._dp > 0:
+        if self._dp > 0 and _lib is not None:
             self._free()
 
     def _free(self):
@@ -42,6 +42,7 @@ class _Display(object):
         _lib.caca_free_display.restype  = ctypes.c_int
 
         return _lib.caca_free_display(self)
+
 
 class Display(_Display):
     """ Display objects, methods are libcaca functions with display_t as first
