@@ -38,7 +38,7 @@ class _Canvas(object):
         return "<CacaCanvas %dx%d>" % (self.get_width(), self.get_height())
 
     def __del__(self):
-        if self._cv > 0:
+        if self._cv > 0 and _lib is not None:
             self._free()
 
     def _free(self):
