@@ -2,6 +2,8 @@
 jnidir = $(libdir)/jni
 libcaca_javadir = $(datadir)/java
 
+AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/caca -I../caca
+
 java_jar = libjava.jar
 
 if USE_JAVA
@@ -99,7 +101,7 @@ if USE_JAVA
 BUILT_SOURCES = $(java_jni_headers) $(java_jni_classes)
 endif
 
-libcaca_java_la_CPPFLAGS = $(JAVA_CFLAGS)
+libcaca_java_la_CPPFLAGS = $(AM_CPPFLAGS) $(JAVA_CFLAGS)
 libcaca_java_la_SOURCES = \
   caca_java_common.h   \
   caca_java_common.c   \
