@@ -15,7 +15,8 @@ addons:
       # FIXME: disable this for now, as it just outputs garbage
       #- texlive-fonts-recommended
       #- doxygen-latex
-      - ruby1.8-dev
+      - ruby-dev
+      - ruby-minitest
 
 before_install:
   - .travis/before_install.sh
