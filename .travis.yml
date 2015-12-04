@@ -1,0 +1,31 @@
+sudo: false
+language: c
+env: VERBOSE=1
+
+addons:
+  apt:
+    packages:
+      - build-essential
+      - pkg-config
+      - libncursesw5-dev
+      - libslang2-dev
+      - libx11-dev
+      - libimlib2-dev
+      - freeglut3-dev
+      # FIXME: disable this for now, as it just outputs garbage
+      #- texlive-fonts-recommended
+      #- doxygen-latex
+      - ruby1.8-dev
+
+before_install:
+  - .travis/before_install.sh
+  - ./bootstrap
+
+os:
+  - linux
+  - osx
+
+compiler:
+  - gcc
+  - clang
+
