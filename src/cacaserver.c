@@ -54,7 +54,7 @@
     "\xff\xfd\x31"     /* DO NAWS */ \
     "\xff\x1f\xfa____" /* SB NAWS */ \
     "\xff\xf0"         /* SE */  \
-    "\033]2;AuvernIX\x07" /* Change window title */ \
+    "\033]2;caca for the network\x07" /* Change window title */ \
     "\033[H\033[J" /* Clear screen */
     /*"\033[?25l"*/ /* Hide cursor */
 
@@ -152,7 +152,7 @@ int main(void)
 
     server->client_count = 0;
     server->clients = NULL;
-    server->port = 23; /* 51914 */
+    server->port = 0xCACA; /* 51914 */
 
     /* FIXME, handle >255 sizes */
     memcpy(server->prefix, INIT_PREFIX, sizeof(INIT_PREFIX));
