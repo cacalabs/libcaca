@@ -31,6 +31,7 @@
 #endif
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <netdb.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <errno.h>
@@ -94,13 +95,19 @@ struct client
     int start, stop;
 };
 
+#define MAXSOCKS 16
+
+struct sock {
+    int sockfd;
+    struct sockaddr_in my_addr;
+};  
+
 struct server
 {
     unsigned int width, height;
     unsigned int port;
-    int sockfd;
-    struct sockaddr_in my_addr;
-    socklen_t sin_size;
+    int sock_count;
+    struct sock socks[MAXSOCKS];
 
     /* Input buffer */
     uint8_t *input;
@@ -118,14 +125,17 @@ struct server
     RETSIGTYPE (*sigpipe_handler)(int);
 };
 
-static void manage_connections(struct server *server);
+void print_ip(struct sockaddr *ai);
+static void manage_connections(struct server *server, int sockfd);
 static int send_data(struct server *server, struct client *c);
 ssize_t nonblock_write(int fd, void *buf, size_t len);
 
 int main(void)
 {
-    int i, yes = 1, flags;
+    int i, yes = 1, flags, fd, error;
     struct server *server;
+    struct addrinfo ai_hints, *ai, *res;
+    char port_str[6];
     char *tmp;
 
 #if USE_WINSOCK
@@ -152,40 +162,39 @@ int main(void)
     tmp[2] = (uint8_t) (server->height & 0xff00) >> 8;
     tmp[3] = (uint8_t) server->height & 0xff;
 
-    if((server->sockfd = socket(PF_INET, SOCK_STREAM, 0)) == -1)
-    {
-        perror("socket");
-        return -1;
+    memset(&ai_hints, 0, sizeof(ai_hints));
+    ai_hints.ai_family = AF_UNSPEC;
+    ai_hints.ai_socktype = SOCK_STREAM;
+    ai_hints.ai_flags = AI_PASSIVE;
+    memset(port_str, 0, sizeof(port_str));
+    snprintf(port_str, 6, "%d", server->port);
+    error = getaddrinfo(NULL, port_str, &ai_hints, &ai);
+    if (error)
+       perror("getaddrinfo");
+
+    for (res = ai; res && server->sock_count < MAXSOCKS; res = res->ai_next) {
+        if ((fd = socket(res->ai_addr->sa_family, SOCK_STREAM, 0)) == -1)
+            perror("socket");
+        if(setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
+            perror("setsockopt: SO_REUSEADDR");
+        if (res->ai_addr->sa_family == AF_INET6)
+            if (setsockopt(fd, IPPROTO_IPV6, IPV6_V6ONLY, &yes, sizeof(int)) == -1)
+                perror("setsockopt: IPV6_V6ONLY");
+        if (bind(fd, res->ai_addr, res->ai_addrlen) == -1)
+            perror("bind");
+        flags = fcntl(fd, F_GETFL, 0);
+        fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+        if(listen(fd, BACKLOG) == -1)
+            perror("listen");
+
+        server->socks[server->sock_count].sockfd = fd;
+        server->sock_count++;
+        fprintf(stderr, "listening on ");
+        print_ip(res->ai_addr);
+        fprintf(stderr, "\n");
     }
+    freeaddrinfo(ai);
 
-    if(setsockopt(server->sockfd, SOL_SOCKET,
-                  SO_REUSEADDR, &yes, sizeof(int)) == -1)
-    {
-        perror("setsockopt SO_REUSEADDR");
-        return -1;
-    }
-
-    server->my_addr.sin_family = AF_INET;
-    server-> my_addr.sin_port = htons(server->port);
-    server->my_addr.sin_addr.s_addr = INADDR_ANY;
-    memset(&(server->my_addr.sin_zero), '\0', 8);
-
-    if(bind(server->sockfd, (struct sockaddr *)&server->my_addr,
-             sizeof(struct sockaddr)) == -1)
-    {
-        perror("bind");
-        return -1;
-    }
-
-    /* Non blocking socket */
-    flags = fcntl(server->sockfd, F_GETFL, 0);
-    fcntl(server->sockfd, F_SETFL, flags | O_NONBLOCK);
-
-    if(listen(server->sockfd, BACKLOG) == -1)
-    {
-        perror("listen");
-        return -1;
-    }
 
     server->canvas = caca_create_canvas(0, 0);
     server->buffer = NULL;
@@ -202,7 +211,8 @@ int main(void)
 restart:
         /* Manage new connections as this function will be called sometimes
          * more often than display */
-        manage_connections(server);
+        for (i = 0; i < server->sock_count; i++)
+            manage_connections(server, server->socks[i].sockfd);
 
         /* Read data from stdin */
         if(server->read < 12)
@@ -288,6 +298,9 @@ restart:
     /* Restore SIGPIPE handler */
     signal(SIGPIPE, server->sigpipe_handler);
 
+    for (i = 0; i < server->sock_count; i++)
+        close(server->socks[i].sockfd);
+
     free(server);
 
 #if USE_WINSOCK
@@ -300,18 +313,30 @@ restart:
  * XXX: The following functions are local
  */
 
-static void manage_connections(struct server *server)
+void print_ip(struct sockaddr *ai)
+{
+    char buffer[INET6_ADDRSTRLEN];
+    int err = getnameinfo(ai, (ai->sa_family==AF_INET)?sizeof(struct sockaddr_in):sizeof(struct sockaddr_in6), buffer, sizeof(buffer), NULL, 0, NI_NUMERICHOST);
+    if (err != 0) {
+        fprintf(stderr, "n/a");   
+    }
+    fprintf(stderr, "%s",buffer);
+}
+
+
+static void manage_connections(struct server *server, int sockfd)
 {
     int fd, flags;
-    struct sockaddr_in remote_addr;
-    socklen_t len = sizeof(struct sockaddr_in);
+    struct sockaddr_in6 remote_addr;
+    socklen_t len = sizeof(struct sockaddr_in6);
 
-    fd = accept(server->sockfd, (struct sockaddr *)&remote_addr, &len);
+    fd = accept(sockfd, (struct sockaddr*)&remote_addr, &len);
     if(fd == -1)
         return;
 
-    fprintf(stderr, "[%i] connected from %s\n",
-                    fd, inet_ntoa(remote_addr.sin_addr));
+    fprintf(stderr, "[%i] connected from ", fd);
+    print_ip((struct sockaddr*)&remote_addr);
+    fprintf(stderr, "\n");
 
     /* Non blocking socket */
     flags = fcntl(fd, F_SETFL, 0);
