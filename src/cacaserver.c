@@ -54,7 +54,7 @@
     "\xff\xfd\x31"     /* DO NAWS */ \
     "\xff\x1f\xfa____" /* SB NAWS */ \
     "\xff\xf0"         /* SE */  \
-    "\033]2;caca for the network\x07" /* Change window title */ \
+    "\033]2;AuvernIX\x07" /* Change window title */ \
     "\033[H\033[J" /* Clear screen */
     /*"\033[?25l"*/ /* Hide cursor */
 
@@ -152,7 +152,7 @@ int main(void)
 
     server->client_count = 0;
     server->clients = NULL;
-    server->port = 0xCACA; /* 51914 */
+    server->port = 23; /* 51914 */
 
     /* FIXME, handle >255 sizes */
     memcpy(server->prefix, INIT_PREFIX, sizeof(INIT_PREFIX));
@@ -170,22 +170,41 @@ int main(void)
     snprintf(port_str, 6, "%d", server->port);
     error = getaddrinfo(NULL, port_str, &ai_hints, &ai);
     if (error)
+    {
        perror("getaddrinfo");
+       return -1;
+    }
 
-    for (res = ai; res && server->sock_count < MAXSOCKS; res = res->ai_next) {
+    for (res = ai; res && server->sock_count < MAXSOCKS; res = res->ai_next)
+    {
         if ((fd = socket(res->ai_addr->sa_family, SOCK_STREAM, 0)) == -1)
+        {
             perror("socket");
+            continue;
+        }
         if(setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
+        {
             perror("setsockopt: SO_REUSEADDR");
+            continue;
+        }
         if (res->ai_addr->sa_family == AF_INET6)
             if (setsockopt(fd, IPPROTO_IPV6, IPV6_V6ONLY, &yes, sizeof(int)) == -1)
+            {
                 perror("setsockopt: IPV6_V6ONLY");
+                continue;
+            }
         if (bind(fd, res->ai_addr, res->ai_addrlen) == -1)
+        {
             perror("bind");
+            continue;
+        }
         flags = fcntl(fd, F_GETFL, 0);
         fcntl(fd, F_SETFL, flags | O_NONBLOCK);
         if(listen(fd, BACKLOG) == -1)
+        {
             perror("listen");
+            continue;
+        }
 
         server->socks[server->sock_count].sockfd = fd;
         server->sock_count++;
@@ -195,6 +214,11 @@ int main(void)
     }
     freeaddrinfo(ai);
 
+    if (server->sock_count == 0)
+    {
+        fprintf(stderr, "Not listening\n");
+        return -1;
+    }
 
     server->canvas = caca_create_canvas(0, 0);
     server->buffer = NULL;
@@ -316,7 +340,13 @@ restart:
 void print_ip(struct sockaddr *ai)
 {
     char buffer[INET6_ADDRSTRLEN];
-    int err = getnameinfo(ai, (ai->sa_family==AF_INET)?sizeof(struct sockaddr_in):sizeof(struct sockaddr_in6), buffer, sizeof(buffer), NULL, 0, NI_NUMERICHOST);
+    socklen_t len = sizeof(struct sockaddr_in6);
+
+    if (ai->sa_family == AF_INET)
+        len = sizeof(struct sockaddr_in);
+
+    int err = getnameinfo(ai, len, buffer, sizeof(buffer), NULL, 0,
+                          NI_NUMERICHOST);
     if (err != 0) {
         fprintf(stderr, "n/a");   
     }
