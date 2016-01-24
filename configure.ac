@@ -471,13 +471,14 @@ AM_CONDITIONAL(USE_PYTHON, test "${ac_cv_my_have_python}" = "yes")
 
 # Build the Ruby bindings?
 ac_cv_my_have_ruby="no"
+ac_cv_my_have_ruby_minitest="no"
 if test "${enable_ruby}" != "no"; then
   AC_PATH_PROG(RUBY, ruby, no)
   if test "${RUBY}" != "no"; then
-    RUBY_CFLAGS="$(ruby -r mkmf -e 'conf = RbConfig::CONFIG.merge("hdrdir" => $hdrdir, "arch_hdrdir" => $arch_hdrdir); print RbConfig::expand("#$INCFLAGS", conf)')"
-    RUBY_LIBS="-L$(ruby -r rbconfig -e 'print RbConfig::CONFIG@<:@"libdir"@:>@') -l$(ruby -r rbconfig -e 'print RbConfig::CONFIG@<:@"RUBY_SO_NAME"@:>@')"
-    RUBY_SITEARCHDIR=`ruby -r rbconfig -e 'print RbConfig::CONFIG@<:@"sitearchdir"@:>@'`
-    RUBY_SITELIBDIR=`ruby -r rbconfig -e 'print RbConfig::CONFIG@<:@"sitelibdir"@:>@'`
+    RUBY_CFLAGS="$("${RUBY}" -r mkmf -e 'conf = RbConfig::CONFIG.merge("hdrdir" => $hdrdir, "arch_hdrdir" => $arch_hdrdir); print RbConfig::expand("#$INCFLAGS", conf)')"
+    RUBY_LIBS="-L$("${RUBY}" -r rbconfig -e 'print RbConfig::CONFIG@<:@"libdir"@:>@') -l$("${RUBY}" -r rbconfig -e 'print RbConfig::CONFIG@<:@"RUBY_SO_NAME"@:>@')"
+    RUBY_SITEARCHDIR=`"${RUBY}" -r rbconfig -e 'print RbConfig::CONFIG@<:@"sitearchdir"@:>@'`
+    RUBY_SITELIBDIR=`"${RUBY}" -r rbconfig -e 'print RbConfig::CONFIG@<:@"sitelibdir"@:>@'`
     AC_SUBST(RUBY_CFLAGS)
     AC_SUBST(RUBY_LIBS)
     AC_SUBST(RUBY_SITEARCHDIR)
@@ -486,9 +487,16 @@ if test "${enable_ruby}" != "no"; then
     AC_CHECK_HEADERS([ruby.h],
      [ac_cv_my_have_ruby="yes"
       CACA_BINDINGS="${CACA_BINDINGS} Ruby"])
+    # For unit tests
+    AC_MSG_CHECKING(for ruby-minitest)
+    if "${RUBY}" -e "require 'minitest'" 2>/dev/null; then
+      ac_cv_my_have_ruby_minitest="yes"
+    fi
+    AC_MSG_RESULT(${ac_cv_my_have_ruby_minitest})
   fi
 fi
 AM_CONDITIONAL(USE_RUBY, test "${ac_cv_my_have_ruby}" = "yes")
+AM_CONDITIONAL(USE_RUBY_MINITEST, test "${ac_cv_my_have_ruby_minitest}" = "yes")
 
 AC_MSG_CHECKING(available language bindings)
 if test -z "${CACA_BINDINGS}"; then
