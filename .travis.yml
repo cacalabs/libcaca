@@ -18,6 +18,12 @@ addons:
       - ruby-dev
       - ruby-minitest
 
+# Travis does shallow clones, but we use the Git history
+# for check-copyright. Disable shallow clones; our whole
+# history is about 5 MiB anyway.
+git:
+  depth: 9999999
+
 before_install:
   - .travis/before_install.sh
   - ./bootstrap
