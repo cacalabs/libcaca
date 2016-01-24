@@ -8,7 +8,7 @@ top_srcdir="$(make -s echo-topdir)"
 #
 
 config_h_in="${top_srcdir}/config.h.in"
-win32_config_h="${top_srcdir}/win32/config.h"
+win32_config_h="${top_srcdir}/build/win32/config.h"
 
 nfails=0
 ntokens=0
@@ -16,7 +16,7 @@ for key in $(sed -ne 's/.*#undef *\([A-Za-z0-9_]*\).*/\1/p' "$config_h_in");
 do
   ntokens=$(($ntokens + 1))
   if ! grep '[ef] \<'"$key"'\>' "$win32_config_h" >/dev/null 2>&1; then
-    echo "error: $key missing from win32/config.h"
+    echo "error: $key missing from build/win32/config.h"
     nfails=$(($nfails + 1))
   fi
 done

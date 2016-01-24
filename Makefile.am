@@ -3,9 +3,9 @@ include $(top_srcdir)/build/autotools/common.am
 
 SUBDIRS = kernel caca src examples tools \
           cxx caca-sharp python ruby java doc
-DIST_SUBDIRS = $(SUBDIRS) win32
+DIST_SUBDIRS = $(SUBDIRS) build
 
-EXTRA_DIST = NOTES COPYING.GPL COPYING.ISC COPYING.LGPL bootstrap build-dos build-kernel build-win32 build-win64 caca-config.in libcaca.spec libcaca.sln
+EXTRA_DIST = NOTES COPYING.GPL COPYING.ISC COPYING.LGPL bootstrap caca-config.in libcaca.spec libcaca.sln
 AUTOMAKE_OPTIONS = dist-bzip2
 
 bin_SCRIPTS = caca-config

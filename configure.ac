@@ -573,7 +573,7 @@ AC_CONFIG_FILES(
   python/Makefile
   ruby/Makefile
   doc/Makefile
-  win32/Makefile
+  build/Makefile
 ])
 AC_CONFIG_FILES(
  [caca/caca.pc
