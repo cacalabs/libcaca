@@ -13,6 +13,12 @@ fi
 
 echo "$nfiles files, $nfails visible errors in documentation"
 
+# Make errors non-fatal on Darwin, because Travis-CI always
+# has outdated software.
+if test "$(uname -s)" = "Darwin"; then
+  exit 0
+fi
+
 if test "$nfails" != "0"; then
   exit 1
 fi

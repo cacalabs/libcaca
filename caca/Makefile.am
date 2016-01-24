@@ -108,5 +108,7 @@ endif
 
 if USE_COCOA
 driver_source += driver/cocoa.m
+else
+EXTRA_CHECKS = driver/cocoa.m
 endif
 

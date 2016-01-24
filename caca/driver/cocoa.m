@@ -1,6 +1,7 @@
 /*
  *  libcaca       Colour ASCII-Art library
  *  Copyright (c) 2006 Colin Delacroix <colin@zoy.org>
+ *            (c) 2016 ignore@this
  *                All Rights Reserved
  *
  *  This library is free software. It comes without any warranty, to
