@@ -1,5 +1,5 @@
 
-AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/caca -I$(top_builddir)/caca
+include $(top_srcdir)/build/autotools/common.am
 
 noinst_PROGRAMS = trifiller blit canvas colors conio $(conio_snake) demo demo0 dithering driver event export figfont font font2tga frames fullwidth gamma hsv input spritedit swallow text transform truecolor unicode import mouse
 
@@ -95,6 +95,4 @@ import_LDADD = ../caca/libcaca.la
 
 mouse_SOURCES = mouse.c
 mouse_LDADD = ../caca/libcaca.la
-
-echo-sources: ; echo $(SOURCES)
 

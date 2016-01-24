@@ -1,4 +1,6 @@
 
+include $(top_srcdir)/build/autotools/common.am
+
 rubylibdir = $(RUBY_SITEARCHDIR)
 rubysitedir = $(RUBY_SITELIBDIR)
 
@@ -37,6 +39,4 @@ EXTRA_DIST = ruby.dox \
              t/tc_frame.rb \
              README \
              $(NULL)
-
-echo-sources: ; echo $(SOURCES)
 

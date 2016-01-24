@@ -1,27 +1,30 @@
 #!/bin/sh
 
+export MAKEFLAGS=""
+top_srcdir="$(make -s echo-topdir)"
+
 #
 # Check that we have no tabs or trailing spaces in the source code
 #
 nfails=0
 nfiles=0
 nlines=0
-for dir in $(make -s echo-dirs -C ..); do
-  if [ ! -d "../$dir" ]; then continue; fi
-  for x in $(make -s echo-sources -C ../$dir); do
+for dir in $(make -s echo-dirs -C "${top_srcdir}"); do
+  if [ ! -d "${top_srcdir}/${dir}" ]; then continue; fi
+  for x in $(make -s echo-sources -C "${top_srcdir}/${dir}"); do
     case "$x" in
       *.c|*.cpp|*.h|*.m|*.php|*.cs|*.java|*.py|*.pl)
         nfiles=$(($nfiles + 1));
-        nlines=$(($nlines + `grep -c . "../$dir/$x"`)) ;;
+        nlines=$(($nlines + `grep -c . "${top_srcdir}/${dir}/$x"`)) ;;
       *)
         continue ;;
     esac
-    if grep '[[:space:]]$' "../$dir/$x" >/dev/null 2>&1; then
-      echo "error: $dir/$x contains trailing spaces"
+    if grep '[[:space:]]$' "${top_srcdir}/${dir}/$x" >/dev/null 2>&1; then
+      echo "error: ${dir}/$x contains trailing spaces"
       nfails=$(($nfails + 1))
     fi
-    if grep '	' "../$dir/$x" >/dev/null 2>&1; then
-      echo "error: $dir/$x contains tabs"
+    if grep '	' "${top_srcdir}/${dir}/$x" >/dev/null 2>&1; then
+      echo "error: ${dir}/$x contains tabs"
       nfails=$(($nfails + 1))
     fi
   done

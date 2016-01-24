@@ -1,13 +1,14 @@
 #!/bin/sh
 
-ret=0
+export MAKEFLAGS=""
+top_srcdir="$(make -s echo-topdir)"
 
 #
 # Check that the Win32 config.h is in sync with config.h.in
 #
 
-config_h_in=$(dirname "$0")/../config.h.in
-win32_config_h=$(dirname "$0")/../win32/config.h
+config_h_in="${top_srcdir}/config.h.in"
+win32_config_h="${top_srcdir}/win32/config.h"
 
 nfails=0
 ntokens=0

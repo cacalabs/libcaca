@@ -1,6 +1,5 @@
 
-AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/caca -I../caca \
-              -I$(top_srcdir)/caca
+include $(top_srcdir)/build/autotools/common.am
 
 noinst_PROGRAMS = optipal sortchars $(pango_programs)
 
@@ -19,6 +18,4 @@ pango_programs = makefont
 else
 pango_programs =
 endif
-
-echo-sources: ; echo $(SOURCES)
 

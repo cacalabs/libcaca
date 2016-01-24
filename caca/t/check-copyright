@@ -1,27 +1,30 @@
 #!/bin/sh
 
+export MAKEFLAGS=""
+top_srcdir="$(make -s echo-topdir)"
+
 #
 # Check that the copyright information is valid
 #
 nfails=0
 nfiles=0
-for dir in $(make -s echo-dirs -C ..); do
-  if [ ! -d "../$dir" ]; then continue; fi
-  for x in $(make -s echo-sources -C ../$dir); do
+for dir in $(make -s echo-dirs -C "${top_srcdir}"); do
+  if [ ! -d "${top_srcdir}/${dir}" ]; then continue; fi
+  for x in $(make -s echo-sources -C "${top_srcdir}/${dir}"); do
     case "$x" in
       *.c|*.cpp|*.h|*.m|*.php|*.cs|*.java|.py|.pl)
         nfiles=$(($nfiles + 1)) ;;
       *)
         continue ;;
     esac
-    if ! grep 'Copyright *([cC])' "../$dir/$x" >/dev/null 2>&1; then
-      echo "error: $dir/$x lacks proper copyright information"
+    if ! grep 'Copyright *([cC])' "${top_srcdir}/${dir}/$x" >/dev/null 2>&1; then
+      echo "error: ${dir}/$x lacks proper copyright information"
       nfails=$(($nfails + 1))
-    elif [ -d ../.git ]; then
-      Y="$(git log "../$dir/$x" | head -n 3 | sed -ne 's/^Date.* \([0-9][0-9][0-9][0-9]\) .*/\1/p')"
+    elif [ -d ../../.git ]; then
+      Y="$(git log "${top_srcdir}/${dir}/$x" | head -n 3 | sed -ne 's/^Date.* \([0-9][0-9][0-9][0-9]\) .*/\1/p')"
       if [ "$Y" != "" ]; then
-        if ! grep "$Y.*@" "../$dir/$x" >/dev/null 2>&1; then
-          echo "error: $dir/$x last modified in $Y, which is not in copyright"
+        if ! grep "$Y.*@" "${top_srcdir}/${dir}/$x" >/dev/null 2>&1; then
+          echo "error: ${dir}/$x last modified in $Y, which is not in copyright"
           nfails=$(($nfails + 1))
         fi
       fi

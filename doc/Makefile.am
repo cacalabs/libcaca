@@ -1,4 +1,6 @@
 
+include $(top_srcdir)/build/autotools/common.am
+
 EXTRA_DIST = doxygen.cfg.in doxygen.css footer.html header.html \
              $(man_MANS) $(doxygen_DOX)
 CLEANFILES = doxygen.log stamp-latex stamp-doxygen

@@ -1,8 +1,8 @@
 
+include $(top_srcdir)/build/autotools/common.am
+
 jnidir = $(libdir)/jni
 libcaca_javadir = $(datadir)/java
-
-AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/caca -I../caca
 
 java_jar = libjava.jar
 

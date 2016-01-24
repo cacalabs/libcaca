@@ -1,4 +1,6 @@
 
+include $(top_srcdir)/build/autotools/common.am
+
 SUBDIRS = kernel caca src examples tools \
           cxx caca-sharp python ruby java doc
 DIST_SUBDIRS = $(SUBDIRS) win32

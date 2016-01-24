@@ -1,11 +1,14 @@
 #!/bin/sh
 
+export MAKEFLAGS=""
+top_srcdir="$(make -s echo-topdir 2>/dev/null)"
+
 #
 # Check for Doxygen warnings
 #
-nfiles="$(grep -c "Parsing file" < ../../doc/doxygen.log)"
-if nfails="$(grep -c Warning: ../../doc/doxygen.log 2>/dev/null)"; then
-  grep Warning: ../../doc/doxygen.log | sed 's/\(.\{75\}\)...*/\1 .../'
+nfiles="$(grep -c "Parsing file" < "${top_srcdir}/doc/doxygen.log")"
+if nfails="$(grep -c Warning: "${top_srcdir}/doc/doxygen.log" 2>/dev/null)"; then
+  grep Warning: "${top_srcdir}/doc/doxygen.log" | sed 's/\(.\{75\}\)...*/\1 .../'
 fi
 
 echo "$nfiles files, $nfails visible errors in documentation"

@@ -1,4 +1,6 @@
 
+include $(top_srcdir)/build/autotools/common.am
+
 EXTRA_DIST = bootsect.S
 
 lib_LTLIBRARIES = $(libkernel_la)
@@ -13,11 +15,8 @@ libkernel_la_SOURCES = \
 	multiboot.h \
 	$(NULL)
 libkernel_la_LDFLAGS = -no-undefined
-AM_CPPFLAGS = -I$(top_srcdir)
 
 clean: clean-local
 clean-local:
 	rm -f bootsect.bin kern.bin kernel.map
-
-echo-sources: ; echo $(SOURCES)
 

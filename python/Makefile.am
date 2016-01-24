@@ -1,4 +1,6 @@
 
+include $(top_srcdir)/build/autotools/common.am
+
 if USE_PYTHON
 cacadir = $(pythondir)/caca
 caca_PYTHON = \
@@ -8,6 +10,7 @@ caca_PYTHON = \
     caca/display.py \
     caca/dither.py \
     caca/font.py
+EXTRA_CHECKS = $(caca_PYTHON)
 endif
 
 EXTRA_DIST = \
@@ -23,6 +26,4 @@ EXTRA_DIST = \
     examples/img2txt.py \
     examples/gol.py \
     examples/text.py
-
-echo-sources: ; echo $(caca_PYTHON)
 

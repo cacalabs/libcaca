@@ -1,9 +1,10 @@
 
+include $(top_srcdir)/build/autotools/common.am
+
 pkgdata_DATA = caca.txt
 
 EXTRA_DIST = caca.txt cacademo.vcxproj cacafire.vcxproj cacaview.vcxproj
-AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/caca -I../caca \
-              -DLIBCACA=1 -DX_DISPLAY_MISSING=1
+AM_CPPFLAGS += -DLIBCACA=1 -DX_DISPLAY_MISSING=1
 
 bin_PROGRAMS = cacademo cacafire cacaplay cacaview img2txt cacaclock $(fcntl_programs)
 noinst_PROGRAMS = cacadraw
@@ -43,6 +44,4 @@ fcntl_programs = cacaserver
 else
 fcntl_programs =
 endif
-
-echo-sources: ; echo $(SOURCES)
 

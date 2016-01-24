@@ -1,5 +1,5 @@
 
-AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/caca -I../caca
+include $(top_srcdir)/build/autotools/common.am
 
 EXTRA_DIST = libcaca++.vcxproj libcaca++.def test-cxx.vcxproj
 if USE_CXX
@@ -30,6 +30,4 @@ uninstall-local:
 	rmdir $(DESTDIR)$(libdir) 2>/dev/null || true
 	rm -f $(DESTDIR)$(pkgconfigdir)/cucul++.pc
 	rmdir $(DESTDIR)$(pkgconfigdir) 2>/dev/null || true
-
-echo-sources: ; echo $(SOURCES)
 

@@ -1,4 +1,6 @@
 
+include $(top_srcdir)/build/autotools/common.am
+
 SUBDIRS = . t
 
 EXTRA_DIST = caca.pc.in \
@@ -6,7 +8,7 @@ EXTRA_DIST = caca.pc.in \
              libcaca.vcxproj libcaca.def
 DISTCLEANFILES = caca.pc
 
-AM_CPPFLAGS = -I$(top_srcdir) -DPLUGINDIR=\"$(plugindir)\"
+AM_CPPFLAGS += -DPLUGINDIR=\"$(plugindir)\"
 
 pkgconfig_DATA = caca.pc
 pkgconfigdir = $(libdir)/pkgconfig
@@ -107,6 +109,4 @@ endif
 if USE_COCOA
 driver_source += driver/cocoa.m
 endif
-
-echo-sources: ; echo $(SOURCES)
 

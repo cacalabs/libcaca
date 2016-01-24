@@ -1,5 +1,5 @@
 
-AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/caca -I..
+include $(top_srcdir)/build/autotools/common.am
 
 if USE_CPPUNIT
 cppunit_tests = caca-test
