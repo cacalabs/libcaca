@@ -20,11 +20,12 @@ for dir in $(make -s echo-dirs -C "${top_srcdir}"); do
     if ! grep 'Copyright *([cC])' "${top_srcdir}/${dir}/$x" >/dev/null 2>&1; then
       echo "error: ${dir}/$x lacks proper copyright information"
       nfails=$(($nfails + 1))
-    elif [ -d ../../.git ]; then
+    elif [ -d "${top_srcdir}/.git" ]; then
       Y="$(git log "${top_srcdir}/${dir}/$x" | head -n 3 | sed -ne 's/^Date.* \([0-9][0-9][0-9][0-9]\) .*/\1/p')"
       if [ "$Y" != "" ]; then
         if ! grep "$Y.*@" "${top_srcdir}/${dir}/$x" >/dev/null 2>&1; then
-          echo "error: ${dir}/$x last modified in $Y, which is not in copyright"
+          echo "error: ${top_srcdir}/${dir}/$x last modified in $Y, which is not in copyright"
+          git log "${top_srcdir}/${dir}/$x" | head -n 3 | sed 's/^/info: /'
           nfails=$(($nfails + 1))
         fi
       fi
