@@ -8,14 +8,22 @@ addons:
       - build-essential
       - pkg-config
       - libncursesw5-dev
-      - libslang2-dev
       - libx11-dev
-      - libimlib2-dev
       - freeglut3-dev
+      - ruby-dev
+      # XXX: not supported by Travis-CI, see
+      # https://github.com/travis-ci/apt-package-whitelist/issues/1422
+      # ... so we just build-dep on libcaca-dev!
+      - libslang2-dev
+      - libcaca-dev
+      # XXX: not supported by Travis-CI, see
+      # https://github.com/travis-ci/apt-package-whitelist/issues/2309
+      - libimlib2-dev
       # FIXME: disable this for now, as it just outputs garbage
       #- texlive-fonts-recommended
       #- doxygen-latex
-      - ruby-dev
+      # XXX: not supported by Travis-CI, see
+      # https://github.com/travis-ci/apt-package-whitelist/issues/2308
       - ruby-minitest
 
 # Travis does shallow clones, but we use the Git history
