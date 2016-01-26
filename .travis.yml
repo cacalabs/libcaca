@@ -16,14 +16,10 @@ addons:
       # ... so we just build-dep on libcaca-dev!
       - libslang2-dev
       - libcaca-dev
-      # XXX: not supported by Travis-CI, see
-      # https://github.com/travis-ci/apt-package-whitelist/issues/2309
       - libimlib2-dev
       # FIXME: disable this for now, as it just outputs garbage
       #- texlive-fonts-recommended
       #- doxygen-latex
-      # XXX: not supported by Travis-CI, see
-      # https://github.com/travis-ci/apt-package-whitelist/issues/2308
       - ruby-minitest
 
 # Travis does shallow clones, but we use the Git history
