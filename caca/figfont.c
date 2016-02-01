@@ -30,8 +30,12 @@
 #include "caca_internals.h"
 
 #if defined _WIN32 && defined __GNUC__ && __GNUC__ >= 3
+#   if !HAVE_SPRINTF_S
 int sprintf_s(char *s, size_t n, const char *fmt, ...) CACA_WEAK;
+#   endif
+#   if !HAVE_VSNPRINTF
 int vsnprintf(char *s, size_t n, const char *fmt, va_list ap) CACA_WEAK;
+#   endif
 #endif
 
 struct caca_charfont
@@ -637,6 +641,7 @@ static uint32_t hsmush(uint32_t ch1, uint32_t ch2, int rule)
  */
 
 #if defined _WIN32 && defined __GNUC__ && __GNUC__ >= 3
+#   if !HAVE_SPRINTF_S
 int sprintf_s(char *s, size_t n, const char *fmt, ...)
 {
     va_list args;
@@ -646,11 +651,14 @@ int sprintf_s(char *s, size_t n, const char *fmt, ...)
     va_end(args);
     return ret;
 }
+#   endif
 
+#   if !HAVE_VSNPRINTF
 int vsnprintf(char *s, size_t n, const char *fmt, va_list ap)
 {
     return 0;
 }
+#   endif
 #endif
 
 /*
