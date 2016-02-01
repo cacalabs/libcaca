@@ -106,12 +106,21 @@ static int x11_init_graphics(caca_display_t *dp)
     dp->resize.allow = 0;
 
 #if defined HAVE_LOCALE_H
-    setlocale(LC_ALL, "");
+    /* FIXME: some better code here would be:
+     * locale_t old_locale = uselocale(newlocale(LC_CTYPE_MASK,
+     *                                           "", (locale_t)0);
+     * … but XOpenDisplay only works properly with setlocale(),
+     * not uselocale(). */
+    char const *old_locale = setlocale(LC_CTYPE, "");
 #endif
 
     dp->drv.p->dpy = XOpenDisplay(NULL);
     if(dp->drv.p->dpy == NULL)
         return -1;
+
+#if defined HAVE_LOCALE_H
+    setlocale(LC_CTYPE, old_locale);
+#endif
 
 #if defined HAVE_GETENV
     fonts[0] = getenv("CACA_FONT");

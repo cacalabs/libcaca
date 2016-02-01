@@ -26,6 +26,7 @@ INSTALL
 caca-config
 # Testsuite binaries
 caca/t/bench
+caca/t/bug-setlocale
 caca/t/caca-test
 caca/t/simple
 caca/t/*.log

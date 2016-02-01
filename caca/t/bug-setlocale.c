@@ -1,6 +1,6 @@
 /*
- *  simple        simple testsuite program
- *  Copyright (c) 2007 Sam Hocevar <sam@hocevar.net>
+ *  bug-setlocale: unit test for wrong setlocale() calls
+ *  Copyright (c) 2016 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  This program is free software. It comes without any warranty, to
@@ -15,6 +15,7 @@
 #if !defined(__KERNEL__)
 #   include <stdio.h>
 #   include <stdlib.h>
+#   include <string.h>
 #endif
 
 #include "caca.h"
@@ -32,29 +33,28 @@
 
 int main(int argc, char *argv[])
 {
-    caca_canvas_t *cv;
-    int tests = 0, passed = 0;
+    char buf[10];
+    char const * const * list;
 
-    cv = caca_create_canvas(0, 0);
-    caca_put_char(cv, 0, 0, 'x');
-    TEST(caca_get_char(cv, 0, 0) != 'x');
+    list = caca_get_display_driver_list();
 
-    caca_rotate_180(cv);
+    int i, tests = 0, passed = 0;
 
-    caca_set_canvas_size(cv, 1, 1);
-    TEST(caca_get_char(cv, 0, 0) != 'x');
-    TEST(caca_get_char(cv, 0, 0) == ' ');
+    snprintf(buf, 10, "%.1f", 0.0f);
+    TEST(buf[1] == '.');
 
-    caca_put_char(cv, 0, 0, 'y');
-    TEST(caca_get_char(cv, 0, 0) == 'y');
+    for (i = 0; list[i]; i += 2)
+    {
+        if (!strcmp(list[i], "x11") || !strcmp(list[i], "ncurses"))
+        {
+            caca_display_t *dp = caca_create_display_with_driver(NULL, list[i]);
 
-    caca_set_canvas_size(cv, 1000, 1000);
-    TEST(caca_get_canvas_width(cv) == 1000);
+            snprintf(buf, 10, "%.1f", 0.0f);
+            TEST(buf[1] == '.');
 
-    caca_put_char(cv, 999, 999, 'z');
-    TEST(caca_get_char(cv, 999, 999) == 'z');
-
-    caca_free_canvas(cv);
+            caca_free_display(dp);
+        }
+    }
 
     fprintf(stderr, "%i tests, %i errors\n", tests, tests - passed);
 

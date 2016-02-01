@@ -56,6 +56,12 @@ static int caca_plugin_install(caca_display_t *, char const *);
  *  retrieved using caca_get_canvas() and it is automatically destroyed when
  *  caca_free_display() is called.
  *
+ *  Note that in order to achieve maximum Unicode compatibility, the driver
+ *  initialisation code may temporarily change the program’s global LC_CTYPE
+ *  locale using setlocale(). It is advised not to call LC_CTYPE-dependent
+ *  functions from other threads during the call to caca_create_display().
+ *  The locale settings are restored when the function returns.
+ *
  *  See also caca_create_display_with_driver().
  *
  *  If an error occurs, NULL is returned and \b errno is set accordingly:

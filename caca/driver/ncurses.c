@@ -228,6 +228,9 @@ static int ncurses_init_graphics(caca_display_t *dp)
         COLOR_WHITE + 8
     };
 
+#if defined HAVE_LOCALE_H
+    char const *old_locale;
+#endif
     mmask_t newmask;
     int fg, bg, max;
 
@@ -242,13 +245,16 @@ static int ncurses_init_graphics(caca_display_t *dp)
     signal(SIGWINCH, sigwinch_handler);
 #endif
 
-#if defined HAVE_LOCALE_H
-    setlocale(LC_ALL, "");
-#endif
-
     _caca_set_term_title("caca for ncurses");
 
+#if defined HAVE_LOCALE_H
+    old_locale = setlocale(LC_CTYPE, "");
+#endif
     initscr();
+#if defined HAVE_LOCALE_H
+    setlocale(LC_CTYPE, old_locale);
+#endif
+
     keypad(stdscr, TRUE);
     nonl();
     raw();
