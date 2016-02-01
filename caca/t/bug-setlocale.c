@@ -1,7 +1,7 @@
 /*
  *  bug-setlocale: unit test for wrong setlocale() calls
- *  Copyright (c) 2016 Sam Hocevar <sam@hocevar.net>
- *                All Rights Reserved
+ *  Copyright © 2016 Sam Hocevar <sam@hocevar.net>
+ *              All Rights Reserved
  *
  *  This program is free software. It comes without any warranty, to
  *  the extent permitted by applicable law. You can redistribute it

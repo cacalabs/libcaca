@@ -17,7 +17,7 @@ for dir in $(make -s echo-dirs -C "${top_srcdir}"); do
       *)
         continue ;;
     esac
-    if ! grep 'Copyright *([cC])' "${top_srcdir}/${dir}/$x" >/dev/null 2>&1; then
+    if ! grep 'Copyright *\((c)\|(C)\|©\)' "${top_srcdir}/${dir}/$x" >/dev/null 2>&1; then
       echo "error: ${dir}/$x lacks proper copyright information"
       nfails=$(($nfails + 1))
     elif [ -d "${top_srcdir}/.git" ]; then

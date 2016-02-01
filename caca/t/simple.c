@@ -1,7 +1,7 @@
 /*
- *  simple        simple testsuite program
- *  Copyright (c) 2007 Sam Hocevar <sam@hocevar.net>
- *                All Rights Reserved
+ *  simple      simple testsuite program
+ *  Copyright © 2007—2016 Sam Hocevar <sam@hocevar.net>
+ *              All Rights Reserved
  *
  *  This program is free software. It comes without any warranty, to
  *  the extent permitted by applicable law. You can redistribute it
