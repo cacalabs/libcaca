@@ -22,6 +22,7 @@
 #define _CACA_PP_H
 
 #include <caca.h>
+#include <caca_internals.h>
 
 #undef __class
 #if defined(_WIN32) && defined(__LIBCACA_PP__)
@@ -168,6 +169,15 @@ __class Event
 
             CACA_EVENT_ANY =           0xffff  /**< Bitmask for any event. */
         } type;
+    int caca_get_event_key_ch();
+    enum caca_event_type caca_get_event_type();
+    uint32_t caca_get_event_key_utf32();
+    int caca_get_event_key_utf8(char *utf8);
+    int caca_get_event_mouse_button();
+    int caca_get_event_mouse_x();
+    int caca_get_event_mouse_y();
+    int caca_get_event_resize_width();
+    int caca_get_event_resize_height();
 
  protected:
     caca_event_t e;
