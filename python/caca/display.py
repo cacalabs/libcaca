@@ -19,6 +19,7 @@ import ctypes
 from caca import _lib, _PYTHON3, _str_to_bytes
 from caca.canvas import _Canvas, Canvas
 
+
 class _DisplayStruct(ctypes.Structure):
     pass
 
@@ -36,7 +37,7 @@ class _Display(object):
         return "<CacaDisplay>"
 
     def __del__(self):
-        if self._dp > 0 and _lib is not None:
+        if self._dp and _lib is not None:
             self._free()
 
     def _free(self):
@@ -205,8 +206,10 @@ class Display(_Display):
 
         return _lib.caca_get_mouse_y(self)
 
+
 class DisplayError(Exception):
     pass
+
 
 class Event(ctypes.Structure):
     """ Object to store libcaca event.

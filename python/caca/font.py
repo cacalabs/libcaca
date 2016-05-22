@@ -27,7 +27,7 @@ class _Font(object):
     """ Model for Font object.
     """
     def __init__(self):
-        self._font = 0
+        self._font = None
 
     def from_param(self):
         """ Required by ctypes module to call object as parameter of
@@ -37,7 +37,7 @@ class _Font(object):
 
     def __del__(self):
         if hasattr(self, "_font"):
-            if self._font > 0:
+            if self._font:
                 self._free()
 
     def __str__(self):
