@@ -19,6 +19,10 @@ import ctypes
 from caca import _lib
 from caca.canvas import _Canvas
 
+
+class _DitherStruct(ctypes.Structure):
+    pass
+
 class _Dither(object):
     """ Model for Dither object.
     """
@@ -66,6 +70,7 @@ class Dither(_Dither):
             ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,
             ctypes.c_uint, ctypes.c_uint, ctypes.c_uint, ctypes.c_uint,
         ]
+        _lib.caca_create_dither.restype = ctypes.POINTER(_DitherStruct)
 
         self._dither = _lib.caca_create_dither(bpp, width, height, pitch,
                                                rmask, gmask, bmask, amask)

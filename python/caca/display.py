@@ -19,6 +19,10 @@ import ctypes
 from caca import _lib, _PYTHON3, _str_to_bytes
 from caca.canvas import _Canvas, Canvas
 
+class _DisplayStruct(ctypes.Structure):
+    pass
+
+
 class _Display(object):
     """ Model for Display objects.
     """
@@ -57,11 +61,15 @@ class Display(_Display):
 
         if driver is None:
             _lib.caca_create_display.argtypes = [_Canvas]
+            _lib.caca_create_display.restype = ctypes.POINTER(_DisplayStruct)
             self._dp = _lib.caca_create_display(cv)
         else:
             _lib.caca_create_display_with_driver.argtypes = [
                 _Canvas, ctypes.c_char_p
             ]
+            _lib.caca_create_display_with_driver.restype = ctypes.POINTER(
+                    _DisplayStruct
+                )
             if _PYTHON3 and isinstance(driver, str):
                 driver = _str_to_bytes(driver)
 

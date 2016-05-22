@@ -21,6 +21,11 @@ from caca import _lib, utf8_to_utf32, utf32_to_utf8
 from caca import _PYTHON3, _str_to_bytes, _bytes_to_str
 from caca.font import _Font
 
+
+class _CanvasStruct(ctypes.Structure):
+    pass
+
+
 class _Canvas(object):
     """ Model for Canvas objects.
     """
@@ -61,6 +66,7 @@ class Canvas(_Canvas):
             pointer -- pointer to libcaca canvas
         """
         _lib.caca_create_canvas.argtypes = [ctypes.c_int, ctypes.c_int]
+        _lib.caca_create_canvas.restype = ctypes.POINTER(_CanvasStruct)
 
         if pointer is None:
             try:

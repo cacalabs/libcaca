@@ -19,6 +19,10 @@ import errno
 
 from caca import _lib, _PYTHON3, _str_to_bytes
 
+
+class _FontStruct(ctypes.Structure):
+    pass
+
 class _Font(object):
     """ Model for Font object.
     """
@@ -62,7 +66,7 @@ class Font(_Font):
         else:
             raise FontError("Unsupported method")
 
-        _lib.caca_load_font.restype = ctypes.c_int
+        _lib.caca_load_font.restype = ctypes.POINTER(_FontStruct)
 
         if _PYTHON3:
             font = _str_to_bytes(font)
