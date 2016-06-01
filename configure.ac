@@ -1,8 +1,9 @@
 
-AC_INIT(libcaca, 0.99.beta20)
-AC_PREREQ(2.50)
+AC_INIT([libcaca],[0.99.beta20])
+AC_PREREQ([2.69])
 AC_CONFIG_AUX_DIR(.auto)
-AC_CANONICAL_SYSTEM
+AC_CONFIG_MACRO_DIR(.auto)
+AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE([no-define tar-ustar silent-rules subdir-objects])
 dnl AM_MAINTAINER_MODE
 AM_DEFAULT_VERBOSITY=0
@@ -34,7 +35,18 @@ AC_LIBTOOL_CXX
 
 AC_C_CONST
 AC_C_INLINE
-AC_TYPE_SIGNAL
+AC_DIAGNOSE([obsolete],[your code may safely assume C89 semantics that RETSIGTYPE is void.
+Remove this warning and the `AC_CACHE_CHECK' when you adjust the code.])dnl
+AC_CACHE_CHECK([return type of signal handlers],[ac_cv_type_signal],[AC_COMPILE_IFELSE(
+[AC_LANG_PROGRAM([#include <sys/types.h>
+#include <signal.h>
+],
+		 [return *(signal (0, 0)) (0) == 1;])],
+		   [ac_cv_type_signal=int],
+		   [ac_cv_type_signal=void])])
+AC_DEFINE_UNQUOTED([RETSIGTYPE],[$ac_cv_type_signal],[Define as the return type of signal handlers
+		    (`int' or `void').])
+
 
 dnl  AC_PROG_EGREP only exists in autoconf 2.54+, so we use AC_EGREP_CPP right
 dnl  now otherwise it might be set in an obscure if statement. Same thing for
@@ -139,22 +151,16 @@ fi
 AC_SUBST(GETOPT_LIBS)
 
 AC_MSG_CHECKING(for Sleep)
-AC_TRY_COMPILE([#include <windows.h>],[Sleep(42);],
- [AC_MSG_RESULT(yes)
-  AC_DEFINE(HAVE_SLEEP, 1, [Define to 1 if you have the ‘Sleep’ function.])],
- [AC_MSG_RESULT(no)])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <windows.h>]], [[Sleep(42);]])],[AC_MSG_RESULT(yes)
+  AC_DEFINE(HAVE_SLEEP, 1, [Define to 1 if you have the ‘Sleep’ function.])],[AC_MSG_RESULT(no)])
 
 AC_MSG_CHECKING(for fsin/fcos)
-AC_TRY_COMPILE([],[double x; asm volatile("fsin; fcos":"=t"(x):);],
- [AC_MSG_RESULT(yes)
-  AC_DEFINE(HAVE_FSIN_FCOS, 1, [Define to 1 if you have the ‘fsin’ and ‘fcos’ instructions.])],
- [AC_MSG_RESULT(no)])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[double x; asm volatile("fsin; fcos":"=t"(x):);]])],[AC_MSG_RESULT(yes)
+  AC_DEFINE(HAVE_FSIN_FCOS, 1, [Define to 1 if you have the ‘fsin’ and ‘fcos’ instructions.])],[AC_MSG_RESULT(no)])
 
 AC_MSG_CHECKING(for fldln2/fxch/fyl2x)
-AC_TRY_COMPILE([],[double x; asm volatile("fldln2; fldln2; fxch; fyl2x":"=t"(x):);],
- [AC_MSG_RESULT(yes)
-  AC_DEFINE(HAVE_FLDLN2, 1, [Define to 1 if you have the ‘fldln2’ and other floating point instructions.])],
- [AC_MSG_RESULT(no)])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[double x; asm volatile("fldln2; fldln2; fxch; fyl2x":"=t"(x):);]])],[AC_MSG_RESULT(yes)
+  AC_DEFINE(HAVE_FLDLN2, 1, [Define to 1 if you have the ‘fldln2’ and other floating point instructions.])],[AC_MSG_RESULT(no)])
 
 AC_CHECK_HEADERS(zlib.h)
 AC_CHECK_LIB(z, gzopen, [ZLIB_LIBS="${ZLIB_LIBS} -lz"])
@@ -394,11 +400,8 @@ ac_cv_my_have_cxx="no"
 if test "${enable_cxx}" != "no"; then
   AC_MSG_CHECKING([working <iostream>])
   AC_LANG_PUSH(C++)
-  AC_TRY_COMPILE(
-   [#include <iostream>],
-   [],
-   [ac_cv_my_have_cxx="yes"
-    CACA_BINDINGS="${CACA_BINDINGS} C++"])
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <iostream>]], [[]])],[ac_cv_my_have_cxx="yes"
+    CACA_BINDINGS="${CACA_BINDINGS} C++"],[])
   AC_LANG_POP(C++)
   AC_MSG_RESULT([$ac_cv_my_have_cxx])
 fi
