@@ -21,12 +21,16 @@ from caca import _lib, utf8_to_utf32, utf32_to_utf8
 from caca import _PYTHON3, _str_to_bytes, _bytes_to_str
 from caca.font import _Font
 
+
+class _CanvasStruct(ctypes.Structure):
+    pass
+
 class _Canvas(object):
     """ Model for Canvas objects.
     """
 
     def __init__(self):
-        self._cv = 0
+        self._cv = None
 
     def from_param(self):
         """ Required by ctypes module to call object as parameter of
@@ -38,7 +42,7 @@ class _Canvas(object):
         return "<CacaCanvas %dx%d>" % (self.get_width(), self.get_height())
 
     def __del__(self):
-        if self._cv > 0 and _lib is not None:
+        if self._cv and _lib is not None:
             self._free()
 
     def _free(self):
@@ -61,6 +65,7 @@ class Canvas(_Canvas):
             pointer -- pointer to libcaca canvas
         """
         _lib.caca_create_canvas.argtypes = [ctypes.c_int, ctypes.c_int]
+        _lib.caca_create_canvas.restype = ctypes.POINTER(_CanvasStruct)
 
         if pointer is None:
             try:

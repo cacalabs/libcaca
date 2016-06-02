@@ -19,6 +19,11 @@ import ctypes
 from caca import _lib, _PYTHON3, _str_to_bytes
 from caca.canvas import _Canvas, Canvas
 
+
+class _DisplayStruct(ctypes.Structure):
+    pass
+
+
 class _Display(object):
     """ Model for Display objects.
     """
@@ -32,7 +37,7 @@ class _Display(object):
         return "<CacaDisplay>"
 
     def __del__(self):
-        if self._dp > 0 and _lib is not None:
+        if self._dp and _lib is not None:
             self._free()
 
     def _free(self):
@@ -57,11 +62,15 @@ class Display(_Display):
 
         if driver is None:
             _lib.caca_create_display.argtypes = [_Canvas]
+            _lib.caca_create_display.restype = ctypes.POINTER(_DisplayStruct)
             self._dp = _lib.caca_create_display(cv)
         else:
             _lib.caca_create_display_with_driver.argtypes = [
                 _Canvas, ctypes.c_char_p
             ]
+            _lib.caca_create_display_with_driver.restype = ctypes.POINTER(
+                    _DisplayStruct
+                )
             if _PYTHON3 and isinstance(driver, str):
                 driver = _str_to_bytes(driver)
 
@@ -197,8 +206,10 @@ class Display(_Display):
 
         return _lib.caca_get_mouse_y(self)
 
+
 class DisplayError(Exception):
     pass
+
 
 class Event(ctypes.Structure):
     """ Object to store libcaca event.

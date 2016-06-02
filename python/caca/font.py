@@ -19,11 +19,15 @@ import errno
 
 from caca import _lib, _PYTHON3, _str_to_bytes
 
+
+class _FontStruct(ctypes.Structure):
+    pass
+
 class _Font(object):
     """ Model for Font object.
     """
     def __init__(self):
-        self._font = 0
+        self._font = None
 
     def from_param(self):
         """ Required by ctypes module to call object as parameter of
@@ -33,7 +37,7 @@ class _Font(object):
 
     def __del__(self):
         if hasattr(self, "_font"):
-            if self._font > 0:
+            if self._font:
                 self._free()
 
     def __str__(self):
@@ -62,7 +66,7 @@ class Font(_Font):
         else:
             raise FontError("Unsupported method")
 
-        _lib.caca_load_font.restype = ctypes.c_int
+        _lib.caca_load_font.restype = ctypes.POINTER(_FontStruct)
 
         if _PYTHON3:
             font = _str_to_bytes(font)
