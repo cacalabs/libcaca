@@ -302,6 +302,7 @@ ssize_t _import_ansi(caca_canvas_t *cv, void const *data, size_t size, int utf8)
                     caca_put_char(cv, j, y, ' ');
                 caca_set_attr(cv, savedattr);
 #endif
+                break;
             case 'X': /* ECH (0x58) - Erase Character */
                 if(argc && argv[0])
                 {
@@ -310,6 +311,7 @@ ssize_t _import_ansi(caca_canvas_t *cv, void const *data, size_t size, int utf8)
                     caca_draw_line(cv, x, y, x + argv[0] - 1, y, ' ');
                     caca_set_attr(cv, savedattr);
                 }
+                break;
             case 'd': /* VPA (0x64) - Line Position Absolute */
                 y = (argc && argv[0] > 0) ? argv[0] - 1 : 0;
                 break;
