@@ -1,6 +1,6 @@
 /*
  *  libcaca       Colour ASCII-Art library
- *  Copyright (c) 2002-2012 Sam Hocevar <sam@hocevar.net>
+ *  Copyright (c) 2002-2016 Sam Hocevar <sam@hocevar.net>
  *                All Rights Reserved
  *
  *  This library is free software. It comes without any warranty, to
@@ -366,12 +366,6 @@ static int _get_next_event(caca_display_t *dp, caca_privevent_t *ev)
 
     ret = _lowlevel_event(dp, ev);
 
-#if defined(USE_SLANG)
-    if(dp->drv.id != CACA_DRIVER_SLANG)
-#endif
-#if defined(USE_NCURSES)
-    if(dp->drv.id != CACA_DRIVER_NCURSES)
-#endif
     return ret;
 
 #if defined(USE_SLANG) || defined(USE_NCURSES)
