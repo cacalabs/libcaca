@@ -35,7 +35,8 @@ done
 
 echo "$nfiles files, $nfails errors in copyright information"
 
-if test "$nfails" != "0"; then
+if test "$nfails" -gt "10"; then
+  echo "That’s too many errors, deliberately failing test"
   exit 1
 fi
 
