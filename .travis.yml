@@ -1,6 +1,11 @@
 sudo: false
 language: c
-env: VERBOSE=1
+env:
+  matrix:
+  - VERBOSE=1
+  global:
+    # Added using “travis encrypt COVERITY_SCAN_TOKEN=<project_token> --add”
+    secure: NxBaKlGmAXMaz8GU0tOir3KV0x/0AwINXBxIY0x66C8yU8lvrzumzpoeGZBDCL8Nugq8p9EI73+pdvuwnsoAGFYDiYNVYefegVwSpz7XBpD8yyKMOdtRtaJLH/vApjzI7s/h+FA7a/j9QFikJ7PVZPIJiVjKNH9URClCaj0EpXLXxQkzg9o1ZCY27+JVWrg5v2HJn6+LddK8iiQhezXw+m9QPVkQiPZmYdvjuFjklulgTguAlWVm307AS2/QJ4sYECTbLiWJ3FTScRZMhuSq6XXGqJ3H3F8ku52QOkyUIIlpNAKKtm0VvPcUgs3SlIxodYykegLsVwm0+RKJN4lbsIN1w0uG/ThWi86T7zwbt6giuoAC4H387zVrd9080zwRedUWSuRB5yR6nsK0lROBquPJ7qnM7xPKwrnW4oyi/6u/syzcbVLOPNoYClYy7Mf8TX5rVBxPUSJ3Ch28GqWXwabKwPSH6jtkXlfvPyMMs29wI8d8i0C80lijhtXeeJNzfOx8MHhEikVc2r67lrqOjGTTIord6fbxTQnqfjiMrWRxvz1ogpdbrsQ1s2xsedvqvNr1v1Xt8IOuHMGQ635G0d12Q+wqHzEbdCmAg1v2VXSfVZcl4faPMNiIdfnZJn+5q14sjznX81IHpyzEWgiMgUXaJ2k49kAMIESripZk4bU=
 
 addons:
   apt:
@@ -21,6 +26,15 @@ addons:
       #- texlive-fonts-recommended
       #- doxygen-latex
       - ruby-minitest
+  coverity_scan:
+    project:
+      name: cacalabs/libcaca
+    build_command_prepend:
+      - ".travis/before_install.sh"
+      - "./bootstrap"
+      - "./configure"
+    build_command: make
+    branch_pattern: master
 
 # Travis does shallow clones, but we use the Git history
 # for check-copyright. Disable shallow clones; our whole
@@ -29,8 +43,8 @@ git:
   depth: 9999999
 
 before_install:
-  - .travis/before_install.sh
-  - ./bootstrap
+  - ".travis/before_install.sh"
+  - "./bootstrap"
 
 os:
   - linux
