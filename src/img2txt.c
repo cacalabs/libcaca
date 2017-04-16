@@ -31,7 +31,7 @@ static void usage(int argc, char **argv)
 
     fprintf(stderr, "Usage: %s [OPTIONS]... <IMAGE>\n", argv[0]);
     fprintf(stderr, "Convert IMAGE to any text based available format.\n");
-    fprintf(stderr, "Example : %s -w 80 -f ansi ./caca.png\n\n", argv[0]);
+    fprintf(stderr, "Example : %s -W 80 -f ansi ./caca.png\n\n", argv[0]);
     fprintf(stderr, "Options:\n");
     fprintf(stderr, "  -h, --help\t\t\tThis help\n");
     fprintf(stderr, "  -v, --version\t\t\tVersion of the program\n");
