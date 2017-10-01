@@ -224,7 +224,7 @@ def main():
         dit.set_charset(charset)
 
     #create dither
-    dit.bitmap(cv, 0, 0, width, height, img.tostring())
+    dit.bitmap(cv, 0, 0, width, height, str(img.tobytes()))
 
     #print export to screen
     sys.stdout.write("%s" % cv.export_to_memory(exformat))
