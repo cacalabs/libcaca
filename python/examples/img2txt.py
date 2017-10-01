@@ -35,7 +35,7 @@ DEPTH = 4
 HELP_MSG = """\
 Usage: %s [OPTIONS]... <IMAGE>
 Convert IMAGE to any text based available format.
-Example: %s -w 80 -f ansi ./caca.png
+Example: %s -W 80 -f ansi ./caca.png
 
 Options:
   -h, --help                      This help
