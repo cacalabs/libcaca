@@ -178,6 +178,7 @@ static int slang_init_graphics(caca_display_t *dp)
 #endif
 
 #ifdef HAVE_SLSMG_UTF8_ENABLE
+    SLutf8_enable(-1);    /* execute utf8 autodetection */
     SLsmg_utf8_enable(1); /* 1 == force, 0 == disable, -1 == autodetect */
     SLtt_utf8_enable(-1);
 #endif
