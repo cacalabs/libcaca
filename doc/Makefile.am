@@ -59,6 +59,5 @@ endif
 	ln -sf cacafire.1 $(DESTDIR)$(mandir)/man1/cacademo.1
 
 uninstall-local:
-	rm -f $(DESTDIR)$(datadir)/doc/libcucul-dev
 	rmdir $(DESTDIR)$(datadir)/doc 2>/dev/null || true
 

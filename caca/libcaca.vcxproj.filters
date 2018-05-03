@@ -17,7 +17,6 @@
     <ClCompile Include="frame.c" />
     <ClCompile Include="getopt.c" />
     <ClCompile Include="graphics.c" />
-    <ClCompile Include="legacy.c" />
     <ClCompile Include="line.c" />
     <ClCompile Include="prof.c" />
     <ClCompile Include="string.c" />

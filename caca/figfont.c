@@ -661,12 +661,3 @@ int vsnprintf(char *s, size_t n, const char *fmt, va_list ap)
 #   endif
 #endif
 
-/*
- * XXX: The following functions are aliases.
- */
-
-int cucul_canvas_set_figfont(cucul_canvas_t *, char const *)
-         CACA_ALIAS(caca_canvas_set_figfont);
-int cucul_put_figchar(cucul_canvas_t *, uint32_t) CACA_ALIAS(caca_put_figchar);
-int cucul_flush_figlet(cucul_canvas_t *) CACA_ALIAS(caca_flush_figlet);
-

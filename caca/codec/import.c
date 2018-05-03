@@ -435,18 +435,3 @@ ssize_t _import_bin(caca_canvas_t *cv, void const *data, size_t len)
     return len & ~(size_t)1;
 }
 
-/*
- * XXX: The following functions are aliases.
- */
-
-ssize_t cucul_import_memory(cucul_canvas_t *, void const *, size_t,
-                     char const *) CACA_ALIAS(caca_import_canvas_from_memory);
-ssize_t cucul_import_file(cucul_canvas_t *, char const *,
-                     char const *) CACA_ALIAS(caca_import_canvas_from_file);
-ssize_t caca_import_memory(caca_canvas_t *, void const *, size_t, char const *)
-                                  CACA_ALIAS(caca_import_canvas_from_memory);
-ssize_t caca_import_file(caca_canvas_t *, char const *, char const *)
-                                  CACA_ALIAS(caca_import_canvas_from_file);
-char const * const * cucul_get_import_list(void)
-         CACA_ALIAS(caca_get_import_list);
-

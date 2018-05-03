@@ -85,7 +85,6 @@
 		E6DB661C10AECC7800B6F924 /* font.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = font.c; path = ../caca/font.c; sourceTree = SOURCE_ROOT; };
 		E6DB661D10AECC7800B6F924 /* frame.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = frame.c; path = ../caca/frame.c; sourceTree = SOURCE_ROOT; };
 		E6DB661E10AECC7800B6F924 /* graphics.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = graphics.c; path = ../caca/graphics.c; sourceTree = SOURCE_ROOT; };
-		E6DB661F10AECC7800B6F924 /* legacy.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = legacy.c; path = ../caca/legacy.c; sourceTree = SOURCE_ROOT; };
 		E6DB662010AECC7800B6F924 /* line.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = line.c; path = ../caca/line.c; sourceTree = SOURCE_ROOT; };
 		E6DB662110AECC7800B6F924 /* string.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = string.c; path = ../caca/string.c; sourceTree = SOURCE_ROOT; };
 		E6DB662210AECC7800B6F924 /* time.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = time.c; path = ../caca/time.c; sourceTree = SOURCE_ROOT; };
@@ -255,7 +254,6 @@
 				E6DB661C10AECC7800B6F924 /* font.c */,
 				E6DB661D10AECC7800B6F924 /* frame.c */,
 				E6DB661E10AECC7800B6F924 /* graphics.c */,
-				E6DB661F10AECC7800B6F924 /* legacy.c */,
 				E6DB662010AECC7800B6F924 /* line.c */,
 				E6DB662110AECC7800B6F924 /* string.c */,
 				E6DB662210AECC7800B6F924 /* time.c */,

@@ -1069,10 +1069,6 @@ static void *export_troff(caca_canvas_t const *cv, size_t *bytes)
  * XXX: The following functions are aliases.
  */
 
-void *cucul_export_memory(cucul_canvas_t const *, char const *,
-                          size_t *) CACA_ALIAS(caca_export_canvas_to_memory);
 void *caca_export_memory(caca_canvas_t const *, char const *,
                          size_t *) CACA_ALIAS(caca_export_canvas_to_memory);
-char const * const * cucul_get_export_list(void)
-         CACA_ALIAS(caca_get_export_list);
 

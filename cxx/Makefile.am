@@ -23,11 +23,6 @@ cxxtest_LDADD = libcaca++.la ../caca/libcaca.la
 
 uninstall-local:
 	. ./libcaca++.la || exit 1; \
-	for x in $$library_names; do \
-	  rm -f $(DESTDIR)$(libdir)/$$(echo $$x | sed 's/caca/cucul/g'); \
-	done
-	rm -f $(DESTDIR)$(libdir)/libcucul++.la
 	rmdir $(DESTDIR)$(libdir) 2>/dev/null || true
-	rm -f $(DESTDIR)$(pkgconfigdir)/cucul++.pc
 	rmdir $(DESTDIR)$(pkgconfigdir) 2>/dev/null || true
 

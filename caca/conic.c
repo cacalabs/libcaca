@@ -339,16 +339,3 @@ static void ellipsepoints(caca_canvas_t *cv, int xo, int yo, int x, int y,
     }
 }
 
-/*
- * XXX: The following functions are aliases.
- */
-
-int cucul_draw_circle(cucul_canvas_t *, int, int, int, uint32_t)
-         CACA_ALIAS(caca_draw_circle);
-int cucul_draw_ellipse(cucul_canvas_t *, int, int, int, int, uint32_t)
-         CACA_ALIAS(caca_draw_ellipse);
-int cucul_draw_thin_ellipse(cucul_canvas_t *, int, int, int, int)
-         CACA_ALIAS(caca_draw_thin_ellipse);
-int cucul_fill_ellipse(cucul_canvas_t *, int, int, int, int, uint32_t)
-         CACA_ALIAS(caca_fill_ellipse);
-
