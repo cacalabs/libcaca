@@ -1,8 +1,8 @@
 /*
- *  img2txt       image to text converter
- *  Copyright (c) 2006-2012 Sam Hocevar <sam@hocevar.net>
- *                2007 Jean-Yves Lamoureux <jylam@lnxscene.org>
- *                All Rights Reserved
+ *  img2txt     image to text converter
+ *  Copyright © 2006—2018 Sam Hocevar <sam@hocevar.net>
+ *              2007 Jean-Yves Lamoureux <jylam@lnxscene.org>
+ *              All Rights Reserved
  *
  *  This program is free software. It comes without any warranty, to
  *  the extent permitted by applicable law. You can redistribute it

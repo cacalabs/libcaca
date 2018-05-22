@@ -1,8 +1,8 @@
 /*
- *  libcaca++     C++ bindings for libcaca
- *  Copyright (c) 2006-2007 Jean-Yves Lamoureux <jylam@lnxscene.org>
- *                2009-2012 Sam Hocevar <sam@hocevar.net>
- *                All Rights Reserved
+ *  libcaca++   C++ bindings for libcaca
+ *  Copyright © 2006—2007 Jean-Yves Lamoureux <jylam@lnxscene.org>
+ *              2009—2018 Sam Hocevar <sam@hocevar.net>
+ *              All Rights Reserved
  *
  *  This library is free software. It comes without any warranty, to
  *  the extent permitted by applicable law. You can redistribute it
