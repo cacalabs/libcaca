@@ -26,6 +26,8 @@
 #undef __class
 #if defined(_WIN32) && defined(__LIBCACA_PP__)
 #   define __class class __declspec(dllexport)
+#elif defined CACA_ENABLE_VISIBILITY
+#   define __class class __attribute__((visibility("default")))
 #else
 #   define __class class
 #endif

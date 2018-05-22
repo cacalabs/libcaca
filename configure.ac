@@ -387,6 +387,16 @@ CFLAGS="${CFLAGS} -g -O2 -fno-strength-reduce -fomit-frame-pointer"
 CFLAGS="${CFLAGS} -Wall -Wpointer-arith -Wcast-align -Wcast-qual -Wstrict-prototypes -Wshadow -Waggregate-return -Wmissing-prototypes -Wnested-externs -Wsign-compare"
 CXXFLAGS="${CXXFLAGS} -Wall -Wpointer-arith -Wcast-align -Wcast-qual -Wshadow -Wsign-compare"
 
+dnl Visibility annotations...
+saved_CFLAGS="$CFLAGS"
+CFLAGS="$CFLAGS -fvisibility=hidden -Wall -Werror"
+AC_MSG_CHECKING(whether compiler supports visibility annotations)
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([[void __attribute__((visibility("default"))) foo(void); void foo(void) {}]])],
+                  [CFLAGS="$saved_CFLAGS -fvisibility=hidden -DCACA_ENABLE_VISIBILITY";
+                   AC_MSG_RESULT(yes)],
+                  [CFLAGS="$saved_CFLAGS"
+                   AC_MSG_RESULT(no)])
+
 CACA_BINDINGS=""
 
 # Build the C++ bindings?
