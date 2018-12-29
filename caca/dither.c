@@ -991,10 +991,10 @@ int caca_dither_bitmap(caca_canvas_t *cv, int x, int y, int w, int h,
         /* First get RGB */
         if(d->antialias)
         {
-            fromx = (x - x1) * w / deltax;
-            fromy = (y - y1) * h / deltay;
-            tox = (x - x1 + 1) * w / deltax;
-            toy = (y - y1 + 1) * h / deltay;
+            fromx = (uint64_t)(x - x1) * w / deltax;
+            fromy = (uint64_t)(y - y1) * h / deltay;
+            tox = (uint64_t)(x - x1 + 1) * w / deltax;
+            toy = (uint64_t)(y - y1 + 1) * h / deltay;
 
             /* We want at least one pixel */
             if(tox == fromx) tox++;
@@ -1017,10 +1017,10 @@ int caca_dither_bitmap(caca_canvas_t *cv, int x, int y, int w, int h,
         }
         else
         {
-            fromx = (x - x1) * w / deltax;
-            fromy = (y - y1) * h / deltay;
-            tox = (x - x1 + 1) * w / deltax;
-            toy = (y - y1 + 1) * h / deltay;
+            fromx = (uint64_t)(x - x1) * w / deltax;
+            fromy = (uint64_t)(y - y1) * h / deltay;
+            tox = (uint64_t)(x - x1 + 1) * w / deltax;
+            toy = (uint64_t)(y - y1 + 1) * h / deltay;
 
             /* tox and toy can overflow the canvas, but they cannot overflow
              * when averaged with fromx and fromy because these are guaranteed
