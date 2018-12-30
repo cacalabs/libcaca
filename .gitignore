@@ -10,6 +10,7 @@
 .auto
 .libs
 .deps
+.dirstamp
 Makefile
 Makefile.in
 aclocal.m4
