@@ -1,13 +1,13 @@
 /*
  *  Imaging tools for cacaview and img2irc
- *  Copyright (c) 2002-2012 Sam Hocevar <sam@hocevar.net>
- *                All Rights Reserved
+ *  Copyright © 2002—2019 Sam Hocevar <sam@hocevar.net>
+ *              All Rights Reserved
  *
  *  This program is free software. It comes without any warranty, to
  *  the extent permitted by applicable law. You can redistribute it
  *  and/or modify it under the terms of the Do What the Fuck You Want
- *  to Public License, Version 2, as published by Sam Hocevar. See
- *  http://www.wtfpl.net/ for more details.
+ *  to Public License, Version 2, as published by the WTFPL Task Force.
+ *  See http://www.wtfpl.net/ for more details.
  */
 
 #include "config.h"
@@ -34,7 +34,7 @@ static unsigned int u8fread(caca_file_t *);
 struct image * load_image(char const * name)
 {
     struct image * im = malloc(sizeof(struct image));
-    unsigned int depth, bpp, rmask, gmask, bmask, amask;
+    unsigned int rmask, gmask, bmask, amask;
 
 #if defined(USE_IMLIB2)
     Imlib_Image image;
@@ -56,12 +56,12 @@ struct image * load_image(char const * name)
     gmask = 0x0000ff00;
     bmask = 0x000000ff;
     amask = 0xff000000;
-    bpp = 32;
-    depth = 4;
+    uint32_t bpp = 32;
+    uint32_t depth = 4;
 
     /* Create the libcaca dither */
     im->dither = caca_create_dither(bpp, im->w, im->h, depth * im->w,
-                                     rmask, gmask, bmask, amask);
+                                    rmask, gmask, bmask, amask);
     if(!im->dither)
     {
         imlib_free_image();
@@ -74,17 +74,16 @@ struct image * load_image(char const * name)
 #else
     /* Try to load a BMP file */
     uint32_t red[256], green[256], blue[256], alpha[256];
-    unsigned int i, colors, offset, tmp, planes;
-    caca_file_t *f;
+    unsigned int tmp;
 
-    f = caca_file_open(name, "rb");
-    if(!f)
+    caca_file_t *f = caca_file_open(name, "rb");
+    if (!f)
     {
         free(im);
         return NULL;
     }
 
-    if(u16fread(f) != 0x4d42)
+    if (u16fread(f) != 0x4d42)
     {
         caca_file_close(f);
         free(im);
@@ -95,18 +94,18 @@ struct image * load_image(char const * name)
     u16fread(f); /* reserved 1 */
     u16fread(f); /* reserved 2 */
 
-    offset = u32fread(f);
+    uint32_t offset = u32fread(f);
+    uint32_t header_size = u32fread(f); /* header size */
 
-    tmp = u32fread(f); /* header size */
-    if(tmp == 40)
+    im->w = u32fread(f);
+    im->h = u32fread(f);
+    uint32_t planes = u16fread(f);
+    uint32_t bpp = u16fread(f);
+    uint32_t colors = 0;
+
+    if (header_size == 40)
     {
-        im->w = u32fread(f);
-        im->h = u32fread(f);
-        planes = u16fread(f);
-        bpp = u16fread(f);
-
-        tmp = u32fread(f); /* compression */
-        if(tmp != 0)
+        if (u32fread(f) != 0) /* compression */
         {
             caca_file_close(f);
             free(im);
@@ -120,7 +119,7 @@ struct image * load_image(char const * name)
         u32fread(f); /* biclrimportantn */
 
         colors = (offset - 54) / 4;
-        for(i = 0; i < colors && i < 256; i++)
+        for (uint32_t i = 0; i < colors && i < 256; i++)
         {
             blue[i] = u8fread(f) * 16;
             green[i] = u8fread(f) * 16;
@@ -129,15 +128,10 @@ struct image * load_image(char const * name)
             u8fread(f);
         }
     }
-    else if(tmp == 12)
+    else if (header_size == 12)
     {
-        im->w = u32fread(f);
-        im->h = u32fread(f);
-        planes = u16fread(f);
-        bpp = u16fread(f);
-
         colors = (offset - 26) / 3;
-        for(i = 0; i < colors && i < 256; i++)
+        for (uint32_t i = 0; i < colors && i < 256; i++)
         {
             blue[i] = u8fread(f);
             green[i] = u8fread(f);
@@ -153,13 +147,13 @@ struct image * load_image(char const * name)
     }
 
     /* Fill the rest of the palette */
-    for(i = colors; i < 256; i++)
+    for (uint32_t i = colors; i < 256; i++)
         blue[i] = green[i] = red[i] = alpha[i] = 0;
 
-    depth = (bpp + 7) / 8;
+    uint32_t depth = (bpp + 7) / 8;
 
     /* Sanity check */
-    if(!im->w || im->w > 0x10000 || !im->h || im->h > 0x10000 || planes != 1)
+    if (!im->w || im->w > 0x10000 || !im->h || im->h > 0x10000 || planes != 1)
     {
         caca_file_close(f);
         free(im);
@@ -168,7 +162,7 @@ struct image * load_image(char const * name)
 
     /* Allocate the pixel buffer */
     im->pixels = malloc(im->w * im->h * depth);
-    if(!im->pixels)
+    if (!im->pixels)
     {
         caca_file_close(f);
         free(im);
@@ -178,40 +172,40 @@ struct image * load_image(char const * name)
     memset(im->pixels, 0, im->w * im->h * depth);
 
     /* Read the bitmap data */
-    for(i = im->h; i--; )
+    for (size_t y = im->h; y--; )
     {
-        unsigned int j, k, bits = 0;
+        uint32_t bits = 0;
 
-        switch(bpp)
+        switch (bpp)
         {
             case 1:
-                for(j = 0; j < im->w; j++)
+                for (size_t x = 0; x < im->w; x++)
                 {
-                    k = j % 32;
-                    if(k == 0)
+                    size_t k = x % 32;
+                    if (k == 0)
                         bits = u32fread(f);
-                    im->pixels[im->w * i * depth + j] =
+                    im->pixels[im->w * y * depth + x] =
                         (bits >> ((k & ~0xf) + 0xf - (k & 0xf))) & 0x1;
                 }
                 break;
             case 4:
-                for(j = 0; j < im->w; j++)
+                for (size_t x = 0; x < im->w; x++)
                 {
-                    k = j % 8;
-                    if(k == 0)
+                    size_t k = x % 8;
+                    if (k == 0)
                         bits = u32fread(f);
-                    im->pixels[im->w * i * depth + j] =
+                    im->pixels[im->w * y * depth + x] =
                         (bits >> (4 * ((k & ~0x1) + 0x1 - (k & 0x1)))) & 0xf;
                 }
                 break;
             default:
                 /* Works for 8bpp, but also for 16, 24 etc. */
-                caca_file_read(f, im->pixels + im->w * i * depth,
-                                im->w * depth);
+                caca_file_read(f, im->pixels + im->w * y * depth,
+                               im->w * depth);
                 /* Pad reads to 4 bytes */
                 tmp = (im->w * depth) % 4;
                 tmp = (4 - tmp) % 4;
-                while(tmp--)
+                while (tmp--)
                     u8fread(f);
                 break;
         }
@@ -242,7 +236,7 @@ struct image * load_image(char const * name)
 
     /* Create the libcaca dither */
     im->dither = caca_create_dither(bpp, im->w, im->h, depth * im->w,
-                                     rmask, gmask, bmask, amask);
+                                    rmask, gmask, bmask, amask);
     if(!im->dither)
     {
         free(im->pixels);
@@ -250,7 +244,7 @@ struct image * load_image(char const * name)
         return NULL;
     }
 
-    if(bpp == 8)
+    if (bpp == 8)
         caca_set_dither_palette(im->dither, red, green, blue, alpha);
 #endif
 
