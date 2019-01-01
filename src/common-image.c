@@ -271,7 +271,7 @@ void unload_image(struct image * im)
 #if !defined(USE_IMLIB2)
 static unsigned int u32fread(caca_file_t * f)
 {
-    uint8_t buffer[4];
+    uint8_t buffer[4] = { 0 };
     caca_file_read(f, buffer, 4);
     return ((unsigned int)buffer[3] << 24) | ((unsigned int)buffer[2] << 16)
              | ((unsigned int)buffer[1] << 8) | ((unsigned int)buffer[0]);
@@ -279,16 +279,16 @@ static unsigned int u32fread(caca_file_t * f)
 
 static unsigned int u16fread(caca_file_t * f)
 {
-    uint8_t buffer[2];
+    uint8_t buffer[2] = { 0 };
     caca_file_read(f, buffer, 2);
     return ((unsigned int)buffer[1] << 8) | ((unsigned int)buffer[0]);
 }
 
 static unsigned int u8fread(caca_file_t * f)
 {
-    uint8_t buffer;
-    caca_file_read(f, &buffer, 1);
-    return (unsigned int)buffer;
+    uint8_t buffer[1] = { 0 };
+    caca_file_read(f, buffer, 1);
+    return (unsigned int)buffer[0];
 }
 #endif
 
