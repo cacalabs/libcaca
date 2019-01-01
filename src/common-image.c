@@ -153,7 +153,7 @@ struct image * load_image(char const * name)
     uint32_t depth = (bpp + 7) / 8;
 
     /* Sanity check */
-    if (!im->w || im->w > 0x10000 || !im->h || im->h > 0x10000 || planes != 1)
+    if (!depth || !im->w || im->w > 0x10000 || !im->h || im->h > 0x10000 || planes != 1)
     {
         caca_file_close(f);
         free(im);
