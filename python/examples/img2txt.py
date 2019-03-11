@@ -35,7 +35,7 @@ DEPTH = 4
 HELP_MSG = """\
 Usage: %s [OPTIONS]... <IMAGE>
 Convert IMAGE to any text based available format.
-Example: %s -w 80 -f ansi ./caca.png
+Example: %s -W 80 -f ansi ./caca.png
 
 Options:
   -h, --help                      This help
@@ -224,7 +224,7 @@ def main():
         dit.set_charset(charset)
 
     #create dither
-    dit.bitmap(cv, 0, 0, width, height, img.tostring())
+    dit.bitmap(cv, 0, 0, width, height, str(img.tobytes()))
 
     #print export to screen
     sys.stdout.write("%s" % cv.export_to_memory(exformat))
