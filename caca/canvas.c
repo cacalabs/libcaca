@@ -45,6 +45,7 @@ static int caca_resize(caca_canvas_t *, int, int);
  *
  *  If an error occurs, NULL is returned and \b errno is set accordingly:
  *  - \c EINVAL Specified width or height is invalid.
+ *  - \c EOVERFLOW Specified width and height overflowed.
  *  - \c ENOMEM Not enough memory for the requested canvas size.
  *
  *  \param width The desired canvas width
@@ -200,6 +201,7 @@ int caca_unmanage_canvas(caca_canvas_t *cv, int (*callback)(void *), void *p)
  *
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
  *  - \c EINVAL Specified width or height is invalid.
+ *  - \c EOVERFLOW Specified width and height overflowed.
  *  - \c EBUSY The canvas is in use by a display driver and cannot be resized.
  *  - \c ENOMEM Not enough memory for the requested canvas size. If this
  *    happens, the canvas handle becomes invalid and should not be used.
@@ -363,7 +365,7 @@ int caca_rand(int min, int max)
 
 int caca_resize(caca_canvas_t *cv, int width, int height)
 {
-    int x, y, f, old_width, old_height, new_size, old_size;
+    int x, y, f, old_width, old_height, old_size;
 
     old_width = cv->width;
     old_height = cv->height;
@@ -375,7 +377,14 @@ int caca_resize(caca_canvas_t *cv, int width, int height)
      * dirty rectangle handling */
     cv->width = width;
     cv->height = height;
-    new_size = width * height;
+    int new_size = width * height;
+
+    /* Check for overflow */
+    if (new_size / width != height)
+    {
+        seterrno(EOVERFLOW);
+        return -1;
+    }
 
     /* If width or height is smaller (or both), we have the opportunity to
      * reduce or even remove dirty rectangles */

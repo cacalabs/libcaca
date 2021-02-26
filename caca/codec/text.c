@@ -46,7 +46,7 @@ ssize_t _import_text(caca_canvas_t *cv, void const *data, size_t size)
     char const *text = (char const *)data;
     unsigned int width = 0, height = 0, x = 0, y = 0, i;
 
-    caca_set_canvas_size(cv, width, height);
+    caca_set_canvas_size(cv, 0, 0);
 
     for(i = 0; i < size; i++)
     {
@@ -70,15 +70,19 @@ ssize_t _import_text(caca_canvas_t *cv, void const *data, size_t size)
             if(y >= height)
                 height = y + 1;
 
-            caca_set_canvas_size(cv, width, height);
+            if (caca_set_canvas_size(cv, width, height) < 0)
+                return -1;
         }
 
         caca_put_char(cv, x, y, ch);
         x++;
     }
 
-    if(y > height)
-        caca_set_canvas_size(cv, width, height = y);
+    if (y > height)
+    {
+        if (caca_set_canvas_size(cv, width, height = y) < 0)
+            return -1;
+    }
 
     return (ssize_t)size;
 }
@@ -431,7 +435,8 @@ ssize_t _import_ansi(caca_canvas_t *cv, void const *data, size_t size, int utf8)
             {
                 savedattr = caca_get_attr(cv, -1, -1);
                 caca_set_attr(cv, im.clearattr);
-                caca_set_canvas_size(cv, width = x + wch, height);
+                if (caca_set_canvas_size(cv, width = x + wch, height) < 0)
+                    return -1;
                 caca_set_attr(cv, savedattr);
             }
             else
@@ -448,7 +453,8 @@ ssize_t _import_ansi(caca_canvas_t *cv, void const *data, size_t size, int utf8)
             caca_set_attr(cv, im.clearattr);
             if(growy)
             {
-                caca_set_canvas_size(cv, width, height = y + 1);
+                if (caca_set_canvas_size(cv, width, height = y + 1) < 0)
+                    return -1;
             }
             else
             {
@@ -480,7 +486,8 @@ ssize_t _import_ansi(caca_canvas_t *cv, void const *data, size_t size, int utf8)
     {
         savedattr = caca_get_attr(cv, -1, -1);
         caca_set_attr(cv, im.clearattr);
-        caca_set_canvas_size(cv, width, height = y);
+        if (caca_set_canvas_size(cv, width, height = y))
+            return -1;
         caca_set_attr(cv, savedattr);
     }
 

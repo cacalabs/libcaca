@@ -61,6 +61,7 @@ static ssize_t import_caca(caca_canvas_t *, void const *, size_t);
  *
  *  If an error occurs, -1 is returned and \b errno is set accordingly:
  *  - \c ENOMEM Not enough memory to allocate canvas.
+ *  - \c EOVERFLOW Importing data caused a value overflow.
  *  - \c EINVAL Invalid format requested.
  *
  *  \param cv A libcaca canvas in which to import the file.
