@@ -7,6 +7,7 @@ DIST_SUBDIRS = $(SUBDIRS) build
 
 EXTRA_DIST = NOTES COPYING.GPL COPYING.ISC COPYING.LGPL bootstrap caca-config.in libcaca.spec libcaca.sln
 AUTOMAKE_OPTIONS = dist-bzip2
+ACLOCAL_AMFLAGS = -I .auto
 
 bin_SCRIPTS = caca-config
 
