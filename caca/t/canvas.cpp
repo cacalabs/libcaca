@@ -16,6 +16,7 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/TestSuite.h>
+#include <climits>
 
 #include "caca.h"
 
@@ -53,17 +54,28 @@ public:
         CPPUNIT_ASSERT_EQUAL(caca_get_canvas_width(cv), 0);
         CPPUNIT_ASSERT_EQUAL(caca_get_canvas_height(cv), 0);
 
-        caca_set_canvas_size(cv, 1, 1);
+        int ret = caca_set_canvas_size(cv, 1, 1);
+        CPPUNIT_ASSERT_EQUAL(ret, 0);
         CPPUNIT_ASSERT_EQUAL(caca_get_canvas_width(cv), 1);
         CPPUNIT_ASSERT_EQUAL(caca_get_canvas_height(cv), 1);
 
-        caca_set_canvas_size(cv, 1234, 1001);
+        ret = caca_set_canvas_size(cv, 1234, 1001);
+        CPPUNIT_ASSERT_EQUAL(ret, 0);
         CPPUNIT_ASSERT_EQUAL(caca_get_canvas_width(cv), 1234);
         CPPUNIT_ASSERT_EQUAL(caca_get_canvas_height(cv), 1001);
 
-        caca_set_canvas_size(cv, 0, 0);
+        ret = caca_set_canvas_size(cv, 0, 0);
+        CPPUNIT_ASSERT_EQUAL(ret, 0);
         CPPUNIT_ASSERT_EQUAL(caca_get_canvas_width(cv), 0);
         CPPUNIT_ASSERT_EQUAL(caca_get_canvas_height(cv), 0);
+
+        CPPUNIT_ASSERT_EQUAL(-1, caca_set_canvas_size(cv, -1, 50));
+        CPPUNIT_ASSERT_EQUAL(-1, caca_set_canvas_size(cv, 50, -1));
+        CPPUNIT_ASSERT_EQUAL(-1, caca_set_canvas_size(cv, -1, -1));
+        CPPUNIT_ASSERT_EQUAL(-1, caca_set_canvas_size(cv, INT_MAX / 2, 3));
+        CPPUNIT_ASSERT_EQUAL(-1, caca_set_canvas_size(cv, 3, INT_MAX / 2));
+        CPPUNIT_ASSERT_EQUAL(-1, caca_set_canvas_size(cv, INT_MAX / 2, INT_MAX / 2));
+        CPPUNIT_ASSERT_EQUAL(0, caca_set_canvas_size(cv, 0, 0));
 
         caca_free_canvas(cv);
     }

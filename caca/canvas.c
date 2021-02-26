@@ -367,6 +367,14 @@ int caca_resize(caca_canvas_t *cv, int width, int height)
 {
     int x, y, f, old_width, old_height, old_size;
 
+    /* Check for overflow */
+    int new_size = width * height;
+    if (new_size < 0 || (width > 0 && new_size / width != height))
+    {
+        seterrno(EOVERFLOW);
+        return -1;
+    }
+
     old_width = cv->width;
     old_height = cv->height;
     old_size = old_width * old_height;
@@ -377,14 +385,6 @@ int caca_resize(caca_canvas_t *cv, int width, int height)
      * dirty rectangle handling */
     cv->width = width;
     cv->height = height;
-    int new_size = width * height;
-
-    /* Check for overflow */
-    if (new_size / width != height)
-    {
-        seterrno(EOVERFLOW);
-        return -1;
-    }
 
     /* If width or height is smaller (or both), we have the opportunity to
      * reduce or even remove dirty rectangles */
