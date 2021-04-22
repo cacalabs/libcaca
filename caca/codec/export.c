@@ -944,21 +944,21 @@ static void *export_tga(caca_canvas_t const *cv, size_t *bytes)
     cur = data = malloc(*bytes);
 
     /* ID Length */
-    cur += sprintf(cur, "%c", 0);
+    *cur++ = 0;
     /* Color Map Type: no colormap */
-    cur += sprintf(cur, "%c", 0);
+    *cur++ = 0;
     /* Image Type: uncompressed truecolor */
-    cur += sprintf(cur, "%c", 2);
+    *cur++ = 2;
     /* Color Map Specification: no color map */
     memset(cur, 0, 5); cur += 5;
 
     /* Image Specification */
-    cur += sprintf(cur, "%c%c", 0, 0); /* X Origin */
-    cur += sprintf(cur, "%c%c", 0, 0); /* Y Origin */
-    cur += sprintf(cur, "%c%c", w & 0xff, w >> 8); /* Width */
-    cur += sprintf(cur, "%c%c", h & 0xff, h >> 8); /* Height */
-    cur += sprintf(cur, "%c", 32); /* Pixel Depth */
-    cur += sprintf(cur, "%c", 40); /* Image Descriptor */
+    *cur++ = 0; *cur++ = 0; /* X Origin */
+    *cur++ = 0; *cur++ = 0; /* Y Origin */
+    *cur++ = w & 0xff; *cur++ = w >> 8; /* Width */
+    *cur++ = h & 0xff; *cur++ = h >> 8; /* Height */
+    *cur++ = 32; /* Pixel Depth */
+    *cur++ = 40; /* Image Descriptor */
 
     /* Image ID: no ID */
     /* Color Map Data: no colormap */
@@ -995,9 +995,13 @@ static void *export_troff(caca_canvas_t const *cv, size_t *bytes)
      *  + 4 bytes = 33
      * Each line has a \n (1) and maybe 0xc2 0xa0 (2)
      * Header has .nf\n (3)
+     * Kludge alert:
+     * The sprintf functions all append a NUL byte, so
+     * add one byte for any terminating NUL byte,
+     * but don't tell the caller.
      */
     *bytes = 3 + cv->height * 3 + (cv->width * cv->height * 33);
-    cur = data = malloc(*bytes);
+    cur = data = malloc(*bytes + 1);	/* Add space for a terminating NUL byte */
 
     cur += sprintf(cur, ".nf\n");
 
