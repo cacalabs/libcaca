@@ -22,6 +22,7 @@
 #include <iostream>
 
 #include <stdio.h> // BUFSIZ
+#include <string.h> // memcpy
 #include <stdarg.h> // va_*
 
 #include "caca++.h"
@@ -482,6 +483,52 @@ int Caca::setTitle(char const *s)
 int Caca::getEvent(unsigned int g, Event *n, int aa)
 {
     return caca_get_event(dp, g, n ? &n->e : NULL, aa);
+}
+
+int Event::caca_get_event_key_ch()
+{
+  return ((caca_privevent_t *)&e)->data.key.ch;
+}
+
+enum Event::caca_event_type Event::caca_get_event_type()
+{
+  return (Event::caca_event_type)(((caca_privevent_t *)&e)->type);
+}
+
+uint32_t Event::caca_get_event_key_utf32()
+{
+  return ((caca_privevent_t *)&e)->data.key.utf32;
+}
+
+int Event::caca_get_event_key_utf8(char *utf8)
+{
+  memcpy(utf8, ((caca_privevent_t *)&e)->data.key.utf8, 8);
+  return 0;
+}
+
+int Event::caca_get_event_mouse_button()
+{
+  return ((caca_privevent_t *)&e)->data.mouse.button;
+}
+
+int Event::caca_get_event_mouse_x()
+{
+  return ((caca_privevent_t *)&e)->data.mouse.x;
+}
+
+int Event::caca_get_event_mouse_y()
+{
+  return ((caca_privevent_t *)&e)->data.mouse.y;
+}
+
+int Event::caca_get_event_resize_width()
+{
+  return ((caca_privevent_t *)&e)->data.resize.w;
+}
+
+int Event::caca_get_event_resize_height()
+{
+  return ((caca_privevent_t *)&e)->data.resize.h;
 }
 
 unsigned int Caca::getMouseX()
