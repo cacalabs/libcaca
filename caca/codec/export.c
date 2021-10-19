@@ -863,7 +863,13 @@ static void *export_svg(caca_canvas_t const *cv, size_t *bytes)
     char *data, *cur;
     int x, y;
 
-    /* 200 is arbitrary but should be ok */
+    /* Use 200 as a safety value for character information size
+     *
+     * Worst case for background, 68 chars:
+     *   <rect style="fill:#fff" x="65535" y="65535" width="6" height="10"/>\n
+     * Worst case for foreground, 97 chars:
+     *   <text style="fill:#fff" font-weight="bold" font-style="italic" x="65535" y="65535">xxxxxx</text>\n
+     */
     *bytes = strlen(svg_header) + 128 + cv->width * cv->height * 200;
     cur = data = malloc(*bytes);
 
