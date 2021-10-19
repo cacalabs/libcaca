@@ -420,6 +420,9 @@ ssize_t _import_bin(caca_canvas_t *cv, void const *data, size_t len)
     caca_set_canvas_size(cv, 0, 0);
     caca_set_canvas_size(cv, 160, len / 160);
 
+    /* Only read an even number of bytes */
+    len &= ~(size_t)1;
+
     for (i = 0; i < len; i += 2)
     {
         caca_set_color_ansi(cv, buf[i + 1] & 0xf, buf[i + 1] >> 4);
@@ -433,6 +436,6 @@ ssize_t _import_bin(caca_canvas_t *cv, void const *data, size_t len)
         }
     }
 
-    return len & ~(size_t)1;
+    return len;
 }
 
