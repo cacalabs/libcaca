@@ -27,6 +27,7 @@
 #include "caca_internals.h"
 #include "codec.h"
 
+/* Big endian */
 static inline int sprintu32(char *s, uint32_t x)
 {
     s[0] = (uint8_t)(x >> 24);
@@ -36,11 +37,26 @@ static inline int sprintu32(char *s, uint32_t x)
     return 4;
 }
 
+/* Big endian */
 static inline int sprintu16(char *s, uint16_t x)
 {
     s[0] = (uint8_t)(x >>  8) & 0xff;
     s[1] = (uint8_t)(x      ) & 0xff;
     return 2;
+}
+
+static inline int write_u8(char *s, uint8_t x)
+{
+    s[0] = x;
+    return 1;
+}
+
+static inline int write_string(char *s, char const *d)
+{
+    int n = 0;
+    for (; d[n]; ++n)
+        s[n] = d[n];
+    return n;
 }
 
 static void *export_caca(caca_canvas_t const *, size_t *);
@@ -338,7 +354,7 @@ static void *export_html(caca_canvas_t const *cv, size_t *bytes)
                 else if(linechar[x + len] == '\'')
                     cur += sprintf(cur, "&#39;");
                 else if(linechar[x + len] < 0x00000080)
-                    cur += sprintf(cur, "%c", (uint8_t)linechar[x + len]);
+                    cur += write_u8(cur, (uint8_t)linechar[x + len]);
                 else if((linechar[x + len] <= 0x0010fffd)
                         &&
                         ((linechar[x + len] & 0x0000fffe) != 0x0000fffe)
@@ -569,7 +585,7 @@ static void *export_html3(caca_canvas_t const *cv, size_t *bytes)
                 else if(linechar[x + i] == '\'')
                     cur += sprintf(cur, "&#39;");
                 else if(linechar[x + i] < 0x00000080)
-                    cur += sprintf(cur, "%c", (uint8_t)linechar[x + i]);
+                    cur += write_u8(cur, (uint8_t)linechar[x + i]);
                 else if((linechar[x + i] <= 0x0010fffd)
                         &&
                         ((linechar[x + i] & 0x0000fffe) != 0x0000fffe)
@@ -944,11 +960,11 @@ static void *export_tga(caca_canvas_t const *cv, size_t *bytes)
     cur = data = malloc(*bytes);
 
     /* ID Length */
-    cur += sprintf(cur, "%c", 0);
+    cur += write_u8(cur, 0);
     /* Color Map Type: no colormap */
-    cur += sprintf(cur, "%c", 0);
+    cur += write_u8(cur, 0);
     /* Image Type: uncompressed truecolor */
-    cur += sprintf(cur, "%c", 2);
+    cur += write_u8(cur, 2);
     /* Color Map Specification: no color map */
     memset(cur, 0, 5); cur += 5;
 
@@ -957,8 +973,8 @@ static void *export_tga(caca_canvas_t const *cv, size_t *bytes)
     cur += sprintf(cur, "%c%c", 0, 0); /* Y Origin */
     cur += sprintf(cur, "%c%c", w & 0xff, w >> 8); /* Width */
     cur += sprintf(cur, "%c%c", h & 0xff, h >> 8); /* Height */
-    cur += sprintf(cur, "%c", 32); /* Pixel Depth */
-    cur += sprintf(cur, "%c", 40); /* Image Descriptor */
+    cur += write_u8(cur, 32); /* Pixel Depth */
+    cur += write_u8(cur, 40); /* Image Descriptor */
 
     /* Image ID: no ID */
     /* Color Map Data: no colormap */
@@ -999,7 +1015,7 @@ static void *export_troff(caca_canvas_t const *cv, size_t *bytes)
     *bytes = 3 + cv->height * 3 + (cv->width * cv->height * 33);
     cur = data = malloc(*bytes);
 
-    cur += sprintf(cur, ".nf\n");
+    cur += write_string(cur, ".nf\n");
 
     prevfg = 0;
     prevbg = 0;
@@ -1054,7 +1070,7 @@ static void *export_troff(caca_canvas_t const *cv, size_t *bytes)
             prevbg = bg;
             started = 1;
         }
-        cur += sprintf(cur, "\n");
+        cur += write_u8(cur, '\n');
     }
     /* Crop to really used size */
     debug("troff export: alloc %lu bytes, realloc %lu",
