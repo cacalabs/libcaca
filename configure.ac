@@ -571,8 +571,10 @@ AM_CONDITIONAL(BUILD_DOCUMENTATION, test "${DOXYGEN}" != "no")
 AM_CONDITIONAL(USE_LATEX, test "${LATEX}" != "no")
 
 # Use cppunit for unit tests?
-PKG_CHECK_MODULES(CPPUNIT, cppunit, [CPPUNIT="yes"], [CPPUNIT="no"])
-AM_CONDITIONAL(USE_CPPUNIT, test "$CPPUNIT" = "yes")
+AS_IF([test "x$enable_cppunit" = "xyes"], [
+  PKG_CHECK_MODULES([CPPUNIT], [cppunit])
+])
+AM_CONDITIONAL([USE_CPPUNIT], [test "x$enable_cppunit" = "xyes"])
 
 # Use zzuf for fuzzing tests?
 ZZUF="no"
