@@ -68,10 +68,10 @@
     <ClInclude Include="caca_prof.h" />
     <ClInclude Include="caca_stubs.h" />
     <ClInclude Include="caca_types.h" />
-    <ClInclude Include="..\win32\config.h" />
     <ClInclude Include="codec\codec.h">
       <Filter>codec</Filter>
     </ClInclude>
+    <ClInclude Include="..\build\win32\config.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="libcaca.def" />
