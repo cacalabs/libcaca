@@ -904,10 +904,13 @@ static void *export_svg(caca_canvas_t const *cv, size_t *bytes)
                 continue;
             }
 
-            cur += sprintf(cur, "<text style=\"fill:#%.03x\" "
+            cur += sprintf(cur, "<text style=\"fill:#%.03x\"%s%s "
                                 "x=\"%d\" y=\"%d\">",
-                                caca_attr_to_rgb12_fg(*lineattr++),
+                                caca_attr_to_rgb12_fg(*lineattr),
+                                (*lineattr & CACA_BOLD) ? " font-weight=\"bold\"" : "",
+                                (*lineattr & CACA_ITALICS) ? " font-style=\"italic\"" : "",
                                 x * 6, (y * 10) + 8);
+            lineattr++;
 
             if(ch < 0x00000020)
                 *cur++ = '?';
