@@ -102,7 +102,7 @@ static void slang_init_palette(void);
 static void slang_write_utf32(uint32_t);
 
 #if defined(HAVE_SIGNAL)
-static RETSIGTYPE sigwinch_handler(int);
+static void sigwinch_handler(int);
 static caca_display_t *sigwinch_d; /* FIXME: we ought to get rid of this */
 #endif
 #if defined(HAVE_GETENV) && defined(HAVE_PUTENV)
@@ -536,7 +536,7 @@ static void slang_write_utf32(uint32_t ch)
 }
 
 #if defined(HAVE_SIGNAL)
-static RETSIGTYPE sigwinch_handler(int sig)
+static void sigwinch_handler(int sig)
 {
     sigwinch_d->resize.resized = 1;
 

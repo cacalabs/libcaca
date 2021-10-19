@@ -29,8 +29,8 @@ fi
 # Check for needed features
 auxdir="`sed -ne 's/^[ \t]*A._CONFIG_AUX_DIR *([[ ]*\([^] )]*\).*/\1/p' $conffile`"
 pkgconfig="`grep '^[ \t]*PKG_PROG_PKG_CONFIG' $conffile >/dev/null 2>&1 && echo yes || echo no`"
-libtool="`grep '^[ \t]*A._PROG_LIBTOOL' $conffile >/dev/null 2>&1 && echo yes || echo no`"
-header="`grep '^[ \t]*A._CONFIG_HEADER' $conffile >/dev/null 2>&1 && echo yes || echo no`"
+libtool="`grep '^[ \t]*LT_INIT' $conffile >/dev/null 2>&1 && echo yes || echo no`"
+header="`grep '^[ \t]*A._CONFIG_HEADERS' $conffile >/dev/null 2>&1 && echo yes || echo no`"
 makefile="`[ -f Makefile.am ] && echo yes || echo no`"
 aclocalflags="`sed -ne 's/^[ \t]*ACLOCAL_AMFLAGS[ \t]*=//p' Makefile.am 2>/dev/null || :`"
 

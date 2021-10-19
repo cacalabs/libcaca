@@ -188,7 +188,7 @@
  */
 
 #if defined HAVE_SIGNAL
-static RETSIGTYPE sigwinch_handler(int);
+static void sigwinch_handler(int);
 static caca_display_t *sigwinch_d; /* FIXME: we ought to get rid of this */
 #endif
 #if defined HAVE_GETENV && defined HAVE_PUTENV
@@ -594,7 +594,7 @@ static void ncurses_set_cursor(caca_display_t *dp, int flags)
  */
 
 #if defined HAVE_SIGNAL
-static RETSIGTYPE sigwinch_handler(int sig)
+static void sigwinch_handler(int sig)
 {
     sigwinch_d->resize.resized = 1;
 

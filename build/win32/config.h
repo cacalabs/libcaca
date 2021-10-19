@@ -75,7 +75,6 @@
 #define PACKAGE_URL "http://caca.zoy.org/wiki/libcaca"
 #define PACKAGE_VERSION "0.99.beta20"
 /* #undef PROF */
-/* #undef RETSIGTYPE */
 /* #undef SCREENUPDATE_IN_PC_H */
 #define STDC_HEADERS 1
 /* #undef USE_COCOA */

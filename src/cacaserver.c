@@ -115,7 +115,7 @@ struct server
     int client_count;
     struct client *clients;
 
-    RETSIGTYPE (*sigpipe_handler)(int);
+    void (*sigpipe_handler)(int);
 };
 
 static void manage_connections(struct server *server);
