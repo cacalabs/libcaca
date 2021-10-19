@@ -1,5 +1,23 @@
 /** \page libcaca-news Libcaca news
 
+\section news0_99_beta20 Changes between 0.99.beta20 and 0.99.beta19
+
+ - numerous fixes for memory leaks and invalid memory accesses:
+   - CVE-2021-30498
+   - CVE-2021-30499
+   - CVE-2021-3410
+   - CVE-2018-20546
+   - CVE-2018-20547
+   - CVE-2018-20545
+   - CVE-2018-20548
+   - CVE-2018-20549
+
+\section news0_99_beta19 Changes between 0.99.beta19 and 0.99.beta18
+
+ - Windows port improvements
+ - Ruby 1.9 support
+ - numerous fixes for memory leaks and invalid memory accesses
+
 \section news0_99_beta18 Changes between 0.99.beta18 and 0.99.beta17
 
  - new "cacaclock" utility
