@@ -388,7 +388,7 @@ ssize_t _import_ansi(caca_canvas_t *cv, void const *data, size_t size, int utf8)
         }
 
         /* Form feed means a new frame */
-        else if(buffer[i] == '\f' && buffer[i + 1] == '\n')
+        else if (i + 1 < size && buffer[i] == '\f' && buffer[i + 1] == '\n')
         {
             int f = caca_get_frame_count(cv);
             caca_create_frame(cv, f);
