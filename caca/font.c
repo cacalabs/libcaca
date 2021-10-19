@@ -425,7 +425,7 @@ int caca_render_canvas(caca_canvas_t const *cv, caca_font_t const *f,
     }
 
     if(f->header.bpp != 8)
-        glyph = malloc(f->header.width * 2 * f->header.height);
+        glyph = _caca_alloc2d(f->header.width, f->header.height, 2);
 
     if(width < cv->width * f->header.width)
         xmax = width / f->header.width;

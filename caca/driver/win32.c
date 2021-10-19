@@ -166,8 +166,7 @@ static int win32_init_graphics(caca_display_t *dp)
 
     SetConsoleActiveScreenBuffer(dp->drv.p->screen);
 
-    dp->drv.p->buffer = malloc(width * height
-                               * sizeof(CHAR_INFO));
+    dp->drv.p->buffer = _caca_alloc2d(width, height, sizeof(CHAR_INFO));
     if(dp->drv.p->buffer == NULL)
         return -1;
 

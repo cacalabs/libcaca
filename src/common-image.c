@@ -103,6 +103,14 @@ struct image * load_image(char const * name)
     uint32_t bpp = u16fread(f);
     uint32_t colors = 0;
 
+    /* Sanity check */
+    if (planes != 1)
+    {
+        caca_file_close(f);
+        free(im);
+        return NULL;
+    }
+
     if (header_size == 40)
     {
         if (u32fread(f) != 0) /* compression */
@@ -152,16 +160,8 @@ struct image * load_image(char const * name)
 
     uint32_t depth = (bpp + 7) / 8;
 
-    /* Sanity check */
-    if (!depth || !im->w || im->w > 0x10000 || !im->h || im->h > 0x10000 || planes != 1)
-    {
-        caca_file_close(f);
-        free(im);
-        return NULL;
-    }
-
     /* Allocate the pixel buffer */
-    im->pixels = malloc(im->w * im->h * depth);
+    im->pixels = _caca_alloc2d(im->w, im->h, depth);
     if (!im->pixels)
     {
         caca_file_close(f);

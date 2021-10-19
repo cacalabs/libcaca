@@ -204,15 +204,15 @@ static BOOL s_quitting = NO;
 
         if(_attrs)
             free(_attrs);
-        _attrs = malloc(_w * _h * sizeof(uint32_t) * 2);
+        _attrs = _caca_alloc2d(_w , _h, sizeof(uint32_t) * 2);
 
         if(_bkg_rects)
             free(_bkg_rects);
-        _bkg_rects = malloc(_w * _h * sizeof(NSRect));
+        _bkg_rects = _caca_alloc2d(_w, _h, sizeof(NSRect));
 
         if(_bkg_colors)
             free(_bkg_colors);
-        _bkg_colors = malloc(_w * _h * sizeof(NSColor*));
+        _bkg_colors = _caca_alloc2d(_w, _h, sizeof(NSColor*));
 
       //  [[self window] setContentSize: NSMakeSize(caca_get_canvas_width(dp->cv) * _font_rect.size.width,
      //                                             caca_get_canvas_height(dp->cv) * _font_rect.size.height)];
