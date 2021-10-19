@@ -1,6 +1,7 @@
 /*
  *  cacaserver  Colour ASCII-Art library
  *  Copyright © 2006-2021 Sam Hocevar <sam@hocevar.net>
+ *              2016 Denis Fondras <ledeuns at github>
  *              2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *              All Rights Reserved
  *
@@ -100,7 +101,7 @@ struct client
 struct sock {
     int sockfd;
     struct sockaddr_in my_addr;
-};  
+};
 
 struct server
 {
@@ -125,7 +126,7 @@ struct server
     void (*sigpipe_handler)(int);
 };
 
-void print_ip(struct sockaddr *ai);
+void fprint_ip(FILE *stream, struct sockaddr *ai);
 static void manage_connections(struct server *server, int sockfd);
 static int send_data(struct server *server, struct client *c);
 ssize_t nonblock_write(int fd, void *buf, size_t len);
@@ -209,7 +210,7 @@ int main(void)
         server->socks[server->sock_count].sockfd = fd;
         server->sock_count++;
         fprintf(stderr, "listening on ");
-        print_ip(res->ai_addr);
+        fprint_ip(stderr, res->ai_addr);
         fprintf(stderr, "\n");
     }
     freeaddrinfo(ai);
@@ -337,7 +338,7 @@ restart:
  * XXX: The following functions are local
  */
 
-void print_ip(struct sockaddr *ai)
+void fprint_ip(FILE *stream, struct sockaddr *ai)
 {
     char buffer[INET6_ADDRSTRLEN];
     socklen_t len = sizeof(struct sockaddr_in6);
@@ -345,14 +346,12 @@ void print_ip(struct sockaddr *ai)
     if (ai->sa_family == AF_INET)
         len = sizeof(struct sockaddr_in);
 
-    int err = getnameinfo(ai, len, buffer, sizeof(buffer), NULL, 0,
-                          NI_NUMERICHOST);
-    if (err != 0) {
-        fprintf(stderr, "n/a");   
-    }
-    fprintf(stderr, "%s",buffer);
+    int err = getnameinfo(ai, len, buffer, sizeof(buffer), NULL, 0, NI_NUMERICHOST);
+    if (err != 0)
+        fprintf(stream, "n/a");
+    else
+        fprintf(stream, "%s", buffer);
 }
-
 
 static void manage_connections(struct server *server, int sockfd)
 {
@@ -365,7 +364,7 @@ static void manage_connections(struct server *server, int sockfd)
         return;
 
     fprintf(stderr, "[%i] connected from ", fd);
-    print_ip((struct sockaddr*)&remote_addr);
+    fprint_ip(stderr, (struct sockaddr*)&remote_addr);
     fprintf(stderr, "\n");
 
     /* Non blocking socket */
