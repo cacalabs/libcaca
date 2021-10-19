@@ -1,6 +1,6 @@
 /*
  *  Imaging tools for cacaview and img2irc
- *  Copyright © 2002—2019 Sam Hocevar <sam@hocevar.net>
+ *  Copyright © 2002—2021 Sam Hocevar <sam@hocevar.net>
  *              All Rights Reserved
  *
  *  This program is free software. It comes without any warranty, to

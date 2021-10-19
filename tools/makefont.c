@@ -1,7 +1,7 @@
 /*
- *  makefont      create libcaca font data
- *  Copyright (c) 2006-2012 Sam Hocevar <sam@hocevar.net>
- *                All Rights Reserved
+ *  makefont    create libcaca font data
+ *  Copyright © 2006—2021 Sam Hocevar <sam@hocevar.net>
+ *              All Rights Reserved
  *
  *  This program is free software. It comes without any warranty, to
  *  the extent permitted by applicable law. You can redistribute it

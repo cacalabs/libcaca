@@ -1,6 +1,6 @@
 /*
  *  libcaca     Colour ASCII-Art library
- *  Copyright © 2002—2018 Sam Hocevar <sam@hocevar.net>
+ *  Copyright © 2002—2021 Sam Hocevar <sam@hocevar.net>
  *              2006 Jean-Yves Lamoureux <jylam@lnxscene.org>
  *              All Rights Reserved
  *

@@ -2,6 +2,8 @@
 
 \section news0_99_beta20 Changes between 0.99.beta20 and 0.99.beta19
 
+ - fixed a bug from 2004 that caused PDF documentation generation to fail
+ - memory allocation functions are now more robust
  - numerous fixes for memory leaks and invalid memory accesses:
    - CVE-2021-30498
    - CVE-2021-30499
