@@ -3,7 +3,7 @@ AC_INIT([libcaca],[0.99.beta20])
 AC_PREREQ([2.71])
 AC_CONFIG_AUX_DIR(.auto)
 AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE([no-define tar-ustar silent-rules subdir-objects])
+AM_INIT_AUTOMAKE([foreign no-define tar-ustar silent-rules subdir-objects])
 dnl AM_MAINTAINER_MODE
 AM_DEFAULT_VERBOSITY=0
 
