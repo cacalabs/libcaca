@@ -29,10 +29,7 @@ endif
 stamp-latex: stamp-doxygen
 if BUILD_DOCUMENTATION
 if USE_LATEX
-	rm -f latex/libcaca.tex latex/libcaca.pdf
-	mv latex/refman.tex latex/libcaca.tex
-	sed 's/setlength{/renewcommand{/' latex/libcaca.tex \
-	  | sed 's/.*usepackage.*times.*//' > latex/refman.tex
+	rm -f latex/libcaca.pdf
 	cd latex && $(MAKE) $(AM_CFLAGS) refman.pdf || (cat refman.log; exit 1)
 	mv latex/refman.pdf latex/libcaca.pdf
 	touch stamp-latex
