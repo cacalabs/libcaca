@@ -35,6 +35,7 @@
 #if defined(USE_PLUGINS)
 #   define gl_install(p) caca_plugin_install(p, "gl")
 #   define x11_install(p) caca_plugin_install(p, "x11")
+#   define sdl_install(p) caca_plugin_install(p, "sdl")
 #endif
 
 static int caca_can_resize(caca_display_t *);
@@ -170,6 +171,9 @@ char const * const * caca_get_display_driver_list(void)
 #endif
 #if defined(USE_GL)
         "gl", "OpenGL window",
+#endif
+#if defined(USE_SDL)
+        "sdl", "SDL window",
 #endif
 #if defined(USE_SLANG)
         "slang", "S-Lang console library",
@@ -336,7 +340,7 @@ static int caca_install_driver(caca_display_t *dp, char const *driver)
     dp->events.autorepeat_ticks = 0;
     dp->events.last_key_event.type = CACA_EVENT_NONE;
 #endif
-#if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO) || defined(USE_GL)
+#if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO) || defined(USE_GL) || defined(USE_SDL)
     dp->events.queue = 0;
 #endif
 
@@ -405,6 +409,9 @@ static int caca_select_driver(caca_display_t *dp, char const *driver)
 #if defined(USE_GL)
         if(!strcasecmp(var, "gl")) return gl_install(dp);
 #endif
+#if defined(USE_SDL)
+        if(!strcasecmp(var, "sdl")) return sdl_install(dp);
+#endif
 #if !defined(__KERNEL__)
         if(!strcasecmp(var, "raw")) return raw_install(dp);
 #endif
@@ -441,6 +448,9 @@ static int caca_select_driver(caca_display_t *dp, char const *driver)
 #endif
 #if defined(USE_GL)
     if(gl_install(dp) == 0) return 0;
+#endif
+#if defined(USE_SDL)
+    if(sdl_install(dp) == 0) return 0;
 #endif
     /* ncurses has a higher priority than slang because it has better colour
      * support across terminal types, despite being slightly slower. */
