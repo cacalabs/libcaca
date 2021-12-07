@@ -269,7 +269,6 @@ if test "${enable_cocoa}" != "no"; then
    [ac_cv_my_have_cocoa="yes"])
   CFLAGS="$save_CFLAGS"
   if test "${ac_cv_my_have_cocoa}" = "yes"; then
-    [[[ "$target_os" =~ [0-9]+ ]]] && darwin_ver="${BASH_REMATCH[[0]]}"
     case x${target} in
     xpowerpc*darwin*)
       # 10.3 needed to link with X11
@@ -297,6 +296,7 @@ if test "${enable_cocoa}" != "no"; then
     esac
     CC="${CC:-gcc-${GCC_VERSION}}"
     CXX="${CXX:-g++-${GCC_VERSION}}"
+    darwin_ver="$(echo "${target_os}" | sed -ne 's/[^0-9]*\([0-9]\+\).*/\1/p')"
     if [[ "$darwin_ver" -lt "13" ]]; then
       MACOSX_SDK_FRAMEWORKS="${MACOSX_SDK_FRAMEWORKS:--F${MACOSX_SDK}/System/Library/Frameworks}"
       CPPFLAGS="${CPPFLAGS} ${ARCH} ${MACOSX_SDK_FRAMEWORKS}"
