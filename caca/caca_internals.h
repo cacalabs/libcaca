@@ -252,8 +252,8 @@ extern int _caca_getticks(caca_timer_t *);
 /* Internal event functions */
 extern void _caca_handle_resize(caca_display_t *);
 #if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO) || defined(USE_GL)
-extern void _push_event(caca_display_t *, caca_privevent_t *);
-extern int _pop_event(caca_display_t *, caca_privevent_t *);
+extern void _caca_push_event(caca_display_t *, caca_privevent_t *);
+extern int _caca_pop_event(caca_display_t *, caca_privevent_t *);
 #endif
 
 /* Internal window functions */

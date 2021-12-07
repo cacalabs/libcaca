@@ -380,7 +380,7 @@ static int _get_next_event(caca_display_t *dp, caca_privevent_t *ev)
            && dp->events.autorepeat_ticks > AUTOREPEAT_THRESHOLD
            && dp->events.autorepeat_ticks > AUTOREPEAT_RATE)
     {
-        _push_event(dp, ev);
+        _caca_push_event(dp, ev);
         dp->events.autorepeat_ticks -= AUTOREPEAT_RATE;
         *ev = dp->events.last_key_event;
         return 1;
@@ -403,7 +403,7 @@ static int _get_next_event(caca_display_t *dp, caca_privevent_t *ev)
           && (dp->events.last_key_ticks > AUTOREPEAT_THRESHOLD
                || (ev->type & CACA_EVENT_KEY_PRESS)))
     {
-        _push_event(dp, ev);
+        _caca_push_event(dp, ev);
         *ev = dp->events.last_key_event;
         ev->type = CACA_EVENT_KEY_RELEASE;
         dp->events.last_key_event.type = CACA_EVENT_NONE;
@@ -425,7 +425,7 @@ static int _get_next_event(caca_display_t *dp, caca_privevent_t *ev)
 static int _lowlevel_event(caca_display_t *dp, caca_privevent_t *ev)
 {
 #if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO)
-    int ret = _pop_event(dp, ev);
+    int ret = _caca_pop_event(dp, ev);
 
     if(ret)
         return ret;
@@ -435,7 +435,7 @@ static int _lowlevel_event(caca_display_t *dp, caca_privevent_t *ev)
 }
 
 #if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO) || defined(USE_GL)
-void _push_event(caca_display_t *dp, caca_privevent_t *ev)
+void _caca_push_event(caca_display_t *dp, caca_privevent_t *ev)
 {
     if(!ev->type || dp->events.queue == EVENTBUF_LEN)
         return;
@@ -443,7 +443,7 @@ void _push_event(caca_display_t *dp, caca_privevent_t *ev)
     dp->events.queue++;
 }
 
-int _pop_event(caca_display_t *dp, caca_privevent_t *ev)
+int _caca_pop_event(caca_display_t *dp, caca_privevent_t *ev)
 {
     int i;
 

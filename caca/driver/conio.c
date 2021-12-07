@@ -151,7 +151,7 @@ static int conio_get_event(caca_display_t *dp, caca_privevent_t *ev)
 
     release = *ev;
     release.type = CACA_EVENT_KEY_RELEASE;
-    _push_event(dp, &release);
+    _caca_push_event(dp, &release);
 
     return 1;
 }

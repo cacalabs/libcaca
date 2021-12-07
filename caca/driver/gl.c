@@ -374,7 +374,7 @@ static int gl_get_event_inner(caca_display_t *dp, caca_privevent_t *ev)
 
         if(dp->drv.p->mouse_clicked)
         {
-            _push_event(dp, ev);
+            _caca_push_event(dp, ev);
             ev->type = CACA_EVENT_MOUSE_PRESS;
             ev->data.mouse.button = dp->drv.p->mouse_button;
             dp->drv.p->mouse_clicked = 0;

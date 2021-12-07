@@ -403,12 +403,12 @@ static int slang_get_event(caca_display_t *dp, caca_privevent_t *ev)
 
         ev->data.mouse.button = button;
         ev->type = CACA_EVENT_MOUSE_PRESS;
-        _push_event(dp, ev);
+        _caca_push_event(dp, ev);
         ev->type = CACA_EVENT_MOUSE_RELEASE;
-        _push_event(dp, ev);
+        _caca_push_event(dp, ev);
 
         if(dp->mouse.x == x && dp->mouse.y == y)
-            return _pop_event(dp, ev);
+            return _caca_pop_event(dp, ev);
 
         dp->mouse.x = x;
         dp->mouse.y = y;

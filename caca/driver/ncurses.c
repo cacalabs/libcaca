@@ -482,9 +482,9 @@ static int ncurses_get_event(caca_display_t *dp, caca_privevent_t *ev)
         switch(mevent.bstate)
         {
 #define PRESS(x) ev->data.mouse.button = x; \
-                 ev->type = CACA_EVENT_MOUSE_PRESS; _push_event(dp, ev)
+                 ev->type = CACA_EVENT_MOUSE_PRESS; _caca_push_event(dp, ev)
 #define RELEASE(x) ev->data.mouse.button = x; \
-                   ev->type = CACA_EVENT_MOUSE_RELEASE; _push_event(dp, ev)
+                   ev->type = CACA_EVENT_MOUSE_RELEASE; _caca_push_event(dp, ev)
 #define CLICK(x) PRESS(x); RELEASE(x)
             case BUTTON1_PRESSED: PRESS(1); break;
             case BUTTON1_RELEASED: RELEASE(1); break;
@@ -530,7 +530,7 @@ static int ncurses_get_event(caca_display_t *dp, caca_privevent_t *ev)
         }
 
         if(dp->mouse.x == mevent.x && dp->mouse.y == mevent.y)
-            return _pop_event(dp, ev);
+            return _caca_pop_event(dp, ev);
 
         dp->mouse.x = mevent.x;
         dp->mouse.y = mevent.y;
