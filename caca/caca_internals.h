@@ -26,6 +26,13 @@ typedef struct caca_privevent caca_privevent_t;
 #   define MAX_DIRTY_COUNT 8
 #endif
 
+#undef __extern
+#if defined CACA_ENABLE_VISIBILITY
+#   define __extern extern __attribute__((visibility("default")))
+#else
+#   define __extern extern
+#endif
+
 struct caca_frame
 {
     /* Frame size */
@@ -116,7 +123,7 @@ int cocoa_install(caca_display_t *);
 int conio_install(caca_display_t *);
 #endif
 #if defined(USE_GL)
-int gl_install(caca_display_t *);
+__extern int gl_install(caca_display_t *);
 #endif
 #if defined(USE_NCURSES)
 int ncurses_install(caca_display_t *);
@@ -133,7 +140,7 @@ int vga_install(caca_display_t *);
 int win32_install(caca_display_t *);
 #endif
 #if defined(USE_X11)
-int x11_install(caca_display_t *);
+__extern int x11_install(caca_display_t *);
 #endif
 
 /* Timer structure */
@@ -252,7 +259,8 @@ extern int _caca_getticks(caca_timer_t *);
 /* Internal event functions */
 extern void _caca_handle_resize(caca_display_t *);
 #if defined(USE_SLANG) || defined(USE_NCURSES) || defined(USE_CONIO) || defined(USE_GL)
-extern void _caca_push_event(caca_display_t *, caca_privevent_t *);
+/* Expose this with ‘__extern’ because the GL driver uses it */
+__extern void _caca_push_event(caca_display_t *, caca_privevent_t *);
 extern int _caca_pop_event(caca_display_t *, caca_privevent_t *);
 #endif
 
@@ -268,5 +276,7 @@ extern void _caca_dump_stats(void);
 extern void _caca_init_stat(struct caca_stat *, char const *, ...);
 extern void _caca_fini_stat(struct caca_stat *);
 #endif
+
+#undef __extern
 
 #endif /* __CACA_INTERNALS_H__ */
