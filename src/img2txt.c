@@ -177,7 +177,13 @@ int main(int argc, char **argv)
     }
 
     /* Assume a 6×10 font */
-    if(!cols && !lines)
+    if(!i->w || !i->h)
+    {
+	fprintf(stderr, "%s: image size is 0\n", argv[0]);
+        lines = 0;
+	cols = 0;
+    }
+    else if(!cols && !lines)
     {
         cols = 60;
         lines = cols * i->h * font_width / i->w / font_height;
@@ -214,7 +220,7 @@ int main(int argc, char **argv)
     export = caca_export_canvas_to_memory(cv, format?format:"ansi", &len);
     if(!export)
     {
-        fprintf(stderr, "%s: Can't export to format '%s'\n", argv[0], format);
+        fprintf(stderr, "%s: Can't export to format '%s'\n", argv[0], format?format:"ansi");
     }
     else
     {
