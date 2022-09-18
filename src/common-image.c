@@ -22,6 +22,7 @@
 #endif
 
 #include "caca.h"
+#include "caca_internals.h"
 
 #include "common-image.h"
 

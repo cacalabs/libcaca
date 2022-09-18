@@ -284,7 +284,7 @@ char const * caca_get_version(void)
  * XXX: The following functions are private.
  */
 
-extern void *_caca_alloc2d(size_t width, size_t height, size_t elem_size)
+void *_caca_alloc2d(size_t width, size_t height, size_t elem_size)
 {
     if (width == 0 || height == 0 || elem_size == 0 || SIZE_MAX / width / height < elem_size)
         return NULL;
