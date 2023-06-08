@@ -25,7 +25,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-#ifdef __MINGW32__
+#if defined(__MINGW32__) && !defined(__MINGW64_VERSION_MAJOR)
 /* This is missing from the MinGW headers. */
 #   if (_WIN32_WINNT >= 0x0500)
 BOOL WINAPI GetCurrentConsoleFont(HANDLE hConsoleOutput, BOOL bMaximumWindow,
