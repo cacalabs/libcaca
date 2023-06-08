@@ -196,7 +196,7 @@ static int win32_end_graphics(caca_display_t *dp)
 
 static int win32_set_display_title(caca_display_t *dp, char const *title)
 {
-    SetConsoleTitle(title);
+    SetConsoleTitleA(title);
     return 0;
 }
 
