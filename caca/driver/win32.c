@@ -19,11 +19,13 @@
 
 #if defined(USE_WIN32)
 
+#if !defined(_WIN32_WINNT) || _WIN32_WINNT < 0x500 /* _WIN32_WINNT_WIN2K */
 #define _WIN32_WINNT 0x500 /* Require WinXP or later */
+#endif
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-#ifdef __MINGW32__
+#if defined(__MINGW32__) && !defined(__MINGW64_VERSION_MAJOR)
 /* This is missing from the MinGW headers. */
 #   if (_WIN32_WINNT >= 0x0500)
 BOOL WINAPI GetCurrentConsoleFont(HANDLE hConsoleOutput, BOOL bMaximumWindow,
@@ -102,6 +104,9 @@ static int win32_init_graphics(caca_display_t *dp)
     CONSOLE_CURSOR_INFO cci_screen;
     SMALL_RECT rect;
     COORD size;
+#if _WIN32_WINNT >= 0x0602 /* _WIN32_WINNT_WIN8 */
+    CREATEFILE2_EXTENDED_PARAMETERS createExParams;
+#endif
 
     dp->drv.p = malloc(sizeof(struct driver_private));
 
@@ -109,9 +114,18 @@ static int win32_init_graphics(caca_display_t *dp)
     dp->drv.p->new_console = AllocConsole();
 
     dp->drv.p->hin = GetStdHandle(STD_INPUT_HANDLE);
+#if _WIN32_WINNT >= 0x0602 /* _WIN32_WINNT_WIN8 */
+    ZeroMemory(&createExParams, sizeof(createExParams));
+    createExParams.dwSize = sizeof(CREATEFILE2_EXTENDED_PARAMETERS);
+    createExParams.dwFileAttributes = FILE_ATTRIBUTE_NORMAL;
+    dp->drv.p->hout = CreateFile2(L"CONOUT$", GENERIC_READ | GENERIC_WRITE,
+                                 FILE_SHARE_READ | FILE_SHARE_WRITE,
+                                 OPEN_EXISTING, &createExParams);
+#else
     dp->drv.p->hout = CreateFile("CONOUT$", GENERIC_READ | GENERIC_WRITE,
                                  FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
                                  OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+#endif
     if(dp->drv.p->hout == INVALID_HANDLE_VALUE)
         return -1;
 
@@ -194,7 +208,7 @@ static int win32_end_graphics(caca_display_t *dp)
 
 static int win32_set_display_title(caca_display_t *dp, char const *title)
 {
-    SetConsoleTitle(title);
+    SetConsoleTitleA(title);
     return 0;
 }
 

@@ -27,6 +27,10 @@
 #       include <unistd.h>
 #   endif
 #endif
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
 
 #include "caca.h"
 #include "caca_internals.h"
@@ -351,7 +355,11 @@ int caca_rand(int min, int max)
 
     if(need_init)
     {
+#ifdef _WIN32
+        srand(GetCurrentProcessId() + _caca_getticks(&timer));
+#else
         srand(getpid() + _caca_getticks(&timer));
+#endif
         need_init = 0;
     }
 
