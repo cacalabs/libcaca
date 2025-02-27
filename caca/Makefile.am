@@ -92,9 +92,9 @@ libx11_plugin_la_LDFLAGS = -no-undefined -module -no-version
 libx11_plugin_la_LIBADD = libcaca.la $(X11_LIBS)
 
 libgl_plugin_la_SOURCES = driver/gl.c
-libgl_plugin_la_CPPFLAGS = $(AM_CPPFLAGS) $(GL_CFLAGS) #$(FTGL_CFLAGS)
+libgl_plugin_la_CPPFLAGS = $(AM_CPPFLAGS) $(GL_CFLAGS)
 libgl_plugin_la_LDFLAGS = -no-undefined -module -no-version
-libgl_plugin_la_LIBADD = libcaca.la $(GL_LIBS) #$(FTGL_LIBS)
+libgl_plugin_la_LIBADD = libcaca.la $(GL_LIBS)
 else
 driver_source += driver/x11.c driver/gl.c
 endif

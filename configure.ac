@@ -257,9 +257,7 @@ if test "${enable_gl}" != "no"; then
   elif test "${enable_gl}" = "yes"; then
     AC_MSG_ERROR([cannot find OpenGL+FreeGLUT development files])
   fi
-  PKG_CHECK_MODULES(FTGL, ftgl >= 2.1.3, [FTGL="yes"], [FTGL="no"])
 fi
-AM_CONDITIONAL(USE_FTGL, test "${FTGL}" = "yes")
 
 if test "${enable_cocoa}" != "no"; then
   ac_cv_my_have_cocoa="no"
@@ -364,8 +362,8 @@ if test "${enable_plugins}" = "yes"; then
   AC_DEFINE(USE_PLUGINS, 1, Define to 1 to activate plugins)
   CACA_LIBS="${CACA_LIBS} -ldl"
 else
-  CACA_CFLAGS="${CACA_CFLAGS} ${X11_CFLAGS} ${GL_CFLAGS} ${FTGL_CFLAGS}"
-  CACA_LIBS="${CACA_LIBS} ${X11_LIBS} ${GL_LIBS} ${FTGL_LIBS}"
+  CACA_CFLAGS="${CACA_CFLAGS} ${X11_CFLAGS} ${GL_CFLAGS}"
+  CACA_LIBS="${CACA_LIBS} ${X11_LIBS} ${GL_LIBS}"
 fi
 AM_CONDITIONAL(USE_PLUGINS, test "${ac_cv_my_have_plugins}" = "yes")
 
