@@ -240,6 +240,7 @@ __extern uint32_t const * caca_get_canvas_chars(caca_canvas_t const *);
 __extern uint32_t const * caca_get_canvas_attrs(caca_canvas_t const *);
 __extern int caca_free_canvas(caca_canvas_t *);
 __extern int caca_rand(int, int);
+__extern void *caca_alloc2d(size_t, size_t, size_t);
 __extern char const * caca_get_version(void);
 /*  @} */
 

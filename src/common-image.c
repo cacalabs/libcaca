@@ -161,7 +161,7 @@ struct image * load_image(char const * name)
     uint32_t depth = (bpp + 7) / 8;
 
     /* Allocate the pixel buffer */
-    im->pixels = _caca_alloc2d(im->w, im->h, depth);
+    im->pixels = caca_alloc2d(im->w, im->h, depth);
     if (!im->pixels)
     {
         caca_file_close(f);
