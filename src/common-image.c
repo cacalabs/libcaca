@@ -29,6 +29,14 @@
 static unsigned int u32fread(caca_file_t *);
 static unsigned int u16fread(caca_file_t *);
 static unsigned int u8fread(caca_file_t *);
+
+static void *_caca_alloc2d(size_t width, size_t height, size_t elem_size)
+{
+    if (width == 0 || height == 0 || elem_size == 0 || SIZE_MAX / width / height < elem_size)
+        return NULL;
+    return malloc(width * height * elem_size);
+}
+
 #endif
 
 struct image * load_image(char const * name)
