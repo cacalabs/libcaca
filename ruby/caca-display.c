@@ -226,7 +226,7 @@ static VALUE get_event(VALUE self, VALUE event_mask, VALUE timeout)
     return e;
 }
 
-static VALUE driver_list(void)
+static VALUE driver_list(VALUE unused)
 {
     VALUE ary;
     char const* const* list;

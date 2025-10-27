@@ -16,6 +16,7 @@
 #include <errno.h>
 #include "caca-dither.h"
 #include "caca-font.h"
+#include "caca_internals.h"
 #include "common.h"
 
 VALUE cCanvas;
@@ -742,7 +743,7 @@ void Init_caca_canvas(VALUE mCaca)
     rb_define_method(cCanvas, "put_str", put_str, 3);
     rb_define_method(cCanvas, "printf", cprintf, -1);
 
-    rb_define_method(cCanvas, "get_attr", get_attr, 3);
+    rb_define_method(cCanvas, "get_attr", get_attr, 2);
     rb_define_method(cCanvas, "attr=", set_attr, 1);
     rb_define_method(cCanvas, "set_attr", set_attr2, 1);
     rb_define_method(cCanvas, "put_attr", put_attr, 3);
@@ -773,7 +774,7 @@ void Init_caca_canvas(VALUE mCaca)
     rb_define_method(cCanvas, "draw_triangle", draw_triangle, 7);
     rb_define_method(cCanvas, "draw_thin_triangle", draw_thin_triangle, 6);
     rb_define_method(cCanvas, "fill_triangle", fill_triangle, 7);
-    rb_define_method(cCanvas, "fill_triangle_textured", fill_triangle_textured, 4);
+    rb_define_method(cCanvas, "fill_triangle_textured", fill_triangle_textured, 3);
     rb_define_method(cCanvas, "dither_bitmap", dither_bitmap, 6);
 
     rb_define_method(cCanvas, "frame_count", get_frame_count, 0);
@@ -792,8 +793,8 @@ void Init_caca_canvas(VALUE mCaca)
     rb_define_method(cCanvas, "import_area_from_file", import_area_from_file, 4);
     rb_define_method(cCanvas, "export_to_memory", export_to_memory, 1);
     rb_define_method(cCanvas, "export_area_to_memory", export_area_to_memory, 5);
-    rb_define_singleton_method(cCanvas, "export_list", export_list, 0);
-    rb_define_singleton_method(cCanvas, "import_list", import_list, 0);
+    rb_define_singleton_method(cCanvas, "export_list", (VALUE (*)(VALUE)) export_list, 0);
+    rb_define_singleton_method(cCanvas, "import_list", (VALUE (*)(VALUE)) import_list, 0);
 
     rb_define_method(cCanvas, "disable_dirty_rect", disable_dirty_rect, 0);
     rb_define_method(cCanvas, "enable_dirty_rect", enable_dirty_rect, 0);

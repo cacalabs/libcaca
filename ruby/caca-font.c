@@ -41,7 +41,7 @@ static VALUE font_initialize(VALUE self, VALUE name)
     return self;
 }
 
-static VALUE font_list(void)
+static VALUE font_list(VALUE unused)
 {
     VALUE ary;
     char const* const* list;
