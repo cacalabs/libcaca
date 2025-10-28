@@ -160,6 +160,11 @@ int main(int argc, char **argv)
         }
     }
 
+    if(!font_height || !font_width)
+    {
+        fprintf(stderr, "%s: invalid font size %dx%d\n", argv[0], font_width, font_height);
+        return 1;
+    }
 
     cv = caca_create_canvas(0, 0);
     if(!cv)
