@@ -176,6 +176,13 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    if(!i->w || !i->h)
+    {
+        fprintf(stderr, "%s: image %s has invalid dimensions %ldx%ld\n", argv[0], argv[argc-1], i->w, i->h);
+        caca_free_canvas(cv);
+        return 1;
+    }
+
     /* Assume a 6×10 font */
     if(!cols && !lines)
     {
