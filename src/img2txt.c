@@ -84,7 +84,7 @@ int main(int argc, char **argv)
     size_t len;
     struct image *i;
     unsigned int cols = 0, lines = 0, font_width = 6, font_height = 10;
-    char *format = NULL;
+    char *format = "ansi";
     char *dither = NULL;
     float gamma = -1, brightness = -1, contrast = -1;
 
@@ -218,7 +218,7 @@ int main(int argc, char **argv)
 
     unload_image(i);
 
-    export = caca_export_canvas_to_memory(cv, format?format:"ansi", &len);
+    export = caca_export_canvas_to_memory(cv, format, &len);
     if(!export)
     {
         fprintf(stderr, "%s: Can't export to format '%s'\n", argv[0], format);
