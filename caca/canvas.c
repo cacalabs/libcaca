@@ -26,6 +26,7 @@
 #   if defined(HAVE_UNISTD_H)
 #       include <unistd.h>
 #   endif
+#   include <limits.h>
 #endif
 
 #include "caca.h"
@@ -368,12 +369,12 @@ int caca_resize(caca_canvas_t *cv, int width, int height)
     int x, y, f, old_width, old_height, old_size;
 
     /* Check for overflow */
-    int new_size = width * height;
-    if (new_size < 0 || (width > 0 && new_size / width != height))
+    if (width != 0 && height > INT_MAX / width)
     {
         seterrno(EOVERFLOW);
         return -1;
     }
+    int new_size = width * height;
 
     old_width = cv->width;
     old_height = cv->height;
