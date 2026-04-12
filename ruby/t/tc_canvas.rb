@@ -1,6 +1,6 @@
 require 'caca'
 
-class TC_Canvas < MiniTest::Test
+class TC_Canvas < Minitest::Test
     def setup
         @c = Caca::Canvas.new(3, 3)
     end

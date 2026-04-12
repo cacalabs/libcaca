@@ -1,6 +1,6 @@
 require 'caca'
 
-class TC_Canvas < MiniTest::Test
+class TC_Canvas < Minitest::Test
     def test_create
         d = Caca::Display.new()
         refute_nil(d, 'Display creation failed')

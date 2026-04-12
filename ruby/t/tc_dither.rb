@@ -1,6 +1,6 @@
 require 'caca'
 
-class TC_Canvas < MiniTest::Test
+class TC_Canvas < Minitest::Test
     def test_create
         d = Caca::Dither.new(8, 32, 32, 32, 0, 0, 0, 0)
     end
