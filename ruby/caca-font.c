@@ -21,10 +21,17 @@ void font_free(void *font)
     caca_free_font((caca_font_t *)font);
 }
 
+static const rb_data_type_t font_dt = {
+    .wrap_struct_name  = "Caca::Font",
+    .function  = {
+        .dfree = font_free,
+    },
+};
+
 static VALUE font_alloc(VALUE klass)
 {
     VALUE obj;
-    obj = Data_Wrap_Struct(klass, 0, font_free, NULL);
+    obj = TypedData_Wrap_Struct(klass, &font_dt, NULL);
     return obj;
 }
 

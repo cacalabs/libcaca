@@ -21,10 +21,17 @@ void dither_free(void *dither)
     caca_free_dither((caca_dither_t *)dither);
 }
 
+static const rb_data_type_t dither_dt = {
+    .wrap_struct_name  = "Caca::Dither",
+    .function  = {
+        .dfree = dither_free,
+    },
+};
+
 static VALUE dither_alloc(VALUE klass)
 {
     VALUE obj;
-    obj = Data_Wrap_Struct(klass, 0, dither_free, NULL);
+    obj = TypedData_Wrap_Struct(klass, &dither_dt, NULL);
     return obj;
 }
 

@@ -23,11 +23,16 @@ void display_free(void *display)
     caca_free_display((caca_display_t *)display);
 }
 
+static const rb_data_type_t display_dt = {
+    .wrap_struct_name  = "Caca::Display",
+    .function  = {
+        .dfree = display_free,
+    },
+};
+
 static VALUE display_alloc(VALUE klass)
 {
-    VALUE obj;
-    obj = Data_Wrap_Struct(klass, 0, display_free, NULL);
-    return obj;
+    return TypedData_Wrap_Struct(klass, &display_dt, NULL);
 }
 
 static VALUE display_initialize(int argc, VALUE* argv, VALUE self)

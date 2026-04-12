@@ -18,6 +18,7 @@
 #include "caca-font.h"
 #include "caca_internals.h"
 #include "common.h"
+#include "limits.h"
 
 VALUE cCanvas;
 
@@ -41,16 +42,42 @@ static void canvas_free(void * p)
     caca_free_canvas((caca_canvas_t *)p);
 }
 
+static size_t canvas_size(const void *p)
+{
+    const caca_canvas_t *cv = (const caca_canvas_t *)p;
+
+    if (cv->height * cv->width > INT_MAX / cv->framecount) {
+        return INT_MAX;
+    }
+
+    return cv->height * cv->width * cv->framecount;
+}
+
+static const rb_data_type_t canvas_dt = {
+    .wrap_struct_name  = "Caca::Canvas",
+    .function  = {
+        .dsize = canvas_size,
+        .dfree = canvas_free,
+    },
+};
+
+static const rb_data_type_t display_autocreated_canvas_dt = {
+    .wrap_struct_name  = "Caca::Canvas",
+    .function  = {
+        .dsize = canvas_size,
+    },
+};
+
 static VALUE canvas_alloc(VALUE klass)
 {
     VALUE obj;
-    obj = Data_Wrap_Struct(klass, NULL, canvas_free, NULL);
+    obj = TypedData_Wrap_Struct(klass, &canvas_dt, NULL);
     return obj;
 }
 
 VALUE canvas_create(caca_canvas_t *canvas)
 {
-    return Data_Wrap_Struct(cCanvas, NULL, NULL, canvas);
+    return TypedData_Wrap_Struct(cCanvas, &display_autocreated_canvas_dt, canvas);
 }
 
 static VALUE canvas_initialize(VALUE self, VALUE width, VALUE height)
@@ -223,7 +250,7 @@ static VALUE blit(int argc, VALUE* argv, VALUE self) {
     {
         rb_raise(rb_eArgError, "src is not a Caca::Canvas");
     }
-    Data_Get_Struct(src, caca_canvas_t, csrc);
+    TypedData_Get_Struct(src, caca_canvas_t, &canvas_dt, csrc);
 
     if(!NIL_P(mask))
     {
@@ -231,7 +258,7 @@ static VALUE blit(int argc, VALUE* argv, VALUE self) {
         {
             rb_raise(rb_eArgError, "mask is not a Caca::Canvas");
         }
-        Data_Get_Struct(mask, caca_canvas_t, cmask);
+        TypedData_Get_Struct(mask, caca_canvas_t, &canvas_dt, cmask);
     }
     else
         cmask = NULL;
@@ -504,7 +531,7 @@ static VALUE fill_triangle_textured(VALUE self, VALUE coords, VALUE texture, VAL
     {
         rb_raise(rb_eArgError, "texture is not a Caca::Canvas");
     }
-    Data_Get_Struct(texture, caca_canvas_t, ctexture);
+    TypedData_Get_Struct(texture, caca_canvas_t, &canvas_dt, ctexture);
 
     caca_fill_triangle_textured(_SELF, ccoords, ctexture, cuv);
     return self;
