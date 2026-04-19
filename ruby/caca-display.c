@@ -69,22 +69,15 @@ static VALUE display_initialize(int argc, VALUE* argv, VALUE self)
     if(cv !=  Qnil)
         canvas = DATA_PTR(cv);
 
-    if(driver == NULL)
-    {
-        display = caca_create_display(canvas);
-        if(display && NIL_P(cv))
-        {
-            cv = canvas_create(caca_get_canvas(display));
-        }
-    }
-    else
-    {
-        display = caca_create_display_with_driver(canvas, driver);
-    }
-
+    display = caca_create_display_with_driver(canvas, driver);
     if(display == NULL)
     {
         rb_raise(rb_eRuntimeError, "%s", strerror(errno));
+    }
+
+    if(NIL_P(cv))
+    {
+        cv = canvas_create(caca_get_canvas(display));
     }
 
     _SELF = display;
