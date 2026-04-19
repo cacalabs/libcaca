@@ -586,7 +586,12 @@ static VALUE render_canvas(VALUE self, VALUE font, VALUE width, VALUE height, VA
         rb_raise(rb_eArgError, "First argument is not a Caca::Font");
     }
 
-    buf = _caca_alloc2d(width, height, 4);
+    if (width == 0 || height == 0 || SIZE_MAX / width / height < 4)
+    {
+        rb_raise(rb_eRangeError, "width * height is too large");
+    }
+
+    buf = malloc(width * height * 4);
     if(buf == NULL)
     {
         rb_raise(rb_eNoMemError, "Out of memory");
