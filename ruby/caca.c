@@ -24,6 +24,9 @@ static VALUE get_version(VALUE self)
     return rb_str_new2(caca_get_version());
 }
 
+#if defined CACA_ENABLE_VISIBILITY
+extern __attribute__((visibility("default")))
+#endif
 void Init_caca()
 {
     VALUE mCaca = rb_define_module("Caca");
