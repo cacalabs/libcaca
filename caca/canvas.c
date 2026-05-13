@@ -375,6 +375,13 @@ int caca_resize(caca_canvas_t *cv, int width, int height)
         return -1;
     }
     int new_size = width * height;
+    /* Check for overflow when multiplying by sizeof(uint32_t) on 32-bit
+     * systems */
+    if (new_size > 0 && (size_t)new_size > SIZE_MAX / sizeof(uint32_t))
+    {
+        seterrno(EOVERFLOW);
+        return -1;
+    }
 
     old_width = cv->width;
     old_height = cv->height;
