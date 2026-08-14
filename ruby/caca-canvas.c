@@ -1,6 +1,6 @@
 /*
  *  libcaca Ruby bindings
- *  Copyright © 2007—2014 Pascal Terjan <pterjan@linuxfr.org>
+ *  Copyright © 2007—2026 Pascal Terjan <pterjan@linuxfr.org>
  *              2021 Sam Hocevar <sam@hocevar.net>
  *              All Rights Reserved
  *
