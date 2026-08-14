@@ -27,6 +27,7 @@ class CanvasTest : public CppUnit::TestCase
     CPPUNIT_TEST(test_resize);
     CPPUNIT_TEST(test_chars);
     CPPUNIT_TEST(test_utf8);
+    CPPUNIT_TEST(test_flip);
     CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -115,6 +116,33 @@ public:
 
         /* Send only one byte of a 4-byte sequence */
         caca_put_str(cv, 0, 0, "\xf0");
+    }
+
+    void test_flip()
+    {
+        caca_canvas_t *cv;
+
+        cv = caca_create_canvas(3, 2);
+
+        caca_put_char(cv, 0, 0, 'A');
+        caca_put_char(cv, 1, 0, 'H');
+        caca_put_char(cv, 2, 0, 'M');
+
+        caca_put_char(cv, 0, 1, '(');
+        caca_put_char(cv, 1, 1, ' ');
+        caca_put_char(cv, 2, 1, ' ');
+
+        caca_flip(cv);
+
+        CPPUNIT_ASSERT_EQUAL((uint32_t)'M', caca_get_char(cv, 0, 0));
+        CPPUNIT_ASSERT_EQUAL((uint32_t)'H', caca_get_char(cv, 1, 0));
+        CPPUNIT_ASSERT_EQUAL((uint32_t)'A', caca_get_char(cv, 2, 0));
+
+        CPPUNIT_ASSERT_EQUAL((uint32_t)' ', caca_get_char(cv, 0, 1));
+        CPPUNIT_ASSERT_EQUAL((uint32_t)' ', caca_get_char(cv, 1, 1));
+        CPPUNIT_ASSERT_EQUAL((uint32_t)')', caca_get_char(cv, 2, 1));
+
+        caca_free_canvas(cv);
     }
 };
 
