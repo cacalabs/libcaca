@@ -324,7 +324,7 @@ int main(int argc, char *argv[])
                 printf("\n");
                 for (int y = 0; y < height; ++y)
                 {
-                    for (int x = 0; x < gtab[n].data_width; ++x)
+                    for (unsigned int x = 0; x < gtab[n].data_width; ++x)
                     {
                         int val = glyph_data[gtab[n].data_offset + y * gtab[n].data_width + x];
                         char ch = lut[val * val * 7 / 256 / 256];
