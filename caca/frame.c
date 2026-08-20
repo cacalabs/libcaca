@@ -147,6 +147,15 @@ int caca_create_frame(caca_canvas_t *cv, int id)
     int size = cv->width * cv->height;
     int f;
 
+
+    /* Check for overflow when multiplying by sizeof(uint32_t) on 32-bit
+     * systems */
+    if (size > 0 && (size_t)size > SIZE_MAX / sizeof(uint32_t))
+    {
+        seterrno(EOVERFLOW);
+        return -1;
+    }
+
     if(id < 0)
         id = 0;
     else if(id > cv->framecount)
