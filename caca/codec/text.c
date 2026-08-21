@@ -709,8 +709,7 @@ void *_export_irc(caca_canvas_t const *cv, size_t *bytes)
             bg = ansibg < 0x10 ? palette[ansibg] : 0x10;
 
             /* TODO: optimise series of same fg / same bg
-             *       don't change fg value if ch == ' '
-             *       make sure the \x03,%d trick works everywhere */
+             *       don't change fg value if ch == ' ' */
             if(bg != prevbg || fg != prevfg)
             {
                 int need_escape = 0;
@@ -733,7 +732,8 @@ void *_export_irc(caca_canvas_t const *cv, size_t *bytes)
                 else
                 {
                     if(fg == 0x10)
-                        cur += sprintf(cur, "\x0f\x03,%d", bg);
+			/* fg must be provided; 99 is the default color for a line */
+                        cur += sprintf(cur, "\x0399,%d", bg);
                     else
                         cur += sprintf(cur, "\x03%d,%d", fg, bg);
                 }
