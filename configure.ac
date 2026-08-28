@@ -145,6 +145,9 @@ AC_COMPILE_IFELSE(
   AC_DEFINE(HAVE_SLEEP, 1, [Define to 1 if you have the ‘Sleep’ function.])],
  [AC_MSG_RESULT(no)])
 
+# Disable LTO when checking for the instructions
+CFLAGS="${CFLAGS} -fno-lto"
+
 AC_MSG_CHECKING(for fsin/fcos)
 AC_COMPILE_IFELSE(
  [AC_LANG_PROGRAM(
@@ -162,6 +165,8 @@ AC_COMPILE_IFELSE(
  [AC_MSG_RESULT(yes)
   AC_DEFINE(HAVE_FLDLN2, 1, [Define to 1 if you have the ‘fldln2’ and other floating point instructions.])],
  [AC_MSG_RESULT(no)])
+
+CFLAGS="${CFLAGS%$' -fno-lto'}"
 
 AC_CHECK_HEADERS(zlib.h)
 AC_CHECK_LIB(z, gzopen, [ZLIB_LIBS="${ZLIB_LIBS} -lz"])
