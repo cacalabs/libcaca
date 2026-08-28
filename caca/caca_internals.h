@@ -268,7 +268,7 @@ extern int _caca_pop_event(caca_display_t *, caca_privevent_t *);
 extern void _caca_set_term_title(char const *);
 
 /* Internal memory function */
-extern void *_caca_alloc2d(size_t width, size_t height, size_t elem_size);
+__extern void *_caca_alloc2d(size_t width, size_t height, size_t elem_size);
 
 /* Profiling functions */
 #if defined PROF
