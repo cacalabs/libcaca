@@ -169,8 +169,8 @@ size_t caca_utf32_to_utf8(char *buf, uint32_t ch)
 
     switch(bytes)
     {
-        case 4: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
-        case 3: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
+        case 4: *--parser = (ch | 0x80) & 0xbf; ch >>= 6; __attribute__((fallthrough));
+        case 3: *--parser = (ch | 0x80) & 0xbf; ch >>= 6; __attribute__((fallthrough));
         case 2: *--parser = (ch | 0x80) & 0xbf; ch >>= 6;
     }
     *--parser = ch | mark[bytes];
