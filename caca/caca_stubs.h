@@ -34,6 +34,8 @@ static inline int geterrno(void) { return errno; }
 #       include <arpa/inet.h>
 #   elif defined HAVE_NETINET_IN_H
 #       include <netinet/in.h>
+#   elif defined HAVE_WINSOCK2_H
+#       include <winsock2.h>
 #   endif
 #   define hton16 htons
 #   define hton32 htonl
